@@ -6,6 +6,7 @@ import io.xpipe.app.comp.base.VBoxViewComp;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
+import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.core.store.FileSystem;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -14,6 +15,7 @@ import javafx.scene.layout.Region;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
+import java.util.List;
 import java.util.function.Function;
 
 @Value
@@ -29,7 +31,10 @@ public class BrowserFileOverviewComp extends SimpleComp {
         Function<FileSystem.FileEntry, Comp<?>> factory = entry -> {
             return Comp.of(() -> {
                 var icon = BrowserIcons.createIcon(entry);
-                var l = new Button(entry.getPath(), icon.createRegion());
+                var graphic = new HorizontalComp(List.of(icon,
+                        new BrowserQuickAccessButtonComp(() -> new BrowserEntry(entry, model.getFileList(),false),model)));
+                var l = new Button(entry.getPath(), graphic.createRegion());
+                l.setGraphicTextGap(1);
                 l.setOnAction(event -> {
                     model.cdAsync(entry.getPath());
                     event.consume();

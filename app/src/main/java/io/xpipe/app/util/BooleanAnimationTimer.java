@@ -5,13 +5,13 @@ import javafx.beans.value.ObservableBooleanValue;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public class BooleanTimer {
+public class BooleanAnimationTimer {
 
     private final ObservableBooleanValue value;
     private final int duration;
     private final Runnable toExecute;
 
-    public BooleanTimer(ObservableBooleanValue value, int duration, Runnable toExecute) {
+    public BooleanAnimationTimer(ObservableBooleanValue value, int duration, Runnable toExecute) {
         this.value = value;
         this.duration = duration;
         this.toExecute = toExecute;

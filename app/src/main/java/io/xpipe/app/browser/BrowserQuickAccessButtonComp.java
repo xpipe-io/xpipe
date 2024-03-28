@@ -4,7 +4,7 @@ import io.xpipe.app.browser.icon.FileIconManager;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
-import io.xpipe.app.util.BooleanTimer;
+import io.xpipe.app.util.BooleanAnimationTimer;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileSystem;
@@ -36,10 +36,15 @@ public class BrowserQuickAccessButtonComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
+        var cm = new ContextMenu();
         var button = new IconButtonComp("mdi2c-chevron-double-right");
         button.apply(struc -> {
             struc.get().setOnAction(event -> {
-                showMenu(struc.get());
+                if (!cm.isShowing()) {
+                    showMenu(cm, struc.get());
+                } else {
+                    cm.hide();
+                }
                 event.consume();
             });
         });
@@ -47,8 +52,8 @@ public class BrowserQuickAccessButtonComp extends SimpleComp {
         return button.createRegion();
     }
 
-    private void showMenu(Node anchor) {
-        var cm = new ContextMenu();
+    private void showMenu(ContextMenu cm, Node anchor) {
+        cm.getItems().clear();
         cm.addEventHandler(Menu.ON_SHOWING, e -> {
             Node content = cm.getSkin().getNode();
             if (content instanceof Region r) {
@@ -126,22 +131,21 @@ public class BrowserQuickAccessButtonComp extends SimpleComp {
             hover.set(false);
             event.consume();
         });
-        new BooleanTimer(hover, 100, () -> {
+        new BooleanAnimationTimer(hover, 100, () -> {
                     if (m.isShowing() && !m.getItems().getFirst().equals(empty)) {
                         return;
                     }
 
-                    List<MenuItem> newItems = null;
-                    try {
-                        newItems = updateMenuItems(contextMenu, m, fileEntry, false, showingActionsMenu);
-                        m.getItems().setAll(newItems);
-                        if (!browserCm.isShowing()) {
-                            m.hide();
-                            m.show();
-                        }
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
+                    ThreadHelper.runFailableAsync(() -> {
+                            var newItems = updateMenuItems(contextMenu, m, fileEntry, false, showingActionsMenu);
+                            Platform.runLater(() -> {
+                                m.getItems().setAll(newItems);
+                                if (!browserCm.isShowing() && m.isShowing()) {
+                                    m.hide();
+                                    m.show();
+                                }
+                            });
+                    });
                 })
                 .start();
         m.setOnAction(event -> {
@@ -204,8 +208,8 @@ public class BrowserQuickAccessButtonComp extends SimpleComp {
                     updateMenuItems(
                             contextMenu,
                             (Menu) menus.get(dirs.getFirst()),
-                            list.getFirst(),
-                            updateInstantly,
+                            dirs.getFirst(),
+                            true,
                             showingActionsMenu);
                 }
                 newItems.addAll(menus.values());
