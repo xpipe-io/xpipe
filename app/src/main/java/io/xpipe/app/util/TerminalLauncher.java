@@ -10,21 +10,25 @@ import io.xpipe.core.process.ProcessControl;
 import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.TerminalInitScriptConfig;
+import io.xpipe.core.util.FailableFunction;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 public class TerminalLauncher {
 
-    public static void openDirect(String title, ShellControl shellControl, String command) throws Exception {
-        var type = AppPrefs.get().terminalType().getValue();
-        if (type == null) {
-            throw ErrorEvent.expected(new IllegalStateException(AppI18n.get("noTerminalSet")));
+    public static void openDirect(String title, FailableFunction<ShellControl,String, Exception> command) throws Exception {
+        try (var sc = LocalShell.getShell().start()) {
+            var type = AppPrefs.get().terminalType().getValue();
+            if (type == null) {
+                throw ErrorEvent.expected(new IllegalStateException(AppI18n.get("noTerminalSet")));
+            }
+            var script = ScriptHelper.constructTerminalInitFile(sc.getShellDialect(), sc, ignored -> null, List.of(),
+                    command.apply(sc), new TerminalInitScriptConfig(title, type.shouldClear() && AppPrefs.get().clearTerminalOnInit().get()));
+            var config = new ExternalTerminalType.LaunchConfiguration(null, title, title, script, sc.getShellDialect());
+            type.launch(config);
         }
-        var script = ScriptHelper.createLocalExecScript(command);
-        var config = new ExternalTerminalType.LaunchConfiguration(
-                null, title, title, script, shellControl.getShellDialect());
-        type.launch(config);
     }
 
     public static void open(String title, ProcessControl cc) throws Exception {
@@ -43,8 +47,7 @@ public class TerminalLauncher {
         var adjustedTitle = prefix + cleanTitle;
         var terminalConfig = new TerminalInitScriptConfig(
                 adjustedTitle,
-                type.shouldClear() && AppPrefs.get().clearTerminalOnInit().get(),
-                color != null);
+                type.shouldClear() && AppPrefs.get().clearTerminalOnInit().get());
 
         var request = UUID.randomUUID();
         var d = ProcessControlProvider.get().getEffectiveLocalDialect();

@@ -135,7 +135,7 @@ public class AppInstaller {
                                              exec || read -rsp "Update failed ..."$'\\n' -n 1 key
                                              """,
                         file, file, name);
-                TerminalLauncher.openDirect("XPipe Updater", LocalShell.getShell(), command);
+                TerminalLauncher.openDirect("XPipe Updater", sc -> command);
             }
 
             @Override
@@ -161,7 +161,7 @@ public class AppInstaller {
                                              exec || read -rsp "Update failed ..."$'\\n' -n 1 key
                                              """,
                         file, file, name);
-                TerminalLauncher.openDirect("XPipe Updater", LocalShell.getShell(), command);
+                TerminalLauncher.openDirect("XPipe Updater", sc -> command);
             }
 
             @Override
@@ -187,7 +187,7 @@ public class AppInstaller {
                                            exec || echo "Update failed ..." && read -rs -k 1 key
                                            """,
                         file, file, name);
-                TerminalLauncher.openDirect("XPipe Updater", LocalShell.getShell(), command);
+                TerminalLauncher.openDirect("XPipe Updater", sc -> command);
             }
 
             @Override

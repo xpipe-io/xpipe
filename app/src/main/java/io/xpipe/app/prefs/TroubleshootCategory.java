@@ -12,7 +12,6 @@ import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileNames;
-import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.util.XPipeInstallation;
 
 public class TroubleshootCategory extends AppPrefsCategory {
@@ -42,14 +41,11 @@ public class TroubleshootCategory extends AppPrefsCategory {
                 .addComp(
                         new TileButtonComp("launchDebugMode", "launchDebugModeDescription", "mdmz-refresh", e -> {
                                     OperationMode.executeAfterShutdown(() -> {
-                                        try (var sc = new LocalStore().control().start()) {
-                                            var script = FileNames.join(
-                                                    XPipeInstallation.getCurrentInstallationBasePath()
-                                                            .toString(),
-                                                    XPipeInstallation.getDaemonDebugScriptPath(OsType.getLocal()));
-                                            var runScript = sc.getShellDialect().runScriptCommand(sc, script);
-                                            TerminalLauncher.openDirect("XPipe Debug", sc, runScript);
-                                        }
+                                        var script = FileNames.join(
+                                                XPipeInstallation.getCurrentInstallationBasePath()
+                                                        .toString(),
+                                                XPipeInstallation.getDaemonDebugScriptPath(OsType.getLocal()));
+                                        TerminalLauncher.openDirect("XPipe Debug", sc -> sc.getShellDialect().runScriptCommand(sc, script));
                                     });
                                     e.consume();
                                 })
