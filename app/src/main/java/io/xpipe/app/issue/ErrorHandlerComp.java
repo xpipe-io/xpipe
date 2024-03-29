@@ -9,7 +9,6 @@ import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
-import io.xpipe.app.util.JfxHelper;
 import io.xpipe.app.util.LicenseRequiredException;
 import io.xpipe.app.util.PlatformState;
 import javafx.application.Platform;
@@ -151,8 +150,18 @@ public class ErrorHandlerComp extends SimpleComp {
         }
     }
 
+    private Region createActionButtonGraphic(String nameString, String descString) {
+        var header = new Label(nameString);
+        AppFont.header(header);
+        var desc = new Label(descString);
+        AppFont.small(desc);
+        var text = new VBox(header, desc);
+        text.setSpacing(2);
+        return text;
+    }
+
     private Region createActionComp(ErrorAction a) {
-        var r = JfxHelper.createNamedEntry(a.getName(), a.getDescription());
+        var r = createActionButtonGraphic(a.getName(), a.getDescription());
         var b = new ButtonComp(null, r, () -> {
             takenAction.setValue(a);
             try {

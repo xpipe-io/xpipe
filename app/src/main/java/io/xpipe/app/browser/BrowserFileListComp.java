@@ -9,6 +9,7 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.HumanReadableFormat;
@@ -503,20 +504,16 @@ final class BrowserFileListComp extends SimpleComp {
                     .get();
             var quickAccess = new BrowserQuickAccessButtonComp(
                             () -> getTableRow().getItem(), fileList.getFileSystemModel())
-                    .hide(Bindings.createBooleanBinding(
+                    .hide(BindingsHelper.persist(Bindings.createBooleanBinding(
                             () -> {
-                                var notDir = getTableRow()
-                                                .getItem()
-                                                .getRawFileEntry()
-                                                .getKind()
-                                        != FileKind.DIRECTORY;
-                                var isParentLink = getTableRow()
-                                        .getItem()
+                                var item = getTableRow().getItem();
+                                var notDir = item.getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY;
+                                var isParentLink = item
                                         .getRawFileEntry()
                                         .equals(fileList.getFileSystemModel().getCurrentParentDirectory());
                                 return notDir || isParentLink;
                             },
-                            itemProperty()))
+                            itemProperty())))
                     .createRegion();
 
             editing.addListener((observable, oldValue, newValue) -> {

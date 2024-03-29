@@ -208,8 +208,13 @@
     -fx-opacity: 1.0;
 }
 
+.browser .quick-access-button {
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
 
-.browser .quick-access-button .context-menu .leaf .arrow {
+.browser .quick-access-button .context-menu .leaf > * > .arrow {
+    -fx-pref-width: 0;
     -fx-opacity: 0;
 }
 

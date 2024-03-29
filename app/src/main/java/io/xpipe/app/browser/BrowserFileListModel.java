@@ -87,20 +87,20 @@ public final class BrowserFileListModel {
                 : all.getValue();
 
         var listCopy = new ArrayList<>(filtered);
-        sort(listCopy);
+        listCopy.sort(order());
         shown.setValue(listCopy);
     }
 
-    private void sort(List<BrowserEntry> l) {
+    public Comparator<BrowserEntry> order() {
         var syntheticFirst = Comparator.<BrowserEntry, Boolean>comparing(path -> !path.isSynthetic());
         var dirsFirst = Comparator.<BrowserEntry, Boolean>comparing(
                 path -> path.getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY);
         var comp = comparatorProperty.getValue();
 
-        Comparator<? super BrowserEntry> us = comp != null
+        Comparator<BrowserEntry> us = comp != null
                 ? syntheticFirst.thenComparing(dirsFirst).thenComparing(comp)
                 : syntheticFirst.thenComparing(dirsFirst);
-        l.sort(us);
+        return us;
     }
 
     public boolean rename(String filename, String newName) {
