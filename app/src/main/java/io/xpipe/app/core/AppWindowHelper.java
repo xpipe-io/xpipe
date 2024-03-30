@@ -4,10 +4,12 @@ import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
+import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
@@ -216,7 +218,7 @@ public class AppWindowHelper {
     public static void setupStylesheets(Scene scene) {
         AppStyle.addStylesheets(scene);
 
-        scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (AppProperties.get().isDeveloperMode() && event.getCode().equals(KeyCode.F3)) {
                 AppStyle.reloadStylesheets(scene);
                 TrackEvent.debug("Reloaded stylesheets");
@@ -224,6 +226,24 @@ public class AppWindowHelper {
             }
         });
         TrackEvent.debug("Set stylesheet reload listener");
+
+        InputHelper.onNavigationInput(scene, (kb) -> {
+            var r = scene.getRoot();
+            if (r != null) {
+                r.pseudoClassStateChanged(PseudoClass.getPseudoClass("key-navigation"), kb);
+                r.pseudoClassStateChanged(PseudoClass.getPseudoClass("normal-navigation"), !kb);
+                r.pseudoClassStateChanged(PseudoClass.getPseudoClass("accessibility-navigation"), false);
+            }
+        });
+
+        Platform.accessibilityActiveProperty().addListener((observable, oldValue, newValue) -> {
+            var r = scene.getRoot();
+            if (r != null) {
+                r.pseudoClassStateChanged(PseudoClass.getPseudoClass("key-navigation"), false);
+                r.pseudoClassStateChanged(PseudoClass.getPseudoClass("normal-navigation"), false);
+                r.pseudoClassStateChanged(PseudoClass.getPseudoClass("accessibility-navigation"), true);
+            }
+        });
     }
 
     public static void setupContent(

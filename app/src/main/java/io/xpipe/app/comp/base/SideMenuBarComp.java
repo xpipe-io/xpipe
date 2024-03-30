@@ -20,6 +20,8 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.css.PseudoClass;
 import javafx.scene.control.Button;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
@@ -67,8 +69,11 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                 Platform.getPreferences().accentColorProperty());
 
         var selected = PseudoClass.getPseudoClass("selected");
-        entries.forEach(e -> {
-            var b = new IconButtonComp(e.icon(), () -> value.setValue(e)).apply(new FancyTooltipAugment<>(e.name()));
+        for (int i = 0; i < entries.size(); i++) {
+            var e = entries.get(i);
+            var b = new IconButtonComp(e.icon(), () -> value.setValue(e));
+            b.shortcut(new KeyCodeCombination(KeyCode.values()[KeyCode.DIGIT1.ordinal() + i]));
+            b.apply(new FancyTooltipAugment<>(e.name()));
             b.apply(struc -> {
                 AppFont.setSize(struc.get(), 2);
                 struc.get().pseudoClassStateChanged(selected, value.getValue().equals(e));
@@ -99,7 +104,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
             });
             b.accessibleText(e.name());
             vbox.getChildren().add(b.createRegion());
-        });
+        }
 
         Augment<CompStructure<Button>> simpleBorders = struc -> {
             struc.get()
@@ -127,6 +132,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                         }
                         UserReportComp.show(event.build());
                     })
+                    .shortcut(new KeyCodeCombination(KeyCode.values()[KeyCode.DIGIT1.ordinal() + entries.size()]))
                     .apply(new FancyTooltipAugment<>("reportIssue"))
                     .apply(simpleBorders)
                     .accessibleTextKey("reportIssue");
@@ -138,6 +144,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
 
         {
             var b = new IconButtonComp("mdi2g-github", () -> Hyperlinks.open(Hyperlinks.GITHUB))
+                    .shortcut(new KeyCodeCombination(KeyCode.values()[KeyCode.DIGIT1.ordinal() + entries.size() + 1]))
                     .apply(new FancyTooltipAugment<>("visitGithubRepository"))
                     .apply(simpleBorders)
                     .accessibleTextKey("visitGithubRepository");
@@ -149,6 +156,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
 
         {
             var b = new IconButtonComp("mdi2d-discord", () -> Hyperlinks.open(Hyperlinks.DISCORD))
+                    .shortcut(new KeyCodeCombination(KeyCode.values()[KeyCode.DIGIT1.ordinal() + entries.size() + 2]))
                     .apply(new FancyTooltipAugment<>("discord"))
                     .apply(simpleBorders)
                     .accessibleTextKey("discord");
@@ -160,6 +168,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
 
         {
             var b = new IconButtonComp("mdi2u-update", () -> UpdateAvailableAlert.showIfNeeded())
+                    .shortcut(new KeyCodeCombination(KeyCode.values()[KeyCode.DIGIT1.ordinal() + entries.size() + 3]))
                     .apply(new FancyTooltipAugment<>("updateAvailableTooltip"))
                     .accessibleTextKey("updateAvailableTooltip");
             b.apply(struc -> {

@@ -15,7 +15,11 @@ import java.util.function.Consumer;
 
 public class Shortcuts {
 
-    private static final Map<Region, KeyCombination> SHORTCUTS = new HashMap<>();
+    private static final Map<Region, KeyCombination> DISPLAY_SHORTCUTS = new HashMap<>();
+
+    public static void addDisplayShortcut(Region region, KeyCombination comb) {
+        DISPLAY_SHORTCUTS.put(region, comb);
+    }
 
     public static <T extends ButtonBase> void addShortcut(T region, KeyCombination comb) {
         addShortcut(region, comb, ButtonBase::fire);
@@ -35,8 +39,8 @@ public class Shortcuts {
             }
         };
 
+        DISPLAY_SHORTCUTS.put(region, comb);
         AtomicReference<Scene> scene = new AtomicReference<>();
-        SHORTCUTS.put(region, comb);
         SimpleChangeListener.apply(region.sceneProperty(), s -> {
             if (Objects.equals(s, scene.get())) {
                 return;
@@ -44,18 +48,19 @@ public class Shortcuts {
 
             if (scene.get() != null) {
                 scene.get().removeEventFilter(KeyEvent.KEY_PRESSED, filter);
-                SHORTCUTS.remove(region);
+                DISPLAY_SHORTCUTS.remove(region);
                 scene.set(null);
             }
 
             if (s != null) {
                 scene.set(s);
+                DISPLAY_SHORTCUTS.put(region, comb);
                 s.addEventFilter(KeyEvent.KEY_PRESSED, filter);
             }
         });
     }
 
-    public static KeyCombination getShortcut(Region region) {
-        return SHORTCUTS.get(region);
+    public static KeyCombination getDisplayShortcut(Region region) {
+        return DISPLAY_SHORTCUTS.get(region);
     }
 }

@@ -3,12 +3,11 @@ package io.xpipe.app.browser;
 import io.xpipe.app.browser.icon.FileIconManager;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.util.BooleanAnimationTimer;
+import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FileKind;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.event.EventHandler;
-import javafx.event.EventTarget;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -24,37 +23,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class BrowserQuickAccessContextMenu extends ContextMenu {
-
-     static void onLeft(EventTarget target, boolean filter, Consumer<KeyEvent> r) {
-         EventHandler<KeyEvent> keyEventEventHandler = event -> {
-             if (event.getCode() == KeyCode.LEFT || event.getCode() == KeyCode.NUMPAD4) {
-                 r.accept(event);
-             }
-         };
-         if (filter) {
-             target.addEventFilter(KeyEvent.KEY_PRESSED, keyEventEventHandler);
-         } else {
-             target.addEventHandler(KeyEvent.KEY_PRESSED, keyEventEventHandler);
-         }
-    }
-
-     static void onRight(EventTarget target, boolean filter, Consumer<KeyEvent> r) {
-         EventHandler<KeyEvent> keyEventEventHandler = event -> {
-             if (event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.NUMPAD6) {
-                 r.accept(event);
-             }
-         };
-         if (filter) {
-             target.addEventFilter(KeyEvent.KEY_PRESSED, keyEventEventHandler);
-         } else {
-             target.addEventHandler(KeyEvent.KEY_PRESSED, keyEventEventHandler);
-         }
-    }
 
     @Getter
     class QuickAccessMenu {
@@ -107,7 +79,7 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
             var empty = new MenuItem("...");
             empty.setDisable(true);
             menu.getItems().add(empty);
-            onRight(empty, true, keyEvent -> {
+            InputHelper.onRight(empty, true, keyEvent -> {
                 keyEvent.consume();
             });
         }
@@ -233,7 +205,7 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
                 this.browserActionMenu.setOnAction(e -> {
                     hide();
                 });
-                onLeft(this.browserActionMenu, true, keyEvent -> {
+                InputHelper.onLeft(this.browserActionMenu, true, keyEvent -> {
                     this.browserActionMenu.hide();
                     keyEvent.consume();
                 });
@@ -271,7 +243,7 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
                 getItems().getFirst().getStyleableNode().requestFocus();
             });
         });
-        onLeft(this, false, e -> {
+        InputHelper.onLeft(this, false, e -> {
             hide();
             e.consume();
         });

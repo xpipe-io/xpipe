@@ -64,7 +64,7 @@
     -fx-background-color: derive(-color-neutral-muted, 25%);
 }
 
-.store-entry-comp:hover, .store-entry-comp:focused {
+.store-entry-comp:hover, .root:key-navigation .store-entry-comp:focused {
     -fx-background-color: -color-neutral-muted;
 }
 
@@ -76,7 +76,7 @@
     -fx-opacity: 1.0;
 }
 
-.expand-button:hover, .expand-button:focused, .quick-access-button:hover, .quick-access-button:focused {
+.expand-button:hover, .root:key-navigation .expand-button:focused, .quick-access-button:hover, .root:key-navigation .quick-access-button:focused {
     -fx-background-color: -color-neutral-muted;
 }
 

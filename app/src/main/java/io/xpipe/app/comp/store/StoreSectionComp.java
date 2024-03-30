@@ -13,6 +13,10 @@ import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.binding.Bindings;
 import javafx.css.PseudoClass;
+import javafx.scene.control.Button;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
@@ -35,17 +39,7 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
         this.topLevel = topLevel;
     }
 
-    @Override
-    public CompStructure<VBox> createBase() {
-        var expanded = BindingsHelper.persist(Bindings.createBooleanBinding(
-                () -> {
-                    return section.getWrapper().getExpanded().get()
-                            && section.getShownChildren().size() > 0;
-                },
-                section.getWrapper().getExpanded(),
-                section.getShownChildren()));
-        var root = StoreEntryComp.customSection(section, topLevel);
-
+    private Comp<CompStructure<Button>> createQuickAccessButton() {
         var quickAccessDisabled = BindingsHelper.persist(Bindings.createBooleanBinding(
                 () -> {
                     return section.getShownChildren().isEmpty();
@@ -62,21 +56,31 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                 .apply(struc -> struc.get().setMinWidth(30))
                 .apply(struc -> struc.get().setPrefWidth(30))
                 .maxHeight(100)
-                .disable(quickAccessDisabled);
+                .disable(quickAccessDisabled)
+                .focusTraversableForAccessibility()
+                .dislayOnlyShortcut(new KeyCodeCombination(KeyCode.RIGHT))
+                .tooltipKey("accessSubConnections");
+        return quickAccessButton;
+    }
+
+    private Comp<CompStructure<Button>> createExpandButton() {
         var expandButton = new IconButtonComp(
-                        Bindings.createStringBinding(
-                                () -> section.getWrapper().getExpanded().get()
-                                                && section.getShownChildren().size() > 0
-                                        ? "mdal-keyboard_arrow_down"
-                                        : "mdal-keyboard_arrow_right",
-                                section.getWrapper().getExpanded(),
-                                section.getShownChildren()),
-                        () -> {
-                            section.getWrapper().toggleExpanded();
-                        })
+                Bindings.createStringBinding(
+                        () -> section.getWrapper().getExpanded().get()
+                                        && section.getShownChildren().size() > 0
+                                ? "mdal-keyboard_arrow_down"
+                                : "mdal-keyboard_arrow_right",
+                        section.getWrapper().getExpanded(),
+                        section.getShownChildren()),
+                () -> {
+                    section.getWrapper().toggleExpanded();
+                });
+        expandButton
                 .apply(struc -> struc.get().setMinWidth(30))
                 .apply(struc -> struc.get().setPrefWidth(30))
-                .focusTraversable()
+                .focusTraversableForAccessibility()
+                .dislayOnlyShortcut(new KeyCodeCombination(KeyCode.SPACE))
+                .tooltipKey("expand")
                 .accessibleText(Bindings.createStringBinding(
                         () -> {
                             return "Expand " + section.getWrapper().getName().getValue();
@@ -87,13 +91,38 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                 .styleClass("expand-button")
                 .maxHeight(100)
                 .vgrow();
+        return expandButton;
+    }
+
+    @Override
+    public CompStructure<VBox> createBase() {
+        var entryButton = StoreEntryComp.customSection(section, topLevel);
+        var quickAccessButton = createQuickAccessButton();
+        var expandButton = createExpandButton();
         var buttonList = new ArrayList<Comp<?>>();
-        if (root.isFullSize()) {
+        if (entryButton.isFullSize()) {
             buttonList.add(quickAccessButton);
         }
         buttonList.add(expandButton);
         var buttons = new VerticalComp(buttonList);
-        List<Comp<?>> topEntryList = List.of(buttons, root.hgrow());
+        var topEntryList = new HorizontalComp(List.of(buttons, entryButton.hgrow()));
+        topEntryList.apply(struc -> {
+            var mainButton = struc.get().getChildren().get(1);
+            mainButton.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                if (event.getCode() == KeyCode.SPACE) {
+                    section.getWrapper().toggleExpanded();
+                    event.consume();
+                }
+                if (event.getCode() == KeyCode.RIGHT) {
+                    var ref = (VBox) struc.get().getChildren().getFirst();
+                    if (entryButton.isFullSize()) {
+                        var btn = (Button) ref.getChildren().getFirst();
+                        btn.fire();
+                    }
+                    event.consume();
+                }
+            });
+        });
 
         // Optimization for large sections. If there are more than 20 children, only add the nodes to the scene if the
         // section is actually expanded
@@ -109,18 +138,23 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                 .minHeight(0)
                 .hgrow();
 
-        return new VerticalComp(List.of(
-                        new HorizontalComp(topEntryList)
-                                .apply(struc -> struc.get().setFillHeight(true)),
-                        Comp.separator().hide(BindingsHelper.persist(expanded.not())),
-                        new HorizontalComp(List.of(content))
-                                .styleClass("content")
-                                .apply(struc -> struc.get().setFillHeight(true))
-                                .hide(BindingsHelper.persist(Bindings.or(
-                                        Bindings.not(section.getWrapper().getExpanded()),
-                                        Bindings.size(section.getShownChildren())
-                                                .isEqualTo(0))))))
-                .styleClass("store-entry-section-comp")
+        var expanded = BindingsHelper.persist(Bindings.createBooleanBinding(
+                () -> {
+                    return section.getWrapper().getExpanded().get()
+                            && section.getShownChildren().size() > 0;
+                },
+                section.getWrapper().getExpanded(),
+                section.getShownChildren()));
+        var full = new VerticalComp(List.of(
+                topEntryList,
+                Comp.separator().hide(BindingsHelper.persist(expanded.not())),
+                new HorizontalComp(List.of(content))
+                        .styleClass("content")
+                        .apply(struc -> struc.get().setFillHeight(true))
+                        .hide(BindingsHelper.persist(Bindings.or(
+                                Bindings.not(section.getWrapper().getExpanded()),
+                                Bindings.size(section.getShownChildren()).isEqualTo(0))))));
+        return full.styleClass("store-entry-section-comp")
                 .apply(struc -> {
                     struc.get().setFillWidth(true);
                     SimpleChangeListener.apply(expanded, val -> {
@@ -128,27 +162,27 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                     });
                     struc.get().pseudoClassStateChanged(EVEN, section.getDepth() % 2 == 0);
                     struc.get().pseudoClassStateChanged(ODD, section.getDepth() % 2 != 0);
-                })
-                .apply(struc -> SimpleChangeListener.apply(section.getWrapper().getColor(), val -> {
-                    if (!topLevel) {
-                        return;
-                    }
-
-                    var newList = new ArrayList<>(struc.get().getStyleClass());
-                    newList.removeIf(s -> Arrays.stream(DataStoreColor.values())
-                            .anyMatch(dataStoreColor -> dataStoreColor.getId().equals(s)));
-                    newList.remove("none");
-                    newList.add("color-box");
-                    if (val != null) {
-                        newList.add(val.getId());
-                    } else {
-                        newList.add("none");
-                    }
-                    struc.get().getStyleClass().setAll(newList);
-                }))
-                .apply(struc -> {
                     struc.get().pseudoClassStateChanged(ROOT, topLevel);
                     struc.get().pseudoClassStateChanged(SUB, !topLevel);
+
+                    SimpleChangeListener.apply(section.getWrapper().getColor(), val -> {
+                        if (!topLevel) {
+                            return;
+                        }
+
+                        var newList = new ArrayList<>(struc.get().getStyleClass());
+                        newList.removeIf(s -> Arrays.stream(DataStoreColor.values())
+                                .anyMatch(
+                                        dataStoreColor -> dataStoreColor.getId().equals(s)));
+                        newList.remove("none");
+                        newList.add("color-box");
+                        if (val != null) {
+                            newList.add(val.getId());
+                        } else {
+                            newList.add("none");
+                        }
+                        struc.get().getStyleClass().setAll(newList);
+                    });
                 })
                 .createStructure();
     }

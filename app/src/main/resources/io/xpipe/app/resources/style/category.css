@@ -14,7 +14,7 @@
     -fx-opacity: 1.0;
 }
 
-.category-button:hover, .category-button:focused {
+.category-button:hover, .root:key-navigation .category-button:focused {
     -fx-background-color: -color-bg-default;
 }
 

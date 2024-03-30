@@ -1,19 +1,20 @@
 package io.xpipe.app.comp.store;
 
-import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import javafx.geometry.Side;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.layout.Region;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
-public class StoreQuickAccessButtonComp extends SimpleComp {
+public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
 
     private final StoreSection section;
     private final Consumer<StoreEntryWrapper> action;
@@ -21,17 +22,6 @@ public class StoreQuickAccessButtonComp extends SimpleComp {
     public StoreQuickAccessButtonComp(StoreSection section, Consumer<StoreEntryWrapper> action) {
         this.section = section;
         this.action = action;
-    }
-
-    @Override
-    protected Region createSimple() {
-        var button = new IconButtonComp("mdi2c-chevron-double-right");
-        button.apply(struc -> {
-            struc.get().setOnAction(event -> {
-                showMenu(struc.get());
-            });
-        });
-        return button.createRegion();
     }
 
     private void showMenu(Node anchor) {
@@ -93,5 +83,16 @@ public class StoreQuickAccessButtonComp extends SimpleComp {
             }
         });
         return m;
+    }
+
+    @Override
+    public CompStructure<Button> createBase() {
+        var button = new IconButtonComp("mdi2c-chevron-double-right");
+        button.apply(struc -> {
+            struc.get().setOnAction(event -> {
+                showMenu(struc.get());
+            });
+        });
+        return button.createStructure();
     }
 }

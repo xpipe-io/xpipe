@@ -2,6 +2,7 @@ package io.xpipe.app.browser;
 
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
+import io.xpipe.app.util.InputHelper;
 import javafx.application.Platform;
 import javafx.scene.control.Menu;
 import javafx.scene.layout.Region;
@@ -36,7 +37,7 @@ public class BrowserQuickAccessButtonComp extends SimpleComp {
                     struc.get().requestFocus();
                 });
             });
-            BrowserQuickAccessContextMenu.onRight(struc.get(), false, keyEvent -> {
+            InputHelper.onRight(struc.get(), false, keyEvent -> {
                 cm.showMenu(struc.get());
                 keyEvent.consume();
             });

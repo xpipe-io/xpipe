@@ -24,6 +24,7 @@ public class AppUserDirectoryCheck {
                                             + ". Please make sure that you have the appropriate permissions and no Antivirus program is blocking the access. "
                                             + "In case you use cloud storage, verify that your cloud storage is working and you are logged in."))
                     .term()
+                    .expected()
                     .handle();
         }
     }

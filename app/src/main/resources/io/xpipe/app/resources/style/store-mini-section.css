@@ -23,7 +23,7 @@
     -fx-background-radius: 0;
 }
 
-.store-section-mini-comp .item:hover, .store-section-mini-comp .item:focused {
+.store-section-mini-comp .item:hover, .root:key-navigation .store-section-mini-comp .item:focused {
     -fx-background-color: -color-accent-subtle;
 }
 
@@ -37,7 +37,7 @@
     -fx-border-color: -color-border-subtle;
 }
 
-.store-section-mini-comp .expand-button:hover, .store-section-mini-comp .expand-button:focused {
+.store-section-mini-comp .expand-button:hover, .root:key-navigation .store-section-mini-comp .expand-button:focused {
     -fx-background-color: -color-neutral-muted;
 }
 
@@ -53,7 +53,7 @@
     -fx-background-radius: 4 0 0 4;
 }
 
-.store-section-mini-comp .quick-access-button:hover, .store-section-mini-comp .quick-access-button:focused {
+.store-section-mini-comp .quick-access-button:hover, .root:key-navigation .store-section-mini-comp .quick-access-button:focused {
     -fx-background-color: -color-neutral-muted;
 }
 

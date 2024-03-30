@@ -15,7 +15,7 @@
     -fx-opacity: 1.0;
 }
 
-.sidebar-comp .icon-button-comp:hover, .sidebar-comp .icon-button-comp:focused {
+.sidebar-comp .icon-button-comp:hover, .root:key-navigation .sidebar-comp .icon-button-comp:focused {
     -fx-background-color: -color-neutral-muted;
 }
 
