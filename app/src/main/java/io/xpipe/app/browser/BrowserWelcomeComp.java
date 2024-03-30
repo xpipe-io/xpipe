@@ -7,14 +7,15 @@ import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.LabelComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.PrettySvgComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.util.JfxHelper;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
@@ -25,6 +26,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+
+import java.util.List;
 
 public class BrowserWelcomeComp extends SimpleComp {
 
@@ -86,25 +89,10 @@ public class BrowserWelcomeComp extends SimpleComp {
         storeList.setSpacing(8);
 
         var listBox = new ListBoxViewComp<>(list, list, e -> {
-                    var entry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
-                    var graphic = entry.get()
-                            .getProvider()
-                            .getDisplayIconFileName(entry.get().getStore());
-                    var view = PrettyImageHelper.ofFixedSize(graphic, 50, 40);
-                    view.padding(new Insets(2, 8, 2, 8));
-                    var content = JfxHelper.createNamedEntry(
-                            DataStorage.get().getStoreDisplayName(entry.get()), e.getPath(), graphic);
-                    var disable = new SimpleBooleanProperty();
-                    return new ButtonComp(null, content, () -> {
-                                ThreadHelper.runAsync(() -> {
-                                    model.restoreStateAsync(e, disable);
-                                });
-                            })
-                            .accessibleText(DataStorage.get().getStoreDisplayName(entry.get()))
-                            .disable(disable)
-                            .styleClass("color-listBox")
-                            .apply(struc -> struc.get().setMaxWidth(2000))
-                            .grow(true, false);
+            var disable = new SimpleBooleanProperty();
+                    var entryButton = entryButton(e, disable);
+                    var dirButton = dirButton(e, disable);
+                    return new HorizontalComp(List.of(entryButton, dirButton));
                 })
                 .apply(struc -> {
                     VBox vBox = (VBox) struc.get().getContent();
@@ -133,5 +121,38 @@ public class BrowserWelcomeComp extends SimpleComp {
         layout.getChildren().add(tile.createRegion());
 
         return layout;
+    }
+
+    private Comp<?> entryButton(BrowserSavedState.Entry e, BooleanProperty disable) {
+        var entry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
+        var graphic = entry.get()
+                .getProvider()
+                .getDisplayIconFileName(entry.get().getStore());
+        var view = PrettyImageHelper.ofFixedSize(graphic, 30, 24);
+        return new ButtonComp(new SimpleStringProperty(DataStorage.get().getStoreDisplayName(entry.get())), view.createRegion(), () -> {
+            ThreadHelper.runAsync(() -> {
+                model.restoreStateAsync(e, disable);
+            });
+        })
+                .minWidth(250)
+                .accessibleText(DataStorage.get().getStoreDisplayName(entry.get()))
+                .disable(disable)
+                .styleClass("entry-button")
+                .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
+    }
+
+    private Comp<?> dirButton(BrowserSavedState.Entry e, BooleanProperty disable) {
+        var entry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
+        return new ButtonComp(new SimpleStringProperty(e.getPath()), null, () -> {
+            ThreadHelper.runAsync(() -> {
+                model.restoreStateAsync(e, disable);
+            });
+        })
+                .accessibleText(e.getPath())
+                .disable(disable)
+                .styleClass("directory-button")
+                .apply(struc -> struc.get().setMaxWidth(2000))
+                .grow(true, false)
+                .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
     }
 }

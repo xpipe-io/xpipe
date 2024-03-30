@@ -230,9 +230,10 @@ public class AppWindowHelper {
         InputHelper.onNavigationInput(scene, (kb) -> {
             var r = scene.getRoot();
             if (r != null) {
-                r.pseudoClassStateChanged(PseudoClass.getPseudoClass("key-navigation"), kb);
-                r.pseudoClassStateChanged(PseudoClass.getPseudoClass("normal-navigation"), !kb);
-                r.pseudoClassStateChanged(PseudoClass.getPseudoClass("accessibility-navigation"), false);
+                var acc = Platform.isAccessibilityActive();
+                r.pseudoClassStateChanged(PseudoClass.getPseudoClass("key-navigation"), kb && !acc);
+                r.pseudoClassStateChanged(PseudoClass.getPseudoClass("normal-navigation"), !kb && !acc);
+                r.pseudoClassStateChanged(PseudoClass.getPseudoClass("accessibility-navigation"), acc);
             }
         });
 

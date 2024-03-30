@@ -79,9 +79,6 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
             var empty = new MenuItem("...");
             empty.setDisable(true);
             menu.getItems().add(empty);
-            InputHelper.onRight(empty, true, keyEvent -> {
-                keyEvent.consume();
-            });
         }
 
         private void createDirectoryMenu() {

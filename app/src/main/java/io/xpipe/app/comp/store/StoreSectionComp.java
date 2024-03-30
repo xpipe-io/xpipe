@@ -56,9 +56,14 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                 .apply(struc -> struc.get().setMinWidth(30))
                 .apply(struc -> struc.get().setPrefWidth(30))
                 .maxHeight(100)
+                .accessibleText(Bindings.createStringBinding(
+                        () -> {
+                            return "Access " + section.getWrapper().getName().getValue();
+                        },
+                        section.getWrapper().getName()))
                 .disable(quickAccessDisabled)
                 .focusTraversableForAccessibility()
-                .dislayOnlyShortcut(new KeyCodeCombination(KeyCode.RIGHT))
+                .displayOnlyShortcut(new KeyCodeCombination(KeyCode.RIGHT))
                 .tooltipKey("accessSubConnections");
         return quickAccessButton;
     }
@@ -79,7 +84,7 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                 .apply(struc -> struc.get().setMinWidth(30))
                 .apply(struc -> struc.get().setPrefWidth(30))
                 .focusTraversableForAccessibility()
-                .dislayOnlyShortcut(new KeyCodeCombination(KeyCode.SPACE))
+                .displayOnlyShortcut(new KeyCodeCombination(KeyCode.SPACE))
                 .tooltipKey("expand")
                 .accessibleText(Bindings.createStringBinding(
                         () -> {

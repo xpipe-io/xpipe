@@ -103,7 +103,7 @@ public class BrowserNavBar extends SimpleComp {
         homeButton.setAccessibleText("Directory options");
         homeButton.getStyleClass().add(Styles.LEFT_PILL);
         homeButton.getStyleClass().add("path-graphic-button");
-        new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, () -> {
+        new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, null, () -> {
                     return model.getInOverview().get() ? null : new BrowserContextMenu(model, null);
                 })
                 .augment(new SimpleCompStructure<>(homeButton));
@@ -112,7 +112,7 @@ public class BrowserNavBar extends SimpleComp {
         historyButton.setAccessibleText("History");
         historyButton.getStyleClass().add(Styles.RIGHT_PILL);
         // historyButton.getStyleClass().add("path-graphic-button");
-        new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, this::createContextMenu)
+        new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, null, this::createContextMenu)
                 .augment(new SimpleCompStructure<>(historyButton));
 
         var breadcrumbs = new BrowserBreadcrumbBar(model).grow(false, true);

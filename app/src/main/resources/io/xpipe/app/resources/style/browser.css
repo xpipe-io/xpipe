@@ -19,8 +19,12 @@
     -fx-opacity: 1.0;
 }
 
-.browser .welcome .button {
-    -fx-border-radius: 4px;
+.browser .welcome .entry-button {
+    -fx-background-radius: 4px 0 0 4px;
+}
+
+.browser .welcome .directory-button {
+    -fx-background-radius: 0 4px 4px 0;
 }
 
 .browser .welcome .button:hover {

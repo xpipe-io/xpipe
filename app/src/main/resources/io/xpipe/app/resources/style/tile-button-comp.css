@@ -1,0 +1,17 @@
+.tile-button-comp {
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+    -fx-background-radius: 4px;
+}
+
+.root.nord .tile-button-comp {
+    -fx-background-radius: 0;
+}
+
+.tile-button-comp:hover:armed {
+    -fx-background-color: derive(-color-neutral-muted, 25%);
+}
+
+.tile-button-comp:hover, .root:key-navigation .tile-button-comp:focused {
+    -fx-background-color: -color-neutral-muted;
+}

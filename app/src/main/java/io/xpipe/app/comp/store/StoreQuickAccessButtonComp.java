@@ -4,8 +4,8 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
+import io.xpipe.app.util.ContextMenuHelper;
 import javafx.geometry.Side;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
@@ -24,22 +24,12 @@ public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
         this.action = action;
     }
 
-    private void showMenu(Node anchor) {
-        var cm = createMenu();
-        if (cm == null) {
-            return;
-        }
-
-        cm.show(anchor, Side.RIGHT, 0, 0);
-    }
-
     private ContextMenu createMenu() {
         if (section.getShownChildren().isEmpty()) {
             return null;
         }
 
-        var cm = new ContextMenu();
-        cm.setAutoHide(true);
+        var cm = ContextMenuHelper.create();
         cm.getStyleClass().add("condensed");
         Menu menu = (Menu) recurse(cm, section);
         cm.getItems().addAll(menu.getItems());
@@ -52,9 +42,7 @@ public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
         var graphic =
                 w.getEntry().getProvider().getDisplayIconFileName(w.getEntry().getStore());
         if (c.isEmpty()) {
-            var item = new MenuItem(
-                    w.getName().getValue(),
-                    PrettyImageHelper.ofFixedSizeSquare(graphic, 16).createRegion());
+            var item = ContextMenuHelper.item(PrettyImageHelper.ofFixedSizeSquare(graphic, 16), w.getName().getValue());
             item.setOnAction(event -> {
                 action.accept(w);
                 contextMenu.hide();
@@ -89,8 +77,14 @@ public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
     public CompStructure<Button> createBase() {
         var button = new IconButtonComp("mdi2c-chevron-double-right");
         button.apply(struc -> {
+            var cm = createMenu();
+            if (cm == null) {
+                return;
+            }
+
             struc.get().setOnAction(event -> {
-                showMenu(struc.get());
+                ContextMenuHelper.toggleShow(cm,struc.get(), Side.RIGHT);
+                event.consume();
             });
         });
         return button.createStructure();

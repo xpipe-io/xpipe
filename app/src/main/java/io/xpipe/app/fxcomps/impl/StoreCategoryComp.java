@@ -15,6 +15,7 @@ import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
+import io.xpipe.app.util.ContextMenuHelper;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.css.PseudoClass;
@@ -22,6 +23,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
 import lombok.EqualsAndHashCode;
@@ -70,7 +72,7 @@ public class StoreCategoryComp extends SimpleComp {
         var showing = new SimpleBooleanProperty();
         var settings = new IconButtonComp("mdomz-settings")
                 .styleClass("settings")
-                .apply(new ContextMenuAugment<>(mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, () -> {
+                .apply(new ContextMenuAugment<>(mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, null, () -> {
                     var cm = createContextMenu(name);
                     showing.bind(cm.showingProperty());
                     return cm;
@@ -93,8 +95,6 @@ public class StoreCategoryComp extends SimpleComp {
                 count.hide(BindingsHelper.persist(hover.or(showing).or(focus))),
                 settings.hide(
                         BindingsHelper.persist(hover.not().and(showing.not()).and(focus.not())))));
-        h.apply(new ContextMenuAugment<>(
-                mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY, () -> createContextMenu(name)));
         h.padding(new Insets(0, 10, 0, (category.getDepth() * 10)));
 
         var categoryButton = new ButtonComp(null, h.createRegion(), category::select)
@@ -103,6 +103,8 @@ public class StoreCategoryComp extends SimpleComp {
                 .apply(struc -> focus.bind(struc.get().focusedProperty()))
                 .accessibleText(category.nameProperty())
                 .grow(true, false);
+        categoryButton.apply(new ContextMenuAugment<>(
+                mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY, keyEvent -> keyEvent.getCode() == KeyCode.SPACE, () -> createContextMenu(name)));
 
         var l = category.getChildren()
                 .sorted(Comparator.comparing(
@@ -122,8 +124,7 @@ public class StoreCategoryComp extends SimpleComp {
     }
 
     private ContextMenu createContextMenu(Region text) {
-        var contextMenu = new ContextMenu();
-        AppFont.normal(contextMenu.getStyleableNode());
+        var contextMenu = ContextMenuHelper.create();
 
         var newCategory = new MenuItem(AppI18n.get("newCategory"), new FontIcon("mdi2p-plus-thick"));
         newCategory.setOnAction(event -> {

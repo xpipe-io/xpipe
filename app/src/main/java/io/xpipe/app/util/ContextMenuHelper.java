@@ -1,0 +1,50 @@
+package io.xpipe.app.util;
+
+import io.xpipe.app.fxcomps.Comp;
+import javafx.application.Platform;
+import javafx.geometry.Side;
+import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.layout.Region;
+
+public class ContextMenuHelper {
+
+    public static ContextMenu create() {
+        ContextMenu contextMenu = new ContextMenu();
+        contextMenu.setAutoHide(true);
+        InputHelper.onLeft(contextMenu, false, e -> {
+            contextMenu.hide();
+            e.consume();
+        });
+        contextMenu.addEventFilter(Menu.ON_SHOWING, e -> {
+            Node content = contextMenu.getSkin().getNode();
+            if (content instanceof Region r) {
+                r.setMaxWidth(500);
+            }
+        });
+        contextMenu.addEventFilter(Menu.ON_SHOWN, e -> {
+            Platform.runLater(() -> {
+                var first = contextMenu.getItems().getFirst();
+                if (first != null) {
+                    first.getStyleableNode().requestFocus();
+                }
+            });
+        });
+        return contextMenu;
+    }
+
+    public static MenuItem item(Comp<?> graphic, String name) {
+        var i = new MenuItem(name, graphic.createRegion());
+        return i;
+    }
+
+    public static void toggleShow(ContextMenu contextMenu, Node ref, Side side) {
+        if (!contextMenu.isShowing()) {
+            contextMenu.show(ref, Side.RIGHT, 0, 0);
+        } else {
+            contextMenu.hide();
+        }
+    }
+}

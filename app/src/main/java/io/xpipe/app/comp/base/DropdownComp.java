@@ -32,7 +32,7 @@ public class DropdownComp extends Comp<CompStructure<Button>> {
                 .toArray(MenuItem[]::new));
 
         Button button = (Button) new ButtonComp(null, () -> {})
-                .apply(new ContextMenuAugment<>(e -> true, () -> {
+                .apply(new ContextMenuAugment<>(e -> true, null, () -> {
                     return cm;
                 }))
                 .createRegion();

@@ -268,6 +268,7 @@ final class BrowserFileListComp extends SimpleComp {
 
                                 return false;
                             },
+                    null,
                             () -> {
                                 if (row.getItem() != null && row.getItem().isSynthetic()) {
                                     return null;

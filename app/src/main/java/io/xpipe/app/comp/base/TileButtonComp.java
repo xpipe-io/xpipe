@@ -1,6 +1,5 @@
 package io.xpipe.app.comp.base;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
@@ -43,7 +42,7 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
     @Override
     public Structure createBase() {
         var bt = new Button();
-        Styles.toggleStyleClass(bt, Styles.FLAT);
+        bt.getStyleClass().add("tile-button-comp");
         bt.setOnAction(e -> {
             action.accept(e);
         });

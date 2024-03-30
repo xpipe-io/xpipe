@@ -52,6 +52,10 @@
     -fx-padding: 0.05em;
 }
 
+.root:key-navigation .icon-button-comp:focused {
+    -fx-background-color: -color-accent-muted;
+}
+
 .scroll-pane {
     -fx-background-color: transparent;
 }

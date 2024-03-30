@@ -97,7 +97,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                 wrapper.executeDefaultAction();
             });
         });
-        new ContextMenuAugment<>(() -> this.createContextMenu()).augment(new SimpleCompStructure<>(button));
+        new ContextMenuAugment<>(mouseEvent -> mouseEvent.isSecondaryButtonDown(), null, () -> this.createContextMenu()).augment(new SimpleCompStructure<>(button));
 
         var loading = LoadingOverlayComp.noProgress(
                 Comp.of(() -> button),
@@ -247,7 +247,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         settingsButton.styleClass("settings");
         settingsButton.accessibleText("More");
         settingsButton.apply(new ContextMenuAugment<>(
-                event -> event.getButton() == MouseButton.PRIMARY, () -> StoreEntryComp.this.createContextMenu()));
+                event -> event.getButton() == MouseButton.PRIMARY, null, () -> StoreEntryComp.this.createContextMenu()));
         settingsButton.apply(new FancyTooltipAugment<>("more"));
         return settingsButton;
     }

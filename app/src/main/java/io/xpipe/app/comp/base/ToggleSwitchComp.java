@@ -5,6 +5,8 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
 
 public class ToggleSwitchComp extends SimpleComp {
@@ -20,6 +22,13 @@ public class ToggleSwitchComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var s = new ToggleSwitch();
+        s.addEventFilter(KeyEvent.KEY_PRESSED,event -> {
+            if (event.getCode() == KeyCode.SPACE || event.getCode() == KeyCode.ENTER) {
+                s.setSelected(!s.isSelected());
+                event.consume();
+            }
+        });
+        s.getStyleClass().add("toggle-switch-comp");
         s.setSelected(selected.getValue());
         s.selectedProperty().addListener((observable, oldValue, newValue) -> {
             selected.setValue(newValue);

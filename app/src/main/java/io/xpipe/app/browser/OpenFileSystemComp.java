@@ -55,7 +55,7 @@ public class OpenFileSystemComp extends SimpleComp {
 
         var menuButton = new MenuButton(null, new FontIcon("mdral-folder_open"));
         new ContextMenuAugment<>(
-                        event -> event.getButton() == MouseButton.PRIMARY, () -> new BrowserContextMenu(model, null))
+                        event -> event.getButton() == MouseButton.PRIMARY, null, () -> new BrowserContextMenu(model, null))
                 .augment(new SimpleCompStructure<>(menuButton));
         menuButton.disableProperty().bind(model.getInOverview());
         menuButton.setAccessibleText("Directory options");

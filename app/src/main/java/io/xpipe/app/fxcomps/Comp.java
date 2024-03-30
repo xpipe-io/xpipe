@@ -21,7 +21,6 @@ import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -185,7 +184,7 @@ public abstract class Comp<S extends CompStructure<?>> {
         return apply(struc -> Shortcuts.addShortcut((ButtonBase) struc.get(), shortcut));
     }
 
-    public Comp<S> dislayOnlyShortcut(KeyCombination shortcut) {
+    public Comp<S> displayOnlyShortcut(KeyCombination shortcut) {
         return apply(struc -> Shortcuts.addDisplayShortcut(struc.get(), shortcut));
     }
 
@@ -195,12 +194,6 @@ public abstract class Comp<S extends CompStructure<?>> {
 
     public Comp<S> tooltipKey(String key) {
         return apply(new FancyTooltipAugment<>(key));
-    }
-
-    public <T1 extends CompStructure<?>, T2 extends CompStructure<?>>void applyMultiple(Comp<T1> c1, Comp<T2> c2, BiConsumer<T1,T2> consumer) {
-        c1.apply(struc -> {
-
-        });
     }
 
     public Region createRegion() {
