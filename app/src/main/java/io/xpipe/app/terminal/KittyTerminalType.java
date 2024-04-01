@@ -1,7 +1,7 @@
 package io.xpipe.app.terminal;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import io.xpipe.app.util.ApplicationHelper;
+import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ShellTemp;
 import io.xpipe.app.util.ThreadHelper;
@@ -44,8 +44,8 @@ public class KittyTerminalType {
     private static boolean prepare() throws Exception {
         var socket = getSocket();
         try (var sc = LocalShell.getShell().start()) {
-            ApplicationHelper.checkIsInPath(sc, "kitty", "Kitty", null);
-            ApplicationHelper.checkIsInPath(sc, "socat", "socat", null);
+            CommandSupport.isInPathOrThrow(sc, "kitty", "Kitty", null);
+            CommandSupport.isInPathOrThrow(sc, "socat", "socat", null);
 
             if (sc.executeSimpleBooleanCommand("test -w " + sc.getShellDialect().fileArgument(socket))) {
                 return false;

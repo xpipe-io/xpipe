@@ -3,8 +3,8 @@ package io.xpipe.app.browser.action;
 import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.ApplicationHelper;
 import io.xpipe.app.util.TerminalLauncher;
+import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
 import org.apache.commons.io.FilenameUtils;
 
@@ -12,7 +12,7 @@ import java.util.List;
 
 public abstract class MultiExecuteAction implements BranchAction {
 
-    protected abstract String createCommand(ShellControl sc, OpenFileSystemModel model, BrowserEntry entry);
+    protected abstract CommandBuilder createCommand(ShellControl sc, OpenFileSystemModel model, BrowserEntry entry);
 
     @Override
     public List<LeafAction> getBranchingActions(OpenFileSystemModel model, List<BrowserEntry> entries) {
@@ -56,29 +56,6 @@ public abstract class MultiExecuteAction implements BranchAction {
                         model.withShell(
                                 pc -> {
                                     for (BrowserEntry entry : entries) {
-                                        var cmd = ApplicationHelper.createDetachCommand(
-                                                pc, createCommand(pc, model, entry));
-                                        pc.command(cmd)
-                                                .withWorkingDirectory(model.getCurrentDirectory()
-                                                        .getPath())
-                                                .execute();
-                                    }
-                                },
-                                false);
-                    }
-
-                    @Override
-                    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-                        return "in background";
-                    }
-                },
-                new LeafAction() {
-
-                    @Override
-                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
-                        model.withShell(
-                                pc -> {
-                                    for (BrowserEntry entry : entries) {
                                         pc.command(createCommand(pc, model, entry))
                                                 .withWorkingDirectory(model.getCurrentDirectory()
                                                         .getPath())
@@ -90,7 +67,7 @@ public abstract class MultiExecuteAction implements BranchAction {
 
                     @Override
                     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-                        return "wait for completion";
+                        return "in background";
                     }
                 });
     }
