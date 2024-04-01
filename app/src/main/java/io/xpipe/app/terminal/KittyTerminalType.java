@@ -25,10 +25,64 @@ public class KittyTerminalType {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
+            try (var sc = LocalShell.getShell().start()) {
+                CommandSupport.isInPathOrThrow(sc, "kitty", "Kitty", null);
+                CommandSupport.isInPathOrThrow(sc, "socat", "socat", null);
+            }
+
             var toClose = prepare();
-            open(configuration);
+            var socketWrite = CommandBuilder.of().add("socat", "-");
+            open(configuration, socketWrite);
             if (toClose) {
-                closeInitial();
+                closeInitial(socketWrite);
+            }
+        }
+
+        private boolean prepare() throws Exception {
+            var socket = getSocket();
+            try (var sc = LocalShell.getShell().start()) {
+                if (sc.executeSimpleBooleanCommand("test -w " + sc.getShellDialect().fileArgument(socket))) {
+                    return false;
+                }
+
+                sc.executeSimpleCommand(CommandBuilder.of().add("kitty").add("-o", "allow_remote_control=socket-only", "--listen-on", "unix:" + getSocket(), "--detach"));
+                ThreadHelper.sleep(1500);
+                return true;
+            }
+        }
+    };
+
+    public static final ExternalTerminalType KITTY_MACOS = new ExternalTerminalType.MacOsType("app.kitty", "kitty") {
+
+        @Override
+        public boolean supportsTabs() {
+            return true;
+        }
+
+        @Override
+        public void launch(LaunchConfiguration configuration) throws Exception {
+            try (var sc = LocalShell.getShell().start()) {
+                CommandSupport.isInPathOrThrow(sc, "nc", "Netcat", null);
+            }
+
+            var toClose = prepare();
+            var socketWrite = CommandBuilder.of().add("nc", "-U");
+            open(configuration, socketWrite);
+            if (toClose) {
+                closeInitial(socketWrite);
+            }
+        }
+
+        private boolean prepare() throws Exception {
+            var socket = getSocket();
+            try (var sc = LocalShell.getShell().start()) {
+                if (sc.executeSimpleBooleanCommand("test -w " + sc.getShellDialect().fileArgument(socket))) {
+                    return false;
+                }
+
+                sc.executeSimpleCommand(CommandBuilder.of().add("open", "-a", "kitty.app", "--args").add("-o", "allow_remote_control=socket-only", "--listen-on", "unix:" + getSocket()));
+                ThreadHelper.sleep(1000);
+                return true;
             }
         }
     };
@@ -41,23 +95,7 @@ public class KittyTerminalType {
         }
     }
 
-    private static boolean prepare() throws Exception {
-        var socket = getSocket();
-        try (var sc = LocalShell.getShell().start()) {
-            CommandSupport.isInPathOrThrow(sc, "kitty", "Kitty", null);
-            CommandSupport.isInPathOrThrow(sc, "socat", "socat", null);
-
-            if (sc.executeSimpleBooleanCommand("test -w " + sc.getShellDialect().fileArgument(socket))) {
-                return false;
-            }
-
-            sc.executeSimpleCommand(CommandBuilder.of().add("kitty").add("-o", "allow_remote_control=socket-only", "--listen-on", "unix:" + getSocket(), "--detach"));
-            ThreadHelper.sleep(1500);
-            return true;
-        }
-    }
-
-    private static void open(ExternalTerminalType.LaunchConfiguration configuration) throws Exception {
+    private static void open(ExternalTerminalType.LaunchConfiguration configuration, CommandBuilder socketWrite) throws Exception {
         try (var sc = LocalShell.getShell().start()) {
             var payload = JsonNodeFactory.instance.objectNode();
             var args = configuration.getDialectLaunchCommand().buildBaseParts(sc);
@@ -75,11 +113,11 @@ public class KittyTerminalType {
             var jsonString = json.toString();
             var echoString = "'\\eP@kitty-cmd" + jsonString + "\\e\\\\'";
 
-            sc.executeSimpleCommand(CommandBuilder.of().add("echo", "-en", echoString, "|", "socat", "-").addFile(getSocket()));
+            sc.executeSimpleCommand(CommandBuilder.of().add("echo", "-en", echoString, "|").add(socketWrite).addFile(getSocket()));
         }
     }
 
-    private static void closeInitial() throws Exception {
+    private static void closeInitial( CommandBuilder socketWrite) throws Exception {
         try (var sc = LocalShell.getShell().start()) {
             var payload = JsonNodeFactory.instance.objectNode();
             payload.put("match", "not recent:0");
@@ -91,7 +129,7 @@ public class KittyTerminalType {
             var jsonString = json.toString();
             var echoString = "'\\eP@kitty-cmd" + jsonString + "\\e\\\\'";
 
-            sc.executeSimpleCommand(CommandBuilder.of().add("echo", "-en", echoString, "|", "socat", "-").addFile(getSocket()));
+            sc.executeSimpleCommand(CommandBuilder.of().add("echo", "-en", echoString, "|").add(socketWrite).addFile(getSocket()));
         }
     }
 }

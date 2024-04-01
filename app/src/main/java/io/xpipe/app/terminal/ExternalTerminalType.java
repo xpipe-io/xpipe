@@ -584,47 +584,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             ExternalApplicationHelper.startAsync(c);
         }
     };
-    ExternalTerminalType KITTY_MACOS = new MacOsType("app.kitty", "kitty") {
-
-        @Override
-        public boolean supportsTabs() {
-            return false;
-        }
-
-        @Override
-        public boolean supportsColoredTitle() {
-            return false;
-        }
-
-        @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
-            if (!MacOsPermissions.waitForAccessibilityPermissions()) {
-                return;
-            }
-
-            try (ShellControl pc = LocalShell.getShell()) {
-                pc.osascriptCommand(String.format(
-                                """
-                                        if application "Kitty" is running then
-                                            tell application "Kitty" to activate
-                                            tell application "System Events" to tell process "Kitty" to keystroke "t" using command down
-                                        else
-                                            tell application "Kitty" to activate
-                                        end if
-                                        delay 1
-                                        tell application "System Events"
-                                            tell process "Kitty"
-                                                keystroke "%s"
-                                                delay 0.01
-                                                key code 36
-                                            end tell
-                                        end tell
-                                        """,
-                                configuration.getScriptFile().toString().replaceAll("\"", "\\\\\"")))
-                        .execute();
-            }
-        }
-    };
     ExternalTerminalType CUSTOM = new CustomType();
     List<ExternalTerminalType> WINDOWS_TERMINALS = List.of(
             TABBY_WINDOWS,
@@ -653,7 +612,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             DEEPIN_TERMINAL,
             Q_TERMINAL);
     List<ExternalTerminalType> MACOS_TERMINALS =
-            List.of(ITERM2, TABBY_MAC_OS, ALACRITTY_MACOS, KITTY_MACOS, WARP, WEZ_MACOS, MACOS_TERMINAL);
+            List.of(ITERM2, TABBY_MAC_OS, ALACRITTY_MACOS, KittyTerminalType.KITTY_MACOS, WARP, WEZ_MACOS, MACOS_TERMINAL);
 
     @SuppressWarnings("TrivialFunctionalExpressionUsage")
     List<ExternalTerminalType> ALL = ((Supplier<List<ExternalTerminalType>>) () -> {
