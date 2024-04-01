@@ -114,9 +114,7 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
                 .mapToInt(value ->
                         value.get().getName().hashCode() + value.getStore().hashCode())
                 .sum();
-        var targetDir = FileNames.join(
-                ShellTemp.getUserSpecificTempDataDirectory(proc, "scripts"),
-                proc.getShellDialect().getId());
+        var targetDir = ShellTemp.getUserSpecificTempDataDirectory(proc, "scripts").join(proc.getShellDialect().getId()).toString();
         var hashFile = FileNames.join(targetDir, "hash");
         var d = proc.getShellDialect();
         if (d.createFileExistsCommand(proc, hashFile).executeAndCheck()) {

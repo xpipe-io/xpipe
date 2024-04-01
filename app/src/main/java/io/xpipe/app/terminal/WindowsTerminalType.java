@@ -75,7 +75,7 @@ public class WindowsTerminalType {
                 ? CommandBuilder.of().addFile(configuration.getScriptFile())
                 : CommandBuilder.of()
                         .add("powershell", "-ExecutionPolicy", "Bypass", "-File")
-                        .addQuoted(configuration.getScriptFile());
+                        .addFile(configuration.getScriptFile());
         var cmd = CommandBuilder.of().add("-w", "1", "nt");
 
         if (configuration.getColor() != null) {

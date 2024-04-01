@@ -60,6 +60,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                             "openCurrentLogFileDescription",
                                             "mdmz-text_snippet",
                                             e -> {
+                                                AppLogs.get().flush();
                                                 FileOpener.openInTextEditor(AppLogs.get()
                                                         .getSessionLogsDirectory()
                                                         .resolve("xpipe.log")

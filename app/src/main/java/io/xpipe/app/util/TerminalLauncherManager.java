@@ -36,7 +36,7 @@ public class TerminalLauncherManager {
 
         try {
             var file = ScriptHelper.createLocalExecScript(processControl.prepareTerminalOpen(config, workingDirectory));
-            entry.setResult(new ResultSuccess(Path.of(file)));
+            entry.setResult(new ResultSuccess(Path.of(file.toString())));
         } catch (Exception e) {
             entry.setResult(new ResultFailure(e));
         }

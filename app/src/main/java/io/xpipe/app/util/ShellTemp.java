@@ -4,6 +4,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FileNames;
+import io.xpipe.core.store.FilePath;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
@@ -34,37 +35,37 @@ public class ShellTemp {
         return temp.resolve(sub);
     }
 
-    public static String getUserSpecificTempDataDirectory(ShellControl proc, String sub) throws Exception {
-        String base;
+    public static FilePath getUserSpecificTempDataDirectory(ShellControl proc, String sub) throws Exception {
+        FilePath base;
         // On Windows and macOS, we already have user specific temp directories
         // Even on macOS as root it is technically unique as only root will use /tmp
         if (!proc.getOsType().equals(OsType.WINDOWS) && !proc.getOsType().equals(OsType.MACOS)) {
             var temp = proc.getSystemTemporaryDirectory();
-            base = FileNames.join(temp, "xpipe");
+            base = temp.join("xpipe");
             // We have to make sure that also other users can create files here
             // This command should work in all shells
             proc.command("chmod 777 " + proc.getShellDialect().fileArgument(base))
                     .executeAndCheck();
             var user = proc.getShellDialect().printUsernameCommand(proc).readStdoutOrThrow();
-            base = FileNames.join(base, user);
+            base = temp.join(user);
         } else {
             var temp = proc.getSystemTemporaryDirectory();
-            base = FileNames.join(temp, "xpipe");
+            base = temp.join("xpipe");
         }
-        return FileNames.join(base, sub);
+        return base.join(sub);
     }
 
     public static void checkTempDirectory(ShellControl proc) throws Exception {
         var d = proc.getShellDialect();
 
         var systemTemp = proc.getSystemTemporaryDirectory();
-        if (!d.directoryExists(proc, systemTemp).executeAndCheck() || !checkDirectoryPermissions(proc, systemTemp)) {
+        if (!d.directoryExists(proc, systemTemp.toString()).executeAndCheck() || !checkDirectoryPermissions(proc, systemTemp.toString())) {
             throw ErrorEvent.expected(new IOException("No permissions to access %s".formatted(systemTemp)));
         }
 
         // Always delete legacy directory and do not care whether it partially fails
         // This system xpipe temp directory might contain other files on the local machine, so only clear the exec
-        d.deleteFileOrDirectory(proc, FileNames.join(systemTemp, "xpipe", "exec"))
+        d.deleteFileOrDirectory(proc, systemTemp.join("xpipe", "exec").toString())
                 .executeAndCheck();
         var home = proc.getOsType().getHomeDirectory(proc);
         d.deleteFileOrDirectory(proc, FileNames.join(home, ".xpipe", "temp")).executeAndCheck();

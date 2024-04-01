@@ -42,7 +42,7 @@ public class ApplicationHelper {
             return String.format(
                     "Start-Process -FilePath %s -ArgumentList \"-NoProfile\", \"-File\", %s",
                     pc.getShellDialect().getExecutableName(),
-                    pc.getShellDialect().fileArgument(script));
+                    pc.getShellDialect().fileArgument(script.toString()));
         }
 
         if (pc.getOsType().equals(OsType.WINDOWS)) {

@@ -39,7 +39,7 @@ public class SimpleScriptStore extends ScriptStore implements ScriptSnippet {
                     .collect(Collectors.joining(
                             shellControl.getShellDialect().getNewLine().getNewLineString()));
             var script = ScriptHelper.createExecScript(targetType, shellControl, fixedCommands);
-            return targetType.sourceScriptCommand(shellControl, script);
+            return targetType.sourceScriptCommand(shellControl, script.toString());
         }
 
         return null;

@@ -1,6 +1,7 @@
 package io.xpipe.core.process;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.util.NewLine;
 import io.xpipe.core.util.SecretValue;
@@ -50,6 +51,10 @@ public interface ShellDialect {
     String literalArgument(String s);
 
     String fileArgument(String s);
+
+    default String fileArgument(FilePath s) {
+        return fileArgument(s.toString());
+    }
 
     String quoteArgument(String s);
 

@@ -1,5 +1,6 @@
 package io.xpipe.core.process;
 
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.store.StatefulDataStore;
 import io.xpipe.core.util.FailableConsumer;
@@ -92,7 +93,7 @@ public interface ShellControl extends ProcessControl {
             FailableFunction<ShellControl, String, Exception> workingDirectory)
             throws Exception;
 
-    String getSystemTemporaryDirectory();
+    FilePath getSystemTemporaryDirectory();
 
     default CommandControl osascriptCommand(String script) {
         return command(String.format(

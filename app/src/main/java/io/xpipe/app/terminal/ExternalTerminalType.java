@@ -10,6 +10,7 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.MacOsPermissions;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.process.*;
+import io.xpipe.core.store.FilePath;
 import lombok.Getter;
 import lombok.Value;
 import lombok.With;
@@ -131,7 +132,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     .add("-e")
                     .add("cmd")
                     .add("/c")
-                    .addQuoted(configuration.getScriptFile().replaceAll(" ", "^$0"));
+                    .addQuoted(configuration.getScriptFile().toString().replaceAll(" ", "^$0"));
         }
     };
     ExternalTerminalType TABBY_WINDOWS = new WindowsType("app.tabby", "Tabby") {
@@ -311,26 +312,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         protected CommandBuilder toCommand(LaunchConfiguration configuration) {
             return CommandBuilder.of()
                     .add("-e")
-                    .addQuoted(configuration.getScriptFile())
+                    .addFile(configuration.getScriptFile())
                     .add("-T")
                     .addQuoted(configuration.getColoredTitle())
                     .add("--new-tab");
-        }
-    };
-    ExternalTerminalType KITTY_LINUX = new SimplePathType("app.kitty", "kitty") {
-
-        @Override
-        public boolean supportsTabs() {
-            return false;
-        }
-
-        @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) {
-            return CommandBuilder.of()
-                    .add("-1")
-                    .add("-T")
-                    .addQuoted(configuration.getColoredTitle())
-                    .addQuoted(configuration.getScriptFile());
         }
     };
     ExternalTerminalType TERMINOLOGY = new SimplePathType("app.terminology", "terminology") {
@@ -347,7 +332,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     .addQuoted(configuration.getColoredTitle())
                     .add("-2")
                     .add("-e")
-                    .addQuoted(configuration.getScriptFile());
+                    .addFile(configuration.getScriptFile());
         }
     };
     ExternalTerminalType COOL_RETRO_TERM = new SimplePathType("app.coolRetroTerm", "cool-retro-term") {
@@ -363,7 +348,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     .add("-T")
                     .addQuoted(configuration.getColoredTitle())
                     .add("-e")
-                    .addQuoted(configuration.getScriptFile());
+                    .addFile(configuration.getScriptFile());
         }
     };
     ExternalTerminalType GUAKE = new SimplePathType("app.guake", "guake") {
@@ -380,7 +365,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     .add("-r")
                     .addQuoted(configuration.getColoredTitle())
                     .add("-e")
-                    .addQuoted(configuration.getScriptFile());
+                    .addFile(configuration.getScriptFile());
         }
     };
     ExternalTerminalType ALACRITTY_LINUX = new SimplePathType("app.alacritty", "alacritty") {
@@ -401,7 +386,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     .add("-t")
                     .addQuoted(configuration.getCleanTitle())
                     .add("-e")
-                    .addQuoted(configuration.getScriptFile());
+                    .addFile(configuration.getScriptFile());
         }
     };
     ExternalTerminalType TILDA = new SimplePathType("app.tilda", "tilda") {
@@ -413,7 +398,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected CommandBuilder toCommand(LaunchConfiguration configuration) {
-            return CommandBuilder.of().add("-c").addQuoted(configuration.getScriptFile());
+            return CommandBuilder.of().add("-c").addFile(configuration.getScriptFile());
         }
     };
     ExternalTerminalType XTERM = new SimplePathType("app.xterm", "xterm") {
@@ -429,7 +414,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     .add("-title")
                     .addQuoted(configuration.getColoredTitle())
                     .add("-e")
-                    .addQuoted(configuration.getScriptFile());
+                    .addFile(configuration.getScriptFile());
         }
     };
     ExternalTerminalType DEEPIN_TERMINAL = new SimplePathType("app.deepinTerminal", "deepin-terminal") {
@@ -441,7 +426,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected CommandBuilder toCommand(LaunchConfiguration configuration) {
-            return CommandBuilder.of().add("-C").addQuoted(configuration.getScriptFile());
+            return CommandBuilder.of().add("-C").addFile(configuration.getScriptFile());
         }
     };
     ExternalTerminalType Q_TERMINAL = new SimplePathType("app.qTerminal", "qterminal") {
@@ -465,7 +450,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
             try (ShellControl pc = LocalShell.getShell()) {
-                var suffix = "\"" + configuration.getScriptFile().replaceAll("\"", "\\\\\"") + "\"";
+                var suffix = "\"" + configuration.getScriptFile().toString().replaceAll("\"", "\\\\\"") + "\"";
                 pc.osascriptCommand(String.format(
                                 """
                                 activate application "Terminal"
@@ -508,7 +493,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                                     create window with default profile command "%s"
                                 end tell
                                 """,
-                                a, a, a, a, configuration.getScriptFile().replaceAll("\"", "\\\\\"")))
+                                a, a, a, a, configuration.getScriptFile().toString().replaceAll("\"", "\\\\\"")))
                         .execute();
             }
         }
@@ -633,7 +618,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                                             end tell
                                         end tell
                                         """,
-                                configuration.getScriptFile().replaceAll("\"", "\\\\\"")))
+                                configuration.getScriptFile().toString().replaceAll("\"", "\\\\\"")))
                         .execute();
             }
         }
@@ -656,7 +641,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             GNOME_TERMINAL,
             TILIX,
             TERMINATOR,
-            KITTY_LINUX,
+            KittyTerminalType.KITTY_LINUX,
             TERMINOLOGY,
             COOL_RETRO_TERM,
             GUAKE,
@@ -747,12 +732,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         String cleanTitle;
 
         @With
-        String scriptFile;
+        FilePath scriptFile;
 
         ShellDialect scriptDialect;
 
         public CommandBuilder getDialectLaunchCommand() {
-            var open = scriptDialect.getOpenScriptCommand(scriptFile);
+            var open = scriptDialect.getOpenScriptCommand(scriptFile.toString());
             return open;
         }
 
@@ -783,7 +768,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
             var format = custom.toLowerCase(Locale.ROOT).contains("$cmd") ? custom : custom + " $CMD";
             try (var pc = LocalShell.getShell()) {
-                var toExecute = ApplicationHelper.replaceFileArgument(format, "CMD", configuration.getScriptFile());
+                var toExecute = ApplicationHelper.replaceFileArgument(format, "CMD", configuration.getScriptFile().toString());
                 // We can't be sure whether the command is blocking or not, so always make it not blocking
                 if (pc.getOsType().equals(OsType.WINDOWS)) {
                     toExecute = "start \"" + configuration.getCleanTitle() + "\" " + toExecute;

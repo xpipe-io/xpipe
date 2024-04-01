@@ -1,5 +1,6 @@
 package io.xpipe.core.process;
 
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.FailableConsumer;
 import io.xpipe.core.util.FailableFunction;
 import lombok.Getter;
@@ -183,6 +184,10 @@ public class CommandBuilder {
             return sc.getShellDialect().fileArgument(s);
         });
         return this;
+    }
+
+    public CommandBuilder addFile(FilePath s) {
+        return addFile(shellControl -> shellControl.getShellDialect().fileArgument(s));
     }
 
     public CommandBuilder addLiteral(String s) {

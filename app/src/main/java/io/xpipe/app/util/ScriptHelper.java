@@ -2,7 +2,7 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.process.*;
-import io.xpipe.core.store.FileNames;
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.FailableFunction;
 import io.xpipe.core.util.SecretValue;
 import lombok.SneakyThrows;
@@ -21,13 +21,13 @@ public class ScriptHelper {
     }
 
     @SneakyThrows
-    public static String createLocalExecScript(String content) {
+    public static FilePath createLocalExecScript(String content) {
         try (var l = LocalShell.getShell().start()) {
             return createExecScript(l, content);
         }
     }
 
-    public static String constructTerminalInitFile(
+    public static FilePath constructTerminalInitFile(
             ShellDialect t,
             ShellControl processControl,
             FailableFunction<ShellControl, String, Exception> workingDirectory,
@@ -74,37 +74,37 @@ public class ScriptHelper {
             content += nl + t.getPassthroughExitCommand() + nl;
         }
 
-        return createExecScript(t, processControl, t.initFileName(processControl), content);
+        return createExecScript(t, processControl, new FilePath(t.initFileName(processControl)), content);
     }
 
     @SneakyThrows
-    public static String getExecScriptFile(ShellControl processControl) {
+    public static FilePath getExecScriptFile(ShellControl processControl) {
         return getExecScriptFile(
                 processControl, processControl.getShellDialect().getScriptFileEnding());
     }
 
     @SneakyThrows
-    public static String getExecScriptFile(ShellControl processControl, String fileEnding) {
+    public static FilePath getExecScriptFile(ShellControl processControl, String fileEnding) {
         var fileName = "exec-" + getScriptId();
         var temp = processControl.getSystemTemporaryDirectory();
-        return FileNames.join(temp, fileName + "." + fileEnding);
+        return temp.join(fileName + "." + fileEnding);
     }
 
     @SneakyThrows
-    public static String createExecScript(ShellControl processControl, String content) {
+    public static FilePath createExecScript(ShellControl processControl, String content) {
         return createExecScript(processControl.getShellDialect(), processControl, content);
     }
 
     @SneakyThrows
-    public static String createExecScript(ShellDialect type, ShellControl processControl, String content) {
+    public static FilePath createExecScript(ShellDialect type, ShellControl processControl, String content) {
         var fileName = "exec-" + getScriptId();
         var temp = processControl.getSystemTemporaryDirectory();
-        var file = FileNames.join(temp, fileName + "." + type.getScriptFileEnding());
+        var file = temp.join(fileName + "." + type.getScriptFileEnding());
         return createExecScript(type, processControl, file, content);
     }
 
     @SneakyThrows
-    public static String createExecScript(ShellDialect type, ShellControl processControl, String file, String content) {
+    public static FilePath createExecScript(ShellDialect type, ShellControl processControl, FilePath file, String content) {
         content = type.prepareScriptContent(content);
 
         TrackEvent.withTrace("Writing exec script")
@@ -114,12 +114,12 @@ public class ScriptHelper {
 
         processControl
                 .getShellDialect()
-                .createScriptTextFileWriteCommand(processControl, content, file)
+                .createScriptTextFileWriteCommand(processControl, content, file.toString())
                 .execute();
         return file;
     }
 
-    public static String createRemoteAskpassScript(ShellControl parent, UUID requestId, String prefix)
+    public static FilePath createRemoteAskpassScript(ShellControl parent, UUID requestId, String prefix)
             throws Exception {
         var type = parent.getShellDialect();
 
@@ -130,7 +130,7 @@ public class ScriptHelper {
 
         var fileName = "exec-" + getScriptId() + "." + type.getScriptFileEnding();
         var temp = parent.getSystemTemporaryDirectory();
-        var file = FileNames.join(temp, fileName);
+        var file = temp.join(fileName);
         if (type != parent.getShellDialect()) {
             try (var sub = parent.subShell(type).start()) {
                 var content =
@@ -144,12 +144,12 @@ public class ScriptHelper {
         }
     }
 
-    public static String createTerminalPreparedAskpassScript(
+    public static FilePath createTerminalPreparedAskpassScript(
             SecretValue pass, ShellControl parent, boolean forceExecutable) throws Exception {
         return createTerminalPreparedAskpassScript(pass != null ? List.of(pass) : List.of(), parent, forceExecutable);
     }
 
-    public static String createTerminalPreparedAskpassScript(
+    public static FilePath createTerminalPreparedAskpassScript(
             List<SecretValue> pass, ShellControl parent, boolean forceExecutable) throws Exception {
         var scriptType = parent.getShellDialect();
 
@@ -161,18 +161,18 @@ public class ScriptHelper {
         return createTerminalPreparedAskpassScript(pass, parent, scriptType);
     }
 
-    private static String createTerminalPreparedAskpassScript(
+    private static FilePath createTerminalPreparedAskpassScript(
             List<SecretValue> pass, ShellControl parent, ShellDialect type) throws Exception {
         var fileName = "exec-" + getScriptId() + "." + type.getScriptFileEnding();
         var temp = parent.getSystemTemporaryDirectory();
-        var file = FileNames.join(temp, fileName);
+        var file = temp.join(fileName);
         if (type != parent.getShellDialect()) {
             try (var sub = parent.subShell(type).start()) {
                 var content = sub.getShellDialect()
                         .getAskpass()
                         .prepareFixedContent(
                                 sub,
-                                file,
+                                file.toString(),
                                 pass.stream()
                                         .map(secretValue -> secretValue.getSecretValue())
                                         .toList());
@@ -183,7 +183,7 @@ public class ScriptHelper {
                     .getAskpass()
                     .prepareFixedContent(
                             parent,
-                            file,
+                            file.toString(),
                             pass.stream()
                                     .map(secretValue -> secretValue.getSecretValue())
                                     .toList());
