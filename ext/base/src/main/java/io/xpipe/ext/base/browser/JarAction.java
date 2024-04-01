@@ -5,6 +5,7 @@ import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.BrowserActionFormatter;
 import io.xpipe.app.browser.action.MultiExecuteAction;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
+import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
 
 import java.util.List;
@@ -27,8 +28,8 @@ public class JarAction extends MultiExecuteAction implements JavaAction, FileTyp
     }
 
     @Override
-    protected String createCommand(ShellControl sc, OpenFileSystemModel model, BrowserEntry entry) {
-        return "java -jar " + entry.getOptionallyQuotedFileName();
+    protected CommandBuilder createCommand(ShellControl sc, OpenFileSystemModel model, BrowserEntry entry) {
+        return CommandBuilder.of().add("java", "-jar").addFile(entry.getRawFileEntry().getPath());
     }
 
     @Override

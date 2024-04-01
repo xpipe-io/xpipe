@@ -2,7 +2,7 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.util.ApplicationHelper;
+import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
@@ -106,9 +106,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
             var format =
                     customCommand.toLowerCase(Locale.ROOT).contains("$file") ? customCommand : customCommand + " $FILE";
-            ApplicationHelper.executeLocalApplication(
-                    CommandBuilder.of().add(ApplicationHelper.replaceFileArgument(format, "FILE", file.toString())),
-                    true);
+            ExternalApplicationHelper.startAsync(
+                    CommandBuilder.of().add(ExternalApplicationHelper.replaceFileArgument(format, "FILE", file.toString())));
         }
 
         @Override
@@ -200,33 +199,28 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                 throw new IOException("Application " + applicationName + ".app not found");
             }
 
-            ApplicationHelper.executeLocalApplication(
+            ExternalApplicationHelper.startAsync(
                     CommandBuilder.of()
                             .add("open", "-a")
                             .addFile(execFile.orElseThrow().toString())
-                            .addFile(file.toString()),
-                    false);
+                            .addFile(file.toString()));
         }
     }
 
     class GenericPathType extends ExternalApplicationType.PathApplication implements ExternalEditorType {
 
-        private final boolean detach;
-
-        public GenericPathType(String id, String command, boolean detach) {
-            super(id, command);
-            this.detach = detach;
+        public GenericPathType(String id, String command, boolean explicityAsync) {
+            super(id, command, explicityAsync);
         }
 
         @Override
         public void launch(Path file) throws Exception {
-            ApplicationHelper.executeLocalApplication(
-                    CommandBuilder.of().add(executable).addFile(file.toString()), detach);
-        }
-
-        @Override
-        public boolean isSelectable() {
-            return true;
+            var builder = CommandBuilder.of().addFile(executable).addFile(file.toString());
+            if (explicityAsync) {
+                ExternalApplicationHelper.startAsync(builder);
+            } else {
+                LocalShell.getShell().executeSimpleCommand(builder);
+            }
         }
     }
 
@@ -248,7 +242,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         public WindowsType(String id, String executable, boolean detach) {
             super(id, executable);
-            this.detach = detach;
+            this.detach = true;
         }
 
         @Override
@@ -262,9 +256,12 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                 }
             }
 
-            Optional<Path> finalLocation = location;
-            ApplicationHelper.executeLocalApplication(
-                    CommandBuilder.of().addFile(finalLocation.get().toString()).addFile(file.toString()), detach);
+            var builder = CommandBuilder.of().addFile(location.get().toString()).addFile(file.toString());
+            if (detach) {
+                ExternalApplicationHelper.startAsync(builder);
+            } else {
+                LocalShell.getShell().executeSimpleCommand(builder);
+            }
         }
     }
 }

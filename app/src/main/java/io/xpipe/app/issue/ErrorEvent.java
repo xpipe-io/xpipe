@@ -54,7 +54,7 @@ public class ErrorEvent {
             return EVENT_BASES.remove(t).description(msg);
         }
 
-        return builder().throwable(t).description(msg);
+        return builder().throwable(t).description(msg + (t.getMessage() != null ? "\n\n" + t.getMessage() : ""));
     }
 
     public static ErrorEventBuilder fromMessage(String msg) {

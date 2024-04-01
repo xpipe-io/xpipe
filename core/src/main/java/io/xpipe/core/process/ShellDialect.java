@@ -16,6 +16,8 @@ import java.util.stream.Stream;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface ShellDialect {
 
+    CommandBuilder launchAsnyc(CommandBuilder cmd);
+
     default String getLicenseFeatureId() {
         return null;
     }
@@ -80,7 +82,7 @@ public interface ShellDialect {
 
     String getScriptFileEnding();
 
-    String addInlineVariablesToCommand(Map<String, String> variables, String command);
+    String assembleCommand(String command, Map<String, String> variables);
 
     Stream<FileSystem.FileEntry> listFiles(FileSystem fs, ShellControl control, String dir) throws Exception;
 

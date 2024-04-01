@@ -210,7 +210,11 @@ public class CommandBuilder {
         return this;
     }
 
-    public String buildCommandBase(ShellControl sc) throws Exception {
+    public String buildBase(ShellControl sc) throws Exception {
+        return String.join(" ", buildBaseParts(sc));
+    }
+
+    public List<String> buildBaseParts(ShellControl sc) throws Exception {
         countDown = CountDown.of();
         uuid = UUID.randomUUID();
 
@@ -227,11 +231,11 @@ public class CommandBuilder {
 
             list.add(evaluate);
         }
-        return String.join(" ", list);
+        return list;
     }
 
-    public String buildString(ShellControl sc) throws Exception {
-        var s = buildCommandBase(sc);
+    public String buildFull(ShellControl sc) throws Exception {
+        var s = buildBase(sc);
         LinkedHashMap<String, String> map = new LinkedHashMap<>();
         for (var e : environmentVariables.entrySet()) {
             var v = e.getValue().evaluate(sc);
@@ -239,7 +243,7 @@ public class CommandBuilder {
                 map.put(e.getKey(), v);
             }
         }
-        return sc.getShellDialect().addInlineVariablesToCommand(map, s);
+        return sc.getShellDialect().assembleCommand(s, map);
     }
 
     public CommandControl build(ShellControl sc) {
