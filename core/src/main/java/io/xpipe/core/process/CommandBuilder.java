@@ -187,7 +187,7 @@ public class CommandBuilder {
     }
 
     public CommandBuilder addFile(FilePath s) {
-        return addFile(shellControl -> shellControl.getShellDialect().fileArgument(s));
+        return addFile(s.toString());
     }
 
     public CommandBuilder addLiteral(String s) {

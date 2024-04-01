@@ -52,7 +52,7 @@ public class ShellTemp {
             var temp = proc.getSystemTemporaryDirectory();
             base = temp.join("xpipe");
         }
-        return base.join(sub);
+        return sub != null ? base.join(sub) : base;
     }
 
     public static void checkTempDirectory(ShellControl proc) throws Exception {
