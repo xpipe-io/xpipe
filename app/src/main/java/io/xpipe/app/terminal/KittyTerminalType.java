@@ -60,7 +60,9 @@ public class KittyTerminalType {
     private static void open(ExternalTerminalType.LaunchConfiguration configuration) throws Exception {
         try (var sc = LocalShell.getShell().start()) {
             var payload = JsonNodeFactory.instance.objectNode();
-            payload.putArray("args").add("bash");
+            var args = configuration.getDialectLaunchCommand().buildBaseParts(sc);
+            var argsArray = payload.putArray("args");
+            args.forEach(argsArray::add);
             payload.put("tab_title",configuration.getColoredTitle());
             payload.put("type", "tab");
             payload.put("logo_alpha", 0.01);
