@@ -1,6 +1,7 @@
 package io.xpipe.app.fxcomps.augment;
 
 import io.xpipe.app.fxcomps.CompStructure;
+import javafx.event.ActionEvent;
 import javafx.geometry.Side;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ContextMenu;
@@ -75,7 +76,11 @@ public class ContextMenuAugment<S extends CompStructure<?>> implements Augment<S
         });
 
         if (r instanceof ButtonBase buttonBase && keyEventCheck == null) {
-            buttonBase.setOnAction(event -> {
+            buttonBase.addEventFilter(ActionEvent.ACTION, event -> {
+                if (buttonBase.getOnAction() != null) {
+                    return;
+                }
+
                 if (!hide.get()) {
                     var cm = contextMenu.get();
                     if (cm != null) {
