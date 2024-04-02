@@ -166,9 +166,9 @@ This mainly concerns the features only available in the professional tier and th
 
 ## More links
 
-You have more questions? Then check out the [FAQ](https://xpipe.io/faq).
+You have more questions? Then check out the [FAQ](https://xpipe.io/#faq).
 
-For information about the security model of XPipe, see the [security page](https://docs.xpipe.io/security).
+For information about the security model of XPipe, see the [security page](https://xpipe.io/features#security).
 
 For information about the privacy policy of XPipe, see the [privacy page](https://docs.xpipe.io/privacy-policy).
 
