@@ -51,12 +51,14 @@ public class AppWindowHelper {
         stage.getIcons().clear();
 
         // This allows for assigning logos even if AppImages has not been initialized yet
-        AppResources.with(AppResources.XPIPE_MODULE, "img/logo", path -> {
+        var dir = OsType.getLocal() == OsType.MACOS ? "img/logo/padded" : "img/logo/full";
+        AppResources.with(AppResources.XPIPE_MODULE, dir, path -> {
             for (String s : List.of(
                     "logo_16x16.png",
                     "logo_24x24.png",
                     "logo_32x32.png",
                     "logo_48x48.png",
+                    "logo_64x64.png",
                     "logo_128x128.png",
                     "logo_256x256.png")) {
                 stage.getIcons().add(AppImages.loadImage(path.resolve(s)));

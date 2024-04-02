@@ -134,7 +134,7 @@ public abstract class OperationMode {
     public static void postInit(String[] args) {
         try {
             // This will initialize the toolkit on macos and create the dock icon
-            // macOS it does not like applications that run fully in the background, so do it always
+            // macOS does not like applications that run fully in the background, so always do it
             if (OsType.getLocal().equals(OsType.MACOS)) {
                 // URL open operations have to be handled in a special way on macOS!
                 Desktop.getDesktop().setOpenURIHandler(e -> {
@@ -156,7 +156,7 @@ public abstract class OperationMode {
                 // This is necessary in case XPipe was started through a script as it will have no icon otherwise
                 if (AppProperties.get().isDeveloperMode() && AppLogs.get().isWriteToSysout()) {
                     try {
-                        var iconUrl = Main.class.getResourceAsStream("resources/img/logo/logo_macos_128x128.png");
+                        var iconUrl = Main.class.getResourceAsStream("resources/img/logo/padded/logo_128x128.png");
                         if (iconUrl != null) {
                             var awtIcon = ImageIO.read(iconUrl);
                             Taskbar.getTaskbar().setIconImage(awtIcon);

@@ -104,7 +104,7 @@ public class AboutCategory extends AppPrefsCategory {
                             AppI18n.get("xPipeClient"),
                             "Version " + AppProperties.get().getVersion() + " ("
                                     + AppProperties.get().getArch() + ")",
-                            "logo/logo_48x48.png");
+                            "logo.png");
                 })
                 .styleClass(Styles.TEXT_BOLD);
 

@@ -1,6 +1,5 @@
 package io.xpipe.app.prefs;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.SimpleComp;
@@ -89,8 +88,6 @@ public class UpdateCheckComp extends SimpleComp {
 
                     refresh();
                 })
-                .styleClass(Styles.ACCENT)
-                .styleClass("button-comp")
                 .styleClass("update-button")
                 .grow(true, false)
                 .disable(PlatformThread.sync(
