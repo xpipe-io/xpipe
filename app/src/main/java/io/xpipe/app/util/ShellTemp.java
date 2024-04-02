@@ -85,9 +85,9 @@ public class ShellTemp {
 
     public static String getSubDirectory(ShellControl proc, String... sub) throws Exception {
         var base = proc.getSystemTemporaryDirectory();
-        var arr = Stream.concat(Stream.of(base), Arrays.stream(sub)).toArray(String[]::new);
+        var arr = Stream.concat(Stream.of(base.toString()), Arrays.stream(sub)).toArray(String[]::new);
         var dir = FileNames.join(arr);
-
+        
         // We assume that this directory does not exist yet and therefore don't perform any checks
         proc.getShellDialect().prepareUserTempDirectory(proc, dir).execute();
 

@@ -65,9 +65,21 @@ public class DesktopShortcuts {
             pc.executeSimpleCommand("chmod ugo+x \"" + executable + "\"");
 
             pc.getShellDialect()
-                    .createScriptTextFileWriteCommand(pc, "APPL????", base + "/PkgInfo")
+                    .createTextFileWriteCommand(pc, "APPL????", base + "/Contents/PkgInfo")
                     .execute();
-            pc.executeSimpleCommand("cp \"" + icon + "\" \"" + base + "/Contents/Resources/" + name + ".icns\"");
+            pc.getShellDialect()
+                    .createTextFileWriteCommand(pc, """
+                                                    <?xml version="1.0" encoding="UTF-8"?>
+                                                    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+                                                    <plist version="1.0">
+                                                    <dict>
+                                                    	<key>CFBundleIconFile</key>
+                                                    	<string>icon.icns</string>
+                                                    </dict>
+                                                    </plist>
+                                                    """, base + "/Contents/Info.plist")
+                    .execute();
+            pc.executeSimpleCommand("cp \"" + icon + "\" \"" + base + "/Contents/Resources/icon.icns\"");
         }
     }
 
