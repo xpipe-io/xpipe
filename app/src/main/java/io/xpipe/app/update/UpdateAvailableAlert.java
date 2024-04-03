@@ -18,6 +18,12 @@ public class UpdateAvailableAlert {
             return;
         }
 
+        // Check whether we still have the latest version prepared
+        uh.refreshUpdateCheckSilent();
+        if (uh.getPreparedUpdate().getValue() == null) {
+            return;
+        }
+
         var u = uh.getPreparedUpdate().getValue();
         var update = AppWindowHelper.showBlockingAlert(alert -> {
                     alert.setTitle(AppI18n.get("updateReadyAlertTitle"));

@@ -4,6 +4,7 @@ import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -12,7 +13,6 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,20 +47,16 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
         });
 
         var header = new Label();
-        header.textProperty().bind(PlatformThread.sync(name));
+        BindingsHelper.bindStrong(header.textProperty(), PlatformThread.sync(name));
         var desc = new Label();
-        desc.textProperty().bind(PlatformThread.sync(description));
+        BindingsHelper.bindStrong(desc.textProperty(), PlatformThread.sync(description));
         AppFont.small(desc);
         desc.setOpacity(0.65);
         var text = new VBox(header, desc);
         text.setSpacing(2);
 
-        var fi = new FontIcon();
-        PlatformThread.sync(icon).subscribe(val -> {
-            fi.setIconLiteral(val);
-        });
-
-        var pane = new StackPane(fi);
+        var fi = new FontIconComp(icon).createStructure();
+        var pane = fi.getPane();
         var hbox = new HBox(pane, text);
         hbox.setSpacing(8);
         pane.prefWidthProperty()
@@ -75,11 +71,11 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
                         desc.heightProperty()));
         pane.prefHeightProperty().addListener((c, o, n) -> {
             var size = Math.min(n.intValue(), 100);
-            fi.setIconSize((int) (size * 0.55));
+            fi.getIcon().setIconSize((int) (size * 0.55));
         });
         bt.setGraphic(hbox);
         return Structure.builder()
-                .graphic(fi)
+                .graphic(fi.getIcon())
                 .button(bt)
                 .content(hbox)
                 .name(header)
