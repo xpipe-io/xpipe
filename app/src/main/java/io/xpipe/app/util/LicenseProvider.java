@@ -4,6 +4,7 @@ import io.xpipe.app.ext.ExtensionException;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.util.ModuleLayerLoader;
+import javafx.beans.value.ObservableValue;
 
 import java.util.ServiceLoader;
 
@@ -16,6 +17,8 @@ public abstract class LicenseProvider {
     }
 
     public abstract boolean hasLicense();
+
+    public abstract ObservableValue<String> licenseTitle();
 
     public abstract LicensedFeature getFeature(String id);
 

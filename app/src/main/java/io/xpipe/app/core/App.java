@@ -6,6 +6,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.XPipeDistributionType;
+import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.core.process.OsType;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
@@ -56,27 +57,21 @@ public class App extends Application {
 
     public void setupWindow() {
         var content = new AppLayoutComp();
+        var t = LicenseProvider.get().licenseTitle();
+        var u = XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate();
         var titleBinding = Bindings.createStringBinding(
                 () -> {
                     var base = String.format(
-                            "XPipe Desktop (%s)", AppProperties.get().getVersion());
+                            "XPipe %s (%s)", t.getValue(), AppProperties.get().getVersion());
                     var prefix = AppProperties.get().isStaging() ? "[Public Test Build, Not a proper release] " : "";
-                    var suffix = XPipeDistributionType.get()
-                                            .getUpdateHandler()
-                                            .getPreparedUpdate()
-                                            .getValue()
-                                    != null
+                    var suffix = u.getValue() != null
                             ? String.format(
-                                    " (Update to %s ready)",
-                                    XPipeDistributionType.get()
-                                            .getUpdateHandler()
-                                            .getPreparedUpdate()
-                                            .getValue()
-                                            .getVersion())
+                                    " (Update to %s ready)", u.getValue().getVersion())
                             : "";
                     return prefix + base + suffix;
                 },
-                XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate());
+                u,
+                t);
 
         var appWindow = AppMainWindow.init(stage);
         appWindow.getStage().titleProperty().bind(PlatformThread.sync(titleBinding));
