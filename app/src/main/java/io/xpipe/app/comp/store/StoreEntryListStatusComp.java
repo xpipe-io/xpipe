@@ -9,7 +9,6 @@ import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
 import io.xpipe.app.fxcomps.impl.FilterComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 import javafx.beans.binding.Bindings;
@@ -36,7 +35,7 @@ public class StoreEntryListStatusComp extends SimpleComp {
 
     public StoreEntryListStatusComp() {
         this.sortMode = new SimpleObjectProperty<>();
-        SimpleChangeListener.apply(StoreViewState.get().getActiveCategory(), val -> {
+        StoreViewState.get().getActiveCategory().subscribe(val -> {
             sortMode.setValue(val.getSortMode().getValue());
         });
         sortMode.addListener((observable, oldValue, newValue) -> {
@@ -51,18 +50,9 @@ public class StoreEntryListStatusComp extends SimpleComp {
 
     private Region createGroupListHeader() {
         var label = new Label();
-        label.textProperty()
-                .bind(Bindings.createStringBinding(
-                        () -> {
-                            return StoreViewState.get()
-                                            .getActiveCategory()
-                                            .getValue()
-                                            .getRoot()
-                                            .equals(StoreViewState.get().getAllConnectionsCategory())
-                                    ? "Connections"
-                                    : "Scripts";
-                        },
-                        StoreViewState.get().getActiveCategory()));
+        var name = BindingsHelper.flatMap(StoreViewState.get().getActiveCategory(),
+                categoryWrapper -> AppI18n.observable(categoryWrapper.getRoot().equals(StoreViewState.get().getAllConnectionsCategory()) ? "connections" : "scripts"));
+        label.textProperty().bind(name);
         label.getStyleClass().add("name");
 
         var all = BindingsHelper.filteredContentBinding(

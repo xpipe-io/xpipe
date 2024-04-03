@@ -5,7 +5,6 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -57,7 +56,7 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
         text.setSpacing(2);
 
         var fi = new FontIcon();
-        SimpleChangeListener.apply(PlatformThread.sync(icon), val -> {
+        PlatformThread.sync(icon).subscribe(val -> {
             fi.setIconLiteral(val);
         });
 

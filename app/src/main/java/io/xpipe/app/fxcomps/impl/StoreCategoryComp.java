@@ -12,7 +12,6 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.util.ContextMenuHelper;
@@ -115,7 +114,7 @@ public class StoreCategoryComp extends SimpleComp {
         var v = new VerticalComp(List.of(categoryButton, children.hide(emptyBinding)));
         v.styleClass("category");
         v.apply(struc -> {
-            SimpleChangeListener.apply(StoreViewState.get().getActiveCategory(), val -> {
+            StoreViewState.get().getActiveCategory().subscribe(val -> {
                 struc.get().pseudoClassStateChanged(SELECTED, val.equals(category));
             });
         });

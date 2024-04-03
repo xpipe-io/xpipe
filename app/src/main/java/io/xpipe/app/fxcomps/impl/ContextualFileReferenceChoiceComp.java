@@ -7,7 +7,6 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.ContextualFileReference;
@@ -39,7 +38,7 @@ public class ContextualFileReferenceChoiceComp extends SimpleComp {
     public <T extends FileSystemStore> ContextualFileReferenceChoiceComp(
             ObservableValue<DataStoreEntryRef<T>> fileSystem, Property<String> filePath) {
         this.fileSystem = new SimpleObjectProperty<>();
-        SimpleChangeListener.apply(fileSystem, val -> {
+        fileSystem.subscribe(val -> {
             this.fileSystem.setValue(val);
         });
         this.filePath = filePath;

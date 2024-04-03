@@ -9,6 +9,8 @@ import io.xpipe.app.fxcomps.impl.IntFieldComp;
 import io.xpipe.app.util.OptionsBuilder;
 import javafx.scene.control.Slider;
 
+import java.util.Arrays;
+
 public class AppearanceCategory extends AppPrefsCategory {
 
     @Override
@@ -22,6 +24,10 @@ public class AppearanceCategory extends AppPrefsCategory {
         return new OptionsBuilder()
                 .addTitle("uiOptions")
                 .sub(new OptionsBuilder()
+                        .nameAndDescription("language")
+                        .addComp(
+                                ChoiceComp.ofTranslatable(prefs.language, Arrays.asList(SupportedLocale.values()), false),
+                                prefs.language)
                         .nameAndDescription("theme")
                         .addComp(
                                 ChoiceComp.ofTranslatable(prefs.theme, AppTheme.Theme.ALL, false)

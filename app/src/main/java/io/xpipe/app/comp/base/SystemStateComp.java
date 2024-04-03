@@ -5,7 +5,6 @@ import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.core.process.ShellStoreState;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
@@ -35,7 +34,7 @@ public class SystemStateComp extends SimpleComp {
                 state));
         var fi = new FontIcon();
         fi.getStyleClass().add("inner-icon");
-        SimpleChangeListener.apply(icon, val -> fi.setIconLiteral(val));
+        icon.subscribe(val -> fi.setIconLiteral(val));
 
         var border = new FontIcon("mdi2c-circle-outline");
         border.getStyleClass().add("outer-icon");
@@ -63,7 +62,7 @@ public class SystemStateComp extends SimpleComp {
             """;
         pane.getStylesheets().add(Styles.toDataURI(dataClass1));
 
-        SimpleChangeListener.apply(PlatformThread.sync(state), val -> {
+        PlatformThread.sync(state).subscribe(val -> {
             pane.getStylesheets().removeAll(success, failure, other);
             pane.getStylesheets().add(val == State.SUCCESS ? success : val == State.FAILURE ? failure : other);
         });

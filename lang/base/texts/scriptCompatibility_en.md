@@ -10,4 +10,4 @@ If you intend to run a basic script on many different systems, then using only `
 
 ### PowerShell
 
-Scripts declared as normal PowerShell scripts are also able to run in PowerShell Core environments.
+Scripts declared as normal `powershell` scripts are also able to run in `pwsh` environments.

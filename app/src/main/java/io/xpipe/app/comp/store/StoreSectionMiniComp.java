@@ -9,7 +9,6 @@ import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.storage.DataStoreColor;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -160,7 +159,7 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
         return vert.styleClass("store-section-mini-comp")
                 .apply(struc -> {
                     struc.get().setFillWidth(true);
-                    SimpleChangeListener.apply(expanded, val -> {
+                    expanded.subscribe(val -> {
                         struc.get().pseudoClassStateChanged(EXPANDED, val);
                     });
                     struc.get().pseudoClassStateChanged(EVEN, section.getDepth() % 2 == 0);
@@ -171,7 +170,7 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                 })
                 .apply(struc -> {
                     if (section.getWrapper() != null) {
-                        SimpleChangeListener.apply(section.getWrapper().getColor(), val -> {
+                        section.getWrapper().getColor().subscribe(val -> {
                             if (section.getDepth() != 1) {
                                 return;
                             }

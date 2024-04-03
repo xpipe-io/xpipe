@@ -297,7 +297,7 @@ public class OptionsBuilder {
 
     public OptionsBuilder longDescription(String descriptionKey) {
         finishCurrent();
-        longDescription = AppI18n.getInstance().getMarkdownDocumentation(descriptionKey);
+        longDescription = AppI18n.get().getMarkdownDocumentation(descriptionKey);
         return this;
     }
 

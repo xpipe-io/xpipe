@@ -6,7 +6,6 @@ import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.util.Translatable;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -72,7 +71,7 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
                 throw new UnsupportedOperationException();
             }
         });
-        SimpleChangeListener.apply(range, c -> {
+        range.subscribe(c -> {
             var list = FXCollections.observableArrayList(c.keySet());
             if (!list.contains(null) && includeNone) {
                 list.add(null);
@@ -84,7 +83,7 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
         cb.valueProperty().addListener((observable, oldValue, newValue) -> {
             value.setValue(newValue);
         });
-        SimpleChangeListener.apply(value, val -> {
+        value.subscribe(val -> {
             PlatformThread.runLaterIfNeeded(() -> cb.valueProperty().set(val));
         });
 

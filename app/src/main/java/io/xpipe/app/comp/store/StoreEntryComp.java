@@ -15,7 +15,6 @@ import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.*;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreColor;
@@ -138,7 +137,7 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     protected void applyState(Node node) {
-        SimpleChangeListener.apply(PlatformThread.sync(wrapper.getValidity()), val -> {
+        PlatformThread.sync(wrapper.getValidity()).subscribe(val -> {
             switch (val) {
                 case LOAD_FAILED -> {
                     node.pseudoClassStateChanged(FAILED, true);

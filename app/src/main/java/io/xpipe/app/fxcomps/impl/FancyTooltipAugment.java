@@ -3,8 +3,10 @@ package io.xpipe.app.fxcomps.impl;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.augment.Augment;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.Shortcuts;
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Tooltip;
 
@@ -24,11 +26,15 @@ public class FancyTooltipAugment<S extends CompStructure<?>> implements Augment<
     public void augment(S struc) {
         var region = struc.get();
         var tt = new Tooltip();
-        var toDisplay = text.getValue();
         if (Shortcuts.getDisplayShortcut(region) != null) {
-            toDisplay = toDisplay + "\n\nShortcut: " + Shortcuts.getDisplayShortcut(region).getDisplayText();
+            var s = AppI18n.observable("shortcut");
+            var binding = Bindings.createStringBinding(() -> {
+                return text.getValue() + "\n\n" + s.getValue() + ": " + Shortcuts.getDisplayShortcut(region).getDisplayText();
+            }, text, s);
+            BindingsHelper.bindStrong(tt.textProperty(), binding);
+        } else {
+            BindingsHelper.bindStrong(tt.textProperty(),text);
         }
-        tt.textProperty().setValue(toDisplay);
         tt.setStyle("-fx-font-size: 11pt;");
         tt.setWrapText(true);
         tt.setMaxWidth(400);

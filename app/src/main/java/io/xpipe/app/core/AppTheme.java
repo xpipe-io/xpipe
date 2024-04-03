@@ -3,7 +3,6 @@ package io.xpipe.app.core;
 import atlantafx.base.theme.*;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -44,7 +43,7 @@ public class AppTheme {
             return;
         }
 
-        SimpleChangeListener.apply(AppPrefs.get().theme, t -> {
+        AppPrefs.get().theme.subscribe(t -> {
             Theme.ALL.forEach(
                     theme -> stage.getScene().getRoot().getStyleClass().remove(theme.getCssId()));
             if (t == null) {
@@ -56,7 +55,7 @@ public class AppTheme {
             stage.getScene().getRoot().pseudoClassStateChanged(DARK, t.isDark());
         });
 
-        SimpleChangeListener.apply(AppPrefs.get().performanceMode(), val -> {
+        AppPrefs.get().performanceMode().subscribe(val -> {
             stage.getScene().getRoot().pseudoClassStateChanged(PRETTY, !val);
             stage.getScene().getRoot().pseudoClassStateChanged(PERFORMANCE, val);
         });

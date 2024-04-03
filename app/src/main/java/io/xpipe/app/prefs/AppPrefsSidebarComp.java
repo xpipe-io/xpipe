@@ -6,7 +6,6 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -27,7 +26,7 @@ public class AppPrefsSidebarComp extends SimpleComp {
                             .apply(struc -> {
                                 struc.get().setTextAlignment(TextAlignment.LEFT);
                                 struc.get().setAlignment(Pos.CENTER_LEFT);
-                                SimpleChangeListener.apply(AppPrefs.get().getSelectedCategory(), val -> {
+                                AppPrefs.get().getSelectedCategory().subscribe(val -> {
                                     struc.get().pseudoClassStateChanged(SELECTED, appPrefsCategory.equals(val));
                                 });
                             })
@@ -36,13 +35,15 @@ public class AppPrefsSidebarComp extends SimpleComp {
                 .toList();
         var vbox = new VerticalComp(buttons).styleClass("sidebar");
         vbox.apply(struc -> {
-            SimpleChangeListener.apply(PlatformThread.sync(AppPrefs.get().getSelectedCategory()), val -> {
-                var index = val != null ? AppPrefs.get().getCategories().indexOf(val) : 0;
-                if (index >= struc.get().getChildren().size()) {
-                    return;
-                }
+            AppPrefs.get().getSelectedCategory().subscribe(val -> {
+                PlatformThread.runLaterIfNeeded(() -> {
+                    var index = val != null ? AppPrefs.get().getCategories().indexOf(val) : 0;
+                    if (index >= struc.get().getChildren().size()) {
+                        return;
+                    }
 
-                ((Button) struc.get().getChildren().get(index)).fire();
+                    ((Button) struc.get().getChildren().get(index)).fire();
+                });
             });
         });
         return vbox.createRegion();

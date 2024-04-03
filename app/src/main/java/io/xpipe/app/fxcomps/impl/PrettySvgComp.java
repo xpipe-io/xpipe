@@ -3,7 +3,6 @@ package io.xpipe.app.fxcomps.impl;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.store.FileNames;
 import javafx.beans.binding.Bindings;
@@ -92,7 +91,7 @@ public class PrettySvgComp extends SimpleComp {
             image.set(fixed);
         };
 
-        SimpleChangeListener.apply(syncValue, val -> update.accept(val));
+        syncValue.subscribe(val -> update.accept(val));
         AppPrefs.get().theme.addListener((observable, oldValue, newValue) -> {
             update.accept(syncValue.getValue());
         });

@@ -10,7 +10,6 @@ import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.fxcomps.impl.TextFieldComp;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
@@ -42,7 +41,7 @@ public class BrowserNavBar extends SimpleComp {
     @Override
     protected Region createSimple() {
         var path = new SimpleStringProperty(model.getCurrentPath().get());
-        SimpleChangeListener.apply(model.getCurrentPath(), (newValue) -> {
+        model.getCurrentPath().subscribe((newValue) -> {
             path.set(newValue);
         });
         path.addListener((observable, oldValue, newValue) -> {
@@ -58,7 +57,7 @@ public class BrowserNavBar extends SimpleComp {
                 .styleClass(Styles.CENTER_PILL)
                 .styleClass("path-text")
                 .apply(struc -> {
-                    SimpleChangeListener.apply(struc.get().focusedProperty(), val -> {
+                    struc.get().focusedProperty().subscribe(val -> {
                         struc.get()
                                 .pseudoClassStateChanged(
                                         INVISIBLE,
@@ -71,7 +70,7 @@ public class BrowserNavBar extends SimpleComp {
                         }
                     });
 
-                    SimpleChangeListener.apply(model.getInOverview(), val -> {
+                    model.getInOverview().subscribe(val -> {
                         // Pseudo classes do not apply if set instantly before shown
                         // If we start a new tab with a directory set, we have to set the pseudo class one pulse later
                         Platform.runLater(() -> {

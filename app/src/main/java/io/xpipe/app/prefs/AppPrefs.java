@@ -104,7 +104,7 @@ public class AppPrefs {
             map(new SimpleBooleanProperty(false), "developerDisableGuiRestrictions", Boolean.class);
     private final ObservableBooleanValue developerDisableGuiRestrictionsEffective =
             bindDeveloperTrue(developerDisableGuiRestrictions);
-    private final ObjectProperty<SupportedLocale> language =
+    final ObjectProperty<SupportedLocale> language =
             map(new SimpleObjectProperty<>(SupportedLocale.ENGLISH), "language", SupportedLocale.class);
 
     @Getter

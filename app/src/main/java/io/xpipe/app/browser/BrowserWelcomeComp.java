@@ -5,6 +5,7 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.HorizontalComp;
@@ -54,7 +55,8 @@ public class BrowserWelcomeComp extends SimpleComp {
         hbox.setSpacing(15);
 
         if (state == null) {
-            var header = new Label("Here you will be able to see where you left off last time.");
+            var header = new Label();
+            header.textProperty().bind(AppI18n.observable("browserWelcomeEmpty"));
             vbox.getChildren().add(header);
             hbox.setPadding(new Insets(40, 40, 40, 50));
             return new VBox(hbox);
@@ -74,13 +76,14 @@ public class BrowserWelcomeComp extends SimpleComp {
         });
         var empty = Bindings.createBooleanBinding(() -> list.isEmpty(), list);
 
-        var header = new LabelComp(Bindings.createStringBinding(
-                        () -> {
-                            return !empty.get()
-                                    ? "You were recently connected to the following systems:"
-                                    : "Here you will be able to see where you left off last time.";
-                        },
-                        empty))
+        var headerBinding = BindingsHelper.mappedBinding(empty,b -> {
+            if (b) {
+                return AppI18n.observable("browserWelcomeEmpty");
+            } else {
+                return AppI18n.observable("browserWelcomeSystems");
+            }
+        });
+        var header = new LabelComp(headerBinding)
                 .createRegion();
         AppFont.setSize(header, 1);
         vbox.getChildren().add(header);

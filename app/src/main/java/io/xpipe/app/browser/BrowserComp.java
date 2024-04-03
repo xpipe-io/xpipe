@@ -16,7 +16,6 @@ import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
@@ -284,7 +283,7 @@ public class BrowserComp extends SimpleComp {
         var id = UUID.randomUUID().toString();
         tab.setId(id);
 
-        SimpleChangeListener.apply(tabs.skinProperty(), newValue -> {
+        tabs.skinProperty().subscribe(newValue -> {
             if (newValue != null) {
                 Platform.runLater(() -> {
                     Label l = (Label) tabs.lookup("#" + id + " .tab-label");

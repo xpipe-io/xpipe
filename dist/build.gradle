@@ -91,6 +91,7 @@ if (rootProject.fullVersion) {
     apply from: 'choco.gradle'
     apply from: 'winget.gradle'
     apply from: 'install.gradle'
+    apply from: 'i18n.gradle'
 
     signing {
         useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)

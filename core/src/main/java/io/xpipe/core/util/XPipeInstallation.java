@@ -295,6 +295,22 @@ public class XPipeInstallation {
         return path;
     }
 
+    public static Path getLangPath() {
+        if (!ModuleHelper.isImage()) {
+            return getCurrentInstallationBasePath().resolve("lang");
+        }
+
+        var install = getCurrentInstallationBasePath();
+        var type = OsType.getLocal();
+        if (type.equals(OsType.WINDOWS)) {
+            return install.resolve("app").resolve("lang");
+        } else if (type.equals(OsType.LINUX)) {
+            return install.resolve("app").resolve("lang");
+        } else {
+            return install.resolve("Contents").resolve("Resources").resolve("lang");
+        }
+    }
+
     public static Path getBundledFontsPath() {
         if (!ModuleHelper.isImage()) {
             return Path.of("dist", "fonts");

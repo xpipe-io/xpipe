@@ -3,7 +3,6 @@ package io.xpipe.app.fxcomps.impl;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
@@ -28,7 +27,7 @@ public class TextAreaComp extends Comp<TextAreaComp.Structure> {
         this.lastAppliedValue = value;
         this.currentValue = new SimpleStringProperty(value.getValue());
         this.lazy = lazy;
-        SimpleChangeListener.apply(value, val -> {
+        value.subscribe(val -> {
             this.currentValue.setValue(val);
         });
     }

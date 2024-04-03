@@ -6,7 +6,6 @@ import io.xpipe.app.fxcomps.augment.Augment;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
 import io.xpipe.app.fxcomps.util.Shortcuts;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -144,7 +143,7 @@ public abstract class Comp<S extends CompStructure<?>> {
     public Comp<S> hide(ObservableValue<Boolean> o) {
         return apply(struc -> {
             var region = struc.get();
-            SimpleChangeListener.apply(o, n -> {
+            o.subscribe(n -> {
                 if (!n) {
                     region.setVisible(true);
                     region.setManaged(true);

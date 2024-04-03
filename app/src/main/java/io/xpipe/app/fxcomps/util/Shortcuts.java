@@ -41,7 +41,7 @@ public class Shortcuts {
 
         DISPLAY_SHORTCUTS.put(region, comb);
         AtomicReference<Scene> scene = new AtomicReference<>();
-        SimpleChangeListener.apply(region.sceneProperty(), s -> {
+        region.sceneProperty().subscribe(s -> {
             if (Objects.equals(s, scene.get())) {
                 return;
             }

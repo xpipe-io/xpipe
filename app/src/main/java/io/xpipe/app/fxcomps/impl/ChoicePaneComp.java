@@ -4,7 +4,6 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -58,7 +57,7 @@ public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
         var vbox = new VBox(transformer.apply(cb));
         vbox.setFillWidth(true);
         cb.prefWidthProperty().bind(vbox.widthProperty());
-        SimpleChangeListener.apply(cb.valueProperty(), n -> {
+        cb.valueProperty().subscribe(n -> {
             if (n == null) {
                 if (vbox.getChildren().size() > 1) {
                     vbox.getChildren().remove(1);
@@ -82,7 +81,7 @@ public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
         cb.valueProperty().addListener((observable, oldValue, newValue) -> {
             selected.setValue(newValue);
         });
-        SimpleChangeListener.apply(selected, val -> {
+        selected.subscribe(val -> {
             PlatformThread.runLaterIfNeeded(() -> cb.valueProperty().set(val));
         });
 

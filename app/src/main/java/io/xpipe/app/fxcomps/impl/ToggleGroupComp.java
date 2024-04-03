@@ -5,7 +5,6 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ToggleButton;
@@ -29,7 +28,7 @@ public class ToggleGroupComp<T> extends Comp<CompStructure<HBox>> {
         var box = new HBox();
         box.getStyleClass().add("toggle-group-comp");
         ToggleGroup group = new ToggleGroup();
-        SimpleChangeListener.apply(PlatformThread.sync(range), val -> {
+        PlatformThread.sync(range).subscribe(val -> {
             if (!val.containsKey(value.getValue())) {
                 this.value.setValue(null);
             }

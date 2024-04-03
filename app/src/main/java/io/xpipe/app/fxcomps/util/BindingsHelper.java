@@ -45,6 +45,11 @@ public class BindingsHelper {
                 .start();
     }
 
+    public static <T> void bindStrong(Property<T> property, ObservableValue<T> value) {
+        property.bind(value);
+        linkPersistently(property, value);
+    }
+
     public static <T, V> void bindExclusive(
             Property<V> selected, Map<V, ? extends Property<T>> map, Property<T> toBind) {
         selected.addListener((c, o, n) -> {
@@ -219,7 +224,7 @@ public class BindingsHelper {
     //    public static <T,U> ObservableValue<U> mappedBinding(ObservableValue<T> observableValue, Function<? super T, ?
     // extends ObservableValue<? extends U>> mapper) {
     //        var v = new SimpleObjectProperty<U>();
-    //        SimpleChangeListener.apply(observableValue, val -> {
+    //        observableValue, val -> {
     //            v.unbind();
     //            v.bind(mapper.apply(val));
     //        });

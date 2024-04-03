@@ -3,7 +3,6 @@ package io.xpipe.app.fxcomps.impl;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.store.FileNames;
@@ -106,7 +105,7 @@ public class PrettyImageComp extends SimpleComp {
             }
         };
 
-        SimpleChangeListener.apply(PlatformThread.sync(value), val -> update.accept(val));
+        PlatformThread.sync(value).subscribe(val -> update.accept(val));
         AppPrefs.get().theme.addListener((observable, oldValue, newValue) -> {
             update.accept(value.getValue());
         });
