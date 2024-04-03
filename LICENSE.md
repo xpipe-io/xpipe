@@ -1,3 +1,10 @@
+XPipe follows an open core model, which essentially means that the main application is open source while certain other components are not. This mainly concerns the features only available in the professional edition and the shell handling library implementation. Furthermore, some CI pipelines and tests that run on private servers are also not included in the open repository.
+
+The distributed XPipe application consists out of two parts:
+- The open-source core that you can find this repository. It is licensed under the Apache License 2.0.
+- The closed-source extensions, mostly for professional edition features, which are not included in the open repository. These are not licensed under the Apache License 2.0.
+
+Here is the license for the source code of this repository:
 
                                  Apache License
                            Version 2.0, January 2004
