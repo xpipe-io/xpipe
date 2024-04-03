@@ -1,6 +1,14 @@
-<img src="https://github.com/xpipe-io/xpipe/assets/72509152/88d750f3-8469-4c51-bb64-5b264b0e9d47" alt="drawing" width="250"/>
+<p align="center">
+    <a href="https://xpipe.io" target="_blank" rel="noopener">
+        <img src="https://github.com/xpipe-io/.github/raw/main/img/banner.png" alt="XPipe Banner" />
+    </a>
+</p>
 
-XPipe is a new type of shell connection hub and remote file manager that allows you to access your entire server infrastructure from your local machine. It works on top of your installed command-line programs and does not require any setup on your remote systems.
+<h1></h1>
+
+## About
+
+XPipe is a new type of shell connection hub and remote file manager that allows you to access your entire server infrastructure from your local machine. It works on top of your installed command-line programs and does not require any setup on your remote systems. So if you normally use CLI tools like `ssh`, `docker`, `kubectl`, etc. to connect to your servers, you can just use XPipe on top of that.
 
 XPipe fully integrates with your tools such as your favourite text/code editors, terminals, shells, command-line tools and more. The platform is designed to be extensible, allowing anyone to add easily support for more tools or to implement custom functionality through a modular extension system.
 
@@ -13,33 +21,34 @@ It currently supports:
 - [Powershell Remote Sessions](https://learn.microsoft.com/en-us/powershell/scripting/learn/remoting/running-remote-commands?view=powershell-7.3)
 - Any other custom remote connection methods that work through the command-line
 
-## Connection Hub
+## Connection hub
 
 - Easily connect to and access all kinds of remote connections in one place
-- Allows you to create specific login environments on any system to instantly jump into a properly set up environment for every use case
-- Can create desktop shortcuts that automatically open remote connections in your terminal
-- Organize all your connections into hierarchical categories to keep a good overview
+- Organize all your connections in hierarchical categories so you can keep an overview hundreds of connections
+- Create specific login environments on any system to instantly jump into a properly set up environment for every use case
+- Quickly perform various commonly used actions like starting/stopping containers, establishing tunnels, and more
+- Create desktop shortcuts that automatically open remote connections in your terminal  without having to open any GUI
 
 ![connections](https://github.com/xpipe-io/xpipe/assets/72509152/5df3169a-4150-4478-a3de-ae1f9748c3c8)
 
-## Remote File Manager
+## Powerful file management
 
 - Interact with the file system of any remote system using a workflow optimized for professionals
 - Quickly open a terminal session into any directory in your favourite terminal emulator
-- Utilize your favourite local programs to open and edit remote files
+- Utilize your entire arsenal of locally installed programs to open and edit remote files
 - Dynamically elevate sessions with sudo when required without having to restart the session
-- Integrates with your local desktop environment for a seamless transfer of local files
+- Seamlessly transfer files from and to your system desktop environment
+- Work and perform transfers on multiple systems at the same time with the built-in tabbed multitasking
 
 ![browser](https://github.com/xpipe-io/xpipe/assets/72509152/4d4e4e54-17c1-4ebe-acf8-f615cfce8b3f)
 
-## Terminal Launcher
+## Terminal launcher
 
-- Automatically login into a shell in your favourite terminal with one click (no need to fill password prompts, etc.)
-- Works for all kinds of shells and connections, locally and remote.
-- Supports command shells (e.g. bash, PowerShell, cmd, etc.) and some database shells (e.g. PostgreSQL Shell)
+- Boots you into a shell session in your favourite terminal with one click. Automatically fills password prompts and more
 - Comes with support for all commonly used terminal emulators across all operating systems
-- Supports launches from the GUI or directly from the command-line
-- Solves all encoding issues on Windows systems as all Windows shells are launched in UTF8 mode by default
+- Supports opening custom terminal emulators as well via a custom command-line spec
+- Works with all command shells such as bash, zsh, cmd, PowerShell, and more, locally and remote
+- Connects to a system while the terminal is still starting up, allowing for faster connections than otherwise possible
 
 <br>
 <p align="center">
@@ -56,12 +65,12 @@ It currently supports:
 
 ![scripts](https://github.com/xpipe-io/xpipe/assets/72509152/56533f22-b689-4201-b58a-eebe0a6d517a)
 
-## Secure Vault
+## Secure vault
 
-- Securely stores all information exclusively on your system,
-  optionally with a custom master passphrase to further encrypt secrets
-- Supports syncing your vault data via your own remote git repository
-- Can integrate with your password manager to fetch secrets and not store them itself
+- All data is stored exclusively on your local system in a cryptographically secure vault. You can also choose to increase security by using a custom master passphrase for further encryption
+- XPipe is able to retrieve secrets automatically from your password manager via it's command-line interface.
+- There are no servers involved, all your information stays on your systems. The XPipe application does not send any personal or sensitive information to outside services.
+- Vault changes can be pushed and pulled from your own remote git repository by multiple team members across many systems
 
 # Downloads
 
@@ -76,7 +85,7 @@ Installers are the easiest way to get started and come with an optional automati
 You can also install XPipe by pasting the installation command into your terminal. This will perform the setup automatically:
 
 ```
-powershell -ExecutionPolicy Bypass -Command iwr "https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.ps1" -OutFile "$env:TEMP\get-xpipe.ps1" ";"  "&" "$env:TEMP\get-xpipe.ps1"
+powershell -ExecutionPolicy Bypass -Command iwr "https://github.com/xpipe-io/xpipe/raw/master/get-xpipe.ps1" -OutFile "$env:TEMP\get-xpipe.ps1" ";"  "&" "$env:TEMP\get-xpipe.ps1"
 ```
 
 If you don't like installers, you can also use a portable version that is packaged as an archive:
@@ -89,12 +98,14 @@ Alternatively, you can also use the following package managers:
 
 ## Linux
 
-You can install XPipe by pasting the installation command into your terminal. This will perform the setup automatically.
+You can install XPipe the fastest by pasting the installation command into your terminal. This will perform the setup automatically.
 The script supports installation via `apt`, `dnf`, `yum`, `zypper`, `rpm`, and `pacman` on Linux:
 
 ```
-bash <(curl -sL https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.sh)
+bash <(curl -sL https://github.com/xpipe-io/xpipe/raw/master/get-xpipe.sh)
 ```
+
+Of course, there are also other installation methods available.
 
 ### Debian-based distros
 
@@ -146,7 +157,7 @@ Installers are the easiest way to get started and come with an optional automati
 You also can install XPipe by pasting the installation command into your terminal. This will perform the `.pkg` install automatically:
 
 ```
-bash <(curl -sL https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.sh)
+bash <(curl -sL https://github.com/xpipe-io/xpipe/raw/master/get-xpipe.sh)
 ```
 
 If you don't like installers, you can also use a portable version that is packaged as an archive:
