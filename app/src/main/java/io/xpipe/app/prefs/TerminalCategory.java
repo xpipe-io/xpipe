@@ -108,22 +108,6 @@ public class TerminalCategory extends AppPrefsCategory {
                                 .apply(struc -> struc.get().setPromptText("myterminal -e $CMD"))
                                 .hide(prefs.terminalType.isNotEqualTo(ExternalTerminalType.CUSTOM)))
                         .addComp(terminalTest)
-                        .name("preferTerminalTabs")
-                        .description(Bindings.createStringBinding(
-                                () -> {
-                                    var disabled = prefs.terminalType().getValue() != null
-                                            && !prefs.terminalType.get().supportsTabs();
-                                    return !disabled
-                                            ? AppI18n.get("preferTerminalTabs")
-                                            : AppI18n.get(
-                                                    "preferTerminalTabsDisabled",
-                                                    prefs.terminalType()
-                                                            .getValue()
-                                                            .toTranslatedString()
-                                                            .getValue());
-                                },
-                                prefs.terminalType()))
-                        .addToggle(prefs.preferTerminalTabs)
                         .disable(Bindings.createBooleanBinding(
                                 () -> {
                                     return prefs.terminalType().getValue() != null

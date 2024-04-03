@@ -52,8 +52,6 @@ public class AppPrefs {
     final DoubleProperty windowOpacity = map(new SimpleDoubleProperty(1.0), "windowOpacity", Double.class);
     final StringProperty customTerminalCommand =
             map(new SimpleStringProperty(""), "customTerminalCommand", String.class);
-    final BooleanProperty preferTerminalTabs =
-            map(new SimpleBooleanProperty(true), "preferTerminalTabs", Boolean.class);
     final BooleanProperty clearTerminalOnInit =
             map(new SimpleBooleanProperty(true), "clearTerminalOnInit", Boolean.class);
     public final BooleanProperty disableCertutilUse =

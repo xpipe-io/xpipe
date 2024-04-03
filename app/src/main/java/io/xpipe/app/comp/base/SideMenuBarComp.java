@@ -167,8 +167,19 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         }
 
         {
-            var b = new IconButtonComp("mdi2u-update", () -> UpdateAvailableAlert.showIfNeeded())
+            var b = new IconButtonComp("mdi2t-translate", () -> Hyperlinks.open(Hyperlinks.TRANSLATE))
                     .shortcut(new KeyCodeCombination(KeyCode.values()[KeyCode.DIGIT1.ordinal() + entries.size() + 3]))
+                    .apply(new FancyTooltipAugment<>("translate"))
+                    .apply(simpleBorders)
+                    .accessibleTextKey("translate");
+            b.apply(struc -> {
+                AppFont.setSize(struc.get(), 2);
+            });
+            vbox.getChildren().add(b.createRegion());
+        }
+
+        {
+            var b = new IconButtonComp("mdi2u-update", () -> UpdateAvailableAlert.showIfNeeded())
                     .apply(new FancyTooltipAugment<>("updateAvailableTooltip"))
                     .accessibleTextKey("updateAvailableTooltip");
             b.apply(struc -> {
