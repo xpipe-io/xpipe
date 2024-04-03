@@ -3,9 +3,6 @@ package io.xpipe.app.browser;
 import atlantafx.base.controls.RingProgressIndicator;
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
-import io.xpipe.app.browser.icon.BrowserIconDirectoryType;
-import io.xpipe.app.browser.icon.BrowserIconFileType;
-import io.xpipe.app.browser.icon.FileIconManager;
 import io.xpipe.app.comp.base.MultiContentComp;
 import io.xpipe.app.comp.base.SideSplitPaneComp;
 import io.xpipe.app.core.AppLayoutModel;
@@ -18,7 +15,6 @@ import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BooleanScope;
-import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -51,12 +47,6 @@ public class BrowserComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        BrowserIconFileType.loadDefinitions();
-        BrowserIconDirectoryType.loadDefinitions();
-        ThreadHelper.runAsync(() -> {
-            FileIconManager.loadIfNecessary();
-        });
-
         var bookmarksList = new BrowserBookmarkComp(model).vgrow();
         var localDownloadStage = new BrowserTransferComp(model.getLocalTransfersStage())
                 .hide(PlatformThread.sync(Bindings.createBooleanBinding(

@@ -1,5 +1,8 @@
 package io.xpipe.app.browser;
 
+import io.xpipe.app.browser.icon.BrowserIconDirectoryType;
+import io.xpipe.app.browser.icon.BrowserIconFileType;
+import io.xpipe.app.browser.icon.FileIconManager;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -138,6 +141,13 @@ public class BrowserModel {
         if (store == null) {
             return;
         }
+
+        // Only load icons when a file system is opened
+        ThreadHelper.runAsync(() -> {
+            BrowserIconFileType.loadDefinitions();
+            BrowserIconDirectoryType.loadDefinitions();
+            FileIconManager.loadIfNecessary();
+        });
 
         ThreadHelper.runFailableAsync(() -> {
             OpenFileSystemModel model;

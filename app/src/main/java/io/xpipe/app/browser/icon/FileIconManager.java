@@ -16,24 +16,22 @@ public class FileIconManager {
         }
     }
 
-    public static String getFileIcon(FileSystem.FileEntry entry, boolean open) {
+    public static synchronized String getFileIcon(FileSystem.FileEntry entry, boolean open) {
         if (entry == null) {
             return null;
         }
 
-        loadIfNecessary();
-
         var r = entry.resolved();
         if (r.getKind() != FileKind.DIRECTORY) {
-            for (var f : BrowserIconFileType.ALL) {
+            for (var f : BrowserIconFileType.getAll()) {
                 if (f.matches(r)) {
-                    return getIconPath(f.getIcon());
+                    return f.getIcon();
                 }
             }
         } else {
-            for (var f : BrowserIconDirectoryType.ALL) {
+            for (var f : BrowserIconDirectoryType.getAll()) {
                 if (f.matches(r)) {
-                    return getIconPath(f.getIcon(r, open));
+                    return f.getIcon(r, open);
                 }
             }
         }
@@ -41,9 +39,5 @@ public class FileIconManager {
         return r.getKind() == FileKind.DIRECTORY
                 ? (open ? "default_folder_opened.svg" : "default_folder.svg")
                 : "default_file.svg";
-    }
-
-    private static String getIconPath(String name) {
-        return name;
     }
 }
