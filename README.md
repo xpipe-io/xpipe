@@ -171,9 +171,11 @@ Alternatively, you can also use [Homebrew](https://github.com/xpipe-io/homebrew-
 
 ## Open source model
 
-XPipe utilizes an open core model, which essentially means that the main application is open source while certain other components are not. Select parts are not open source yet, but may be added to this repository in the future.
+XPipe follows an open core model, which essentially means that the main application is open source while certain other components are not. This mainly concerns the features only available in the professional edition and the shell handling library implementation. Furthermore, some CI pipelines and tests that run on private servers are also not included in the open repository.
 
-This mainly concerns the features only available in the professional tier and the shell handling library implementation. Furthermore, some CI pipelines and tests that run on private servers are also not included in this repository.
+The distributed XPipe application consists out of two parts:
+- The open-source core that you can find this repository. It is licensed under the [Apache License 2.0](/LICENSE.md).
+- The closed-source extensions, mostly for professional edition features, which are not included in this repository
 
 ## More links
 
@@ -181,7 +183,7 @@ You have more questions? Then check out the [FAQ](https://xpipe.io/#faq).
 
 For information about the security model of XPipe, see the [security page](https://xpipe.io/features#security).
 
-For information about the privacy policy of XPipe, see the [privacy page](https://docs.xpipe.io/privacy-policy).
+For information about the privacy policy of XPipe, see the [privacy policy](https://docs.xpipe.io/privacy-policy).
 
 In case you're interested in development, check out the [contributing page](/CONTRIBUTING.md).
 
