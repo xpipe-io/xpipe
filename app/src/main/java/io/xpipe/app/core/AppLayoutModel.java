@@ -2,7 +2,6 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.browser.BrowserComp;
 import io.xpipe.app.browser.BrowserModel;
-import io.xpipe.app.comp.DeveloperTabComp;
 import io.xpipe.app.comp.store.StoreLayoutComp;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.prefs.AppPrefsComp;
@@ -74,19 +73,11 @@ public class AppLayoutModel {
         var l = new ArrayList<>(List.of(
                 new Entry(AppI18n.observable("browser"), "mdi2f-file-cabinet", new BrowserComp(BrowserModel.DEFAULT)),
                 new Entry(AppI18n.observable("connections"), "mdi2c-connection", new StoreLayoutComp()),
-                new Entry(AppI18n.observable("settings"), "mdsmz-miscellaneous_services", new AppPrefsComp())));
-        // new SideMenuBarComp.Entry(AppI18n.observable("help"), "mdi2b-book-open-variant", new
-        // StorageLayoutComp()),
-        // new SideMenuBarComp.Entry(AppI18n.observable("account"), "mdi2a-account", new StorageLayoutComp())
-        if (AppProperties.get().isDeveloperMode() && !AppProperties.get().isImage()) {
-            l.add(new Entry(AppI18n.observable("developer"), "mdi2b-book-open-variant", new DeveloperTabComp()));
-        }
-
-        l.add(new Entry(
-                AppI18n.observable("explorePlans"),
-                "mdi2p-professional-hexagon",
-                LicenseProvider.get().overviewPage()));
-
+                new Entry(AppI18n.observable("settings"), "mdsmz-miscellaneous_services", new AppPrefsComp()),
+                new Entry(
+                        AppI18n.observable("explorePlans"),
+                        "mdi2p-professional-hexagon",
+                        LicenseProvider.get().overviewPage())));
         return l;
     }
 

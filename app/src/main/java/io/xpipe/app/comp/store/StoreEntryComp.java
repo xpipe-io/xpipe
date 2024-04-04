@@ -368,7 +368,8 @@ public abstract class StoreEntryComp extends SimpleComp {
             StoreViewState.get()
                     .getSortedCategories(wrapper.getCategory().getValue().getRoot())
                     .forEach(storeCategoryWrapper -> {
-                        MenuItem m = new MenuItem(storeCategoryWrapper.getName());
+                        MenuItem m = new MenuItem();
+                        m.textProperty().bind(storeCategoryWrapper.nameProperty());
                         m.setOnAction(event -> {
                             wrapper.moveTo(storeCategoryWrapper.getCategory());
                             event.consume();

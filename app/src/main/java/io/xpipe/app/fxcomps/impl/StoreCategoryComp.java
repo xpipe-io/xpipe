@@ -106,7 +106,7 @@ public class StoreCategoryComp extends SimpleComp {
 
         var l = category.getChildren()
                 .sorted(Comparator.comparing(
-                        storeCategoryWrapper -> storeCategoryWrapper.getName().toLowerCase(Locale.ROOT)));
+                        storeCategoryWrapper -> storeCategoryWrapper.nameProperty().getValue().toLowerCase(Locale.ROOT)));
         var children = new ListBoxViewComp<>(l, l, storeCategoryWrapper -> new StoreCategoryComp(storeCategoryWrapper));
 
         var emptyBinding = Bindings.isEmpty(category.getChildren());

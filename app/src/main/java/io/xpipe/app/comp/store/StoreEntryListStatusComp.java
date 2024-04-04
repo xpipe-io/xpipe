@@ -126,7 +126,8 @@ public class StoreEntryListStatusComp extends SimpleComp {
     }
 
     private Region createButtons() {
-        var menu = new MenuButton(AppI18n.get("addConnections"), new FontIcon("mdi2p-plus-thick"));
+        var menu = new MenuButton(null, new FontIcon("mdi2p-plus-thick"));
+        menu.textProperty().bind(AppI18n.observable("addConnections"));
         menu.setAlignment(Pos.CENTER);
         menu.setTextAlignment(TextAlignment.CENTER);
         AppFont.medium(menu);

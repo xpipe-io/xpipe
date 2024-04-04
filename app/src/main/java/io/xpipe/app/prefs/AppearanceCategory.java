@@ -2,20 +2,39 @@ package io.xpipe.app.prefs;
 
 import atlantafx.base.controls.ProgressSliderSkin;
 import atlantafx.base.theme.Styles;
+import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppTheme;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.ChoiceComp;
+import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.IntFieldComp;
+import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.OptionsBuilder;
+import javafx.geometry.Pos;
 import javafx.scene.control.Slider;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class AppearanceCategory extends AppPrefsCategory {
 
     @Override
     protected String getId() {
         return "appearance";
+    }
+
+    private Comp<?> languageChoice() {
+        var prefs = AppPrefs.get();
+        var c = ChoiceComp.ofTranslatable(prefs.language, Arrays.asList(SupportedLocale.values()), false);
+        var visit = new ButtonComp(AppI18n.observable("translate"), new FontIcon("mdi2w-web"), () -> {
+            Hyperlinks.open(Hyperlinks.TRANSLATE);
+        });
+        return new HorizontalComp(List.of(c, visit)).apply(struc -> {
+            struc.get().setAlignment(Pos.CENTER_LEFT);
+            struc.get().setSpacing(10);
+        });
     }
 
     @Override
@@ -26,7 +45,7 @@ public class AppearanceCategory extends AppPrefsCategory {
                 .sub(new OptionsBuilder()
                         .nameAndDescription("language")
                         .addComp(
-                                ChoiceComp.ofTranslatable(prefs.language, Arrays.asList(SupportedLocale.values()), false),
+                                languageChoice(),
                                 prefs.language)
                         .nameAndDescription("theme")
                         .addComp(
