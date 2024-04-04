@@ -2,6 +2,7 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -64,10 +65,10 @@ public class StoreSection {
 
         var c = Comparator.<StoreSection>comparingInt(
                 value -> value.getWrapper().getEntry().getValidity().isUsable() ? -1 : 1);
-        var mappedSortMode = BindingsHelper.mappedBinding(
+        var mappedSortMode = BindingsHelper.flatMap(
                 category,
                 storeCategoryWrapper -> storeCategoryWrapper != null ? storeCategoryWrapper.getSortMode() : null);
-        return BindingsHelper.orderedContentBinding(
+        return ListBindingsHelper.orderedContentBinding(
                 list,
                 (o1, o2) -> {
                     var current = mappedSortMode.getValue();
@@ -86,16 +87,16 @@ public class StoreSection {
             Predicate<StoreEntryWrapper> entryFilter,
             ObservableStringValue filterString,
             ObservableValue<StoreCategoryWrapper> category) {
-        var topLevel = BindingsHelper.filteredContentBinding(
+        var topLevel = ListBindingsHelper.filteredContentBinding(
                 all,
                 section -> {
                     return DataStorage.get().isRootEntry(section.getEntry());
                 },
                 category);
-        var cached = BindingsHelper.cachedMappedContentBinding(
-                topLevel, storeEntryWrapper -> create(storeEntryWrapper, 1, all, entryFilter, filterString, category));
+        var cached = ListBindingsHelper.cachedMappedContentBinding(
+                topLevel, topLevel, storeEntryWrapper -> create(storeEntryWrapper, 1, all, entryFilter, filterString, category));
         var ordered = sorted(cached, category);
-        var shown = BindingsHelper.filteredContentBinding(
+        var shown = ListBindingsHelper.filteredContentBinding(
                 ordered,
                 section -> {
                     var showFilter = filterString == null || section.shouldShow(filterString.get());
@@ -121,7 +122,7 @@ public class StoreSection {
             return new StoreSection(e, FXCollections.observableArrayList(), FXCollections.observableArrayList(), depth);
         }
 
-        var allChildren = BindingsHelper.filteredContentBinding(all, other -> {
+        var allChildren = ListBindingsHelper.filteredContentBinding(all, other -> {
             // Legacy implementation that does not use children caches. Use for testing
             //            if (true) return DataStorage.get()
             //                    .getDisplayParent(other.getEntry())
@@ -131,10 +132,10 @@ public class StoreSection {
             // This check is fast as the children are cached in the storage
             return DataStorage.get().getStoreChildren(e.getEntry()).contains(other.getEntry());
         });
-        var cached = BindingsHelper.cachedMappedContentBinding(
-                allChildren, entry1 -> create(entry1, depth + 1, all, entryFilter, filterString, category));
+        var cached = ListBindingsHelper.cachedMappedContentBinding(
+                allChildren, allChildren, entry1 -> create(entry1, depth + 1, all, entryFilter, filterString, category));
         var ordered = sorted(cached, category);
-        var filtered = BindingsHelper.filteredContentBinding(
+        var filtered = ListBindingsHelper.filteredContentBinding(
                 ordered,
                 section -> {
                     var showFilter = filterString == null || section.shouldShow(filterString.get());

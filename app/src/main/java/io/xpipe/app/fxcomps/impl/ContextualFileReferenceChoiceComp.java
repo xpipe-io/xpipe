@@ -4,10 +4,9 @@ import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.StandaloneFileBrowser;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.ContextualFileReference;
@@ -39,7 +38,7 @@ public class ContextualFileReferenceChoiceComp extends SimpleComp {
     public <T extends FileSystemStore> ContextualFileReferenceChoiceComp(
             ObservableValue<DataStoreEntryRef<T>> fileSystem, Property<String> filePath) {
         this.fileSystem = new SimpleObjectProperty<>();
-        SimpleChangeListener.apply(fileSystem, val -> {
+        fileSystem.subscribe(val -> {
             this.fileSystem.setValue(val);
         });
         this.filePath = filePath;
@@ -66,7 +65,7 @@ public class ContextualFileReferenceChoiceComp extends SimpleComp {
                 .styleClass(Styles.CENTER_PILL)
                 .grow(false, true);
 
-        var canGitShare = BindingsHelper.persist(Bindings.createBooleanBinding(
+        var canGitShare = Bindings.createBooleanBinding(
                 () -> {
                     if (!AppPrefs.get().enableGitStorage().get()
                             || filePath.getValue() == null
@@ -77,8 +76,18 @@ public class ContextualFileReferenceChoiceComp extends SimpleComp {
                     return true;
                 },
                 filePath,
-                AppPrefs.get().enableGitStorage()));
+                AppPrefs.get().enableGitStorage());
         var gitShareButton = new ButtonComp(null, new FontIcon("mdi2g-git"), () -> {
+            if (!AppPrefs.get().enableGitStorage().get()) {
+                AppLayoutModel.get().selectSettings();
+                AppPrefs.get().selectCategory(3);
+                return;
+            }
+
+            if (filePath.getValue() == null || ContextualFileReference.of(filePath.getValue()).isInDataDirectory()) {
+                return;
+            }
+
             if (filePath.getValue() == null || filePath.getValue().isBlank() || !canGitShare.get()) {
                 return;
             }
@@ -108,7 +117,7 @@ public class ContextualFileReferenceChoiceComp extends SimpleComp {
                 ErrorEvent.fromThrowable(e).handle();
             }
         });
-        gitShareButton.apply(new FancyTooltipAugment<>("gitShareFileTooltip"));
+        gitShareButton.apply(new TooltipAugment<>("gitShareFileTooltip"));
         gitShareButton.styleClass(Styles.RIGHT_PILL).grow(false, true);
 
         var layout = new HorizontalComp(List.of(fileNameComp, fileBrowseButton, gitShareButton))

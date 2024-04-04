@@ -1,5 +1,6 @@
 package io.xpipe.app.comp.store;
 
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
@@ -80,6 +81,10 @@ public class StoreCategoryWrapper {
 
     private void setupListeners() {
         name.addListener((c, o, n) -> {
+            if (n.equals(translatedName(category.getName()))) {
+                return;
+            }
+
             category.setName(n);
         });
 
@@ -88,6 +93,10 @@ public class StoreCategoryWrapper {
         }));
 
         AppPrefs.get().showChildCategoriesInParentCategory().addListener((observable, oldValue, newValue) -> {
+            update();
+        });
+
+        AppPrefs.get().language().addListener((observable, oldValue, newValue) -> {
             update();
         });
 
@@ -112,8 +121,9 @@ public class StoreCategoryWrapper {
 
     public void update() {
         // Avoid reupdating name when changed from the name property!
-        if (!category.getName().equals(name.getValue())) {
-            name.setValue(category.getName());
+        var catName = translatedName(category.getName());
+        if (!catName.equals(name.getValue())) {
+            name.setValue(catName);
         }
 
         lastAccess.setValue(category.getLastAccess().minus(Duration.ofMillis(500)));
@@ -140,16 +150,28 @@ public class StoreCategoryWrapper {
         });
     }
 
-    public String getName() {
-        return name.getValue();
+    private String translatedName(String original) {
+        if (original.equals("All connections")) {
+            return AppI18n.get("allConnections");
+        }
+        if (original.equals("All scripts")) {
+            return AppI18n.get("allScripts");
+        }
+        if (original.equals("Predefined")) {
+            return AppI18n.get("predefined");
+        }
+        if (original.equals("Custom")) {
+            return AppI18n.get("custom");
+        }
+        if (original.equals("Default")) {
+            return AppI18n.get("default");
+        }
+
+        return original;
     }
 
     public Property<String> nameProperty() {
         return name;
-    }
-
-    public Instant getLastAccess() {
-        return lastAccess.getValue();
     }
 
     public Property<Instant> lastAccessProperty() {

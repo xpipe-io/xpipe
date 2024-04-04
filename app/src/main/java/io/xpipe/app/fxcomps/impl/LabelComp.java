@@ -3,6 +3,7 @@ package io.xpipe.app.fxcomps.impl;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;

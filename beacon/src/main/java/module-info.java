@@ -27,7 +27,6 @@ open module io.xpipe.beacon {
             SinkExchange,
             DrainExchange,
             LaunchExchange,
-            InstanceExchange,
             EditStoreExchange,
             StoreProviderListExchange,
             ModeExchange,

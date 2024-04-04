@@ -1,6 +1,6 @@
 package io.xpipe.app.browser;
 
-import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileNames;
@@ -33,7 +33,7 @@ public final class BrowserFileListModel {
     private final ObservableList<BrowserEntry> previousSelection = FXCollections.observableArrayList();
     private final ObservableList<BrowserEntry> selection = FXCollections.observableArrayList();
     private final ObservableList<FileSystem.FileEntry> selectedRaw =
-            BindingsHelper.mappedContentBinding(selection, entry -> entry.getRawFileEntry());
+            ListBindingsHelper.mappedContentBinding(selection, entry -> entry.getRawFileEntry());
 
     private final Property<BrowserEntry> draggedOverDirectory = new SimpleObjectProperty<>();
     private final Property<Boolean> draggedOverEmpty = new SimpleBooleanProperty();

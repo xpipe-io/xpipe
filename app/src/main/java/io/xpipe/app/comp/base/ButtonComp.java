@@ -3,7 +3,6 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -50,7 +49,7 @@ public class ButtonComp extends Comp<CompStructure<Button>> {
         var graphic = getGraphic();
         if (graphic instanceof FontIcon f) {
             // f.iconColorProperty().bind(button.textFillProperty());
-            SimpleChangeListener.apply(button.fontProperty(), c -> {
+            button.fontProperty().subscribe(c -> {
                 f.setIconSize((int) new Size(c.getSize(), SizeUnits.PT).pixels());
             });
         }

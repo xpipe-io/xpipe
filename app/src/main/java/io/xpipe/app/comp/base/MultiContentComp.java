@@ -3,7 +3,6 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -25,9 +24,11 @@ public class MultiContentComp extends SimpleComp {
         for (Map.Entry<Comp<?>, ObservableValue<Boolean>> entry : content.entrySet()) {
             var region = entry.getKey().createRegion();
             stack.getChildren().add(region);
-            SimpleChangeListener.apply(PlatformThread.sync(entry.getValue()), val -> {
-                region.setManaged(val);
-                region.setVisible(val);
+            entry.getValue().subscribe(val -> {
+                PlatformThread.runLaterIfNeeded(() -> {
+                    region.setManaged(val);
+                    region.setVisible(val);
+                });
             });
         }
         return stack;

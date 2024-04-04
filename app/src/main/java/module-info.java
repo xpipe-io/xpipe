@@ -77,6 +77,7 @@ open module io.xpipe.app {
     requires jdk.management;
     requires jdk.management.agent;
     requires net.steppschuh.markdowngenerator;
+    requires com.shinyhut.vernacular;
 
     // Required by extensions
     requires java.security.jgss;
@@ -150,6 +151,5 @@ open module io.xpipe.app {
             TerminalWaitExchangeImpl,
             TerminalLaunchExchangeImpl,
             QueryStoreExchangeImpl,
-            InstanceExchangeImpl,
             VersionExchangeImpl;
 }

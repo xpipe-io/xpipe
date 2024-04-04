@@ -49,11 +49,13 @@ public class AppPrefs {
             map(new SimpleBooleanProperty(true), "saveWindowLocation", Boolean.class);
     final ObjectProperty<ExternalTerminalType> terminalType =
             map(new SimpleObjectProperty<>(), "terminalType", ExternalTerminalType.class);
+    final ObjectProperty<ExternalRdpClientType> rdpClientType =
+            map(new SimpleObjectProperty<>(), "rdpClientType", ExternalRdpClientType.class);
     final DoubleProperty windowOpacity = map(new SimpleDoubleProperty(1.0), "windowOpacity", Double.class);
+    final StringProperty customRdpClientCommand =
+            map(new SimpleStringProperty(null), "customRdpClientCommand", String.class);
     final StringProperty customTerminalCommand =
-            map(new SimpleStringProperty(""), "customTerminalCommand", String.class);
-    final BooleanProperty preferTerminalTabs =
-            map(new SimpleBooleanProperty(true), "preferTerminalTabs", Boolean.class);
+            map(new SimpleStringProperty(null), "customTerminalCommand", String.class);
     final BooleanProperty clearTerminalOnInit =
             map(new SimpleBooleanProperty(true), "clearTerminalOnInit", Boolean.class);
     public final BooleanProperty disableCertutilUse =
@@ -104,7 +106,7 @@ public class AppPrefs {
             map(new SimpleBooleanProperty(false), "developerDisableGuiRestrictions", Boolean.class);
     private final ObservableBooleanValue developerDisableGuiRestrictionsEffective =
             bindDeveloperTrue(developerDisableGuiRestrictions);
-    private final ObjectProperty<SupportedLocale> language =
+    final ObjectProperty<SupportedLocale> language =
             map(new SimpleObjectProperty<>(SupportedLocale.ENGLISH), "language", SupportedLocale.class);
 
     @Getter
@@ -139,6 +141,7 @@ public class AppPrefs {
                 new AppearanceCategory(),
                 new TerminalCategory(),
                 new EditorCategory(),
+                new RdpCategory(),
                 new SyncCategory(),
                 new VaultCategory(),
                 new LocalShellCategory(),
@@ -357,8 +360,16 @@ public class AppPrefs {
         return terminalType;
     }
 
+    public ObservableValue<ExternalRdpClientType> rdpClientType() {
+        return rdpClientType;
+    }
+
     public ObservableValue<String> customTerminalCommand() {
         return customTerminalCommand;
+    }
+
+    public ObservableValue<String> customRdpClientCommand() {
+        return customRdpClientCommand;
     }
 
     public ObservableValue<Path> storageDirectory() {
@@ -411,7 +422,12 @@ public class AppPrefs {
         if (externalEditor.get() == null) {
             ExternalEditorType.detectDefault();
         }
+
         terminalType.set(ExternalTerminalType.determineDefault(terminalType.get()));
+
+        if (rdpClientType.get() == null) {
+            rdpClientType.setValue(ExternalRdpClientType.determineDefault());
+        }
     }
 
     public Comp<?> getCustomComp(String id) {

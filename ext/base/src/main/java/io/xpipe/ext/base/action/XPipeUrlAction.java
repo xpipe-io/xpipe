@@ -5,9 +5,7 @@ import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.LaunchableStore;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.JacksonMapper;
 import lombok.Value;
@@ -43,7 +41,7 @@ public class XPipeUrlAction implements ActionProvider {
                         if (!entry.getValidity().isUsable()) {
                             return null;
                         }
-                        return new LaunchAction(entry);
+                        return new LaunchAction.Action(entry);
                     }
                     case "action" -> {
                         var id = args.get(1);
@@ -84,30 +82,6 @@ public class XPipeUrlAction implements ActionProvider {
         @Override
         public void execute() throws Exception {
             actionProvider.getDataStoreCallSite().createAction(entry.ref()).execute();
-        }
-    }
-
-    @Value
-    static class LaunchAction implements ActionProvider.Action {
-
-        DataStoreEntry entry;
-
-        @Override
-        public boolean requiresJavaFXPlatform() {
-            return false;
-        }
-
-        @Override
-        public void execute() throws Exception {
-            var storeName = entry.getName();
-            if (entry.getStore() instanceof LaunchableStore s) {
-                var command = s.prepareLaunchCommand();
-                if (command == null) {
-                    return;
-                }
-
-                TerminalLauncher.open(storeName, command);
-            }
         }
     }
 

@@ -11,8 +11,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
+import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.util.ContextMenuHelper;
@@ -77,7 +76,7 @@ public class StoreCategoryComp extends SimpleComp {
                     showing.bind(cm.showingProperty());
                     return cm;
                 }));
-        var shownList = BindingsHelper.filteredContentBinding(
+        var shownList = ListBindingsHelper.filteredContentBinding(
                 category.getContainedEntries(),
                 storeEntryWrapper -> {
                     return storeEntryWrapper.shouldShow(
@@ -92,9 +91,8 @@ public class StoreCategoryComp extends SimpleComp {
                 Comp.hspacer(4),
                 Comp.of(() -> name),
                 Comp.hspacer(),
-                count.hide(BindingsHelper.persist(hover.or(showing).or(focus))),
-                settings.hide(
-                        BindingsHelper.persist(hover.not().and(showing.not()).and(focus.not())))));
+                count.hide(hover.or(showing).or(focus)),
+                settings.hide(hover.not().and(showing.not()).and(focus.not()))));
         h.padding(new Insets(0, 10, 0, (category.getDepth() * 10)));
 
         var categoryButton = new ButtonComp(null, h.createRegion(), category::select)
@@ -108,14 +106,14 @@ public class StoreCategoryComp extends SimpleComp {
 
         var l = category.getChildren()
                 .sorted(Comparator.comparing(
-                        storeCategoryWrapper -> storeCategoryWrapper.getName().toLowerCase(Locale.ROOT)));
+                        storeCategoryWrapper -> storeCategoryWrapper.nameProperty().getValue().toLowerCase(Locale.ROOT)));
         var children = new ListBoxViewComp<>(l, l, storeCategoryWrapper -> new StoreCategoryComp(storeCategoryWrapper));
 
         var emptyBinding = Bindings.isEmpty(category.getChildren());
         var v = new VerticalComp(List.of(categoryButton, children.hide(emptyBinding)));
         v.styleClass("category");
         v.apply(struc -> {
-            SimpleChangeListener.apply(StoreViewState.get().getActiveCategory(), val -> {
+            StoreViewState.get().getActiveCategory().subscribe(val -> {
                 struc.get().pseudoClassStateChanged(SELECTED, val.equals(category));
             });
         });

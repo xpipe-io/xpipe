@@ -27,11 +27,11 @@ public class DataStoreFlowChoiceComp extends SimpleComp {
         map.put(DataFlow.INPUT_OUTPUT, AppI18n.observable("app.inout"));
         return new ToggleGroupComp<>(selected, new SimpleObjectProperty<>(map))
                 .apply(struc -> {
-                    new FancyTooltipAugment<>("app.inputDescription")
+                    new TooltipAugment<>("app.inputDescription")
                             .augment(struc.get().getChildren().get(0));
-                    new FancyTooltipAugment<>("app.outputDescription")
+                    new TooltipAugment<>("app.outputDescription")
                             .augment(struc.get().getChildren().get(1));
-                    new FancyTooltipAugment<>("app.inoutDescription")
+                    new TooltipAugment<>("app.inoutDescription")
                             .augment(struc.get().getChildren().get(2));
                 })
                 .createRegion();

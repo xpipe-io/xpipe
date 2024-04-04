@@ -30,11 +30,11 @@ public class AppImages {
 
         TrackEvent.info("Loading images ...");
         for (var module : AppExtensionManager.getInstance().getContentModules()) {
-            loadDirectory(module.getName(), "img");
+            loadDirectory(module.getName(), "img", true, true);
         }
     }
 
-    public static void loadDirectory(String module, String dir) {
+    public static void loadDirectory(String module, String dir, boolean loadImages, boolean loadSvgs) {
         AppResources.with(module, dir, basePath -> {
             if (!Files.exists(basePath)) {
                 return;
@@ -48,10 +48,10 @@ public class AppImages {
                     var relativeFileName = FilenameUtils.separatorsToUnix(
                             basePath.relativize(file).toString());
                     try {
-                        if (FilenameUtils.getExtension(file.toString()).equals("svg")) {
+                        if (FilenameUtils.getExtension(file.toString()).equals("svg") && loadSvgs) {
                             var s = Files.readString(file);
                             svgImages.put(defaultPrefix + relativeFileName, s);
-                        } else {
+                        } else if (loadImages) {
                             images.put(defaultPrefix + relativeFileName, loadImage(file));
                         }
                     } catch (IOException ex) {

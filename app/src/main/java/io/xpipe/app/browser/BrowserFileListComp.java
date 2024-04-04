@@ -9,7 +9,6 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.HumanReadableFormat;
@@ -505,7 +504,7 @@ final class BrowserFileListComp extends SimpleComp {
                     .get();
             var quickAccess = new BrowserQuickAccessButtonComp(
                             () -> getTableRow().getItem(), fileList.getFileSystemModel())
-                    .hide(BindingsHelper.persist(Bindings.createBooleanBinding(
+                    .hide(Bindings.createBooleanBinding(
                             () -> {
                                 var item = getTableRow().getItem();
                                 var notDir = item.getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY;
@@ -514,7 +513,7 @@ final class BrowserFileListComp extends SimpleComp {
                                         .equals(fileList.getFileSystemModel().getCurrentParentDirectory());
                                 return notDir || isParentLink;
                             },
-                            itemProperty())))
+                            itemProperty()).not().not())
                     .createRegion();
 
             editing.addListener((observable, oldValue, newValue) -> {
@@ -558,7 +557,7 @@ final class BrowserFileListComp extends SimpleComp {
                     // Don't set image as that would trigger image comp update
                     // and cells are emptied on each change, leading to unnecessary changes
                     // img.set(null);
-
+					
                     // Visibility seems to be bugged, so use opacity
                     setOpacity(0.0);
                 } else {

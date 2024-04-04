@@ -29,7 +29,7 @@ public class BrowserEntry {
             return null;
         }
 
-        for (var f : BrowserIconFileType.ALL) {
+        for (var f : BrowserIconFileType.getAll()) {
             if (f.matches(rawFileEntry)) {
                 return f;
             }
@@ -43,7 +43,7 @@ public class BrowserEntry {
             return null;
         }
 
-        for (var f : BrowserIconDirectoryType.ALL) {
+        for (var f : BrowserIconDirectoryType.getAll()) {
             if (f.matches(rawFileEntry)) {
                 return f;
             }

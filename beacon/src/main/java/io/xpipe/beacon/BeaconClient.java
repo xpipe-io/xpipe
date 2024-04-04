@@ -11,10 +11,8 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import io.xpipe.beacon.exchange.MessageExchanges;
 import io.xpipe.beacon.exchange.data.ClientErrorMessage;
 import io.xpipe.beacon.exchange.data.ServerErrorMessage;
-import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.util.Deobfuscator;
 import io.xpipe.core.util.JacksonMapper;
-import io.xpipe.core.util.ProxyManagerProvider;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -60,51 +58,6 @@ public class BeaconClient implements AutoCloseable {
         }
         socket.setSoTimeout(0);
         return client;
-    }
-
-    public static BeaconClient connectProxy(ShellStore proxy) throws Exception {
-        var control = proxy.control().start();
-        if (!ProxyManagerProvider.get().setup(control)) {
-            throw new IOException("XPipe connector required to perform operation");
-        }
-        var command = control.command("xpipe beacon --raw").start();
-        command.discardErr();
-        return new BeaconClient(command, command.getStdout(), command.getStdin()) {
-
-            //            {
-            //                new Thread(() -> {
-            //                    while (true) {
-            //                        if (!control.isRunning()) {
-            //                            close();
-            //                        }
-            //                    }
-            //                })
-            //            }
-
-            @Override
-            public void close() throws ConnectorException {
-                try {
-                    getRawInputStream().readAllBytes();
-                } catch (IOException ex) {
-                    throw new ConnectorException(ex);
-                }
-
-                super.close();
-            }
-
-            @Override
-            public <T extends ResponseMessage> T receiveResponse()
-                    throws ConnectorException, ClientException, ServerException {
-                try {
-                    sendEOF();
-                    getRawOutputStream().close();
-                } catch (IOException ex) {
-                    throw new ConnectorException(ex);
-                }
-
-                return super.receiveResponse();
-            }
-        };
     }
 
     public static Optional<BeaconClient> tryEstablishConnection(ClientInformation information) {

@@ -3,7 +3,6 @@ package io.xpipe.app.core;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -98,7 +97,7 @@ public class AppGreetings {
                         alert.getButtonTypes().add(buttonType);
 
                         Button button = (Button) alert.getDialogPane().lookupButton(buttonType);
-                        button.disableProperty().bind(BindingsHelper.persist(accepted.not()));
+                        button.disableProperty().bind(accepted.not());
                     }
 
                     alert.getButtonTypes().add(ButtonType.CANCEL);

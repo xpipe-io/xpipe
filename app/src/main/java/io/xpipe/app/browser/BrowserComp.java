@@ -4,22 +4,19 @@ import atlantafx.base.controls.RingProgressIndicator;
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.icon.BrowserIconDirectoryType;
-import io.xpipe.app.browser.icon.BrowserIconFileType;
 import io.xpipe.app.browser.icon.FileIconManager;
+import io.xpipe.app.browser.icon.BrowserIconFileType;
 import io.xpipe.app.comp.base.MultiContentComp;
 import io.xpipe.app.comp.base.SideSplitPaneComp;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
+import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BooleanScope;
-import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -52,12 +49,6 @@ public class BrowserComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        BrowserIconFileType.loadDefinitions();
-        BrowserIconDirectoryType.loadDefinitions();
-        ThreadHelper.runAsync(() -> {
-            FileIconManager.loadIfNecessary();
-        });
-
         var bookmarksList = new BrowserBookmarkComp(model).vgrow();
         var localDownloadStage = new BrowserTransferComp(model.getLocalTransfersStage())
                 .hide(PlatformThread.sync(Bindings.createBooleanBinding(
@@ -133,7 +124,7 @@ public class BrowserComp extends SimpleComp {
     private Comp<?> createTabs() {
         var multi = new MultiContentComp(Map.<Comp<?>, ObservableValue<Boolean>>of(
                 Comp.of(() -> createTabPane()),
-                BindingsHelper.persist(Bindings.isNotEmpty(model.getOpenFileSystems())),
+                Bindings.isNotEmpty(model.getOpenFileSystems()),
                 new BrowserWelcomeComp(model).apply(struc -> StackPane.setAlignment(struc.get(), Pos.CENTER_LEFT)),
                 Bindings.createBooleanBinding(
                         () -> {
@@ -284,7 +275,7 @@ public class BrowserComp extends SimpleComp {
         var id = UUID.randomUUID().toString();
         tab.setId(id);
 
-        SimpleChangeListener.apply(tabs.skinProperty(), newValue -> {
+        tabs.skinProperty().subscribe(newValue -> {
             if (newValue != null) {
                 Platform.runLater(() -> {
                     Label l = (Label) tabs.lookup("#" + id + " .tab-label");
@@ -303,7 +294,7 @@ public class BrowserComp extends SimpleComp {
                     if (color != null) {
                         c.getStyleClass().add(color.getId());
                     }
-                    new FancyTooltipAugment<>(new SimpleStringProperty(model.getTooltip())).augment(c);
+                    new TooltipAugment<>(new SimpleStringProperty(model.getTooltip())).augment(c);
                     c.addEventHandler(
                             DragEvent.DRAG_ENTERED,
                             mouseEvent -> Platform.runLater(

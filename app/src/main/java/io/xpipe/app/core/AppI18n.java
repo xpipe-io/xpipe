@@ -2,7 +2,7 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.ext.PrefsChoiceValue;
-import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
+import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -10,101 +10,70 @@ import io.xpipe.app.prefs.SupportedLocale;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.Translatable;
 import io.xpipe.core.util.ModuleHelper;
+import io.xpipe.core.util.XPipeInstallation;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringBinding;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import lombok.SneakyThrows;
+import lombok.Value;
 import org.apache.commons.io.FilenameUtils;
 import org.ocpsoft.prettytime.PrettyTime;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 
 public class AppI18n {
 
-    private static final Pattern VAR_PATTERN = Pattern.compile("\\$\\w+?\\$");
-    private static final AppI18n INSTANCE = new AppI18n();
-    private Map<String, String> translations;
-    private Map<String, String> markdownDocumentations;
-    private PrettyTime prettyTime;
+    @Value
+    static class LoadedTranslations {
 
-    public static void init() {
-        var i = INSTANCE;
-        if (i.translations != null) {
-            return;
+        Map<String, String> translations;
+        Map<String, String> markdownDocumentations;
+        PrettyTime prettyTime;
+    }
+
+    private static final Pattern VAR_PATTERN = Pattern.compile("\\$\\w+?\\$");
+    private static AppI18n INSTANCE;
+    private LoadedTranslations english;
+    private final Property<LoadedTranslations> currentLanguage = new SimpleObjectProperty<>();
+
+    public static void init() throws Exception {
+        INSTANCE = new AppI18n();
+        INSTANCE.load();
+    }
+
+    private void load() throws Exception {
+        if (english == null) {
+            english = load(Locale.ENGLISH);
         }
 
-        i.load();
-
         if (AppPrefs.get() != null) {
-            AppPrefs.get().language().addListener((c, o, n) -> {
-                i.clear();
-                i.load();
+            AppPrefs.get().language().subscribe(n -> {
+                try {
+                    currentLanguage.setValue(n != null ? load(n.getLocale()) : null);
+                } catch (Exception e) {
+                    ErrorEvent.fromThrowable(e).handle();
+                }
             });
         }
     }
 
-    public static AppI18n getInstance() {
+    public static AppI18n get() {
         return INSTANCE;
     }
 
-    public static StringBinding readableInstant(String s, ObservableValue<Instant> instant) {
-        return readableInstant(instant, rs -> getValue(getInstance().getLocalised(s), rs));
-    }
-
-    public static StringBinding readableInstant(ObservableValue<Instant> instant, UnaryOperator<String> op) {
-        return Bindings.createStringBinding(
-                () -> {
-                    if (instant.getValue() == null) {
-                        return "null";
-                    }
-
-                    return op.apply(
-                            getInstance().prettyTime.format(instant.getValue().minus(Duration.ofSeconds(1))));
-                },
-                instant);
-    }
-
-    public static StringBinding readableInstant(ObservableValue<Instant> instant) {
-        return Bindings.createStringBinding(
-                () -> {
-                    if (instant.getValue() == null) {
-                        return "null";
-                    }
-
-                    return getInstance().prettyTime.format(instant.getValue().minus(Duration.ofSeconds(1)));
-                },
-                instant);
-    }
-
-    public static StringBinding readableDuration(ObservableValue<Duration> duration) {
-        return Bindings.createStringBinding(
-                () -> {
-                    if (duration.getValue() == null) {
-                        return "null";
-                    }
-
-                    return getInstance()
-                            .prettyTime
-                            .formatDuration(getInstance()
-                                    .prettyTime
-                                    .approximateDuration(Instant.now().plus(duration.getValue())));
-                },
-                duration);
+    private LoadedTranslations getLoaded() {
+        return currentLanguage.getValue() != null ? currentLanguage.getValue() : english;
     }
 
     public static ObservableValue<String> observable(String s, Object... vars) {
@@ -115,7 +84,7 @@ public class AppI18n {
         var key = INSTANCE.getKey(s);
         return Bindings.createStringBinding(() -> {
             return get(key, vars);
-        });
+        }, INSTANCE.currentLanguage);
     }
 
     public static String get(String s, Object... vars) {
@@ -147,7 +116,7 @@ public class AppI18n {
                     || caller.equals(ModuleHelper.class)
                     || caller.equals(ModalOverlayComp.class)
                     || caller.equals(AppI18n.class)
-                    || caller.equals(FancyTooltipAugment.class)
+                    || caller.equals(TooltipAugment.class)
                     || caller.equals(PrefsChoiceValue.class)
                     || caller.equals(Translatable.class)
                     || caller.equals(AppWindowHelper.class)
@@ -160,11 +129,6 @@ public class AppI18n {
         return "";
     }
 
-    private void clear() {
-        translations.clear();
-        prettyTime = null;
-    }
-
     public String getKey(String s) {
         var key = s;
         if (!s.contains(".")) {
@@ -173,62 +137,62 @@ public class AppI18n {
         return key;
     }
 
-    public boolean containsKey(String s) {
-        var key = getKey(s);
-        if (translations == null) {
-            return false;
-        }
-
-        return translations.containsKey(key);
-    }
-
     public String getLocalised(String s, Object... vars) {
         var key = getKey(s);
 
-        if (translations == null) {
+        if (english == null) {
             TrackEvent.warn("Translations not initialized for " + key);
             return s;
         }
 
-        if (!translations.containsKey(key)) {
-            TrackEvent.warn("Translation key not found for " + key);
-            return key;
+        if (currentLanguage.getValue() != null && currentLanguage.getValue().getTranslations().containsKey(key)) {
+            var localisedString = currentLanguage.getValue().getTranslations().get(key);
+            return getValue(localisedString, vars);
         }
 
-        var localisedString = translations.get(key);
-        return getValue(localisedString, vars);
+        if (english.getTranslations().containsKey(key)) {
+            var localisedString = english.getTranslations().get(key);
+            return getValue(localisedString, vars);
+        }
+
+        TrackEvent.warn("Translation key not found for " + key);
+        return key;
     }
 
-    public boolean isLoaded() {
-        return translations != null;
-    }
-
-    private boolean matchesLocale(Path f) {
-        var l = AppPrefs.get() != null
-                ? AppPrefs.get().language().getValue().getLocale()
-                : SupportedLocale.ENGLISH.getLocale();
+    private boolean matchesLocale(Path f, Locale l) {
         var name = FilenameUtils.getBaseName(f.getFileName().toString());
         var ending = "_" + l.toLanguageTag();
         return name.endsWith(ending);
     }
 
     public String getMarkdownDocumentation(String name) {
-        if (!markdownDocumentations.containsKey(name)) {
-            TrackEvent.withWarn("Markdown documentation for key " + name + " not found")
-                    .handle();
+        if (currentLanguage.getValue() != null && currentLanguage.getValue().getMarkdownDocumentations().containsKey(name)) {
+            var localisedString = currentLanguage.getValue().getMarkdownDocumentations().get(name);
+            return localisedString;
         }
 
-        return markdownDocumentations.getOrDefault(name, "");
+        if (english.getMarkdownDocumentations().containsKey(name)) {
+            var localisedString = english.getMarkdownDocumentations().get(name);
+            return localisedString;
+        }
+
+        TrackEvent.withWarn("Markdown documentation for key " + name + " not found")
+                .handle();
+        return "";
     }
 
-    private void load() {
+    private Path getModuleLangPath(String module) {
+        return XPipeInstallation.getLangPath().resolve(module);
+    }
+
+    private LoadedTranslations load(Locale l) throws Exception {
         TrackEvent.info("Loading translations ...");
 
-        translations = new HashMap<>();
+        var translations = new HashMap<String, String>();
         for (var module : AppExtensionManager.getInstance().getContentModules()) {
-            AppResources.with(module.getName(), "lang", basePath -> {
+            var basePath = getModuleLangPath(FilenameUtils.getExtension(module.getName())).resolve("strings");
                 if (!Files.exists(basePath)) {
-                    return;
+                    continue;
                 }
 
                 AtomicInteger fileCounter = new AtomicInteger();
@@ -238,7 +202,7 @@ public class AppI18n {
                 Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                        if (!matchesLocale(file)) {
+                        if (!matchesLocale(file, l)) {
                             return FileVisitResult.CONTINUE;
                         }
 
@@ -249,7 +213,7 @@ public class AppI18n {
                         fileCounter.incrementAndGet();
                         try (var in = Files.newInputStream(file)) {
                             var props = new Properties();
-                            props.load(in);
+                            props.load(new InputStreamReader(in, StandardCharsets.UTF_8));
                             props.forEach((key, value) -> {
                                 var hasPrefix = key.toString().contains(".");
                                 var usedPrefix = hasPrefix ? "" : defaultPrefix;
@@ -267,21 +231,20 @@ public class AppI18n {
                         .tag("fileCount", fileCounter.get())
                         .tag("lineCount", lineCounter.get())
                         .handle();
-            });
         }
 
-        markdownDocumentations = new HashMap<>();
+        var markdownDocumentations = new HashMap<String, String>();
         for (var module : AppExtensionManager.getInstance().getContentModules()) {
-            AppResources.with(module.getName(), "lang", basePath -> {
+            var basePath = getModuleLangPath(FilenameUtils.getExtension(module.getName())).resolve("texts");
                 if (!Files.exists(basePath)) {
-                    return;
+                    continue;
                 }
 
                 var moduleName = FilenameUtils.getExtension(module.getName());
                 Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                        if (!matchesLocale(file)) {
+                        if (!matchesLocale(file, l)) {
                             return FileVisitResult.CONTINUE;
                         }
 
@@ -302,13 +265,14 @@ public class AppI18n {
                         return FileVisitResult.CONTINUE;
                     }
                 });
-            });
         }
 
-        this.prettyTime = new PrettyTime(
+        var prettyTime = new PrettyTime(
                 AppPrefs.get() != null
                         ? AppPrefs.get().language().getValue().getLocale()
                         : SupportedLocale.ENGLISH.getLocale());
+
+        return new LoadedTranslations(translations,markdownDocumentations, prettyTime);
     }
 
     @SuppressWarnings("removal")

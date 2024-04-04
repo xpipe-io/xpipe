@@ -104,6 +104,7 @@ project.ext {
     if (signingPassword == null) {
         signingPassword = ''
     }
+    deeplApiKey = findProperty('DEEPL_API_KEY')
 }
 
 if (org.gradle.internal.os.OperatingSystem.current() == org.gradle.internal.os.OperatingSystem.LINUX) {

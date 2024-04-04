@@ -2,7 +2,7 @@ package io.xpipe.app.browser.action;
 
 import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
-import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
+import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.util.Shortcuts;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.LicenseProvider;
@@ -39,7 +39,7 @@ public interface LeafAction extends BrowserAction {
         if (getShortcut() != null) {
             Shortcuts.addShortcut(b, getShortcut());
         }
-        new FancyTooltipAugment<>(new SimpleStringProperty(getName(model, selected))).augment(b);
+        new TooltipAugment<>(new SimpleStringProperty(getName(model, selected))).augment(b);
         var graphic = getIcon(model, selected);
         if (graphic != null) {
             b.setGraphic(graphic);

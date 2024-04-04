@@ -3,6 +3,7 @@ package io.xpipe.core.store;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +22,10 @@ public final class FilePath {
         if (!value.equals(value.trim())) {
             throw new IllegalArgumentException();
         }
+    }
+
+    public Path toLocalPath() {
+        return Path.of(value);
     }
 
     public String toString() {

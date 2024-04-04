@@ -47,6 +47,7 @@ public class BaseMode extends OperationMode {
         AppI18n.init();
         LicenseProvider.get().init();
         AppPrefs.initLocal();
+        AppI18n.init();
         AppCertutilCheck.check();
         AppAvCheck.check();
         AppSid.init();

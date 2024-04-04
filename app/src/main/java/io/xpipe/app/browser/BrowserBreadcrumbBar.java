@@ -3,7 +3,6 @@ package io.xpipe.app.browser;
 import atlantafx.base.controls.Breadcrumbs;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.core.store.FileNames;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -40,7 +39,7 @@ public class BrowserBreadcrumbBar extends SimpleComp {
 
         var breadcrumbs = new Breadcrumbs<String>();
         breadcrumbs.setMinWidth(0);
-        SimpleChangeListener.apply(PlatformThread.sync(model.getCurrentPath()), val -> {
+        PlatformThread.sync(model.getCurrentPath()).subscribe( val -> {
             if (val == null) {
                 breadcrumbs.setSelectedCrumb(null);
                 return;

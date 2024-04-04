@@ -7,7 +7,6 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ScanProvider;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.DataStoreChoiceComp;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -168,7 +167,7 @@ public class ScanAlert {
                     })
                     .padding(new Insets(20));
 
-            SimpleChangeListener.apply(entry, newValue -> {
+            entry.subscribe(newValue -> {
                 selected.clear();
                 stackPane.getChildren().clear();
 

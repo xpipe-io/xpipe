@@ -4,7 +4,6 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.TextField;
@@ -27,7 +26,7 @@ public class TextFieldComp extends Comp<CompStructure<TextField>> {
         this.currentValue = new SimpleStringProperty(value.getValue());
         this.lazy = lazy;
         if (!lazy) {
-            SimpleChangeListener.apply(currentValue, val -> {
+            currentValue.subscribe(val -> {
                 value.setValue(val);
             });
         }

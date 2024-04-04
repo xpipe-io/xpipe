@@ -6,7 +6,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.augment.DragOverPseudoClassAugment;
 import io.xpipe.app.fxcomps.impl.*;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.process.OsType;
@@ -39,11 +39,11 @@ public class BrowserTransferComp extends SimpleComp {
     protected Region createSimple() {
         var background = new LabelComp(AppI18n.observable("transferDescription"))
                 .apply(struc -> struc.get().setGraphic(new FontIcon("mdi2d-download-outline")))
-                .visible(BindingsHelper.persist(Bindings.isEmpty(model.getItems())));
+                .visible(Bindings.isEmpty(model.getItems()));
         var backgroundStack =
                 new StackComp(List.of(background)).grow(true, true).styleClass("download-background");
 
-        var binding = BindingsHelper.mappedContentBinding(model.getItems(), item -> item.getFileEntry());
+        var binding = ListBindingsHelper.mappedContentBinding(model.getItems(), item -> item.getFileEntry());
         var list = new BrowserSelectionListComp(
                         binding,
                         entry -> Bindings.createStringBinding(
@@ -70,20 +70,20 @@ public class BrowserTransferComp extends SimpleComp {
                         .flatMap(aBoolean ->
                                 aBoolean ? AppI18n.observable("dragLocalFiles") : AppI18n.observable("dragFiles")))
                 .apply(struc -> struc.get().setGraphic(new FontIcon("mdi2h-hand-left")))
-                .hide(PlatformThread.sync(BindingsHelper.persist(Bindings.isEmpty(model.getItems()))))
+                .hide(PlatformThread.sync(Bindings.isEmpty(model.getItems())))
                 .grow(true, false)
                 .apply(struc -> struc.get().setPadding(new Insets(8)));
 
         var downloadButton = new IconButtonComp("mdi2d-download", () -> {
                     model.download();
                 })
-                .hide(BindingsHelper.persist(Bindings.isEmpty(model.getItems())))
+                .hide(Bindings.isEmpty(model.getItems()))
                 .disable(PlatformThread.sync(model.getAllDownloaded()))
-                .apply(new FancyTooltipAugment<>("downloadStageDescription"));
+                .apply(new TooltipAugment<>("downloadStageDescription"));
         var clearButton = new IconButtonComp("mdi2c-close", () -> {
                     model.clear();
                 })
-                .hide(BindingsHelper.persist(Bindings.isEmpty(model.getItems())));
+                .hide(Bindings.isEmpty(model.getItems()));
         var clearPane = Comp.derive(
                 new HorizontalComp(List.of(downloadButton, clearButton))
                         .apply(struc -> struc.get().setSpacing(10)),

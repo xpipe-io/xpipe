@@ -13,9 +13,7 @@ import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.*;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreColor;
@@ -101,8 +99,7 @@ public abstract class StoreEntryComp extends SimpleComp {
 
         var loading = LoadingOverlayComp.noProgress(
                 Comp.of(() -> button),
-                BindingsHelper.persist(
-                        wrapper.getInRefresh().and(wrapper.getObserving().not())));
+                wrapper.getInRefresh().and(wrapper.getObserving().not()));
         return loading.createRegion();
     }
 
@@ -138,7 +135,7 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     protected void applyState(Node node) {
-        SimpleChangeListener.apply(PlatformThread.sync(wrapper.getValidity()), val -> {
+        PlatformThread.sync(wrapper.getValidity()).subscribe(val -> {
             switch (val) {
                 case LOAD_FAILED -> {
                     node.pseudoClassStateChanged(FAILED, true);
@@ -174,7 +171,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         var imageComp = PrettyImageHelper.ofFixedSize(img, w, h);
         var storeIcon = imageComp.createRegion();
         if (wrapper.getValidity().getValue().isUsable()) {
-            new FancyTooltipAugment<>(new SimpleStringProperty(
+            new TooltipAugment<>(new SimpleStringProperty(
                             wrapper.getEntry().getProvider().getDisplayName()))
                     .augment(storeIcon);
         }
@@ -212,7 +209,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                     });
             button.accessibleText(
                     actionProvider.getName(wrapper.getEntry().ref()).getValue());
-            button.apply(new FancyTooltipAugment<>(
+            button.apply(new TooltipAugment<>(
                     actionProvider.getName(wrapper.getEntry().ref())));
             if (actionProvider.activeType() == ActionProvider.DataStoreCallSite.ActiveType.ONLY_SHOW_IF_ENABLED) {
                 button.hide(Bindings.not(p.getValue()));
@@ -248,7 +245,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         settingsButton.accessibleText("More");
         settingsButton.apply(new ContextMenuAugment<>(
                 event -> event.getButton() == MouseButton.PRIMARY, null, () -> StoreEntryComp.this.createContextMenu()));
-        settingsButton.apply(new FancyTooltipAugment<>("more"));
+        settingsButton.apply(new TooltipAugment<>("more"));
         return settingsButton;
     }
 
@@ -371,7 +368,8 @@ public abstract class StoreEntryComp extends SimpleComp {
             StoreViewState.get()
                     .getSortedCategories(wrapper.getCategory().getValue().getRoot())
                     .forEach(storeCategoryWrapper -> {
-                        MenuItem m = new MenuItem(storeCategoryWrapper.getName());
+                        MenuItem m = new MenuItem();
+                        m.textProperty().bind(storeCategoryWrapper.nameProperty());
                         m.setOnAction(event -> {
                             wrapper.moveTo(storeCategoryWrapper.getCategory());
                             event.consume();

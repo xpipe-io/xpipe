@@ -12,7 +12,6 @@ import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ExceptionConverter;
 import io.xpipe.app.issue.TrackEvent;
@@ -381,7 +380,7 @@ public class StoreCreationComp extends DialogComp {
         providerChoice.apply(GrowAugment.create(true, false));
         providerChoice.onSceneAssign(struc -> struc.get().requestFocus());
 
-        SimpleChangeListener.apply(provider, n -> {
+        provider.subscribe(n -> {
             if (n != null) {
                 var d = n.guiDialog(existingEntry, store);
                 var propVal = new SimpleValidator();

@@ -4,7 +4,6 @@ import io.xpipe.app.comp.store.StoreCategoryWrapper;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.property.Property;
 import javafx.geometry.Insets;
 import javafx.scene.control.ComboBox;
@@ -28,7 +27,7 @@ public class DataStoreCategoryChoiceComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        SimpleChangeListener.apply(external, newValue -> {
+        external.subscribe(newValue -> {
             if (newValue == null) {
                 value.setValue(root);
             } else if (root == null) {
