@@ -59,7 +59,7 @@ public class BrowserStatusBarComp extends SimpleComp {
 
     private Comp<?> createClipboardStatus() {
         var cc = BrowserClipboard.currentCopyClipboard;
-        var ccCount = (BindingsHelper.persist(Bindings.createStringBinding(
+        var ccCount = Bindings.createStringBinding(
                 () -> {
                     if (cc.getValue() != null && cc.getValue().getEntries().size() > 0) {
                         return cc.getValue().getEntries().size() + " file"
@@ -68,7 +68,7 @@ public class BrowserStatusBarComp extends SimpleComp {
                         return null;
                     }
                 },
-                cc)));
+                cc);
         return new LabelComp(ccCount);
     }
 
@@ -86,7 +86,7 @@ public class BrowserStatusBarComp extends SimpleComp {
                             .count();
                 },
                 model.getFileList().getAll());
-        var selectedComp = new LabelComp(BindingsHelper.persist(Bindings.createStringBinding(
+        var selectedComp = new LabelComp(Bindings.createStringBinding(
                 () -> {
                     if (selectedCount.getValue().intValue() == 0) {
                         return null;
@@ -95,7 +95,7 @@ public class BrowserStatusBarComp extends SimpleComp {
                     }
                 },
                 selectedCount,
-                allCount)));
+                allCount));
         return selectedComp;
     }
 

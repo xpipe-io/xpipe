@@ -2,7 +2,6 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
-import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import javafx.beans.property.SimpleStringProperty;
@@ -37,9 +36,10 @@ public class FontIconComp extends Comp <FontIconComp.Structure>{
     public FontIconComp.Structure createBase() {
         var fi = new FontIcon();
         var obs = PlatformThread.sync(icon);
-        BindingsHelper.linkPersistently(fi, obs);
-        obs.subscribe(val -> {
-            fi.setIconLiteral(val);
+        icon.subscribe(val -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                fi.setIconLiteral(val);
+            });
         });
 
         var pane = new StackPane(fi);

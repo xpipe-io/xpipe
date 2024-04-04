@@ -4,7 +4,8 @@ import atlantafx.base.controls.Spacer;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.augment.Augment;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
-import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
+import io.xpipe.app.fxcomps.impl.TooltipAugment;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.Shortcuts;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
@@ -143,6 +144,7 @@ public abstract class Comp<S extends CompStructure<?>> {
     public Comp<S> hide(ObservableValue<Boolean> o) {
         return apply(struc -> {
             var region = struc.get();
+            BindingsHelper.preserve(region, o);
             o.subscribe(n -> {
                 if (!n) {
                     region.setVisible(true);
@@ -188,11 +190,11 @@ public abstract class Comp<S extends CompStructure<?>> {
     }
 
     public Comp<S> tooltip(ObservableValue<String> text) {
-        return apply(new FancyTooltipAugment<>(text));
+        return apply(new TooltipAugment<>(text));
     }
 
     public Comp<S> tooltipKey(String key) {
-        return apply(new FancyTooltipAugment<>(key));
+        return apply(new TooltipAugment<>(key));
     }
 
     public Region createRegion() {
@@ -201,6 +203,8 @@ public abstract class Comp<S extends CompStructure<?>> {
 
     public S createStructure() {
         S struc = createBase();
+        // Make comp last at least as long as region
+        BindingsHelper.preserve(struc.get(), this);
         if (augments != null) {
             for (var a : augments) {
                 a.augment(struc);

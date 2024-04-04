@@ -11,7 +11,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.util.ContextMenuHelper;
@@ -76,7 +76,7 @@ public class StoreCategoryComp extends SimpleComp {
                     showing.bind(cm.showingProperty());
                     return cm;
                 }));
-        var shownList = BindingsHelper.filteredContentBinding(
+        var shownList = ListBindingsHelper.filteredContentBinding(
                 category.getContainedEntries(),
                 storeEntryWrapper -> {
                     return storeEntryWrapper.shouldShow(
@@ -91,9 +91,8 @@ public class StoreCategoryComp extends SimpleComp {
                 Comp.hspacer(4),
                 Comp.of(() -> name),
                 Comp.hspacer(),
-                count.hide(BindingsHelper.persist(hover.or(showing).or(focus))),
-                settings.hide(
-                        BindingsHelper.persist(hover.not().and(showing.not()).and(focus.not())))));
+                count.hide(hover.or(showing).or(focus)),
+                settings.hide(hover.not().and(showing.not()).and(focus.not()))));
         h.padding(new Insets(0, 10, 0, (category.getDepth() * 10)));
 
         var categoryButton = new ButtonComp(null, h.createRegion(), category::select)

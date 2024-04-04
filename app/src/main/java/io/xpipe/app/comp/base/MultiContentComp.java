@@ -24,9 +24,11 @@ public class MultiContentComp extends SimpleComp {
         for (Map.Entry<Comp<?>, ObservableValue<Boolean>> entry : content.entrySet()) {
             var region = entry.getKey().createRegion();
             stack.getChildren().add(region);
-            PlatformThread.sync(entry.getValue()).subscribe(val -> {
-                region.setManaged(val);
-                region.setVisible(val);
+            entry.getValue().subscribe(val -> {
+                PlatformThread.runLaterIfNeeded(() -> {
+                    region.setManaged(val);
+                    region.setVisible(val);
+                });
             });
         }
         return stack;

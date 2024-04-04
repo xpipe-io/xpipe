@@ -13,6 +13,7 @@ import io.xpipe.app.fxcomps.impl.LabelComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.PrettySvgComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.binding.Bindings;
@@ -62,7 +63,7 @@ public class BrowserWelcomeComp extends SimpleComp {
             return new VBox(hbox);
         }
 
-        var list = BindingsHelper.filteredContentBinding(state.getEntries(), e -> {
+        var list = ListBindingsHelper.filteredContentBinding(state.getEntries(), e -> {
             var entry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
             if (entry.isEmpty()) {
                 return false;
@@ -76,7 +77,7 @@ public class BrowserWelcomeComp extends SimpleComp {
         });
         var empty = Bindings.createBooleanBinding(() -> list.isEmpty(), list);
 
-        var headerBinding = BindingsHelper.mappedBinding(empty,b -> {
+        var headerBinding = BindingsHelper.flatMap(empty,b -> {
             if (b) {
                 return AppI18n.observable("browserWelcomeEmpty");
             } else {

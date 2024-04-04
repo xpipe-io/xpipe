@@ -37,7 +37,7 @@ public class OsLogoComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var img = BindingsHelper.persist(Bindings.createObjectBinding(
+        var img = Bindings.createObjectBinding(
                 () -> {
                     if (state.getValue() != SystemStateComp.State.SUCCESS) {
                         return null;
@@ -51,7 +51,7 @@ public class OsLogoComp extends SimpleComp {
                     return getImage(ons.getOsName());
                 },
                 wrapper.getPersistentState(),
-                state));
+                state);
         var hide = BindingsHelper.map(img, s -> s != null);
         return new StackComp(
                         List.of(new SystemStateComp(state).hide(hide), new PrettyImageComp(img, 24, 24).visible(hide)))

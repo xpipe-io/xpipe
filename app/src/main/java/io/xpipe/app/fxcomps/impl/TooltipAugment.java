@@ -3,22 +3,21 @@ package io.xpipe.app.fxcomps.impl;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.augment.Augment;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.Shortcuts;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Tooltip;
 
-public class FancyTooltipAugment<S extends CompStructure<?>> implements Augment<S> {
+public class TooltipAugment<S extends CompStructure<?>> implements Augment<S> {
 
     private final ObservableValue<String> text;
 
-    public FancyTooltipAugment(ObservableValue<String> text) {
+    public TooltipAugment(ObservableValue<String> text) {
         this.text = PlatformThread.sync(text);
     }
 
-    public FancyTooltipAugment(String key) {
+    public TooltipAugment(String key) {
         this.text = AppI18n.observable(key);
     }
 
@@ -31,9 +30,9 @@ public class FancyTooltipAugment<S extends CompStructure<?>> implements Augment<
             var binding = Bindings.createStringBinding(() -> {
                 return text.getValue() + "\n\n" + s.getValue() + ": " + Shortcuts.getDisplayShortcut(region).getDisplayText();
             }, text, s);
-            BindingsHelper.bindStrong(tt.textProperty(), binding);
+            tt.textProperty().bind(binding);
         } else {
-            BindingsHelper.bindStrong(tt.textProperty(),text);
+            tt.textProperty().bind(text);
         }
         tt.setStyle("-fx-font-size: 11pt;");
         tt.setWrapText(true);

@@ -4,7 +4,6 @@ import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -47,9 +46,9 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
         });
 
         var header = new Label();
-        BindingsHelper.bindStrong(header.textProperty(), PlatformThread.sync(name));
+        header.textProperty().bind(PlatformThread.sync(name));
         var desc = new Label();
-        BindingsHelper.bindStrong(desc.textProperty(), PlatformThread.sync(description));
+        desc.textProperty().bind(PlatformThread.sync(description));
         AppFont.small(desc);
         desc.setOpacity(0.65);
         var text = new VBox(header, desc);

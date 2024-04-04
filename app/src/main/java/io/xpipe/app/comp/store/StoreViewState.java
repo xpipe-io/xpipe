@@ -1,7 +1,7 @@
 package io.xpipe.app.comp.store;
 
 import io.xpipe.app.core.AppCache;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
@@ -273,7 +273,7 @@ public class StoreViewState {
                 return o1.getName().compareToIgnoreCase(o2.getName());
             }
         };
-        return BindingsHelper.filteredContentBinding(
+        return ListBindingsHelper.filteredContentBinding(
                         categories, cat -> root == null || cat.getRoot().equals(root))
                 .sorted(comparator);
     }

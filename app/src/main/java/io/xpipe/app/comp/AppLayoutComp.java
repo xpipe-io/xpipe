@@ -7,7 +7,6 @@ import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
-import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import javafx.beans.binding.Bindings;
@@ -25,14 +24,15 @@ public class AppLayoutComp extends Comp<CompStructure<Pane>> {
         var multi = new MultiContentComp(model.getEntries().stream()
                 .collect(Collectors.toMap(
                         entry -> entry.comp(),
-                        entry -> PlatformThread.sync(Bindings.createBooleanBinding(
+                        entry -> Bindings.createBooleanBinding(
                                 () -> {
                                     return model.getSelected().getValue().equals(entry);
                                 },
-                                model.getSelected())))));
+                                model.getSelected())))
+        );
 
         var pane = new BorderPane();
-        var sidebar = new SideMenuBarComp(model.getSelectedInternal(), model.getEntries());
+        var sidebar = new SideMenuBarComp(model.getSelected(), model.getEntries());
         pane.setCenter(multi.createRegion());
         pane.setRight(sidebar.createRegion());
         pane.getStyleClass().add("background");

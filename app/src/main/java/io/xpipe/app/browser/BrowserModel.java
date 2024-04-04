@@ -3,7 +3,7 @@ package io.xpipe.app.browser;
 import io.xpipe.app.browser.icon.BrowserIconDirectoryType;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
 import io.xpipe.app.browser.icon.FileIconManager;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
@@ -50,7 +50,7 @@ public class BrowserModel {
                 return;
             }
 
-            BindingsHelper.bindContent(selection, newValue.getFileList().getSelection());
+            ListBindingsHelper.bindContent(selection, newValue.getFileList().getSelection());
         });
     }
 

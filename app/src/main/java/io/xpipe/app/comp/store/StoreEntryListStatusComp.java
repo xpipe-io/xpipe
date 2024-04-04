@@ -5,10 +5,11 @@ import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
+import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.impl.FilterComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 import javafx.beans.binding.Bindings;
@@ -55,7 +56,7 @@ public class StoreEntryListStatusComp extends SimpleComp {
         label.textProperty().bind(name);
         label.getStyleClass().add("name");
 
-        var all = BindingsHelper.filteredContentBinding(
+        var all = ListBindingsHelper.filteredContentBinding(
                 StoreViewState.get().getAllEntries(),
                 storeEntryWrapper -> {
                     var storeRoot = storeEntryWrapper.getCategory().getValue().getRoot();
@@ -66,7 +67,7 @@ public class StoreEntryListStatusComp extends SimpleComp {
                             .equals(storeRoot);
                 },
                 StoreViewState.get().getActiveCategory());
-        var shownList = BindingsHelper.filteredContentBinding(
+        var shownList = ListBindingsHelper.filteredContentBinding(
                 all,
                 storeEntryWrapper -> {
                     return storeEntryWrapper.shouldShow(
@@ -178,7 +179,7 @@ public class StoreEntryListStatusComp extends SimpleComp {
                             sortMode));
         });
         alphabetical.accessibleTextKey("sortAlphabetical");
-        alphabetical.apply(new FancyTooltipAugment<>("sortAlphabetical"));
+        alphabetical.apply(new TooltipAugment<>("sortAlphabetical"));
         return alphabetical;
     }
 
@@ -217,7 +218,7 @@ public class StoreEntryListStatusComp extends SimpleComp {
                             sortMode));
         });
         date.accessibleTextKey("sortLastUsed");
-        date.apply(new FancyTooltipAugment<>("sortLastUsed"));
+        date.apply(new TooltipAugment<>("sortLastUsed"));
         return date;
     }
 

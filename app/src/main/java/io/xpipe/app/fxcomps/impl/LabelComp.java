@@ -25,7 +25,6 @@ public class LabelComp extends Comp<CompStructure<Label>> {
     @Override
     public CompStructure<Label> createBase() {
         var label = new Label();
-        BindingsHelper.linkPersistently(label,text);
         text.subscribe(t -> {
             PlatformThread.runLaterIfNeeded(() -> label.setText(t));
         });

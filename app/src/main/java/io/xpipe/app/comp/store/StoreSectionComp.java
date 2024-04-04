@@ -7,7 +7,7 @@ import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.binding.Bindings;
@@ -39,11 +39,11 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
     }
 
     private Comp<CompStructure<Button>> createQuickAccessButton() {
-        var quickAccessDisabled = BindingsHelper.persist(Bindings.createBooleanBinding(
+        var quickAccessDisabled = Bindings.createBooleanBinding(
                 () -> {
                     return section.getShownChildren().isEmpty();
                 },
-                section.getShownChildren()));
+                section.getShownChildren());
         Consumer<StoreEntryWrapper> quickAccessAction = w -> {
             ThreadHelper.runFailableAsync(() -> {
                 w.executeDefaultAction();
@@ -90,8 +90,7 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                             return "Expand " + section.getWrapper().getName().getValue();
                         },
                         section.getWrapper().getName()))
-                .disable(BindingsHelper.persist(
-                        Bindings.size(section.getShownChildren()).isEqualTo(0)))
+                .disable(Bindings.size(section.getShownChildren()).isEqualTo(0))
                 .styleClass("expand-button")
                 .maxHeight(100)
                 .vgrow();
@@ -130,7 +129,7 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
 
         // Optimization for large sections. If there are more than 20 children, only add the nodes to the scene if the
         // section is actually expanded
-        var listSections = BindingsHelper.filteredContentBinding(
+        var listSections = ListBindingsHelper.filteredContentBinding(
                 section.getShownChildren(),
                 storeSection -> section.getAllChildren().size() <= 20
                         || section.getWrapper().getExpanded().get(),
@@ -142,22 +141,22 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                 .minHeight(0)
                 .hgrow();
 
-        var expanded = BindingsHelper.persist(Bindings.createBooleanBinding(
+        var expanded = Bindings.createBooleanBinding(
                 () -> {
                     return section.getWrapper().getExpanded().get()
                             && section.getShownChildren().size() > 0;
                 },
                 section.getWrapper().getExpanded(),
-                section.getShownChildren()));
+                section.getShownChildren());
         var full = new VerticalComp(List.of(
                 topEntryList,
-                Comp.separator().hide(BindingsHelper.persist(expanded.not())),
+                Comp.separator().hide(expanded.not()),
                 new HorizontalComp(List.of(content))
                         .styleClass("content")
                         .apply(struc -> struc.get().setFillHeight(true))
-                        .hide(BindingsHelper.persist(Bindings.or(
+                        .hide(Bindings.or(
                                 Bindings.not(section.getWrapper().getExpanded()),
-                                Bindings.size(section.getShownChildren()).isEqualTo(0))))));
+                                Bindings.size(section.getShownChildren()).isEqualTo(0)))));
         return full.styleClass("store-entry-section-comp")
                 .apply(struc -> {
                     struc.get().setFillWidth(true);

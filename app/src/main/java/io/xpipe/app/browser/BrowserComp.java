@@ -8,10 +8,9 @@ import io.xpipe.app.comp.base.SideSplitPaneComp;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
+import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BooleanScope;
@@ -122,7 +121,7 @@ public class BrowserComp extends SimpleComp {
     private Comp<?> createTabs() {
         var multi = new MultiContentComp(Map.<Comp<?>, ObservableValue<Boolean>>of(
                 Comp.of(() -> createTabPane()),
-                BindingsHelper.persist(Bindings.isNotEmpty(model.getOpenFileSystems())),
+                Bindings.isNotEmpty(model.getOpenFileSystems()),
                 new BrowserWelcomeComp(model).apply(struc -> StackPane.setAlignment(struc.get(), Pos.CENTER_LEFT)),
                 Bindings.createBooleanBinding(
                         () -> {
@@ -292,7 +291,7 @@ public class BrowserComp extends SimpleComp {
                     if (color != null) {
                         c.getStyleClass().add(color.getId());
                     }
-                    new FancyTooltipAugment<>(new SimpleStringProperty(model.getTooltip())).augment(c);
+                    new TooltipAugment<>(new SimpleStringProperty(model.getTooltip())).augment(c);
                     c.addEventHandler(
                             DragEvent.DRAG_ENTERED,
                             mouseEvent -> Platform.runLater(

@@ -9,7 +9,6 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.Shortcuts;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -97,7 +96,7 @@ public class OpenFileSystemComp extends SimpleComp {
                 home,
                 model.getCurrentPath().isNull(),
                 fileList,
-                BindingsHelper.persist(model.getCurrentPath().isNull().not())));
+                model.getCurrentPath().isNull().not()));
         return stack.createRegion();
     }
 }

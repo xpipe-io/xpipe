@@ -8,7 +8,6 @@ import io.xpipe.app.fxcomps.impl.ChoiceComp;
 import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.fxcomps.impl.TextFieldComp;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.OptionsBuilder;
@@ -66,14 +65,14 @@ public class TerminalCategory extends AppPrefsCategory {
 
             Hyperlinks.open(t.getWebsite());
         });
-        var visitVisible = BindingsHelper.persist(Bindings.createBooleanBinding(() -> {
+        var visitVisible = Bindings.createBooleanBinding(() -> {
             var t = prefs.terminalType().getValue();
             if (t == null || t.getWebsite() == null) {
                 return false;
             }
 
             return true;
-        }, prefs.terminalType()));
+        }, prefs.terminalType());
         visit.visible(visitVisible);
 
         return new HorizontalComp(List.of(c, visit)).apply(struc -> {
