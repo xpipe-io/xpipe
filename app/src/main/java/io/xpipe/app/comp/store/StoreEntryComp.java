@@ -95,7 +95,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                 wrapper.executeDefaultAction();
             });
         });
-        new ContextMenuAugment<>(mouseEvent -> mouseEvent.isSecondaryButtonDown(), null, () -> this.createContextMenu()).augment(new SimpleCompStructure<>(button));
+        new ContextMenuAugment<>(mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY, null, () -> this.createContextMenu()).augment(button);
 
         var loading = LoadingOverlayComp.noProgress(
                 Comp.of(() -> button),

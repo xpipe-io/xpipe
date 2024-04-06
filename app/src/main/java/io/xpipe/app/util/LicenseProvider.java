@@ -43,11 +43,6 @@ public abstract class LicenseProvider {
         }
 
         @Override
-        public boolean requiresFullDaemon() {
-            return true;
-        }
-
-        @Override
         public boolean prioritizeLoading() {
             return true;
         }

@@ -64,11 +64,6 @@ public abstract class ScanProvider {
         }
 
         @Override
-        public boolean requiresFullDaemon() {
-            return true;
-        }
-
-        @Override
         public boolean prioritizeLoading() {
             return false;
         }

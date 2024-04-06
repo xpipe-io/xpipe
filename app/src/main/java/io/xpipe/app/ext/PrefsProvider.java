@@ -36,11 +36,6 @@ public abstract class PrefsProvider {
         }
 
         @Override
-        public boolean requiresFullDaemon() {
-            return true;
-        }
-
-        @Override
         public boolean prioritizeLoading() {
             return false;
         }

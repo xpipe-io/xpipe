@@ -93,11 +93,6 @@ public interface BrowserAction {
         }
 
         @Override
-        public boolean requiresFullDaemon() {
-            return true;
-        }
-
-        @Override
         public boolean prioritizeLoading() {
             return false;
         }

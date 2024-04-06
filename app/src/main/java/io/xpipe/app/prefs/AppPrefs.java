@@ -144,6 +144,7 @@ public class AppPrefs {
                 new RdpCategory(),
                 new SyncCategory(),
                 new VaultCategory(),
+                new SshCategory(),
                 new LocalShellCategory(),
                 new SecurityCategory(),
                 new PasswordManagerCategory(),

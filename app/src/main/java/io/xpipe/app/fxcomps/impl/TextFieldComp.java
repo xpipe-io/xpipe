@@ -30,6 +30,9 @@ public class TextFieldComp extends Comp<CompStructure<TextField>> {
                 value.setValue(val);
             });
         }
+        lastAppliedValue.addListener((c, o, n) -> {
+            currentValue.setValue(n);
+        });
     }
 
     @Override
@@ -39,7 +42,6 @@ public class TextFieldComp extends Comp<CompStructure<TextField>> {
             currentValue.setValue(n != null && n.length() > 0 ? n : null);
         });
         lastAppliedValue.addListener((c, o, n) -> {
-            currentValue.setValue(n);
             PlatformThread.runLaterIfNeeded(() -> {
                 // Check if control value is the same. Then don't set it as that might cause bugs
                 if (Objects.equals(text.getText(), n)

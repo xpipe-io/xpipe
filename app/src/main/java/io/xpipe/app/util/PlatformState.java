@@ -1,17 +1,14 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.check.AppSystemFontCheck;
-import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
 import javafx.application.Platform;
-import javafx.scene.input.Clipboard;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.awt.*;
-import java.awt.datatransfer.StringSelection;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 
@@ -28,15 +25,16 @@ public enum PlatformState {
     private static Exception lastError;
 
     public static void teardown() {
-        PlatformThread.runLaterIfNeededBlocking(() -> {
-            try {
-                // Fix to preserve clipboard contents after shutdown
-                var string = Clipboard.getSystemClipboard().getString();
-                var s = new StringSelection(string);
-                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(s, s);
-            } catch (IllegalStateException ignored) {
-            }
-        });
+        // This is bad and can get sometimes stuck
+//        PlatformThread.runLaterIfNeededBlocking(() -> {
+//            try {
+//                // Fix to preserve clipboard contents after shutdown
+//                var string = Clipboard.getSystemClipboard().getString();
+//                var s = new StringSelection(string);
+//                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(s, s);
+//            } catch (IllegalStateException ignored) {
+//            }
+//        });
 
         Platform.exit();
         setCurrent(PlatformState.EXITED);

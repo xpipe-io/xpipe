@@ -145,11 +145,6 @@ public interface ActionProvider {
         }
 
         @Override
-        public boolean requiresFullDaemon() {
-            return true;
-        }
-
-        @Override
         public boolean prioritizeLoading() {
             return false;
         }

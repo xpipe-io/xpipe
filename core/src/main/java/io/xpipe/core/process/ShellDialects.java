@@ -80,11 +80,6 @@ public class ShellDialects {
         }
 
         @Override
-        public boolean requiresFullDaemon() {
-            return false;
-        }
-
-        @Override
         public boolean prioritizeLoading() {
             return true;
         }

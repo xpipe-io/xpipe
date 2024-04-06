@@ -1,11 +1,16 @@
 package io.xpipe.app.core;
 
+import com.fasterxml.jackson.databind.jsontype.NamedType;
 import io.xpipe.app.exchange.MessageExchangeImpls;
+import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.ext.ExtensionException;
-import io.xpipe.app.ext.XPipeServiceProviders;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.core.process.ProcessControlProvider;
+import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.core.util.ModuleHelper;
+import io.xpipe.core.util.ModuleLayerLoader;
 import io.xpipe.core.util.XPipeInstallation;
 import lombok.Getter;
 import lombok.Value;
@@ -47,9 +52,24 @@ public class AppExtensionManager {
         }
 
         if (load) {
-            // INSTANCE.addNativeLibrariesToPath();
             try {
-                XPipeServiceProviders.load(INSTANCE.extendedLayer);
+                ModuleLayerLoader.loadAll(INSTANCE.extendedLayer, true, t -> {
+                    ErrorEvent.fromThrowable(t).handle();
+                });
+                ProcessControlProvider.init(INSTANCE.extendedLayer);
+                TrackEvent.info("Loading extension providers ...");
+                DataStoreProviders.init(INSTANCE.extendedLayer);
+                for (DataStoreProvider p : DataStoreProviders.getAll()) {
+                    TrackEvent.trace("Loaded data store provider " + p.getId());
+                    JacksonMapper.configure(objectMapper -> {
+                        for (Class<?> storeClass : p.getStoreClasses()) {
+                            objectMapper.registerSubtypes(new NamedType(storeClass));
+                        }
+                    });
+                }
+                ModuleLayerLoader.loadAll(INSTANCE.extendedLayer, false, t -> {
+                    ErrorEvent.fromThrowable(t).handle();
+                });
                 MessageExchangeImpls.loadAll();
             } catch (Throwable t) {
                 throw new ExtensionException(
