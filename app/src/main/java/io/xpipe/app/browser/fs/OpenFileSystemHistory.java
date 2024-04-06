@@ -1,4 +1,4 @@
-package io.xpipe.app.browser;
+package io.xpipe.app.browser.fs;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;

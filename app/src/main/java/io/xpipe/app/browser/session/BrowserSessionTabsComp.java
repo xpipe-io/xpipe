@@ -1,19 +1,13 @@
-package io.xpipe.app.browser;
+package io.xpipe.app.browser.session;
 
 import atlantafx.base.controls.RingProgressIndicator;
-import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
-import io.xpipe.app.browser.icon.BrowserIconDirectoryType;
-import io.xpipe.app.browser.icon.FileIconManager;
-import io.xpipe.app.browser.icon.BrowserIconFileType;
+import io.xpipe.app.browser.BrowserWelcomeComp;
 import io.xpipe.app.comp.base.MultiContentComp;
-import io.xpipe.app.comp.base.SideSplitPaneComp;
-import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
-import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BooleanScope;
@@ -23,15 +17,12 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
-import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
 import javafx.scene.layout.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -39,100 +30,25 @@ import static atlantafx.base.theme.Styles.DENSE;
 import static atlantafx.base.theme.Styles.toggleStyleClass;
 import static javafx.scene.control.TabPane.TabClosingPolicy.ALL_TABS;
 
-public class BrowserComp extends SimpleComp {
+public class BrowserSessionTabsComp extends SimpleComp {
 
-    private final BrowserModel model;
+    private final BrowserSessionModel model;
 
-    public BrowserComp(BrowserModel model) {
+    public BrowserSessionTabsComp(BrowserSessionModel model) {
         this.model = model;
     }
 
-    @Override
-    protected Region createSimple() {
-        var bookmarksList = new BrowserBookmarkComp(model).vgrow();
-        var localDownloadStage = new BrowserTransferComp(model.getLocalTransfersStage())
-                .hide(PlatformThread.sync(Bindings.createBooleanBinding(
-                        () -> {
-                            if (model.getOpenFileSystems().size() == 0) {
-                                return true;
-                            }
-
-                            if (model.getMode().isChooser()) {
-                                return true;
-                            }
-
-                            return false;
-                        },
-                        model.getOpenFileSystems(),
-                        model.getSelected())));
-        localDownloadStage.prefHeight(200);
-        localDownloadStage.maxHeight(200);
-        var vertical = new VerticalComp(List.of(bookmarksList, localDownloadStage));
-
-        var splitPane = new SideSplitPaneComp(vertical, createTabs())
-                .withInitialWidth(AppLayoutModel.get().getSavedState().getBrowserConnectionsWidth())
-                .withOnDividerChange(AppLayoutModel.get().getSavedState()::setBrowserConnectionsWidth)
-                .apply(struc -> {
-                    struc.getLeft().setMinWidth(200);
-                    struc.getLeft().setMaxWidth(500);
-                });
-        var r = addBottomBar(splitPane.createRegion());
-        r.getStyleClass().add("browser");
-        // AppFont.small(r);
-        return r;
-    }
-
-    private Region addBottomBar(Region r) {
-        if (!model.getMode().isChooser()) {
-            return r;
-        }
-
-        var selectedLabel = new Label("Selected: ");
-        selectedLabel.setAlignment(Pos.CENTER);
-        var selected = new HBox();
-        selected.setAlignment(Pos.CENTER_LEFT);
-        selected.setSpacing(10);
-        model.getSelection().addListener((ListChangeListener<? super BrowserEntry>) c -> {
-            PlatformThread.runLaterIfNeeded(() -> {
-                selected.getChildren()
-                        .setAll(c.getList().stream()
-                                .map(s -> {
-                                    var field =
-                                            new TextField(s.getRawFileEntry().getPath());
-                                    field.setEditable(false);
-                                    field.setPrefWidth(500);
-                                    return field;
-                                })
-                                .toList());
-            });
-        });
-        var spacer = new Spacer(Orientation.HORIZONTAL);
-        var button = new Button("Select");
-        button.setPadding(new Insets(5, 10, 5, 10));
-        button.setOnAction(event -> model.finishChooser());
-        button.setDefaultButton(true);
-        var bottomBar = new HBox(selectedLabel, selected, spacer, button);
-        HBox.setHgrow(selected, Priority.ALWAYS);
-        bottomBar.setAlignment(Pos.CENTER);
-        bottomBar.getStyleClass().add("chooser-bar");
-
-        var layout = new VBox(r, bottomBar);
-        VBox.setVgrow(r, Priority.ALWAYS);
-        return layout;
-    }
-
-    private Comp<?> createTabs() {
+    public Region createSimple() {
         var multi = new MultiContentComp(Map.<Comp<?>, ObservableValue<Boolean>>of(
                 Comp.of(() -> createTabPane()),
-                Bindings.isNotEmpty(model.getOpenFileSystems()),
+                Bindings.isNotEmpty(model.getSessionEntries()),
                 new BrowserWelcomeComp(model).apply(struc -> StackPane.setAlignment(struc.get(), Pos.CENTER_LEFT)),
                 Bindings.createBooleanBinding(
                         () -> {
-                            return model.getOpenFileSystems().size() == 0
-                                    && !model.getMode().isChooser();
+                            return model.getSessionEntries().size() == 0;
                         },
-                        model.getOpenFileSystems())));
-        return multi;
+                        model.getSessionEntries())));
+        return multi.createRegion();
     }
 
     private TabPane createTabPane() {
@@ -144,16 +60,16 @@ public class BrowserComp extends SimpleComp {
         Styles.toggleStyleClass(tabs, TabPane.STYLE_CLASS_FLOATING);
         toggleStyleClass(tabs, DENSE);
 
-        var map = new HashMap<OpenFileSystemModel, Tab>();
+        var map = new HashMap<BrowserSessionEntry, Tab>();
 
         // Restore state
-        model.getOpenFileSystems().forEach(v -> {
+        model.getSessionEntries().forEach(v -> {
             var t = createTab(tabs, v);
             map.put(v, t);
             tabs.getTabs().add(t);
         });
         tabs.getSelectionModel()
-                .select(model.getOpenFileSystems().indexOf(model.getSelected().getValue()));
+                .select(model.getSessionEntries().indexOf(model.getSelectedEntry().getValue()));
 
         // Used for ignoring changes by the tabpane when new tabs are added. We want to perform the selections manually!
         var modifying = new SimpleBooleanProperty();
@@ -165,7 +81,7 @@ public class BrowserComp extends SimpleComp {
             }
 
             if (newValue == null) {
-                model.getSelected().setValue(null);
+                model.getSelectedEntry().setValue(null);
                 return;
             }
 
@@ -175,11 +91,11 @@ public class BrowserComp extends SimpleComp {
                     .findAny()
                     .map(Map.Entry::getKey)
                     .orElse(null);
-            model.getSelected().setValue(source);
+            model.getSelectedEntry().setValue(source);
         });
 
         // Handle selection from model
-        model.getSelected().addListener((observable, oldValue, newValue) -> {
+        model.getSelectedEntry().addListener((observable, oldValue, newValue) -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 if (newValue == null) {
                     tabs.getSelectionModel().select(null);
@@ -201,7 +117,7 @@ public class BrowserComp extends SimpleComp {
             });
         });
 
-        model.getOpenFileSystems().addListener((ListChangeListener<? super OpenFileSystemModel>) c -> {
+        model.getSessionEntries().addListener((ListChangeListener<? super BrowserSessionEntry>) c -> {
             while (c.next()) {
                 for (var r : c.getRemoved()) {
                     PlatformThread.runLaterIfNeeded(() -> {
@@ -238,14 +154,14 @@ public class BrowserComp extends SimpleComp {
                         continue;
                     }
 
-                    model.closeFileSystemAsync(source.getKey());
+                    model.closeAsync(source.getKey());
                 }
             }
         });
         return tabs;
     }
 
-    private Tab createTab(TabPane tabs, OpenFileSystemModel model) {
+    private Tab createTab(TabPane tabs, BrowserSessionEntry model) {
         var tab = new Tab();
 
         var ring = new RingProgressIndicator(0, false);
@@ -270,7 +186,7 @@ public class BrowserComp extends SimpleComp {
                         PlatformThread.sync(model.getBusy())));
         tab.setText(model.getName());
 
-        tab.setContent(new OpenFileSystemComp(model).createSimple());
+        tab.setContent(model.comp().createRegion());
 
         var id = UUID.randomUUID().toString();
         tab.setId(id);

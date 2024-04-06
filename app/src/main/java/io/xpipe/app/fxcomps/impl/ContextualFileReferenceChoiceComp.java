@@ -1,7 +1,7 @@
 package io.xpipe.app.fxcomps.impl;
 
 import atlantafx.base.theme.Styles;
-import io.xpipe.app.browser.StandaloneFileBrowser;
+import io.xpipe.app.browser.session.BrowserChooserComp;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
@@ -52,7 +52,7 @@ public class ContextualFileReferenceChoiceComp extends SimpleComp {
                 .grow(false, true);
 
         var fileBrowseButton = new ButtonComp(null, new FontIcon("mdi2f-folder-open-outline"), () -> {
-                    StandaloneFileBrowser.openSingleFile(() -> fileSystem.getValue(), fileStore -> {
+                    BrowserChooserComp.openSingleFile(() -> fileSystem.getValue(), fileStore -> {
                         if (fileStore == null) {
                             filePath.setValue(null);
                             fileSystem.setValue(null);

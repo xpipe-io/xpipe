@@ -1,7 +1,13 @@
-package io.xpipe.app.browser;
+package io.xpipe.app.browser.fs;
 
 import atlantafx.base.controls.Spacer;
+import io.xpipe.app.browser.BrowserFilterComp;
+import io.xpipe.app.browser.BrowserNavBar;
+import io.xpipe.app.browser.BrowserOverviewComp;
+import io.xpipe.app.browser.BrowserStatusBarComp;
 import io.xpipe.app.browser.action.BrowserAction;
+import io.xpipe.app.browser.file.BrowserContextMenu;
+import io.xpipe.app.browser.file.BrowserFileListComp;
 import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.comp.base.MultiContentComp;
 import io.xpipe.app.fxcomps.Comp;

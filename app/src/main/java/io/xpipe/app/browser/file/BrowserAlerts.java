@@ -1,4 +1,4 @@
-package io.xpipe.app.browser;
+package io.xpipe.app.browser.file;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;

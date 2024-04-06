@@ -1,7 +1,7 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.BrowserEntry;
-import io.xpipe.app.browser.OpenFileSystemModel;
+import io.xpipe.app.browser.file.BrowserEntry;
+import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.browser.action.MultiExecuteAction;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;

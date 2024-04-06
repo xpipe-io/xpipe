@@ -1,4 +1,4 @@
-package io.xpipe.app.browser;
+package io.xpipe.app.browser.file;
 
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
@@ -47,7 +47,7 @@ import java.util.Objects;
 import static io.xpipe.app.util.HumanReadableFormat.byteCount;
 import static javafx.scene.control.TableColumn.SortType.ASCENDING;
 
-final class BrowserFileListComp extends SimpleComp {
+public final class BrowserFileListComp extends SimpleComp {
 
     private static final PseudoClass HIDDEN = PseudoClass.getPseudoClass("hidden");
     private static final PseudoClass EMPTY = PseudoClass.getPseudoClass("empty");
@@ -121,7 +121,7 @@ final class BrowserFileListComp extends SimpleComp {
     }
 
     private void prepareTableSelectionModel(TableView<BrowserEntry> table) {
-        if (!fileList.getMode().isMultiple()) {
+        if (!fileList.getSelectionMode().isMultiple()) {
             table.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         } else {
             table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -141,9 +141,9 @@ final class BrowserFileListComp extends SimpleComp {
                                     .getPath()));
             // Remove unsuitable selection
             toSelect.removeIf(browserEntry -> (browserEntry.getRawFileEntry().getKind() == FileKind.DIRECTORY
-                            && !fileList.getMode().isAcceptsDirectories())
+                            && !fileList.getSelectionMode().isAcceptsDirectories())
                     || (browserEntry.getRawFileEntry().getKind() != FileKind.DIRECTORY
-                            && !fileList.getMode().isAcceptsFiles()));
+                            && !fileList.getSelectionMode().isAcceptsFiles()));
             fileList.getSelection().setAll(toSelect);
 
             Platform.runLater(() -> {

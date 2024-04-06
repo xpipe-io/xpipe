@@ -1,5 +1,6 @@
-package io.xpipe.app.browser;
+package io.xpipe.app.browser.file;
 
+import io.xpipe.app.browser.file.BrowserFileListModel;
 import io.xpipe.app.browser.icon.BrowserIconDirectoryType;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
 import io.xpipe.core.store.FileKind;

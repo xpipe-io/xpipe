@@ -1,5 +1,6 @@
-package io.xpipe.app.browser;
+package io.xpipe.app.browser.file;
 
+import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.browser.icon.FileIconManager;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.util.BooleanAnimationTimer;

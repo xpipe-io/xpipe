@@ -1,6 +1,6 @@
 package io.xpipe.ext.base.action;
 
-import io.xpipe.app.browser.BrowserModel;
+import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.ext.ActionProvider;
@@ -56,7 +56,7 @@ public class BrowseStoreAction implements ActionProvider {
 
         @Override
         public void execute() {
-            BrowserModel.DEFAULT.openFileSystemAsync(entry.ref(), null, new SimpleBooleanProperty());
+            BrowserSessionModel.DEFAULT.openFileSystemAsync(entry.ref(), null, new SimpleBooleanProperty());
             AppLayoutModel.get().selectBrowser();
         }
     }

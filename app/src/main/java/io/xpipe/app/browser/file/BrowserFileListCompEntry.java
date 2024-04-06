@@ -1,5 +1,7 @@
-package io.xpipe.app.browser;
+package io.xpipe.app.browser.file;
 
+import io.xpipe.app.browser.BrowserClipboard;
+import io.xpipe.app.browser.BrowserSelectionListComp;
 import io.xpipe.core.store.FileKind;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;

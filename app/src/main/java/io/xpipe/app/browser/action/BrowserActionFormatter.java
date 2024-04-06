@@ -1,6 +1,6 @@
 package io.xpipe.app.browser.action;
 
-import io.xpipe.app.browser.BrowserEntry;
+import io.xpipe.app.browser.file.BrowserEntry;
 
 import java.util.List;
 

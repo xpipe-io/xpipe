@@ -1,5 +1,6 @@
 package io.xpipe.app.browser;
 
+import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
@@ -122,11 +123,13 @@ public class BrowserTransferComp extends SimpleComp {
                                         return;
                                     }
 
+                                    if (!(model.getBrowserSessionModel().getSelectedEntry().getValue() instanceof OpenFileSystemModel fileSystemModel)) {
+                                        return;
+                                    }
+
                                     var files = drag.getEntries();
                                     model.drop(
-                                            model.getBrowserModel()
-                                                    .getSelected()
-                                                    .getValue(),
+                                            fileSystemModel,
                                             files);
                                     event.setDropCompleted(true);
                                     event.consume();

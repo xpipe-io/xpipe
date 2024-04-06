@@ -1,4 +1,4 @@
-package io.xpipe.app.browser;
+package io.xpipe.app.browser.fs;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;

@@ -1,7 +1,15 @@
-package io.xpipe.app.browser;
+package io.xpipe.app.browser.fs;
 
+import io.xpipe.app.browser.file.BrowserFileListModel;
+import io.xpipe.app.browser.BrowserSavedState;
+import io.xpipe.app.browser.BrowserTransferProgress;
+import io.xpipe.app.browser.file.FileSystemHelper;
 import io.xpipe.app.browser.action.BrowserAction;
+import io.xpipe.app.browser.session.BrowserAbstractSessionModel;
+import io.xpipe.app.browser.session.BrowserSessionModel;
+import io.xpipe.app.browser.session.BrowserSessionEntry;
 import io.xpipe.app.comp.base.ModalOverlayComp;
+import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -27,44 +35,85 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Getter
-public final class OpenFileSystemModel {
+public final class OpenFileSystemModel extends BrowserSessionEntry {
 
-    private final DataStoreEntryRef<? extends FileSystemStore> entry;
     private final Property<String> filter = new SimpleStringProperty();
     private final BrowserFileListModel fileList;
     private final ReadOnlyObjectWrapper<String> currentPath = new ReadOnlyObjectWrapper<>();
     private final OpenFileSystemHistory history = new OpenFileSystemHistory();
-    private final BooleanProperty busy = new SimpleBooleanProperty();
-    private final BrowserModel browserModel;
     private final Property<ModalOverlayComp.OverlayContent> overlay = new SimpleObjectProperty<>();
     private final BooleanProperty inOverview = new SimpleBooleanProperty();
-    private final String name;
-    private final String tooltip;
     private final Property<BrowserTransferProgress> progress =
             new SimpleObjectProperty<>(BrowserTransferProgress.empty());
     private FileSystem fileSystem;
     private OpenFileSystemSavedState savedState;
     private OpenFileSystemCache cache;
 
-    public OpenFileSystemModel(BrowserModel browserModel, DataStoreEntryRef<? extends FileSystemStore> entry) {
-        this.browserModel = browserModel;
-        this.entry = entry;
-        this.name = DataStorage.get().getStoreDisplayName(entry.get());
-        this.tooltip = DataStorage.get().getId(entry.getEntry()).toString();
+    public OpenFileSystemModel(BrowserAbstractSessionModel<?> model, DataStoreEntryRef<? extends FileSystemStore> entry, SelectionMode selectionMode) {
+        super(model, entry);
         this.inOverview.bind(Bindings.createBooleanBinding(
                 () -> {
                     return currentPath.get() == null;
                 },
                 currentPath));
-        fileList = new BrowserFileListModel(this);
+        fileList = new BrowserFileListModel(selectionMode, this);
     }
 
-    public boolean isBusy() {
+    @Override
+    public Comp<?> comp() {
+        return new OpenFileSystemComp(this);
+    }
+
+    @Override
+    public boolean canImmediatelyClose() {
         return !progress.getValue().done()
                 || (fileSystem != null
-                        && fileSystem.getShell().isPresent()
-                        && fileSystem.getShell().get().getLock().isLocked());
+                && fileSystem.getShell().isPresent()
+                && fileSystem.getShell().get().getLock().isLocked());
     }
+
+    @Override
+    public void init() throws Exception {
+        BooleanScope.execute(busy, () -> {
+            var fs = entry.getStore().createFileSystem();
+            if (fs.getShell().isPresent()) {
+                ProcessControlProvider.get().withDefaultScripts(fs.getShell().get());
+                fs.getShell().get().onKill(() -> {
+                    browserModel.closeAsync(this);
+                });
+            }
+            fs.open();
+            this.fileSystem = fs;
+
+            this.cache = new OpenFileSystemCache(this);
+            for (BrowserAction b : BrowserAction.ALL) {
+                b.init(this);
+            }
+        });
+        this.savedState = OpenFileSystemSavedState.loadForStore(this);
+    }
+
+    @Override
+    public void close() {
+        if (fileSystem == null) {
+            return;
+        }
+
+        if (DataStorage.get().getStoreEntries().contains(getEntry().get())
+                && savedState != null
+                && getCurrentPath().get() != null) {
+            if (getBrowserModel() instanceof BrowserSessionModel bm) {
+                bm.getSavedState().add(new BrowserSavedState.Entry(getEntry().get().getUuid(), getCurrentPath().get()));
+            }
+        }
+        try {
+            fileSystem.close();
+        } catch (IOException e) {
+            ErrorEvent.fromThrowable(e).handle();
+        }
+        fileSystem = null;
+    }
+
 
     private void startIfNeeded() throws Exception {
         if (fileSystem == null) {
@@ -369,40 +418,8 @@ public final class OpenFileSystemModel {
         });
     }
 
-    void closeSync() {
-        if (fileSystem == null) {
-            return;
-        }
-
-        try {
-            fileSystem.close();
-        } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).handle();
-        }
-        fileSystem = null;
-    }
-
     public boolean isClosed() {
         return fileSystem == null;
-    }
-
-    public void initFileSystem() throws Exception {
-        BooleanScope.execute(busy, () -> {
-            var fs = entry.getStore().createFileSystem();
-            if (fs.getShell().isPresent()) {
-                ProcessControlProvider.get().withDefaultScripts(fs.getShell().get());
-                fs.getShell().get().onKill(() -> {
-                    browserModel.closeFileSystemAsync(this);
-                });
-            }
-            fs.open();
-            this.fileSystem = fs;
-
-            this.cache = new OpenFileSystemCache(this);
-            for (BrowserAction b : BrowserAction.ALL) {
-                b.init(this);
-            }
-        });
     }
 
     public void initWithGivenDirectory(String dir) throws Exception {
@@ -412,10 +429,6 @@ public final class OpenFileSystemModel {
     public void initWithDefaultDirectory() {
         savedState.cd(null);
         history.updateCurrent(null);
-    }
-
-    void initSavedState() {
-        this.savedState = OpenFileSystemSavedState.loadForStore(this);
     }
 
     public void openTerminalAsync(String directory) {
@@ -444,5 +457,24 @@ public final class OpenFileSystemModel {
 
     public void forthSync(int i) throws Exception {
         cdSyncWithoutCheck(history.forth(i));
+    }
+
+    @Getter
+    public enum SelectionMode {
+        SINGLE_FILE(false, true, false),
+        MULTIPLE_FILE(true, true, false),
+        SINGLE_DIRECTORY(false, false, true),
+        MULTIPLE_DIRECTORY(true, false, true),
+        ALL(true, true, true);
+
+        private final boolean multiple;
+        private final boolean acceptsFiles;
+        private final boolean acceptsDirectories;
+
+        SelectionMode(boolean multiple, boolean acceptsFiles, boolean acceptsDirectories) {
+            this.multiple = multiple;
+            this.acceptsFiles = acceptsFiles;
+            this.acceptsDirectories = acceptsDirectories;
+        }
     }
 }

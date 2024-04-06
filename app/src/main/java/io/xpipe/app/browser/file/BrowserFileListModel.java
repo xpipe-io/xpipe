@@ -1,5 +1,6 @@
-package io.xpipe.app.browser;
+package io.xpipe.app.browser.file;
 
+import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.store.FileKind;
@@ -25,6 +26,8 @@ public final class BrowserFileListModel {
     static final Comparator<BrowserEntry> FILE_TYPE_COMPARATOR =
             Comparator.comparing(path -> path.getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY);
 
+    private final OpenFileSystemModel.SelectionMode selectionMode;
+
     private final OpenFileSystemModel fileSystemModel;
     private final Property<Comparator<BrowserEntry>> comparatorProperty =
             new SimpleObjectProperty<>(FILE_TYPE_COMPARATOR);
@@ -39,7 +42,8 @@ public final class BrowserFileListModel {
     private final Property<Boolean> draggedOverEmpty = new SimpleBooleanProperty();
     private final Property<BrowserEntry> editing = new SimpleObjectProperty<>();
 
-    public BrowserFileListModel(OpenFileSystemModel fileSystemModel) {
+    public BrowserFileListModel(OpenFileSystemModel.SelectionMode selectionMode, OpenFileSystemModel fileSystemModel) {
+        this.selectionMode = selectionMode;
         this.fileSystemModel = fileSystemModel;
 
         fileSystemModel.getFilter().addListener((observable, oldValue, newValue) -> {
@@ -49,10 +53,6 @@ public final class BrowserFileListModel {
         selection.addListener((ListChangeListener<? super BrowserEntry>) c -> {
             previousSelection.setAll(c.getList());
         });
-    }
-
-    public BrowserModel.Mode getMode() {
-        return fileSystemModel.getBrowserModel().getMode();
     }
 
     public void setAll(Stream<FileSystem.FileEntry> newFiles) {
@@ -135,12 +135,6 @@ public final class BrowserFileListModel {
     }
 
     public void onDoubleClick(BrowserEntry entry) {
-        if (entry.getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY
-                && getMode().equals(BrowserModel.Mode.SINGLE_FILE_CHOOSER)) {
-            getFileSystemModel().getBrowserModel().finishChooser();
-            return;
-        }
-
         if (entry.getRawFileEntry().resolved().getKind() == FileKind.DIRECTORY) {
             fileSystemModel.cdAsync(entry.getRawFileEntry().resolved().getPath());
         }

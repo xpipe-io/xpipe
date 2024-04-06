@@ -1,7 +1,7 @@
 package io.xpipe.app.browser.action;
 
-import io.xpipe.app.browser.BrowserEntry;
-import io.xpipe.app.browser.OpenFileSystemModel;
+import io.xpipe.app.browser.file.BrowserEntry;
+import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.util.Shortcuts;
 import io.xpipe.app.util.BooleanScope;
@@ -23,7 +23,7 @@ public interface LeafAction extends BrowserAction {
         var b = new Button();
         b.setOnAction(event -> {
             // Only accept shortcut actions in the current tab
-            if (!model.equals(model.getBrowserModel().getSelected().getValue())) {
+            if (!model.equals(model.getBrowserModel().getSelectedEntry().getValue())) {
                 return;
             }
 

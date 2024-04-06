@@ -1,4 +1,4 @@
-package io.xpipe.app.browser;
+package io.xpipe.app.browser.fs;
 
 import io.xpipe.app.util.ShellControlCache;
 import io.xpipe.core.process.ShellControl;

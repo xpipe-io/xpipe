@@ -1,5 +1,7 @@
 package io.xpipe.app.browser;
 
+import io.xpipe.app.browser.file.BrowserFileOverviewComp;
+import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.comp.base.SimpleTitledPaneComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.SimpleComp;

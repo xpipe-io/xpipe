@@ -1,6 +1,8 @@
 package io.xpipe.app.browser;
 
 import atlantafx.base.theme.Styles;
+import io.xpipe.app.browser.file.BrowserContextMenu;
+import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.browser.icon.FileIconManager;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;

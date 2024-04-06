@@ -1,5 +1,6 @@
-package io.xpipe.app.browser;
+package io.xpipe.app.browser.file;
 
+import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.util.InputHelper;

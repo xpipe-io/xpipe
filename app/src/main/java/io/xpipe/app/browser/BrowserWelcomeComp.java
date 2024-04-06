@@ -1,6 +1,7 @@
 package io.xpipe.app.browser;
 
 import atlantafx.base.controls.Spacer;
+import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.TileButtonComp;
@@ -33,9 +34,9 @@ import java.util.List;
 
 public class BrowserWelcomeComp extends SimpleComp {
 
-    private final BrowserModel model;
+    private final BrowserSessionModel model;
 
-    public BrowserWelcomeComp(BrowserModel model) {
+    public BrowserWelcomeComp(BrowserSessionModel model) {
         this.model = model;
     }
 

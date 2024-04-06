@@ -1,7 +1,7 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.browser.BrowserComp;
-import io.xpipe.app.browser.BrowserModel;
+import io.xpipe.app.browser.session.BrowserSessionComp;
+import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.comp.store.StoreLayoutComp;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.prefs.AppPrefsComp;
@@ -71,7 +71,7 @@ public class AppLayoutModel {
 
     private List<Entry> createEntryList() {
         var l = new ArrayList<>(List.of(
-                new Entry(AppI18n.observable("browser"), "mdi2f-file-cabinet", new BrowserComp(BrowserModel.DEFAULT)),
+                new Entry(AppI18n.observable("browser"), "mdi2f-file-cabinet", new BrowserSessionComp(BrowserSessionModel.DEFAULT)),
                 new Entry(AppI18n.observable("connections"), "mdi2c-connection", new StoreLayoutComp()),
                 new Entry(AppI18n.observable("settings"), "mdsmz-miscellaneous_services", new AppPrefsComp()),
                 new Entry(

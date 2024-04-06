@@ -1,6 +1,7 @@
 package io.xpipe.app.browser;
 
 import atlantafx.base.controls.Breadcrumbs;
+import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.core.store.FileNames;

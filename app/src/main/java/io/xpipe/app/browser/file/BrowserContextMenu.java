@@ -1,8 +1,9 @@
-package io.xpipe.app.browser;
+package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.action.BranchAction;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.LeafAction;
+import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.util.LicenseProvider;
 import javafx.scene.control.ContextMenu;
@@ -13,7 +14,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import java.util.ArrayList;
 import java.util.List;
 
-final class BrowserContextMenu extends ContextMenu {
+public final class BrowserContextMenu extends ContextMenu {
 
     private final OpenFileSystemModel model;
     private final BrowserEntry source;
