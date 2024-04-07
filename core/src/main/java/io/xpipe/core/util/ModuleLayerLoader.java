@@ -6,14 +6,10 @@ import java.util.function.Consumer;
 public interface ModuleLayerLoader {
 
     static void loadAll(
-            ModuleLayer layer, boolean prioritization, Consumer<Throwable> errorHandler) {
+            ModuleLayer layer, Consumer<Throwable> errorHandler) {
         ServiceLoader.load(layer, ModuleLayerLoader.class).stream().forEach(moduleLayerLoaderProvider -> {
             var instance = moduleLayerLoaderProvider.get();
             try {
-                if (instance.prioritizeLoading() != prioritization) {
-                    return;
-                }
-
                 instance.init(layer);
             } catch (Throwable t) {
                 errorHandler.accept(t);
@@ -21,7 +17,8 @@ public interface ModuleLayerLoader {
         });
     }
 
-    void init(ModuleLayer layer);
+    default void init(ModuleLayer layer) {}
 
-    boolean prioritizeLoading();
+    default void reset() {}
+
 }

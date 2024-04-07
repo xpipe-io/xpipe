@@ -42,9 +42,5 @@ public abstract class LicenseProvider {
                     .orElseThrow(() -> ExtensionException.corrupt("Missing license provider"));
         }
 
-        @Override
-        public boolean prioritizeLoading() {
-            return true;
-        }
     }
 }

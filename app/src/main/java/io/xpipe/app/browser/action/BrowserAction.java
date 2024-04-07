@@ -92,9 +92,5 @@ public interface BrowserAction {
                     .toList());
         }
 
-        @Override
-        public boolean prioritizeLoading() {
-            return false;
-        }
     }
 }

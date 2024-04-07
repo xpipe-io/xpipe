@@ -3,10 +3,7 @@ import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.exchange.*;
 import io.xpipe.app.exchange.cli.*;
-import io.xpipe.app.ext.ActionProvider;
-import io.xpipe.app.ext.DataStoreProvider;
-import io.xpipe.app.ext.PrefsProvider;
-import io.xpipe.app.ext.ScanProvider;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.issue.EventHandler;
 import io.xpipe.app.issue.EventHandlerImpl;
 import io.xpipe.app.storage.DataStateProviderImpl;
@@ -120,6 +117,7 @@ open module io.xpipe.app {
     provides Module with
             StorageJacksonModule;
     provides ModuleLayerLoader with
+            MessageExchangeImpls.Loader, DataStoreProviders.Loader,
             ActionProvider.Loader,
             PrefsProvider.Loader,
             BrowserAction.Loader,

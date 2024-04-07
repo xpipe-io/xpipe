@@ -63,9 +63,5 @@ public abstract class ScanProvider {
                     .collect(Collectors.toList());
         }
 
-        @Override
-        public boolean prioritizeLoading() {
-            return false;
-        }
     }
 }

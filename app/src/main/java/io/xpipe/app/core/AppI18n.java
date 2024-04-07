@@ -48,6 +48,10 @@ public class AppI18n {
     private final Property<LoadedTranslations> currentLanguage = new SimpleObjectProperty<>();
 
     public static void init() throws Exception {
+        if (INSTANCE != null) {
+            return;
+        }
+
         INSTANCE = new AppI18n();
         INSTANCE.load();
     }

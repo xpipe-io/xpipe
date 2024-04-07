@@ -35,9 +35,5 @@ public abstract class PrefsProvider {
                     .collect(Collectors.toList());
         }
 
-        @Override
-        public boolean prioritizeLoading() {
-            return false;
-        }
     }
 }

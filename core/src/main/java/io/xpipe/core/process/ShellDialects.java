@@ -78,10 +78,5 @@ public class ShellDialects {
             RBASH = byId("rbash");
             OVH_BASTION = byId("ovhBastion");
         }
-
-        @Override
-        public boolean prioritizeLoading() {
-            return true;
-        }
     }
 }

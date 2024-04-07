@@ -144,9 +144,5 @@ public interface ActionProvider {
                     .toList());
         }
 
-        @Override
-        public boolean prioritizeLoading() {
-            return false;
-        }
     }
 }
