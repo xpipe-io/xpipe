@@ -1,7 +1,7 @@
 package io.xpipe.app.browser.session;
 
 import atlantafx.base.controls.Spacer;
-import io.xpipe.app.browser.*;
+import io.xpipe.app.browser.BrowserBookmarkComp;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemComp;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
@@ -21,7 +21,6 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FileSystemStore;
 import io.xpipe.core.store.ShellStore;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.Property;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -45,34 +44,21 @@ public class BrowserChooserComp extends SimpleComp {
     }
 
     public static void openSingleFile(
-            Supplier<DataStoreEntryRef<? extends FileSystemStore>> store, Consumer<FileReference> file) {
+            Supplier<DataStoreEntryRef<? extends FileSystemStore>> store, Consumer<FileReference> file, boolean save) {
         PlatformThread.runLaterIfNeeded(() -> {
             var model = new BrowserChooserModel(OpenFileSystemModel.SelectionMode.SINGLE_FILE);
             var comp = new BrowserChooserComp(model)
                     .apply(struc -> struc.get().setPrefSize(1200, 700))
                     .apply(struc -> AppFont.normal(struc.get()));
-            var window = AppWindowHelper.sideWindow(AppI18n.get("openFileTitle"), stage -> comp, false, null);
+            var window = AppWindowHelper.sideWindow(AppI18n.get(save ? "saveFileTitle" : "openFileTitle"), stage -> comp, false, null);
             model.setOnFinish(fileStores -> {
                 file.accept(fileStores.size() > 0 ? fileStores.getFirst() : null);
                 window.close();
             });
             window.show();
-            model.openFileSystemAsync(store.get(), null, null);
-        });
-    }
-
-    public static void saveSingleFile(Property<FileReference> file) {
-        PlatformThread.runLaterIfNeeded(() -> {
-            var model = new BrowserChooserModel(OpenFileSystemModel.SelectionMode.SINGLE_FILE);
-            var comp = new BrowserChooserComp(model)
-                    .apply(struc -> struc.get().setPrefSize(1200, 700))
-                    .apply(struc -> AppFont.normal(struc.get()));
-            var window = AppWindowHelper.sideWindow(AppI18n.get("saveFileTitle"), stage -> comp, true, null);
-            model.setOnFinish(fileStores -> {
-                file.setValue(fileStores.size() > 0 ? fileStores.getFirst() : null);
-                window.close();
+            ThreadHelper.runAsync(() -> {
+                model.openFileSystemAsync(store.get(), null, null);
             });
-            window.show();
         });
     }
 

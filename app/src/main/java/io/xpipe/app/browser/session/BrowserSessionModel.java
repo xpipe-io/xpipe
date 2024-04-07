@@ -21,7 +21,7 @@ import lombok.Getter;
 import java.util.ArrayList;
 
 @Getter
-public class BrowserSessionModel extends BrowserAbstractSessionModel<BrowserSessionEntry> {
+public class BrowserSessionModel extends BrowserAbstractSessionModel<BrowserSessionEntry<?>> {
 
     public static final BrowserSessionModel DEFAULT = new BrowserSessionModel(BrowserSavedStateImpl.load());
 

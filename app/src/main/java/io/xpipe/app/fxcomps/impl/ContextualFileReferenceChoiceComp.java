@@ -6,7 +6,9 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.AppWindowHelper;
-import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.ContextualFileReference;
@@ -22,7 +24,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.nio.file.Files;
@@ -30,7 +31,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 
-public class ContextualFileReferenceChoiceComp extends SimpleComp {
+public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>> {
 
     private final Property<DataStoreEntryRef<? extends FileSystemStore>> fileSystem;
     private final Property<String> filePath;
@@ -45,23 +46,23 @@ public class ContextualFileReferenceChoiceComp extends SimpleComp {
     }
 
     @Override
-    protected Region createSimple() {
+    public CompStructure<HBox> createBase() {
         var fileNameComp = new TextFieldComp(filePath)
                 .apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS))
                 .styleClass(Styles.LEFT_PILL)
                 .grow(false, true);
 
         var fileBrowseButton = new ButtonComp(null, new FontIcon("mdi2f-folder-open-outline"), () -> {
-                    BrowserChooserComp.openSingleFile(() -> fileSystem.getValue(), fileStore -> {
-                        if (fileStore == null) {
-                            filePath.setValue(null);
-                            fileSystem.setValue(null);
-                        } else {
-                            filePath.setValue(fileStore.getPath());
-                            fileSystem.setValue(fileStore.getFileSystem());
-                        }
-                    });
-                })
+            BrowserChooserComp.openSingleFile(() -> fileSystem.getValue(), fileStore -> {
+                if (fileStore == null) {
+                    filePath.setValue(null);
+                    fileSystem.setValue(null);
+                } else {
+                    filePath.setValue(fileStore.getPath());
+                    fileSystem.setValue(fileStore.getFileSystem());
+                }
+            }, false);
+        })
                 .styleClass(Styles.CENTER_PILL)
                 .grow(false, true);
 
@@ -129,6 +130,6 @@ public class ContextualFileReferenceChoiceComp extends SimpleComp {
             });
         });
 
-        return layout.createRegion();
+        return new SimpleCompStructure<>(layout.createStructure().get());
     }
 }

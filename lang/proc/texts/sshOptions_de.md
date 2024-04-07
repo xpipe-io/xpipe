@@ -12,7 +12,7 @@ Die genaue Anzahl der unterstützten Optionen hängt ausschließlich von deinem 
 Der Inhalt hier entspricht einem Host-Abschnitt in einer SSH-Konfigurationsdatei.
 Beachte, dass du den `Host`-Eintrag nicht explizit definieren musst, denn das wird automatisch erledigt.
 
-Wenn du mehr als einen Host-Abschnitt definieren willst, z. B. bei abhängigen Verbindungen wie einem Proxy-Jump-Host, der von einem anderen Config-Host abhängt, solltest du stattdessen eine richtige SSH-Konfigurationsdatei verwenden, da hier nur genau eine Host-Definition unterstützt wird.
+Wenn du mehr als einen Host-Abschnitt definieren willst, z. B. bei abhängigen Verbindungen wie einem Proxy-Jump-Host, der von einem anderen Config-Host abhängt, kannst du auch mehrere Host-Einträge definieren. Es wird dann der erste Host als Verbindung genutzt.
 
 Du musst keine Formatierung mit Leerzeichen oder Einrückung vornehmen, das ist für die Funktion nicht erforderlich.
 

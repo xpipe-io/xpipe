@@ -12,7 +12,7 @@ The exact amount of supported options purely depends on your installed SSH clien
 The content here is equivalent to one host section in an SSH config file.
 Note that you don't have to explicitly define the `Host` entry, as that will be done automatically.
 
-If you intend to define more than one host section, e.g. with dependent connections such as a proxy jump host that depends on another config host, you should use a proper SSH config file instead as only exactly one host definition is supported here.
+If you intend to define more than one host section, e.g. with dependent connections such as a proxy jump host that depends on another config host, you can define multiple host entries in here as well. XPipe will then launch the first host entry.
 
 You don't have to perform any formatting with whitespace or indentation, this is not needed for it to function.
 

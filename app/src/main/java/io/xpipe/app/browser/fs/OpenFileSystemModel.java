@@ -35,7 +35,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Getter
-public final class OpenFileSystemModel extends BrowserSessionEntry {
+public final class OpenFileSystemModel extends BrowserSessionEntry<FileSystemStore> {
 
     private final Property<String> filter = new SimpleStringProperty();
     private final BrowserFileListModel fileList;

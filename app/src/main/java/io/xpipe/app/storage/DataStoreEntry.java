@@ -111,7 +111,7 @@ public class DataStoreEntry extends StorageElement {
         this.categoryUuid = categoryUuid;
         this.store = store;
         this.storeNode = null;
-        this.validity = Validity.COMPLETE;
+        this.validity = Validity.INCOMPLETE;
         this.configuration = Configuration.defaultConfiguration();
         this.expanded = false;
         this.color = null;
