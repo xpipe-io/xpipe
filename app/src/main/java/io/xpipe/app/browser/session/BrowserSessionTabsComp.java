@@ -18,9 +18,12 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.input.DragEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,7 +63,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
         Styles.toggleStyleClass(tabs, TabPane.STYLE_CLASS_FLOATING);
         toggleStyleClass(tabs, DENSE);
 
-        var map = new HashMap<BrowserSessionEntry, Tab>();
+        var map = new HashMap<BrowserSessionTab, Tab>();
 
         // Restore state
         model.getSessionEntries().forEach(v -> {
@@ -117,7 +120,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
             });
         });
 
-        model.getSessionEntries().addListener((ListChangeListener<? super BrowserSessionEntry>) c -> {
+        model.getSessionEntries().addListener((ListChangeListener<? super BrowserSessionTab>) c -> {
             while (c.next()) {
                 for (var r : c.getRemoved()) {
                     PlatformThread.runLaterIfNeeded(() -> {
@@ -161,7 +164,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
         return tabs;
     }
 
-    private Tab createTab(TabPane tabs, BrowserSessionEntry model) {
+    private Tab createTab(TabPane tabs, BrowserSessionTab<?> model) {
         var tab = new Tab();
 
         var ring = new RingProgressIndicator(0, false);

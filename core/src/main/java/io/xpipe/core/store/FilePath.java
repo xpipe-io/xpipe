@@ -107,7 +107,7 @@ public final class FilePath {
 
     public FilePath join(String... parts) {
         var joined = String.join("/", parts);
-        return new FilePath(value + "/" + joined);
+        return new FilePath(value + "/" + joined).normalize();
     }
 
     public boolean isAbsolute() {

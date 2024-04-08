@@ -9,7 +9,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import lombok.Getter;
 
 @Getter
-public abstract class BrowserSessionEntry<T extends DataStore> {
+public abstract class BrowserSessionTab<T extends DataStore> {
 
     protected final DataStoreEntryRef<? extends T> entry;
     protected final BooleanProperty busy = new SimpleBooleanProperty();
@@ -17,7 +17,7 @@ public abstract class BrowserSessionEntry<T extends DataStore> {
     protected final String name;
     protected final String tooltip;
 
-    public BrowserSessionEntry(BrowserAbstractSessionModel<?> browserModel, DataStoreEntryRef<? extends T> entry) {
+    public BrowserSessionTab(BrowserAbstractSessionModel<?> browserModel, DataStoreEntryRef<? extends T> entry) {
         this.browserModel = browserModel;
         this.entry = entry;
         this.name = DataStorage.get().getStoreDisplayName(entry.get());
