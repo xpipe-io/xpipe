@@ -28,6 +28,8 @@ public interface OsType {
         }
     }
 
+    String makeFileSystemCompatible(String path);
+
     List<String> determineInterestingPaths(ShellControl pc) throws Exception;
 
     String getHomeDirectory(ShellControl pc) throws Exception;
@@ -53,6 +55,11 @@ public interface OsType {
             permits OsType.Windows, OsType.Linux, OsType.MacOs, OsType.Solaris, OsType.Bsd {}
 
     final class Windows implements OsType, Local, Any {
+
+        @Override
+        public String makeFileSystemCompatible(String path) {
+            return path.replaceAll("[<>:\"/\\\\|?*]", "_").replaceAll("\\p{C}", "");
+        }
 
         @Override
         public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
@@ -115,6 +122,11 @@ public interface OsType {
     }
 
     class Unix implements OsType {
+
+        @Override
+        public String makeFileSystemCompatible(String path) {
+            return path.replaceAll("/", "_").replaceAll("\0", "");
+        }
 
         @Override
         public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
@@ -197,6 +209,11 @@ public interface OsType {
     final class Bsd extends Unix implements Any {}
 
     final class MacOs implements OsType, Local, Any {
+
+        @Override
+        public String makeFileSystemCompatible(String path) {
+            return path.replaceAll("[/:]", "_").replaceAll("\0", "");
+        }
 
         @Override
         public List<String> determineInterestingPaths(ShellControl pc) throws Exception {

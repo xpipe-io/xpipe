@@ -136,7 +136,8 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
 
         for (DataStoreEntryRef<SimpleScriptStore> scriptStore : refs) {
             var content = d.prepareScriptContent(scriptStore.getStore().getCommands());
-            var fileName = scriptStore.get().getName().toLowerCase(Locale.ROOT).replaceAll(" ", "_");
+            var fileName = proc.getOsType().makeFileSystemCompatible(
+                    scriptStore.get().getName().toLowerCase(Locale.ROOT).replaceAll(" ", "_"));
             var scriptFile = FileNames.join(targetDir, fileName + "." + d.getScriptFileEnding());
             d.createScriptTextFileWriteCommand(proc, content, scriptFile).execute();
         }

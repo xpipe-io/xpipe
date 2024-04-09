@@ -280,7 +280,8 @@ public class FileSystemHelper {
             var baseRelative = FileNames.toDirectory(FileNames.getParent(source.getPath()));
             List<FileSystem.FileEntry> list = source.getFileSystem().listFilesRecursively(source.getPath());
             for (FileSystem.FileEntry fileEntry : list) {
-                flatFiles.put(fileEntry, FileNames.toUnix(FileNames.relativize(baseRelative, fileEntry.getPath())));
+                var rel = FileNames.toUnix(FileNames.relativize(baseRelative, fileEntry.getPath()));
+                flatFiles.put(fileEntry, rel);
                 if (fileEntry.getKind() == FileKind.FILE) {
                     // This one is up-to-date and does not need to be recalculated
                     totalSize.addAndGet(fileEntry.getSize());
@@ -295,7 +296,8 @@ public class FileSystemHelper {
         AtomicLong transferred = new AtomicLong();
         for (var e : flatFiles.entrySet()) {
             var sourceFile = e.getKey();
-            var targetFile = FileNames.join(target.getPath(), e.getValue());
+            var targetFile = target.getFileSystem().getShell().orElseThrow().getOsType().makeFileSystemCompatible(
+                    FileNames.join(target.getPath(), e.getValue()));
             if (sourceFile.getFileSystem().equals(target.getFileSystem())) {
                 throw new IllegalStateException();
             }
