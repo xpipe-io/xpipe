@@ -75,17 +75,17 @@ public final class BrowserContextMenu extends ContextMenu {
             for (BrowserAction a : all) {
                 var used = resolveIfNeeded(a, selected);
                 if (a instanceof LeafAction la) {
-                    getItems().add(la.toMenuItem(model, used, s -> s));
+                    getItems().add(la.toMenuItem(model, used));
                 }
 
                 if (a instanceof BranchAction la) {
-                    var m = new Menu(a.getName(model, used) + " ...");
+                    var m = new Menu(a.getName(model, used).getValue() + " ...");
                     for (LeafAction sub : la.getBranchingActions(model, used)) {
                         var subUsed = resolveIfNeeded(sub, selected);
                         if (!sub.isApplicable(model, subUsed)) {
                             continue;
                         }
-                        m.getItems().add(sub.toMenuItem(model, subUsed, s -> s));
+                        m.getItems().add(sub.toMenuItem(model, subUsed));
                     }
                     var graphic = a.getIcon(model, used);
                     if (graphic != null) {

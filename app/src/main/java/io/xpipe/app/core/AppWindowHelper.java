@@ -82,12 +82,7 @@ public class AppWindowHelper {
         }
 
         stage.setOnShown(e -> {
-            // If we set the theme pseudo classes earlier when the window is not shown
-            // they do not apply. Is this a bug in JavaFX?
-            Platform.runLater(() -> {
-                AppTheme.initThemeHandlers(stage);
-            });
-
+            AppTheme.initThemeHandlers(stage);
             centerToMainWindow(stage);
             clampWindow(stage).ifPresent(rectangle2D -> {
                 stage.setX(rectangle2D.getMinX());

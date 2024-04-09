@@ -7,6 +7,8 @@ import io.xpipe.app.browser.action.MultiExecuteAction;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 
 import java.util.List;
 
@@ -18,8 +20,8 @@ public class JarAction extends MultiExecuteAction implements JavaAction, FileTyp
     }
 
     @Override
-    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return "java -jar " + BrowserActionFormatter.filesArgument(entries);
+    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return new SimpleStringProperty("java -jar " + BrowserActionFormatter.filesArgument(entries));
     }
 
     @Override

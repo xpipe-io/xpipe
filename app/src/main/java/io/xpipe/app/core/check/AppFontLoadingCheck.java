@@ -13,7 +13,7 @@ public class AppFontLoadingCheck {
             // This can fail if the found system fonts can somehow not be loaded
             Font.getDefault();
         } catch (Throwable e) {
-            var event = ErrorEvent.fromThrowable("Unable to load fonts", e).build();
+            var event = ErrorEvent.fromThrowable("Unable to load fonts. Do you have valid font packages installed?", e).build();
             // We can't use the normal error handling facility
             // as the platform reports as working but opening windows still does not work
             new LogErrorHandler().handle(event);

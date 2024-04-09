@@ -6,6 +6,8 @@ import io.xpipe.app.browser.action.ExecuteApplicationAction;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileNames;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 
 import java.util.List;
 
@@ -33,8 +35,8 @@ public class UnzipAction extends ExecuteApplicationAction implements FileTypeAct
     }
 
     @Override
-    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return "unzip [...]";
+    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return new SimpleStringProperty("unzip [...]");
     }
 
     @Override

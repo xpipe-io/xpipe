@@ -4,6 +4,7 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.util.ModuleLayerLoader;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCombination;
 
@@ -53,7 +54,7 @@ public interface BrowserAction {
         return false;
     }
 
-    String getName(OpenFileSystemModel model, List<BrowserEntry> entries);
+    ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries);
 
     default boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return true;

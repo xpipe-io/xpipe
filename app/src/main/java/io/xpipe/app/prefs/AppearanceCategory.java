@@ -15,7 +15,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Slider;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class AppearanceCategory extends AppPrefsCategory {
@@ -27,7 +26,7 @@ public class AppearanceCategory extends AppPrefsCategory {
 
     private Comp<?> languageChoice() {
         var prefs = AppPrefs.get();
-        var c = ChoiceComp.ofTranslatable(prefs.language, Arrays.asList(SupportedLocale.values()), false);
+        var c = ChoiceComp.ofTranslatable(prefs.language, SupportedLocale.ALL, false);
         var visit = new ButtonComp(AppI18n.observable("translate"), new FontIcon("mdi2w-web"), () -> {
             Hyperlinks.open(Hyperlinks.TRANSLATE);
         });

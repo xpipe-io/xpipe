@@ -3,12 +3,14 @@ package io.xpipe.ext.base.browser;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.browser.action.MultiExecuteAction;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileSystem;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -61,8 +63,8 @@ public class RunAction extends MultiExecuteAction {
     }
 
     @Override
-    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return "Run";
+    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return AppI18n.observable("run");
     }
 
     @Override

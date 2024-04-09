@@ -2,10 +2,12 @@ package io.xpipe.app.browser.action;
 
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
+import javafx.beans.value.ObservableValue;
 import org.apache.commons.io.FilenameUtils;
 
 import java.util.List;
@@ -39,9 +41,9 @@ public abstract class MultiExecuteAction implements BranchAction {
                     }
 
                     @Override
-                    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         var t = AppPrefs.get().terminalType().getValue();
-                        return "in " + (t != null ? t.toTranslatedString().getValue() : "?");
+                        return AppI18n.observable("executeInTerminal", t != null ? t.toTranslatedString().getValue() : "?");
                     }
 
                     @Override
@@ -66,8 +68,8 @@ public abstract class MultiExecuteAction implements BranchAction {
                     }
 
                     @Override
-                    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-                        return "in background";
+                    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                        return AppI18n.observable("executeInBackground");
                     }
                 });
     }

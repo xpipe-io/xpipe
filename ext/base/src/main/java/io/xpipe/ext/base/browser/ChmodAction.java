@@ -4,8 +4,11 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.browser.action.BranchAction;
 import io.xpipe.app.browser.action.LeafAction;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -24,8 +27,8 @@ public class ChmodAction implements BranchAction {
     }
 
     @Override
-    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return "Chmod";
+    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return AppI18n.observable("chmod");
     }
 
     @Override
@@ -55,8 +58,8 @@ public class ChmodAction implements BranchAction {
         }
 
         @Override
-        public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-            return option;
+        public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+            return new SimpleStringProperty(option);
         }
 
         @Override

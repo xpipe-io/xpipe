@@ -3,6 +3,8 @@ package io.xpipe.ext.base.browser;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.browser.action.LeafAction;
+import io.xpipe.app.core.AppI18n;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -33,8 +35,8 @@ public class ForwardAction implements LeafAction {
     }
 
     @Override
-    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return "Forward";
+    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return AppI18n.observable("goForward");
     }
 
     @Override

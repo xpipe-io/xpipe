@@ -6,21 +6,21 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.WindowControl;
 import io.xpipe.core.process.OsType;
-import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.application.Application;
 import javafx.application.ColorScheme;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
+import javafx.event.EventHandler;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Window;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -43,21 +43,69 @@ public class AppTheme {
             return;
         }
 
-        AppPrefs.get().theme.subscribe(t -> {
-            Theme.ALL.forEach(
-                    theme -> stage.getScene().getRoot().getStyleClass().remove(theme.getCssId()));
-            if (t == null) {
-                return;
-            }
+        initWindowsThemeHandler(stage);
 
-            stage.getScene().getRoot().getStyleClass().add(t.getCssId());
-            stage.getScene().getRoot().pseudoClassStateChanged(LIGHT, !t.isDark());
-            stage.getScene().getRoot().pseudoClassStateChanged(DARK, t.isDark());
+        // If we set the theme pseudo classes earlier when the window is not shown
+        // they do not apply. Is this a bug in JavaFX?
+        Platform.runLater(() -> {
+            AppPrefs.get().theme.subscribe(t -> {
+                Theme.ALL.forEach(
+                        theme -> stage.getScene().getRoot().getStyleClass().remove(theme.getCssId()));
+                if (t == null) {
+                    return;
+                }
+
+                stage.getScene().getRoot().getStyleClass().add(t.getCssId());
+                stage.getScene().getRoot().pseudoClassStateChanged(LIGHT, !t.isDark());
+                stage.getScene().getRoot().pseudoClassStateChanged(DARK, t.isDark());
+            });
+
+            AppPrefs.get().performanceMode().subscribe(val -> {
+                stage.getScene().getRoot().pseudoClassStateChanged(PRETTY, !val);
+                stage.getScene().getRoot().pseudoClassStateChanged(PERFORMANCE, val);
+            });
         });
+    }
 
-        AppPrefs.get().performanceMode().subscribe(val -> {
-            stage.getScene().getRoot().pseudoClassStateChanged(PRETTY, !val);
-            stage.getScene().getRoot().pseudoClassStateChanged(PERFORMANCE, val);
+    private static void initWindowsThemeHandler(Window stage) {
+        if (OsType.getLocal() != OsType.WINDOWS) {
+            return;
+        }
+
+        EventHandler<WindowEvent> windowTheme = new EventHandler<>() {
+            @Override
+            public void handle(WindowEvent event) {
+                if (!stage.isShowing()) {
+                    return;
+                }
+
+                try {
+                    var c = new WindowControl(stage);
+                    c.setWindowAttribute(20, AppPrefs.get().theme.getValue().isDark());
+                    stage.setWidth(stage.getWidth() - 1);
+                    Platform.runLater( () -> {
+                        stage.setWidth(stage.getWidth() + 1);
+                    });
+                } catch (Exception e) {
+                    ErrorEvent.fromThrowable(e).handle();
+                }
+                stage.removeEventFilter(WindowEvent.WINDOW_SHOWN, this);
+            }
+        };
+        if (stage.isShowing()) {
+            windowTheme.handle(null);
+        } else {
+            stage.addEventFilter(WindowEvent.WINDOW_SHOWN, windowTheme);
+        }
+
+        AppPrefs.get().theme.addListener((observable, oldValue, newValue) -> {
+            Platform.runLater(() -> {
+            var transition = new PauseTransition(Duration.millis(300));
+            transition.setOnFinished(e -> {
+                windowTheme.handle(null);
+            });
+            transition.play();
+            });
         });
     }
 

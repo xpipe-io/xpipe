@@ -107,7 +107,7 @@ public class AppPrefs {
     private final ObservableBooleanValue developerDisableGuiRestrictionsEffective =
             bindDeveloperTrue(developerDisableGuiRestrictions);
     final ObjectProperty<SupportedLocale> language =
-            map(new SimpleObjectProperty<>(SupportedLocale.ENGLISH), "language", SupportedLocale.class);
+            map(new SimpleObjectProperty<>(SupportedLocale.getEnglish()), "language", SupportedLocale.class);
 
     @Getter
     private final Property<InPlaceSecretValue> lockPassword = new SimpleObjectProperty<>();

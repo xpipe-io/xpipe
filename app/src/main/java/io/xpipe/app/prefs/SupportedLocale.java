@@ -1,25 +1,31 @@
 package io.xpipe.app.prefs;
 
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.List;
 import java.util.Locale;
 
 @AllArgsConstructor
 @Getter
-public enum SupportedLocale implements PrefsChoiceValue {
-    ENGLISH(Locale.ENGLISH, "english"),
-    GERMAN(Locale.GERMAN, "german");
+public class SupportedLocale implements PrefsChoiceValue {
+
+    public static List<SupportedLocale> ALL = AppProperties.get().getLanguages().stream().map(s -> new SupportedLocale(Locale.of(s), s)).toList();
+
+    public static SupportedLocale getEnglish() {
+        return ALL.stream().filter(supportedLocale -> supportedLocale.getId().equals("en")).findFirst().orElseThrow();
+    }
 
     private final Locale locale;
     private final String id;
 
     @Override
     public ObservableValue<String> toTranslatedString() {
-        return new SimpleStringProperty(locale.getDisplayName());
+        return new SimpleStringProperty(locale.getDisplayName(locale));
     }
 
     @Override

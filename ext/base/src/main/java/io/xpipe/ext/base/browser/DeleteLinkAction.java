@@ -4,7 +4,9 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.FileSystemHelper;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.browser.action.LeafAction;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.store.FileKind;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -30,8 +32,8 @@ public class DeleteLinkAction implements LeafAction {
     }
 
     @Override
-    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return "Delete link";
+    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return AppI18n.observable("deleteLink");
     }
 
     @Override

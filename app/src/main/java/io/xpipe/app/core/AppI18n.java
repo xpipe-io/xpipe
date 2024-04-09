@@ -48,11 +48,9 @@ public class AppI18n {
     private final Property<LoadedTranslations> currentLanguage = new SimpleObjectProperty<>();
 
     public static void init() throws Exception {
-        if (INSTANCE != null) {
-            return;
+        if (INSTANCE == null) {
+            INSTANCE = new AppI18n();
         }
-
-        INSTANCE = new AppI18n();
         INSTANCE.load();
     }
 
@@ -274,7 +272,7 @@ public class AppI18n {
         var prettyTime = new PrettyTime(
                 AppPrefs.get() != null
                         ? AppPrefs.get().language().getValue().getLocale()
-                        : SupportedLocale.ENGLISH.getLocale());
+                        : SupportedLocale.getEnglish().getLocale());
 
         return new LoadedTranslations(translations,markdownDocumentations, prettyTime);
     }
