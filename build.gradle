@@ -77,7 +77,7 @@ project.ext {
     javafxVersion = '22'
     platformName = getPlatformName()
     artifactChecksums = new HashMap<String, String>()
-    languages = ["en", "de", "fr"]
+    languages = ["en", "nl", "es", "fr", "de", "it", "pt", "ru", "ja", "zh", "pt-BR"]
     jvmRunArgs = [
             "--add-opens", "java.base/java.lang=io.xpipe.app",
             "--add-opens", "java.base/java.lang=io.xpipe.core",
