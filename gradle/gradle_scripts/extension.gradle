@@ -70,7 +70,7 @@ dependencies {
         exclude group: 'org.openjfx', module: 'javafx-base'
         exclude group: 'org.openjfx', module: 'javafx-controls'
     }
-    compileOnly 'commons-io:commons-io:2.15.1'
+    compileOnly 'commons-io:commons-io:2.16.1'
     compileOnly group: 'org.kordamp.ikonli', name: 'ikonli-javafx', version: "12.2.0"
 
     if (project != project(':base')) {
