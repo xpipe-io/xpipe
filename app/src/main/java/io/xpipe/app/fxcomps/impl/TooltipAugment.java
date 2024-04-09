@@ -8,6 +8,7 @@ import io.xpipe.app.fxcomps.util.Shortcuts;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Tooltip;
+import javafx.stage.Window;
 
 public class TooltipAugment<S extends CompStructure<?>> implements Augment<S> {
 
@@ -21,10 +22,24 @@ public class TooltipAugment<S extends CompStructure<?>> implements Augment<S> {
         this.text = AppI18n.observable(key);
     }
 
+    private static class FixedTooltip extends Tooltip {
+
+        public FixedTooltip() {
+            super();
+        }
+
+        @Override
+        protected void show() {
+            Window owner = getOwnerWindow();
+            if (owner.isFocused())
+                super.show();
+        }
+    }
+
     @Override
     public void augment(S struc) {
         var region = struc.get();
-        var tt = new Tooltip();
+        var tt = new FixedTooltip();
         if (Shortcuts.getDisplayShortcut(region) != null) {
             var s = AppI18n.observable("shortcut");
             var binding = Bindings.createStringBinding(() -> {

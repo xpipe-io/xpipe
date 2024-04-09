@@ -7,3 +7,7 @@ If you want to learn more about how to use SSH configs, you can use `man ssh_con
 ### Identities
 
 Note that you can also specify an `IdentityFile` option in here. If any identity is specified in here, any otherwise specified identity later down below will be ignored.
+
+### X11 forwarding
+
+If any options for X11 forwarding are specified here, XPipe will automatically attempt to set up X11 forwarding on Windows through WSL.
