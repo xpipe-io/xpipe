@@ -72,6 +72,7 @@ public class BrowserSessionComp extends SimpleComp {
                 });
         var r = splitPane.createRegion();
         r.getStyleClass().add("browser");
+
         return r;
     }
 }

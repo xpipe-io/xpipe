@@ -19,6 +19,7 @@ import javafx.event.EventHandler;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
@@ -38,19 +39,16 @@ public class AppTheme {
     private static final PseudoClass PERFORMANCE = PseudoClass.getPseudoClass("performance");
     private static boolean init;
 
-    public static void initThemeHandlers(Window stage) {
+    public static void initThemeHandlers(Stage stage) {
         if (AppPrefs.get() == null) {
             return;
         }
 
         initWindowsThemeHandler(stage);
 
-        // If we set the theme pseudo classes earlier when the window is not shown
-        // they do not apply. Is this a bug in JavaFX?
-        Platform.runLater(() -> {
+        Runnable r = () -> {
             AppPrefs.get().theme.subscribe(t -> {
-                Theme.ALL.forEach(
-                        theme -> stage.getScene().getRoot().getStyleClass().remove(theme.getCssId()));
+                Theme.ALL.forEach(theme -> stage.getScene().getRoot().getStyleClass().remove(theme.getCssId()));
                 if (t == null) {
                     return;
                 }
@@ -64,7 +62,14 @@ public class AppTheme {
                 stage.getScene().getRoot().pseudoClassStateChanged(PRETTY, !val);
                 stage.getScene().getRoot().pseudoClassStateChanged(PERFORMANCE, val);
             });
-        });
+        };
+        if (stage.getOwner() != null) {
+            // If we set the theme pseudo classes earlier when the window is not shown
+            // they do not apply. Is this a bug in JavaFX?
+            Platform.runLater(r);
+        } else {
+            r.run();
+        }
     }
 
     private static void initWindowsThemeHandler(Window stage) {
@@ -82,11 +87,11 @@ public class AppTheme {
                 try {
                     var c = new WindowControl(stage);
                     c.setWindowAttribute(20, AppPrefs.get().theme.getValue().isDark());
-                    stage.setWidth(stage.getWidth() - 1);
+                    stage.setWidth(stage.getWidth() + 1);
                     Platform.runLater( () -> {
-                        stage.setWidth(stage.getWidth() + 1);
+                        stage.setWidth(stage.getWidth() - 1);
                     });
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     ErrorEvent.fromThrowable(e).handle();
                 }
                 stage.removeEventFilter(WindowEvent.WINDOW_SHOWN, this);

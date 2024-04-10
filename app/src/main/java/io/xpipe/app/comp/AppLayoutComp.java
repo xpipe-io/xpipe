@@ -10,9 +10,14 @@ import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import javafx.beans.binding.Bindings;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.Node;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class AppLayoutComp extends Comp<CompStructure<Pane>> {
@@ -21,19 +26,15 @@ public class AppLayoutComp extends Comp<CompStructure<Pane>> {
 
     @Override
     public CompStructure<Pane> createBase() {
-        var multi = new MultiContentComp(model.getEntries().stream()
-                .collect(Collectors.toMap(
-                        entry -> entry.comp(),
-                        entry -> Bindings.createBooleanBinding(
-                                () -> {
-                                    return model.getSelected().getValue().equals(entry);
-                                },
-                                model.getSelected())))
-        );
+        Map<Comp<?>, ObservableValue<Boolean>> map = model.getEntries().stream().collect(Collectors.toMap(entry -> entry.comp(), entry -> Bindings.createBooleanBinding(() -> {
+            return model.getSelected().getValue().equals(entry);
+        }, model.getSelected())));
+        var multi = new MultiContentComp(map);
 
         var pane = new BorderPane();
         var sidebar = new SideMenuBarComp(model.getSelected(), model.getEntries());
-        pane.setCenter(multi.createRegion());
+        StackPane multiR = (StackPane) multi.createRegion();
+        pane.setCenter(multiR);
         pane.setRight(sidebar.createRegion());
         pane.getStyleClass().add("background");
         model.getSelected().addListener((c, o, n) -> {
@@ -43,6 +44,19 @@ public class AppLayoutComp extends Comp<CompStructure<Pane>> {
             }
         });
         AppFont.normal(pane);
+
+        onSceneAssign(struc -> {
+            struc.get().getScene().addEventFilter(KeyEvent.ANY, event -> {
+                for (Node r : multiR.getChildren()) {
+                    if (r.isManaged()) {
+                        r.fireEvent(event);
+                        event.consume();
+                        break;
+                    }
+                }
+            });
+        });
+
         return new SimpleCompStructure<>(pane);
     }
 }
