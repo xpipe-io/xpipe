@@ -14,19 +14,6 @@ There are no real formal contribution guidelines right now, they will maybe come
 - [dist](dist) - Tools to create a distributable package of XPipe
 - [ext](ext) - Available XPipe extensions. Essentially every concrete feature implementation is implemented as an extension
 
-## Modularity
-
-All XPipe components target [Java 21](https://openjdk.java.net/projects/jdk/20/) and make full use of the Java Module System (JPMS).
-All components are modularized, including all their dependencies.
-In case a dependency is (sadly) not modularized yet, module information is manually added using [extra-java-module-info](https://github.com/gradlex-org/extra-java-module-info).
-Further, note that as this is a pretty complicated Java project that fully utilizes modularity,
-many IDEs still have problems building this project properly.
-
-For example, you can't build this project in eclipse or vscode as it will complain about missing modules.
-The tested and recommended IDE is IntelliJ.
-When setting up the project in IntelliJ, make sure that the correct JDK (Java 21)
-is selected both for the project and for gradle itself.
-
 ## Development Setup
 
 You need to have an up-to-date version of XPipe installed on your local system in order to properly
@@ -39,9 +26,9 @@ Note that in case the current master branch is ahead of the latest release, it m
 It is therefore recommended to always check out the matching version tag for your local repository and local XPipe installation.
 You can find the available version tags at https://github.com/xpipe-io/xpipe/tags
 
-You need to have GraalVM Community Edition for Java 21 installed as a JDK to compile the project.
+You need to have JDK for Java 22 installed to compile the project.
 If you are on Linux or macOS, you can easily accomplish that by running the `setup.sh` script.
-On Windows, you have to manually install the JDK.
+On Windows, you have to manually install a JDK, e.g. from [Adoptium](https://adoptium.net/temurin/releases/?version=22).
 
 ## Building and Running
 
@@ -57,6 +44,19 @@ You are also able to properly debug the built production application through two
 
 Note that when any unit test is run using a debugger, the XPipe daemon process that is started will also attempt
 to connect to that debugger through [AttachMe](https://plugins.jetbrains.com/plugin/13263-attachme) as well.
+
+## Modularity and IDEs
+
+All XPipe components target [Java 22](https://openjdk.java.net/projects/jdk/22/) and make full use of the Java Module System (JPMS).
+All components are modularized, including all their dependencies.
+In case a dependency is (sadly) not modularized yet, module information is manually added using [extra-java-module-info](https://github.com/gradlex-org/extra-java-module-info).
+Further, note that as this is a pretty complicated Java project that fully utilizes modularity,
+many IDEs still have problems building this project properly.
+
+For example, you can't build this project in eclipse or vscode as it will complain about missing modules.
+The tested and recommended IDE is IntelliJ.
+When setting up the project in IntelliJ, make sure that the correct JDK (Java 22)
+is selected both for the project and for gradle itself.
 
 ## Contributing guide
 
@@ -96,3 +96,7 @@ The [sample action](https://github.com/xpipe-io/xpipe/blob/master/ext/base/src/m
 ### Implementing something else
 
 if you want to work on something that was not listed here, you can still do so of course. You can reach out on the [Discord server](https://discord.gg/8y89vS8cRb) to discuss any development plans and get you started.
+
+### Translations
+
+See the [translation guide](/lang/README.md) for details.

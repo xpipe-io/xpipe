@@ -15,7 +15,11 @@ import java.util.Locale;
 public class SupportedLocale implements PrefsChoiceValue {
 
     public static List<SupportedLocale> ALL = AppProperties.get().getLanguages().stream()
-            .map(s -> new SupportedLocale(Locale.of(s), s))
+            .map(s -> {
+                var split = s.split("-");
+                var loc = split.length == 2 ? Locale.of(split[0], split[1]) : Locale.of(s);
+                return new SupportedLocale(loc, s);
+            })
             .toList();
     private final Locale locale;
     private final String id;
