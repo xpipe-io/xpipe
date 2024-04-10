@@ -1,10 +1,10 @@
 package io.xpipe.ext.base.browser;
 
+import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.app.browser.file.BrowserAlerts;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.FileSystemHelper;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
-import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.store.FileKind;
 import javafx.beans.value.ObservableValue;
@@ -46,10 +46,12 @@ public class DeleteAction implements LeafAction {
 
     @Override
     public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return AppI18n.observable("deleteFile",entries.stream()
-                .allMatch(browserEntry ->
-                        browserEntry.getRawFileEntry().getKind() == FileKind.LINK)
-                ? " link"
-                : "");
+        return AppI18n.observable(
+                "deleteFile",
+                entries.stream()
+                                .allMatch(browserEntry ->
+                                        browserEntry.getRawFileEntry().getKind() == FileKind.LINK)
+                        ? " link"
+                        : "");
     }
 }

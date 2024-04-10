@@ -267,7 +267,7 @@ public final class BrowserFileListComp extends SimpleComp {
 
                                 return false;
                             },
-                    null,
+                            null,
                             () -> {
                                 if (row.getItem() != null && row.getItem().isSynthetic()) {
                                     return null;
@@ -505,15 +505,20 @@ public final class BrowserFileListComp extends SimpleComp {
             var quickAccess = new BrowserQuickAccessButtonComp(
                             () -> getTableRow().getItem(), fileList.getFileSystemModel())
                     .hide(Bindings.createBooleanBinding(
-                            () -> {
-                                var item = getTableRow().getItem();
-                                var notDir = item.getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY;
-                                var isParentLink = item
-                                        .getRawFileEntry()
-                                        .equals(fileList.getFileSystemModel().getCurrentParentDirectory());
-                                return notDir || isParentLink;
-                            },
-                            itemProperty()).not().not())
+                                    () -> {
+                                        var item = getTableRow().getItem();
+                                        var notDir = item.getRawFileEntry()
+                                                        .resolved()
+                                                        .getKind()
+                                                != FileKind.DIRECTORY;
+                                        var isParentLink = item.getRawFileEntry()
+                                                .equals(fileList.getFileSystemModel()
+                                                        .getCurrentParentDirectory());
+                                        return notDir || isParentLink;
+                                    },
+                                    itemProperty())
+                            .not()
+                            .not())
                     .createRegion();
 
             editing.addListener((observable, oldValue, newValue) -> {
@@ -557,7 +562,7 @@ public final class BrowserFileListComp extends SimpleComp {
                     // Don't set image as that would trigger image comp update
                     // and cells are emptied on each change, leading to unnecessary changes
                     // img.set(null);
-					
+
                     // Visibility seems to be bugged, so use opacity
                     setOpacity(0.0);
                 } else {

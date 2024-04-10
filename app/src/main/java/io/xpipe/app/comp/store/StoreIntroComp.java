@@ -46,9 +46,7 @@ public class StoreIntroComp extends SimpleComp {
         hbox.setSpacing(35);
         hbox.setAlignment(Pos.CENTER);
 
-        var v = new VBox(
-                hbox, scanPane
-                );
+        var v = new VBox(hbox, scanPane);
         v.setMinWidth(Region.USE_PREF_SIZE);
         v.setMaxWidth(Region.USE_PREF_SIZE);
         v.setMinHeight(Region.USE_PREF_SIZE);

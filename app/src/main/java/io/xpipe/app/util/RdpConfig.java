@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 @Value
 public class RdpConfig {
 
+    Map<String, TypedValue> content;
+
     public static RdpConfig parseFile(String file) throws IOException {
         var content = Files.readString(Path.of(file));
         return parseContent(content);
@@ -30,21 +32,12 @@ public class RdpConfig {
                 map.put(split[0].trim(), new RdpConfig.TypedValue("s", split[1].trim()));
             }
 
-
             if (split.length == 3) {
                 map.put(split[0].trim(), new RdpConfig.TypedValue(split[1].trim(), split[2].trim()));
             }
         });
         return new RdpConfig(map);
     }
-
-    @Value
-    public static class TypedValue {
-        String type;
-        String value;
-    }
-
-    Map<String, TypedValue> content;
 
     public RdpConfig overlay(Map<String, TypedValue> override) {
         var newMap = new LinkedHashMap<>(content);
@@ -53,12 +46,21 @@ public class RdpConfig {
     }
 
     public String toString() {
-        return content.entrySet().stream().map(e -> {
-            return e.getKey() + ":" + e.getValue().getType() + ":" + e.getValue().getValue();
-        }).collect(Collectors.joining("\n"));
+        return content.entrySet().stream()
+                .map(e -> {
+                    return e.getKey() + ":" + e.getValue().getType() + ":"
+                            + e.getValue().getValue();
+                })
+                .collect(Collectors.joining("\n"));
     }
 
     public Optional<TypedValue> get(String key) {
         return Optional.ofNullable(content.get(key));
+    }
+
+    @Value
+    public static class TypedValue {
+        String type;
+        String value;
     }
 }

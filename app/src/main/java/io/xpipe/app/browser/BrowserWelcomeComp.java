@@ -78,15 +78,14 @@ public class BrowserWelcomeComp extends SimpleComp {
         });
         var empty = Bindings.createBooleanBinding(() -> list.isEmpty(), list);
 
-        var headerBinding = BindingsHelper.flatMap(empty,b -> {
+        var headerBinding = BindingsHelper.flatMap(empty, b -> {
             if (b) {
                 return AppI18n.observable("browserWelcomeEmpty");
             } else {
                 return AppI18n.observable("browserWelcomeSystems");
             }
         });
-        var header = new LabelComp(headerBinding)
-                .createRegion();
+        var header = new LabelComp(headerBinding).createRegion();
         AppFont.setSize(header, 1);
         vbox.getChildren().add(header);
 
@@ -94,7 +93,7 @@ public class BrowserWelcomeComp extends SimpleComp {
         storeList.setSpacing(8);
 
         var listBox = new ListBoxViewComp<>(list, list, e -> {
-            var disable = new SimpleBooleanProperty();
+                    var disable = new SimpleBooleanProperty();
                     var entryButton = entryButton(e, disable);
                     var dirButton = dirButton(e, disable);
                     return new HorizontalComp(List.of(entryButton, dirButton));
@@ -130,15 +129,17 @@ public class BrowserWelcomeComp extends SimpleComp {
 
     private Comp<?> entryButton(BrowserSavedState.Entry e, BooleanProperty disable) {
         var entry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
-        var graphic = entry.get()
-                .getProvider()
-                .getDisplayIconFileName(entry.get().getStore());
+        var graphic =
+                entry.get().getProvider().getDisplayIconFileName(entry.get().getStore());
         var view = PrettyImageHelper.ofFixedSize(graphic, 30, 24);
-        return new ButtonComp(new SimpleStringProperty(DataStorage.get().getStoreDisplayName(entry.get())), view.createRegion(), () -> {
-            ThreadHelper.runAsync(() -> {
-                model.restoreStateAsync(e, disable);
-            });
-        })
+        return new ButtonComp(
+                        new SimpleStringProperty(DataStorage.get().getStoreDisplayName(entry.get())),
+                        view.createRegion(),
+                        () -> {
+                            ThreadHelper.runAsync(() -> {
+                                model.restoreStateAsync(e, disable);
+                            });
+                        })
                 .minWidth(250)
                 .accessibleText(DataStorage.get().getStoreDisplayName(entry.get()))
                 .disable(disable)
@@ -149,10 +150,10 @@ public class BrowserWelcomeComp extends SimpleComp {
     private Comp<?> dirButton(BrowserSavedState.Entry e, BooleanProperty disable) {
         var entry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
         return new ButtonComp(new SimpleStringProperty(e.getPath()), null, () -> {
-            ThreadHelper.runAsync(() -> {
-                model.restoreStateAsync(e, disable);
-            });
-        })
+                    ThreadHelper.runAsync(() -> {
+                        model.restoreStateAsync(e, disable);
+                    });
+                })
                 .accessibleText(e.getPath())
                 .disable(disable)
                 .styleClass("directory-button")

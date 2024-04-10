@@ -24,9 +24,14 @@ public class AppLayoutComp extends Comp<CompStructure<Pane>> {
 
     @Override
     public CompStructure<Pane> createBase() {
-        Map<Comp<?>, ObservableValue<Boolean>> map = model.getEntries().stream().collect(Collectors.toMap(entry -> entry.comp(), entry -> Bindings.createBooleanBinding(() -> {
-            return model.getSelected().getValue().equals(entry);
-        }, model.getSelected())));
+        Map<Comp<?>, ObservableValue<Boolean>> map = model.getEntries().stream()
+                .collect(Collectors.toMap(
+                        entry -> entry.comp(),
+                        entry -> Bindings.createBooleanBinding(
+                                () -> {
+                                    return model.getSelected().getValue().equals(entry);
+                                },
+                                model.getSelected())));
         var multi = new MultiContentComp(map);
 
         var pane = new BorderPane();

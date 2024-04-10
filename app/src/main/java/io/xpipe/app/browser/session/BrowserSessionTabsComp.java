@@ -72,7 +72,8 @@ public class BrowserSessionTabsComp extends SimpleComp {
             tabs.getTabs().add(t);
         });
         tabs.getSelectionModel()
-                .select(model.getSessionEntries().indexOf(model.getSelectedEntry().getValue()));
+                .select(model.getSessionEntries()
+                        .indexOf(model.getSelectedEntry().getValue()));
 
         // Used for ignoring changes by the tabpane when new tabs are added. We want to perform the selections manually!
         var modifying = new SimpleBooleanProperty();

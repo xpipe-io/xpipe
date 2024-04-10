@@ -40,7 +40,7 @@ public class BrowserBreadcrumbBar extends SimpleComp {
 
         var breadcrumbs = new Breadcrumbs<String>();
         breadcrumbs.setMinWidth(0);
-        PlatformThread.sync(model.getCurrentPath()).subscribe( val -> {
+        PlatformThread.sync(model.getCurrentPath()).subscribe(val -> {
             if (val == null) {
                 breadcrumbs.setSelectedCrumb(null);
                 return;

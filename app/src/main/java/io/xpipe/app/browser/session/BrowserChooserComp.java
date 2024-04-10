@@ -50,7 +50,8 @@ public class BrowserChooserComp extends SimpleComp {
             var comp = new BrowserChooserComp(model)
                     .apply(struc -> struc.get().setPrefSize(1200, 700))
                     .apply(struc -> AppFont.normal(struc.get()));
-            var window = AppWindowHelper.sideWindow(AppI18n.get(save ? "saveFileTitle" : "openFileTitle"), stage -> comp, false, null);
+            var window = AppWindowHelper.sideWindow(
+                    AppI18n.get(save ? "saveFileTitle" : "openFileTitle"), stage -> comp, false, null);
             model.setOnFinish(fileStores -> {
                 file.accept(fileStores.size() > 0 ? fileStores.getFirst() : null);
                 window.close();
@@ -81,7 +82,12 @@ public class BrowserChooserComp extends SimpleComp {
             });
         };
 
-        var bookmarksList = new BrowserBookmarkComp(BindingsHelper.map(model.getSelectedEntry(), v -> v.getEntry().get()), applicable, action).vgrow();
+        var bookmarksList = new BrowserBookmarkComp(
+                        BindingsHelper.map(
+                                model.getSelectedEntry(), v -> v.getEntry().get()),
+                        applicable,
+                        action)
+                .vgrow();
         var stack = Comp.of(() -> {
             var s = new StackPane();
             model.getSelectedEntry().subscribe(selected -> {

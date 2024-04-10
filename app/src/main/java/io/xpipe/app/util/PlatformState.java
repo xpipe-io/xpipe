@@ -26,15 +26,15 @@ public enum PlatformState {
 
     public static void teardown() {
         // This is bad and can get sometimes stuck
-//        PlatformThread.runLaterIfNeededBlocking(() -> {
-//            try {
-//                // Fix to preserve clipboard contents after shutdown
-//                var string = Clipboard.getSystemClipboard().getString();
-//                var s = new StringSelection(string);
-//                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(s, s);
-//            } catch (IllegalStateException ignored) {
-//            }
-//        });
+        //        PlatformThread.runLaterIfNeededBlocking(() -> {
+        //            try {
+        //                // Fix to preserve clipboard contents after shutdown
+        //                var string = Clipboard.getSystemClipboard().getString();
+        //                var s = new StringSelection(string);
+        //                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(s, s);
+        //            } catch (IllegalStateException ignored) {
+        //            }
+        //        });
 
         Platform.exit();
         setCurrent(PlatformState.EXITED);

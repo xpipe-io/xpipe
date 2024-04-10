@@ -15,18 +15,6 @@ import java.lang.reflect.Method;
 @Getter
 public class WindowControl {
 
-    public interface DwmSupport extends Library {
-
-        DwmSupport INSTANCE = Native.load("dwmapi", DwmSupport.class);
-
-        WinNT.HRESULT DwmSetWindowAttribute(
-                WinDef.HWND hwnd,
-                int dwAttribute,
-                PointerType pvAttribute,
-                int cbAttribute
-        );
-    }
-
     private final WinDef.HWND windowHandle;
 
     public WindowControl(Window stage) throws Exception {
@@ -48,16 +36,20 @@ public class WindowControl {
     }
 
     public void move(int x, int y, int w, int h) {
-        User32.INSTANCE.SetWindowPos(windowHandle, new WinDef.HWND(), x,y,w,h, 0);
+        User32.INSTANCE.SetWindowPos(windowHandle, new WinDef.HWND(), x, y, w, h, 0);
     }
 
     public void setWindowAttribute(int attribute, boolean attributeValue) {
         DwmSupport.INSTANCE.DwmSetWindowAttribute(
-                windowHandle,
-                attribute,
-                new WinDef.BOOLByReference(new WinDef.BOOL(attributeValue)),
-                WinDef.BOOL.SIZE
-        );
+                windowHandle, attribute, new WinDef.BOOLByReference(new WinDef.BOOL(attributeValue)), WinDef.BOOL.SIZE);
         User32.INSTANCE.UpdateWindow(windowHandle);
+    }
+
+    public interface DwmSupport extends Library {
+
+        DwmSupport INSTANCE = Native.load("dwmapi", DwmSupport.class);
+
+        WinNT.HRESULT DwmSetWindowAttribute(
+                WinDef.HWND hwnd, int dwAttribute, PointerType pvAttribute, int cbAttribute);
     }
 }

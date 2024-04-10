@@ -34,18 +34,10 @@ import java.util.regex.Pattern;
 
 public class AppI18n {
 
-    @Value
-    static class LoadedTranslations {
-
-        Map<String, String> translations;
-        Map<String, String> markdownDocumentations;
-        PrettyTime prettyTime;
-    }
-
     private static final Pattern VAR_PATTERN = Pattern.compile("\\$\\w+?\\$");
     private static AppI18n INSTANCE;
-    private LoadedTranslations english;
     private final Property<LoadedTranslations> currentLanguage = new SimpleObjectProperty<>();
+    private LoadedTranslations english;
 
     public static void init() throws Exception {
         if (INSTANCE == null) {
@@ -54,28 +46,8 @@ public class AppI18n {
         INSTANCE.load();
     }
 
-    private void load() throws Exception {
-        if (english == null) {
-            english = load(Locale.ENGLISH);
-        }
-
-        if (AppPrefs.get() != null) {
-            AppPrefs.get().language().subscribe(n -> {
-                try {
-                    currentLanguage.setValue(n != null ? load(n.getLocale()) : null);
-                } catch (Exception e) {
-                    ErrorEvent.fromThrowable(e).handle();
-                }
-            });
-        }
-    }
-
     public static AppI18n get() {
         return INSTANCE;
-    }
-
-    private LoadedTranslations getLoaded() {
-        return currentLanguage.getValue() != null ? currentLanguage.getValue() : english;
     }
 
     public static ObservableValue<String> observable(String s, Object... vars) {
@@ -84,9 +56,11 @@ public class AppI18n {
         }
 
         var key = INSTANCE.getKey(s);
-        return Bindings.createStringBinding(() -> {
-            return get(key, vars);
-        }, INSTANCE.currentLanguage);
+        return Bindings.createStringBinding(
+                () -> {
+                    return get(key, vars);
+                },
+                INSTANCE.currentLanguage);
     }
 
     public static String get(String s, Object... vars) {
@@ -131,6 +105,26 @@ public class AppI18n {
         return "";
     }
 
+    private void load() throws Exception {
+        if (english == null) {
+            english = load(Locale.ENGLISH);
+        }
+
+        if (AppPrefs.get() != null) {
+            AppPrefs.get().language().subscribe(n -> {
+                try {
+                    currentLanguage.setValue(n != null ? load(n.getLocale()) : null);
+                } catch (Exception e) {
+                    ErrorEvent.fromThrowable(e).handle();
+                }
+            });
+        }
+    }
+
+    private LoadedTranslations getLoaded() {
+        return currentLanguage.getValue() != null ? currentLanguage.getValue() : english;
+    }
+
     public String getKey(String s) {
         var key = s;
         if (!s.contains(".")) {
@@ -147,7 +141,8 @@ public class AppI18n {
             return s;
         }
 
-        if (currentLanguage.getValue() != null && currentLanguage.getValue().getTranslations().containsKey(key)) {
+        if (currentLanguage.getValue() != null
+                && currentLanguage.getValue().getTranslations().containsKey(key)) {
             var localisedString = currentLanguage.getValue().getTranslations().get(key);
             return getValue(localisedString, vars);
         }
@@ -168,8 +163,10 @@ public class AppI18n {
     }
 
     public String getMarkdownDocumentation(String name) {
-        if (currentLanguage.getValue() != null && currentLanguage.getValue().getMarkdownDocumentations().containsKey(name)) {
-            var localisedString = currentLanguage.getValue().getMarkdownDocumentations().get(name);
+        if (currentLanguage.getValue() != null
+                && currentLanguage.getValue().getMarkdownDocumentations().containsKey(name)) {
+            var localisedString =
+                    currentLanguage.getValue().getMarkdownDocumentations().get(name);
             return localisedString;
         }
 
@@ -192,81 +189,83 @@ public class AppI18n {
 
         var translations = new HashMap<String, String>();
         for (var module : AppExtensionManager.getInstance().getContentModules()) {
-            var basePath = getModuleLangPath(FilenameUtils.getExtension(module.getName())).resolve("strings");
-                if (!Files.exists(basePath)) {
-                    continue;
-                }
+            var basePath = getModuleLangPath(FilenameUtils.getExtension(module.getName()))
+                    .resolve("strings");
+            if (!Files.exists(basePath)) {
+                continue;
+            }
 
-                AtomicInteger fileCounter = new AtomicInteger();
-                AtomicInteger lineCounter = new AtomicInteger();
-                var simpleName = FilenameUtils.getExtension(module.getName());
-                String defaultPrefix = simpleName.equals("app") ? "app." : simpleName + ".";
-                Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                        if (!matchesLocale(file, l)) {
-                            return FileVisitResult.CONTINUE;
-                        }
-
-                        if (!file.getFileName().toString().endsWith(".properties")) {
-                            return FileVisitResult.CONTINUE;
-                        }
-
-                        fileCounter.incrementAndGet();
-                        try (var in = Files.newInputStream(file)) {
-                            var props = new Properties();
-                            props.load(new InputStreamReader(in, StandardCharsets.UTF_8));
-                            props.forEach((key, value) -> {
-                                var hasPrefix = key.toString().contains(".");
-                                var usedPrefix = hasPrefix ? "" : defaultPrefix;
-                                translations.put(usedPrefix + key, value.toString());
-                                lineCounter.incrementAndGet();
-                            });
-                        } catch (IOException ex) {
-                            ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
-                        }
+            AtomicInteger fileCounter = new AtomicInteger();
+            AtomicInteger lineCounter = new AtomicInteger();
+            var simpleName = FilenameUtils.getExtension(module.getName());
+            String defaultPrefix = simpleName.equals("app") ? "app." : simpleName + ".";
+            Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                    if (!matchesLocale(file, l)) {
                         return FileVisitResult.CONTINUE;
                     }
-                });
 
-                TrackEvent.withDebug("Loading translations for module " + simpleName)
-                        .tag("fileCount", fileCounter.get())
-                        .tag("lineCount", lineCounter.get())
-                        .handle();
+                    if (!file.getFileName().toString().endsWith(".properties")) {
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    fileCounter.incrementAndGet();
+                    try (var in = Files.newInputStream(file)) {
+                        var props = new Properties();
+                        props.load(new InputStreamReader(in, StandardCharsets.UTF_8));
+                        props.forEach((key, value) -> {
+                            var hasPrefix = key.toString().contains(".");
+                            var usedPrefix = hasPrefix ? "" : defaultPrefix;
+                            translations.put(usedPrefix + key, value.toString());
+                            lineCounter.incrementAndGet();
+                        });
+                    } catch (IOException ex) {
+                        ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+
+            TrackEvent.withDebug("Loading translations for module " + simpleName)
+                    .tag("fileCount", fileCounter.get())
+                    .tag("lineCount", lineCounter.get())
+                    .handle();
         }
 
         var markdownDocumentations = new HashMap<String, String>();
         for (var module : AppExtensionManager.getInstance().getContentModules()) {
-            var basePath = getModuleLangPath(FilenameUtils.getExtension(module.getName())).resolve("texts");
-                if (!Files.exists(basePath)) {
-                    continue;
-                }
+            var basePath = getModuleLangPath(FilenameUtils.getExtension(module.getName()))
+                    .resolve("texts");
+            if (!Files.exists(basePath)) {
+                continue;
+            }
 
-                var moduleName = FilenameUtils.getExtension(module.getName());
-                Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                        if (!matchesLocale(file, l)) {
-                            return FileVisitResult.CONTINUE;
-                        }
-
-                        if (!file.getFileName().toString().endsWith(".md")) {
-                            return FileVisitResult.CONTINUE;
-                        }
-
-                        var name = file.getFileName()
-                                .toString()
-                                .substring(0, file.getFileName().toString().lastIndexOf("_"));
-                        try (var in = Files.newInputStream(file)) {
-                            var usedPrefix = moduleName + ":";
-                            markdownDocumentations.put(
-                                    usedPrefix + name, new String(in.readAllBytes(), StandardCharsets.UTF_8));
-                        } catch (IOException ex) {
-                            ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
-                        }
+            var moduleName = FilenameUtils.getExtension(module.getName());
+            Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                    if (!matchesLocale(file, l)) {
                         return FileVisitResult.CONTINUE;
                     }
-                });
+
+                    if (!file.getFileName().toString().endsWith(".md")) {
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    var name = file.getFileName()
+                            .toString()
+                            .substring(0, file.getFileName().toString().lastIndexOf("_"));
+                    try (var in = Files.newInputStream(file)) {
+                        var usedPrefix = moduleName + ":";
+                        markdownDocumentations.put(
+                                usedPrefix + name, new String(in.readAllBytes(), StandardCharsets.UTF_8));
+                    } catch (IOException ex) {
+                        ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+            });
         }
 
         var prettyTime = new PrettyTime(
@@ -274,7 +273,15 @@ public class AppI18n {
                         ? AppPrefs.get().language().getValue().getLocale()
                         : SupportedLocale.getEnglish().getLocale());
 
-        return new LoadedTranslations(translations,markdownDocumentations, prettyTime);
+        return new LoadedTranslations(translations, markdownDocumentations, prettyTime);
+    }
+
+    @Value
+    static class LoadedTranslations {
+
+        Map<String, String> translations;
+        Map<String, String> markdownDocumentations;
+        PrettyTime prettyTime;
     }
 
     @SuppressWarnings("removal")

@@ -10,23 +10,7 @@ import java.nio.file.Path;
 
 public interface WindowsTerminalType extends ExternalTerminalType {
 
-    @Override
-    default boolean isRecommended() {
-        return true;
-    }
-
-    @Override
-    default boolean supportsTabs() {
-        return true;
-    }
-
-    @Override
-    default boolean supportsColoredTitle() {
-        return false;
-    }
-
     public static final ExternalTerminalType WINDOWS_TERMINAL = new Standard();
-
     public static final ExternalTerminalType WINDOWS_TERMINAL_PREVIEW = new Preview();
 
     private static CommandBuilder toCommand(ExternalTerminalType.LaunchConfiguration configuration) throws Exception {
@@ -48,9 +32,26 @@ public interface WindowsTerminalType extends ExternalTerminalType {
         return cmd.add("--title").addQuoted(fixedName).add(toExec);
     }
 
+    @Override
+    default boolean supportsTabs() {
+        return true;
+    }
+
+    @Override
+    default boolean isRecommended() {
+        return true;
+    }
+
+    @Override
+    default boolean supportsColoredTitle() {
+        return false;
+    }
+
     class Standard extends SimplePathType implements WindowsTerminalType {
 
-        public Standard() {super("app.windowsTerminal", "wt.exe", false);}
+        public Standard() {
+            super("app.windowsTerminal", "wt.exe", false);
+        }
 
         @Override
         public String getWebsite() {

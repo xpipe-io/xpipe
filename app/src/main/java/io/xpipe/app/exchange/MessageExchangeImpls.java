@@ -12,6 +12,28 @@ import java.util.stream.Collectors;
 
 public class MessageExchangeImpls {
 
+    private static List<MessageExchangeImpl<?, ?>> ALL;
+
+    @SuppressWarnings("unchecked")
+    public static <RQ extends RequestMessage, RS extends ResponseMessage> Optional<MessageExchangeImpl<RQ, RS>> byId(
+            String name) {
+        var r = ALL.stream().filter(d -> d.getId().equals(name)).findAny();
+        return Optional.ofNullable((MessageExchangeImpl<RQ, RS>) r.orElse(null));
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <RQ extends RequestMessage, RS extends ResponseMessage>
+            Optional<MessageExchangeImpl<RQ, RS>> byRequest(RQ req) {
+        var r = ALL.stream()
+                .filter(d -> d.getRequestClass().equals(req.getClass()))
+                .findAny();
+        return Optional.ofNullable((MessageExchangeImpl<RQ, RS>) r.orElse(null));
+    }
+
+    public static List<MessageExchangeImpl<?, ?>> getAll() {
+        return ALL;
+    }
+
     public static class Loader implements ModuleLayerLoader {
 
         @Override
@@ -35,28 +57,5 @@ public class MessageExchangeImpls {
                 }
             });
         }
-    }
-
-    private static List<MessageExchangeImpl<?, ?>> ALL;
-
-
-    @SuppressWarnings("unchecked")
-    public static <RQ extends RequestMessage, RS extends ResponseMessage> Optional<MessageExchangeImpl<RQ, RS>> byId(
-            String name) {
-        var r = ALL.stream().filter(d -> d.getId().equals(name)).findAny();
-        return Optional.ofNullable((MessageExchangeImpl<RQ, RS>) r.orElse(null));
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <RQ extends RequestMessage, RS extends ResponseMessage>
-            Optional<MessageExchangeImpl<RQ, RS>> byRequest(RQ req) {
-        var r = ALL.stream()
-                .filter(d -> d.getRequestClass().equals(req.getClass()))
-                .findAny();
-        return Optional.ofNullable((MessageExchangeImpl<RQ, RS>) r.orElse(null));
-    }
-
-    public static List<MessageExchangeImpl<?, ?>> getAll() {
-        return ALL;
     }
 }

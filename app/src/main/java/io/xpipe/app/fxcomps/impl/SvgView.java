@@ -68,7 +68,7 @@ public class SvgView {
         wv.setDisable(true);
 
         wv.getEngine().loadContent(svgContent.getValue() != null ? getHtml(svgContent.getValue()) : null);
-        svgContent.subscribe( n -> {
+        svgContent.subscribe(n -> {
             if (n == null) {
                 wv.setOpacity(0.0);
                 return;

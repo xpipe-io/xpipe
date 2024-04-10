@@ -1,11 +1,11 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.browser.action.BranchAction;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserActionFormatter;
 import io.xpipe.app.browser.action.LeafAction;
+import io.xpipe.app.browser.file.BrowserEntry;
+import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.ClipboardHelper;
 import io.xpipe.core.store.FileKind;
@@ -49,7 +49,7 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                     public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
                             return new SimpleObjectProperty<>(BrowserActionFormatter.centerEllipsis(
-                                            entries.getFirst().getRawFileEntry().getPath(), 50));
+                                    entries.getFirst().getRawFileEntry().getPath(), 50));
                         }
 
                         return AppI18n.observable("absolutePaths");
@@ -68,7 +68,7 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                     public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
                             return new SimpleObjectProperty<>(BrowserActionFormatter.centerEllipsis(
-                                            entries.getFirst().getRawFileEntry().getPath(), 50));
+                                    entries.getFirst().getRawFileEntry().getPath(), 50));
                         }
 
                         return AppI18n.observable("absoluteLinkPaths");
@@ -133,10 +133,9 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                     public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
                             return new SimpleObjectProperty<>(BrowserActionFormatter.centerEllipsis(
-                                            FileNames.getFileName(entries.getFirst()
-                                                    .getRawFileEntry()
-                                                    .getPath()),
-                                            50));
+                                    FileNames.getFileName(
+                                            entries.getFirst().getRawFileEntry().getPath()),
+                                    50));
                         }
 
                         return AppI18n.observable("fileNames");
@@ -156,10 +155,9 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                     public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
                             return new SimpleObjectProperty<>(BrowserActionFormatter.centerEllipsis(
-                                            FileNames.getFileName(entries.getFirst()
-                                                    .getRawFileEntry()
-                                                    .getPath()),
-                                            50));
+                                    FileNames.getFileName(
+                                            entries.getFirst().getRawFileEntry().getPath()),
+                                    50));
                         }
 
                         return AppI18n.observable("linkFileNames");

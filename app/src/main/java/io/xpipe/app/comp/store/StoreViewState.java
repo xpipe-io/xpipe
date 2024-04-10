@@ -270,7 +270,9 @@ public class StoreViewState {
                     return parent;
                 }
 
-                return o1.nameProperty().getValue().compareToIgnoreCase(o2.nameProperty().getValue());
+                return o1.nameProperty()
+                        .getValue()
+                        .compareToIgnoreCase(o2.nameProperty().getValue());
             }
         };
         return ListBindingsHelper.filteredContentBinding(

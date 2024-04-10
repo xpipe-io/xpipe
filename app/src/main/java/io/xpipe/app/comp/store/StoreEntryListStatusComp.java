@@ -5,9 +5,9 @@ import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.impl.FilterComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
+import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.util.ThreadHelper;
@@ -51,8 +51,12 @@ public class StoreEntryListStatusComp extends SimpleComp {
 
     private Region createGroupListHeader() {
         var label = new Label();
-        var name = BindingsHelper.flatMap(StoreViewState.get().getActiveCategory(),
-                categoryWrapper -> AppI18n.observable(categoryWrapper.getRoot().equals(StoreViewState.get().getAllConnectionsCategory()) ? "connections" : "scripts"));
+        var name = BindingsHelper.flatMap(
+                StoreViewState.get().getActiveCategory(),
+                categoryWrapper -> AppI18n.observable(
+                        categoryWrapper.getRoot().equals(StoreViewState.get().getAllConnectionsCategory())
+                                ? "connections"
+                                : "scripts"));
         label.textProperty().bind(name);
         label.getStyleClass().add("name");
 

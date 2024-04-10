@@ -62,6 +62,5 @@ public abstract class ScanProvider {
                             scanProvider -> scanProvider.getClass().getName()))
                     .collect(Collectors.toList());
         }
-
     }
 }

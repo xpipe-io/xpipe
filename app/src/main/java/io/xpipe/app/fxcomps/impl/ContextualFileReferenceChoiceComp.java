@@ -53,16 +53,19 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                 .grow(false, true);
 
         var fileBrowseButton = new ButtonComp(null, new FontIcon("mdi2f-folder-open-outline"), () -> {
-            BrowserChooserComp.openSingleFile(() -> fileSystem.getValue(), fileStore -> {
-                if (fileStore == null) {
-                    filePath.setValue(null);
-                    fileSystem.setValue(null);
-                } else {
-                    filePath.setValue(fileStore.getPath());
-                    fileSystem.setValue(fileStore.getFileSystem());
-                }
-            }, false);
-        })
+                    BrowserChooserComp.openSingleFile(
+                            () -> fileSystem.getValue(),
+                            fileStore -> {
+                                if (fileStore == null) {
+                                    filePath.setValue(null);
+                                    fileSystem.setValue(null);
+                                } else {
+                                    filePath.setValue(fileStore.getPath());
+                                    fileSystem.setValue(fileStore.getFileSystem());
+                                }
+                            },
+                            false);
+                })
                 .styleClass(Styles.CENTER_PILL)
                 .grow(false, true);
 
@@ -85,7 +88,8 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                 return;
             }
 
-            if (filePath.getValue() == null || ContextualFileReference.of(filePath.getValue()).isInDataDirectory()) {
+            if (filePath.getValue() == null
+                    || ContextualFileReference.of(filePath.getValue()).isInDataDirectory()) {
                 return;
             }
 

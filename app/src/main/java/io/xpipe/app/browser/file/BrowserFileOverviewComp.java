@@ -32,8 +32,10 @@ public class BrowserFileOverviewComp extends SimpleComp {
         Function<FileSystem.FileEntry, Comp<?>> factory = entry -> {
             return Comp.of(() -> {
                 var icon = BrowserIcons.createIcon(entry);
-                var graphic = new HorizontalComp(List.of(icon,
-                        new BrowserQuickAccessButtonComp(() -> new BrowserEntry(entry, model.getFileList(),false),model)));
+                var graphic = new HorizontalComp(List.of(
+                        icon,
+                        new BrowserQuickAccessButtonComp(
+                                () -> new BrowserEntry(entry, model.getFileList(), false), model)));
                 var l = new Button(entry.getPath(), graphic.createRegion());
                 l.setGraphicTextGap(1);
                 l.setOnAction(event -> {

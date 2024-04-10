@@ -1,8 +1,8 @@
 package io.xpipe.ext.base.browser;
 
+import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
-import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.store.FileKind;
@@ -17,7 +17,8 @@ public class OpenDirectoryInNewTabAction implements LeafAction {
     @Override
     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
         if (model.getBrowserModel() instanceof BrowserSessionModel bm) {
-            bm.openFileSystemAsync(model.getEntry(), m -> entries.getFirst().getRawFileEntry().getPath(), null);
+            bm.openFileSystemAsync(
+                    model.getEntry(), m -> entries.getFirst().getRawFileEntry().getPath(), null);
         }
     }
 
@@ -43,7 +44,8 @@ public class OpenDirectoryInNewTabAction implements LeafAction {
 
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return model.getBrowserModel() instanceof BrowserSessionModel && entries.size() == 1
+        return model.getBrowserModel() instanceof BrowserSessionModel
+                && entries.size() == 1
                 && entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.DIRECTORY);
     }
 }

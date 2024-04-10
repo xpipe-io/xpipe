@@ -94,7 +94,9 @@ public class StoreSection {
                 },
                 category);
         var cached = ListBindingsHelper.cachedMappedContentBinding(
-                topLevel, topLevel, storeEntryWrapper -> create(storeEntryWrapper, 1, all, entryFilter, filterString, category));
+                topLevel,
+                topLevel,
+                storeEntryWrapper -> create(storeEntryWrapper, 1, all, entryFilter, filterString, category));
         var ordered = sorted(cached, category);
         var shown = ListBindingsHelper.filteredContentBinding(
                 ordered,
@@ -133,7 +135,9 @@ public class StoreSection {
             return DataStorage.get().getStoreChildren(e.getEntry()).contains(other.getEntry());
         });
         var cached = ListBindingsHelper.cachedMappedContentBinding(
-                allChildren, allChildren, entry1 -> create(entry1, depth + 1, all, entryFilter, filterString, category));
+                allChildren,
+                allChildren,
+                entry1 -> create(entry1, depth + 1, all, entryFilter, filterString, category));
         var ordered = sorted(cached, category);
         var filtered = ListBindingsHelper.filteredContentBinding(
                 ordered,

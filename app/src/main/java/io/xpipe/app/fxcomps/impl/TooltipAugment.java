@@ -22,29 +22,19 @@ public class TooltipAugment<S extends CompStructure<?>> implements Augment<S> {
         this.text = AppI18n.observable(key);
     }
 
-    private static class FixedTooltip extends Tooltip {
-
-        public FixedTooltip() {
-            super();
-        }
-
-        @Override
-        protected void show() {
-            Window owner = getOwnerWindow();
-            if (owner.isFocused())
-                super.show();
-        }
-    }
-
     @Override
     public void augment(S struc) {
         var region = struc.get();
         var tt = new FixedTooltip();
         if (Shortcuts.getDisplayShortcut(region) != null) {
             var s = AppI18n.observable("shortcut");
-            var binding = Bindings.createStringBinding(() -> {
-                return text.getValue() + "\n\n" + s.getValue() + ": " + Shortcuts.getDisplayShortcut(region).getDisplayText();
-            }, text, s);
+            var binding = Bindings.createStringBinding(
+                    () -> {
+                        return text.getValue() + "\n\n" + s.getValue() + ": "
+                                + Shortcuts.getDisplayShortcut(region).getDisplayText();
+                    },
+                    text,
+                    s);
             tt.textProperty().bind(binding);
         } else {
             tt.textProperty().bind(text);
@@ -55,5 +45,18 @@ public class TooltipAugment<S extends CompStructure<?>> implements Augment<S> {
         tt.getStyleClass().add("fancy-tooltip");
 
         Tooltip.install(struc.get(), tt);
+    }
+
+    private static class FixedTooltip extends Tooltip {
+
+        public FixedTooltip() {
+            super();
+        }
+
+        @Override
+        protected void show() {
+            Window owner = getOwnerWindow();
+            if (owner.isFocused()) super.show();
+        }
     }
 }

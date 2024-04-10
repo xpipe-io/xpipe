@@ -71,11 +71,12 @@ public class StoreCategoryComp extends SimpleComp {
         var showing = new SimpleBooleanProperty();
         var settings = new IconButtonComp("mdomz-settings")
                 .styleClass("settings")
-                .apply(new ContextMenuAugment<>(mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, null, () -> {
-                    var cm = createContextMenu(name);
-                    showing.bind(cm.showingProperty());
-                    return cm;
-                }));
+                .apply(new ContextMenuAugment<>(
+                        mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, null, () -> {
+                            var cm = createContextMenu(name);
+                            showing.bind(cm.showingProperty());
+                            return cm;
+                        }));
         var shownList = ListBindingsHelper.filteredContentBinding(
                 category.getContainedEntries(),
                 storeEntryWrapper -> {
@@ -102,11 +103,13 @@ public class StoreCategoryComp extends SimpleComp {
                 .accessibleText(category.nameProperty())
                 .grow(true, false);
         categoryButton.apply(new ContextMenuAugment<>(
-                mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY, keyEvent -> keyEvent.getCode() == KeyCode.SPACE, () -> createContextMenu(name)));
+                mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY,
+                keyEvent -> keyEvent.getCode() == KeyCode.SPACE,
+                () -> createContextMenu(name)));
 
         var l = category.getChildren()
-                .sorted(Comparator.comparing(
-                        storeCategoryWrapper -> storeCategoryWrapper.nameProperty().getValue().toLowerCase(Locale.ROOT)));
+                .sorted(Comparator.comparing(storeCategoryWrapper ->
+                        storeCategoryWrapper.nameProperty().getValue().toLowerCase(Locale.ROOT)));
         var children = new ListBoxViewComp<>(l, l, storeCategoryWrapper -> new StoreCategoryComp(storeCategoryWrapper));
 
         var emptyBinding = Bindings.isEmpty(category.getChildren());

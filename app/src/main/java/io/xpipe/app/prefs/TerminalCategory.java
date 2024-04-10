@@ -30,57 +30,6 @@ public class TerminalCategory extends AppPrefsCategory {
         return "terminal";
     }
 
-    private Comp<?> terminalChoice() {
-        var prefs = AppPrefs.get();
-        var c = ChoiceComp.ofTranslatable(
-                prefs.terminalType, PrefsChoiceValue.getSupported(ExternalTerminalType.class), false);
-        c.apply(struc -> {
-            struc.get().setCellFactory(param -> {
-                return new ListCell<>() {
-                    @Override
-                    protected void updateItem(ExternalTerminalType item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty) {
-                            return;
-                        }
-
-                        setText(item.toTranslatedString().getValue());
-                        if (item != ExternalTerminalType.CUSTOM) {
-                            var graphic = new FontIcon(item.isRecommended() ? "mdi2c-check-decagram" : "mdi2a-alert-circle-check");
-                            graphic.setFill(item.isRecommended() ? Color.GREEN : Color.ORANGE);
-                            setGraphic(graphic);
-                        } else {
-                            setGraphic(new FontIcon("mdi2m-minus-circle"));
-                        }
-                    }
-                };
-            });
-        });
-
-        var visit = new ButtonComp(AppI18n.observable("website"), new FontIcon("mdi2w-web"), () -> {
-            var t = prefs.terminalType().getValue();
-            if (t == null || t.getWebsite() == null) {
-                return;
-            }
-
-            Hyperlinks.open(t.getWebsite());
-        });
-        var visitVisible = Bindings.createBooleanBinding(() -> {
-            var t = prefs.terminalType().getValue();
-            if (t == null || t.getWebsite() == null) {
-                return false;
-            }
-
-            return true;
-        }, prefs.terminalType());
-        visit.visible(visitVisible);
-
-        return new HorizontalComp(List.of(c, visit)).apply(struc -> {
-            struc.get().setAlignment(Pos.CENTER_LEFT);
-            struc.get().setSpacing(10);
-        });
-    }
-
     @Override
     protected Comp<?> create() {
         var prefs = AppPrefs.get();
@@ -116,5 +65,59 @@ public class TerminalCategory extends AppPrefsCategory {
                         .nameAndDescription("clearTerminalOnInit")
                         .addToggle(prefs.clearTerminalOnInit))
                 .buildComp();
+    }
+
+    private Comp<?> terminalChoice() {
+        var prefs = AppPrefs.get();
+        var c = ChoiceComp.ofTranslatable(
+                prefs.terminalType, PrefsChoiceValue.getSupported(ExternalTerminalType.class), false);
+        c.apply(struc -> {
+            struc.get().setCellFactory(param -> {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(ExternalTerminalType item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            return;
+                        }
+
+                        setText(item.toTranslatedString().getValue());
+                        if (item != ExternalTerminalType.CUSTOM) {
+                            var graphic = new FontIcon(
+                                    item.isRecommended() ? "mdi2c-check-decagram" : "mdi2a-alert-circle-check");
+                            graphic.setFill(item.isRecommended() ? Color.GREEN : Color.ORANGE);
+                            setGraphic(graphic);
+                        } else {
+                            setGraphic(new FontIcon("mdi2m-minus-circle"));
+                        }
+                    }
+                };
+            });
+        });
+
+        var visit = new ButtonComp(AppI18n.observable("website"), new FontIcon("mdi2w-web"), () -> {
+            var t = prefs.terminalType().getValue();
+            if (t == null || t.getWebsite() == null) {
+                return;
+            }
+
+            Hyperlinks.open(t.getWebsite());
+        });
+        var visitVisible = Bindings.createBooleanBinding(
+                () -> {
+                    var t = prefs.terminalType().getValue();
+                    if (t == null || t.getWebsite() == null) {
+                        return false;
+                    }
+
+                    return true;
+                },
+                prefs.terminalType());
+        visit.visible(visitVisible);
+
+        return new HorizontalComp(List.of(c, visit)).apply(struc -> {
+            struc.get().setAlignment(Pos.CENTER_LEFT);
+            struc.get().setSpacing(10);
+        });
     }
 }

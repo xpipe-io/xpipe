@@ -43,7 +43,9 @@ public abstract class MultiExecuteAction implements BranchAction {
                     @Override
                     public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         var t = AppPrefs.get().terminalType().getValue();
-                        return AppI18n.observable("executeInTerminal", t != null ? t.toTranslatedString().getValue() : "?");
+                        return AppI18n.observable(
+                                "executeInTerminal",
+                                t != null ? t.toTranslatedString().getValue() : "?");
                     }
 
                     @Override

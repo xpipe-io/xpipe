@@ -5,8 +5,7 @@ import java.util.function.Consumer;
 
 public interface ModuleLayerLoader {
 
-    static void loadAll(
-            ModuleLayer layer, Consumer<Throwable> errorHandler) {
+    static void loadAll(ModuleLayer layer, Consumer<Throwable> errorHandler) {
         ServiceLoader.load(layer, ModuleLayerLoader.class).stream().forEach(moduleLayerLoaderProvider -> {
             var instance = moduleLayerLoaderProvider.get();
             try {
@@ -20,5 +19,4 @@ public interface ModuleLayerLoader {
     default void init(ModuleLayer layer) {}
 
     default void reset() {}
-
 }

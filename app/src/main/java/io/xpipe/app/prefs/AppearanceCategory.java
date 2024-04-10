@@ -24,18 +24,6 @@ public class AppearanceCategory extends AppPrefsCategory {
         return "appearance";
     }
 
-    private Comp<?> languageChoice() {
-        var prefs = AppPrefs.get();
-        var c = ChoiceComp.ofTranslatable(prefs.language, SupportedLocale.ALL, false);
-        var visit = new ButtonComp(AppI18n.observable("translate"), new FontIcon("mdi2w-web"), () -> {
-            Hyperlinks.open(Hyperlinks.TRANSLATE);
-        });
-        return new HorizontalComp(List.of(c, visit)).apply(struc -> {
-            struc.get().setAlignment(Pos.CENTER_LEFT);
-            struc.get().setSpacing(10);
-        });
-    }
-
     @Override
     protected Comp<?> create() {
         var prefs = AppPrefs.get();
@@ -43,9 +31,7 @@ public class AppearanceCategory extends AppPrefsCategory {
                 .addTitle("uiOptions")
                 .sub(new OptionsBuilder()
                         .nameAndDescription("language")
-                        .addComp(
-                                languageChoice(),
-                                prefs.language)
+                        .addComp(languageChoice(), prefs.language)
                         .nameAndDescription("theme")
                         .addComp(
                                 ChoiceComp.ofTranslatable(prefs.theme, AppTheme.Theme.ALL, false)
@@ -82,5 +68,17 @@ public class AppearanceCategory extends AppPrefsCategory {
                         .nameAndDescription("enforceWindowModality")
                         .addToggle(prefs.enforceWindowModality))
                 .buildComp();
+    }
+
+    private Comp<?> languageChoice() {
+        var prefs = AppPrefs.get();
+        var c = ChoiceComp.ofTranslatable(prefs.language, SupportedLocale.ALL, false);
+        var visit = new ButtonComp(AppI18n.observable("translate"), new FontIcon("mdi2w-web"), () -> {
+            Hyperlinks.open(Hyperlinks.TRANSLATE);
+        });
+        return new HorizontalComp(List.of(c, visit)).apply(struc -> {
+            struc.get().setAlignment(Pos.CENTER_LEFT);
+            struc.get().setSpacing(10);
+        });
     }
 }

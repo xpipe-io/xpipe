@@ -104,7 +104,8 @@ public class ScriptHelper {
     }
 
     @SneakyThrows
-    public static FilePath createExecScript(ShellDialect type, ShellControl processControl, FilePath file, String content) {
+    public static FilePath createExecScript(
+            ShellDialect type, ShellControl processControl, FilePath file, String content) {
         content = type.prepareScriptContent(content);
 
         TrackEvent.withTrace("Writing exec script")

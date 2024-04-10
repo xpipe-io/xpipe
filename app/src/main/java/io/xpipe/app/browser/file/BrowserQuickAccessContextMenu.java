@@ -29,18 +29,105 @@ import java.util.stream.Collectors;
 
 public class BrowserQuickAccessContextMenu extends ContextMenu {
 
+    private final Supplier<BrowserEntry> base;
+    private final OpenFileSystemModel model;
+    private ContextMenu shownBrowserActionsMenu;
+    private boolean expandBrowserActionMenuKey;
+    private boolean keyBasedNavigation;
+    private boolean closeBrowserActionMenuKey;
+    public BrowserQuickAccessContextMenu(Supplier<BrowserEntry> base, OpenFileSystemModel model) {
+        this.base = base;
+        this.model = model;
+
+        addEventFilter(Menu.ON_SHOWING, e -> {
+            Node content = getSkin().getNode();
+            if (content instanceof Region r) {
+                r.setMaxWidth(500);
+            }
+        });
+        addEventFilter(Menu.ON_SHOWN, e -> {
+            Platform.runLater(() -> {
+                getItems().getFirst().getStyleableNode().requestFocus();
+            });
+        });
+        InputHelper.onLeft(this, false, e -> {
+            hide();
+            e.consume();
+        });
+        setAutoHide(true);
+        getStyleClass().add("condensed");
+    }
+
+    public void showMenu(Node anchor) {
+        getItems().clear();
+        ThreadHelper.runFailableAsync(() -> {
+            var entry = base.get();
+            if (entry.getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY) {
+                return;
+            }
+
+            var actionsMenu = new AtomicReference<ContextMenu>();
+            var r = new Menu();
+            var newItems = updateMenuItems(r, entry, true);
+            Platform.runLater(() -> {
+                getItems().addAll(r.getItems());
+                show(anchor, Side.RIGHT, 0, 0);
+            });
+        });
+    }
+
+    private MenuItem createItem(BrowserEntry browserEntry) {
+        return new QuickAccessMenu(browserEntry).getMenu();
+    }
+
+    private List<MenuItem> updateMenuItems(Menu m, BrowserEntry entry, boolean updateInstantly) throws Exception {
+        var newFiles = model.getFileSystem()
+                .listFiles(entry.getRawFileEntry().resolved().getPath());
+        try (var s = newFiles) {
+            var list = s.map(fileEntry -> fileEntry.resolved()).toList();
+            // Wait until all files are listed, i.e. do not skip the stream elements
+            list = list.subList(0, Math.min(list.size(), 150));
+
+            var newItems = new ArrayList<MenuItem>();
+            if (list.isEmpty()) {
+                var empty = new Menu("<empty>");
+                empty.getStyleClass().add("leaf");
+                newItems.add(empty);
+            } else {
+                var browserEntries = list.stream()
+                        .map(fileEntry -> new BrowserEntry(fileEntry, model.getFileList(), false))
+                        .toList();
+                var menus = browserEntries.stream()
+                        .sorted(model.getFileList().order())
+                        .collect(Collectors.toMap(e -> e, e -> createItem(e), (v1, v2) -> v2, LinkedHashMap::new));
+                var dirs = browserEntries.stream()
+                        .filter(e -> e.getRawFileEntry().getKind() == FileKind.DIRECTORY)
+                        .toList();
+                if (dirs.size() == 1) {
+                    updateMenuItems((Menu) menus.get(dirs.getFirst()), dirs.getFirst(), true);
+                }
+                newItems.addAll(menus.values());
+            }
+            if (updateInstantly) {
+                m.getItems().setAll(newItems);
+            }
+            return newItems;
+        }
+    }
+
     @Getter
     class QuickAccessMenu {
         private final BrowserEntry browserEntry;
-        private ContextMenu browserActionMenu;
         private final Menu menu;
+        private ContextMenu browserActionMenu;
 
         public QuickAccessMenu(BrowserEntry browserEntry) {
             this.browserEntry = browserEntry;
             this.menu = new Menu(
                     // Use original name, not the link target
                     browserEntry.getRawFileEntry().getName(),
-                    PrettyImageHelper.ofFixedSizeSquare(FileIconManager.getFileIcon(browserEntry.getRawFileEntry(), false), 24)
+                    PrettyImageHelper.ofFixedSizeSquare(
+                                    FileIconManager.getFileIcon(browserEntry.getRawFileEntry(), false), 24)
                             .createRegion());
             createMenu();
             addInputListeners();
@@ -49,7 +136,7 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
         private void createMenu() {
             var fileEntry = browserEntry.getRawFileEntry();
             if (fileEntry.resolved().getKind() != FileKind.DIRECTORY) {
-                 createFileMenu();
+                createFileMenu();
             } else {
                 createDirectoryMenu();
             }
@@ -141,8 +228,9 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
                 }
             });
             new BooleanAnimationTimer(hover, 100, () -> {
-                expandDirectoryMenu(empty);
-            }).start();
+                        expandDirectoryMenu(empty);
+                    })
+                    .start();
         }
 
         private void addInputListeners() {
@@ -155,13 +243,15 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
                         } else {
                             expandBrowserActionMenuKey = false;
                         }
-                        if (event.getCode().equals(KeyCode.LEFT) && browserActionMenu != null && browserActionMenu.isShowing()) {
+                        if (event.getCode().equals(KeyCode.LEFT)
+                                && browserActionMenu != null
+                                && browserActionMenu.isShowing()) {
                             closeBrowserActionMenuKey = true;
                         } else {
                             closeBrowserActionMenuKey = false;
                         }
                     });
-                    contextMenu.addEventFilter(MouseEvent.ANY,event -> {
+                    contextMenu.addEventFilter(MouseEvent.ANY, event -> {
                         keyBasedNavigation = false;
                     });
                 }
@@ -215,104 +305,6 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
             Platform.runLater(() -> {
                 browserActionMenu.getItems().getFirst().getStyleableNode().requestFocus();
             });
-        }
-    }
-
-    private final Supplier<BrowserEntry> base;
-    private final OpenFileSystemModel model;
-    private ContextMenu shownBrowserActionsMenu;
-
-    private boolean expandBrowserActionMenuKey;
-    private boolean keyBasedNavigation;
-    private boolean closeBrowserActionMenuKey;
-
-    public BrowserQuickAccessContextMenu(Supplier<BrowserEntry> base, OpenFileSystemModel model) {
-        this.base = base;
-        this.model = model;
-
-        addEventFilter(Menu.ON_SHOWING, e -> {
-            Node content = getSkin().getNode();
-            if (content instanceof Region r) {
-                r.setMaxWidth(500);
-            }
-        });
-        addEventFilter(Menu.ON_SHOWN, e -> {
-            Platform.runLater(() -> {
-                getItems().getFirst().getStyleableNode().requestFocus();
-            });
-        });
-        InputHelper.onLeft(this, false, e -> {
-            hide();
-            e.consume();
-        });
-        setAutoHide(true);
-        getStyleClass().add("condensed");
-    }
-
-    public void showMenu(Node anchor) {
-        getItems().clear();
-        ThreadHelper.runFailableAsync(() -> {
-            var entry = base.get();
-            if (entry.getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY) {
-                return;
-            }
-
-            var actionsMenu = new AtomicReference<ContextMenu>();
-            var r = new Menu();
-            var newItems = updateMenuItems(r, entry, true);
-            Platform.runLater(() -> {
-                getItems().addAll(r.getItems());
-                show(anchor, Side.RIGHT, 0, 0);
-            });
-        });
-    }
-
-    private MenuItem createItem(BrowserEntry browserEntry) {
-        return new QuickAccessMenu(browserEntry).getMenu();
-    }
-
-    private List<MenuItem> updateMenuItems(
-            Menu m,
-            BrowserEntry entry,
-            boolean updateInstantly)
-            throws Exception {
-        var newFiles = model.getFileSystem().listFiles(entry.getRawFileEntry().resolved().getPath());
-        try (var s = newFiles) {
-            var list = s.map(fileEntry -> fileEntry.resolved()).toList();
-            // Wait until all files are listed, i.e. do not skip the stream elements
-            list = list.subList(0, Math.min(list.size(), 150));
-
-            var newItems = new ArrayList<MenuItem>();
-            if (list.isEmpty()) {
-                var empty = new Menu("<empty>");
-                empty.getStyleClass().add("leaf");
-                newItems.add(empty);
-            } else {
-                var browserEntries = list.stream()
-                        .map(fileEntry -> new BrowserEntry(fileEntry, model.getFileList(), false))
-                        .toList();
-                var menus = browserEntries.stream()
-                        .sorted(model.getFileList().order())
-                        .collect(Collectors.toMap(
-                                e -> e,
-                                e -> createItem(e),
-                                (v1, v2) -> v2,
-                                LinkedHashMap::new));
-                var dirs = browserEntries.stream()
-                        .filter(e -> e.getRawFileEntry().getKind() == FileKind.DIRECTORY)
-                        .toList();
-                if (dirs.size() == 1) {
-                    updateMenuItems(
-                            (Menu) menus.get(dirs.getFirst()),
-                            dirs.getFirst(),
-                            true);
-                }
-                newItems.addAll(menus.values());
-            }
-            if (updateInstantly) {
-                m.getItems().setAll(newItems);
-            }
-            return newItems;
         }
     }
 }

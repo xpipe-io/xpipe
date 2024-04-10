@@ -128,6 +128,10 @@ public class BrowserStatusBarComp extends SimpleComp {
         });
 
         // Use status bar as an extension of file list
-        new ContextMenuAugment<>(mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY, null, () -> new BrowserContextMenu(model, null)).augment(new SimpleCompStructure<>(r));
+        new ContextMenuAugment<>(
+                        mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY,
+                        null,
+                        () -> new BrowserContextMenu(model, null))
+                .augment(new SimpleCompStructure<>(r));
     }
 }

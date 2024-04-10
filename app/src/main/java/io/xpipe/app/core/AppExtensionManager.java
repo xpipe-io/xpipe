@@ -49,7 +49,7 @@ public class AppExtensionManager {
         if (load) {
             try {
                 ProcessControlProvider.init(INSTANCE.extendedLayer);
-                ModuleLayerLoader.loadAll(INSTANCE.extendedLayer,  t -> {
+                ModuleLayerLoader.loadAll(INSTANCE.extendedLayer, t -> {
                     ErrorEvent.fromThrowable(t).handle();
                 });
             } catch (Throwable t) {

@@ -14,14 +14,18 @@ import java.util.Locale;
 @Getter
 public class SupportedLocale implements PrefsChoiceValue {
 
-    public static List<SupportedLocale> ALL = AppProperties.get().getLanguages().stream().map(s -> new SupportedLocale(Locale.of(s), s)).toList();
-
-    public static SupportedLocale getEnglish() {
-        return ALL.stream().filter(supportedLocale -> supportedLocale.getId().equals("en")).findFirst().orElseThrow();
-    }
-
+    public static List<SupportedLocale> ALL = AppProperties.get().getLanguages().stream()
+            .map(s -> new SupportedLocale(Locale.of(s), s))
+            .toList();
     private final Locale locale;
     private final String id;
+
+    public static SupportedLocale getEnglish() {
+        return ALL.stream()
+                .filter(supportedLocale -> supportedLocale.getId().equals("en"))
+                .findFirst()
+                .orElseThrow();
+    }
 
     @Override
     public ObservableValue<String> toTranslatedString() {

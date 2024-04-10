@@ -41,6 +41,5 @@ public abstract class LicenseProvider {
                     .findFirst()
                     .orElseThrow(() -> ExtensionException.corrupt("Missing license provider"));
         }
-
     }
 }

@@ -46,7 +46,12 @@ public class BrowserSessionComp extends SimpleComp {
             });
         };
 
-        var bookmarksList = new BrowserBookmarkComp(BindingsHelper.map(model.getSelectedEntry(), v -> v.getEntry().get()), applicable, action).vgrow();
+        var bookmarksList = new BrowserBookmarkComp(
+                        BindingsHelper.map(
+                                model.getSelectedEntry(), v -> v.getEntry().get()),
+                        applicable,
+                        action)
+                .vgrow();
         var localDownloadStage = new BrowserTransferComp(model.getLocalTransfersStage())
                 .hide(PlatformThread.sync(Bindings.createBooleanBinding(
                         () -> {

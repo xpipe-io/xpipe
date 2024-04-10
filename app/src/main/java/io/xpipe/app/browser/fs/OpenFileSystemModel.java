@@ -1,10 +1,10 @@
 package io.xpipe.app.browser.fs;
 
-import io.xpipe.app.browser.file.BrowserFileListModel;
 import io.xpipe.app.browser.BrowserSavedState;
 import io.xpipe.app.browser.BrowserTransferProgress;
-import io.xpipe.app.browser.file.FileSystemHelper;
 import io.xpipe.app.browser.action.BrowserAction;
+import io.xpipe.app.browser.file.BrowserFileListModel;
+import io.xpipe.app.browser.file.FileSystemHelper;
 import io.xpipe.app.browser.session.BrowserAbstractSessionModel;
 import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.browser.session.BrowserSessionTab;
@@ -49,7 +49,10 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
     private OpenFileSystemSavedState savedState;
     private OpenFileSystemCache cache;
 
-    public OpenFileSystemModel(BrowserAbstractSessionModel<?> model, DataStoreEntryRef<? extends FileSystemStore> entry, SelectionMode selectionMode) {
+    public OpenFileSystemModel(
+            BrowserAbstractSessionModel<?> model,
+            DataStoreEntryRef<? extends FileSystemStore> entry,
+            SelectionMode selectionMode) {
         super(model, entry);
         this.inOverview.bind(Bindings.createBooleanBinding(
                 () -> {
@@ -68,8 +71,8 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
     public boolean canImmediatelyClose() {
         return !progress.getValue().done()
                 || (fileSystem != null
-                && fileSystem.getShell().isPresent()
-                && fileSystem.getShell().get().getLock().isLocked());
+                        && fileSystem.getShell().isPresent()
+                        && fileSystem.getShell().get().getLock().isLocked());
     }
 
     @Override
@@ -103,7 +106,9 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
                 && savedState != null
                 && getCurrentPath().get() != null) {
             if (getBrowserModel() instanceof BrowserSessionModel bm) {
-                bm.getSavedState().add(new BrowserSavedState.Entry(getEntry().get().getUuid(), getCurrentPath().get()));
+                bm.getSavedState()
+                        .add(new BrowserSavedState.Entry(
+                                getEntry().get().getUuid(), getCurrentPath().get()));
             }
         }
         try {
@@ -113,7 +118,6 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
         }
         fileSystem = null;
     }
-
 
     private void startIfNeeded() throws Exception {
         if (fileSystem == null) {

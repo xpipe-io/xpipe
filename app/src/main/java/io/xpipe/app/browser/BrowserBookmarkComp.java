@@ -39,8 +39,7 @@ public final class BrowserBookmarkComp extends SimpleComp {
     public BrowserBookmarkComp(
             ObservableValue<DataStoreEntry> selected,
             Predicate<StoreEntryWrapper> applicable,
-            BiConsumer<StoreEntryWrapper, BooleanProperty> action
-    ) {
+            BiConsumer<StoreEntryWrapper, BooleanProperty> action) {
         this.selected = selected;
         this.applicable = applicable;
         this.action = action;
@@ -66,8 +65,8 @@ public final class BrowserBookmarkComp extends SimpleComp {
                                 .pseudoClassStateChanged(
                                         SELECTED,
                                         newValue != null
-                                                && newValue
-                                                .equals(s.getWrapper().getEntry()));
+                                                && newValue.equals(
+                                                        s.getWrapper().getEntry()));
                     });
                 });
             });

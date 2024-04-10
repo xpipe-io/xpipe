@@ -28,7 +28,6 @@ public class BrowserSessionModel extends BrowserAbstractSessionModel<BrowserSess
     private final BrowserTransferModel localTransfersStage = new BrowserTransferModel(this);
     private final BrowserSavedState savedState;
 
-
     public BrowserSessionModel(BrowserSavedState savedState) {
         this.savedState = savedState;
     }

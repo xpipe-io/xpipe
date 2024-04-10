@@ -42,7 +42,9 @@ public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
         var graphic =
                 w.getEntry().getProvider().getDisplayIconFileName(w.getEntry().getStore());
         if (c.isEmpty()) {
-            var item = ContextMenuHelper.item(PrettyImageHelper.ofFixedSizeSquare(graphic, 16), w.getName().getValue());
+            var item = ContextMenuHelper.item(
+                    PrettyImageHelper.ofFixedSizeSquare(graphic, 16),
+                    w.getName().getValue());
             item.setOnAction(event -> {
                 action.accept(w);
                 contextMenu.hide();
@@ -83,7 +85,7 @@ public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
             }
 
             struc.get().setOnAction(event -> {
-                ContextMenuHelper.toggleShow(cm,struc.get(), Side.RIGHT);
+                ContextMenuHelper.toggleShow(cm, struc.get(), Side.RIGHT);
                 event.consume();
             });
         });

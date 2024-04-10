@@ -25,8 +25,7 @@ public class RdpCategory extends AppPrefsCategory {
                         .nameAndDescription("customRdpClientCommand")
                         .addComp(new TextFieldComp(prefs.customRdpClientCommand, true)
                                 .apply(struc -> struc.get().setPromptText("myrdpclient -c $FILE"))
-                                .hide(prefs.rdpClientType.isNotEqualTo(ExternalRdpClientType.CUSTOM)))
-                )
+                                .hide(prefs.rdpClientType.isNotEqualTo(ExternalRdpClientType.CUSTOM))))
                 .buildComp();
     }
 }

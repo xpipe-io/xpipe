@@ -48,7 +48,8 @@ public class AppTheme {
 
         Runnable r = () -> {
             AppPrefs.get().theme.subscribe(t -> {
-                Theme.ALL.forEach(theme -> stage.getScene().getRoot().getStyleClass().remove(theme.getCssId()));
+                Theme.ALL.forEach(
+                        theme -> stage.getScene().getRoot().getStyleClass().remove(theme.getCssId()));
                 if (t == null) {
                     return;
                 }
@@ -88,7 +89,7 @@ public class AppTheme {
                     var c = new WindowControl(stage);
                     c.setWindowAttribute(20, AppPrefs.get().theme.getValue().isDark());
                     stage.setWidth(stage.getWidth() + 1);
-                    Platform.runLater( () -> {
+                    Platform.runLater(() -> {
                         stage.setWidth(stage.getWidth() - 1);
                     });
                 } catch (Throwable e) {
@@ -105,11 +106,11 @@ public class AppTheme {
 
         AppPrefs.get().theme.addListener((observable, oldValue, newValue) -> {
             Platform.runLater(() -> {
-            var transition = new PauseTransition(Duration.millis(300));
-            transition.setOnFinished(e -> {
-                windowTheme.handle(null);
-            });
-            transition.play();
+                var transition = new PauseTransition(Duration.millis(300));
+                transition.setOnFinished(e -> {
+                    windowTheme.handle(null);
+                });
+                transition.play();
             });
         });
     }

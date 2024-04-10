@@ -21,7 +21,7 @@ public class SshCategory extends AppPrefsCategory {
                         .nameAndDescription("useBundledTools")
                         .addToggle(prefs.useBundledTools)
                         .hide(new SimpleBooleanProperty(!OsType.getLocal().equals(OsType.WINDOWS)))
-                .addComp(prefs.getCustomComp("x11WslInstance"))
+                        .addComp(prefs.getCustomComp("x11WslInstance"))
                         .hide(new SimpleBooleanProperty(!OsType.getLocal().equals(OsType.WINDOWS))))
                 .buildComp();
     }

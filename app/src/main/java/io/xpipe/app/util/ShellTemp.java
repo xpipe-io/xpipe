@@ -59,7 +59,8 @@ public class ShellTemp {
         var d = proc.getShellDialect();
 
         var systemTemp = proc.getSystemTemporaryDirectory();
-        if (!d.directoryExists(proc, systemTemp.toString()).executeAndCheck() || !checkDirectoryPermissions(proc, systemTemp.toString())) {
+        if (!d.directoryExists(proc, systemTemp.toString()).executeAndCheck()
+                || !checkDirectoryPermissions(proc, systemTemp.toString())) {
             throw ErrorEvent.expected(new IOException("No permissions to access %s".formatted(systemTemp)));
         }
 
@@ -87,7 +88,7 @@ public class ShellTemp {
         var base = proc.getSystemTemporaryDirectory();
         var arr = Stream.concat(Stream.of(base.toString()), Arrays.stream(sub)).toArray(String[]::new);
         var dir = FileNames.join(arr);
-        
+
         // We assume that this directory does not exist yet and therefore don't perform any checks
         proc.getShellDialect().prepareUserTempDirectory(proc, dir).execute();
 

@@ -2,7 +2,6 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -12,19 +11,7 @@ import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 @AllArgsConstructor
-public class FontIconComp extends Comp <FontIconComp.Structure>{
-
-    @Value
-    public static class Structure implements CompStructure<StackPane> {
-
-        FontIcon icon;
-        StackPane pane;
-
-        @Override
-        public StackPane get() {
-            return pane;
-        }
-    }
+public class FontIconComp extends Comp<FontIconComp.Structure> {
 
     private final ObservableValue<String> icon;
 
@@ -44,5 +31,17 @@ public class FontIconComp extends Comp <FontIconComp.Structure>{
 
         var pane = new StackPane(fi);
         return new FontIconComp.Structure(fi, pane);
+    }
+
+    @Value
+    public static class Structure implements CompStructure<StackPane> {
+
+        FontIcon icon;
+        StackPane pane;
+
+        @Override
+        public StackPane get() {
+            return pane;
+        }
     }
 }

@@ -117,7 +117,8 @@ open module io.xpipe.app {
     provides Module with
             StorageJacksonModule;
     provides ModuleLayerLoader with
-            MessageExchangeImpls.Loader, DataStoreProviders.Loader,
+            MessageExchangeImpls.Loader,
+            DataStoreProviders.Loader,
             ActionProvider.Loader,
             PrefsProvider.Loader,
             BrowserAction.Loader,

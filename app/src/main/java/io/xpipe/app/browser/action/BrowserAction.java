@@ -92,6 +92,5 @@ public interface BrowserAction {
                     })
                     .toList());
         }
-
     }
 }

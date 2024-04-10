@@ -1,10 +1,10 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.browser.action.BranchAction;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.LeafAction;
+import io.xpipe.app.browser.file.BrowserEntry;
+import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.browser.icon.BrowserIcons;
 import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.core.AppI18n;

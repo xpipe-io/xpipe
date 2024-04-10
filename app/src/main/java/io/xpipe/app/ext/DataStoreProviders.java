@@ -14,37 +14,6 @@ import java.util.stream.Collectors;
 
 public class DataStoreProviders {
 
-    public static class Loader implements ModuleLayerLoader {
-
-        @Override
-        public void init(ModuleLayer layer) {
-            TrackEvent.info("Loading extension providers ...");
-            ALL = ServiceLoader.load(layer, DataStoreProvider.class).stream().map(ServiceLoader.Provider::get).collect(Collectors.toList());
-            ALL.removeIf(p -> {
-                try {
-                    if (!p.init()) {
-                        return true;
-                    }
-
-                    p.validate();
-                    return false;
-                } catch (Throwable e) {
-                    ErrorEvent.fromThrowable(e).handle();
-                    return true;
-                }
-            });
-
-            for (DataStoreProvider p : getAll()) {
-                TrackEvent.trace("Loaded data store provider " + p.getId());
-                JacksonMapper.configure(objectMapper -> {
-                    for (Class<?> storeClass : p.getStoreClasses()) {
-                        objectMapper.registerSubtypes(new NamedType(storeClass));
-                    }
-                });
-            }
-        }
-    }
-
     private static List<DataStoreProvider> ALL;
 
     public static void postInit(ModuleLayer layer) {
@@ -99,5 +68,38 @@ public class DataStoreProviders {
 
     public static List<DataStoreProvider> getAll() {
         return ALL;
+    }
+
+    public static class Loader implements ModuleLayerLoader {
+
+        @Override
+        public void init(ModuleLayer layer) {
+            TrackEvent.info("Loading extension providers ...");
+            ALL = ServiceLoader.load(layer, DataStoreProvider.class).stream()
+                    .map(ServiceLoader.Provider::get)
+                    .collect(Collectors.toList());
+            ALL.removeIf(p -> {
+                try {
+                    if (!p.init()) {
+                        return true;
+                    }
+
+                    p.validate();
+                    return false;
+                } catch (Throwable e) {
+                    ErrorEvent.fromThrowable(e).handle();
+                    return true;
+                }
+            });
+
+            for (DataStoreProvider p : getAll()) {
+                TrackEvent.trace("Loaded data store provider " + p.getId());
+                JacksonMapper.configure(objectMapper -> {
+                    for (Class<?> storeClass : p.getStoreClasses()) {
+                        objectMapper.registerSubtypes(new NamedType(storeClass));
+                    }
+                });
+            }
+        }
     }
 }

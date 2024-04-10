@@ -45,7 +45,8 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                                 XPipeInstallation.getCurrentInstallationBasePath()
                                                         .toString(),
                                                 XPipeInstallation.getDaemonDebugScriptPath(OsType.getLocal()));
-                                        TerminalLauncher.openDirect("XPipe Debug", sc -> sc.getShellDialect().runScriptCommand(sc, script));
+                                        TerminalLauncher.openDirect("XPipe Debug", sc -> sc.getShellDialect()
+                                                .runScriptCommand(sc, script));
                                     });
                                     e.consume();
                                 })

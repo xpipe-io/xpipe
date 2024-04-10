@@ -106,8 +106,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
             var format =
                     customCommand.toLowerCase(Locale.ROOT).contains("$file") ? customCommand : customCommand + " $FILE";
-            ExternalApplicationHelper.startAsync(
-                    CommandBuilder.of().add(ExternalApplicationHelper.replaceFileArgument(format, "FILE", file.toString())));
+            ExternalApplicationHelper.startAsync(CommandBuilder.of()
+                    .add(ExternalApplicationHelper.replaceFileArgument(format, "FILE", file.toString())));
         }
 
         @Override
@@ -199,11 +199,10 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                 throw new IOException("Application " + applicationName + ".app not found");
             }
 
-            ExternalApplicationHelper.startAsync(
-                    CommandBuilder.of()
-                            .add("open", "-a")
-                            .addFile(execFile.orElseThrow().toString())
-                            .addFile(file.toString()));
+            ExternalApplicationHelper.startAsync(CommandBuilder.of()
+                    .add("open", "-a")
+                    .addFile(execFile.orElseThrow().toString())
+                    .addFile(file.toString()));
         }
     }
 

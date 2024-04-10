@@ -38,11 +38,7 @@ public class BrowserSessionMultiTab extends BrowserSessionTab<DataStore> {
         return true;
     }
 
-    public void init() throws Exception {
+    public void init() throws Exception {}
 
-    }
-
-    public void close() {
-
-    }
+    public void close() {}
 }

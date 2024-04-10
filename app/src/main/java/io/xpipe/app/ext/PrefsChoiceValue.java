@@ -36,9 +36,7 @@ public interface PrefsChoiceValue extends Translatable {
             throw new AssertionError();
         }
 
-        return all.stream()
-                .filter(t -> ((PrefsChoiceValue) t).isSelectable())
-                .toList();
+        return all.stream().filter(t -> ((PrefsChoiceValue) t).isSelectable()).toList();
     }
 
     default boolean isAvailable() {

@@ -38,8 +38,7 @@ public abstract class StringSource {
             try (var sc = host.control().start()) {
                 var path = file.toAbsoluteFilePath(sc);
                 if (!sc.getShellDialect().createFileExistsCommand(sc, path).executeAndCheck()) {
-                    throw ErrorEvent.expected(
-                            new IllegalArgumentException("File " + path + " does not exist"));
+                    throw ErrorEvent.expected(new IllegalArgumentException("File " + path + " does not exist"));
                 }
 
                 var abs = file.toAbsoluteFilePath(sc);

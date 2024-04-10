@@ -71,7 +71,10 @@ public class AppLayoutModel {
 
     private List<Entry> createEntryList() {
         var l = new ArrayList<>(List.of(
-                new Entry(AppI18n.observable("browser"), "mdi2f-file-cabinet", new BrowserSessionComp(BrowserSessionModel.DEFAULT)),
+                new Entry(
+                        AppI18n.observable("browser"),
+                        "mdi2f-file-cabinet",
+                        new BrowserSessionComp(BrowserSessionModel.DEFAULT)),
                 new Entry(AppI18n.observable("connections"), "mdi2c-connection", new StoreLayoutComp()),
                 new Entry(AppI18n.observable("settings"), "mdsmz-miscellaneous_services", new AppPrefsComp()),
                 new Entry(

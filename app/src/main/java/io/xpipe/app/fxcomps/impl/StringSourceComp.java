@@ -17,7 +17,8 @@ public class StringSourceComp extends SimpleComp {
     private final Property<DataStoreEntryRef<ShellStore>> fileSystem;
     private final Property<StringSource> stringSource;
 
-    public <T extends ShellStore> StringSourceComp(ObservableValue<DataStoreEntryRef<T>> fileSystem, Property<StringSource> stringSource) {
+    public <T extends ShellStore> StringSourceComp(
+            ObservableValue<DataStoreEntryRef<T>> fileSystem, Property<StringSource> stringSource) {
         this.stringSource = stringSource;
         this.fileSystem = new SimpleObjectProperty<>();
         fileSystem.subscribe(val -> {
@@ -27,9 +28,13 @@ public class StringSourceComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var inPlace = new SimpleObjectProperty<>(stringSource.getValue() instanceof StringSource.InPlace i ? i.get() : null);
+        var inPlace =
+                new SimpleObjectProperty<>(stringSource.getValue() instanceof StringSource.InPlace i ? i.get() : null);
         var fs = stringSource.getValue() instanceof StringSource.File f ? f.getFile() : null;
-        var file = new SimpleObjectProperty<>(stringSource.getValue() instanceof StringSource.File f ? f.getFile().serialize() : null);
+        var file = new SimpleObjectProperty<>(
+                stringSource.getValue() instanceof StringSource.File f
+                        ? f.getFile().serialize()
+                        : null);
         var showText = new SimpleBooleanProperty(inPlace.get() != null);
 
         var stringField = new TextAreaComp(inPlace);
@@ -39,8 +44,9 @@ public class StringSourceComp extends SimpleComp {
 
         var tr = stringField.createRegion();
         var button = new IconButtonComp("mdi2c-checkbox-marked-outline", () -> {
-            showText.set(!showText.getValue());
-        }).createRegion();
+                    showText.set(!showText.getValue());
+                })
+                .createRegion();
         AnchorPane.setBottomAnchor(button, 10.0);
         AnchorPane.setRightAnchor(button, 10.0);
         var anchorPane = new AnchorPane(tr, button);

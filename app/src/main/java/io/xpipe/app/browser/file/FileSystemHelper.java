@@ -296,8 +296,11 @@ public class FileSystemHelper {
         AtomicLong transferred = new AtomicLong();
         for (var e : flatFiles.entrySet()) {
             var sourceFile = e.getKey();
-            var targetFile = target.getFileSystem().getShell().orElseThrow().getOsType().makeFileSystemCompatible(
-                    FileNames.join(target.getPath(), e.getValue()));
+            var targetFile = target.getFileSystem()
+                    .getShell()
+                    .orElseThrow()
+                    .getOsType()
+                    .makeFileSystemCompatible(FileNames.join(target.getPath(), e.getValue()));
             if (sourceFile.getFileSystem().equals(target.getFileSystem())) {
                 throw new IllegalStateException();
             }

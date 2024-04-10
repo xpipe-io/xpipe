@@ -53,9 +53,8 @@ public class OsLogoComp extends SimpleComp {
                 wrapper.getPersistentState(),
                 state);
         var hide = BindingsHelper.map(img, s -> s != null);
-        return new StackComp(List.of(
-                        new SystemStateComp(state).hide(hide),
-                        new PrettyImageComp(img, 24, 24).visible(hide)))
+        return new StackComp(
+                        List.of(new SystemStateComp(state).hide(hide), new PrettyImageComp(img, 24, 24).visible(hide)))
                 .createRegion();
     }
 

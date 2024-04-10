@@ -103,5 +103,4 @@ public class BrowserChooserModel extends BrowserAbstractSessionModel<OpenFileSys
             }
         });
     }
-
 }

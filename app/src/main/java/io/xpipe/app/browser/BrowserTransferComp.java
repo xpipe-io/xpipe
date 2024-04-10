@@ -123,14 +123,15 @@ public class BrowserTransferComp extends SimpleComp {
                                         return;
                                     }
 
-                                    if (!(model.getBrowserSessionModel().getSelectedEntry().getValue() instanceof OpenFileSystemModel fileSystemModel)) {
+                                    if (!(model.getBrowserSessionModel()
+                                                    .getSelectedEntry()
+                                                    .getValue()
+                                            instanceof OpenFileSystemModel fileSystemModel)) {
                                         return;
                                     }
 
                                     var files = drag.getEntries();
-                                    model.drop(
-                                            fileSystemModel,
-                                            files);
+                                    model.drop(fileSystemModel, files);
                                     event.setDropCompleted(true);
                                     event.consume();
                                 }
