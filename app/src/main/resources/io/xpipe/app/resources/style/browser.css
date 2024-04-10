@@ -1,3 +1,12 @@
+.browser .visual-display {
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 2 1 1 1;
+}
+
+.browser .visual-display:focused {
+    -fx-border-color: -color-accent-emphasis;
+}
+
 .download-background {
     -fx-border-color: -color-border-default;
     -fx-border-width: 1px 0 0 0;

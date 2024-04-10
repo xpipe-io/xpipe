@@ -11,8 +11,6 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.Node;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -44,19 +42,6 @@ public class AppLayoutComp extends Comp<CompStructure<Pane>> {
             }
         });
         AppFont.normal(pane);
-
-        onSceneAssign(struc -> {
-            struc.get().getScene().addEventFilter(KeyEvent.ANY, event -> {
-                for (Node r : multiR.getChildren()) {
-                    if (r.isManaged()) {
-                        r.fireEvent(event);
-                        event.consume();
-                        break;
-                    }
-                }
-            });
-        });
-
         return new SimpleCompStructure<>(pane);
     }
 }

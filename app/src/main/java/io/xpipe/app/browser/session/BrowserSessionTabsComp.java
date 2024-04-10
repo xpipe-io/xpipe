@@ -63,7 +63,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
         Styles.toggleStyleClass(tabs, TabPane.STYLE_CLASS_FLOATING);
         toggleStyleClass(tabs, DENSE);
 
-        var map = new HashMap<BrowserSessionTab, Tab>();
+        var map = new HashMap<BrowserSessionTab<?>, Tab>();
 
         // Restore state
         model.getSessionEntries().forEach(v -> {
