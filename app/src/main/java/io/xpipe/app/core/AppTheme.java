@@ -88,10 +88,6 @@ public class AppTheme {
                 try {
                     var c = new WindowControl(stage);
                     c.setWindowAttribute(20, AppPrefs.get().theme.getValue().isDark());
-                    stage.setWidth(stage.getWidth() + 1);
-                    Platform.runLater(() -> {
-                        stage.setWidth(stage.getWidth() - 1);
-                    });
                 } catch (Throwable e) {
                     ErrorEvent.fromThrowable(e).handle();
                 }

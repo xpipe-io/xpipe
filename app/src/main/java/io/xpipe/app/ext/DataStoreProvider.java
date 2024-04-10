@@ -147,19 +147,15 @@ public interface DataStoreProvider {
         return new SimpleStringProperty(null);
     }
 
-    default String i18n(String key) {
-        return AppI18n.get(getId() + "." + key);
+    default ObservableValue<String> i18n(String key) {
+        return AppI18n.observable(getId() + "." + key);
     }
 
-    default String i18nKey(String key) {
-        return getId() + "." + key;
-    }
-
-    default String getDisplayName() {
+    default ObservableValue<String> displayName() {
         return i18n("displayName");
     }
 
-    default String getDisplayDescription() {
+    default ObservableValue<String> displayDescription() {
         return i18n("displayDescription");
     }
 

@@ -5,6 +5,7 @@ import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.icon.FileIconManager;
 import io.xpipe.app.comp.base.LazyTextFieldComp;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
@@ -70,7 +71,8 @@ public final class BrowserFileListComp extends SimpleComp {
 
     @SuppressWarnings("unchecked")
     private TableView<BrowserEntry> createTable() {
-        var filenameCol = new TableColumn<BrowserEntry, String>("Name");
+        var filenameCol = new TableColumn<BrowserEntry, String>();
+        filenameCol.textProperty().bind(AppI18n.observable("name"));
         filenameCol.setCellValueFactory(param -> new SimpleStringProperty(
                 param.getValue() != null
                         ? FileNames.getFileName(
@@ -80,17 +82,20 @@ public final class BrowserFileListComp extends SimpleComp {
         filenameCol.setSortType(ASCENDING);
         filenameCol.setCellFactory(col -> new FilenameCell(fileList.getEditing()));
 
-        var sizeCol = new TableColumn<BrowserEntry, Number>("Size");
+        var sizeCol = new TableColumn<BrowserEntry, Number>();
+        sizeCol.textProperty().bind(AppI18n.observable("size"));
         sizeCol.setCellValueFactory(param -> new SimpleLongProperty(
                 param.getValue().getRawFileEntry().resolved().getSize()));
         sizeCol.setCellFactory(col -> new FileSizeCell());
 
-        var mtimeCol = new TableColumn<BrowserEntry, Instant>("Modified");
+        var mtimeCol = new TableColumn<BrowserEntry, Instant>();
+        mtimeCol.textProperty().bind(AppI18n.observable("modified"));
         mtimeCol.setCellValueFactory(param -> new SimpleObjectProperty<>(
                 param.getValue().getRawFileEntry().resolved().getDate()));
         mtimeCol.setCellFactory(col -> new FileTimeCell());
 
-        var modeCol = new TableColumn<BrowserEntry, String>("Attributes");
+        var modeCol = new TableColumn<BrowserEntry, String>();
+        modeCol.textProperty().bind(AppI18n.observable("attributes"));
         modeCol.setCellValueFactory(param -> new SimpleObjectProperty<>(
                 param.getValue().getRawFileEntry().resolved().getMode()));
         modeCol.setCellFactory(col -> new FileModeCell());

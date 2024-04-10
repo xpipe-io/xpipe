@@ -84,7 +84,8 @@ public class StoreCreationMenu {
             event.consume();
         });
         sub.forEach(dataStoreProvider -> {
-            var item = new MenuItem(dataStoreProvider.getDisplayName());
+            var item = new MenuItem();
+            item.textProperty().bind(dataStoreProvider.displayName());
             item.setGraphic(PrettyImageHelper.ofFixedSizeSquare(dataStoreProvider.getDisplayIconFileName(null), 16)
                     .createRegion());
             item.setOnAction(event -> {

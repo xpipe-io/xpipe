@@ -11,6 +11,7 @@ import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.JfxHelper;
 import io.xpipe.app.util.OptionsBuilder;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Region;
@@ -101,9 +102,9 @@ public class AboutCategory extends AppPrefsCategory {
     private Comp<?> createProperties() {
         var title = Comp.of(() -> {
                     return JfxHelper.createNamedEntry(
-                            AppI18n.get("xPipeClient"),
-                            "Version " + AppProperties.get().getVersion() + " ("
-                                    + AppProperties.get().getArch() + ")",
+                            AppI18n.observable("xPipeClient"),
+                            new SimpleStringProperty("Version " + AppProperties.get().getVersion() + " ("
+                                    + AppProperties.get().getArch() + ")"),
                             "logo.png");
                 })
                 .styleClass(Styles.TEXT_BOLD);
