@@ -5,7 +5,8 @@ import io.xpipe.beacon.ServerException;
 import io.xpipe.core.process.ProcessControl;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.TerminalInitScriptConfig;
-import io.xpipe.core.util.FailableFunction;
+import io.xpipe.core.process.WorkingDirectoryFunction;
+import io.xpipe.core.store.FilePath;
 import lombok.Setter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
@@ -22,16 +23,26 @@ public class TerminalLauncherManager {
 
     private static void prepare(
             ProcessControl processControl, TerminalInitScriptConfig config, String directory, Entry entry) {
-        FailableFunction<ShellControl, String, Exception> workingDirectory = sc -> {
-            if (directory == null) {
-                return null;
+        var workingDirectory = new WorkingDirectoryFunction() {
+
+            @Override
+            public boolean isFixed() {
+                return true;
             }
 
-            if (!sc.getShellDialect().directoryExists(sc, directory).executeAndCheck()) {
-                return null;
+            @Override
+            public boolean isSpecified() {
+                return directory != null;
             }
 
-            return directory;
+            @Override
+            public FilePath apply(ShellControl shellControl) throws Exception {
+                if (directory == null) {
+                    return null;
+                }
+
+                return new FilePath(directory);
+            }
         };
 
         try {

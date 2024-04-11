@@ -1,7 +1,5 @@
 package io.xpipe.core.process;
 
-import io.xpipe.core.util.FailableFunction;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -17,7 +15,7 @@ public interface ProcessControl extends AutoCloseable {
     void resetData(boolean cache);
 
     String prepareTerminalOpen(
-            TerminalInitScriptConfig config, FailableFunction<ShellControl, String, Exception> workingDirectory)
+            TerminalInitScriptConfig config, WorkingDirectoryFunction workingDirectory)
             throws Exception;
 
     void closeStdin() throws IOException;

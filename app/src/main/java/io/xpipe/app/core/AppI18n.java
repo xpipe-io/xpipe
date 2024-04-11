@@ -110,14 +110,16 @@ public class AppI18n {
             english = load(Locale.ENGLISH);
         }
 
-        if (AppPrefs.get() != null) {
-            AppPrefs.get().language().subscribe(n -> {
-                try {
-                    currentLanguage.setValue(n != null ? load(n.getLocale()) : null);
-                } catch (Exception e) {
-                    ErrorEvent.fromThrowable(e).handle();
-                }
-            });
+        if (currentLanguage.getValue() == null) {
+            if (AppPrefs.get() != null) {
+                AppPrefs.get().language().subscribe(n -> {
+                    try {
+                        currentLanguage.setValue(n != null ? load(n.getLocale()) : null);
+                    } catch (Exception e) {
+                        ErrorEvent.fromThrowable(e).handle();
+                    }
+                });
+            }
         }
     }
 

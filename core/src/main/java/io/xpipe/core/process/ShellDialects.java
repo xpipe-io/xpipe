@@ -31,7 +31,7 @@ public class ShellDialects {
 
     public static List<ShellDialect> getStartableDialects() {
         return ALL.stream()
-                .filter(dialect -> dialect.getOpenCommand(null) != null)
+                .filter(dialect -> dialect.getLaunchCommand() != null)
                 .toList();
     }
 

@@ -6,10 +6,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.terminal.ExternalTerminalType;
-import io.xpipe.core.process.ProcessControl;
-import io.xpipe.core.process.ProcessControlProvider;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.TerminalInitScriptConfig;
+import io.xpipe.core.process.*;
 import io.xpipe.core.util.FailableFunction;
 
 import java.io.IOException;
@@ -28,7 +25,7 @@ public class TerminalLauncher {
             var script = ScriptHelper.constructTerminalInitFile(
                     sc.getShellDialect(),
                     sc,
-                    ignored -> null,
+                    WorkingDirectoryFunction.none(),
                     List.of(),
                     command.apply(sc),
                     new TerminalInitScriptConfig(

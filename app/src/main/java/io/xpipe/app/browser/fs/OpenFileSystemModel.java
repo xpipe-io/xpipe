@@ -238,7 +238,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
             var name = adjustedPath + " - " + entry.get().getName();
             ThreadHelper.runFailableAsync(() -> {
                 if (ShellDialects.getStartableDialects().stream()
-                        .anyMatch(dialect -> adjustedPath.startsWith(dialect.getOpenCommand(null)))) {
+                        .anyMatch(dialect -> adjustedPath.toLowerCase().startsWith(dialect.getExecutableName().toLowerCase()))) {
                     TerminalLauncher.open(
                             entry.getEntry(),
                             name,

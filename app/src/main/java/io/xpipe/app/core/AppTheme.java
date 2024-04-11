@@ -6,7 +6,6 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.WindowControl;
 import io.xpipe.core.process.OsType;
 import javafx.animation.*;
 import javafx.application.Application;
@@ -86,8 +85,8 @@ public class AppTheme {
                 }
 
                 try {
-                    var c = new WindowControl(stage);
-                    c.setWindowAttribute(20, AppPrefs.get().theme.getValue().isDark());
+//                    var c = new WindowControl(stage);
+//                    c.setWindowAttribute(20, AppPrefs.get().theme.getValue().isDark());
                 } catch (Throwable e) {
                     ErrorEvent.fromThrowable(e).handle();
                 }

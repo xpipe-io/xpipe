@@ -147,6 +147,18 @@ public class CommandBuilder {
         return this;
     }
 
+    public CommandBuilder addAll(List<String> s) {
+        for (String s1 : s) {
+            elements.add(new Fixed(s1));
+        }
+        return this;
+    }
+
+    public CommandBuilder addAll(FailableFunction<ShellControl, List<String>, Exception> f) {
+        elements.add(sc -> String.join(" ", f.apply(sc)));
+        return this;
+    }
+
     public CommandBuilder prepend(String... s) {
         elements.addAll(0, Arrays.stream(s).map(s2 -> new Fixed(s2)).toList());
         return this;

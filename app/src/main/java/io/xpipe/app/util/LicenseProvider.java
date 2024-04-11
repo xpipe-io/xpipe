@@ -2,7 +2,6 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.ext.ExtensionException;
 import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.util.ModuleLayerLoader;
 import javafx.beans.value.ObservableValue;
 
@@ -22,7 +21,7 @@ public abstract class LicenseProvider {
 
     public abstract LicensedFeature getFeature(String id);
 
-    public abstract void handleShellControl(ShellControl sc);
+    public abstract void checkShellControl(String s);
 
     public abstract void showLicenseAlert(LicenseRequiredException ex);
 
