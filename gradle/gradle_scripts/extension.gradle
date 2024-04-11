@@ -8,6 +8,7 @@
 // jar.dependsOn(copyRuntimeLibs)
 
 def dev = tasks.register('createDevOutput', Copy) {
+    dependsOn jar
     mustRunAfter jar
 
     if (project.allExtensions.contains(project)) {
@@ -17,6 +18,10 @@ def dev = tasks.register('createDevOutput', Copy) {
     }
 }
 jar.finalizedBy(dev)
+
+project(':app').tasks.withType(JavaExec).configureEach {
+    dependsOn(dev)
+}
 
 tasks.register('createExtOutput', Copy) {
     mustRunAfter jar
