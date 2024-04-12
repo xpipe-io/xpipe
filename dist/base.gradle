@@ -30,6 +30,10 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                 from "$projectDir/fonts"
                 into "$distDir/base/app/fonts"
             }
+            copy {
+                from "$rootDir/lang"
+                into "$distDir/base/app/lang"
+            }
 
             def debugArguments = file("$projectDir/debug/debug_arguments.txt").text.lines().map(s -> '"' + s + '"').collect(Collectors.joining(
                     ' '))
@@ -90,6 +94,10 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
             copy {
                 from "$projectDir/fonts"
                 into "$distDir/base/app/fonts"
+            }
+            copy {
+                from "$rootDir/lang"
+                into "$distDir/base/app/lang"
             }
 
             // Fixes a JPackage bug
@@ -183,6 +191,11 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                 from "$projectDir/bundled_bin/$platformName"
                 into "$distDir/$app/Contents/Resources/bundled"
             }
+            copy {
+                from "$rootDir/lang"
+                into "$distDir/$app/Contents/Resources/lang"
+            }
+
 
             copy {
                 from "$projectDir/PkgInstaller/darwin/Resources/uninstall.sh"
