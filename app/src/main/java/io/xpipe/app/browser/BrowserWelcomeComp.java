@@ -96,7 +96,10 @@ public class BrowserWelcomeComp extends SimpleComp {
                     var disable = new SimpleBooleanProperty();
                     var entryButton = entryButton(e, disable);
                     var dirButton = dirButton(e, disable);
-                    return new HorizontalComp(List.of(entryButton, dirButton));
+                    return new HorizontalComp(List.of(entryButton, dirButton)).apply(struc -> {
+                        ((Region) struc.get().getChildren().get(0)).prefHeightProperty().bind(struc.get().heightProperty());
+                        ((Region) struc.get().getChildren().get(1)).prefHeightProperty().bind(struc.get().heightProperty());
+                    });
                 })
                 .apply(struc -> {
                     VBox vBox = (VBox) struc.get().getContent();
