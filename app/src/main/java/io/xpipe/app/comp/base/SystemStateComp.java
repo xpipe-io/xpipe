@@ -62,9 +62,11 @@ public class SystemStateComp extends SimpleComp {
             """;
         pane.getStylesheets().add(Styles.toDataURI(dataClass1));
 
-        PlatformThread.sync(state).subscribe(val -> {
-            pane.getStylesheets().removeAll(success, failure, other);
-            pane.getStylesheets().add(val == State.SUCCESS ? success : val == State.FAILURE ? failure : other);
+        state.subscribe(val -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                pane.getStylesheets().removeAll(success, failure, other);
+                pane.getStylesheets().add(val == State.SUCCESS ? success : val == State.FAILURE ? failure : other);
+            });
         });
 
         return pane;

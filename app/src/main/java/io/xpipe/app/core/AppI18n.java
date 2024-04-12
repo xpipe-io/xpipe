@@ -108,6 +108,7 @@ public class AppI18n {
     private void load() throws Exception {
         if (english == null) {
             english = load(Locale.ENGLISH);
+            Locale.setDefault(Locale.ENGLISH);
         }
 
         if (currentLanguage.getValue() == null) {
@@ -115,6 +116,7 @@ public class AppI18n {
                 AppPrefs.get().language().subscribe(n -> {
                     try {
                         currentLanguage.setValue(n != null ? load(n.getLocale()) : null);
+                        Locale.setDefault(n != null ? n.getLocale() : Locale.ENGLISH);
                     } catch (Exception e) {
                         ErrorEvent.fromThrowable(e).handle();
                     }
@@ -275,12 +277,13 @@ public class AppI18n {
                         ? AppPrefs.get().language().getValue().getLocale()
                         : SupportedLocale.getEnglish().getLocale());
 
-        return new LoadedTranslations(translations, markdownDocumentations, prettyTime);
+        return new LoadedTranslations(l, translations, markdownDocumentations, prettyTime);
     }
 
     @Value
     static class LoadedTranslations {
 
+        Locale locale;
         Map<String, String> translations;
         Map<String, String> markdownDocumentations;
         PrettyTime prettyTime;
