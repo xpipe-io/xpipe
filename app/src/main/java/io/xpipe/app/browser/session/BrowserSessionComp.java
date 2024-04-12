@@ -30,8 +30,15 @@ public class BrowserSessionComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         Predicate<StoreEntryWrapper> applicable = storeEntryWrapper -> {
-            return (storeEntryWrapper.getEntry().getStore() instanceof ShellStore)
-                    && storeEntryWrapper.getEntry().getValidity().isUsable();
+            if (!storeEntryWrapper.getEntry().getValidity().isUsable()) {
+                return false;
+            }
+
+            if (storeEntryWrapper.getEntry().getStore() instanceof ShellStore) {
+                return true;
+            }
+
+            return storeEntryWrapper.getEntry().getProvider().browserAction(model,storeEntryWrapper.getEntry(), null) != null;
         };
         BiConsumer<StoreEntryWrapper, BooleanProperty> action = (w, busy) -> {
             ThreadHelper.runFailableAsync(() -> {
@@ -42,6 +49,11 @@ public class BrowserSessionComp extends SimpleComp {
 
                 if (entry.getStore() instanceof ShellStore fileSystem) {
                     model.openFileSystemAsync(entry.ref(), null, busy);
+                }
+
+                var a = entry.getProvider().browserAction(model, entry, busy);
+                if (a != null) {
+                    a.execute();
                 }
             });
         };

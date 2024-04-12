@@ -1,5 +1,6 @@
 package io.xpipe.app.ext;
 
+import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.comp.store.StoreEntryComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
@@ -15,6 +16,7 @@ import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.JacksonizedValue;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -42,6 +44,14 @@ public interface DataStoreProvider {
                         String.format("Store class %s is not a Jacksonized value", storeClass.getSimpleName()));
             }
         }
+    }
+
+    default ActionProvider.Action launchAction(DataStoreEntry store) {
+        return null;
+    }
+
+    default ActionProvider.Action browserAction(BrowserSessionModel sessionModel, DataStoreEntry store, BooleanProperty busy) {
+        return null;
     }
 
     default String browserDisplayName(DataStore store) {
