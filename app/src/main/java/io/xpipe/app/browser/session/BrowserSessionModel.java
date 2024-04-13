@@ -4,9 +4,6 @@ import io.xpipe.app.browser.BrowserSavedState;
 import io.xpipe.app.browser.BrowserSavedStateImpl;
 import io.xpipe.app.browser.BrowserTransferModel;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
-import io.xpipe.app.browser.icon.BrowserIconDirectoryType;
-import io.xpipe.app.browser.icon.BrowserIconFileType;
-import io.xpipe.app.browser.icon.FileIconManager;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
@@ -76,13 +73,6 @@ public class BrowserSessionModel extends BrowserAbstractSessionModel<BrowserSess
         if (store == null) {
             return;
         }
-
-        // Only load icons when a file system is opened
-        ThreadHelper.runAsync(() -> {
-            BrowserIconFileType.loadDefinitions();
-            BrowserIconDirectoryType.loadDefinitions();
-            FileIconManager.loadIfNecessary();
-        });
 
         ThreadHelper.runFailableAsync(() -> {
             OpenFileSystemModel model;

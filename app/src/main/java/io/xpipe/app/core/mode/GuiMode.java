@@ -1,5 +1,8 @@
 package io.xpipe.app.core.mode;
 
+import io.xpipe.app.browser.icon.BrowserIconDirectoryType;
+import io.xpipe.app.browser.icon.BrowserIconFileType;
+import io.xpipe.app.browser.icon.FileIconManager;
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppGreetings;
 import io.xpipe.app.core.AppMainWindow;
@@ -8,6 +11,7 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.update.UpdateChangelogAlert;
+import io.xpipe.app.util.ThreadHelper;
 import javafx.stage.Stage;
 
 public class GuiMode extends PlatformMode {
@@ -46,6 +50,12 @@ public class GuiMode extends PlatformMode {
             AppMainWindow.getInstance().show();
         });
         TrackEvent.info("Window setup complete");
+
+        ThreadHelper.runAsync(() -> {
+            BrowserIconFileType.loadDefinitions();
+            BrowserIconDirectoryType.loadDefinitions();
+            FileIconManager.loadIfNecessary();
+        });
 
         UpdateChangelogAlert.showIfNeeded();
     }
