@@ -7,6 +7,7 @@ import io.xpipe.beacon.exchange.cli.ListStoresExchange;
 import io.xpipe.beacon.exchange.data.StoreListEntry;
 
 import java.util.Comparator;
+import java.util.List;
 
 public class ListStoresExchangeImpl extends ListStoresExchange
         implements MessageExchangeImpl<ListStoresExchange.Request, ListStoresExchange.Response> {
@@ -14,6 +15,10 @@ public class ListStoresExchangeImpl extends ListStoresExchange
     @Override
     public Response handleRequest(BeaconHandler handler, Request msg) {
         DataStorage s = DataStorage.get();
+        if (s == null) {
+            return Response.builder().entries(List.of()).build();
+        }
+
         var e = s.getStoreEntries().stream()
                 .filter(entry -> !entry.isDisabled())
                 .map(col -> StoreListEntry.builder()
