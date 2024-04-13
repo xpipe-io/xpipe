@@ -29,8 +29,8 @@ public class SecretManager {
     }
 
     public static synchronized SecretQueryProgress expectAskpass(
-            UUID request, UUID storeId, List<SecretQuery> suppliers, SecretQuery fallback, CountDown countDown) {
-        var p = new SecretQueryProgress(request, storeId, suppliers, fallback, countDown);
+            UUID request, UUID storeId, List<SecretQuery> suppliers, SecretQuery fallback, List<SecretQueryFilter> filters, CountDown countDown) {
+        var p = new SecretQueryProgress(request, storeId, suppliers, fallback, filters, countDown);
         progress.add(p);
         return p;
     }
@@ -56,7 +56,7 @@ public class SecretManager {
         }
 
         var uuid = UUID.randomUUID();
-        var p = expectAskpass(uuid, secretId, List.of(strategy.query()), SecretQuery.prompt(false), CountDown.of());
+        var p = expectAskpass(uuid, secretId, List.of(strategy.query()), SecretQuery.prompt(false), List.of(), CountDown.of());
         p.preAdvance(sub);
         var r = p.process(prompt);
         completeRequest(uuid);

@@ -18,6 +18,7 @@ public class SecretQueryProgress {
     private final UUID storeId;
     private final List<SecretQuery> suppliers;
     private final SecretQuery fallback;
+    private final List<SecretQueryFilter> filters;
     private final List<String> seenPrompts;
     private final CountDown countDown;
     private boolean requestCancelled;
@@ -27,11 +28,13 @@ public class SecretQueryProgress {
             @NonNull UUID storeId,
             @NonNull List<SecretQuery> suppliers,
             @NonNull SecretQuery fallback,
+            @NonNull List<SecretQueryFilter> filters,
             @NonNull CountDown countDown) {
         this.requestId = requestId;
         this.storeId = storeId;
         this.suppliers = new ArrayList<>(suppliers);
         this.fallback = fallback;
+        this.filters = filters;
         this.countDown = countDown;
         this.seenPrompts = new ArrayList<>();
     }
@@ -47,6 +50,13 @@ public class SecretQueryProgress {
         // Cancel early
         if (requestCancelled) {
             return null;
+        }
+
+        for (SecretQueryFilter filter : filters) {
+            var o = filter.filter(prompt);
+            if (o.isPresent()) {
+                return o.get();
+            }
         }
 
         var seenBefore = seenPrompts.contains(prompt);
