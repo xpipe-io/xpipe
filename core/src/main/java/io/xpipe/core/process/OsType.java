@@ -28,7 +28,7 @@ public interface OsType {
         }
     }
 
-    String makeFileSystemCompatible(String path);
+    String makeFileSystemCompatible(String name);
 
     List<String> determineInterestingPaths(ShellControl pc) throws Exception;
 
@@ -57,8 +57,8 @@ public interface OsType {
     final class Windows implements OsType, Local, Any {
 
         @Override
-        public String makeFileSystemCompatible(String path) {
-            return path.replaceAll("[<>:\"/\\\\|?*]", "_").replaceAll("\\p{C}", "");
+        public String makeFileSystemCompatible(String name) {
+            return name.replaceAll("[<>:\"/\\\\|?*]", "_").replaceAll("\\p{C}", "");
         }
 
         @Override
@@ -124,8 +124,9 @@ public interface OsType {
     class Unix implements OsType {
 
         @Override
-        public String makeFileSystemCompatible(String path) {
-            return path.replaceAll("/", "_").replaceAll("\0", "");
+        public String makeFileSystemCompatible(String name) {
+            // Technically the backslash is supported, but it causes all kinds of troubles, so we also exclude it
+            return name.replaceAll("/\\\\", "_").replaceAll("\0", "");
         }
 
         @Override
@@ -211,8 +212,9 @@ public interface OsType {
     final class MacOs implements OsType, Local, Any {
 
         @Override
-        public String makeFileSystemCompatible(String path) {
-            return path.replaceAll("[/:]", "_").replaceAll("\0", "");
+        public String makeFileSystemCompatible(String name) {
+            // Technically the backslash is supported, but it causes all kinds of troubles, so we also exclude it
+            return name.replaceAll("[\\\\/:]", "_").replaceAll("\0", "");
         }
 
         @Override

@@ -65,13 +65,13 @@ public class App extends Application {
                             "XPipe %s (%s)", t.getValue(), AppProperties.get().getVersion());
                     var prefix = AppProperties.get().isStaging() ? "[Public Test Build, Not a proper release] " : "";
                     var suffix = u.getValue() != null
-                            ? String.format(
-                                    " (Update to %s ready)", u.getValue().getVersion())
+                            ? AppI18n.get("updateReadyTitle", u.getValue().getVersion())
                             : "";
                     return prefix + base + suffix;
                 },
                 u,
-                t);
+                t,
+                AppPrefs.get().language());
 
         var appWindow = AppMainWindow.init(stage);
         appWindow.getStage().titleProperty().bind(PlatformThread.sync(titleBinding));

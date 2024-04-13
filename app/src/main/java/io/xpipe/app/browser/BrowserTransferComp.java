@@ -38,18 +38,22 @@ public class BrowserTransferComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
+        var syncItems = PlatformThread.sync(model.getItems());
+        var syncDownloaded = PlatformThread.sync(model.getDownloading());
+        var syncAllDownloaded = PlatformThread.sync(model.getAllDownloaded());
+        
         var background = new LabelComp(AppI18n.observable("transferDescription"))
                 .apply(struc -> struc.get().setGraphic(new FontIcon("mdi2d-download-outline")))
-                .visible(Bindings.isEmpty(model.getItems()));
+                .visible(Bindings.isEmpty(syncItems));
         var backgroundStack =
                 new StackComp(List.of(background)).grow(true, true).styleClass("download-background");
 
-        var binding = ListBindingsHelper.mappedContentBinding(model.getItems(), item -> item.getFileEntry());
+        var binding = ListBindingsHelper.mappedContentBinding(syncItems, item -> item.getFileEntry());
         var list = new BrowserSelectionListComp(
                         binding,
                         entry -> Bindings.createStringBinding(
                                 () -> {
-                                    var sourceItem = model.getItems().stream()
+                                    var sourceItem = syncItems.stream()
                                             .filter(item -> item.getFileEntry() == entry)
                                             .findAny();
                                     if (sourceItem.isEmpty()) {
@@ -64,27 +68,27 @@ public class BrowserTransferComp extends SimpleComp {
                                                             .orElse("?");
                                     return FileNames.getFileName(entry.getPath()) + " (" + name + ")";
                                 },
-                                model.getAllDownloaded()))
+                                syncAllDownloaded))
                 .apply(struc -> struc.get().setMinHeight(150))
                 .grow(false, true);
-        var dragNotice = new LabelComp(model.getAllDownloaded()
+        var dragNotice = new LabelComp(syncAllDownloaded
                         .flatMap(aBoolean ->
                                 aBoolean ? AppI18n.observable("dragLocalFiles") : AppI18n.observable("dragFiles")))
                 .apply(struc -> struc.get().setGraphic(new FontIcon("mdi2h-hand-left")))
-                .hide(PlatformThread.sync(Bindings.isEmpty(model.getItems())))
+                .hide(Bindings.isEmpty(syncItems))
                 .grow(true, false)
                 .apply(struc -> struc.get().setPadding(new Insets(8)));
 
         var downloadButton = new IconButtonComp("mdi2d-download", () -> {
                     model.download();
                 })
-                .hide(Bindings.isEmpty(model.getItems()))
-                .disable(PlatformThread.sync(model.getAllDownloaded()))
+                .hide(Bindings.isEmpty(syncItems))
+                .disable(syncAllDownloaded)
                 .apply(new TooltipAugment<>("downloadStageDescription"));
         var clearButton = new IconButtonComp("mdi2c-close", () -> {
                     model.clear();
                 })
-                .hide(Bindings.isEmpty(model.getItems()));
+                .hide(Bindings.isEmpty(syncItems));
         var clearPane = Comp.derive(
                 new HorizontalComp(List.of(downloadButton, clearButton))
                         .apply(struc -> struc.get().setSpacing(10)),
@@ -144,11 +148,11 @@ public class BrowserTransferComp extends SimpleComp {
                                 }
                             });
                             struc.get().setOnDragDetected(event -> {
-                                if (model.getDownloading().get()) {
+                                if (syncDownloaded.getValue()) {
                                     return;
                                 }
 
-                                var selected = model.getItems().stream()
+                                var selected = syncItems.stream()
                                         .map(BrowserTransferModel.Item::getFileEntry)
                                         .toList();
                                 Dragboard db = struc.get().startDragAndDrop(TransferMode.COPY);
@@ -158,7 +162,7 @@ public class BrowserTransferComp extends SimpleComp {
                                     return;
                                 }
 
-                                var files = model.getItems().stream()
+                                var files = syncItems.stream()
                                         .filter(item -> item.downloadFinished().get())
                                         .map(item -> {
                                             try {
@@ -195,7 +199,7 @@ public class BrowserTransferComp extends SimpleComp {
                                 event.consume();
                             });
                         }),
-                PlatformThread.sync(model.getDownloading()));
+                syncDownloaded);
         return stack.styleClass("transfer").createRegion();
     }
 }

@@ -4,16 +4,14 @@ import io.xpipe.app.browser.BrowserTransferProgress;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.store.FileKind;
-import io.xpipe.core.store.FileNames;
-import io.xpipe.core.store.FileSystem;
-import io.xpipe.core.store.LocalStore;
+import io.xpipe.core.store.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -151,6 +149,18 @@ public class FileSystemHelper {
                 Files.size(file),
                 null,
                 Files.isDirectory(file) ? FileKind.DIRECTORY : FileKind.FILE);
+    }
+
+    public static FileSystem.FileEntry getRemoteWrapper(FileSystem fileSystem, String file) throws Exception {
+        return new FileSystem.FileEntry(
+                fileSystem,
+                file,
+                Instant.now(),
+                false,
+                false,
+                fileSystem.getFileSize(file),
+                null,
+                fileSystem.directoryExists(file) ? FileKind.DIRECTORY : FileKind.FILE);
     }
 
     public static void dropLocalFilesInto(
@@ -296,11 +306,8 @@ public class FileSystemHelper {
         AtomicLong transferred = new AtomicLong();
         for (var e : flatFiles.entrySet()) {
             var sourceFile = e.getKey();
-            var targetFile = target.getFileSystem()
-                    .getShell()
-                    .orElseThrow()
-                    .getOsType()
-                    .makeFileSystemCompatible(FileNames.join(target.getPath(), e.getValue()));
+            var fixedRelPath = new FilePath(e.getValue()).fileSystemCompatible(target.getFileSystem().getShell().orElseThrow().getOsType());
+            var targetFile = FileNames.join(target.getPath(), fixedRelPath.toString());
             if (sourceFile.getFileSystem().equals(target.getFileSystem())) {
                 throw new IllegalStateException();
             }

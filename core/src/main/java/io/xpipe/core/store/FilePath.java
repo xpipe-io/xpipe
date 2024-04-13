@@ -1,5 +1,6 @@
 package io.xpipe.core.store;
 
+import io.xpipe.core.process.OsType;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
@@ -7,9 +8,18 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @EqualsAndHashCode
 public final class FilePath {
+
+    public static boolean isProbableFilePath(OsType osType, String s) {
+        if (osType.equals(OsType.WINDOWS) && s.length() >= 2 && s.charAt(1) == ':') {
+            return true;
+        }
+
+        return s.startsWith("/");
+    }
 
     @NonNull
     private final String value;
@@ -22,6 +32,36 @@ public final class FilePath {
         if (!value.equals(value.trim())) {
             throw new IllegalArgumentException();
         }
+    }
+
+    public FilePath fileSystemCompatible(OsType osType) {
+        var split = split();
+        var needsReplacement = split.stream().anyMatch(s -> !s.equals(osType.makeFileSystemCompatible(s)));
+        if (!needsReplacement) {
+            return this;
+        }
+
+        var backslash = value.contains("\\");
+        var p = Pattern.compile("[^/\\\\]+");
+        var m = p.matcher(value);
+        var replaced = m.replaceAll(matchResult -> osType.makeFileSystemCompatible(matchResult.group()));
+        return new FilePath(replaced);
+    }
+
+    public FilePath getRoot() {
+        if (value.startsWith("/")) {
+            return new FilePath("/");
+        } else if (value.length() >= 2 && value.charAt(1) == ':') {
+            // Without the trailing slash, many programs struggle with this
+            return new FilePath(value.substring(0, 2) + "\\");
+        } else if (value.startsWith("\\\\")) {
+            var split = split();
+            if (split.size() > 0) {
+                return new FilePath("\\\\" + split.getFirst());
+            }
+        }
+
+        throw new IllegalArgumentException("Unable to determine root of " + value);
     }
 
     public Path toLocalPath() {
