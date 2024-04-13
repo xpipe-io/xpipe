@@ -99,4 +99,4 @@ if you want to work on something that was not listed here, you can still do so o
 
 ### Translations
 
-See the [translation guide](/lang/README.md) for details.
+See the [translation guide](/lang) for details.
