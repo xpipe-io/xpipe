@@ -3,7 +3,6 @@ package io.xpipe.app.fxcomps.impl;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
@@ -37,7 +36,7 @@ public class SvgView {
     public static SvgView create(ObservableValue<String> content) {
         var widthProperty = new SimpleIntegerProperty();
         var heightProperty = new SimpleIntegerProperty();
-        SimpleChangeListener.apply(content, val -> {
+        content.subscribe(val -> {
             if (val == null || val.isBlank()) {
                 return;
             }
@@ -69,7 +68,7 @@ public class SvgView {
         wv.setDisable(true);
 
         wv.getEngine().loadContent(svgContent.getValue() != null ? getHtml(svgContent.getValue()) : null);
-        SimpleChangeListener.apply(svgContent, n -> {
+        svgContent.subscribe(n -> {
             if (n == null) {
                 wv.setOpacity(0.0);
                 return;

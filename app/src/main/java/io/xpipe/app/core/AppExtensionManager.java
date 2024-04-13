@@ -1,11 +1,11 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.exchange.MessageExchangeImpls;
 import io.xpipe.app.ext.ExtensionException;
-import io.xpipe.app.ext.XPipeServiceProviders;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.util.ModuleHelper;
+import io.xpipe.core.util.ModuleLayerLoader;
 import io.xpipe.core.util.XPipeInstallation;
 import lombok.Getter;
 import lombok.Value;
@@ -47,10 +47,11 @@ public class AppExtensionManager {
         }
 
         if (load) {
-            // INSTANCE.addNativeLibrariesToPath();
             try {
-                XPipeServiceProviders.load(INSTANCE.extendedLayer);
-                MessageExchangeImpls.loadAll();
+                ProcessControlProvider.init(INSTANCE.extendedLayer);
+                ModuleLayerLoader.loadAll(INSTANCE.extendedLayer, t -> {
+                    ErrorEvent.fromThrowable(t).handle();
+                });
             } catch (Throwable t) {
                 throw new ExtensionException(
                         "Service provider initialization failed. Is the installation data corrupt?", t);

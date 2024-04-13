@@ -109,7 +109,7 @@ public class LauncherCommand implements Callable<Integer> {
             // starting up or listening on another port
             if (!AppDataLock.lock()) {
                 throw new IOException(
-                        "Data directory " + AppProperties.get().getDataDir().toString() + " is already locked");
+                        "Data directory " + AppProperties.get().getDataDir().toString() + " is already locked. Is another instance running?");
             }
         } catch (Exception ex) {
             var cli = XPipeInstallation.getLocalDefaultCliExecutable();

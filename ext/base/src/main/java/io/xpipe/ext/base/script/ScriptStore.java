@@ -114,7 +114,9 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
                 .mapToInt(value ->
                         value.get().getName().hashCode() + value.getStore().hashCode())
                 .sum();
-        var targetDir = ShellTemp.getUserSpecificTempDataDirectory(proc, "scripts").join(proc.getShellDialect().getId()).toString();
+        var targetDir = ShellTemp.getUserSpecificTempDataDirectory(proc, "scripts")
+                .join(proc.getShellDialect().getId())
+                .toString();
         var hashFile = FileNames.join(targetDir, "hash");
         var d = proc.getShellDialect();
         if (d.createFileExistsCommand(proc, hashFile).executeAndCheck()) {
@@ -136,7 +138,9 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
 
         for (DataStoreEntryRef<SimpleScriptStore> scriptStore : refs) {
             var content = d.prepareScriptContent(scriptStore.getStore().getCommands());
-            var fileName = scriptStore.get().getName().toLowerCase(Locale.ROOT).replaceAll(" ", "_");
+            var fileName = proc.getOsType()
+                    .makeFileSystemCompatible(
+                            scriptStore.get().getName().toLowerCase(Locale.ROOT).replaceAll(" ", "_"));
             var scriptFile = FileNames.join(targetDir, fileName + "." + d.getScriptFileEnding());
             d.createScriptTextFileWriteCommand(proc, content, scriptFile).execute();
         }

@@ -5,11 +5,11 @@ import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
 import io.xpipe.app.fxcomps.impl.FilterComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
+import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
+import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 import javafx.beans.binding.Bindings;
@@ -36,7 +36,7 @@ public class StoreEntryListStatusComp extends SimpleComp {
 
     public StoreEntryListStatusComp() {
         this.sortMode = new SimpleObjectProperty<>();
-        SimpleChangeListener.apply(StoreViewState.get().getActiveCategory(), val -> {
+        StoreViewState.get().getActiveCategory().subscribe(val -> {
             sortMode.setValue(val.getSortMode().getValue());
         });
         sortMode.addListener((observable, oldValue, newValue) -> {
@@ -51,21 +51,16 @@ public class StoreEntryListStatusComp extends SimpleComp {
 
     private Region createGroupListHeader() {
         var label = new Label();
-        label.textProperty()
-                .bind(Bindings.createStringBinding(
-                        () -> {
-                            return StoreViewState.get()
-                                            .getActiveCategory()
-                                            .getValue()
-                                            .getRoot()
-                                            .equals(StoreViewState.get().getAllConnectionsCategory())
-                                    ? "Connections"
-                                    : "Scripts";
-                        },
-                        StoreViewState.get().getActiveCategory()));
+        var name = BindingsHelper.flatMap(
+                StoreViewState.get().getActiveCategory(),
+                categoryWrapper -> AppI18n.observable(
+                        categoryWrapper.getRoot().equals(StoreViewState.get().getAllConnectionsCategory())
+                                ? "connections"
+                                : "scripts"));
+        label.textProperty().bind(name);
         label.getStyleClass().add("name");
 
-        var all = BindingsHelper.filteredContentBinding(
+        var all = ListBindingsHelper.filteredContentBinding(
                 StoreViewState.get().getAllEntries(),
                 storeEntryWrapper -> {
                     var storeRoot = storeEntryWrapper.getCategory().getValue().getRoot();
@@ -76,7 +71,7 @@ public class StoreEntryListStatusComp extends SimpleComp {
                             .equals(storeRoot);
                 },
                 StoreViewState.get().getActiveCategory());
-        var shownList = BindingsHelper.filteredContentBinding(
+        var shownList = ListBindingsHelper.filteredContentBinding(
                 all,
                 storeEntryWrapper -> {
                     return storeEntryWrapper.shouldShow(
@@ -135,7 +130,8 @@ public class StoreEntryListStatusComp extends SimpleComp {
     }
 
     private Region createButtons() {
-        var menu = new MenuButton(AppI18n.get("addConnections"), new FontIcon("mdi2p-plus-thick"));
+        var menu = new MenuButton(null, new FontIcon("mdi2p-plus-thick"));
+        menu.textProperty().bind(AppI18n.observable("addConnections"));
         menu.setAlignment(Pos.CENTER);
         menu.setTextAlignment(TextAlignment.CENTER);
         AppFont.medium(menu);
@@ -188,7 +184,7 @@ public class StoreEntryListStatusComp extends SimpleComp {
                             sortMode));
         });
         alphabetical.accessibleTextKey("sortAlphabetical");
-        alphabetical.apply(new FancyTooltipAugment<>("sortAlphabetical"));
+        alphabetical.apply(new TooltipAugment<>("sortAlphabetical"));
         return alphabetical;
     }
 
@@ -227,7 +223,7 @@ public class StoreEntryListStatusComp extends SimpleComp {
                             sortMode));
         });
         date.accessibleTextKey("sortLastUsed");
-        date.apply(new FancyTooltipAugment<>("sortLastUsed"));
+        date.apply(new TooltipAugment<>("sortLastUsed"));
         return date;
     }
 

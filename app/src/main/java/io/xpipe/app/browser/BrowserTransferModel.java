@@ -1,5 +1,8 @@
 package io.xpipe.app.browser;
 
+import io.xpipe.app.browser.file.FileSystemHelper;
+import io.xpipe.app.browser.fs.OpenFileSystemModel;
+import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ShellTemp;
@@ -36,7 +39,7 @@ public class BrowserTransferModel {
         t.setName("file downloader");
         return t;
     });
-    BrowserModel browserModel;
+    BrowserSessionModel browserSessionModel;
     ObservableList<Item> items = FXCollections.observableArrayList();
     BooleanProperty downloading = new SimpleBooleanProperty();
     BooleanProperty allDownloaded = new SimpleBooleanProperty();

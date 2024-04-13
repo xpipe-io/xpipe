@@ -7,13 +7,15 @@ import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
-import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import javafx.beans.binding.Bindings;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class AppLayoutComp extends Comp<CompStructure<Pane>> {
@@ -22,18 +24,20 @@ public class AppLayoutComp extends Comp<CompStructure<Pane>> {
 
     @Override
     public CompStructure<Pane> createBase() {
-        var multi = new MultiContentComp(model.getEntries().stream()
+        Map<Comp<?>, ObservableValue<Boolean>> map = model.getEntries().stream()
                 .collect(Collectors.toMap(
                         entry -> entry.comp(),
-                        entry -> PlatformThread.sync(Bindings.createBooleanBinding(
+                        entry -> Bindings.createBooleanBinding(
                                 () -> {
                                     return model.getSelected().getValue().equals(entry);
                                 },
-                                model.getSelected())))));
+                                model.getSelected())));
+        var multi = new MultiContentComp(map);
 
         var pane = new BorderPane();
-        var sidebar = new SideMenuBarComp(model.getSelectedInternal(), model.getEntries());
-        pane.setCenter(multi.createRegion());
+        var sidebar = new SideMenuBarComp(model.getSelected(), model.getEntries());
+        StackPane multiR = (StackPane) multi.createRegion();
+        pane.setCenter(multiR);
         pane.setRight(sidebar.createRegion());
         pane.getStyleClass().add("background");
         model.getSelected().addListener((c, o, n) -> {

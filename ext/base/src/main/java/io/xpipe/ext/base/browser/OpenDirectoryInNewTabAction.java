@@ -1,9 +1,12 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.BrowserEntry;
-import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.LeafAction;
+import io.xpipe.app.browser.file.BrowserEntry;
+import io.xpipe.app.browser.fs.OpenFileSystemModel;
+import io.xpipe.app.browser.session.BrowserSessionModel;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.store.FileKind;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -13,11 +16,10 @@ public class OpenDirectoryInNewTabAction implements LeafAction {
 
     @Override
     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        model.getBrowserModel()
-                .openFileSystemAsync(
-                        model.getEntry(),
-                        m -> entries.getFirst().getRawFileEntry().getPath(),
-                        null);
+        if (model.getBrowserModel() instanceof BrowserSessionModel bm) {
+            bm.openFileSystemAsync(
+                    model.getEntry(), m -> entries.getFirst().getRawFileEntry().getPath(), null);
+        }
     }
 
     @Override
@@ -36,13 +38,14 @@ public class OpenDirectoryInNewTabAction implements LeafAction {
     }
 
     @Override
-    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return "Open in new tab";
+    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return AppI18n.observable("openInNewTab");
     }
 
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return entries.size() == 1
+        return model.getBrowserModel() instanceof BrowserSessionModel
+                && entries.size() == 1
                 && entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.DIRECTORY);
     }
 }

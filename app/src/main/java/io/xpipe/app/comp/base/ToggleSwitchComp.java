@@ -22,7 +22,7 @@ public class ToggleSwitchComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var s = new ToggleSwitch();
-        s.addEventFilter(KeyEvent.KEY_PRESSED,event -> {
+        s.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.SPACE || event.getCode() == KeyCode.ENTER) {
                 s.setSelected(!s.isSelected());
                 event.consume();

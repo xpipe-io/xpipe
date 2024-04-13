@@ -1,6 +1,6 @@
 package io.xpipe.app.core.mode;
 
-import io.xpipe.app.browser.BrowserModel;
+import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppAvCheck;
@@ -47,6 +47,7 @@ public class BaseMode extends OperationMode {
         AppI18n.init();
         LicenseProvider.get().init();
         AppPrefs.initLocal();
+        AppI18n.init();
         AppCertutilCheck.check();
         AppAvCheck.check();
         AppSid.init();
@@ -74,7 +75,7 @@ public class BaseMode extends OperationMode {
     @Override
     public void finalTeardown() {
         TrackEvent.info("Background mode shutdown started");
-        BrowserModel.DEFAULT.reset();
+        BrowserSessionModel.DEFAULT.reset();
         StoreViewState.reset();
         DataStorage.reset();
         AppPrefs.reset();

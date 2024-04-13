@@ -1,0 +1,5 @@
+## Betik ba??ml?l?klar?
+
+Önce çal??t?r?lacak komut dosyalar? ve komut dosyas? gruplar?. Bir grubun tamam? ba??ml?l?k haline getirilirse, bu gruptaki tüm komut dosyalar? ba??ml?l?k olarak kabul edilecektir.
+
+Komut dosyalar?n?n çözümlenmi? ba??ml?l?k grafi?i düzle?tirilir, filtrelenir ve benzersiz hale getirilir. Yani, yaln?zca uyumlu komut dosyalar? çal??t?r?lacak ve bir komut dosyas? birden çok kez çal??t?r?lacaksa, yaln?zca ilk seferde çal??t?r?lacakt?r.

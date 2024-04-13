@@ -3,7 +3,6 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.TextField;
@@ -65,7 +64,7 @@ public class LazyTextFieldComp extends Comp<LazyTextFieldComp.Structure> {
         sp.prefHeightProperty().bind(r.prefHeightProperty());
         r.setDisable(true);
 
-        SimpleChangeListener.apply(currentValue, n -> {
+        currentValue.subscribe(n -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 // Check if control value is the same. Then don't set it as that might cause bugs
                 if (Objects.equals(r.getText(), n) || (n == null && r.getText().isEmpty())) {

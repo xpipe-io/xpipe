@@ -5,19 +5,10 @@ import java.util.function.Consumer;
 
 public interface ModuleLayerLoader {
 
-    static void loadAll(
-            ModuleLayer layer, boolean hasDaemon, boolean prioritization, Consumer<Throwable> errorHandler) {
+    static void loadAll(ModuleLayer layer, Consumer<Throwable> errorHandler) {
         ServiceLoader.load(layer, ModuleLayerLoader.class).stream().forEach(moduleLayerLoaderProvider -> {
             var instance = moduleLayerLoaderProvider.get();
             try {
-                if (instance.requiresFullDaemon() && !hasDaemon) {
-                    return;
-                }
-
-                if (instance.prioritizeLoading() != prioritization) {
-                    return;
-                }
-
                 instance.init(layer);
             } catch (Throwable t) {
                 errorHandler.accept(t);
@@ -25,9 +16,7 @@ public interface ModuleLayerLoader {
         });
     }
 
-    void init(ModuleLayer layer);
+    default void init(ModuleLayer layer) {}
 
-    boolean requiresFullDaemon();
-
-    boolean prioritizeLoading();
+    default void reset() {}
 }

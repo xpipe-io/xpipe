@@ -132,13 +132,7 @@ public interface ShellDialect {
         return getPrintVariableCommand(name);
     }
 
-    String getOpenCommand(ShellControl shellControl);
-
     CommandBuilder getOpenScriptCommand(String file);
-
-    default String getLoginOpenCommand(ShellControl shellControl) {
-        return getOpenCommand(shellControl);
-    }
 
     default void prepareCommandForShell(CommandBuilder b) {}
 
@@ -174,7 +168,7 @@ public interface ShellDialect {
 
     String clearDisplayCommand();
 
-    String[] getLocalLaunchCommand();
+    ShellLaunchCommand getLaunchCommand();
 
     ShellDumbMode getDumbMode();
 

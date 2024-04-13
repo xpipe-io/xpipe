@@ -5,7 +5,6 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -13,7 +12,6 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -56,12 +54,8 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
         var text = new VBox(header, desc);
         text.setSpacing(2);
 
-        var fi = new FontIcon();
-        SimpleChangeListener.apply(PlatformThread.sync(icon), val -> {
-            fi.setIconLiteral(val);
-        });
-
-        var pane = new StackPane(fi);
+        var fi = new FontIconComp(icon).createStructure();
+        var pane = fi.getPane();
         var hbox = new HBox(pane, text);
         hbox.setSpacing(8);
         pane.prefWidthProperty()
@@ -76,11 +70,11 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
                         desc.heightProperty()));
         pane.prefHeightProperty().addListener((c, o, n) -> {
             var size = Math.min(n.intValue(), 100);
-            fi.setIconSize((int) (size * 0.55));
+            fi.getIcon().setIconSize((int) (size * 0.55));
         });
         bt.setGraphic(hbox);
         return Structure.builder()
-                .graphic(fi)
+                .graphic(fi.getIcon())
                 .button(bt)
                 .content(hbox)
                 .name(header)

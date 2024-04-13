@@ -5,6 +5,30 @@ import io.xpipe.core.process.CommandBuilder;
 
 public interface AlacrittyTerminalType extends ExternalTerminalType {
 
+    ExternalTerminalType ALACRITTY_WINDOWS = new Windows();
+    ExternalTerminalType ALACRITTY_LINUX = new Linux();
+    ExternalTerminalType ALACRITTY_MAC_OS = new MacOs();
+
+    @Override
+    default boolean supportsTabs() {
+        return false;
+    }
+
+    @Override
+    default String getWebsite() {
+        return "https://github.com/alacritty/alacritty";
+    }
+
+    @Override
+    default boolean isRecommended() {
+        return false;
+    }
+
+    @Override
+    default boolean supportsColoredTitle() {
+        return false;
+    }
+
     static class Windows extends SimplePathType implements AlacrittyTerminalType {
 
         public Windows() {
@@ -15,11 +39,11 @@ public interface AlacrittyTerminalType extends ExternalTerminalType {
         protected CommandBuilder toCommand(LaunchConfiguration configuration) {
             var b = CommandBuilder.of();
 
-//            if (configuration.getColor() != null) {
-//                b.add("-o")
-//                        .addQuoted("colors.primary.background='%s'"
-//                                .formatted(configuration.getColor().toHexString()));
-//            }
+            //            if (configuration.getColor() != null) {
+            //                b.add("-o")
+            //                        .addQuoted("colors.primary.background='%s'"
+            //                                .formatted(configuration.getColor().toHexString()));
+            //            }
 
             // Alacritty is bugged and will not accept arguments with spaces even if they are correctly passed/escaped
             // So this will not work when the script file has spaces
@@ -28,7 +52,6 @@ public interface AlacrittyTerminalType extends ExternalTerminalType {
                     .add("-e")
                     .add(configuration.getDialectLaunchCommand());
         }
-
     }
 
     static class Linux extends SimplePathType implements AlacrittyTerminalType {
@@ -45,31 +68,6 @@ public interface AlacrittyTerminalType extends ExternalTerminalType {
                     .add("-e")
                     .addFile(configuration.getScriptFile());
         }
-
-    }
-
-    ExternalTerminalType ALACRITTY_WINDOWS = new Windows();
-    ExternalTerminalType ALACRITTY_LINUX = new Linux();
-    ExternalTerminalType ALACRITTY_MAC_OS = new MacOs();
-
-    @Override
-    default String getWebsite() {
-        return "https://github.com/alacritty/alacritty";
-    }
-
-    @Override
-    default boolean isRecommended() {
-        return false;
-    }
-
-    @Override
-    default boolean supportsTabs() {
-        return false;
-    }
-
-    @Override
-    default boolean supportsColoredTitle() {
-        return false;
     }
 
     class MacOs extends MacOsType implements AlacrittyTerminalType {

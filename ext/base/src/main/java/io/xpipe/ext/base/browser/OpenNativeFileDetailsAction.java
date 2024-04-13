@@ -1,12 +1,14 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.BrowserEntry;
-import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.LeafAction;
+import io.xpipe.app.browser.file.BrowserEntry;
+import io.xpipe.app.browser.fs.OpenFileSystemModel;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FileNames;
+import javafx.beans.value.ObservableValue;
 
 import java.util.List;
 
@@ -70,8 +72,8 @@ public class OpenNativeFileDetailsAction implements LeafAction {
     }
 
     @Override
-    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return "Show details";
+    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return AppI18n.observable("showDetails");
     }
 
     @Override

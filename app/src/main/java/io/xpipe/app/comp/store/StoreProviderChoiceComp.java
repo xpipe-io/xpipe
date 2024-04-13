@@ -39,7 +39,7 @@ public class StoreProviderChoiceComp extends Comp<CompStructure<ComboBox<DataSto
         }
 
         var graphic = provider.getDisplayIconFileName(null);
-        return JfxHelper.createNamedEntry(provider.getDisplayName(), provider.getDisplayDescription(), graphic);
+        return JfxHelper.createNamedEntry(provider.displayName(), provider.displayDescription(), graphic);
     }
 
     @Override
@@ -49,8 +49,13 @@ public class StoreProviderChoiceComp extends Comp<CompStructure<ComboBox<DataSto
             protected void updateItem(DataStoreProvider item, boolean empty) {
                 super.updateItem(item, empty);
                 setGraphic(createGraphic(item));
-                setAccessibleText(item != null ? item.getDisplayName() : null);
-                setAccessibleHelp(item != null ? item.getDisplayDescription() : null);
+                if (item != null) {
+                    accessibleTextProperty().bind(item.displayName());
+                    accessibleHelpProperty().bind(item.displayDescription());
+                } else {
+                    accessibleTextProperty().unbind();
+                    accessibleHelpProperty().unbind();
+                }
             }
         };
         var cb = new ComboBox<DataStoreProvider>();

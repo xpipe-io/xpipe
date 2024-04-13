@@ -3,7 +3,8 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.storage.DataStoreColor;
-import io.xpipe.app.util.*;
+import io.xpipe.app.util.CommandSupport;
+import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.FilePath;
 import lombok.Getter;
@@ -13,7 +14,10 @@ import lombok.With;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Comparator;
+import java.util.List;
 import java.util.function.Supplier;
 
 public interface ExternalTerminalType extends PrefsChoiceValue {
@@ -21,12 +25,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType CMD = new SimplePathType("app.cmd", "cmd.exe", true) {
 
         @Override
-        public boolean isRecommended() {
+        public boolean supportsTabs() {
             return false;
         }
 
         @Override
-        public boolean supportsTabs() {
+        public boolean isRecommended() {
             return false;
         }
 
@@ -48,12 +52,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType POWERSHELL = new SimplePathType("app.powershell", "powershell", true) {
 
         @Override
-        public boolean isRecommended() {
+        public boolean supportsTabs() {
             return false;
         }
 
         @Override
-        public boolean supportsTabs() {
+        public boolean isRecommended() {
             return false;
         }
 
@@ -88,12 +92,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType PWSH = new SimplePathType("app.pwsh", "pwsh", true) {
 
         @Override
-        public boolean isRecommended() {
+        public boolean supportsTabs() {
             return false;
         }
 
         @Override
-        public boolean supportsTabs() {
+        public boolean isRecommended() {
             return false;
         }
 
@@ -118,8 +122,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
     ExternalTerminalType GNOME_TERMINAL = new PathCheckType("app.gnomeTerminal", "gnome-terminal", true) {
         @Override
-        public boolean supportsColoredTitle() {
-            return true;
+        public boolean supportsTabs() {
+            return false;
         }
 
         @Override
@@ -128,8 +132,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsTabs() {
-            return false;
+        public boolean supportsColoredTitle() {
+            return true;
         }
 
         @Override
@@ -152,12 +156,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType KONSOLE = new SimplePathType("app.konsole", "konsole", true) {
 
         @Override
-        public boolean isRecommended() {
+        public boolean supportsTabs() {
             return true;
         }
 
         @Override
-        public boolean supportsTabs() {
+        public boolean isRecommended() {
             return true;
         }
 
@@ -176,10 +180,9 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
     ExternalTerminalType XFCE = new SimplePathType("app.xfce", "xfce4-terminal", true) {
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean supportsTabs() {
             return true;
         }
-
 
         @Override
         public boolean isRecommended() {
@@ -187,7 +190,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsTabs() {
+        public boolean supportsColoredTitle() {
             return true;
         }
 
@@ -202,10 +205,9 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
     ExternalTerminalType ELEMENTARY = new SimplePathType("app.elementaryTerminal", "io.elementary.terminal", true) {
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean supportsTabs() {
             return true;
         }
-
 
         @Override
         public boolean isRecommended() {
@@ -213,7 +215,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsTabs() {
+        public boolean supportsColoredTitle() {
             return true;
         }
 
@@ -224,10 +226,9 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
     ExternalTerminalType TILIX = new SimplePathType("app.tilix", "tilix", true) {
         @Override
-        public boolean supportsColoredTitle() {
-            return true;
+        public boolean supportsTabs() {
+            return false;
         }
-
 
         @Override
         public boolean isRecommended() {
@@ -235,8 +236,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsTabs() {
-            return false;
+        public boolean supportsColoredTitle() {
+            return true;
         }
 
         @Override
@@ -250,10 +251,9 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
     ExternalTerminalType TERMINATOR = new SimplePathType("app.terminator", "terminator", true) {
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean supportsTabs() {
             return true;
         }
-
 
         @Override
         public boolean isRecommended() {
@@ -261,7 +261,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsTabs() {
+        public boolean supportsColoredTitle() {
             return true;
         }
 
@@ -277,10 +277,9 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
     ExternalTerminalType TERMINOLOGY = new SimplePathType("app.terminology", "terminology", true) {
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean supportsTabs() {
             return true;
         }
-
 
         @Override
         public boolean isRecommended() {
@@ -288,7 +287,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsTabs() {
+        public boolean supportsColoredTitle() {
             return true;
         }
 
@@ -304,10 +303,9 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
     ExternalTerminalType COOL_RETRO_TERM = new SimplePathType("app.coolRetroTerm", "cool-retro-term", true) {
         @Override
-        public boolean supportsColoredTitle() {
-            return true;
+        public boolean supportsTabs() {
+            return false;
         }
-
 
         @Override
         public boolean isRecommended() {
@@ -315,8 +313,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsTabs() {
-            return false;
+        public boolean supportsColoredTitle() {
+            return true;
         }
 
         @Override
@@ -330,10 +328,9 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
     ExternalTerminalType GUAKE = new SimplePathType("app.guake", "guake", true) {
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean supportsTabs() {
             return true;
         }
-
 
         @Override
         public boolean isRecommended() {
@@ -341,7 +338,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsTabs() {
+        public boolean supportsColoredTitle() {
             return true;
         }
 
@@ -357,10 +354,9 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
     ExternalTerminalType TILDA = new SimplePathType("app.tilda", "tilda", true) {
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean supportsTabs() {
             return true;
         }
-
 
         @Override
         public boolean isRecommended() {
@@ -368,7 +364,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsTabs() {
+        public boolean supportsColoredTitle() {
             return true;
         }
 
@@ -379,10 +375,9 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
     ExternalTerminalType XTERM = new SimplePathType("app.xterm", "xterm", true) {
         @Override
-        public boolean supportsColoredTitle() {
-            return true;
+        public boolean supportsTabs() {
+            return false;
         }
-
 
         @Override
         public boolean isRecommended() {
@@ -390,8 +385,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsTabs() {
-            return false;
+        public boolean supportsColoredTitle() {
+            return true;
         }
 
         @Override
@@ -405,10 +400,9 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
     ExternalTerminalType DEEPIN_TERMINAL = new SimplePathType("app.deepinTerminal", "deepin-terminal", true) {
         @Override
-        public boolean supportsColoredTitle() {
-            return true;
+        public boolean supportsTabs() {
+            return false;
         }
-
 
         @Override
         public boolean isRecommended() {
@@ -416,8 +410,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsTabs() {
-            return false;
+        public boolean supportsColoredTitle() {
+            return true;
         }
 
         @Override
@@ -427,8 +421,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
     ExternalTerminalType Q_TERMINAL = new SimplePathType("app.qTerminal", "qterminal", true) {
         @Override
-        public boolean supportsColoredTitle() {
-            return true;
+        public boolean supportsTabs() {
+            return false;
         }
 
         @Override
@@ -436,10 +430,9 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return false;
         }
 
-
         @Override
-        public boolean supportsTabs() {
-            return false;
+        public boolean supportsColoredTitle() {
+            return true;
         }
 
         @Override
@@ -449,8 +442,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
     ExternalTerminalType MACOS_TERMINAL = new MacOsType("app.macosTerminal", "Terminal") {
         @Override
-        public boolean supportsColoredTitle() {
-            return true;
+        public boolean supportsTabs() {
+            return false;
         }
 
         @Override
@@ -459,8 +452,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsTabs() {
-            return false;
+        public boolean supportsColoredTitle() {
+            return true;
         }
 
         @Override
@@ -480,7 +473,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
     ExternalTerminalType ITERM2 = new MacOsType("app.iterm2", "iTerm") {
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean supportsTabs() {
             return true;
         }
 
@@ -490,7 +483,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsTabs() {
+        public boolean supportsColoredTitle() {
             return true;
         }
 
@@ -519,7 +512,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                                     create window with default profile command "%s"
                                 end tell
                                 """,
-                                a, a, a, a, configuration.getScriptFile().toString().replaceAll("\"", "\\\\\"")))
+                                a,
+                                a,
+                                a,
+                                a,
+                                configuration.getScriptFile().toString().replaceAll("\"", "\\\\\"")))
                         .execute();
             }
         }
@@ -527,7 +524,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType WARP = new MacOsType("app.warp", "Warp") {
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean supportsTabs() {
             return true;
         }
 
@@ -537,7 +534,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsTabs() {
+        public boolean supportsColoredTitle() {
             return true;
         }
 
@@ -582,8 +579,14 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             XTERM,
             DEEPIN_TERMINAL,
             Q_TERMINAL);
-    List<ExternalTerminalType> MACOS_TERMINALS =
-            List.of(ITERM2, TabbyTerminalType.TABBY_MAC_OS, AlacrittyTerminalType.ALACRITTY_MAC_OS, KittyTerminalType.KITTY_MACOS, WARP, WezTerminalType.WEZTERM_MAC_OS, MACOS_TERMINAL);
+    List<ExternalTerminalType> MACOS_TERMINALS = List.of(
+            ITERM2,
+            TabbyTerminalType.TABBY_MAC_OS,
+            AlacrittyTerminalType.ALACRITTY_MAC_OS,
+            KittyTerminalType.KITTY_MACOS,
+            WARP,
+            WezTerminalType.WEZTERM_MAC_OS,
+            MACOS_TERMINAL);
 
     @SuppressWarnings("TrivialFunctionalExpressionUsage")
     List<ExternalTerminalType> ALL = ((Supplier<List<ExternalTerminalType>>) () -> {
@@ -714,5 +717,4 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         protected abstract CommandBuilder toCommand(LaunchConfiguration configuration) throws Exception;
     }
-
 }

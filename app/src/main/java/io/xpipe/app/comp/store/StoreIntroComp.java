@@ -21,15 +21,18 @@ public class StoreIntroComp extends SimpleComp {
 
     @Override
     public Region createSimple() {
-        var title = new Label(AppI18n.get("storeIntroTitle"));
+        var title = new Label();
+        title.textProperty().bind(AppI18n.observable("storeIntroTitle"));
         title.getStyleClass().add(Styles.TEXT_BOLD);
         AppFont.setSize(title, 7);
 
-        var introDesc = new Label(AppI18n.get("storeIntroDescription"));
+        var introDesc = new Label();
+        introDesc.textProperty().bind(AppI18n.observable("storeIntroDescription"));
         introDesc.setWrapText(true);
         introDesc.setMaxWidth(470);
 
-        var scanButton = new Button(AppI18n.get("detectConnections"), new FontIcon("mdi2m-magnify"));
+        var scanButton = new Button(null, new FontIcon("mdi2m-magnify"));
+        scanButton.textProperty().bind(AppI18n.observable("detectConnections"));
         scanButton.setOnAction(event -> ScanAlert.showAsync(DataStorage.get().local()));
         scanButton.setDefaultButton(true);
         var scanPane = new StackPane(scanButton);
@@ -43,12 +46,7 @@ public class StoreIntroComp extends SimpleComp {
         hbox.setSpacing(35);
         hbox.setAlignment(Pos.CENTER);
 
-        var v = new VBox(
-                hbox, scanPane
-                //                new Separator(Orientation.HORIZONTAL),
-                //                documentation,
-                //                docLinkPane
-                );
+        var v = new VBox(hbox, scanPane);
         v.setMinWidth(Region.USE_PREF_SIZE);
         v.setMaxWidth(Region.USE_PREF_SIZE);
         v.setMinHeight(Region.USE_PREF_SIZE);

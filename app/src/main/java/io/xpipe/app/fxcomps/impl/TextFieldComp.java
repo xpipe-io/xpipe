@@ -4,7 +4,6 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.TextField;
@@ -27,10 +26,13 @@ public class TextFieldComp extends Comp<CompStructure<TextField>> {
         this.currentValue = new SimpleStringProperty(value.getValue());
         this.lazy = lazy;
         if (!lazy) {
-            SimpleChangeListener.apply(currentValue, val -> {
+            currentValue.subscribe(val -> {
                 value.setValue(val);
             });
         }
+        lastAppliedValue.addListener((c, o, n) -> {
+            currentValue.setValue(n);
+        });
     }
 
     @Override
@@ -40,7 +42,6 @@ public class TextFieldComp extends Comp<CompStructure<TextField>> {
             currentValue.setValue(n != null && n.length() > 0 ? n : null);
         });
         lastAppliedValue.addListener((c, o, n) -> {
-            currentValue.setValue(n);
             PlatformThread.runLaterIfNeeded(() -> {
                 // Check if control value is the same. Then don't set it as that might cause bugs
                 if (Objects.equals(text.getText(), n)

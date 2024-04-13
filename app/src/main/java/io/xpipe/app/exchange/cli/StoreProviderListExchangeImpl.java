@@ -22,7 +22,7 @@ public class StoreProviderListExchangeImpl extends StoreProviderListExchange
                         .filter(dataStoreProvider -> category.equals(dataStoreProvider.getCreationCategory()))
                         .map(p -> ProviderEntry.builder()
                                 .id(p.getId())
-                                .description(p.getDisplayDescription())
+                                .description(p.displayDescription().getValue())
                                 .hidden(p.getCreationCategory() == null)
                                 .build())
                         .toList()));

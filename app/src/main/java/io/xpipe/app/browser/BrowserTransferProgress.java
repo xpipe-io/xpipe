@@ -9,7 +9,7 @@ public class BrowserTransferProgress {
     long transferred;
     long total;
 
-    static BrowserTransferProgress empty() {
+    public static BrowserTransferProgress empty() {
         return new BrowserTransferProgress(null, 0, 0);
     }
 
@@ -17,7 +17,7 @@ public class BrowserTransferProgress {
         return new BrowserTransferProgress(name, 0, size);
     }
 
-    static BrowserTransferProgress finished(String name, long size) {
+    public static BrowserTransferProgress finished(String name, long size) {
         return new BrowserTransferProgress(name, size, size);
     }
 

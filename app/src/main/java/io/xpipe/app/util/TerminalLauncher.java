@@ -6,10 +6,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.terminal.ExternalTerminalType;
-import io.xpipe.core.process.ProcessControl;
-import io.xpipe.core.process.ProcessControlProvider;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.TerminalInitScriptConfig;
+import io.xpipe.core.process.*;
 import io.xpipe.core.util.FailableFunction;
 
 import java.io.IOException;
@@ -18,14 +15,23 @@ import java.util.UUID;
 
 public class TerminalLauncher {
 
-    public static void openDirect(String title, FailableFunction<ShellControl,String, Exception> command) throws Exception {
+    public static void openDirect(String title, FailableFunction<ShellControl, String, Exception> command)
+            throws Exception {
         try (var sc = LocalShell.getShell().start()) {
             var type = AppPrefs.get().terminalType().getValue();
             if (type == null) {
                 throw ErrorEvent.expected(new IllegalStateException(AppI18n.get("noTerminalSet")));
             }
-            var script = ScriptHelper.constructTerminalInitFile(sc.getShellDialect(), sc, ignored -> null, List.of(),
-                    command.apply(sc), new TerminalInitScriptConfig(title, type.shouldClear() && AppPrefs.get().clearTerminalOnInit().get()));
+            var script = ScriptHelper.constructTerminalInitFile(
+                    sc.getShellDialect(),
+                    sc,
+                    WorkingDirectoryFunction.none(),
+                    List.of(),
+                    command.apply(sc),
+                    new TerminalInitScriptConfig(
+                            title,
+                            type.shouldClear()
+                                    && AppPrefs.get().clearTerminalOnInit().get()));
             var config = new ExternalTerminalType.LaunchConfiguration(null, title, title, script, sc.getShellDialect());
             type.launch(config);
         }

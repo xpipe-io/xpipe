@@ -12,18 +12,18 @@ import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public interface BrowserIconFileType {
+public abstract class BrowserIconFileType {
 
-    List<BrowserIconFileType> ALL = new ArrayList<>();
+    private static final List<BrowserIconFileType> ALL = new ArrayList<>();
 
-    static BrowserIconFileType byId(String id) {
+    public static synchronized BrowserIconFileType byId(String id) {
         return ALL.stream()
                 .filter(fileType -> fileType.getId().equals(id))
                 .findAny()
                 .orElseThrow();
     }
 
-    static void loadDefinitions() {
+    public static synchronized void loadDefinitions() {
         AppResources.with(AppResources.XPIPE_MODULE, "file_list.txt", path -> {
             try (var reader =
                     new BufferedReader(new InputStreamReader(Files.newInputStream(path), StandardCharsets.UTF_8))) {
@@ -53,14 +53,18 @@ public interface BrowserIconFileType {
         });
     }
 
-    String getId();
+    public static synchronized List<BrowserIconFileType> getAll() {
+        return ALL;
+    }
 
-    boolean matches(FileSystem.FileEntry entry);
+    public abstract String getId();
 
-    String getIcon();
+    public abstract boolean matches(FileSystem.FileEntry entry);
+
+    public abstract String getIcon();
 
     @Getter
-    class Simple implements BrowserIconFileType {
+    public static class Simple extends BrowserIconFileType {
 
         private final String id;
         private final IconVariant icon;

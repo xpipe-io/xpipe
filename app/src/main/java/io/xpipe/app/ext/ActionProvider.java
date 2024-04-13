@@ -143,15 +143,5 @@ public interface ActionProvider {
                     })
                     .toList());
         }
-
-        @Override
-        public boolean requiresFullDaemon() {
-            return true;
-        }
-
-        @Override
-        public boolean prioritizeLoading() {
-            return false;
-        }
     }
 }

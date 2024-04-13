@@ -1,6 +1,9 @@
 package io.xpipe.app.browser;
 
 import atlantafx.base.controls.Spacer;
+import io.xpipe.app.browser.file.BrowserContextMenu;
+import io.xpipe.app.browser.file.BrowserFileListCompEntry;
+import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
@@ -11,6 +14,7 @@ import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.util.HumanReadableFormat;
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.ToolBar;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
@@ -59,7 +63,7 @@ public class BrowserStatusBarComp extends SimpleComp {
 
     private Comp<?> createClipboardStatus() {
         var cc = BrowserClipboard.currentCopyClipboard;
-        var ccCount = (BindingsHelper.persist(Bindings.createStringBinding(
+        var ccCount = Bindings.createStringBinding(
                 () -> {
                     if (cc.getValue() != null && cc.getValue().getEntries().size() > 0) {
                         return cc.getValue().getEntries().size() + " file"
@@ -68,7 +72,7 @@ public class BrowserStatusBarComp extends SimpleComp {
                         return null;
                     }
                 },
-                cc)));
+                cc);
         return new LabelComp(ccCount);
     }
 
@@ -86,7 +90,7 @@ public class BrowserStatusBarComp extends SimpleComp {
                             .count();
                 },
                 model.getFileList().getAll());
-        var selectedComp = new LabelComp(BindingsHelper.persist(Bindings.createStringBinding(
+        var selectedComp = new LabelComp(Bindings.createStringBinding(
                 () -> {
                     if (selectedCount.getValue().intValue() == 0) {
                         return null;
@@ -95,7 +99,7 @@ public class BrowserStatusBarComp extends SimpleComp {
                     }
                 },
                 selectedCount,
-                allCount)));
+                allCount));
         return selectedComp;
     }
 
@@ -124,6 +128,10 @@ public class BrowserStatusBarComp extends SimpleComp {
         });
 
         // Use status bar as an extension of file list
-        new ContextMenuAugment<>(mouseEvent -> mouseEvent.isSecondaryButtonDown(), null, () -> new BrowserContextMenu(model, null)).augment(new SimpleCompStructure<>(r));
+        new ContextMenuAugment<>(
+                        mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY,
+                        null,
+                        () -> new BrowserContextMenu(model, null))
+                .augment(new SimpleCompStructure<>(r));
     }
 }

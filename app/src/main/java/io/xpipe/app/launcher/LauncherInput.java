@@ -1,6 +1,6 @@
 package io.xpipe.app.launcher;
 
-import io.xpipe.app.browser.BrowserModel;
+import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.ActionProvider;
@@ -119,7 +119,8 @@ public abstract class LauncherInput {
 
             var dir = Files.isDirectory(file) ? file : file.getParent();
             AppLayoutModel.get().selectBrowser();
-            BrowserModel.DEFAULT.openFileSystemAsync(DataStorage.get().local().ref(), model -> dir.toString(), null);
+            BrowserSessionModel.DEFAULT.openFileSystemAsync(
+                    DataStorage.get().local().ref(), model -> dir.toString(), null);
         }
     }
 

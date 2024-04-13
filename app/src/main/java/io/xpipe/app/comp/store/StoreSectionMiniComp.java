@@ -8,8 +8,7 @@ import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
+import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.storage.DataStoreColor;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -101,16 +100,15 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                                         + section.getWrapper().getName().getValue();
                             },
                             section.getWrapper().getName()))
-                    .disable(BindingsHelper.persist(
-                            Bindings.size(section.getAllChildren()).isEqualTo(0)))
+                    .disable(Bindings.size(section.getAllChildren()).isEqualTo(0))
                     .grow(false, true)
                     .styleClass("expand-button");
 
-            var quickAccessDisabled = BindingsHelper.persist(Bindings.createBooleanBinding(
+            var quickAccessDisabled = Bindings.createBooleanBinding(
                     () -> {
                         return section.getShownChildren().isEmpty();
                     },
-                    section.getShownChildren()));
+                    section.getShownChildren());
             Consumer<StoreEntryWrapper> quickAccessAction = w -> {
                 action.accept(w);
             };
@@ -134,7 +132,7 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
         // Optimization for large sections. If there are more than 20 children, only add the nodes to the scene if the
         // section is actually expanded
         var listSections = section.getWrapper() != null
-                ? BindingsHelper.filteredContentBinding(
+                ? ListBindingsHelper.filteredContentBinding(
                         section.getShownChildren(),
                         storeSection -> section.getAllChildren().size() <= 20 || expanded.get(),
                         expanded,
@@ -149,9 +147,9 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
         list.add(new HorizontalComp(List.of(content))
                 .styleClass("content")
                 .apply(struc -> struc.get().setFillHeight(true))
-                .hide(BindingsHelper.persist(Bindings.or(
+                .hide(Bindings.or(
                         Bindings.not(expanded),
-                        Bindings.size(section.getAllChildren()).isEqualTo(0)))));
+                        Bindings.size(section.getAllChildren()).isEqualTo(0))));
 
         var vert = new VerticalComp(list);
         if (condensedStyle) {
@@ -160,7 +158,7 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
         return vert.styleClass("store-section-mini-comp")
                 .apply(struc -> {
                     struc.get().setFillWidth(true);
-                    SimpleChangeListener.apply(expanded, val -> {
+                    expanded.subscribe(val -> {
                         struc.get().pseudoClassStateChanged(EXPANDED, val);
                     });
                     struc.get().pseudoClassStateChanged(EVEN, section.getDepth() % 2 == 0);
@@ -171,7 +169,7 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                 })
                 .apply(struc -> {
                     if (section.getWrapper() != null) {
-                        SimpleChangeListener.apply(section.getWrapper().getColor(), val -> {
+                        section.getWrapper().getColor().subscribe(val -> {
                             if (section.getDepth() != 1) {
                                 return;
                             }

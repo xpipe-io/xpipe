@@ -1,16 +1,18 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.BrowserEntry;
-import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.BranchAction;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.LeafAction;
+import io.xpipe.app.browser.file.BrowserEntry;
+import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.browser.icon.BrowserIcons;
 import io.xpipe.app.comp.base.ModalOverlayComp;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.process.OsType;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -35,8 +37,8 @@ public class NewItemAction implements BrowserAction, BranchAction {
     }
 
     @Override
-    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return "New";
+    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return AppI18n.observable("new");
     }
 
     @Override
@@ -76,8 +78,8 @@ public class NewItemAction implements BrowserAction, BranchAction {
                     }
 
                     @Override
-                    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-                        return "File";
+                    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                        return AppI18n.observable("file");
                     }
                 },
                 new LeafAction() {
@@ -105,8 +107,8 @@ public class NewItemAction implements BrowserAction, BranchAction {
                     }
 
                     @Override
-                    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-                        return "Directory";
+                    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                        return AppI18n.observable("directory");
                     }
                 },
                 new LeafAction() {
@@ -137,8 +139,8 @@ public class NewItemAction implements BrowserAction, BranchAction {
                     }
 
                     @Override
-                    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-                        return "Symbolic link";
+                    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                        return AppI18n.observable("symbolicLink");
                     }
 
                     @Override

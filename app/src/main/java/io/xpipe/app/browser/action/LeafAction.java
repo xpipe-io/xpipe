@@ -1,19 +1,17 @@
 package io.xpipe.app.browser.action;
 
-import io.xpipe.app.browser.BrowserEntry;
-import io.xpipe.app.browser.OpenFileSystemModel;
-import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
+import io.xpipe.app.browser.file.BrowserEntry;
+import io.xpipe.app.browser.fs.OpenFileSystemModel;
+import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.util.Shortcuts;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.ThreadHelper;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
-import java.util.function.UnaryOperator;
 
 public interface LeafAction extends BrowserAction {
 
@@ -23,7 +21,7 @@ public interface LeafAction extends BrowserAction {
         var b = new Button();
         b.setOnAction(event -> {
             // Only accept shortcut actions in the current tab
-            if (!model.equals(model.getBrowserModel().getSelected().getValue())) {
+            if (!model.equals(model.getBrowserModel().getSelectedEntry().getValue())) {
                 return;
             }
 
@@ -39,13 +37,14 @@ public interface LeafAction extends BrowserAction {
         if (getShortcut() != null) {
             Shortcuts.addShortcut(b, getShortcut());
         }
-        new FancyTooltipAugment<>(new SimpleStringProperty(getName(model, selected))).augment(b);
+        var name = getName(model, selected);
+        new TooltipAugment<>(name).augment(b);
         var graphic = getIcon(model, selected);
         if (graphic != null) {
             b.setGraphic(graphic);
         }
         b.setMnemonicParsing(false);
-        b.setAccessibleText(getName(model, selected));
+        b.accessibleTextProperty().bind(name);
 
         b.setDisable(!isActive(model, selected));
         model.getCurrentPath().addListener((observable, oldValue, newValue) -> {
@@ -61,10 +60,10 @@ public interface LeafAction extends BrowserAction {
         return b;
     }
 
-    default MenuItem toMenuItem(
-            OpenFileSystemModel model, List<BrowserEntry> selected, UnaryOperator<String> nameFunc) {
-        var name = nameFunc.apply(getName(model, selected));
-        var mi = new MenuItem(name);
+    default MenuItem toMenuItem(OpenFileSystemModel model, List<BrowserEntry> selected) {
+        var name = getName(model, selected);
+        var mi = new MenuItem();
+        mi.textProperty().bind(name);
         mi.setOnAction(event -> {
             ThreadHelper.runFailableAsync(() -> {
                 BooleanScope.execute(model.getBusy(), () -> {

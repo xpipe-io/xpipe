@@ -27,6 +27,9 @@ public class StoreCreationMenu {
         menu.getItems().add(category("addHost", "mdi2h-home-plus", DataStoreProvider.CreationCategory.HOST, "ssh"));
 
         menu.getItems()
+                .add(category("addVisual", "mdi2c-camera-plus", DataStoreProvider.CreationCategory.VISUAL, null));
+
+        menu.getItems()
                 .add(category("addShell", "mdi2t-text-box-multiple", DataStoreProvider.CreationCategory.SHELL, null));
 
         menu.getItems()
@@ -81,7 +84,8 @@ public class StoreCreationMenu {
             event.consume();
         });
         sub.forEach(dataStoreProvider -> {
-            var item = new MenuItem(dataStoreProvider.getDisplayName());
+            var item = new MenuItem();
+            item.textProperty().bind(dataStoreProvider.displayName());
             item.setGraphic(PrettyImageHelper.ofFixedSizeSquare(dataStoreProvider.getDisplayIconFileName(null), 16)
                     .createRegion());
             item.setOnAction(event -> {

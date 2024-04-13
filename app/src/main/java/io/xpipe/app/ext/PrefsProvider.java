@@ -34,15 +34,5 @@ public abstract class PrefsProvider {
                     .map(ServiceLoader.Provider::get)
                     .collect(Collectors.toList());
         }
-
-        @Override
-        public boolean requiresFullDaemon() {
-            return true;
-        }
-
-        @Override
-        public boolean prioritizeLoading() {
-            return false;
-        }
     }
 }

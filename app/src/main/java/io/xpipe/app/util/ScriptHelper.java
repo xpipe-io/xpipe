@@ -3,7 +3,6 @@ package io.xpipe.app.util;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.FilePath;
-import io.xpipe.core.util.FailableFunction;
 import io.xpipe.core.util.SecretValue;
 import lombok.SneakyThrows;
 
@@ -30,7 +29,7 @@ public class ScriptHelper {
     public static FilePath constructTerminalInitFile(
             ShellDialect t,
             ShellControl processControl,
-            FailableFunction<ShellControl, String, Exception> workingDirectory,
+            WorkingDirectoryFunction workingDirectory,
             List<String> init,
             String toExecuteInShell,
             TerminalInitScriptConfig config)
@@ -59,10 +58,10 @@ public class ScriptHelper {
             content += nl + t.changeTitleCommand(config.getDisplayName()) + nl;
         }
 
-        if (workingDirectory != null) {
+        if (workingDirectory != null && workingDirectory.isSpecified()) {
             var wd = workingDirectory.apply(processControl);
             if (wd != null) {
-                content += t.getCdCommand(wd) + nl;
+                content += t.getCdCommand(wd.toString()) + nl;
             }
         }
 
@@ -104,7 +103,8 @@ public class ScriptHelper {
     }
 
     @SneakyThrows
-    public static FilePath createExecScript(ShellDialect type, ShellControl processControl, FilePath file, String content) {
+    public static FilePath createExecScript(
+            ShellDialect type, ShellControl processControl, FilePath file, String content) {
         content = type.prepareScriptContent(content);
 
         TrackEvent.withTrace("Writing exec script")

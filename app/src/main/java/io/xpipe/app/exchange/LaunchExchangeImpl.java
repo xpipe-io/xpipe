@@ -2,7 +2,6 @@ package io.xpipe.app.exchange;
 
 import io.xpipe.beacon.BeaconHandler;
 import io.xpipe.beacon.exchange.LaunchExchange;
-import io.xpipe.core.process.TerminalInitScriptConfig;
 import io.xpipe.core.store.LaunchableStore;
 
 import java.util.Arrays;
@@ -16,9 +15,9 @@ public class LaunchExchangeImpl extends LaunchExchange
     public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
         var store = getStoreEntryById(msg.getId(), false);
         if (store.getStore() instanceof LaunchableStore s) {
-            var command = s.prepareLaunchCommand()
-                    .prepareTerminalOpen(TerminalInitScriptConfig.ofName(store.getName()), sc -> null);
-            return Response.builder().command(split(command)).build();
+            //            var command = s.prepareLaunchCommand()
+            //                    .prepareTerminalOpen(TerminalInitScriptConfig.ofName(store.getName()), sc -> null);
+            //            return Response.builder().command(split(command)).build();
         }
 
         throw new IllegalArgumentException(store.getName() + " is not launchable");

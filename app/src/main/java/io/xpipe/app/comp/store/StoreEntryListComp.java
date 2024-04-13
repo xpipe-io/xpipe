@@ -5,7 +5,6 @@ import io.xpipe.app.comp.base.MultiContentComp;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.HorizontalComp;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -50,16 +49,16 @@ public class StoreEntryListComp extends SimpleComp {
         var map = new LinkedHashMap<Comp<?>, ObservableValue<Boolean>>();
         map.put(
                 createList(),
-                BindingsHelper.persist(Bindings.not(Bindings.isEmpty(
-                        StoreViewState.get().getCurrentTopLevelSection().getShownChildren()))));
+                Bindings.not(Bindings.isEmpty(
+                        StoreViewState.get().getCurrentTopLevelSection().getShownChildren())));
 
         map.put(new StoreIntroComp(), showIntro);
         map.put(
                 new StoreNotFoundComp(),
-                BindingsHelper.persist(Bindings.and(
+                Bindings.and(
                         Bindings.not(Bindings.isEmpty(StoreViewState.get().getAllEntries())),
                         Bindings.isEmpty(
-                                StoreViewState.get().getCurrentTopLevelSection().getShownChildren()))));
+                                StoreViewState.get().getCurrentTopLevelSection().getShownChildren())));
         return new MultiContentComp(map).createRegion();
     }
 }

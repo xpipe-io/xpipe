@@ -3,7 +3,6 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ScrollPane;
@@ -28,7 +27,7 @@ public class AppPrefsComp extends SimpleComp {
                             .createRegion();
                 }));
         var pfxSp = new ScrollPane();
-        SimpleChangeListener.apply(AppPrefs.get().getSelectedCategory(), val -> {
+        AppPrefs.get().getSelectedCategory().subscribe(val -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 pfxSp.setContent(map.get(val));
             });

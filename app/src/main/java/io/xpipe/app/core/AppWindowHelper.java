@@ -53,11 +53,12 @@ public class AppWindowHelper {
         // This allows for assigning logos even if AppImages has not been initialized yet
         var dir = OsType.getLocal() == OsType.MACOS ? "img/logo/padded" : "img/logo/full";
         AppResources.with(AppResources.XPIPE_MODULE, dir, path -> {
-            var size = switch (OsType.getLocal()) {
-                case OsType.Linux linux -> 128;
-                case OsType.MacOs macOs -> 128;
-                case OsType.Windows windows -> 32;
-            };
+            var size =
+                    switch (OsType.getLocal()) {
+                        case OsType.Linux linux -> 128;
+                        case OsType.MacOs macOs -> 128;
+                        case OsType.Windows windows -> 32;
+                    };
             stage.getIcons().add(AppImages.loadImage(path.resolve("logo_" + size + "x" + size + ".png")));
         });
     }
@@ -82,12 +83,7 @@ public class AppWindowHelper {
         }
 
         stage.setOnShown(e -> {
-            // If we set the theme pseudo classes earlier when the window is not shown
-            // they do not apply. Is this a bug in JavaFX?
-            Platform.runLater(() -> {
-                AppTheme.initThemeHandlers(stage);
-            });
-
+            AppTheme.initThemeHandlers(stage);
             centerToMainWindow(stage);
             clampWindow(stage).ifPresent(rectangle2D -> {
                 stage.setX(rectangle2D.getMinX());

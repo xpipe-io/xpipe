@@ -18,7 +18,10 @@ public class ContextMenuAugment<S extends CompStructure<?>> implements Augment<S
     private final Predicate<KeyEvent> keyEventCheck;
     private final Supplier<ContextMenu> contextMenu;
 
-    public ContextMenuAugment(Predicate<MouseEvent> mouseEventCheck, Predicate<KeyEvent> keyEventCheck, Supplier<ContextMenu> contextMenu) {
+    public ContextMenuAugment(
+            Predicate<MouseEvent> mouseEventCheck,
+            Predicate<KeyEvent> keyEventCheck,
+            Supplier<ContextMenu> contextMenu) {
         this.mouseEventCheck = mouseEventCheck;
         this.keyEventCheck = keyEventCheck;
         this.contextMenu = contextMenu;

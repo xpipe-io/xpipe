@@ -1,7 +1,11 @@
 package io.xpipe.app.ext;
 
+import com.fasterxml.jackson.databind.jsontype.NamedType;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.core.util.JacksonMapper;
+import io.xpipe.core.util.ModuleLayerLoader;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,27 +15,6 @@ import java.util.stream.Collectors;
 public class DataStoreProviders {
 
     private static List<DataStoreProvider> ALL;
-
-    public static void init(ModuleLayer layer) {
-        if (ALL == null) {
-            ALL = ServiceLoader.load(layer, DataStoreProvider.class).stream()
-                    .map(ServiceLoader.Provider::get)
-                    .collect(Collectors.toList());
-            ALL.removeIf(p -> {
-                try {
-                    if (!p.init()) {
-                        return true;
-                    }
-
-                    p.validate();
-                    return false;
-                } catch (Throwable e) {
-                    ErrorEvent.fromThrowable(e).handle();
-                    return true;
-                }
-            });
-        }
-    }
 
     public static void postInit(ModuleLayer layer) {
         ALL.forEach(p -> {
@@ -85,5 +68,38 @@ public class DataStoreProviders {
 
     public static List<DataStoreProvider> getAll() {
         return ALL;
+    }
+
+    public static class Loader implements ModuleLayerLoader {
+
+        @Override
+        public void init(ModuleLayer layer) {
+            TrackEvent.info("Loading extension providers ...");
+            ALL = ServiceLoader.load(layer, DataStoreProvider.class).stream()
+                    .map(ServiceLoader.Provider::get)
+                    .collect(Collectors.toList());
+            ALL.removeIf(p -> {
+                try {
+                    if (!p.init()) {
+                        return true;
+                    }
+
+                    p.validate();
+                    return false;
+                } catch (Throwable e) {
+                    ErrorEvent.fromThrowable(e).handle();
+                    return true;
+                }
+            });
+
+            for (DataStoreProvider p : getAll()) {
+                TrackEvent.trace("Loaded data store provider " + p.getId());
+                JacksonMapper.configure(objectMapper -> {
+                    for (Class<?> storeClass : p.getStoreClasses()) {
+                        objectMapper.registerSubtypes(new NamedType(storeClass));
+                    }
+                });
+            }
+        }
     }
 }

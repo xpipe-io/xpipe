@@ -62,15 +62,5 @@ public abstract class ScanProvider {
                             scanProvider -> scanProvider.getClass().getName()))
                     .collect(Collectors.toList());
         }
-
-        @Override
-        public boolean requiresFullDaemon() {
-            return true;
-        }
-
-        @Override
-        public boolean prioritizeLoading() {
-            return false;
-        }
     }
 }

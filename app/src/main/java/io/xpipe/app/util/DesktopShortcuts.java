@@ -68,7 +68,9 @@ public class DesktopShortcuts {
                     .createTextFileWriteCommand(pc, "APPL????", base + "/Contents/PkgInfo")
                     .execute();
             pc.getShellDialect()
-                    .createTextFileWriteCommand(pc, """
+                    .createTextFileWriteCommand(
+                            pc,
+                            """
                                                     <?xml version="1.0" encoding="UTF-8"?>
                                                     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
                                                     <plist version="1.0">
@@ -77,7 +79,8 @@ public class DesktopShortcuts {
                                                     	<string>icon.icns</string>
                                                     </dict>
                                                     </plist>
-                                                    """, base + "/Contents/Info.plist")
+                                                    """,
+                            base + "/Contents/Info.plist")
                     .execute();
             pc.executeSimpleCommand("cp \"" + icon + "\" \"" + base + "/Contents/Resources/icon.icns\"");
         }

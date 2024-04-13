@@ -1,11 +1,13 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.BrowserEntry;
-import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.LeafAction;
+import io.xpipe.app.browser.file.BrowserEntry;
+import io.xpipe.app.browser.fs.OpenFileSystemModel;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.FileOpener;
 import io.xpipe.core.store.FileKind;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -31,9 +33,9 @@ public class EditFileAction implements LeafAction {
     }
 
     @Override
-    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
         var e = AppPrefs.get().externalEditor().getValue();
-        return "Edit with " + (e != null ? e.toTranslatedString().getValue() : "?");
+        return AppI18n.observable("editWithEditor", e.toTranslatedString().getValue());
     }
 
     @Override

@@ -15,18 +15,18 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public interface BrowserIconDirectoryType {
+public abstract class BrowserIconDirectoryType {
 
-    List<BrowserIconDirectoryType> ALL = new ArrayList<>();
+    private static final List<BrowserIconDirectoryType> ALL = new ArrayList<>();
 
-    static BrowserIconDirectoryType byId(String id) {
+    public static synchronized BrowserIconDirectoryType byId(String id) {
         return ALL.stream()
                 .filter(fileType -> fileType.getId().equals(id))
                 .findAny()
                 .orElseThrow();
     }
 
-    static void loadDefinitions() {
+    public static synchronized void loadDefinitions() {
         ALL.add(new BrowserIconDirectoryType() {
 
             @Override
@@ -74,13 +74,17 @@ public interface BrowserIconDirectoryType {
         });
     }
 
-    String getId();
+    public static synchronized List<BrowserIconDirectoryType> getAll() {
+        return ALL;
+    }
 
-    boolean matches(FileSystem.FileEntry entry);
+    public abstract String getId();
 
-    String getIcon(FileSystem.FileEntry entry, boolean open);
+    public abstract boolean matches(FileSystem.FileEntry entry);
 
-    class Simple implements BrowserIconDirectoryType {
+    public abstract String getIcon(FileSystem.FileEntry entry, boolean open);
+
+    public static class Simple extends BrowserIconDirectoryType {
 
         @Getter
         private final String id;

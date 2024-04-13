@@ -1,10 +1,12 @@
 package io.xpipe.app.browser;
 
 import atlantafx.base.controls.Spacer;
+import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.HorizontalComp;
@@ -12,6 +14,7 @@ import io.xpipe.app.fxcomps.impl.LabelComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.PrettySvgComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.binding.Bindings;
@@ -31,9 +34,9 @@ import java.util.List;
 
 public class BrowserWelcomeComp extends SimpleComp {
 
-    private final BrowserModel model;
+    private final BrowserSessionModel model;
 
-    public BrowserWelcomeComp(BrowserModel model) {
+    public BrowserWelcomeComp(BrowserSessionModel model) {
         this.model = model;
     }
 
@@ -54,13 +57,14 @@ public class BrowserWelcomeComp extends SimpleComp {
         hbox.setSpacing(15);
 
         if (state == null) {
-            var header = new Label("Here you will be able to see where you left off last time.");
+            var header = new Label();
+            header.textProperty().bind(AppI18n.observable("browserWelcomeEmpty"));
             vbox.getChildren().add(header);
             hbox.setPadding(new Insets(40, 40, 40, 50));
             return new VBox(hbox);
         }
 
-        var list = BindingsHelper.filteredContentBinding(state.getEntries(), e -> {
+        var list = ListBindingsHelper.filteredContentBinding(state.getEntries(), e -> {
             var entry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
             if (entry.isEmpty()) {
                 return false;
@@ -74,14 +78,14 @@ public class BrowserWelcomeComp extends SimpleComp {
         });
         var empty = Bindings.createBooleanBinding(() -> list.isEmpty(), list);
 
-        var header = new LabelComp(Bindings.createStringBinding(
-                        () -> {
-                            return !empty.get()
-                                    ? "You were recently connected to the following systems:"
-                                    : "Here you will be able to see where you left off last time.";
-                        },
-                        empty))
-                .createRegion();
+        var headerBinding = BindingsHelper.flatMap(empty, b -> {
+            if (b) {
+                return AppI18n.observable("browserWelcomeEmpty");
+            } else {
+                return AppI18n.observable("browserWelcomeSystems");
+            }
+        });
+        var header = new LabelComp(headerBinding).createRegion();
         AppFont.setSize(header, 1);
         vbox.getChildren().add(header);
 
@@ -89,10 +93,13 @@ public class BrowserWelcomeComp extends SimpleComp {
         storeList.setSpacing(8);
 
         var listBox = new ListBoxViewComp<>(list, list, e -> {
-            var disable = new SimpleBooleanProperty();
+                    var disable = new SimpleBooleanProperty();
                     var entryButton = entryButton(e, disable);
                     var dirButton = dirButton(e, disable);
-                    return new HorizontalComp(List.of(entryButton, dirButton));
+                    return new HorizontalComp(List.of(entryButton, dirButton)).apply(struc -> {
+                        ((Region) struc.get().getChildren().get(0)).prefHeightProperty().bind(struc.get().heightProperty());
+                        ((Region) struc.get().getChildren().get(1)).prefHeightProperty().bind(struc.get().heightProperty());
+                    });
                 })
                 .apply(struc -> {
                     VBox vBox = (VBox) struc.get().getContent();
@@ -125,15 +132,17 @@ public class BrowserWelcomeComp extends SimpleComp {
 
     private Comp<?> entryButton(BrowserSavedState.Entry e, BooleanProperty disable) {
         var entry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
-        var graphic = entry.get()
-                .getProvider()
-                .getDisplayIconFileName(entry.get().getStore());
+        var graphic =
+                entry.get().getProvider().getDisplayIconFileName(entry.get().getStore());
         var view = PrettyImageHelper.ofFixedSize(graphic, 30, 24);
-        return new ButtonComp(new SimpleStringProperty(DataStorage.get().getStoreDisplayName(entry.get())), view.createRegion(), () -> {
-            ThreadHelper.runAsync(() -> {
-                model.restoreStateAsync(e, disable);
-            });
-        })
+        return new ButtonComp(
+                        new SimpleStringProperty(DataStorage.get().getStoreDisplayName(entry.get())),
+                        view.createRegion(),
+                        () -> {
+                            ThreadHelper.runAsync(() -> {
+                                model.restoreStateAsync(e, disable);
+                            });
+                        })
                 .minWidth(250)
                 .accessibleText(DataStorage.get().getStoreDisplayName(entry.get()))
                 .disable(disable)
@@ -144,10 +153,10 @@ public class BrowserWelcomeComp extends SimpleComp {
     private Comp<?> dirButton(BrowserSavedState.Entry e, BooleanProperty disable) {
         var entry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
         return new ButtonComp(new SimpleStringProperty(e.getPath()), null, () -> {
-            ThreadHelper.runAsync(() -> {
-                model.restoreStateAsync(e, disable);
-            });
-        })
+                    ThreadHelper.runAsync(() -> {
+                        model.restoreStateAsync(e, disable);
+                    });
+                })
                 .accessibleText(e.getPath())
                 .disable(disable)
                 .styleClass("directory-button")

@@ -3,10 +3,7 @@ import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.exchange.*;
 import io.xpipe.app.exchange.cli.*;
-import io.xpipe.app.ext.ActionProvider;
-import io.xpipe.app.ext.DataStoreProvider;
-import io.xpipe.app.ext.PrefsProvider;
-import io.xpipe.app.ext.ScanProvider;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.issue.EventHandler;
 import io.xpipe.app.issue.EventHandlerImpl;
 import io.xpipe.app.storage.DataStateProviderImpl;
@@ -42,6 +39,9 @@ open module io.xpipe.app {
     exports io.xpipe.app.browser.icon;
     exports io.xpipe.app.core.check;
     exports io.xpipe.app.terminal;
+    exports io.xpipe.app.browser.session;
+    exports io.xpipe.app.browser.fs;
+    exports io.xpipe.app.browser.file;
 
     requires com.sun.jna;
     requires com.sun.jna.platform;
@@ -77,6 +77,7 @@ open module io.xpipe.app {
     requires jdk.management;
     requires jdk.management.agent;
     requires net.steppschuh.markdowngenerator;
+    requires com.shinyhut.vernacular;
 
     // Required by extensions
     requires java.security.jgss;
@@ -116,6 +117,8 @@ open module io.xpipe.app {
     provides Module with
             StorageJacksonModule;
     provides ModuleLayerLoader with
+            MessageExchangeImpls.Loader,
+            DataStoreProviders.Loader,
             ActionProvider.Loader,
             PrefsProvider.Loader,
             BrowserAction.Loader,
@@ -150,6 +153,5 @@ open module io.xpipe.app {
             TerminalWaitExchangeImpl,
             TerminalLaunchExchangeImpl,
             QueryStoreExchangeImpl,
-            InstanceExchangeImpl,
             VersionExchangeImpl;
 }

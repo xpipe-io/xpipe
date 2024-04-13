@@ -85,7 +85,6 @@ public class PlatformThread {
                 ov.removeListener(invListenerMap.getOrDefault(listener, listener));
             }
         };
-        BindingsHelper.linkPersistently(obs, ov);
         return obs;
     }
 
@@ -272,7 +271,6 @@ public class PlatformThread {
                 ol.removeListener(invListenerMap.getOrDefault(listener, listener));
             }
         };
-        BindingsHelper.linkPersistently(obs, ol);
         return obs;
     }
 

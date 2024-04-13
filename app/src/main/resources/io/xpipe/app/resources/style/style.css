@@ -2,19 +2,11 @@
     -fx-background-color: transparent;
 }
 
-.root:pretty:dark.background {
-    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, derive(-color-bg-default, 5%) 40%, derive(-color-bg-default, 2%) 50%, derive(-color-bg-default, 5%) 100%);
-}
-
-.root:performance:dark.background {
+.root:dark.background {
     -fx-background-color: derive(-color-bg-default, 5%);
 }
 
-.root:pretty:light.background {
-    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, derive(-color-bg-default, -9%) 40%, derive(-color-bg-default, 1%) 50%, derive(-color-bg-default, -9%) 100%);
-}
-
-.root:performance:light.background {
+.root:light.background {
     -fx-background-color: derive(-color-bg-default, -9%);
 }
 

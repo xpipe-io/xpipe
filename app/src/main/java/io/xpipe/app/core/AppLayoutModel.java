@@ -1,11 +1,9 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.browser.BrowserComp;
-import io.xpipe.app.browser.BrowserModel;
-import io.xpipe.app.comp.DeveloperTabComp;
+import io.xpipe.app.browser.session.BrowserSessionComp;
+import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.comp.store.StoreLayoutComp;
 import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.prefs.AppPrefsComp;
 import io.xpipe.app.util.LicenseProvider;
 import javafx.beans.property.Property;
@@ -30,13 +28,11 @@ public class AppLayoutModel {
     private final List<Entry> entries;
 
     private final Property<Entry> selected;
-    private final ObservableValue<Entry> selectedWrapper;
 
     public AppLayoutModel(SavedState savedState) {
         this.savedState = savedState;
         this.entries = createEntryList();
         this.selected = new SimpleObjectProperty<>(entries.get(1));
-        this.selectedWrapper = PlatformThread.sync(selected);
     }
 
     public static AppLayoutModel get() {
@@ -53,12 +49,8 @@ public class AppLayoutModel {
         INSTANCE = null;
     }
 
-    public Property<Entry> getSelectedInternal() {
+    public Property<Entry> getSelected() {
         return selected;
-    }
-
-    public ObservableValue<Entry> getSelected() {
-        return selectedWrapper;
     }
 
     public void selectBrowser() {
@@ -79,21 +71,16 @@ public class AppLayoutModel {
 
     private List<Entry> createEntryList() {
         var l = new ArrayList<>(List.of(
-                new Entry(AppI18n.observable("browser"), "mdi2f-file-cabinet", new BrowserComp(BrowserModel.DEFAULT)),
+                new Entry(
+                        AppI18n.observable("browser"),
+                        "mdi2f-file-cabinet",
+                        new BrowserSessionComp(BrowserSessionModel.DEFAULT)),
                 new Entry(AppI18n.observable("connections"), "mdi2c-connection", new StoreLayoutComp()),
-                new Entry(AppI18n.observable("settings"), "mdsmz-miscellaneous_services", new AppPrefsComp())));
-        // new SideMenuBarComp.Entry(AppI18n.observable("help"), "mdi2b-book-open-variant", new
-        // StorageLayoutComp()),
-        // new SideMenuBarComp.Entry(AppI18n.observable("account"), "mdi2a-account", new StorageLayoutComp())
-        if (AppProperties.get().isDeveloperMode() && !AppProperties.get().isImage()) {
-            l.add(new Entry(AppI18n.observable("developer"), "mdi2b-book-open-variant", new DeveloperTabComp()));
-        }
-
-        l.add(new Entry(
-                AppI18n.observable("explorePlans"),
-                "mdi2p-professional-hexagon",
-                LicenseProvider.get().overviewPage()));
-
+                new Entry(AppI18n.observable("settings"), "mdsmz-miscellaneous_services", new AppPrefsComp()),
+                new Entry(
+                        AppI18n.observable("explorePlans"),
+                        "mdi2p-professional-hexagon",
+                        LicenseProvider.get().overviewPage())));
         return l;
     }
 

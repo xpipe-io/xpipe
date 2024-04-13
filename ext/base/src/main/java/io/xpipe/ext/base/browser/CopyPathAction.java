@@ -1,14 +1,17 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.BrowserEntry;
-import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.BranchAction;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserActionFormatter;
 import io.xpipe.app.browser.action.LeafAction;
+import io.xpipe.app.browser.file.BrowserEntry;
+import io.xpipe.app.browser.fs.OpenFileSystemModel;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.ClipboardHelper;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileNames;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -29,8 +32,8 @@ public class CopyPathAction implements BrowserAction, BranchAction {
     }
 
     @Override
-    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return "Copy location";
+    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return AppI18n.observable("copyLocation");
     }
 
     @Override
@@ -43,14 +46,13 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                     }
 
                     @Override
-                    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
-                            return " "
-                                    + BrowserActionFormatter.centerEllipsis(
-                                            entries.getFirst().getRawFileEntry().getPath(), 50);
+                            return new SimpleObjectProperty<>(BrowserActionFormatter.centerEllipsis(
+                                    entries.getFirst().getRawFileEntry().getPath(), 50));
                         }
 
-                        return "Absolute Paths";
+                        return AppI18n.observable("absolutePaths");
                     }
 
                     @Override
@@ -63,14 +65,13 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                 },
                 new LeafAction() {
                     @Override
-                    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
-                            return " "
-                                    + BrowserActionFormatter.centerEllipsis(
-                                            entries.getFirst().getRawFileEntry().getPath(), 50);
+                            return new SimpleObjectProperty<>(BrowserActionFormatter.centerEllipsis(
+                                    entries.getFirst().getRawFileEntry().getPath(), 50));
                         }
 
-                        return "Absolute Link Paths";
+                        return AppI18n.observable("absoluteLinkPaths");
                     }
 
                     @Override
@@ -95,15 +96,15 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                 },
                 new LeafAction() {
                     @Override
-                    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
-                            return "\""
+                            return new SimpleObjectProperty<>("\""
                                     + BrowserActionFormatter.centerEllipsis(
                                             entries.getFirst().getRawFileEntry().getPath(), 50)
-                                    + "\"";
+                                    + "\"");
                         }
 
-                        return "Absolute Paths (Quoted)";
+                        return AppI18n.observable("absolutePathsQuoted");
                     }
 
                     @Override
@@ -129,17 +130,15 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                     }
 
                     @Override
-                    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
-                            return " "
-                                    + BrowserActionFormatter.centerEllipsis(
-                                            FileNames.getFileName(entries.getFirst()
-                                                    .getRawFileEntry()
-                                                    .getPath()),
-                                            50);
+                            return new SimpleObjectProperty<>(BrowserActionFormatter.centerEllipsis(
+                                    FileNames.getFileName(
+                                            entries.getFirst().getRawFileEntry().getPath()),
+                                    50));
                         }
 
-                        return "File Names";
+                        return AppI18n.observable("fileNames");
                     }
 
                     @Override
@@ -153,17 +152,15 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                 },
                 new LeafAction() {
                     @Override
-                    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
-                            return " "
-                                    + BrowserActionFormatter.centerEllipsis(
-                                            FileNames.getFileName(entries.getFirst()
-                                                    .getRawFileEntry()
-                                                    .getPath()),
-                                            50);
+                            return new SimpleObjectProperty<>(BrowserActionFormatter.centerEllipsis(
+                                    FileNames.getFileName(
+                                            entries.getFirst().getRawFileEntry().getPath()),
+                                    50));
                         }
 
-                        return "Link File Names";
+                        return AppI18n.observable("linkFileNames");
                     }
 
                     @Override
@@ -195,18 +192,18 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                 },
                 new LeafAction() {
                     @Override
-                    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
-                            return "\""
+                            return new SimpleObjectProperty<>("\""
                                     + BrowserActionFormatter.centerEllipsis(
                                             FileNames.getFileName(entries.getFirst()
                                                     .getRawFileEntry()
                                                     .getPath()),
                                             50)
-                                    + "\"";
+                                    + "\"");
                         }
 
-                        return "File Names (Quoted)";
+                        return AppI18n.observable("fileNamesQuoted");
                     }
 
                     @Override

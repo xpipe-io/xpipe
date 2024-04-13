@@ -77,14 +77,20 @@ project.ext {
     javafxVersion = '22'
     platformName = getPlatformName()
     artifactChecksums = new HashMap<String, String>()
+    languages = ["en", "nl", "es", "fr", "de", "it", "pt", "ru", "ja", "zh", "tr"]
     jvmRunArgs = [
             "--add-opens", "java.base/java.lang=io.xpipe.app",
             "--add-opens", "java.base/java.lang=io.xpipe.core",
             "--add-opens", "java.desktop/java.awt=io.xpipe.app",
             "--add-opens", "net.synedra.validatorfx/net.synedra.validatorfx=io.xpipe.app",
             "--add-opens", "java.base/java.nio.file=io.xpipe.app",
+            "--add-exports", "javafx.graphics/com.sun.javafx.tk=io.xpipe.app",
+            "--add-opens", "javafx.graphics/com.sun.glass.ui=io.xpipe.app",
+            "--add-opens", "javafx.graphics/javafx.stage=io.xpipe.app",
+            "--add-opens", "javafx.graphics/com.sun.javafx.tk.quantum=io.xpipe.app",
             "-Xmx8g",
             "-Dio.xpipe.app.arch=$rootProject.arch",
+            "-Dio.xpipe.app.languages=${String.join(";", languages)}",
             "-Dfile.encoding=UTF-8",
             // Disable this for now as it requires Windows 10+
             // '-XX:+UseZGC',
@@ -104,6 +110,7 @@ project.ext {
     if (signingPassword == null) {
         signingPassword = ''
     }
+    deeplApiKey = findProperty('DEEPL_API_KEY')
 }
 
 if (org.gradle.internal.os.OperatingSystem.current() == org.gradle.internal.os.OperatingSystem.LINUX) {

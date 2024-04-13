@@ -23,7 +23,7 @@ public interface ShellControl extends ProcessControl {
 
     List<UUID> getExitUuids();
 
-    void setWorkingDirectory(FailableFunction<ShellControl, String, Exception> workingDirectory);
+    void setWorkingDirectory(WorkingDirectoryFunction workingDirectory);
 
     Optional<ShellStore> getSourceStore();
 
@@ -90,7 +90,7 @@ public interface ShellControl extends ProcessControl {
     String prepareIntermediateTerminalOpen(
             String content,
             TerminalInitScriptConfig config,
-            FailableFunction<ShellControl, String, Exception> workingDirectory)
+            WorkingDirectoryFunction workingDirectory)
             throws Exception;
 
     FilePath getSystemTemporaryDirectory();
@@ -176,7 +176,7 @@ public interface ShellControl extends ProcessControl {
 
             @Override
             public CommandBuilder prepareWithoutInitCommand() {
-                return CommandBuilder.of().add(sc -> type.getLoginOpenCommand(sc));
+                return CommandBuilder.of().addAll(sc -> type.getLaunchCommand().loginCommand(sc.getOsType()));
             }
 
             @Override
@@ -194,7 +194,7 @@ public interface ShellControl extends ProcessControl {
 
             @Override
             public CommandBuilder prepareWithoutInitCommand() {
-                return CommandBuilder.of().add(sc -> sc.getShellDialect().getLoginOpenCommand(sc));
+                return CommandBuilder.of().addAll(sc -> sc.getShellDialect().getLaunchCommand().loginCommand(sc.getOsType()));
             }
 
             @Override
