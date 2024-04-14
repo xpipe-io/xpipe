@@ -28,6 +28,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -94,6 +95,16 @@ public abstract class StoreEntryComp extends SimpleComp {
             ThreadHelper.runFailableAsync(() -> {
                 wrapper.executeDefaultAction();
             });
+        });
+        button.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+            if (event.getClickCount() > 1) {
+                event.consume();
+            }
+        });
+        button.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            if (event.getClickCount() > 1) {
+                event.consume();
+            }
         });
         new ContextMenuAugment<>(
                         mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY,

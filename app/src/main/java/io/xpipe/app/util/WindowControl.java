@@ -40,9 +40,15 @@ public class WindowControl {
     }
 
     public void setWindowAttribute(int attribute, boolean attributeValue) {
-        DwmSupport.INSTANCE.DwmSetWindowAttribute(
-                windowHandle, attribute, new WinDef.BOOLByReference(new WinDef.BOOL(attributeValue)), WinDef.BOOL.SIZE);
-        User32.INSTANCE.UpdateWindow(windowHandle);
+        DwmSupport.INSTANCE.DwmSetWindowAttribute(windowHandle, attribute, new WinDef.BOOLByReference(new WinDef.BOOL(attributeValue)), WinDef.BOOL.SIZE);
+    }
+
+    public void setWindowAttribute(int attribute, long attributeValue) {
+        DwmSupport.INSTANCE.DwmSetWindowAttribute(windowHandle, attribute, new WinDef.DWORDByReference(new WinDef.DWORD(attributeValue)), WinDef.DWORD.SIZE);
+    }
+
+    public void redraw() {
+        User32.INSTANCE.RedrawWindow(windowHandle, null, null, new WinDef.DWORD(User32.RDW_FRAME | User32.RDW_VALIDATE));
     }
 
     public interface DwmSupport extends Library {

@@ -87,6 +87,8 @@ public class AppTheme {
                 try {
 //                    var c = new WindowControl(stage);
 //                    c.setWindowAttribute(20, AppPrefs.get().theme.getValue().isDark());
+//                    c.setWindowAttribute(34, 0xFFFFFFFEL);
+//                    c.redraw();
                 } catch (Throwable e) {
                     ErrorEvent.fromThrowable(e).handle();
                 }
