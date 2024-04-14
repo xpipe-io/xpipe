@@ -49,7 +49,7 @@ public interface StoreSortMode {
     StoreSortMode DATE_DESC = new StoreSortMode() {
         @Override
         public StoreSection representative(StoreSection s) {
-            return Stream.concat(s.getShownChildren().stream().map(this::representative), Stream.of(s))
+            return Stream.concat(s.getShownChildren().stream().filter(section -> section.getWrapper().getEntry().getValidity().isUsable()).map(this::representative), Stream.of(s))
                     .max(Comparator.comparing(
                             section -> section.getWrapper().getEntry().getLastAccess()))
                     .orElseThrow();
@@ -70,7 +70,7 @@ public interface StoreSortMode {
     StoreSortMode DATE_ASC = new StoreSortMode() {
         @Override
         public StoreSection representative(StoreSection s) {
-            return Stream.concat(s.getShownChildren().stream().map(this::representative), Stream.of(s))
+            return Stream.concat(s.getShownChildren().stream().filter(section -> section.getWrapper().getEntry().getValidity().isUsable()).map(this::representative), Stream.of(s))
                     .max(Comparator.comparing(
                             section -> section.getWrapper().getEntry().getLastAccess()))
                     .orElseThrow();
