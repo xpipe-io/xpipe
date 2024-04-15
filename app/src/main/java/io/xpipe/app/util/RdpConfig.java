@@ -62,5 +62,9 @@ public class RdpConfig {
     public static class TypedValue {
         String type;
         String value;
+
+        public static TypedValue string(String value) {
+            return new TypedValue("s", value);
+        }
     }
 }

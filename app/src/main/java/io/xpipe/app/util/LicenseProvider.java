@@ -21,7 +21,9 @@ public abstract class LicenseProvider {
 
     public abstract LicensedFeature getFeature(String id);
 
-    public abstract void checkShellControl(String s);
+    public abstract boolean checkOsName(String name);
+
+    public abstract void checkOsNameOrThrow(String s);
 
     public abstract void showLicenseAlert(LicenseRequiredException ex);
 

@@ -16,14 +16,14 @@ public class BrowserAlerts {
 
     public static FileConflictChoice showFileConflictAlert(String file, boolean multiple) {
         var map = new LinkedHashMap<ButtonType, FileConflictChoice>();
-        map.put(new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE), FileConflictChoice.CANCEL);
+        map.put(new ButtonType(AppI18n.get("cancel"), ButtonBar.ButtonData.CANCEL_CLOSE), FileConflictChoice.CANCEL);
         if (multiple) {
-            map.put(new ButtonType("Skip", ButtonBar.ButtonData.OTHER), FileConflictChoice.SKIP);
-            map.put(new ButtonType("Skip All", ButtonBar.ButtonData.OTHER), FileConflictChoice.SKIP_ALL);
+            map.put(new ButtonType(AppI18n.get("skip"), ButtonBar.ButtonData.OTHER), FileConflictChoice.SKIP);
+            map.put(new ButtonType(AppI18n.get("skipAll"), ButtonBar.ButtonData.OTHER), FileConflictChoice.SKIP_ALL);
         }
-        map.put(new ButtonType("Replace", ButtonBar.ButtonData.OTHER), FileConflictChoice.REPLACE);
+        map.put(new ButtonType(AppI18n.get("replace"), ButtonBar.ButtonData.OTHER), FileConflictChoice.REPLACE);
         if (multiple) {
-            map.put(new ButtonType("Replace All", ButtonBar.ButtonData.OTHER), FileConflictChoice.REPLACE_ALL);
+            map.put(new ButtonType(AppI18n.get("replaceAll"), ButtonBar.ButtonData.OTHER), FileConflictChoice.REPLACE_ALL);
         }
         return AppWindowHelper.showBlockingAlert(alert -> {
                     alert.setTitle(AppI18n.get("fileConflictAlertTitle"));

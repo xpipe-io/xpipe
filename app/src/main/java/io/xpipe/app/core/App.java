@@ -65,7 +65,7 @@ public class App extends Application {
                             "XPipe %s (%s)", t.getValue(), AppProperties.get().getVersion());
                     var prefix = AppProperties.get().isStaging() ? "[Public Test Build, Not a proper release] " : "";
                     var suffix = u.getValue() != null
-                            ? AppI18n.get("updateReadyTitle", u.getValue().getVersion())
+                            ? " " + AppI18n.get("updateReadyTitle", u.getValue().getVersion())
                             : "";
                     return prefix + base + suffix;
                 },

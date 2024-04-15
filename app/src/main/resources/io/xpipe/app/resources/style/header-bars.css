@@ -74,21 +74,6 @@
     -fx-border-width: 4;
 }
 
-.store-header-bar .menu-button .context-menu > * > * {
-    -fx-padding: 5px 10px 5px 10px;
-}
-
-.store-header-bar .menu-button .context-menu > * {
-    -fx-padding: 0;
-}
-
-.store-header-bar .menu-button .context-menu {
-    -fx-padding: 3px;
-    -fx-background-radius: 4px;
-    -fx-border-radius: 4px;
-    -fx-border-color: -color-neutral-muted;
-}
-
 .store-creation-bar, .store-sort-bar, .store-category-bar {
     -fx-background-radius: 0 4px 4px 0;
     -fx-border-radius: 0 4px 4px 0;

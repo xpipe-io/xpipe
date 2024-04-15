@@ -1,3 +1,18 @@
+.menu-button .context-menu > * > * {
+    -fx-padding: 5px 10px 5px 10px;
+}
+
+.menu-button .context-menu > * {
+    -fx-padding: 0;
+}
+
+.menu-button .context-menu {
+    -fx-padding: 3px;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-border-color: -color-neutral-muted;
+}
+
 .context-menu > * > * {
     -fx-padding: 3px 10px 3px 10px;
     -fx-background-radius: 1px;

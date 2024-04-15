@@ -84,7 +84,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
         var gitShareButton = new ButtonComp(null, new FontIcon("mdi2g-git"), () -> {
             if (!AppPrefs.get().enableGitStorage().get()) {
                 AppLayoutModel.get().selectSettings();
-                AppPrefs.get().selectCategory(3);
+                AppPrefs.get().selectCategory("synchronization");
                 return;
             }
 

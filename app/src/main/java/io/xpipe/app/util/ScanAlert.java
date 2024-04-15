@@ -183,6 +183,7 @@ public class ScanAlert {
                         }
 
                         shellControl = newValue.getStore().control();
+                        shellControl.withoutLicenseCheck();
                         shellControl.start();
                         var a = applicable.apply(entry.get().get(), shellControl);
 

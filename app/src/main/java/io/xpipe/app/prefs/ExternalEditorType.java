@@ -241,7 +241,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         public WindowsType(String id, String executable, boolean detach) {
             super(id, executable);
-            this.detach = true;
+            this.detach = detach;
         }
 
         @Override

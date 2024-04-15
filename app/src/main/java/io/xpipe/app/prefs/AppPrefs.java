@@ -139,15 +139,15 @@ public class AppPrefs {
                 new AboutCategory(),
                 new SystemCategory(),
                 new AppearanceCategory(),
+                new SyncCategory(),
+                new VaultCategory(),
+                new PasswordManagerCategory(),
+                new SecurityCategory(),
                 new TerminalCategory(),
                 new EditorCategory(),
                 new RdpCategory(),
-                new SyncCategory(),
-                new VaultCategory(),
                 new SshCategory(),
                 new LocalShellCategory(),
-                new SecurityCategory(),
-                new PasswordManagerCategory(),
                 new TroubleshootCategory(),
                 new DeveloperCategory());
         var selected = AppCache.get("selectedPrefsCategory", Integer.class, () -> 0);
@@ -505,10 +505,12 @@ public class AppPrefs {
         }
     }
 
-    public void selectCategory(int selected) {
+    public void selectCategory(String id) {
         AppLayoutModel.get().selectSettings();
-        var index = selected >= 0 && selected < categories.size() ? selected : 0;
-        selectedCategory.setValue(categories.get(index));
+        var found = categories.stream().filter(appPrefsCategory -> appPrefsCategory.getId().equals(id)).findFirst();
+        found.ifPresent(appPrefsCategory -> {
+            selectedCategory.setValue(appPrefsCategory);
+        });
     }
 
     public String passwordManagerString(String key) {

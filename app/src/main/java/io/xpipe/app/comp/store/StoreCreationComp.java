@@ -212,8 +212,8 @@ public class StoreCreationComp extends DialogComp {
                             .setContent(AppWindowHelper.alertContentText(AppI18n.get("confirmInvalidStoreContent")));
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
                     alert.getButtonTypes().clear();
-                    alert.getButtonTypes().add(new ButtonType("Retry", ButtonBar.ButtonData.CANCEL_CLOSE));
-                    alert.getButtonTypes().add(new ButtonType("Skip", ButtonBar.ButtonData.OK_DONE));
+                    alert.getButtonTypes().add(new ButtonType(AppI18n.get("retry"), ButtonBar.ButtonData.CANCEL_CLOSE));
+                    alert.getButtonTypes().add(new ButtonType(AppI18n.get("skip"), ButtonBar.ButtonData.OK_DONE));
                 })
                 .map(b -> b.getButtonData().isDefaultButton())
                 .orElse(false);

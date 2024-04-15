@@ -46,7 +46,7 @@ public class SecretRetrievalStrategyHelper {
                                 .apply(struc -> struc.get().setPromptText("Password key"))
                                 .hgrow(),
                         new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
-                                    AppPrefs.get().selectCategory(9);
+                                    AppPrefs.get().selectCategory("passwordManager");
                                     App.getApp().getStage().requestFocus();
                                 })
                                 .grow(false, true)))
@@ -54,6 +54,7 @@ public class SecretRetrievalStrategyHelper {
         return new OptionsBuilder()
                 .name("passwordKey")
                 .addComp(content, keyProperty)
+                .nonNull()
                 .bind(
                         () -> {
                             return new SecretRetrievalStrategy.PasswordManager(keyProperty.getValue());

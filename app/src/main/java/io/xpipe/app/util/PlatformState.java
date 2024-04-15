@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.check.AppSystemFontCheck;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
@@ -83,7 +84,7 @@ public enum PlatformState {
                     : h.getMessage();
             TrackEvent.warn(h.getMessage());
             PlatformState.setCurrent(PlatformState.EXITED);
-            return Optional.of(new HeadlessException(msg));
+            return Optional.of(ErrorEvent.expected(new HeadlessException(msg)));
         } catch (Throwable t) {
             TrackEvent.warn(t.getMessage());
             PlatformState.setCurrent(PlatformState.EXITED);

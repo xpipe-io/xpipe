@@ -2,6 +2,7 @@ package io.xpipe.app.prefs;
 
 import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.TextFieldComp;
@@ -14,6 +15,8 @@ import io.xpipe.core.store.LocalStore;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -23,6 +26,22 @@ public class PasswordManagerCategory extends AppPrefsCategory {
     @Override
     protected String getId() {
         return "passwordManager";
+    }
+
+    private Comp<?> createTemplateChoice() {
+        return Comp.of(() -> {
+            var cb = new MenuButton();
+            cb.textProperty().bind(AppI18n.observable("templates"));
+            ExternalPasswordManager.ALL.forEach(externalPasswordManager -> {
+                var m = new MenuItem(externalPasswordManager.toTranslatedString().getValue());
+                m.setOnAction(event -> {
+                    AppPrefs.get().passwordManagerCommand.set(externalPasswordManager.getTemplate());
+                    event.consume();
+                });
+                cb.getItems().add(m);
+            });
+            return cb;
+        });
     }
 
     @Override
@@ -48,6 +67,13 @@ public class PasswordManagerCategory extends AppPrefsCategory {
             });
         };
 
+        var c = new TextFieldComp(prefs.passwordManagerCommand, true).apply(struc -> struc.get().setPromptText("mypassmgr get $KEY")).minWidth(350);
+        var visit = createTemplateChoice();
+        var choice = new HorizontalComp(List.of(c, visit)).apply(struc -> {
+            struc.get().setAlignment(Pos.CENTER_LEFT);
+            struc.get().setSpacing(10);
+        });
+
         var testPasswordManager = new HorizontalComp(List.of(
                         new TextFieldComp(testPasswordManagerValue)
                                 .apply(struc -> struc.get().setPromptText("Enter password key"))
@@ -63,8 +89,7 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                 .addTitle("passwordManager")
                 .sub(new OptionsBuilder()
                         .nameAndDescription("passwordManagerCommand")
-                        .addComp(new TextFieldComp(prefs.passwordManagerCommand, true)
-                                .apply(struc -> struc.get().setPromptText("mypassmgr get $KEY")))
+                        .addComp(choice)
                         .nameAndDescription("passwordManagerCommandTest")
                         .addComp(testPasswordManager))
                 .buildComp();

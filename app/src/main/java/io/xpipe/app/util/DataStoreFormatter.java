@@ -13,6 +13,17 @@ import java.util.function.IntFunction;
 
 public class DataStoreFormatter {
 
+    public static String formattedOsName(String osName) {
+        osName = osName.replaceAll("^Microsoft ", "");
+
+        var proRequired = !LicenseProvider.get().checkOsName(osName);
+        if (!proRequired) {
+            return osName;
+        }
+
+        return "[Pro] " + osName;
+    }
+
     public static ObservableValue<String> shellInformation(StoreEntryWrapper w) {
         return BindingsHelper.map(w.getPersistentState(), o -> {
             if (o instanceof ShellStoreState s) {
@@ -23,11 +34,11 @@ public class DataStoreFormatter {
                 if (s.getShellDialect() != null
                         && !s.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
                     return s.getOsName() != null
-                            ? s.getOsName()
+                            ? formattedOsName(s.getOsName())
                             : s.getShellDialect().getDisplayName();
                 }
 
-                return s.isRunning() ? s.getOsName() : "Connection failed";
+                return s.isRunning() ? formattedOsName(s.getOsName()) : "Connection failed";
             }
 
             return "?";

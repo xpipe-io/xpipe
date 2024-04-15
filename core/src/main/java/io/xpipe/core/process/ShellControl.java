@@ -67,7 +67,12 @@ public interface ShellControl extends ProcessControl {
     }
 
     default <T extends ShellStoreState> ShellControl withShellStateFail(StatefulDataStore<T> store) {
-        return onStartupFail(shellControl -> {
+        return onStartupFail(t -> {
+            // Ugly
+            if (t.getClass().getSimpleName().equals("LicenseRequiredException")) {
+                return;
+            }
+
             var s = store.getState();
             s.setRunning(false);
             store.setState(s);
