@@ -32,7 +32,7 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
 
             @Override
             public void execute() throws Exception {
-                s.getDesktop().getStore().runScript(store.getName(), s.getDesktop().getStore().getUsedDialect(), s.getFullCommand());
+                s.getDesktop().getStore().runDesktopScript(store.getName(), s.getDesktop().getStore().getUsedDialect(), s.getFullCommand());
             }
         };
     }
@@ -48,7 +48,7 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
 
             @Override
             public void execute() throws Exception {
-                s.getDesktop().getStore().runScript(store.getName(), s.getDesktop().getStore().getUsedDialect(), s.getFullCommand());
+                s.getDesktop().getStore().runDesktopScript(store.getName(), s.getDesktop().getStore().getUsedDialect(), s.getFullCommand());
             }
         };
     }

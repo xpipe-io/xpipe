@@ -1,6 +1,6 @@
 package io.xpipe.core.store;
 
-public interface SingletonSessionStore<T extends SingletonSessionStore.Session> extends InternalCacheDataStore {
+public interface SingletonSessionStore<T extends SingletonSessionStore.Session> extends ExpandedLifecycleStore, InternalCacheDataStore {
 
     static abstract class Session {
 
@@ -11,7 +11,27 @@ public interface SingletonSessionStore<T extends SingletonSessionStore.Session> 
         public abstract void stop() throws Exception;
     }
 
-    void onSessionUpdate(boolean active);
+    @Override
+    public default void finalizeValidate() throws Exception {
+        stopSessionIfNeeded();
+    }
+
+    default void setEnabled(boolean value) {
+        setCache("sessionEnabled", value);
+    }
+
+    default boolean isRunning() {
+        return getCache("sessionRunning", Boolean.class, false);
+    }
+
+    default boolean isEnabled() {
+        return getCache("sessionEnabled",Boolean.class,false);
+    }
+
+    default void onSessionUpdate(boolean active) {
+        setEnabled(active);
+        setCache("sessionRunning", active);
+    }
 
     T newSession() throws Exception;
 
@@ -22,30 +42,36 @@ public interface SingletonSessionStore<T extends SingletonSessionStore.Session> 
         return (T) getCache("session", getSessionClass(), null);
     }
 
-    default void startIfNeeded() throws Exception {
-        var s = getSession();
-        if (s != null) {
-            if (s.isRunning()) {
+    default void startSessionIfNeeded() throws Exception {
+        synchronized (this) {
+            var s = getSession();
+            setEnabled(true);
+            if (s != null) {
+                if (s.isRunning()) {
+                    return;
+                }
+
+                s.start();
                 return;
             }
 
+            s = newSession();
             s.start();
-            return;
+            setCache("session", s);
+            onSessionUpdate(true);
         }
-
-        s = newSession();
-        s.start();
-        setCache("session", s);
-        onSessionUpdate(true);
     }
 
 
-    default void stopIfNeeded() throws Exception {
-        var ex = getSession();
-        setCache("session", null);
-        if (ex != null) {
-            ex.stop();
-            onSessionUpdate(false);
+    default void stopSessionIfNeeded() throws Exception {
+        synchronized (this) {
+            var ex = getSession();
+            setEnabled(false);
+            if (ex != null) {
+                ex.stop();
+                setCache("session", null);
+                onSessionUpdate(false);
+            }
         }
     }
 }

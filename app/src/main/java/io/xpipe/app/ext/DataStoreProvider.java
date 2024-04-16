@@ -18,12 +18,19 @@ import io.xpipe.core.util.JacksonizedValue;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;
 
 public interface DataStoreProvider {
+
+    default ObservableBooleanValue busy(StoreEntryWrapper wrapper) {
+        return new SimpleBooleanProperty(false);
+    }
+
     default boolean editByDefault() {
         return false;
     }

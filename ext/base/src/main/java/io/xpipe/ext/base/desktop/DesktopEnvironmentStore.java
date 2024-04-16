@@ -53,12 +53,12 @@ public class DesktopEnvironmentStore extends JacksonizedValue implements Desktop
 
     public void launch(String n, String commands) throws Exception {
         var fullName = n + " [" + getSelfEntry().getName() + "]";
-        base.getStore().runScript(fullName, dialect, getMergedInitCommands(commands));
+        base.getStore().runDesktopScript(fullName, dialect, getMergedInitCommands(commands));
     }
 
     public void launchSelf() throws Exception {
         var fullName = getSelfEntry().getName();
-        base.getStore().runTerminal(fullName, terminal, dialect, getMergedInitCommands(null));
+        base.getStore().runDesktopTerminal(fullName, terminal, dialect, getMergedInitCommands(null));
     }
 
     @Override
@@ -67,13 +67,13 @@ public class DesktopEnvironmentStore extends JacksonizedValue implements Desktop
     }
 
     @Override
-    public void runScript(String name, ShellDialect dialect, String script) throws Exception {
-        base.getStore().runScript(name, dialect, script);
+    public void runDesktopScript(String name, ShellDialect dialect, String script) throws Exception {
+        base.getStore().runDesktopScript(name, dialect, script);
     }
 
     @Override
-    public void runTerminal(String name, ExternalTerminalType terminalType, ShellDialect dialect, String script) throws Exception {
-        base.getStore().runTerminal(name,terminalType,dialect,script);
+    public void runDesktopTerminal(String name, ExternalTerminalType terminalType, ShellDialect dialect, String script) throws Exception {
+        base.getStore().runDesktopTerminal(name,terminalType,dialect,script);
     }
 
     @Override

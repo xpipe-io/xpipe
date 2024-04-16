@@ -10,12 +10,12 @@ import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.property.*;
-import javafx.collections.FXCollections;
 import lombok.Getter;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -26,15 +26,14 @@ public class StoreEntryWrapper {
     private final DataStoreEntry entry;
     private final Property<Instant> lastAccess;
     private final BooleanProperty disabled = new SimpleBooleanProperty();
-    private final BooleanProperty inRefresh = new SimpleBooleanProperty();
-    private final BooleanProperty observing = new SimpleBooleanProperty();
+    private final BooleanProperty busy = new SimpleBooleanProperty();
     private final Property<DataStoreEntry.Validity> validity = new SimpleObjectProperty<>();
     private final Map<ActionProvider, BooleanProperty> actionProviders;
     private final Property<ActionProvider.DefaultDataStoreCallSite<?>> defaultActionProvider;
     private final BooleanProperty deletable = new SimpleBooleanProperty();
     private final BooleanProperty expanded = new SimpleBooleanProperty();
     private final Property<Object> persistentState = new SimpleObjectProperty<>();
-    private final MapProperty<String, Object> cache = new SimpleMapProperty<>(FXCollections.observableHashMap());
+    private final Property<Map<String, Object>> cache = new SimpleObjectProperty<>(Map.of());
     private final Property<DataStoreColor> color = new SimpleObjectProperty<>();
     private final Property<StoreCategoryWrapper> category = new SimpleObjectProperty<>();
     private final Property<String> summary = new SimpleObjectProperty<>();
@@ -112,12 +111,12 @@ public class StoreEntryWrapper {
         disabled.setValue(entry.isDisabled());
         validity.setValue(entry.getValidity());
         expanded.setValue(entry.isExpanded());
-        observing.setValue(entry.isObserving());
         persistentState.setValue(entry.getStorePersistentState());
-        cache.putAll(entry.getStoreCache());
+        // Use map copy to recognize update
+        cache.setValue(new HashMap<>(entry.getStoreCache()));
         color.setValue(entry.getColor());
 
-        inRefresh.setValue(entry.isInRefresh());
+        busy.setValue(entry.isInRefresh());
         deletable.setValue(entry.getConfiguration().isDeletable()
                 || AppPrefs.get().developerDisableGuiRestrictions().getValue());
 

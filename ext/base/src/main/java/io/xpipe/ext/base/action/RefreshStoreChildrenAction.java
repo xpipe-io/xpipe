@@ -9,7 +9,7 @@ import io.xpipe.app.util.FixedHierarchyStore;
 import javafx.beans.value.ObservableValue;
 import lombok.Value;
 
-public class RefreshStoreAction implements ActionProvider {
+public class RefreshStoreChildrenAction implements ActionProvider {
 
     @Override
     public ActionProvider.DataStoreCallSite<?> getDataStoreCallSite() {

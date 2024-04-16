@@ -47,10 +47,6 @@ public class DataStoreEntry extends StorageElement {
     @NonFinal
     boolean inRefresh;
 
-    @NonFinal
-    @Setter
-    boolean observing;
-
     @Getter
     @NonFinal
     DataStoreProvider provider;

@@ -9,9 +9,9 @@ public interface DesktopBaseStore extends DataStore {
 
     boolean supportsDesktopAccess();
 
-    void runScript(String name, ShellDialect dialect, String script) throws Exception;
+    void runDesktopScript(String name, ShellDialect dialect, String script) throws Exception;
 
-    void runTerminal(String name, ExternalTerminalType terminalType, ShellDialect dialect, String script) throws Exception;
+    void runDesktopTerminal(String name, ExternalTerminalType terminalType, ShellDialect dialect, String script) throws Exception;
 
     ShellDialect getUsedDialect();
 
