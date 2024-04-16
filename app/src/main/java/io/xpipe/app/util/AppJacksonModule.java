@@ -1,4 +1,4 @@
-package io.xpipe.app.storage;
+package io.xpipe.app.util;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.xpipe.app.util.PasswordLockSecretValue;
-import io.xpipe.app.util.VaultKeySecretValue;
+import io.xpipe.app.storage.*;
+import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.util.EncryptedSecretValue;
 import io.xpipe.core.util.JacksonMapper;
@@ -16,7 +16,7 @@ import io.xpipe.core.util.SecretValue;
 import java.io.IOException;
 import java.util.UUID;
 
-public class StorageJacksonModule extends SimpleModule {
+public class AppJacksonModule extends SimpleModule {
 
     @Override
     public void setupModule(SetupContext context) {
@@ -29,6 +29,8 @@ public class StorageJacksonModule extends SimpleModule {
         addDeserializer(ContextualFileReference.class, new LocalFileReferenceDeserializer());
         addSerializer(DataStoreSecret.class, new DataStoreSecretSerializer());
         addDeserializer(DataStoreSecret.class, new DataStoreSecretDeserializer());
+        addSerializer(ExternalTerminalType.class, new ExternalTerminalTypeSerializer());
+        addDeserializer(ExternalTerminalType.class, new ExternalTerminalTypeDeserializer());
 
         context.addSerializers(_serializers);
         context.addDeserializers(_deserializers);
@@ -48,6 +50,24 @@ public class StorageJacksonModule extends SimpleModule {
         @Override
         public ContextualFileReference deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             return ContextualFileReference.of(p.getValueAsString());
+        }
+    }
+
+    public static class ExternalTerminalTypeSerializer extends JsonSerializer<ExternalTerminalType> {
+
+        @Override
+        public void serialize(ExternalTerminalType value, JsonGenerator jgen, SerializerProvider provider)
+                throws IOException {
+            jgen.writeString(value.getId());
+        }
+    }
+
+    public static class ExternalTerminalTypeDeserializer extends JsonDeserializer<ExternalTerminalType> {
+
+        @Override
+        public ExternalTerminalType deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            var id = p.getValueAsString();
+            return ExternalTerminalType.ALL.stream().filter(terminalType -> terminalType.getId().equals(id)).findFirst().orElse(null);
         }
     }
 

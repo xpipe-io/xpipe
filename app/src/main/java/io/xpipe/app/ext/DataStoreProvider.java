@@ -24,7 +24,6 @@ import javafx.beans.value.ObservableValue;
 import java.util.List;
 
 public interface DataStoreProvider {
-
     default boolean editByDefault() {
         return false;
     }
@@ -208,6 +207,6 @@ public interface DataStoreProvider {
         TUNNEL,
         SCRIPT,
         CLUSTER,
-        VISUAL;
+        DESKSTOP;
     }
 }

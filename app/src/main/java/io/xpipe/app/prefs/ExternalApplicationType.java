@@ -34,7 +34,7 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
         return getId();
     }
 
-    public static class MacApplication extends ExternalApplicationType {
+    public static abstract class MacApplication extends ExternalApplicationType {
 
         protected final String applicationName;
 

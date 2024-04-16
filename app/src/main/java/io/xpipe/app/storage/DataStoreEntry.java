@@ -431,6 +431,10 @@ public class DataStoreEntry extends StorageElement {
     }
 
     public void validateOrThrow() throws Throwable {
+        if (store == null) {
+            return;
+        }
+
         try {
             store.checkComplete();
             setInRefresh(true);

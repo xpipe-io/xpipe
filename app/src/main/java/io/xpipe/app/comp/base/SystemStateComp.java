@@ -6,7 +6,6 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.core.process.ShellStoreState;
-import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.layout.Region;
@@ -25,16 +24,14 @@ public class SystemStateComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var icon = PlatformThread.sync(Bindings.createStringBinding(
-                () -> {
-                    return state.getValue() == State.FAILURE
-                            ? "mdi2l-lightning-bolt"
-                            : state.getValue() == State.SUCCESS ? "mdal-check" : "mdsmz-remove";
-                },
-                state));
         var fi = new FontIcon();
         fi.getStyleClass().add("inner-icon");
-        icon.subscribe(val -> fi.setIconLiteral(val));
+        state.subscribe(s -> {
+            var i = s == State.FAILURE
+                    ? "mdi2l-lightning-bolt"
+                    : s == State.SUCCESS ? "mdal-check" : "mdsmz-remove";
+            PlatformThread.runLaterIfNeeded(() -> fi.setIconLiteral(i));
+        });
 
         var border = new FontIcon("mdi2c-circle-outline");
         border.getStyleClass().add("outer-icon");

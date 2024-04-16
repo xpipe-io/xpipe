@@ -51,6 +51,7 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
     @Override
     public CompStructure<ComboBox<T>> createBase() {
         var cb = new ComboBox<T>();
+        cb.setMaxWidth(2000);
         cb.setConverter(new StringConverter<>() {
             @Override
             public String toString(T object) {

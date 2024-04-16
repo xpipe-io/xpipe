@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 24.3.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+
+<svg
+   version="1.1"
+   id="Layer_1"
+   x="0px"
+   y="0px"
+   viewBox="0 0 205.60609 122.97245"
+   xml:space="preserve"
+   sodipodi:docname="desktopCommand_icon-dark.svg"
+   width="205.60609"
+   height="122.97245"
+   inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
+   inkscape:export-filename="C:\Projects\xpipe\xpipex\ext\proc\src\main\resources\io\xpipe\ext\proc\resources\img\command_icon-16.png"
+   inkscape:export-xdpi="7.8066268"
+   inkscape:export-ydpi="7.8066268"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+   id="defs21" /><sodipodi:namedview
+   id="namedview19"
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1.0"
+   inkscape:pageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="0"
+   showgrid="false"
+   inkscape:zoom="2.3671504"
+   inkscape:cx="-23.445912"
+   inkscape:cy="2.1122443"
+   inkscape:window-width="1920"
+   inkscape:window-height="1017"
+   inkscape:window-x="-8"
+   inkscape:window-y="-8"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="Layer_1" />
+<style
+   type="text/css"
+   id="style2">
+	.st0{fill:#0C0C0C;}
+	.st1{fill:#AC55FF;}
+</style>
+
+<g
+   id="g16"
+   transform="matrix(0.81,0,0,0.81,-104.55448,-145.88493)"
+   style="fill:#ba6600;fill-opacity:1">
+	<g
+   id="g8"
+   style="fill:#ba6600;fill-opacity:1">
+		<path
+   class="st1"
+   d="m 166.9,196.4 c -3.3,-2.8 -8.2,-2.4 -11,0.8 -2.5,2.9 -2.5,7.2 0,10.1 l 47,47.1 -47,47.1 c -3.3,2.8 -3.6,7.7 -0.8,11 2.8,3.3 7.7,3.6 11,0.8 0.3,-0.3 0.6,-0.5 0.8,-0.8 l 52.6,-52.6 c 3,-3 3,-7.9 0,-11 z"
+   id="path6"
+   style="fill:#ba6600;fill-opacity:1" />
+	</g>
+	<g
+   id="g14"
+   style="fill:#ba6600;fill-opacity:1">
+		<path
+   class="st1"
+   d="M 350.3,301.2 H 241.2 c -4.3,0 -7.8,3.5 -7.8,7.8 0,4.3 3.5,7.8 7.8,7.8 h 109.1 c 4.3,0 7.8,-3.5 7.8,-7.8 0,-4.3 -3.5,-7.8 -7.8,-7.8 z"
+   id="path10"
+   style="fill:#ba6600;fill-opacity:1" />
+		<path
+   class="st1"
+   d="M 350.3,317.5 H 241.2 c -4.7,0 -8.5,-3.8 -8.5,-8.5 0,-4.7 3.8,-8.5 8.5,-8.5 h 109.1 c 4.7,0 8.5,3.8 8.5,8.5 0,4.7 -3.8,8.5 -8.5,8.5 z M 241.2,301.9 c -3.9,0 -7,3.2 -7,7 0,3.8 3.2,7 7,7 h 109.1 c 3.9,0 7,-3.2 7,-7 0,-3.8 -3.2,-7 -7,-7 z"
+   id="path12"
+   style="fill:#ba6600;fill-opacity:1" />
+	</g>
+</g>
+</svg>

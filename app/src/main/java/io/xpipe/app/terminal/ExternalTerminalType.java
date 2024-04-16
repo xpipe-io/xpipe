@@ -7,6 +7,7 @@ import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.FilePath;
+import io.xpipe.core.util.FailableFunction;
 import lombok.Getter;
 import lombok.Value;
 import lombok.With;
@@ -18,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Supplier;
 
 public interface ExternalTerminalType extends PrefsChoiceValue {
 
@@ -151,6 +151,18 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                         // https://askubuntu.com/questions/1148475/launching-gnome-terminal-from-vscode
                         .envrironment("GNOME_TERMINAL_SCREEN", sc -> "");
             }
+        }
+
+        @Override
+        public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand() {
+            return launchConfiguration -> {
+                var toExecute = CommandBuilder.of()
+                        .add(executable, "-v", "--title")
+                        .addQuoted(launchConfiguration.getColoredTitle())
+                        .add("--")
+                        .addFile(launchConfiguration.getScriptFile());
+                return toExecute.buildSimple();
+            };
         }
     };
     ExternalTerminalType KONSOLE = new SimplePathType("app.konsole", "konsole", true) {
@@ -551,6 +563,17 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                             .addQuoted("Warp.app")
                             .addFile(configuration.getScriptFile()));
         }
+
+        @Override
+        public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand() {
+            return launchConfiguration -> {
+                var toExecute = CommandBuilder.of()
+                        .add("open", "-a")
+                        .addQuoted("Warp.app")
+                        .addFile(launchConfiguration.getScriptFile());
+                return toExecute.buildSimple();
+            };
+        }
     };
     ExternalTerminalType CUSTOM = new CustomTerminalType();
     List<ExternalTerminalType> WINDOWS_TERMINALS = List.of(
@@ -588,24 +611,31 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             WezTerminalType.WEZTERM_MAC_OS,
             MACOS_TERMINAL);
 
-    @SuppressWarnings("TrivialFunctionalExpressionUsage")
-    List<ExternalTerminalType> ALL = ((Supplier<List<ExternalTerminalType>>) () -> {
-                var all = new ArrayList<ExternalTerminalType>();
-                if (OsType.getLocal().equals(OsType.WINDOWS)) {
-                    all.addAll(WINDOWS_TERMINALS);
-                }
-                if (OsType.getLocal().equals(OsType.LINUX)) {
-                    all.addAll(LINUX_TERMINALS);
-                }
-                if (OsType.getLocal().equals(OsType.MACOS)) {
-                    all.addAll(MACOS_TERMINALS);
-                }
-                // Prefer with tabs
-                all.sort(Comparator.comparingInt(o -> (o.supportsTabs() ? -1 : 0)));
-                all.add(CUSTOM);
-                return all;
-            })
-            .get();
+    List<ExternalTerminalType> APPLICABLE = getTypes(OsType.getLocal(), false, true);
+
+    List<ExternalTerminalType> ALL = getTypes(null, false, true);
+
+    static List<ExternalTerminalType> getTypes(OsType osType, boolean remote, boolean custom) {
+        var all = new ArrayList<ExternalTerminalType>();
+        if (osType == null || osType.equals(OsType.WINDOWS)) {
+            all.addAll(WINDOWS_TERMINALS);
+        }
+        if (osType == null || osType.equals(OsType.LINUX)) {
+            all.addAll(LINUX_TERMINALS);
+        }
+        if (osType == null || osType.equals(OsType.MACOS)) {
+            all.addAll(MACOS_TERMINALS);
+        }
+        if (remote) {
+            all.removeIf(externalTerminalType -> externalTerminalType.remoteLaunchCommand() == null);
+        }
+        // Prefer recommended
+        all.sort(Comparator.comparingInt(o -> (o.isRecommended() ? -1 : 0)));
+        if (custom) {
+            all.add(CUSTOM);
+        }
+        return all;
+    }
 
     static ExternalTerminalType determineDefault(ExternalTerminalType existing) {
         // Check for incompatibility with fallback shell
@@ -618,7 +648,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return existing;
         }
 
-        return ALL.stream()
+        return APPLICABLE.stream()
                 .filter(externalTerminalType -> !externalTerminalType.equals(CUSTOM))
                 .filter(terminalType -> terminalType.isAvailable())
                 .findFirst()
@@ -640,6 +670,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     }
 
     default void launch(LaunchConfiguration configuration) throws Exception {}
+
+    default FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand() {
+        return null;
+    }
 
     abstract class WindowsType extends ExternalApplicationType.WindowsType implements ExternalTerminalType {
 
@@ -713,6 +747,18 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         public void launch(LaunchConfiguration configuration) throws Exception {
             var args = toCommand(configuration);
             launch(configuration.getColoredTitle(), args);
+        }
+
+        @Override
+        public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand() {
+            return launchConfiguration -> {
+                var args = toCommand(launchConfiguration);
+                args.add(0, executable);
+                if (explicityAsync) {
+                    args = launchConfiguration.getScriptDialect().launchAsnyc(args);
+                }
+                return args.buildSimple();
+            };
         }
 
         protected abstract CommandBuilder toCommand(LaunchConfiguration configuration) throws Exception;

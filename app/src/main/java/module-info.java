@@ -7,7 +7,7 @@ import io.xpipe.app.ext.*;
 import io.xpipe.app.issue.EventHandler;
 import io.xpipe.app.issue.EventHandlerImpl;
 import io.xpipe.app.storage.DataStateProviderImpl;
-import io.xpipe.app.storage.StorageJacksonModule;
+import io.xpipe.app.util.AppJacksonModule;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.ProxyManagerProviderImpl;
 import io.xpipe.app.util.TerminalLauncher;
@@ -114,8 +114,7 @@ open module io.xpipe.app {
     uses LicenseProvider;
     uses io.xpipe.app.util.LicensedFeature;
 
-    provides Module with
-            StorageJacksonModule;
+    provides Module with AppJacksonModule;
     provides ModuleLayerLoader with
             MessageExchangeImpls.Loader,
             DataStoreProviders.Loader,
