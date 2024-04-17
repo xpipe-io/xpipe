@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 
 public interface ExternalRdpClientType extends PrefsChoiceValue {
 
-    ExternalRdpClientType MSTSC = new PathCheckType("app.mstsc", "mstsc.exe", true) {
+    ExternalRdpClientType MSTSC = new PathCheckType("app.mstsc", "mstsc.exe", false) {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {

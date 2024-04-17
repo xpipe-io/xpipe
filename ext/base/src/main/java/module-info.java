@@ -3,6 +3,7 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.ext.base.action.*;
 import io.xpipe.ext.base.browser.*;
+import io.xpipe.ext.base.desktop.DesktopCommandStoreProvider;
 import io.xpipe.ext.base.desktop.DesktopEnvironmentStoreProvider;
 import io.xpipe.ext.base.script.ScriptGroupStoreProvider;
 import io.xpipe.ext.base.script.SimpleScriptStoreProvider;
@@ -66,6 +67,6 @@ open module io.xpipe.ext.base {
             DeleteStoreChildrenAction,
             BrowseStoreAction;
     provides DataStoreProvider with
-            SimpleScriptStoreProvider, DesktopEnvironmentStoreProvider, DesktopApplicationStoreProvider,
+            SimpleScriptStoreProvider, DesktopEnvironmentStoreProvider, DesktopApplicationStoreProvider, DesktopCommandStoreProvider,
             ScriptGroupStoreProvider;
 }

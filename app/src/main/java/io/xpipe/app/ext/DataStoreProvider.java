@@ -52,6 +52,10 @@ public interface DataStoreProvider {
         }
     }
 
+    default ActionProvider.Action activateAction(DataStoreEntry store) {
+        return null;
+    }
+
     default ActionProvider.Action launchAction(DataStoreEntry store) {
         return null;
     }
@@ -139,13 +143,13 @@ public interface DataStoreProvider {
         return null;
     }
 
-    default boolean init() {
+    default boolean preInit() {
         return true;
     }
 
-    default void postInit() {}
+    default void init() {}
 
-    default void storageInit() {}
+    default void reset() {}
 
     default boolean isShareableFromLocalMachine() {
         return false;

@@ -150,8 +150,8 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
                                 .findModule("io.xpipe.ext.proc")
                                 .orElseThrow(),
                         "io.xpipe.ext.proc.ShellDialectChoiceComp")
-                .getDeclaredConstructor(Property.class)
-                .newInstance(dialect);
+                .getDeclaredConstructor(Property.class, boolean.class)
+                .newInstance(dialect, false);
         return new OptionsBuilder()
                 .name("snippets")
                 .description("snippetsDescription")
@@ -210,7 +210,7 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public void storageInit() {
+    public void init() {
         DataStorage.get()
                 .addStoreEntryIfNotPresent(DataStoreEntry.createNew(
                         UUID.fromString("a9945ad2-db61-4304-97d7-5dc4330691a7"),

@@ -34,8 +34,7 @@ public class DesktopEnvironmentStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public ActionProvider.Action launchAction(DataStoreEntry store) {
-        DesktopEnvironmentStore s = store.getStore().asNeeded();
+    public ActionProvider.Action activateAction(DataStoreEntry store) {
         return new ActionProvider.Action() {
             @Override
             public boolean requiresJavaFXPlatform() {
@@ -44,7 +43,32 @@ public class DesktopEnvironmentStoreProvider implements DataStoreProvider {
 
             @Override
             public void execute() throws Exception {
-                s.launchSelf();
+                DesktopEnvironmentStore s = store.getStore().asNeeded();
+                var a = s.getBase().get().getProvider().activateAction(s.getBase().get());
+                if (a != null) {
+                    a.execute();
+                }
+            }
+        };
+    }
+
+    @Override
+    public ActionProvider.Action launchAction(DataStoreEntry store) {
+        return new ActionProvider.Action() {
+            @Override
+            public boolean requiresJavaFXPlatform() {
+                return false;
+            }
+
+            @Override
+            public void execute() throws Exception {
+                DesktopEnvironmentStore s = store.getStore().asNeeded();
+                var a = s.getBase().get().getProvider().activateAction(s.getBase().get());
+                if (a != null) {
+                    a.execute();
+                }
+                var fullName = store.getName();
+                s.runDesktopTerminal(fullName, null);
             }
         };
     }
@@ -77,8 +101,8 @@ public class DesktopEnvironmentStoreProvider implements DataStoreProvider {
                                 .findModule("io.xpipe.ext.proc")
                                 .orElseThrow(),
                         "io.xpipe.ext.proc.ShellDialectChoiceComp")
-                .getDeclaredConstructor(Property.class)
-                .newInstance(dialect);
+                .getDeclaredConstructor(Property.class, boolean.class)
+                .newInstance(dialect, false);
         return new OptionsBuilder()
                 .nameAndDescription("desktopHost")
                 .addComp(
@@ -106,7 +130,6 @@ public class DesktopEnvironmentStoreProvider implements DataStoreProvider {
                                 StoreViewState.get().getAllScriptsCategory()),
                         scripts)
                 .nameAndDescription("desktopInitScript")
-                .longDescription("proc:environmentScript")
                 .addComp(
                         new IntegratedTextAreaComp(
                                 initScript,

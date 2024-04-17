@@ -1,11 +1,13 @@
 package io.xpipe.app.core.mode;
 
 import io.xpipe.app.Main;
-import io.xpipe.app.core.*;
+import io.xpipe.app.core.App;
+import io.xpipe.app.core.AppLogs;
+import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.AppState;
 import io.xpipe.app.core.check.AppDebugModeCheck;
 import io.xpipe.app.core.check.AppTempCheck;
 import io.xpipe.app.core.check.AppUserDirectoryCheck;
-import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.launcher.LauncherCommand;
 import io.xpipe.app.launcher.LauncherInput;
@@ -166,8 +168,6 @@ public abstract class OperationMode {
                     }
                 }
             }
-
-            DataStoreProviders.postInit(AppExtensionManager.getInstance().getExtendedLayer());
         } catch (Throwable ex) {
             ErrorEvent.fromThrowable(ex).term().handle();
         }

@@ -7,6 +7,7 @@ import io.xpipe.app.core.check.AppAvCheck;
 import io.xpipe.app.core.check.AppCertutilCheck;
 import io.xpipe.app.core.check.AppShellCheck;
 import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
@@ -62,6 +63,7 @@ public class BaseMode extends OperationMode {
         AppPrefs.initSharedRemote();
         UnlockAlert.showIfNeeded();
         DataStorage.init();
+        DataStoreProviders.init();
         AppFileWatcher.init();
         FileBridge.init();
         ActionProvider.initProviders();
@@ -77,6 +79,7 @@ public class BaseMode extends OperationMode {
         TrackEvent.info("Background mode shutdown started");
         BrowserSessionModel.DEFAULT.reset();
         StoreViewState.reset();
+        DataStoreProviders.reset();
         DataStorage.reset();
         AppPrefs.reset();
         AppResources.reset();

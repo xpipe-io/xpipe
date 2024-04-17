@@ -86,14 +86,6 @@ public abstract class DataStorage {
 
         INSTANCE = shouldPersist() ? new StandardStorage() : new ImpersistentStorage();
         INSTANCE.load();
-
-        DataStoreProviders.getAll().forEach(dataStoreProvider -> {
-            try {
-                dataStoreProvider.storageInit();
-            } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).omit().handle();
-            }
-        });
     }
 
     public static void reset() {

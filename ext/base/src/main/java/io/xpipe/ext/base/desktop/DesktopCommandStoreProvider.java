@@ -1,17 +1,18 @@
 package io.xpipe.ext.base.desktop;
 
 import io.xpipe.app.browser.session.BrowserSessionModel;
+import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.fxcomps.impl.DataStoreChoiceComp;
-import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.store.DataStore;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -19,7 +20,7 @@ import javafx.beans.property.SimpleStringProperty;
 
 import java.util.List;
 
-public class DesktopApplicationStoreProvider implements DataStoreProvider {
+public class DesktopCommandStoreProvider implements DataStoreProvider {
 
     @Override
     public ActionProvider.Action browserAction(BrowserSessionModel sessionModel, DataStoreEntry store, BooleanProperty busy) {
@@ -36,13 +37,13 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
 
             @Override
             public void execute() throws Exception {
-                DesktopApplicationStore s = store.getStore().asNeeded();
-                var baseEntry = s.getDesktop().get();
+                DesktopCommandStore s = store.getStore().asNeeded();
+                var baseEntry = s.getEnvironment().getStore().getBase().get();
                 var baseActivate = baseEntry.getProvider().activateAction(baseEntry);
                 if (baseActivate != null) {
                     baseActivate.execute();
                 }
-                s.getDesktop().getStore().runDesktopApplication(store.getName(), s);
+                s.getEnvironment().getStore().runDesktopTerminal(store.getName(),s.getScript());
             }
         };
     }
@@ -54,64 +55,74 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
 
     @Override
     public DataStoreEntry getDisplayParent(DataStoreEntry store) {
-        DesktopApplicationStore s = store.getStore().asNeeded();
-        return s.getDesktop().get();
+        DesktopCommandStore s = store.getStore().asNeeded();
+        return s.getEnvironment().get();
     }
 
     @Override
     public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
-        DesktopApplicationStore st = (DesktopApplicationStore) store.getValue();
-        var host = new SimpleObjectProperty<>(st.getDesktop());
-        var path = new SimpleStringProperty(st.getPath() != null ? st.getPath().toAbsoluteFilePath(null) : null);
-        var args = new SimpleStringProperty(st.getArguments() != null ? st.getArguments() : null);
+        DesktopCommandStore st = (DesktopCommandStore) store.getValue();
+        var env = new SimpleObjectProperty<>(st.getEnvironment());
+        var script = new SimpleStringProperty(st.getScript());
         return new OptionsBuilder()
-                .nameAndDescription("desktopBase")
+                .nameAndDescription("desktopEnvironmentBase")
                 .addComp(
                         new DataStoreChoiceComp<>(
                                 DataStoreChoiceComp.Mode.HOST,
                                 entry,
-                                host,
-                                DesktopBaseStore.class,
+                                env,
+                                DesktopEnvironmentStore.class,
                                 desktopStoreDataStoreEntryRef -> desktopStoreDataStoreEntryRef.getStore().supportsDesktopAccess(),
                                 StoreViewState.get().getAllConnectionsCategory()),
-                        host)
+                        env)
                 .nonNull()
-                .nameAndDescription("desktopApplicationPath")
-                .addString(path)
+                .nameAndDescription("desktopCommandScript")
+                .addComp(
+                        new IntegratedTextAreaComp(
+                                script,
+                                false,
+                                "commands",
+                                Bindings.createStringBinding(
+                                        () -> {
+                                            return env.getValue() != null && env.getValue().getStore().getDialect() != null
+                                                    ? env.getValue().getStore().getDialect()
+                                                    .getScriptFileEnding()
+                                                    : "sh";
+                                        },
+                                        env)),
+                        script)
                 .nonNull()
-                .nameAndDescription("desktopApplicationArguments")
-                .addString(args)
                 .bind(
                         () -> {
-                            return DesktopApplicationStore.builder().desktop(host.get()).path(ContextualFileReference.of(path.get())).arguments(args.get()).build();
+                            return DesktopCommandStore.builder().environment(env.get()).script(script.get()).build();
                         },
                         store)
                 .buildDialog();
     }
 
     public String summaryString(StoreEntryWrapper wrapper) {
-        DesktopApplicationStore s = wrapper.getEntry().getStore().asNeeded();
-        return DataStoreFormatter.toApostropheName(s.getDesktop().get()) + " config";
+        DesktopCommandStore s = wrapper.getEntry().getStore().asNeeded();
+        return DataStoreFormatter.toApostropheName(s.getEnvironment().get()) + " config";
     }
 
     @Override
     public String getDisplayIconFileName(DataStore store) {
-        return "base:desktopApplication_icon.svg";
+        return "base:desktopCommand_icon.svg";
     }
 
     @Override
     public DataStore defaultStore() {
-        return DesktopApplicationStore.builder().build();
+        return DesktopCommandStore.builder().build();
     }
 
     @Override
     public List<String> getPossibleNames() {
-        return List.of("desktopApplication");
+        return List.of("desktopCommand");
     }
 
     @Override
     public List<Class<?>> getStoreClasses() {
-        return List.of(DesktopApplicationStore.class);
+        return List.of(DesktopCommandStore.class);
     }
 
 

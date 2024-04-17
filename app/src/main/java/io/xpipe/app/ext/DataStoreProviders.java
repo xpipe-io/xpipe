@@ -16,12 +16,22 @@ public class DataStoreProviders {
 
     private static List<DataStoreProvider> ALL;
 
-    public static void postInit(ModuleLayer layer) {
-        ALL.forEach(p -> {
+    public static void init() {
+        DataStoreProviders.getAll().forEach(dataStoreProvider -> {
             try {
-                p.postInit();
-            } catch (Throwable e) {
-                ErrorEvent.fromThrowable(e).handle();
+                dataStoreProvider.init();
+            } catch (Exception e) {
+                ErrorEvent.fromThrowable(e).omit().handle();
+            }
+        });
+    }
+
+    public static void reset() {
+        DataStoreProviders.getAll().forEach(dataStoreProvider -> {
+            try {
+                dataStoreProvider.reset();
+            } catch (Exception e) {
+                ErrorEvent.fromThrowable(e).omit().handle();
             }
         });
     }
@@ -80,7 +90,7 @@ public class DataStoreProviders {
                     .collect(Collectors.toList());
             ALL.removeIf(p -> {
                 try {
-                    if (!p.init()) {
+                    if (!p.preInit()) {
                         return true;
                     }
 

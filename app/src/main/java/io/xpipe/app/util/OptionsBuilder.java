@@ -204,7 +204,7 @@ public class OptionsBuilder {
         this.lastCompHeadReference = comp;
     }
 
-    public OptionsBuilder stringArea(Property<String> prop, boolean lazy) {
+    public OptionsBuilder addStringArea(Property<String> prop, boolean lazy) {
         var comp = new TextAreaComp(prop, lazy);
         pushComp(comp);
         props.add(prop);
