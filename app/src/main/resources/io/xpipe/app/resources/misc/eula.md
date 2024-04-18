@@ -2,7 +2,7 @@
 
 ## Preamble
 
-This end user license agreement (hereinafter “**EULA**”) is a license agreement between you as the end user and **XPipe UG (haftungsbeschränkt)**, Reichertshalde 81, 71642 Ludwigsburg, (hereinafter “**XPipe**”) for the use of the products “XPipe”, a server connection and server management software, which was developed by XPipe (hereinafter “**Software**”).
+This end user license agreement (hereinafter “**EULA**”) is a license agreement between you as the end user and **XPipe UG (haftungsbeschränkt)**, Reichertshalde 81, 71642 Ludwigsburg, (hereinafter “**XPipe**”) for the use of the products “XPipe”, a server connection and server management software (hereinafter “**Software**”).
 
 This document can be viewed and printed out at any time in the XPipe desktop application or at http://docs.xpipe.io/end-user-license-agreement. The customer is independently responsible for saving the text of the contract at the time the contract is concluded. No copies will be provided by XPipe after the fact.
 
@@ -10,21 +10,21 @@ This document can be viewed and printed out at any time in the XPipe desktop app
 
 (1) The EULA governs the terms under which you may use the Software. By accepting the EULA or using the Software, you agree to be bound by the terms of the EULA.
 
-(2) This EULA does not establish a service relationship between XPipe and you in return for payment. The payment of a license fee is solely the subject of the contractual relationship between you and the payment service provider Lemonsqueezy, to whom you pay license fees and in return we grant you a right to use additional software features of the professional plan. “Lemonsqueezy” collectively means Lemon Squeezy, LLC, 222 South Main Street Suite 500, Salt Lake City, Utah. Lemon Squeezy, LLC is a global payment service provider that facilitates online transactions using common online payment methods and acts as the seller of the product.
+(2) This EULA does not establish a service relationship between XPipe and you in return for payment. The payment of a license fee is solely the subject of the contractual relationship between you and the payment service provider Lemonsqueezy, to whom you pay license fees and in return we grant you a right to use additional software features. “Lemonsqueezy” collectively means Lemon Squeezy, LLC, 222 South Main Street Suite 500, Salt Lake City, Utah. Lemon Squeezy, LLC is a global payment service provider that facilitates online transactions using common online payment methods and acts as the seller of the product.
 
 ## § 2 License
 
 (1) By entering into the EULA, you receive the non-exclusive, non-transferable and non-sublicensable right, unlimited in time, to run the Software installed on a computer in machine-readable format in accordance with the terms of the EULA (“License”).
 
-(2) The rights granted with the license include the right to obtain updates of the software provided by XPipe for the period of an active subscription. The use of updates is voluntary. Insofar as new software functions are introduced with an update, this does not justify any claim by you that these will also be maintained with future updates.
+(2) The rights granted with the license include the right to obtain updates of the software provided by XPipe for the period of an active license. The use of updates is voluntary. Insofar as new software functions are introduced with an update, this does not justify any claim by you that these will also be maintained with future updates.
 
-## § 3 Provision of the Software, Activation of the Subscription
+## § 3 Provision of the Software, Activation of the License
 
 (1) The software is made available by you downloading it from the XPipe website and installing it independently on your device. XPipe itself owes you neither provision nor installation or integration of the software on a computer.
 
-(2) Any active subscription is checked for validity each time the program is started. For this purpose, an Internet connection is required at least once a week when the program is started. Any circumvention of a subscription activation and any unauthorized use of the software not authorized by XPipe and in violation of this EULA is prohibited.
+(2) Any active license is checked for validity each time the program is started. For this purpose, an Internet connection is required at least once a week when the program is started. Any circumvention of a license activation and any unauthorized use of the software not authorized by XPipe and in violation of this EULA is prohibited.
 
-(3) Activation of a subscription is done individually for you as an end user, and the activated subscription is verified when the program is started. You may install the software on multiple computers.
+(3) Activation of a license is done individually for you as an end user, and the activated license is verified when the program is started. You may install the software on multiple computers.
 
 (4) Any circumvention of the aforementioned activation is prohibited.
 

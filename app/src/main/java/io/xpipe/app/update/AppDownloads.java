@@ -68,7 +68,7 @@ public class AppDownloads {
 
             return Optional.of(downloadFile);
         } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t).omitted(omitErrors).handle();
+            ErrorEvent.fromThrowable(t).omitted(omitErrors).expected().handle();
             return Optional.empty();
         }
     }
@@ -106,7 +106,7 @@ public class AppDownloads {
             var bytes = HttpHelper.executeGet(url, aFloat -> {});
             return Optional.of(new String(bytes, StandardCharsets.UTF_8));
         } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t).omitted(omitErrors).handle();
+            ErrorEvent.fromThrowable(t).omitted(omitErrors).expected().handle();
             return Optional.empty();
         }
     }
