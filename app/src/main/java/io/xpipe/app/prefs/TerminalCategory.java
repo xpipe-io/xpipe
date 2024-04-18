@@ -14,11 +14,13 @@ import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.LocalStore;
+
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ListCell;
 import javafx.scene.paint.Color;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;

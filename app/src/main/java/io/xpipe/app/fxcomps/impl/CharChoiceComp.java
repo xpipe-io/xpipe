@@ -3,6 +3,7 @@ package io.xpipe.app.fxcomps.impl;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
+
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;

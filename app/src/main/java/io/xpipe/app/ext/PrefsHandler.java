@@ -1,6 +1,7 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.fxcomps.Comp;
+
 import javafx.beans.property.Property;
 
 public interface PrefsHandler {

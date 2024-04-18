@@ -14,8 +14,7 @@ public interface ProcessControl extends AutoCloseable {
 
     void resetData(boolean cache);
 
-    String prepareTerminalOpen(
-            TerminalInitScriptConfig config, WorkingDirectoryFunction workingDirectory)
+    String prepareTerminalOpen(TerminalInitScriptConfig config, WorkingDirectoryFunction workingDirectory)
             throws Exception;
 
     void closeStdin() throws IOException;

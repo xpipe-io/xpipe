@@ -7,6 +7,7 @@ import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.TerminalInitScriptConfig;
 import io.xpipe.core.process.WorkingDirectoryFunction;
 import io.xpipe.core.store.FilePath;
+
 import lombok.Setter;
 import lombok.Value;
 import lombok.experimental.NonFinal;

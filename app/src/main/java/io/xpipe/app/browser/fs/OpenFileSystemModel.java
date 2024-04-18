@@ -22,8 +22,10 @@ import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.ShellOpenFunction;
 import io.xpipe.core.store.*;
 import io.xpipe.core.util.FailableConsumer;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -237,8 +239,9 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
             var directory = currentPath.get();
             var name = adjustedPath + " - " + entry.get().getName();
             ThreadHelper.runFailableAsync(() -> {
-                if (ShellDialects.getStartableDialects().stream()
-                        .anyMatch(dialect -> adjustedPath.toLowerCase().startsWith(dialect.getExecutableName().toLowerCase()))) {
+                if (ShellDialects.getStartableDialects().stream().anyMatch(dialect -> adjustedPath
+                        .toLowerCase()
+                        .startsWith(dialect.getExecutableName().toLowerCase()))) {
                     TerminalLauncher.open(
                             entry.getEntry(),
                             name,

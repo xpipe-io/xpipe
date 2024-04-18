@@ -8,6 +8,7 @@ import io.xpipe.app.fxcomps.impl.SecretFieldComp;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.util.InPlaceSecretValue;
+
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;

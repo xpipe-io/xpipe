@@ -7,8 +7,10 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.FileOpener;
 import io.xpipe.core.store.FileKind;
+
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;

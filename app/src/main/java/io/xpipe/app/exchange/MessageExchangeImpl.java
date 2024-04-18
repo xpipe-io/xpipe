@@ -8,6 +8,7 @@ import io.xpipe.beacon.RequestMessage;
 import io.xpipe.beacon.ResponseMessage;
 import io.xpipe.beacon.exchange.MessageExchange;
 import io.xpipe.core.store.DataStoreId;
+
 import lombok.NonNull;
 
 public interface MessageExchangeImpl<RQ extends RequestMessage, RS extends ResponseMessage> extends MessageExchange {

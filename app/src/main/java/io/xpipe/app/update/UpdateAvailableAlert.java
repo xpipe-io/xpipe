@@ -3,6 +3,7 @@ package io.xpipe.app.update;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
+
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;

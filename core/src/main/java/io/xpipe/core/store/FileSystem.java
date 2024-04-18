@@ -1,6 +1,7 @@
 package io.xpipe.core.store;
 
 import io.xpipe.core.process.ShellControl;
+
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.Value;

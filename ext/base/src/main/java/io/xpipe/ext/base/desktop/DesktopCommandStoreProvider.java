@@ -12,6 +12,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.store.DataStore;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -23,7 +24,8 @@ import java.util.List;
 public class DesktopCommandStoreProvider implements DataStoreProvider {
 
     @Override
-    public ActionProvider.Action browserAction(BrowserSessionModel sessionModel, DataStoreEntry store, BooleanProperty busy) {
+    public ActionProvider.Action browserAction(
+            BrowserSessionModel sessionModel, DataStoreEntry store, BooleanProperty busy) {
         return launchAction(store);
     }
 
@@ -43,7 +45,7 @@ public class DesktopCommandStoreProvider implements DataStoreProvider {
                 if (baseActivate != null) {
                     baseActivate.execute();
                 }
-                s.getEnvironment().getStore().runDesktopTerminal(store.getName(),s.getScript());
+                s.getEnvironment().getStore().runDesktopTerminal(store.getName(), s.getScript());
             }
         };
     }
@@ -72,7 +74,8 @@ public class DesktopCommandStoreProvider implements DataStoreProvider {
                                 entry,
                                 env,
                                 DesktopEnvironmentStore.class,
-                                desktopStoreDataStoreEntryRef -> desktopStoreDataStoreEntryRef.getStore().supportsDesktopAccess(),
+                                desktopStoreDataStoreEntryRef ->
+                                        desktopStoreDataStoreEntryRef.getStore().supportsDesktopAccess(),
                                 StoreViewState.get().getAllConnectionsCategory()),
                         env)
                 .nonNull()
@@ -84,9 +87,15 @@ public class DesktopCommandStoreProvider implements DataStoreProvider {
                                 "commands",
                                 Bindings.createStringBinding(
                                         () -> {
-                                            return env.getValue() != null && env.getValue().getStore().getDialect() != null
-                                                    ? env.getValue().getStore().getDialect()
-                                                    .getScriptFileEnding()
+                                            return env.getValue() != null
+                                                            && env.getValue()
+                                                                            .getStore()
+                                                                            .getDialect()
+                                                                    != null
+                                                    ? env.getValue()
+                                                            .getStore()
+                                                            .getDialect()
+                                                            .getScriptFileEnding()
                                                     : "sh";
                                         },
                                         env)),
@@ -94,7 +103,10 @@ public class DesktopCommandStoreProvider implements DataStoreProvider {
                 .nonNull()
                 .bind(
                         () -> {
-                            return DesktopCommandStore.builder().environment(env.get()).script(script.get()).build();
+                            return DesktopCommandStore.builder()
+                                    .environment(env.get())
+                                    .script(script.get())
+                                    .build();
                         },
                         store)
                 .buildDialog();
@@ -124,6 +136,4 @@ public class DesktopCommandStoreProvider implements DataStoreProvider {
     public List<Class<?>> getStoreClasses() {
         return List.of(DesktopCommandStore.class);
     }
-
-
 }

@@ -2,12 +2,14 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.util.FailableRunnable;
+
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
+
 import net.synedra.validatorfx.Check;
 import net.synedra.validatorfx.ValidationResult;
 

@@ -6,9 +6,11 @@ import io.xpipe.app.comp.store.StoreLayoutComp;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.prefs.AppPrefsComp;
 import io.xpipe.app.util.LicenseProvider;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
+
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;

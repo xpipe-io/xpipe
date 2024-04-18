@@ -1,6 +1,7 @@
 package io.xpipe.app.launcher;
 
 import io.xpipe.core.util.XPipeDaemonMode;
+
 import picocli.CommandLine;
 
 public class LauncherModeConverter implements CommandLine.ITypeConverter<XPipeDaemonMode> {

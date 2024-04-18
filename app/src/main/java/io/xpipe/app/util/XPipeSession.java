@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppCache;
+
 import lombok.Value;
 
 import java.util.UUID;

@@ -3,11 +3,13 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.browser.BrowserClipboard;
 import io.xpipe.app.browser.BrowserSelectionListComp;
 import io.xpipe.core.store.FileKind;
+
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
+
 import lombok.Getter;
 
 import java.io.File;

@@ -1,7 +1,8 @@
 package io.xpipe.core.store;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.xpipe.core.util.DataStateProvider;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface DataStore {

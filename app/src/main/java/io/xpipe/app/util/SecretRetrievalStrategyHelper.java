@@ -7,9 +7,11 @@ import io.xpipe.app.fxcomps.impl.SecretFieldComp;
 import io.xpipe.app.fxcomps.impl.TextFieldComp;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreSecret;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.Arrays;

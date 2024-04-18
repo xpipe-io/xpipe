@@ -1,6 +1,5 @@
 package io.xpipe.app.terminal;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ShellTemp;
@@ -8,6 +7,8 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.XPipeInstallation;
+
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 public interface KittyTerminalType extends ExternalTerminalType {
 

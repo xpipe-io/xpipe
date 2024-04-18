@@ -7,8 +7,10 @@ import io.xpipe.app.fxcomps.util.Shortcuts;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;

@@ -2,8 +2,10 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.PrefsChoiceValue;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

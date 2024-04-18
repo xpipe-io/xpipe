@@ -6,10 +6,12 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.util.FailableRunnable;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
+
 import lombok.SneakyThrows;
 import lombok.Value;
 

@@ -1,6 +1,7 @@
 package io.xpipe.app.fxcomps;
 
 import javafx.scene.layout.Region;
+
 import lombok.AllArgsConstructor;
 import lombok.Value;
 

@@ -3,6 +3,7 @@ package io.xpipe.app.util;
 import io.xpipe.app.ext.ExtensionException;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.core.util.ModuleLayerLoader;
+
 import javafx.beans.value.ObservableValue;
 
 import java.util.ServiceLoader;

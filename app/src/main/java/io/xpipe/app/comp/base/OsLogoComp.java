@@ -8,6 +8,7 @@ import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.core.process.OsNameState;
 import io.xpipe.core.store.FileNames;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;

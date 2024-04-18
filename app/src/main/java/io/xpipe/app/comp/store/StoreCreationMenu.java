@@ -5,10 +5,12 @@ import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.util.ScanAlert;
+
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 public class StoreCreationMenu {

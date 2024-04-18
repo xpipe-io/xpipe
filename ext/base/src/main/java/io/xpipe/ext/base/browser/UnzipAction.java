@@ -6,6 +6,7 @@ import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileNames;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 

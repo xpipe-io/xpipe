@@ -5,6 +5,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.issue.ErrorEvent;
+
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 

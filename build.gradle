@@ -5,6 +5,7 @@ import java.util.stream.Stream
 plugins {
     id "io.codearte.nexus-staging" version "0.30.0"
     id 'org.gradlex.extra-java-module-info' version '1.8' apply false
+    id("com.diffplug.spotless") version "6.25.0" apply false
 }
 
 allprojects { subproject ->
@@ -13,6 +14,18 @@ allprojects { subproject ->
         failOnMissingModuleInfo.set(false)
     }
     apply from: "$rootDir/modules.gradle"
+}
+
+subprojects {subproject ->
+    apply plugin: 'com.diffplug.spotless'
+    spotless {
+        java {
+            palantirJavaFormat()
+            trimTrailingWhitespace()
+            endWithNewline()
+            importOrder('io.xpipe', 'javafx', '', 'java', '\\#')
+        }
+    }
 }
 
 def getArchName() {

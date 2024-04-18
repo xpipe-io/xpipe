@@ -4,6 +4,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.ModuleLayerLoader;
+
 import javafx.beans.value.ObservableValue;
 
 import java.net.URI;

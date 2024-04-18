@@ -1,6 +1,5 @@
 package io.xpipe.app.browser;
 
-import atlantafx.base.controls.Spacer;
 import io.xpipe.app.browser.file.BrowserContextMenu;
 import io.xpipe.app.browser.file.BrowserFileListCompEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
@@ -12,10 +11,13 @@ import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.impl.LabelComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.util.HumanReadableFormat;
+
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
+
+import atlantafx.base.controls.Spacer;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 

@@ -5,9 +5,9 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-import javax.crypto.SecretKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Random;
+import javax.crypto.SecretKey;
 
 @JsonTypeName("default")
 @SuperBuilder

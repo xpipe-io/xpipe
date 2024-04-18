@@ -1,6 +1,7 @@
 package io.xpipe.app.browser;
 
 import javafx.collections.ObservableList;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;

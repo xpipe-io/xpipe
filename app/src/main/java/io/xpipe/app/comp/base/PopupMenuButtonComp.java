@@ -1,13 +1,15 @@
 package io.xpipe.app.comp.base;
 
-import atlantafx.base.controls.Popover;
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
+
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Region;
+
+import atlantafx.base.controls.Popover;
+import atlantafx.base.theme.Styles;
 
 public class PopupMenuButtonComp extends SimpleComp {
 

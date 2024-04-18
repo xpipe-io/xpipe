@@ -15,6 +15,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.JacksonizedValue;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -60,7 +61,8 @@ public interface DataStoreProvider {
         return null;
     }
 
-    default ActionProvider.Action browserAction(BrowserSessionModel sessionModel, DataStoreEntry store, BooleanProperty busy) {
+    default ActionProvider.Action browserAction(
+            BrowserSessionModel sessionModel, DataStoreEntry store, BooleanProperty busy) {
         return null;
     }
 

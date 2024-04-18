@@ -7,6 +7,7 @@ import io.xpipe.core.store.*;
 import io.xpipe.core.util.NewLine;
 import io.xpipe.core.util.SecretValue;
 import io.xpipe.core.util.StreamCharset;
+
 import lombok.Value;
 
 public class DialogHelper {

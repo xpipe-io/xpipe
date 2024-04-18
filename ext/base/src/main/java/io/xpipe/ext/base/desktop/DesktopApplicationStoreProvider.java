@@ -12,6 +12,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.store.DataStore;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -22,7 +23,8 @@ import java.util.List;
 public class DesktopApplicationStoreProvider implements DataStoreProvider {
 
     @Override
-    public ActionProvider.Action browserAction(BrowserSessionModel sessionModel, DataStoreEntry store, BooleanProperty busy) {
+    public ActionProvider.Action browserAction(
+            BrowserSessionModel sessionModel, DataStoreEntry store, BooleanProperty busy) {
         return launchAction(store);
     }
 
@@ -72,7 +74,8 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
                                 entry,
                                 host,
                                 DesktopBaseStore.class,
-                                desktopStoreDataStoreEntryRef -> desktopStoreDataStoreEntryRef.getStore().supportsDesktopAccess(),
+                                desktopStoreDataStoreEntryRef ->
+                                        desktopStoreDataStoreEntryRef.getStore().supportsDesktopAccess(),
                                 StoreViewState.get().getAllConnectionsCategory()),
                         host)
                 .nonNull()
@@ -83,7 +86,11 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
                 .addString(args)
                 .bind(
                         () -> {
-                            return DesktopApplicationStore.builder().desktop(host.get()).path(ContextualFileReference.of(path.get())).arguments(args.get()).build();
+                            return DesktopApplicationStore.builder()
+                                    .desktop(host.get())
+                                    .path(ContextualFileReference.of(path.get()))
+                                    .arguments(args.get())
+                                    .build();
                         },
                         store)
                 .buildDialog();
@@ -113,6 +120,4 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
     public List<Class<?>> getStoreClasses() {
         return List.of(DesktopApplicationStore.class);
     }
-
-
 }

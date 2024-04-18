@@ -11,6 +11,7 @@ import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.ShellStore;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.layout.Region;
@@ -38,7 +39,8 @@ public class BrowserSessionComp extends SimpleComp {
                 return true;
             }
 
-            return storeEntryWrapper.getEntry().getProvider().browserAction(model,storeEntryWrapper.getEntry(), null) != null;
+            return storeEntryWrapper.getEntry().getProvider().browserAction(model, storeEntryWrapper.getEntry(), null)
+                    != null;
         };
         BiConsumer<StoreEntryWrapper, BooleanProperty> action = (w, busy) -> {
             ThreadHelper.runFailableAsync(() -> {

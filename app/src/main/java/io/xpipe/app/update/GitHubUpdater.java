@@ -1,7 +1,9 @@
 package io.xpipe.app.update;
 
 import io.xpipe.app.core.AppProperties;
+
 import javafx.scene.layout.Region;
+
 import org.kohsuke.github.GHRelease;
 
 import java.nio.file.Files;

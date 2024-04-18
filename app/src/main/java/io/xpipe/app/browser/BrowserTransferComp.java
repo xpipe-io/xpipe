@@ -12,6 +12,7 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileNames;
+
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
@@ -20,6 +21,7 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.File;
@@ -41,7 +43,7 @@ public class BrowserTransferComp extends SimpleComp {
         var syncItems = PlatformThread.sync(model.getItems());
         var syncDownloaded = PlatformThread.sync(model.getDownloading());
         var syncAllDownloaded = PlatformThread.sync(model.getAllDownloaded());
-        
+
         var background = new LabelComp(AppI18n.observable("transferDescription"))
                 .apply(struc -> struc.get().setGraphic(new FontIcon("mdi2d-download-outline")))
                 .visible(Bindings.isEmpty(syncItems));
@@ -71,9 +73,8 @@ public class BrowserTransferComp extends SimpleComp {
                                 syncAllDownloaded))
                 .apply(struc -> struc.get().setMinHeight(150))
                 .grow(false, true);
-        var dragNotice = new LabelComp(syncAllDownloaded
-                        .flatMap(aBoolean ->
-                                aBoolean ? AppI18n.observable("dragLocalFiles") : AppI18n.observable("dragFiles")))
+        var dragNotice = new LabelComp(syncAllDownloaded.flatMap(
+                        aBoolean -> aBoolean ? AppI18n.observable("dragLocalFiles") : AppI18n.observable("dragFiles")))
                 .apply(struc -> struc.get().setGraphic(new FontIcon("mdi2h-hand-left")))
                 .hide(Bindings.isEmpty(syncItems))
                 .grow(true, false)

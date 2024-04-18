@@ -4,6 +4,7 @@ import io.xpipe.app.comp.base.SideSplitPaneComp;
 import io.xpipe.app.core.AppActionLinkDetector;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.fxcomps.SimpleComp;
+
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;

@@ -14,12 +14,14 @@ import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.util.PasswordLockSecretValue;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.ModuleHelper;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableStringValue;
 import javafx.beans.value.ObservableValue;
+
 import lombok.Getter;
 import lombok.Value;
 
@@ -507,7 +509,9 @@ public class AppPrefs {
 
     public void selectCategory(String id) {
         AppLayoutModel.get().selectSettings();
-        var found = categories.stream().filter(appPrefsCategory -> appPrefsCategory.getId().equals(id)).findFirst();
+        var found = categories.stream()
+                .filter(appPrefsCategory -> appPrefsCategory.getId().equals(id))
+                .findFirst();
         found.ifPresent(appPrefsCategory -> {
             selectedCategory.setValue(appPrefsCategory);
         });

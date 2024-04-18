@@ -4,6 +4,7 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.LogErrorHandler;
+
 import javafx.scene.text.Font;
 
 public class AppFontLoadingCheck {

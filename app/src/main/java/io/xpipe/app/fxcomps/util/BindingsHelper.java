@@ -1,9 +1,11 @@
 package io.xpipe.app.fxcomps.util;
 
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
+
 import lombok.Value;
 
 import java.lang.ref.WeakReference;

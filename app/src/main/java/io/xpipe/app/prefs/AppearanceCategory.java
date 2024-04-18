@@ -1,7 +1,5 @@
 package io.xpipe.app.prefs;
 
-import atlantafx.base.controls.ProgressSliderSkin;
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppTheme;
@@ -11,8 +9,12 @@ import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.IntFieldComp;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.OptionsBuilder;
+
 import javafx.geometry.Pos;
 import javafx.scene.control.Slider;
+
+import atlantafx.base.controls.ProgressSliderSkin;
+import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;

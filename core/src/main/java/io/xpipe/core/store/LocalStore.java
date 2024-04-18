@@ -1,10 +1,11 @@
 package io.xpipe.core.store;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.util.JacksonizedValue;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("local")
 public class LocalStore extends JacksonizedValue implements ShellStore, StatefulDataStore<ShellStoreState> {

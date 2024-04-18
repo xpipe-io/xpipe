@@ -4,6 +4,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.StoreCategoryListComp;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
+
 import javafx.scene.layout.Region;
 
 import java.util.List;

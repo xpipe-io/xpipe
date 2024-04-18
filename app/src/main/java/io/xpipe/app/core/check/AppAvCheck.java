@@ -6,10 +6,12 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.process.OsType;
+
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
+
 import lombok.Getter;
 
 import java.nio.file.Files;

@@ -9,6 +9,7 @@ import io.xpipe.app.util.XPipeSession;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.XPipeInstallation;
+
 import lombok.Getter;
 
 import java.util.Arrays;

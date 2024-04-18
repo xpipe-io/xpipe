@@ -1,7 +1,8 @@
 package io.xpipe.app.storage;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import javafx.scene.paint.Color;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 @Getter

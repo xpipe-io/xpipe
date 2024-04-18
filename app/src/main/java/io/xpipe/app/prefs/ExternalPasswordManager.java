@@ -46,7 +46,6 @@ public interface ExternalPasswordManager extends PrefsChoiceValue {
         }
     };
 
-
     static ExternalPasswordManager LASTPASS = new ExternalPasswordManager() {
         @Override
         public String getTemplate() {
@@ -76,5 +75,7 @@ public interface ExternalPasswordManager extends PrefsChoiceValue {
         }
     };
 
-    static List<ExternalPasswordManager> ALL = Stream.of(ONEPASSWORD, BITWARDEN, DASHLANE, LASTPASS, MACOS_KEYCHAIN).filter(externalPasswordManager -> externalPasswordManager.isSelectable()).toList();
+    static List<ExternalPasswordManager> ALL = Stream.of(ONEPASSWORD, BITWARDEN, DASHLANE, LASTPASS, MACOS_KEYCHAIN)
+            .filter(externalPasswordManager -> externalPasswordManager.isSelectable())
+            .toList();
 }

@@ -7,6 +7,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.ShellStore;
+
 import javafx.beans.value.ObservableValue;
 
 import java.util.function.IntFunction;

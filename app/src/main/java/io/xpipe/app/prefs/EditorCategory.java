@@ -10,8 +10,10 @@ import io.xpipe.app.fxcomps.impl.TextFieldComp;
 import io.xpipe.app.util.FileOpener;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;

@@ -1,6 +1,5 @@
 package io.xpipe.app.browser.fs;
 
-import atlantafx.base.controls.Spacer;
 import io.xpipe.app.browser.BrowserFilterComp;
 import io.xpipe.app.browser.BrowserNavBar;
 import io.xpipe.app.browser.BrowserOverviewComp;
@@ -16,6 +15,7 @@ import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.fxcomps.util.Shortcuts;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -28,6 +28,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+
+import atlantafx.base.controls.Spacer;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.ArrayList;

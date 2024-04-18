@@ -5,7 +5,7 @@ import io.xpipe.core.util.FailableFunction;
 
 public interface WorkingDirectoryFunction {
 
-    static WorkingDirectoryFunction of(FailableFunction<ShellControl,FilePath, Exception> path) {
+    static WorkingDirectoryFunction of(FailableFunction<ShellControl, FilePath, Exception> path) {
         return new WorkingDirectoryFunction() {
             @Override
             public boolean isFixed() {

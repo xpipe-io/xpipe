@@ -8,6 +8,7 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FileNames;
+
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;

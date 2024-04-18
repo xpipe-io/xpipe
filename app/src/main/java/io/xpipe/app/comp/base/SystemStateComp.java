@@ -1,14 +1,16 @@
 package io.xpipe.app.comp.base;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.core.process.ShellStoreState;
+
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.layout.Region;
+
+import atlantafx.base.theme.Styles;
 import lombok.Getter;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.javafx.StackedFontIcon;
@@ -27,9 +29,7 @@ public class SystemStateComp extends SimpleComp {
         var fi = new FontIcon();
         fi.getStyleClass().add("inner-icon");
         state.subscribe(s -> {
-            var i = s == State.FAILURE
-                    ? "mdi2l-lightning-bolt"
-                    : s == State.SUCCESS ? "mdal-check" : "mdsmz-remove";
+            var i = s == State.FAILURE ? "mdi2l-lightning-bolt" : s == State.SUCCESS ? "mdal-check" : "mdsmz-remove";
             PlatformThread.runLaterIfNeeded(() -> fi.setIconLiteral(i));
         });
 

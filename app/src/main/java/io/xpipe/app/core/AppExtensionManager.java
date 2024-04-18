@@ -7,6 +7,7 @@ import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.ModuleLayerLoader;
 import io.xpipe.core.util.XPipeInstallation;
+
 import lombok.Getter;
 import lombok.Value;
 

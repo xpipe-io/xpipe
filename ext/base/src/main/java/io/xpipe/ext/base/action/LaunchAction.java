@@ -10,7 +10,9 @@ import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.LaunchableStore;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.ext.base.script.ScriptStore;
+
 import javafx.beans.value.ObservableValue;
+
 import lombok.Value;
 
 public class LaunchAction implements ActionProvider {
@@ -41,8 +43,9 @@ public class LaunchAction implements ActionProvider {
 
             @Override
             public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
-                return o.get().getValidity().isUsable() && (
-                        o.getStore() instanceof LaunchableStore || o.get().getProvider().launchAction(o.get()) != null);
+                return o.get().getValidity().isUsable()
+                        && (o.getStore() instanceof LaunchableStore
+                                || o.get().getProvider().launchAction(o.get()) != null);
             }
 
             @Override
@@ -73,8 +76,9 @@ public class LaunchAction implements ActionProvider {
 
             @Override
             public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
-                return o.get().getValidity().isUsable() && (
-                        o.getStore() instanceof LaunchableStore || o.get().getProvider().launchAction(o.get()) != null);
+                return o.get().getValidity().isUsable()
+                        && (o.getStore() instanceof LaunchableStore
+                                || o.get().getProvider().launchAction(o.get()) != null);
             }
         };
     }

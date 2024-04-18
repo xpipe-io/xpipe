@@ -6,9 +6,11 @@ import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.util.LicenseProvider;
+
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.SeparatorMenuItem;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.ArrayList;

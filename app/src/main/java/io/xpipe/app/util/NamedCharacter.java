@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.core.dialog.QueryConverter;
+
 import lombok.Value;
 
 import java.util.List;

@@ -3,6 +3,7 @@ package io.xpipe.app.fxcomps.impl;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
+
 import javafx.geometry.Pos;
 import javafx.scene.layout.StackPane;
 

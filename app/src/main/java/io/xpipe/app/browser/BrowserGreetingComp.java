@@ -1,13 +1,15 @@
 package io.xpipe.app.browser;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
+
+import atlantafx.base.theme.Styles;
 
 import java.time.LocalDateTime;
 

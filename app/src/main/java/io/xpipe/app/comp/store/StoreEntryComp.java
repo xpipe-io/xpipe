@@ -1,6 +1,5 @@
 package io.xpipe.app.comp.store;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppActionLinkDetector;
@@ -19,6 +18,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.*;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableDoubleValue;
@@ -32,6 +32,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+
+import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.ArrayList;
@@ -186,8 +188,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         var imageComp = PrettyImageHelper.ofFixedSize(img, w, h);
         var storeIcon = imageComp.createRegion();
         if (wrapper.getValidity().getValue().isUsable()) {
-            new TooltipAugment<>(wrapper.getEntry().getProvider().displayName())
-                    .augment(storeIcon);
+            new TooltipAugment<>(wrapper.getEntry().getProvider().displayName()).augment(storeIcon);
         }
 
         var stack = new StackPane(storeIcon);

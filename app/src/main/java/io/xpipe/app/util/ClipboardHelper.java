@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.fxcomps.util.PlatformThread;
+
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 

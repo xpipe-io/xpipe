@@ -1,12 +1,12 @@
 package io.xpipe.app.core;
 
-import atlantafx.base.theme.*;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
+
 import javafx.animation.*;
 import javafx.application.Application;
 import javafx.application.ColorScheme;
@@ -22,6 +22,8 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
+
+import atlantafx.base.theme.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -85,10 +87,10 @@ public class AppTheme {
                 }
 
                 try {
-//                    var c = new WindowControl(stage);
-//                    c.setWindowAttribute(20, AppPrefs.get().theme.getValue().isDark());
-//                    c.setWindowAttribute(34, 0xFFFFFFFEL);
-//                    c.redraw();
+                    //                    var c = new WindowControl(stage);
+                    //                    c.setWindowAttribute(20, AppPrefs.get().theme.getValue().isDark());
+                    //                    c.setWindowAttribute(34, 0xFFFFFFFEL);
+                    //                    c.redraw();
                 } catch (Throwable e) {
                     ErrorEvent.fromThrowable(e).handle();
                 }

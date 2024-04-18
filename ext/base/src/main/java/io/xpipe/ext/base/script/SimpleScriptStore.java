@@ -1,12 +1,13 @@
 package io.xpipe.ext.base.script;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.process.ScriptSnippet;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialect;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;

@@ -4,6 +4,7 @@ import io.xpipe.app.comp.store.StoreSortMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.store.LocalStore;
+
 import org.apache.commons.io.FileUtils;
 
 import java.nio.file.Files;

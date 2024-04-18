@@ -4,6 +4,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.util.ProxyManagerProvider;
+
 import javafx.scene.control.Alert;
 
 import java.util.Optional;

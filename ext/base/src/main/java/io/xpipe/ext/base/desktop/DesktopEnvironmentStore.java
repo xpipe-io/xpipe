@@ -1,6 +1,5 @@
 package io.xpipe.ext.base.desktop;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.util.Validators;
@@ -11,6 +10,8 @@ import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.JacksonizedValue;
 import io.xpipe.ext.base.SelfReferentialStore;
 import io.xpipe.ext.base.script.ScriptStore;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -52,7 +53,9 @@ public class DesktopEnvironmentStore extends JacksonizedValue
                         simpleScriptStore.getMinimumDialect().isCompatibleTo(dialect)
                                 && simpleScriptStore.getExecutionType().runInTerminal())
                 .toList();
-        var initCommands = new ArrayList<>(filtered.stream().map(simpleScriptStore -> simpleScriptStore.getCommands()).toList());
+        var initCommands = new ArrayList<>(filtered.stream()
+                .map(simpleScriptStore -> simpleScriptStore.getCommands())
+                .toList());
         if (initScript != null) {
             initCommands.add(initScript);
         }
@@ -87,10 +90,16 @@ public class DesktopEnvironmentStore extends JacksonizedValue
 
     public void runDesktopTerminal(String name, String script) throws Exception {
         var launchCommand = terminal.remoteLaunchCommand();
-        var toExecute = (script != null ? getMergedInitCommands(script + "\n" + dialect.getPauseCommand() + "\n" + dialect.getNormalExitCommand()): getMergedInitCommands(null));
+        var toExecute = (script != null
+                ? getMergedInitCommands(
+                        script + "\n" + dialect.getPauseCommand() + "\n" + dialect.getNormalExitCommand())
+                : getMergedInitCommands(null));
         var scriptFile = base.getStore().createScript(dialect, toExecute);
-        var launchScriptFile = base.getStore().createScript(dialect, dialect.prepareTerminalInitFileOpenCommand(dialect, null, scriptFile.toString()));
-        var launchConfig = new ExternalTerminalType.LaunchConfiguration(null, name, name, launchScriptFile, getUsedDialect());
+        var launchScriptFile = base.getStore()
+                .createScript(
+                        dialect, dialect.prepareTerminalInitFileOpenCommand(dialect, null, scriptFile.toString()));
+        var launchConfig =
+                new ExternalTerminalType.LaunchConfiguration(null, name, name, launchScriptFile, getUsedDialect());
         base.getStore().runDesktopScript(name, launchCommand.apply(launchConfig));
     }
 

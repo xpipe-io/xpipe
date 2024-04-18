@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.fxcomps.util.PlatformThread;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;

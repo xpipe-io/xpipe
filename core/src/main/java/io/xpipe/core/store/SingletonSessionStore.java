@@ -1,8 +1,9 @@
 package io.xpipe.core.store;
 
-public interface SingletonSessionStore<T extends SingletonSessionStore.Session> extends ExpandedLifecycleStore, InternalCacheDataStore {
+public interface SingletonSessionStore<T extends SingletonSessionStore.Session>
+        extends ExpandedLifecycleStore, InternalCacheDataStore {
 
-    static abstract class Session {
+    abstract static class Session {
 
         public abstract boolean isRunning();
 
@@ -25,7 +26,7 @@ public interface SingletonSessionStore<T extends SingletonSessionStore.Session> 
     }
 
     default boolean isEnabled() {
-        return getCache("sessionEnabled",Boolean.class,false);
+        return getCache("sessionEnabled", Boolean.class, false);
     }
 
     default void onSessionUpdate(boolean active) {
@@ -61,7 +62,6 @@ public interface SingletonSessionStore<T extends SingletonSessionStore.Session> 
             onSessionUpdate(true);
         }
     }
-
 
     default void stopSessionIfNeeded() throws Exception {
         synchronized (this) {

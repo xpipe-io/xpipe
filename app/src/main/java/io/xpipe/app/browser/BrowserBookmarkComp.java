@@ -1,6 +1,5 @@
 package io.xpipe.app.browser;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.comp.store.StoreSectionMiniComp;
@@ -14,6 +13,7 @@ import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DataStoreCategoryChoiceComp;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -24,6 +24,8 @@ import javafx.css.PseudoClass;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+
+import atlantafx.base.theme.Styles;
 
 import java.util.List;
 import java.util.function.BiConsumer;

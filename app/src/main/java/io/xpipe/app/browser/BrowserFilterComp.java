@@ -1,17 +1,19 @@
 package io.xpipe.app.browser;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.impl.TextFieldComp;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+
+import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 public class BrowserFilterComp extends Comp<BrowserFilterComp.Structure> {

@@ -3,6 +3,7 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.core.util.XPipeDaemonMode;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

@@ -9,7 +9,9 @@ import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.beans.property.*;
+
 import lombok.Getter;
 
 import java.time.Duration;

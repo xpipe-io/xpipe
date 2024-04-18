@@ -3,6 +3,7 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ScrollPane;

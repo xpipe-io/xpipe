@@ -11,11 +11,13 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FileSystem;
+
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+
 import lombok.SneakyThrows;
 
 import java.util.List;

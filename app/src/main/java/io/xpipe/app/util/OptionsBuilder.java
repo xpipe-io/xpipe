@@ -1,17 +1,19 @@
 package io.xpipe.app.util;
 
-import atlantafx.base.controls.Spacer;
 import io.xpipe.app.comp.base.ToggleSwitchComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.*;
 import io.xpipe.core.util.InPlaceSecretValue;
+
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
+
+import atlantafx.base.controls.Spacer;
 import net.synedra.validatorfx.Check;
 
 import java.nio.file.InvalidPathException;

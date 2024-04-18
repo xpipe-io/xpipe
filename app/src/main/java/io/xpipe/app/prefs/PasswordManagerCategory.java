@@ -1,6 +1,5 @@
 package io.xpipe.app.prefs;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
@@ -12,11 +11,14 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.CommandControl;
 import io.xpipe.core.store.LocalStore;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
+
+import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -33,7 +35,8 @@ public class PasswordManagerCategory extends AppPrefsCategory {
             var cb = new MenuButton();
             cb.textProperty().bind(AppI18n.observable("templates"));
             ExternalPasswordManager.ALL.forEach(externalPasswordManager -> {
-                var m = new MenuItem(externalPasswordManager.toTranslatedString().getValue());
+                var m = new MenuItem(
+                        externalPasswordManager.toTranslatedString().getValue());
                 m.setOnAction(event -> {
                     AppPrefs.get().passwordManagerCommand.set(externalPasswordManager.getTemplate());
                     event.consume();
@@ -67,7 +70,9 @@ public class PasswordManagerCategory extends AppPrefsCategory {
             });
         };
 
-        var c = new TextFieldComp(prefs.passwordManagerCommand, true).apply(struc -> struc.get().setPromptText("mypassmgr get $KEY")).minWidth(350);
+        var c = new TextFieldComp(prefs.passwordManagerCommand, true)
+                .apply(struc -> struc.get().setPromptText("mypassmgr get $KEY"))
+                .minWidth(350);
         var visit = createTemplateChoice();
         var choice = new HorizontalComp(List.of(c, visit)).apply(struc -> {
             struc.get().setAlignment(Pos.CENTER_LEFT);

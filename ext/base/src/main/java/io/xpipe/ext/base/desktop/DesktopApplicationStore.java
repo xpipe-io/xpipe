@@ -1,12 +1,13 @@
 package io.xpipe.ext.base.desktop;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.JacksonizedValue;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -29,7 +30,9 @@ public class DesktopApplicationStore extends JacksonizedValue implements DataSto
     }
 
     public String getFullCommand() {
-        var builder = CommandBuilder.of().addFile(path.toAbsoluteFilePath(null)).add(arguments != null ? " " + arguments : "");
+        var builder = CommandBuilder.of()
+                .addFile(path.toAbsoluteFilePath(null))
+                .add(arguments != null ? " " + arguments : "");
         builder = desktop.getStore().getUsedDialect().launchAsnyc(builder);
         return builder.buildSimple();
     }

@@ -8,6 +8,7 @@ import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ShellTemp;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystem;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -16,6 +17,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
 import lombok.Value;
 import org.apache.commons.io.FileUtils;
 

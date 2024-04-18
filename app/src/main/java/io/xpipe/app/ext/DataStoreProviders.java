@@ -1,11 +1,12 @@
 package io.xpipe.app.ext;
 
-import com.fasterxml.jackson.databind.jsontype.NamedType;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.core.util.ModuleLayerLoader;
+
+import com.fasterxml.jackson.databind.jsontype.NamedType;
 
 import java.util.List;
 import java.util.Optional;

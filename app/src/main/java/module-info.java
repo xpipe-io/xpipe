@@ -1,4 +1,3 @@
-import com.fasterxml.jackson.databind.Module;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.exchange.*;
@@ -15,6 +14,8 @@ import io.xpipe.core.util.DataStateProvider;
 import io.xpipe.core.util.ModuleLayerLoader;
 import io.xpipe.core.util.ProxyFunction;
 import io.xpipe.core.util.ProxyManagerProvider;
+
+import com.fasterxml.jackson.databind.Module;
 import org.slf4j.spi.SLF4JServiceProvider;
 
 open module io.xpipe.app {
@@ -114,7 +115,8 @@ open module io.xpipe.app {
     uses LicenseProvider;
     uses io.xpipe.app.util.LicensedFeature;
 
-    provides Module with AppJacksonModule;
+    provides Module with
+            AppJacksonModule;
     provides ModuleLayerLoader with
             MessageExchangeImpls.Loader,
             DataStoreProviders.Loader,

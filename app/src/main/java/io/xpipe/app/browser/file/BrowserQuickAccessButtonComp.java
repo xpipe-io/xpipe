@@ -4,6 +4,7 @@ import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.util.InputHelper;
+
 import javafx.application.Platform;
 import javafx.scene.control.Menu;
 import javafx.scene.layout.Region;

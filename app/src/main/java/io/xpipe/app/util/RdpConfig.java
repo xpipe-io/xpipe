@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.core.util.StreamCharset;
+
 import lombok.Value;
 
 import java.io.BufferedInputStream;
@@ -18,7 +19,8 @@ public class RdpConfig {
     Map<String, TypedValue> content;
 
     public static RdpConfig parseFile(String file) throws Exception {
-        try (var in = new BufferedReader(StreamCharset.detectedReader(new BufferedInputStream(Files.newInputStream(Path.of(file)))))) {
+        try (var in = new BufferedReader(
+                StreamCharset.detectedReader(new BufferedInputStream(Files.newInputStream(Path.of(file)))))) {
             var content = in.lines().collect(Collectors.joining("\n"));
             return parseContent(content);
         }

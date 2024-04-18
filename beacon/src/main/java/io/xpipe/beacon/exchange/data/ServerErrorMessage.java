@@ -1,6 +1,7 @@
 package io.xpipe.beacon.exchange.data;
 
 import io.xpipe.beacon.ServerException;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;

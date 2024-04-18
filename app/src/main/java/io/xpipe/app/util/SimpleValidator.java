@@ -7,6 +7,7 @@ import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ChangeListener;
+
 import net.synedra.validatorfx.Check;
 import net.synedra.validatorfx.Severity;
 import net.synedra.validatorfx.ValidationMessage;

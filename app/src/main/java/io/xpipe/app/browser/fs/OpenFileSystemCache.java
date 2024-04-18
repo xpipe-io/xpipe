@@ -3,6 +3,7 @@ package io.xpipe.app.browser.fs;
 import io.xpipe.app.util.ShellControlCache;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialect;
+
 import lombok.Getter;
 
 @Getter

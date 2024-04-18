@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.fxcomps.Comp;
+
 import javafx.application.Platform;
 import javafx.geometry.Side;
 import javafx.scene.Node;

@@ -18,9 +18,11 @@ import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.ext.base.script.ScriptStore;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
+
 import lombok.SneakyThrows;
 
 import java.util.ArrayList;
@@ -29,7 +31,8 @@ import java.util.List;
 public class DesktopEnvironmentStoreProvider implements DataStoreProvider {
 
     @Override
-    public ActionProvider.Action browserAction(BrowserSessionModel sessionModel, DataStoreEntry store, BooleanProperty busy) {
+    public ActionProvider.Action browserAction(
+            BrowserSessionModel sessionModel, DataStoreEntry store, BooleanProperty busy) {
         return launchAction(store);
     }
 
@@ -44,7 +47,10 @@ public class DesktopEnvironmentStoreProvider implements DataStoreProvider {
             @Override
             public void execute() throws Exception {
                 DesktopEnvironmentStore s = store.getStore().asNeeded();
-                var a = s.getBase().get().getProvider().activateAction(s.getBase().get());
+                var a = s.getBase()
+                        .get()
+                        .getProvider()
+                        .activateAction(s.getBase().get());
                 if (a != null) {
                     a.execute();
                 }
@@ -63,7 +69,10 @@ public class DesktopEnvironmentStoreProvider implements DataStoreProvider {
             @Override
             public void execute() throws Exception {
                 DesktopEnvironmentStore s = store.getStore().asNeeded();
-                var a = s.getBase().get().getProvider().activateAction(s.getBase().get());
+                var a = s.getBase()
+                        .get()
+                        .getProvider()
+                        .activateAction(s.getBase().get());
                 if (a != null) {
                     a.execute();
                 }
@@ -91,9 +100,9 @@ public class DesktopEnvironmentStoreProvider implements DataStoreProvider {
         var host = new SimpleObjectProperty<>(st.getBase());
         var terminal = new SimpleObjectProperty<>(st.getTerminal());
         var dialect = new SimpleObjectProperty<>(st.getDialect());
-        var scripts = new SimpleListProperty<>(FXCollections.observableArrayList(new ArrayList<>(st.getEffectiveScripts())));
+        var scripts =
+                new SimpleListProperty<>(FXCollections.observableArrayList(new ArrayList<>(st.getEffectiveScripts())));
         var initScript = new SimpleStringProperty(st.getInitScript());
-
 
         Comp<?> dialectChoice = (Comp<?>) Class.forName(
                         AppExtensionManager.getInstance()
@@ -111,12 +120,16 @@ public class DesktopEnvironmentStoreProvider implements DataStoreProvider {
                                 entry,
                                 host,
                                 DesktopBaseStore.class,
-                                desktopStoreDataStoreEntryRef -> desktopStoreDataStoreEntryRef.getStore().supportsDesktopAccess(),
+                                desktopStoreDataStoreEntryRef ->
+                                        desktopStoreDataStoreEntryRef.getStore().supportsDesktopAccess(),
                                 StoreViewState.get().getAllConnectionsCategory()),
                         host)
                 .nonNull()
                 .nameAndDescription("desktopTerminal")
-                .addComp(ChoiceComp.ofTranslatable(terminal, ExternalTerminalType.getTypes(st.getUsedOsType(), true, false),true), terminal)
+                .addComp(
+                        ChoiceComp.ofTranslatable(
+                                terminal, ExternalTerminalType.getTypes(st.getUsedOsType(), true, false), true),
+                        terminal)
                 .nonNull()
                 .nameAndDescription("desktopShellDialect")
                 .addComp(dialectChoice, dialect)
@@ -138,16 +151,20 @@ public class DesktopEnvironmentStoreProvider implements DataStoreProvider {
                                 Bindings.createStringBinding(
                                         () -> {
                                             return dialect.getValue() != null
-                                                    ? dialect
-                                                    .getValue()
-                                                    .getScriptFileEnding()
+                                                    ? dialect.getValue().getScriptFileEnding()
                                                     : "sh";
                                         },
                                         dialect)),
                         initScript)
                 .bind(
                         () -> {
-                            return DesktopEnvironmentStore.builder().base(host.get()).terminal(terminal.get()).dialect(dialect.get()).scripts(scripts.get()).initScript(initScript.get()).build();
+                            return DesktopEnvironmentStore.builder()
+                                    .base(host.get())
+                                    .terminal(terminal.get())
+                                    .dialect(dialect.get())
+                                    .scripts(scripts.get())
+                                    .initScript(initScript.get())
+                                    .build();
                         },
                         store)
                 .buildDialog();
@@ -177,6 +194,4 @@ public class DesktopEnvironmentStoreProvider implements DataStoreProvider {
     public List<Class<?>> getStoreClasses() {
         return List.of(DesktopEnvironmentStore.class);
     }
-
-
 }

@@ -1,9 +1,10 @@
 package io.xpipe.app.core;
 
-import com.sun.jna.Function;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.process.OsType;
+
+import com.sun.jna.Function;
 import lombok.Getter;
 
 import java.util.concurrent.TimeUnit;

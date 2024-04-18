@@ -5,6 +5,7 @@ import io.xpipe.app.browser.icon.BrowserIconFileType;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystem;
+
 import lombok.Getter;
 
 @Getter

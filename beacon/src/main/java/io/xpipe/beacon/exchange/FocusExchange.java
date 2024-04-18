@@ -3,6 +3,7 @@ package io.xpipe.beacon.exchange;
 import io.xpipe.beacon.RequestMessage;
 import io.xpipe.beacon.ResponseMessage;
 import io.xpipe.core.util.XPipeDaemonMode;
+
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;

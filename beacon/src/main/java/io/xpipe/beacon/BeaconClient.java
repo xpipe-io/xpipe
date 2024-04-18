@@ -1,5 +1,11 @@
 package io.xpipe.beacon;
 
+import io.xpipe.beacon.exchange.MessageExchanges;
+import io.xpipe.beacon.exchange.data.ClientErrorMessage;
+import io.xpipe.beacon.exchange.data.ServerErrorMessage;
+import io.xpipe.core.util.Deobfuscator;
+import io.xpipe.core.util.JacksonMapper;
+
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -8,11 +14,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import io.xpipe.beacon.exchange.MessageExchanges;
-import io.xpipe.beacon.exchange.data.ClientErrorMessage;
-import io.xpipe.beacon.exchange.data.ServerErrorMessage;
-import io.xpipe.core.util.Deobfuscator;
-import io.xpipe.core.util.JacksonMapper;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

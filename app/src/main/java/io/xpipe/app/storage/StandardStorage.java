@@ -5,6 +5,7 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.LocalStore;
+
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 

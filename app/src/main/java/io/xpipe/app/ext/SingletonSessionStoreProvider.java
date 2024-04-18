@@ -8,6 +8,7 @@ import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.SingletonSessionStore;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
@@ -16,10 +17,12 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
 
     @Override
     public default ObservableBooleanValue busy(StoreEntryWrapper wrapper) {
-        return Bindings.createBooleanBinding(() -> {
-            SingletonSessionStore<?> s = wrapper.getEntry().getStore().asNeeded();
-            return s.isEnabled() != s.isRunning();
-        }, wrapper.getCache());
+        return Bindings.createBooleanBinding(
+                () -> {
+                    SingletonSessionStore<?> s = wrapper.getEntry().getStore().asNeeded();
+                    return s.isEnabled() != s.isRunning();
+                },
+                wrapper.getCache());
     }
 
     @Override
@@ -51,18 +54,15 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
     }
 
     public default Comp<?> stateDisplay(StoreEntryWrapper w) {
-        return new SystemStateComp(
-                Bindings.createObjectBinding(
-                        () -> {
-                            SingletonSessionStore<?> s = w.getEntry().getStore().asNeeded();
-                            if (!s.isEnabled()) {
-                                return SystemStateComp.State.OTHER;
-                            }
+        return new SystemStateComp(Bindings.createObjectBinding(
+                () -> {
+                    SingletonSessionStore<?> s = w.getEntry().getStore().asNeeded();
+                    if (!s.isEnabled()) {
+                        return SystemStateComp.State.OTHER;
+                    }
 
-                            return s.isRunning()
-                                    ? SystemStateComp.State.SUCCESS
-                                    : SystemStateComp.State.FAILURE;
-                        },
-                        w.getCache()));
+                    return s.isRunning() ? SystemStateComp.State.SUCCESS : SystemStateComp.State.FAILURE;
+                },
+                w.getCache()));
     }
 }

@@ -4,6 +4,7 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.StringSource;
 import io.xpipe.core.store.ShellStore;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;

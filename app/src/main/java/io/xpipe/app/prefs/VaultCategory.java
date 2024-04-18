@@ -7,7 +7,9 @@ import io.xpipe.app.util.LockChangeAlert;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.Validator;
 import io.xpipe.core.util.XPipeInstallation;
+
 import javafx.beans.binding.Bindings;
+
 import lombok.SneakyThrows;
 
 public class VaultCategory extends AppPrefsCategory {

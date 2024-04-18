@@ -4,6 +4,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileSystem;
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
@@ -23,7 +24,9 @@ public class BrowserAlerts {
         }
         map.put(new ButtonType(AppI18n.get("replace"), ButtonBar.ButtonData.OTHER), FileConflictChoice.REPLACE);
         if (multiple) {
-            map.put(new ButtonType(AppI18n.get("replaceAll"), ButtonBar.ButtonData.OTHER), FileConflictChoice.REPLACE_ALL);
+            map.put(
+                    new ButtonType(AppI18n.get("replaceAll"), ButtonBar.ButtonData.OTHER),
+                    FileConflictChoice.REPLACE_ALL);
         }
         return AppWindowHelper.showBlockingAlert(alert -> {
                     alert.setTitle(AppI18n.get("fileConflictAlertTitle"));

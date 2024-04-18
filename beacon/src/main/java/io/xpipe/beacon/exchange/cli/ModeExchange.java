@@ -4,6 +4,7 @@ import io.xpipe.beacon.RequestMessage;
 import io.xpipe.beacon.ResponseMessage;
 import io.xpipe.beacon.exchange.MessageExchange;
 import io.xpipe.core.util.XPipeDaemonMode;
+
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;

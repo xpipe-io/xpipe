@@ -1,15 +1,16 @@
 package io.xpipe.app.util;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.util.AesSecretValue;
 import io.xpipe.core.util.InPlaceSecretValue;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-import javax.crypto.SecretKey;
 import java.security.spec.InvalidKeySpecException;
+import javax.crypto.SecretKey;
 
 @JsonTypeName("vault")
 @SuperBuilder

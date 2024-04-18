@@ -2,6 +2,7 @@ package io.xpipe.app.fxcomps.augment;
 
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
+
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
 

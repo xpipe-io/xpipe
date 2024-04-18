@@ -1,7 +1,5 @@
 package io.xpipe.app.fxcomps.impl;
 
-import atlantafx.base.controls.Popover;
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.store.*;
 import io.xpipe.app.core.AppFont;
@@ -14,6 +12,7 @@ import io.xpipe.app.util.DataStoreCategoryChoiceComp;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.store.ShellStore;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -25,6 +24,9 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+
+import atlantafx.base.controls.Popover;
+import atlantafx.base.theme.Styles;
 import lombok.RequiredArgsConstructor;
 import org.kordamp.ikonli.javafx.FontIcon;
 

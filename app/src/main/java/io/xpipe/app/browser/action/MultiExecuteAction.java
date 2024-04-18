@@ -7,7 +7,9 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
+
 import javafx.beans.value.ObservableValue;
+
 import org.apache.commons.io.FilenameUtils;
 
 import java.util.List;

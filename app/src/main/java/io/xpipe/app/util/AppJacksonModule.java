@@ -1,17 +1,18 @@
 package io.xpipe.app.util;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.util.EncryptedSecretValue;
 import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.core.util.SecretValue;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -67,7 +68,10 @@ public class AppJacksonModule extends SimpleModule {
         @Override
         public ExternalTerminalType deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             var id = p.getValueAsString();
-            return ExternalTerminalType.ALL.stream().filter(terminalType -> terminalType.getId().equals(id)).findFirst().orElse(null);
+            return ExternalTerminalType.ALL.stream()
+                    .filter(terminalType -> terminalType.getId().equals(id))
+                    .findFirst()
+                    .orElse(null);
         }
     }
 

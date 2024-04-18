@@ -2,6 +2,7 @@ package io.xpipe.app.fxcomps.impl;
 
 import io.xpipe.app.comp.store.StoreCategoryWrapper;
 import io.xpipe.app.fxcomps.SimpleComp;
+
 import javafx.scene.layout.Region;
 
 import java.util.List;

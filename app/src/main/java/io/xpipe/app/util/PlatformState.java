@@ -5,7 +5,9 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
+
 import javafx.application.Platform;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -75,12 +77,12 @@ public enum PlatformState {
             // Catch more than just the headless exception in case the graphics environment initialization completely
             // fails
         } catch (HeadlessException h) {
-            var msg = OsType.getLocal().equals(OsType.LINUX) ? "No X11 DISPLAY variable was set or no headful library support was found." +
-                    "\n\n" +
-                    "Please note that XPipe is a desktop application that should be run on your local workstation." +
-                    " It is able to provide the full functionality for all integrations via remote server connections, e.g. via SSH." +
-                    " You don't have to install XPipe on any system like a server, a WSL distribution, a hypervisor, etc.," +
-                    " to have full access to that system, a shell connection to it is enough for XPipe to work from your local machine."
+            var msg = OsType.getLocal().equals(OsType.LINUX)
+                    ? "No X11 DISPLAY variable was set or no headful library support was found." + "\n\n"
+                            + "Please note that XPipe is a desktop application that should be run on your local workstation."
+                            + " It is able to provide the full functionality for all integrations via remote server connections, e.g. via SSH."
+                            + " You don't have to install XPipe on any system like a server, a WSL distribution, a hypervisor, etc.,"
+                            + " to have full access to that system, a shell connection to it is enough for XPipe to work from your local machine."
                     : h.getMessage();
             TrackEvent.warn(h.getMessage());
             PlatformState.setCurrent(PlatformState.EXITED);

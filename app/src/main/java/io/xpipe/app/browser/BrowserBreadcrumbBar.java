@@ -1,16 +1,18 @@
 package io.xpipe.app.browser;
 
-import atlantafx.base.controls.Breadcrumbs;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.core.store.FileNames;
+
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.util.Callback;
+
+import atlantafx.base.controls.Breadcrumbs;
 
 import java.util.ArrayList;
 

@@ -1,5 +1,8 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.core.util.JacksonMapper;
+
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
@@ -7,8 +10,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.util.JacksonMapper;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;

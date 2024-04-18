@@ -1,6 +1,7 @@
 package io.xpipe.app.fxcomps.augment;
 
 import io.xpipe.app.fxcomps.CompStructure;
+
 import javafx.scene.Cursor;
 
 public class DraggableAugment<S extends CompStructure<?>> implements Augment<S> {

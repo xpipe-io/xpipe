@@ -6,6 +6,7 @@ import io.xpipe.app.core.AppTheme;
 import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.app.fxcomps.impl.SecretFieldComp;
 import io.xpipe.core.util.InPlaceSecretValue;
+
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;

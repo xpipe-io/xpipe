@@ -1,5 +1,7 @@
 package io.xpipe.app.util;
 
+import javafx.stage.Window;
+
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
@@ -7,7 +9,6 @@ import com.sun.jna.PointerType;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinNT;
-import javafx.stage.Window;
 import lombok.Getter;
 
 import java.lang.reflect.Method;
@@ -40,15 +41,21 @@ public class WindowControl {
     }
 
     public void setWindowAttribute(int attribute, boolean attributeValue) {
-        DwmSupport.INSTANCE.DwmSetWindowAttribute(windowHandle, attribute, new WinDef.BOOLByReference(new WinDef.BOOL(attributeValue)), WinDef.BOOL.SIZE);
+        DwmSupport.INSTANCE.DwmSetWindowAttribute(
+                windowHandle, attribute, new WinDef.BOOLByReference(new WinDef.BOOL(attributeValue)), WinDef.BOOL.SIZE);
     }
 
     public void setWindowAttribute(int attribute, long attributeValue) {
-        DwmSupport.INSTANCE.DwmSetWindowAttribute(windowHandle, attribute, new WinDef.DWORDByReference(new WinDef.DWORD(attributeValue)), WinDef.DWORD.SIZE);
+        DwmSupport.INSTANCE.DwmSetWindowAttribute(
+                windowHandle,
+                attribute,
+                new WinDef.DWORDByReference(new WinDef.DWORD(attributeValue)),
+                WinDef.DWORD.SIZE);
     }
 
     public void redraw() {
-        User32.INSTANCE.RedrawWindow(windowHandle, null, null, new WinDef.DWORD(User32.RDW_FRAME | User32.RDW_VALIDATE));
+        User32.INSTANCE.RedrawWindow(
+                windowHandle, null, null, new WinDef.DWORD(User32.RDW_FRAME | User32.RDW_VALIDATE));
     }
 
     public interface DwmSupport extends Library {

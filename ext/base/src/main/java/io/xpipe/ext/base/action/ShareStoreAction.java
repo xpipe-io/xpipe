@@ -8,7 +8,9 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ClipboardHelper;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.InPlaceSecretValue;
+
 import javafx.beans.value.ObservableValue;
+
 import lombok.Value;
 
 public class ShareStoreAction implements ActionProvider {

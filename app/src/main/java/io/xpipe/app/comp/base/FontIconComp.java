@@ -3,9 +3,11 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.StackPane;
+
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;

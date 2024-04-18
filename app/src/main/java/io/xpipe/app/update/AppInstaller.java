@@ -1,8 +1,5 @@
 package io.xpipe.app.update;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
@@ -12,6 +9,10 @@ import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.util.XPipeInstallation;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Getter;
 
 import java.nio.file.Files;

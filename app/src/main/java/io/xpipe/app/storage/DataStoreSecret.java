@@ -1,11 +1,12 @@
 package io.xpipe.app.storage;
 
-import com.fasterxml.jackson.core.TreeNode;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.PasswordLockSecretValue;
 import io.xpipe.app.util.VaultKeySecretValue;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.SecretValue;
+
+import com.fasterxml.jackson.core.TreeNode;
 import lombok.Setter;
 import lombok.Value;
 import lombok.experimental.NonFinal;

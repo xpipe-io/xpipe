@@ -1,6 +1,7 @@
 package io.xpipe.app.fxcomps.augment;
 
 import io.xpipe.app.fxcomps.CompStructure;
+
 import javafx.event.ActionEvent;
 import javafx.geometry.Side;
 import javafx.scene.control.ButtonBase;

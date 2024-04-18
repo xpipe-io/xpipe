@@ -7,6 +7,7 @@ import io.xpipe.app.util.BooleanAnimationTimer;
 import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FileKind;
+
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Side;
@@ -18,6 +19,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
+
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -35,6 +37,7 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
     private boolean expandBrowserActionMenuKey;
     private boolean keyBasedNavigation;
     private boolean closeBrowserActionMenuKey;
+
     public BrowserQuickAccessContextMenu(Supplier<BrowserEntry> base, OpenFileSystemModel model) {
         this.base = base;
         this.model = model;

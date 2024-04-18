@@ -1,10 +1,11 @@
 package io.xpipe.ext.base.script;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.ext.base.GroupStore;
 import io.xpipe.ext.base.SelfReferentialStore;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;

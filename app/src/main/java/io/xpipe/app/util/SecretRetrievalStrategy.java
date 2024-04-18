@@ -1,13 +1,14 @@
 package io.xpipe.app.util;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreSecret;
 import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.util.InPlaceSecretValue;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -137,10 +138,11 @@ public interface SecretRetrievalStrategy {
                     }
 
                     if (r.lines().count() > 1 || r.isBlank()) {
-                        throw ErrorEvent.expected(new IllegalArgumentException("Received not exactly one output line:\n" + r + "\n\n" +
-                                "XPipe requires your password manager command to output only the raw password." +
-                                " If the output includes any formatting, messages, or your password key either matched multiple entries or none," +
-                                " you will have to change the command and/or password key."));
+                        throw ErrorEvent.expected(
+                                new IllegalArgumentException("Received not exactly one output line:\n" + r + "\n\n"
+                                        + "XPipe requires your password manager command to output only the raw password."
+                                        + " If the output includes any formatting, messages, or your password key either matched multiple entries or none,"
+                                        + " you will have to change the command and/or password key."));
                     }
 
                     return new SecretQueryResult(InPlaceSecretValue.of(r), false);

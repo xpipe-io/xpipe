@@ -3,6 +3,7 @@ package io.xpipe.app.util;
 import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
+
 import lombok.Getter;
 
 public class LocalShell {

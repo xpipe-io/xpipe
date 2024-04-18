@@ -1,7 +1,6 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.comp.store.StoreSortMode;
-import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.FixedHierarchyStore;
@@ -11,7 +10,9 @@ import io.xpipe.core.store.DataStoreId;
 import io.xpipe.core.store.FixedChildStore;
 import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.util.UuidHelper;
+
 import javafx.util.Pair;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;

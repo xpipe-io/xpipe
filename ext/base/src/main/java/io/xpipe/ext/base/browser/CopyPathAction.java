@@ -10,6 +10,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.ClipboardHelper;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileNames;
+
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.input.KeyCode;

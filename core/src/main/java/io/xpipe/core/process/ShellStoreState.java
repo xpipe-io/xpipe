@@ -1,6 +1,7 @@
 package io.xpipe.core.process;
 
 import io.xpipe.core.store.DataStoreState;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;

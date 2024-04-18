@@ -1,8 +1,8 @@
 package io.xpipe.app.util;
 
-import atlantafx.base.controls.Spacer;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
+
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -10,9 +10,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
+import atlantafx.base.controls.Spacer;
+
 public class JfxHelper {
 
-    public static Region createNamedEntry(ObservableValue<String> nameString, ObservableValue<String> descString, String image) {
+    public static Region createNamedEntry(
+            ObservableValue<String> nameString, ObservableValue<String> descString, String image) {
         var header = new Label();
         header.textProperty().bind(nameString);
         AppFont.header(header);

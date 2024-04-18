@@ -5,11 +5,13 @@ import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.util.ListBindingsHelper;
+
 import javafx.css.Size;
 import javafx.css.SizeUnits;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;

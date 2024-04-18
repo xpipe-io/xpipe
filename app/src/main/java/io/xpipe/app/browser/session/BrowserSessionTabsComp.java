@@ -1,7 +1,5 @@
 package io.xpipe.app.browser.session;
 
-import atlantafx.base.controls.RingProgressIndicator;
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.BrowserWelcomeComp;
 import io.xpipe.app.comp.base.MultiContentComp;
 import io.xpipe.app.fxcomps.Comp;
@@ -11,6 +9,7 @@ import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BooleanScope;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -24,6 +23,9 @@ import javafx.scene.control.TabPane;
 import javafx.scene.input.DragEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+
+import atlantafx.base.controls.RingProgressIndicator;
+import atlantafx.base.theme.Styles;
 
 import java.util.HashMap;
 import java.util.Map;

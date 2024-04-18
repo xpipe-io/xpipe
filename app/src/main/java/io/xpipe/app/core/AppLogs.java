@@ -4,6 +4,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.XPipeSession;
 import io.xpipe.core.util.Deobfuscator;
+
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.ILoggerFactory;

@@ -1,18 +1,20 @@
 package io.xpipe.app.comp.base;
 
-import atlantafx.base.controls.RingProgressIndicator;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.StackPane;
+
+import atlantafx.base.controls.RingProgressIndicator;
 
 public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
 

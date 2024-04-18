@@ -2,6 +2,7 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.SimpleComp;
+
 import javafx.beans.property.ListProperty;
 import javafx.geometry.Orientation;
 import javafx.scene.control.CheckBox;
@@ -10,6 +11,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 

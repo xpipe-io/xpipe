@@ -5,6 +5,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
+
 import lombok.Value;
 
 import java.nio.file.Files;
@@ -86,6 +87,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
     List<ExternalRdpClientType> WINDOWS_CLIENTS = List.of(MSTSC);
     List<ExternalRdpClientType> LINUX_CLIENTS = List.of(REMMINA);
     List<ExternalRdpClientType> MACOS_CLIENTS = List.of(MICROSOFT_REMOTE_DESKTOP_MACOS_APP);
+
     @SuppressWarnings("TrivialFunctionalExpressionUsage")
     List<ExternalRdpClientType> ALL = ((Supplier<List<ExternalRdpClientType>>) () -> {
                 var all = new ArrayList<ExternalRdpClientType>();

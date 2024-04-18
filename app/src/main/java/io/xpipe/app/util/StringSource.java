@@ -3,6 +3,7 @@ package io.xpipe.app.util;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.core.store.ShellStore;
+
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 

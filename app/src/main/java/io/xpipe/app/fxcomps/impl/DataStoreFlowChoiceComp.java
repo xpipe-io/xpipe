@@ -3,10 +3,12 @@ package io.xpipe.app.fxcomps.impl;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.core.store.DataFlow;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.Region;
+
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 

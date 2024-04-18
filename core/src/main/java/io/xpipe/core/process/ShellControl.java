@@ -5,6 +5,7 @@ import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.store.StatefulDataStore;
 import io.xpipe.core.util.FailableConsumer;
 import io.xpipe.core.util.FailableFunction;
+
 import lombok.NonNull;
 
 import java.io.IOException;
@@ -93,9 +94,7 @@ public interface ShellControl extends ProcessControl {
     ShellControl withErrorFormatter(Function<String, String> formatter);
 
     String prepareIntermediateTerminalOpen(
-            String content,
-            TerminalInitScriptConfig config,
-            WorkingDirectoryFunction workingDirectory)
+            String content, TerminalInitScriptConfig config, WorkingDirectoryFunction workingDirectory)
             throws Exception;
 
     FilePath getSystemTemporaryDirectory();
@@ -199,7 +198,8 @@ public interface ShellControl extends ProcessControl {
 
             @Override
             public CommandBuilder prepareWithoutInitCommand() {
-                return CommandBuilder.of().addAll(sc -> sc.getShellDialect().getLaunchCommand().loginCommand(sc.getOsType()));
+                return CommandBuilder.of()
+                        .addAll(sc -> sc.getShellDialect().getLaunchCommand().loginCommand(sc.getOsType()));
             }
 
             @Override

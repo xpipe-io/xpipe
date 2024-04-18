@@ -1,5 +1,13 @@
 package io.xpipe.app.browser.fs;
 
+import io.xpipe.app.core.AppCache;
+import io.xpipe.core.store.FileNames;
+import io.xpipe.core.util.JacksonMapper;
+
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -11,12 +19,6 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import io.xpipe.app.core.AppCache;
-import io.xpipe.core.store.FileNames;
-import io.xpipe.core.util.JacksonMapper;
-import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 

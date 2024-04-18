@@ -2,7 +2,9 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorHandler;
+
 import javafx.application.Platform;
+
 import lombok.Getter;
 import lombok.SneakyThrows;
 

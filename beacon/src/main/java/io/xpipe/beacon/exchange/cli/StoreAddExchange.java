@@ -5,6 +5,7 @@ import io.xpipe.beacon.ResponseMessage;
 import io.xpipe.beacon.exchange.MessageExchange;
 import io.xpipe.core.dialog.DialogReference;
 import io.xpipe.core.store.DataStore;
+
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;

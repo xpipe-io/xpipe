@@ -4,9 +4,11 @@ import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.core.util.Deobfuscator;
+
 import javafx.geometry.Insets;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Region;
+
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor

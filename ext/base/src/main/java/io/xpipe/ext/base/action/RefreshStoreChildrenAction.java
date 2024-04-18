@@ -6,7 +6,9 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.FixedHierarchyStore;
+
 import javafx.beans.value.ObservableValue;
+
 import lombok.Value;
 
 public class RefreshStoreChildrenAction implements ActionProvider {

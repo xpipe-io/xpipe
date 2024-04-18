@@ -4,6 +4,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.CountDown;
 import io.xpipe.core.util.SecretReference;
 import io.xpipe.core.util.SecretValue;
+
 import lombok.Getter;
 import lombok.NonNull;
 

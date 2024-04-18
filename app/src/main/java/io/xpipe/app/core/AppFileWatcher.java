@@ -3,6 +3,7 @@ package io.xpipe.app.core;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.ThreadHelper;
+
 import lombok.Getter;
 
 import java.io.IOException;

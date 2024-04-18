@@ -3,6 +3,7 @@ package io.xpipe.app.storage;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FileNames;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;

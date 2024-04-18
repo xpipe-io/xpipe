@@ -1,6 +1,5 @@
 package io.xpipe.app.browser;
 
-import atlantafx.base.controls.Spacer;
 import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
@@ -17,6 +16,7 @@ import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -29,6 +29,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+
+import atlantafx.base.controls.Spacer;
 
 import java.util.List;
 
@@ -97,8 +99,12 @@ public class BrowserWelcomeComp extends SimpleComp {
                     var entryButton = entryButton(e, disable);
                     var dirButton = dirButton(e, disable);
                     return new HorizontalComp(List.of(entryButton, dirButton)).apply(struc -> {
-                        ((Region) struc.get().getChildren().get(0)).prefHeightProperty().bind(struc.get().heightProperty());
-                        ((Region) struc.get().getChildren().get(1)).prefHeightProperty().bind(struc.get().heightProperty());
+                        ((Region) struc.get().getChildren().get(0))
+                                .prefHeightProperty()
+                                .bind(struc.get().heightProperty());
+                        ((Region) struc.get().getChildren().get(1))
+                                .prefHeightProperty()
+                                .bind(struc.get().heightProperty());
                     });
                 })
                 .apply(struc -> {

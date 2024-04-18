@@ -1,6 +1,7 @@
 package io.xpipe.core.store;
 
 import io.xpipe.core.process.OsType;
+
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 

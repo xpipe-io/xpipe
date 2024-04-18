@@ -5,11 +5,13 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.scene.layout.Region;
+
 import lombok.AllArgsConstructor;
 import lombok.Setter;
 
@@ -22,6 +24,7 @@ public class StoreToggleComp extends SimpleComp {
     private final StoreSection section;
     private final BooleanProperty value;
     private final Consumer<Boolean> onChange;
+
     @Setter
     private ObservableBooleanValue customVisibility = new SimpleBooleanProperty(true);
 

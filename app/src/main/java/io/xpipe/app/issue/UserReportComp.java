@@ -1,7 +1,5 @@
 package io.xpipe.app.issue;
 
-import atlantafx.base.controls.Popover;
-import atlantafx.base.controls.Spacer;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.comp.base.MarkdownComp;
@@ -9,6 +7,7 @@ import io.xpipe.app.comp.base.TitledPaneComp;
 import io.xpipe.app.core.*;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
+
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -22,6 +21,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+
+import atlantafx.base.controls.Popover;
+import atlantafx.base.controls.Spacer;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

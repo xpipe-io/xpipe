@@ -2,6 +2,7 @@ package io.xpipe.beacon;
 
 import io.xpipe.core.util.FailableBiConsumer;
 import io.xpipe.core.util.FailableConsumer;
+
 import lombok.Getter;
 
 import java.io.IOException;
