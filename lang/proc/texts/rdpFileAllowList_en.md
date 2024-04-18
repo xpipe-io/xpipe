@@ -1,6 +1,8 @@
 ## RDP desktop integration
 
-You can use this RDP connection in XPipe to quickly launch applications and scripts. However, due to the nature of RDP, you would have to edit the remote application allow list on your server for this to work. You can also choose not to do this and just use XPipe to launch your RDP client without using any advanced desktop integration features.
+You can use this RDP connection in XPipe to quickly launch applications and scripts. However, due to the nature of RDP, you have to edit the remote application allow list on your server for this to work. Furthermore, this option enables drive sharing to execute your scripts on your remote server.
+
+You can also choose not to do this and just use XPipe to launch your RDP client without using any advanced desktop integration features.
 
 ### RDP allow lists
 
@@ -10,19 +12,17 @@ You can find the allow list settings in the registry of your server at `HKEY_LOC
 
 #### Disabling the allow list
 
-You can disable the allow list concept to allow all remote applications to be started directly from XPipe. For this, you can run the following command on your server: `Set-ItemProperty -Path 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList' -Name "fDisabledAllowList" -Value 1`.
+You can disable the allow list concept to allow all remote applications to be started directly from XPipe. For this, you can run the following command on your server: `Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList' -Name "fDisabledAllowList" -Value 1`.
 
 #### Adding allowed applications
 
 Alternatively, you can also add individual remote applications to the list. This will then allow you to launch the listed applications directly from XPipe.
 
-Under the `Applications` key of `TSAppAllowList`, create a new key with some arbitrary name. The only requirement for the name is that it is unique within the children of the “Applications” key. This new key, must have two string values in it: `Name` and `Path`. `Name` is the name by which we will refer to the application later when configuring the client, and `Path` is the path to the application on the server:
+Under the `Applications` key of `TSAppAllowList`, create a new key with some arbitrary name. The only requirement for the name is that it is unique within the children of the “Applications” key. This new key, must have two string values in it: `Name` and `Path`. `Name` is the name by which we will refer to the application later when configuring the client, and `Path` is the path to the application on the server. You can do this in PowerShell with the following commands:
 
 ```
-New-Item -Path 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList\Applications' -Force
-New-Item -Path 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList\Applications\<MyApplication>' -Force
-Set-ItemProperty -Path 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList' -Name "Name" -Value "<MyApplication>"
-Set-ItemProperty -Path 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList' -Name "Path" -Value "<absolute path of executable>"
+Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList\Applications\<MyApplication>' -Name "Name" -Value "<MyApplication>" -Force
+Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList\Applications\<MyApplication>' -Name "Path" -Value "<absolute path of executable>" -Force
 ```
 
 If you want to allow XPipe to also run scripts and open terminal sessions, you have to add `cmd.exe` to the allow list as well. 
