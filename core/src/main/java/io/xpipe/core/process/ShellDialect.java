@@ -6,15 +6,12 @@ import io.xpipe.core.util.NewLine;
 import io.xpipe.core.util.SecretValue;
 import io.xpipe.core.util.StreamCharset;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface ShellDialect {
 
     CommandBuilder launchAsnyc(CommandBuilder cmd);

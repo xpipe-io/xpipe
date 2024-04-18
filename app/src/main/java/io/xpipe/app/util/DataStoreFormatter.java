@@ -4,10 +4,10 @@ import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.ShellStore;
-
 import javafx.beans.value.ObservableValue;
 
 import java.util.function.IntFunction;
@@ -28,15 +28,20 @@ public class DataStoreFormatter {
     public static ObservableValue<String> shellInformation(StoreEntryWrapper w) {
         return BindingsHelper.map(w.getPersistentState(), o -> {
             if (o instanceof ShellStoreState s) {
-                if (!s.isInitialized()) {
+                if (s.getRunning() == null) {
                     return null;
                 }
 
-                if (s.getShellDialect() != null
-                        && !s.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
-                    return s.getOsName() != null
-                            ? formattedOsName(s.getOsName())
-                            : s.getShellDialect().getDisplayName();
+                if (s.getShellDialect() != null && !s.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
+                    if (s.getOsName() != null) {
+                        return formattedOsName(s.getOsName());
+                    }
+
+                    if (s.getShellDialect().equals(ShellDialects.UNSUPPORTED)) {
+                        return null;
+                    }
+
+                    return s.getShellDialect().getDisplayName();
                 }
 
                 return s.isRunning() ? formattedOsName(s.getOsName()) : "Connection failed";

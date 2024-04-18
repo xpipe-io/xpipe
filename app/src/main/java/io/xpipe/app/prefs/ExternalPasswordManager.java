@@ -30,7 +30,7 @@ public interface ExternalPasswordManager extends PrefsChoiceValue {
 
         @Override
         public String getId() {
-            return "1Password";
+            return "1password";
         }
     };
 
@@ -42,7 +42,7 @@ public interface ExternalPasswordManager extends PrefsChoiceValue {
 
         @Override
         public String getId() {
-            return "Dashlane";
+            return "dashlane";
         }
     };
 
@@ -54,7 +54,7 @@ public interface ExternalPasswordManager extends PrefsChoiceValue {
 
         @Override
         public String getId() {
-            return "LastPass";
+            return "lastpass";
         }
     };
 
@@ -66,7 +66,7 @@ public interface ExternalPasswordManager extends PrefsChoiceValue {
 
         @Override
         public String getId() {
-            return "macOS keychain";
+            return "macosKeychain";
         }
 
         @Override

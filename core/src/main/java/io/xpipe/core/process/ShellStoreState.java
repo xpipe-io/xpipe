@@ -21,10 +21,6 @@ public class ShellStoreState extends DataStoreState implements OsNameState {
     ShellDialect shellDialect;
     Boolean running;
 
-    public boolean isInitialized() {
-        return running != null;
-    }
-
     public boolean isRunning() {
         return running != null ? running : false;
     }
