@@ -30,15 +30,18 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class OpenFileSystemComp extends SimpleComp {
 
     private final OpenFileSystemModel model;
+    private final boolean showStatusBar;
 
-    public OpenFileSystemComp(OpenFileSystemModel model) {
+    public OpenFileSystemComp(OpenFileSystemModel model, boolean showStatusBar) {
         this.model = model;
+        this.showStatusBar = showStatusBar;
     }
 
     @Override
@@ -96,8 +99,13 @@ public class OpenFileSystemComp extends SimpleComp {
     private Region createFileListContent() {
         var directoryView = new BrowserFileListComp(model.getFileList())
                 .apply(struc -> VBox.setVgrow(struc.get(), Priority.ALWAYS));
-        var statusBar = new BrowserStatusBarComp(model);
-        var fileList = new VerticalComp(List.of(directoryView, statusBar));
+        var fileListElements = new ArrayList<Comp<?>>();
+        fileListElements.add(directoryView);
+        if (showStatusBar) {
+            var statusBar = new BrowserStatusBarComp(model);
+            fileListElements.add(statusBar);
+        }
+        var fileList = new VerticalComp(fileListElements);
 
         var home = new BrowserOverviewComp(model);
         var stack = new MultiContentComp(Map.of(

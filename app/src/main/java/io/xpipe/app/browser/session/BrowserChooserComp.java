@@ -1,10 +1,10 @@
 package io.xpipe.app.browser.session;
 
-import atlantafx.base.controls.Spacer;
 import io.xpipe.app.browser.BrowserBookmarkComp;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemComp;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
+import io.xpipe.app.comp.base.DialogComp;
 import io.xpipe.app.comp.base.SideSplitPaneComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.core.AppFont;
@@ -22,13 +22,12 @@ import io.xpipe.core.store.FileSystemStore;
 import io.xpipe.core.store.ShellStore;
 import javafx.beans.property.BooleanProperty;
 import javafx.collections.ListChangeListener;
-import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -37,21 +36,23 @@ import java.util.function.Supplier;
 
 public class BrowserChooserComp extends SimpleComp {
 
-    private final BrowserChooserModel model;
+    private final BrowserFileChooserModel model;
 
-    public BrowserChooserComp(BrowserChooserModel model) {
+    public BrowserChooserComp(BrowserFileChooserModel model) {
         this.model = model;
     }
 
     public static void openSingleFile(
             Supplier<DataStoreEntryRef<? extends FileSystemStore>> store, Consumer<FileReference> file, boolean save) {
         PlatformThread.runLaterIfNeeded(() -> {
-            var model = new BrowserChooserModel(OpenFileSystemModel.SelectionMode.SINGLE_FILE);
+            var model = new BrowserFileChooserModel(OpenFileSystemModel.SelectionMode.SINGLE_FILE);
             var comp = new BrowserChooserComp(model)
                     .apply(struc -> struc.get().setPrefSize(1200, 700))
                     .apply(struc -> AppFont.normal(struc.get()));
             var window = AppWindowHelper.sideWindow(
-                    AppI18n.get(save ? "saveFileTitle" : "openFileTitle"), stage -> comp, false, null);
+                    AppI18n.get(save ? "saveFileTitle" : "openFileTitle"), stage -> {
+                        return comp;
+                    }, false, null);
             model.setOnFinish(fileStores -> {
                 file.accept(fileStores.size() > 0 ? fileStores.getFirst() : null);
                 window.close();
@@ -93,7 +94,7 @@ public class BrowserChooserComp extends SimpleComp {
             model.getSelectedEntry().subscribe(selected -> {
                 PlatformThread.runLaterIfNeeded(() -> {
                     if (selected != null) {
-                        s.getChildren().setAll(new OpenFileSystemComp(selected).createRegion());
+                        s.getChildren().setAll(new OpenFileSystemComp(selected, false).createRegion());
                     } else {
                         s.getChildren().clear();
                     }
@@ -108,43 +109,53 @@ public class BrowserChooserComp extends SimpleComp {
                     struc.getLeft().setMinWidth(200);
                     struc.getLeft().setMaxWidth(500);
                 });
-        var r = addBottomBar(splitPane.createRegion());
+
+        var dialogPane = new DialogComp() {
+
+            @Override
+            protected Comp<?> pane(Comp<?> content) {
+                return content;
+            }
+
+            @Override
+            protected void finish() {
+                model.finishChooser();
+            }
+
+            @Override
+            public Comp<?> content() {
+                return splitPane;
+            }
+
+            @Override
+            public Comp<?> bottom() {
+                return Comp.of(() -> {
+                    var selected = new HBox();
+                    selected.setAlignment(Pos.CENTER_LEFT);
+                    model.getFileSelection().addListener((ListChangeListener<? super BrowserEntry>) c -> {
+                        PlatformThread.runLaterIfNeeded(() -> {
+                            selected.getChildren()
+                                    .setAll(c.getList().stream()
+                                            .map(s -> {
+                                                var field =
+                                                        new TextField(s.getRawFileEntry().getPath());
+                                                field.setEditable(false);
+                                                HBox.setHgrow(field, Priority.ALWAYS);
+                                                return field;
+                                            })
+                                            .toList());
+                        });
+                    });
+                    var bottomBar = new HBox(selected);
+                    HBox.setHgrow(selected, Priority.ALWAYS);
+                    bottomBar.setAlignment(Pos.CENTER);
+                    return bottomBar;
+                });
+            }
+        };
+
+        var r = dialogPane.createRegion();
         r.getStyleClass().add("browser");
         return r;
-    }
-
-    private Region addBottomBar(Region r) {
-        var selectedLabel = new Label("Selected: ");
-        selectedLabel.setAlignment(Pos.CENTER);
-        var selected = new HBox();
-        selected.setAlignment(Pos.CENTER_LEFT);
-        selected.setSpacing(10);
-        model.getFileSelection().addListener((ListChangeListener<? super BrowserEntry>) c -> {
-            PlatformThread.runLaterIfNeeded(() -> {
-                selected.getChildren()
-                        .setAll(c.getList().stream()
-                                .map(s -> {
-                                    var field =
-                                            new TextField(s.getRawFileEntry().getPath());
-                                    field.setEditable(false);
-                                    field.setPrefWidth(500);
-                                    return field;
-                                })
-                                .toList());
-            });
-        });
-        var spacer = new Spacer(Orientation.HORIZONTAL);
-        var button = new Button("Select");
-        button.setPadding(new Insets(5, 10, 5, 10));
-        button.setOnAction(event -> model.finishChooser());
-        button.setDefaultButton(true);
-        var bottomBar = new HBox(selectedLabel, selected, spacer, button);
-        HBox.setHgrow(selected, Priority.ALWAYS);
-        bottomBar.setAlignment(Pos.CENTER);
-        bottomBar.getStyleClass().add("chooser-bar");
-
-        var layout = new VBox(r, bottomBar);
-        VBox.setVgrow(r, Priority.ALWAYS);
-        return layout;
     }
 }

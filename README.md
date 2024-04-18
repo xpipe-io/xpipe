@@ -167,6 +167,12 @@ If you don't like installers, you can also use a portable version that is packag
 
 Alternatively, you can also use [Homebrew](https://github.com/xpipe-io/homebrew-tap) to install XPipe with `brew install --cask xpipe-io/tap/xpipe`.
 
+## Early access releases
+
+Prior to full releases, there will be several Public Test Build (PTB) releases published at https://github.com/xpipe-io/xpipe-ptb to see whether everything is production ready and contain the latest new features.
+
+In case you're interested in trying out the PTB versions, you can easily do so without any limitations. The regular releases and PTB releases are designed to not interfere with each other and can therefore be installed and used side by side.
+
 # Further information
 
 ## Open source model

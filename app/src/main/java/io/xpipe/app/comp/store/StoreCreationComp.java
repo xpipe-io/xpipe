@@ -309,8 +309,8 @@ public class StoreCreationComp extends DialogComp {
     }
 
     @Override
-    protected Comp<?> scrollPane(Comp<?> content) {
-        var back = super.scrollPane(content);
+    protected Comp<?> pane(Comp<?> content) {
+        var back = super.pane(content);
         return new ErrorOverlayComp(back, messageProp);
     }
 

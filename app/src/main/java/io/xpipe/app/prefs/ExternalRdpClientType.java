@@ -22,6 +22,10 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
             var file = writeConfig(adaptedRdpConfig);
             LocalShell.getShell()
                     .executeSimpleCommand(CommandBuilder.of().add(executable).addFile(file.toString()));
+            ThreadHelper.runFailableAsync(() -> {
+                ThreadHelper.sleep(1000);
+                Files.delete(file);
+            });
         }
 
         private RdpConfig getAdaptedConfig(LaunchConfiguration configuration) throws Exception {

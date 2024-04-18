@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 @Getter
-public class BrowserChooserModel extends BrowserAbstractSessionModel<OpenFileSystemModel> {
+public class BrowserFileChooserModel extends BrowserAbstractSessionModel<OpenFileSystemModel> {
 
     private final OpenFileSystemModel.SelectionMode selectionMode;
     private final ObservableList<BrowserEntry> fileSelection = FXCollections.observableArrayList();
@@ -30,7 +30,7 @@ public class BrowserChooserModel extends BrowserAbstractSessionModel<OpenFileSys
     @Setter
     private Consumer<List<FileReference>> onFinish;
 
-    public BrowserChooserModel(OpenFileSystemModel.SelectionMode selectionMode) {
+    public BrowserFileChooserModel(OpenFileSystemModel.SelectionMode selectionMode) {
         this.selectionMode = selectionMode;
         selectedEntry.addListener((observable, oldValue, newValue) -> {
             if (newValue == null) {
@@ -45,17 +45,13 @@ public class BrowserChooserModel extends BrowserAbstractSessionModel<OpenFileSys
     public void finishChooser() {
         var chosen = new ArrayList<>(fileSelection);
 
-        synchronized (BrowserChooserModel.this) {
+        synchronized (BrowserFileChooserModel.this) {
             var open = selectedEntry.getValue();
             if (open != null) {
                 ThreadHelper.runAsync(() -> {
                     open.close();
                 });
             }
-        }
-
-        if (chosen.size() == 0) {
-            return;
         }
 
         var stores = chosen.stream()
@@ -81,7 +77,7 @@ public class BrowserChooserModel extends BrowserAbstractSessionModel<OpenFileSys
                 model = new OpenFileSystemModel(this, store, selectionMode);
                 model.init();
                 // Prevent multiple calls from interfering with each other
-                synchronized (BrowserChooserModel.this) {
+                synchronized (BrowserFileChooserModel.this) {
                     selectedEntry.setValue(model);
                     sessionEntries.add(model);
                 }

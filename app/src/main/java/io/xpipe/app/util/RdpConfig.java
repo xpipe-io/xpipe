@@ -1,8 +1,10 @@
 package io.xpipe.app.util;
 
+import io.xpipe.core.util.StreamCharset;
 import lombok.Value;
 
-import java.io.IOException;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
@@ -15,9 +17,11 @@ public class RdpConfig {
 
     Map<String, TypedValue> content;
 
-    public static RdpConfig parseFile(String file) throws IOException {
-        var content = Files.readString(Path.of(file));
-        return parseContent(content);
+    public static RdpConfig parseFile(String file) throws Exception {
+        try (var in = new BufferedReader(StreamCharset.detectedReader(new BufferedInputStream(Files.newInputStream(Path.of(file)))))) {
+            var content = in.lines().collect(Collectors.joining("\n"));
+            return parseContent(content);
+        }
     }
 
     public static RdpConfig parseContent(String content) {

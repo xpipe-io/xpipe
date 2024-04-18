@@ -64,7 +64,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
 
     @Override
     public Comp<?> comp() {
-        return new OpenFileSystemComp(this);
+        return new OpenFileSystemComp(this, true);
     }
 
     @Override

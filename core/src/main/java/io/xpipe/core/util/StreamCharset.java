@@ -4,7 +4,6 @@ import lombok.Value;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -138,7 +137,28 @@ public class StreamCharset {
         return found.get();
     }
 
-    public Reader reader(InputStream stream) throws Exception {
+    public static InputStreamReader detectedReader(InputStream inputStream) throws Exception {
+        StreamCharset detected = null;
+        for (var charset : StreamCharset.COMMON) {
+            if (charset.hasByteOrderMark()) {
+                inputStream.mark(charset.getByteOrderMark().length);
+                var bom = inputStream.readNBytes(charset.getByteOrderMark().length);
+                inputStream.reset();
+                if (Arrays.equals(bom, charset.getByteOrderMark())) {
+                    detected = charset;
+                    break;
+                }
+            }
+        }
+
+        if (detected == null) {
+            detected = StreamCharset.UTF8;
+        }
+
+        return detected.reader(inputStream);
+    }
+
+    public InputStreamReader reader(InputStream stream) throws Exception {
         if (hasByteOrderMark()) {
             var bom = stream.readNBytes(getByteOrderMark().length);
             if (bom.length != 0 && !Arrays.equals(bom, getByteOrderMark())) {

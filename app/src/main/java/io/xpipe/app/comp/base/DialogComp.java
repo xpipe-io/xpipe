@@ -1,6 +1,5 @@
 package io.xpipe.app.comp.base;
 
-import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
@@ -39,14 +38,18 @@ public abstract class DialogComp extends Comp<CompStructure<Region>> {
         });
     }
 
-    protected Region createStepNavigation() {
+    protected Region createNavigation() {
         HBox buttons = new HBox();
         buttons.setFillHeight(true);
         var customButton = bottom();
         if (customButton != null) {
-            buttons.getChildren().add(customButton.createRegion());
+            var c = customButton.createRegion();
+            buttons.getChildren().add(c);
+            HBox.setHgrow(c, Priority.ALWAYS);
         }
-        buttons.getChildren().add(new Spacer());
+        var spacer = new Region();
+        HBox.setHgrow(spacer, Priority.SOMETIMES);
+        buttons.getChildren().add(spacer);
         buttons.getStyleClass().add("buttons");
         buttons.setSpacing(5);
         buttons.setAlignment(Pos.CENTER_RIGHT);
@@ -69,9 +72,9 @@ public abstract class DialogComp extends Comp<CompStructure<Region>> {
 
     @Override
     public CompStructure<Region> createBase() {
-        var sp = scrollPane(content()).createRegion();
+        var sp = pane(content()).createRegion();
         VBox vbox = new VBox();
-        vbox.getChildren().addAll(sp, createStepNavigation());
+        vbox.getChildren().addAll(sp, createNavigation());
         vbox.getStyleClass().add("dialog-comp");
         vbox.setFillWidth(true);
         VBox.setVgrow(sp, Priority.ALWAYS);
@@ -86,7 +89,7 @@ public abstract class DialogComp extends Comp<CompStructure<Region>> {
 
     public abstract Comp<?> content();
 
-    protected Comp<?> scrollPane(Comp<?> content) {
+    protected Comp<?> pane(Comp<?> content) {
         var entry = content.styleClass("dialog-content");
         return Comp.of(() -> {
             var entryR = entry.createRegion();
