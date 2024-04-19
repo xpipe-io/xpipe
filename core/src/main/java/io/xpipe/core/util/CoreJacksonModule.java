@@ -1,5 +1,6 @@
 package io.xpipe.core.util;
 
+import com.fasterxml.jackson.databind.*;
 import io.xpipe.core.dialog.BaseQueryElement;
 import io.xpipe.core.dialog.BusyElement;
 import io.xpipe.core.dialog.ChoiceElement;
@@ -13,10 +14,6 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -99,6 +96,15 @@ public class CoreJacksonModule extends SimpleModule {
 
         @Override
         public ShellDialect deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            var tree = JacksonMapper.getDefault().readTree(p);
+            if (tree.isObject()) {
+                var t = (JsonNode) tree.get("type");
+                if (t == null) {
+                    return null;
+                }
+                return ShellDialects.byNameIfPresent(t.asText()).orElse(null);
+            }
+
             return ShellDialects.byNameIfPresent(p.getValueAsString()).orElse(null);
         }
     }
