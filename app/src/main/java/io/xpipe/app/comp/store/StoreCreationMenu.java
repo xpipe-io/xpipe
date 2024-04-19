@@ -5,12 +5,10 @@ import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.util.ScanAlert;
-
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-
 import org.kordamp.ikonli.javafx.FontIcon;
 
 public class StoreCreationMenu {
@@ -85,7 +83,13 @@ public class StoreCreationMenu {
                     category);
             event.consume();
         });
-        sub.forEach(dataStoreProvider -> {
+        var providers = sub.stream().sorted((o1, o2) -> -o1.getModuleName().compareTo(o2.getModuleName())).toList();
+        for (int i = 0; i < providers.size(); i++) {
+            var dataStoreProvider = providers.get(i);
+            if (i > 0 && !providers.get(i - 1).getModuleName().equals(dataStoreProvider.getModuleName())) {
+                menu.getItems().add(new SeparatorMenuItem());
+            }
+
             var item = new MenuItem();
             item.textProperty().bind(dataStoreProvider.displayName());
             item.setGraphic(PrettyImageHelper.ofFixedSizeSquare(dataStoreProvider.getDisplayIconFileName(null), 16)
@@ -95,7 +99,7 @@ public class StoreCreationMenu {
                 event.consume();
             });
             menu.getItems().add(item);
-        });
+        }
         return menu;
     }
 }
