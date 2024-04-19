@@ -1,11 +1,10 @@
 package io.xpipe.app.util;
 
+import com.sun.jna.platform.win32.Advapi32Util;
+import com.sun.jna.platform.win32.WinReg;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
-
-import com.sun.jna.platform.win32.Advapi32Util;
-import com.sun.jna.platform.win32.WinReg;
 
 import java.util.Optional;
 
@@ -44,6 +43,33 @@ public class WindowsRegistry {
         } catch (Throwable t) {
             ErrorEvent.fromThrowable(t).handle();
             return Optional.empty();
+        }
+    }
+
+    public static boolean remoteKeyExists(ShellControl shellControl, int hkey, String key) throws Exception {
+        var command = CommandBuilder.of()
+                .add("reg", "query")
+                .addQuoted((hkey == HKEY_LOCAL_MACHINE ? "HKEY_LOCAL_MACHINE" : "HKEY_CURRENT_USER") + "\\" + key)
+                .add("/ve");
+        try (var c = shellControl.command(command).start()) {
+            return c.discardAndCheckExit();
+        }
+    }
+
+    public static Optional<String> findRemoteValuesRecursive(ShellControl shellControl, int hkey, String key, String valueName) throws Exception {
+        var command = CommandBuilder.of()
+                .add("reg", "query")
+                .addQuoted((hkey == HKEY_LOCAL_MACHINE ? "HKEY_LOCAL_MACHINE" : "HKEY_CURRENT_USER") + "\\" + key)
+                .add("/v")
+                .addQuoted(valueName)
+                .add("/s");
+        try (var c = shellControl.command(command).start()) {
+            var output = c.readStdoutDiscardErr();
+            if (c.getExitCode() != 0) {
+                return Optional.empty();
+            } else {
+                return Optional.of(output);
+            }
         }
     }
 

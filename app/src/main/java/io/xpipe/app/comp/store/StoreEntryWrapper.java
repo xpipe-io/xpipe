@@ -115,7 +115,10 @@ public class StoreEntryWrapper {
         expanded.setValue(entry.isExpanded());
         persistentState.setValue(entry.getStorePersistentState());
         // Use map copy to recognize update
-        cache.setValue(new HashMap<>(entry.getStoreCache()));
+        // This is a synchronized map, so we synchronize the access
+        synchronized (entry.getStoreCache()) {
+            cache.setValue(new HashMap<>(entry.getStoreCache()));
+        }
         color.setValue(entry.getColor());
 
         busy.setValue(entry.isInRefresh());
