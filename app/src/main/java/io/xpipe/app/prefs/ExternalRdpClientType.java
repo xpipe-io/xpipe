@@ -6,6 +6,7 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 
+import io.xpipe.core.util.SecretValue;
 import lombok.Value;
 
 import java.nio.file.Files;
@@ -29,6 +30,11 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
             });
         }
 
+        @Override
+        public boolean supportsPasswordPassing() {
+            return true;
+        }
+
         private RdpConfig getAdaptedConfig(LaunchConfiguration configuration) throws Exception {
             var input = configuration.getConfig();
             if (input.get("password 51").isPresent()) {
@@ -38,24 +44,23 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
             var address = input.get("full address")
                     .map(typedValue -> typedValue.getValue())
                     .orElse("?");
-            var pass = SecretManager.retrieve(
-                    configuration.getPassword(), "Password for " + address, configuration.getStoreId(), 0);
+            var pass = configuration.getPassword();
             if (pass == null) {
                 return input;
             }
 
             var adapted = input.overlay(Map.of(
                     "password 51",
-                    new RdpConfig.TypedValue("b", encrypt(pass.getSecretValue())),
+                    new RdpConfig.TypedValue("b", encrypt(pass)),
                     "prompt for credentials",
                     new RdpConfig.TypedValue("i", "0")));
             return adapted;
         }
 
-        private String encrypt(String password) throws Exception {
+        private String encrypt(SecretValue password) throws Exception {
             var ps = LocalShell.getLocalPowershell();
             var cmd = ps.command(
-                    "(\"" + password + "\" | ConvertTo-SecureString -AsPlainText -Force) | ConvertFrom-SecureString;");
+                    "(\"" + password.getSecretValue() + "\" | ConvertTo-SecureString -AsPlainText -Force) | ConvertFrom-SecureString;");
             cmd.setSensitive();
             return cmd.readStdoutOrThrow();
         }
@@ -69,6 +74,11 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
                     .executeSimpleCommand(
                             CommandBuilder.of().add(executable).add("-c").addFile(file.toString()));
         }
+
+        @Override
+        public boolean supportsPasswordPassing() {
+            return false;
+        }
     };
     ExternalRdpClientType MICROSOFT_REMOTE_DESKTOP_MACOS_APP =
             new MacOsType("app.microsoftRemoteDesktopApp", "Microsoft Remote Desktop.app") {
@@ -81,6 +91,11 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
                                     .add("open", "-a")
                                     .addQuoted("Microsoft Remote Desktop.app")
                                     .addFile(file.toString()));
+                }
+
+                @Override
+                public boolean supportsPasswordPassing() {
+                    return false;
                 }
             };
     ExternalRdpClientType CUSTOM = new CustomType();
@@ -115,6 +130,8 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
 
     void launch(LaunchConfiguration configuration) throws Exception;
 
+    boolean supportsPasswordPassing();
+
     default Path writeConfig(RdpConfig input) throws Exception {
         var file =
                 LocalShell.getShell().getSystemTemporaryDirectory().join("exec-" + ScriptHelper.getScriptId() + ".rdp");
@@ -128,7 +145,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
         String title;
         RdpConfig config;
         UUID storeId;
-        SecretRetrievalStrategy password;
+        SecretValue password;
     }
 
     abstract class PathCheckType extends ExternalApplicationType.PathApplication implements ExternalRdpClientType {
@@ -165,6 +182,11 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
                             format,
                             "FILE",
                             writeConfig(configuration.getConfig()).toString())));
+        }
+
+        @Override
+        public boolean supportsPasswordPassing() {
+            return false;
         }
 
         @Override

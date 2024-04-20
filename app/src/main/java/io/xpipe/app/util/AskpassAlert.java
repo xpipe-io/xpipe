@@ -44,8 +44,8 @@ public class AskpassAlert {
                         });
                     }
 
-                    var text = new SecretFieldComp(prop).createStructure().get();
-                    alert.getDialogPane().setContent(new StackPane(text));
+                    var text = new SecretFieldComp(prop, false).createStructure();
+                    alert.getDialogPane().setContent(new StackPane(text.get()));
                     var stage = (Stage) alert.getDialogPane().getScene().getWindow();
                     stage.setAlwaysOnTop(true);
 
@@ -84,8 +84,8 @@ public class AskpassAlert {
                         anim.start();
                         // Wait 1 pulse before focus so that the scene can be assigned to text
                         Platform.runLater(() -> {
-                            text.requestFocus();
-                            text.end();
+                            text.getField().requestFocus();
+                            text.getField().end();
                         });
                         event.consume();
                     });

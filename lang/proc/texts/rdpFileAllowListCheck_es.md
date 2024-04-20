@@ -1,22 +1,22 @@
 # Aplicaciones remotas RDP
 
-Puedes utilizar conexiones RDP en XPipe para lanzar rápidamente aplicaciones y scripts remotos sin abrir un escritorio completo. Sin embargo, debido a la naturaleza de RDP, tienes que editar la lista de aplicaciones remotas permitidas en tu servidor para que esto funcione.
+Puedes utilizar conexiones RDP en XPipe para lanzar rÃ¡pidamente aplicaciones y scripts remotos sin abrir un escritorio completo. Sin embargo, debido a la naturaleza de RDP, tienes que editar la lista de aplicaciones remotas permitidas en tu servidor para que esto funcione.
 
 ## Listas de permitidos RDP
 
-Un servidor RDP utiliza el concepto de listas de permitidos para gestionar el lanzamiento de aplicaciones. Esto significa esencialmente que, a menos que la lista de permitidas esté desactivada o que se hayan añadido explícitamente aplicaciones específicas a la lista de permitidas, el lanzamiento directo de cualquier aplicación remota fallará.
+Un servidor RDP utiliza el concepto de listas de permitidos para gestionar el lanzamiento de aplicaciones. Esto significa esencialmente que, a menos que la lista de permitidas estÃ© desactivada o que se hayan aÃ±adido explÃ­citamente aplicaciones especÃ­ficas a la lista de permitidas, el lanzamiento directo de cualquier aplicaciÃ³n remota fallarÃ¡.
 
-Puedes encontrar la configuración de la lista de permitidas en el registro de tu servidor en `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList`.
+Puedes encontrar la configuraciÃ³n de la lista de permitidas en el registro de tu servidor en `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList`.
 
 ### Permitir todas las aplicaciones
 
 Puedes desactivar la lista de permitidas para permitir que todas las aplicaciones remotas se inicien directamente desde XPipe. Para ello, puedes ejecutar el siguiente comando en tu servidor en PowerShell: `Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList' -Name "fDisabledAllowList" -Value 1`.
 
-### Añadir aplicaciones permitidas
+### AÃ±adir aplicaciones permitidas
 
-También puedes añadir aplicaciones remotas individuales a la lista. Esto te permitirá lanzar las aplicaciones de la lista directamente desde XPipe.
+TambiÃ©n puedes aÃ±adir aplicaciones remotas individuales a la lista. Esto te permitirÃ¡ lanzar las aplicaciones de la lista directamente desde XPipe.
 
-En la clave `Aplicaciones` de `TSAppAllowList`, crea una nueva clave con un nombre arbitrario. El único requisito para el nombre es que sea único dentro de los hijos de la clave "Aplicaciones". Esta nueva clave debe contener los siguientes valores: `Nombre`, `Ruta` y `Configuración de la línea de comandos`. Puedes hacerlo en PowerShell con los siguientes comandos:
+En la clave `Aplicaciones` de `TSAppAllowList`, crea una nueva clave con un nombre arbitrario. El Ãºnico requisito para el nombre es que sea Ãºnico dentro de los hijos de la clave "Aplicaciones". Esta nueva clave debe contener los siguientes valores: `Nombre`, `Ruta` y `ConfiguraciÃ³n de la lÃ­nea de comandos`. Puedes hacerlo en PowerShell con los siguientes comandos:
 
 ```
 $appName="Bloc de notas"
@@ -25,12 +25,12 @@ $appPath="C:\Windows\System32\notepad.exe"
 $regKey="HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList\Applications"
 Nuevo-elemento -Ruta "$regKey\$appName"
 Nuevo-elemento-Propiedad -Ruta "$regKey$$appName" -Nombre "Name" -Valor "$appName" -Force
-Nueva-Propiedad-Artículo -Ruta "$regKey\$NombreDeLaAplicacion" -Nombre "Ruta" -Valor "$rutaDeLaAplicacion" -Forzar
+Nueva-Propiedad-ArtÃ­culo -Ruta "$regKey\$NombreDeLaAplicacion" -Nombre "Ruta" -Valor "$rutaDeLaAplicacion" -Forzar
 Nuevo-Item-Propiedad -Ruta "$regKey\$NombreDeLaAplicacion" -Nombre "CommandLineSetting" -Valor "1" -PropertyType DWord -Force
-<código>`</código
+<cÃ³digo>`</cÃ³digo
 
-Si quieres permitir que XPipe ejecute también scripts y abra sesiones de terminal, tienes que añadir también `C:\Windows\System32\cmd.exe` a la lista de permitidos. 
+Si quieres permitir que XPipe ejecute tambiÃ©n scripts y abra sesiones de terminal, tienes que aÃ±adir tambiÃ©n `C:\Windows\System32\cmd.exe` a la lista de permitidos. 
 
 ## Consideraciones de seguridad
 
-Esto no hace que tu servidor sea inseguro en modo alguno, ya que siempre puedes ejecutar las mismas aplicaciones manualmente al iniciar una conexión RDP. Las listas de permitidos están más pensadas para evitar que los clientes ejecuten instantáneamente cualquier aplicación sin la intervención del usuario. A fin de cuentas, depende de ti si confías en XPipe para hacer esto. Puedes iniciar esta conexión sin problemas, sólo es útil si quieres utilizar alguna de las funciones avanzadas de integración de escritorio de XPipe.
+Esto no hace que tu servidor sea inseguro en modo alguno, ya que siempre puedes ejecutar las mismas aplicaciones manualmente al iniciar una conexiÃ³n RDP. Las listas de permitidos estÃ¡n mÃ¡s pensadas para evitar que los clientes ejecuten instantÃ¡neamente cualquier aplicaciÃ³n sin la intervenciÃ³n del usuario. A fin de cuentas, depende de ti si confÃ­as en XPipe para hacer esto. Puedes iniciar esta conexiÃ³n sin problemas, sÃ³lo es Ãºtil si quieres utilizar alguna de las funciones avanzadas de integraciÃ³n de escritorio de XPipe.

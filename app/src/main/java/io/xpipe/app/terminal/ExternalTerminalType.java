@@ -612,9 +612,9 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             WezTerminalType.WEZTERM_MAC_OS,
             MACOS_TERMINAL);
 
-    List<ExternalTerminalType> APPLICABLE = getTypes(OsType.getLocal(), false, true);
+    List<ExternalTerminalType> ALL = getTypes(OsType.getLocal(), false, true);
 
-    List<ExternalTerminalType> ALL = getTypes(null, false, true);
+    List<ExternalTerminalType> ALL_CROSS_PLATFORM = getTypes(null, false, true);
 
     static List<ExternalTerminalType> getTypes(OsType osType, boolean remote, boolean custom) {
         var all = new ArrayList<ExternalTerminalType>();
@@ -649,7 +649,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return existing;
         }
 
-        return APPLICABLE.stream()
+        return ALL.stream()
                 .filter(externalTerminalType -> !externalTerminalType.equals(CUSTOM))
                 .filter(terminalType -> terminalType.isAvailable())
                 .findFirst()

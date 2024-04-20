@@ -320,7 +320,7 @@ public class OptionsBuilder {
     }
 
     public OptionsBuilder addSecret(Property<InPlaceSecretValue> prop) {
-        var comp = new SecretFieldComp(prop);
+        var comp = new SecretFieldComp(prop, true);
         pushComp(comp);
         props.add(prop);
         return this;

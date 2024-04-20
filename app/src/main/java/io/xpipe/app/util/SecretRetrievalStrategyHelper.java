@@ -27,7 +27,7 @@ public class SecretRetrievalStrategyHelper {
                         ? p.getValue().getValue().getInternalSecret()
                         : null);
         return new OptionsBuilder()
-                .addComp(new SecretFieldComp(secretProperty), secretProperty)
+                .addComp(new SecretFieldComp(secretProperty, true), secretProperty)
                 .bind(
                         () -> {
                             var newSecret = secretProperty.get();
