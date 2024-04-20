@@ -96,7 +96,7 @@ public class CoreJacksonModule extends SimpleModule {
 
         @Override
         public ShellDialect deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            var tree = JacksonMapper.getDefault().readTree(p);
+            JsonNode tree = JacksonMapper.getDefault().readTree(p);
             if (tree.isObject()) {
                 var t = (JsonNode) tree.get("type");
                 if (t == null) {
@@ -105,7 +105,7 @@ public class CoreJacksonModule extends SimpleModule {
                 return ShellDialects.byNameIfPresent(t.asText()).orElse(null);
             }
 
-            return ShellDialects.byNameIfPresent(p.getValueAsString()).orElse(null);
+            return ShellDialects.byNameIfPresent(tree.asText()).orElse(null);
         }
     }
 

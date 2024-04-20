@@ -155,7 +155,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand() {
+        public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand(ShellDialect systemDialect) {
             return launchConfiguration -> {
                 var toExecute = CommandBuilder.of()
                         .add(executable, "-v", "--title")
@@ -566,7 +566,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand() {
+        public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand(ShellDialect systemDialect) {
             return launchConfiguration -> {
                 var toExecute = CommandBuilder.of()
                         .add("open", "-a")
@@ -628,7 +628,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             all.addAll(MACOS_TERMINALS);
         }
         if (remote) {
-            all.removeIf(externalTerminalType -> externalTerminalType.remoteLaunchCommand() == null);
+            all.removeIf(externalTerminalType -> externalTerminalType.remoteLaunchCommand(null) == null);
         }
         // Prefer recommended
         all.sort(Comparator.comparingInt(o -> (o.isRecommended() ? -1 : 0)));
@@ -672,7 +672,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     default void launch(LaunchConfiguration configuration) throws Exception {}
 
-    default FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand() {
+    default FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand(ShellDialect systemDialect) {
         return null;
     }
 
@@ -714,12 +714,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             var open = scriptDialect.getOpenScriptCommand(scriptFile.toString());
             return open;
         }
-
-        public CommandBuilder appendDialectLaunchCommand(CommandBuilder b) {
-            var open = getDialectLaunchCommand();
-            b.add(open);
-            return b;
-        }
     }
 
     abstract class MacOsType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
@@ -751,12 +745,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand() {
+        public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand(ShellDialect systemDialect) {
             return launchConfiguration -> {
                 var args = toCommand(launchConfiguration);
                 args.add(0, executable);
                 if (explicityAsync) {
-                    args = launchConfiguration.getScriptDialect().launchAsnyc(args);
+                    args = systemDialect.launchAsnyc(args);
                 }
                 return args.buildSimple();
             };

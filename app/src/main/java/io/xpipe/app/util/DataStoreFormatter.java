@@ -37,7 +37,7 @@ public class DataStoreFormatter {
                         return formattedOsName(s.getOsName());
                     }
 
-                    if (s.getShellDialect().equals(ShellDialects.UNSUPPORTED)) {
+                    if (s.getShellDialect().equals(ShellDialects.NO_INTERACTION)) {
                         return null;
                     }
 
