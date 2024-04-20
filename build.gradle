@@ -87,7 +87,7 @@ project.ext {
     website = 'https://xpipe.io'
     sourceWebsite = 'https://github.com/xpipe-io/xpipe'
     authors = 'Christopher Schnick'
-    javafxVersion = '22'
+    javafxVersion = '22.0.1'
     platformName = getPlatformName()
     artifactChecksums = new HashMap<String, String>()
     languages = ["en", "nl", "es", "fr", "de", "it", "pt", "ru", "ja", "zh", "tr"]
