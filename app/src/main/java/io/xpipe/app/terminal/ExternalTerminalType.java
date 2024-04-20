@@ -614,7 +614,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     List<ExternalTerminalType> ALL = getTypes(OsType.getLocal(), false, true);
 
-    List<ExternalTerminalType> ALL_CROSS_PLATFORM = getTypes(null, false, true);
+    List<ExternalTerminalType> ALL_ON_ALL_PLATFORMS = getTypes(null, false, true);
 
     static List<ExternalTerminalType> getTypes(OsType osType, boolean remote, boolean custom) {
         var all = new ArrayList<ExternalTerminalType>();

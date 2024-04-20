@@ -68,7 +68,7 @@ public class AppJacksonModule extends SimpleModule {
         @Override
         public ExternalTerminalType deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             var id = p.getValueAsString();
-            return ExternalTerminalType.ALL.stream()
+            return ExternalTerminalType.ALL_ON_ALL_PLATFORMS.stream()
                     .filter(terminalType -> terminalType.getId().equals(id))
                     .findFirst()
                     .orElse(null);
