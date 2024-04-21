@@ -575,6 +575,20 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 return toExecute.buildSimple();
             };
         }
+
+        @Override
+        public String additionalInitCommands(ShellControl sc) {
+            if (sc.getShellDialect() == ShellDialects.ZSH) {
+                return "printf '\\eP$f{\"hook\": \"SourcedRcFileForWarp\", \"value\": { \"shell\": \"zsh\"}}\\x9c'";
+            }
+            if (sc.getShellDialect() == ShellDialects.BASH) {
+                return "printf '\\eP$f{\"hook\": \"SourcedRcFileForWarp\", \"value\": { \"shell\": \"bash\"}}\\x9c'";
+            }
+            if (sc.getShellDialect() == ShellDialects.FISH) {
+                return "printf '\\eP$f{\"hook\": \"SourcedRcFileForWarp\", \"value\": { \"shell\": \"fish\"}}\\x9c'";
+            }
+            return null;
+        }
     };
     ExternalTerminalType CUSTOM = new CustomTerminalType();
     List<ExternalTerminalType> WINDOWS_TERMINALS = List.of(
@@ -654,6 +668,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 .filter(terminalType -> terminalType.isAvailable())
                 .findFirst()
                 .orElse(null);
+    }
+
+    default String additionalInitCommands(ShellControl sc) {
+        return null;
     }
 
     boolean supportsTabs();
