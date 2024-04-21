@@ -94,7 +94,7 @@ public interface ShellControl extends ProcessControl {
     ShellControl withErrorFormatter(Function<String, String> formatter);
 
     String prepareIntermediateTerminalOpen(
-            String content, TerminalInitScriptConfig config, WorkingDirectoryFunction workingDirectory)
+            TerminalInitFunction content, TerminalInitScriptConfig config, WorkingDirectoryFunction workingDirectory)
             throws Exception;
 
     FilePath getSystemTemporaryDirectory();

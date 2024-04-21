@@ -577,7 +577,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public String additionalInitCommands(ShellControl sc) {
+        public TerminalInitFunction additionalInitCommands() {
+            return TerminalInitFunction.of(sc -> {
             if (sc.getShellDialect() == ShellDialects.ZSH) {
                 return "printf '\\eP$f{\"hook\": \"SourcedRcFileForWarp\", \"value\": { \"shell\": \"zsh\"}}\\x9c'";
             }
@@ -588,6 +589,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 return "printf '\\eP$f{\"hook\": \"SourcedRcFileForWarp\", \"value\": { \"shell\": \"fish\"}}\\x9c'";
             }
             return null;
+            });
         }
     };
     ExternalTerminalType CUSTOM = new CustomTerminalType();
@@ -670,8 +672,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 .orElse(null);
     }
 
-    default String additionalInitCommands(ShellControl sc) {
-        return null;
+    default TerminalInitFunction additionalInitCommands() {
+        return TerminalInitFunction.none();
     }
 
     boolean supportsTabs();

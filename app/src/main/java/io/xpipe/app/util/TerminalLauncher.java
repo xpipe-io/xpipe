@@ -32,7 +32,7 @@ public class TerminalLauncher {
                             title,
                             type.shouldClear()
                                     && AppPrefs.get().clearTerminalOnInit().get(),
-                    type.additionalInitCommands(sc)));
+                    null));
             var config = new ExternalTerminalType.LaunchConfiguration(null, title, title, script, sc.getShellDialect());
             type.launch(config);
         }
@@ -55,7 +55,7 @@ public class TerminalLauncher {
         var terminalConfig = new TerminalInitScriptConfig(
                 adjustedTitle,
                 type.shouldClear() && AppPrefs.get().clearTerminalOnInit().get(),
-                cc instanceof ShellControl sc ? type.additionalInitCommands(sc) : null);
+                cc instanceof ShellControl sc ? type.additionalInitCommands() : TerminalInitFunction.none());
 
         var request = UUID.randomUUID();
         var d = ProcessControlProvider.get().getEffectiveLocalDialect();
