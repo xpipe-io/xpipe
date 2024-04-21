@@ -10,6 +10,7 @@ import lombok.SneakyThrows;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class ScriptHelper {
 
@@ -31,8 +32,8 @@ public class ScriptHelper {
             ShellDialect t,
             ShellControl processControl,
             WorkingDirectoryFunction workingDirectory,
-            List<String> init,
-            String toExecuteInShell,
+            List<String> preInit,
+            List<String> postInit,
             TerminalInitScriptConfig config,
             boolean exit)
             throws Exception {
@@ -43,6 +44,9 @@ public class ScriptHelper {
         if (clear != null && config.isClearScreen()) {
             content += clear + nl;
         }
+
+        // Normalize line endings
+        content += nl + preInit.stream().flatMap(s -> s.lines()).collect(Collectors.joining(nl)) + nl;
 
         var applyRcCommand = t.applyRcFileCommand();
         if (applyRcCommand != null) {
@@ -67,12 +71,8 @@ public class ScriptHelper {
             }
         }
 
-        content += nl + String.join(nl, init.stream().filter(s -> s != null).toList()) + nl;
-
-        if (toExecuteInShell != null) {
-            // Normalize line endings
-            content += String.join(nl, toExecuteInShell.lines().toList()) + nl;
-        }
+        // Normalize line endings
+        content += nl + postInit.stream().flatMap(s -> s.lines()).collect(Collectors.joining(nl)) + nl;
 
         if (exit) {
             content += nl + t.getPassthroughExitCommand();

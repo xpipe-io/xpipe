@@ -27,7 +27,7 @@ public class TerminalLauncher {
                     sc,
                     WorkingDirectoryFunction.none(),
                     List.of(),
-                    command.apply(sc),
+                    List.of(command.apply(sc)),
                     new TerminalInitScriptConfig(
                             title,
                             type.shouldClear()
