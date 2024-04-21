@@ -33,7 +33,8 @@ public class ScriptHelper {
             WorkingDirectoryFunction workingDirectory,
             List<String> init,
             String toExecuteInShell,
-            TerminalInitScriptConfig config)
+            TerminalInitScriptConfig config,
+            boolean exit)
             throws Exception {
         String nl = t.getNewLine().getNewLineString();
         var content = "";
@@ -71,7 +72,10 @@ public class ScriptHelper {
         if (toExecuteInShell != null) {
             // Normalize line endings
             content += String.join(nl, toExecuteInShell.lines().toList()) + nl;
-            content += nl + t.getPassthroughExitCommand() + nl;
+        }
+
+        if (exit) {
+            content += nl + t.getPassthroughExitCommand();
         }
 
         return createExecScript(t, processControl, new FilePath(t.initFileName(processControl)), content);
