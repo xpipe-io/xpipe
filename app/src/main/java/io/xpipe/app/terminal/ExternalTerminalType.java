@@ -630,16 +630,16 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         @Override
         public TerminalInitFunction additionalInitCommands() {
             return TerminalInitFunction.of(sc -> {
-            if (sc.getShellDialect() == ShellDialects.ZSH) {
-                return "printf '\\eP$f{\"hook\": \"SourcedRcFileForWarp\", \"value\": { \"shell\": \"zsh\"}}\\x9c'";
-            }
-            if (sc.getShellDialect() == ShellDialects.BASH) {
-                return "printf '\\eP$f{\"hook\": \"SourcedRcFileForWarp\", \"value\": { \"shell\": \"bash\"}}\\x9c'";
-            }
-            if (sc.getShellDialect() == ShellDialects.FISH) {
-                return "printf '\\eP$f{\"hook\": \"SourcedRcFileForWarp\", \"value\": { \"shell\": \"fish\"}}\\x9c'";
-            }
-            return null;
+                if (sc.getShellDialect() == ShellDialects.ZSH) {
+                    return "printf '\\eP$f{\"hook\": \"SourcedRcFileForWarp\", \"value\": { \"shell\": \"zsh\"}}\\x9c'";
+                }
+                if (sc.getShellDialect() == ShellDialects.BASH) {
+                    return "printf '\\eP$f{\"hook\": \"SourcedRcFileForWarp\", \"value\": { \"shell\": \"bash\"}}\\x9c'";
+                }
+                if (sc.getShellDialect() == ShellDialects.FISH) {
+                    return "printf '\\eP$f{\"hook\": \"SourcedRcFileForWarp\", \"value\": { \"shell\": \"fish\"}}\\x9c'";
+                }
+                return null;
             });
         }
     };
