@@ -314,6 +314,23 @@ public abstract class DataStorage {
         saveAsync();
     }
 
+    public void shareCategory(DataStoreCategory category, boolean share) {
+        category.setShare(share);
+
+        DataStoreCategory p = category;
+        if (share) {
+            while ((p = DataStorage.get()
+                    .getStoreCategoryIfPresent(p.getParentCategory())
+                    .orElse(null))
+                    != null) {
+                p.setShare(true);
+            }
+        }
+
+        // Update git remote if needed
+        DataStorage.get().saveAsync();
+    }
+
     public void updateCategory(DataStoreEntry entry, DataStoreCategory newCategory) {
         if (getStoreCategoryIfPresent(entry.getUuid())
                 .map(category -> category.equals(newCategory))
