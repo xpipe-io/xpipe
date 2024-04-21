@@ -247,7 +247,6 @@ public abstract class StoreEntryComp extends SimpleComp {
             comp.apply(struc -> {
                 struc.get().getStyleClass().remove(Styles.FLAT);
             });
-            comp.grow(false, true);
         });
         return new HorizontalComp(list)
                 .apply(struc -> {
