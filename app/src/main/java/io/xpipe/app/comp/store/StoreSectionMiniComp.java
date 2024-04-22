@@ -176,12 +176,12 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                             struc.get().getStyleClass().removeIf(s -> Arrays.stream(DataStoreColor.values())
                                     .anyMatch(dataStoreColor ->
                                             dataStoreColor.getId().equals(s)));
-                            struc.get().getStyleClass().remove("none");
+                            struc.get().getStyleClass().remove("gray");
                             struc.get().getStyleClass().add("color-box");
                             if (val != null) {
                                 struc.get().getStyleClass().add(val.getId());
                             } else {
-                                struc.get().getStyleClass().add("none");
+                                struc.get().getStyleClass().add("gray");
                             }
                         });
                     }

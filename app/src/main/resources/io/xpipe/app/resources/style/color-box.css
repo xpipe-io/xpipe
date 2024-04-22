@@ -30,12 +30,12 @@
 }
 
 .root:pretty:light .color-box.gray {
-    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, derive(-color-bg-default, -5%) 40%, derive(-color-bg-default, -3%) 50%, derive(-color-bg-default, -5%) 100%);
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, derive(-color-bg-default, -2%) 40%, derive(-color-bg-default, 0%) 50%, derive(-color-bg-default, -3%) 100%);
     -fx-border-color: derive(-color-border-default, -10%);
 }
 
 .root:performance:light .color-box.gray {
-    -fx-background-color: derive(-color-bg-default, -5%);
+    -fx-background-color: derive(-color-bg-default, -2%);
     -fx-border-color: derive(-color-border-default, -10%);
 }
 
@@ -45,12 +45,12 @@
 
 
 .root:pretty:light .color-box.blue {
-    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, rgb(130, 130, 250, 0.2) 40%, rgb(57, 57, 200, 0.2) 50%, rgb(137, 137, 250, 0.2) 100%);
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, rgb(130, 130, 250, 0.15) 40%, rgb(57, 57, 200, 0.15) 50%, rgb(137, 137, 250, 0.15) 100%);
     -fx-border-color: rgba(80, 100, 150, 0.3);
 }
 
 .root:performance:light .color-box.blue {
-    -fx-background-color: rgb(130, 130, 250, 0.2);
+    -fx-background-color: rgb(130, 130, 250, 0.15);
     -fx-border-color: rgba(80, 100, 150, 0.3);
 }
 

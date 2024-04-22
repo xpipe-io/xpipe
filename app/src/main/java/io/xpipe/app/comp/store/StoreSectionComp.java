@@ -178,12 +178,12 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                         newList.removeIf(s -> Arrays.stream(DataStoreColor.values())
                                 .anyMatch(
                                         dataStoreColor -> dataStoreColor.getId().equals(s)));
-                        newList.remove("none");
+                        newList.remove("gray");
                         newList.add("color-box");
                         if (val != null) {
                             newList.add(val.getId());
                         } else {
-                            newList.add("none");
+                            newList.add("gray");
                         }
                         struc.get().getStyleClass().setAll(newList);
                     });
