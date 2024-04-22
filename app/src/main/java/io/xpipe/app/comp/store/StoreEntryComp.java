@@ -381,8 +381,7 @@ public abstract class StoreEntryComp extends SimpleComp {
             contextMenu.getItems().add(browse);
         }
 
-        if (wrapper.getEntry().getProvider() != null
-                && wrapper.getEntry().getProvider().canMoveCategories()) {
+        if (wrapper.getEntry().getProvider() != null) {
             var move = new Menu(AppI18n.get("moveTo"), new FontIcon("mdi2f-folder-move-outline"));
             StoreViewState.get()
                     .getSortedCategories(wrapper.getCategory().getValue().getRoot())

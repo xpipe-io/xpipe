@@ -10,9 +10,7 @@ import io.xpipe.core.store.DataStoreId;
 import io.xpipe.core.store.FixedChildStore;
 import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.util.UuidHelper;
-
 import javafx.util.Pair;
-
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -529,7 +527,7 @@ public abstract class DataStorage {
     public void addStoreEntriesIfNotPresent(@NonNull DataStoreEntry... es) {
         for (DataStoreEntry e : es) {
             if (storeEntriesSet.contains(e)
-                    || getStoreEntryIfPresent(e.getStore()).isPresent()) {
+                    || getStoreEntryIfPresent(e.getStore(), false).isPresent()) {
                 return;
             }
 
@@ -563,7 +561,7 @@ public abstract class DataStorage {
     }
 
     public DataStoreEntry addStoreIfNotPresent(DataStoreEntry related, @NonNull String name, DataStore store) {
-        var f = getStoreEntryIfPresent(store);
+        var f = getStoreEntryIfPresent(store, false);
         if (f.isPresent()) {
             return f.get();
         }
@@ -770,12 +768,12 @@ public abstract class DataStorage {
                 .findFirst();
     }
 
-    public Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull DataStore store) {
+    public Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull DataStore store, boolean identityOnly) {
         return storeEntriesSet.stream()
                 .filter(n -> n.getStore() == store
-                        || (n.getStore() != null
+                        || (!identityOnly && (n.getStore() != null
                                 && Objects.equals(store.getClass(), n.getStore().getClass())
-                                && store.equals(n.getStore())))
+                                && store.equals(n.getStore()))))
                 .findFirst();
     }
 
@@ -814,7 +812,7 @@ public abstract class DataStorage {
             return Optional.empty();
         }
 
-        return getStoreEntryIfPresent(store).map(dataStoreEntry -> dataStoreEntry.getName());
+        return getStoreEntryIfPresent(store, true).map(dataStoreEntry -> dataStoreEntry.getName());
     }
 
     public String getStoreDisplayName(DataStoreEntry store) {

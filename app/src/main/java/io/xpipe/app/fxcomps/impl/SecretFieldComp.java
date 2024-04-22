@@ -88,6 +88,13 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
         if (allowCopy) {
             ig.getChildren().add(copyButton);
         }
+
+        ig.focusedProperty().addListener((c, o, n) -> {
+            if (n) {
+                text.requestFocus();
+            }
+        });
+
         return new Structure(ig, text);
     }
 }

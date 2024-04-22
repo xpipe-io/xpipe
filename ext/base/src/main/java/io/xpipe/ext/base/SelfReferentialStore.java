@@ -10,7 +10,7 @@ public interface SelfReferentialStore extends DataStore {
 
     default DataStoreEntry getSelfEntry() {
         return DataStorage.get()
-                .getStoreEntryIfPresent(this)
+                .getStoreEntryIfPresent(this, true)
                 .or(() -> {
                     return DataStorage.get().getStoreEntryInProgressIfPresent(this);
                 })

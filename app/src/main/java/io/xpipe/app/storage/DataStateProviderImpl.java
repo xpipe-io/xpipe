@@ -15,7 +15,7 @@ public class DataStateProviderImpl extends DataStateProvider {
             return;
         }
 
-        var entry = DataStorage.get().getStoreEntryIfPresent(store).or(() -> DataStorage.get()
+        var entry = DataStorage.get().getStoreEntryIfPresent(store, true).or(() -> DataStorage.get()
                 .getStoreEntryInProgressIfPresent(store));
         if (entry.isEmpty()) {
             return;
@@ -30,7 +30,7 @@ public class DataStateProviderImpl extends DataStateProvider {
             return def.get();
         }
 
-        var entry = DataStorage.get().getStoreEntryIfPresent(store);
+        var entry = DataStorage.get().getStoreEntryIfPresent(store, true);
         if (entry.isEmpty()) {
             return def.get();
         }
@@ -52,7 +52,7 @@ public class DataStateProviderImpl extends DataStateProvider {
             return;
         }
 
-        var entry = DataStorage.get().getStoreEntryIfPresent(store);
+        var entry = DataStorage.get().getStoreEntryIfPresent(store, true);
         if (entry.isEmpty()) {
             return;
         }
@@ -66,7 +66,7 @@ public class DataStateProviderImpl extends DataStateProvider {
             return def.get();
         }
 
-        var entry = DataStorage.get().getStoreEntryIfPresent(store);
+        var entry = DataStorage.get().getStoreEntryIfPresent(store, true);
         if (entry.isEmpty()) {
             return def.get();
         }
@@ -80,7 +80,7 @@ public class DataStateProviderImpl extends DataStateProvider {
     }
 
     public boolean isInStorage(DataStore store) {
-        var entry = DataStorage.get().getStoreEntryIfPresent(store);
+        var entry = DataStorage.get().getStoreEntryIfPresent(store, true);
         return entry.isPresent();
     }
 }

@@ -50,8 +50,7 @@ public class DesktopEnvironmentStore extends JacksonizedValue
         var f = ScriptStore.flatten(scripts);
         var filtered = f.stream()
                 .filter(simpleScriptStore ->
-                        simpleScriptStore.getMinimumDialect().isCompatibleTo(dialect)
-                                && simpleScriptStore.getExecutionType().runInTerminal())
+                        simpleScriptStore.getMinimumDialect().isCompatibleTo(dialect))
                 .toList();
         var initCommands = new ArrayList<>(filtered.stream()
                 .map(simpleScriptStore -> simpleScriptStore.getCommands())

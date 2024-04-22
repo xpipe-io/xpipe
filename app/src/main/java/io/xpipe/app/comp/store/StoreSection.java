@@ -107,7 +107,7 @@ public class StoreSection {
                     var matchesSelector = section.anyMatches(entryFilter);
                     var sameCategory = category == null
                             || category.getValue() == null
-                            || inCategory(category.getValue(), section.getWrapper());
+                            || showInCategory(category.getValue(), section.getWrapper());
                     return showFilter && matchesSelector && sameCategory;
                 },
                 category,
@@ -148,7 +148,7 @@ public class StoreSection {
                     var matchesSelector = section.anyMatches(entryFilter);
                     var sameCategory = category == null
                             || category.getValue() == null
-                            || inCategory(category.getValue(), section.getWrapper());
+                            || showInCategory(category.getValue(), section.getWrapper());
                     // If this entry is already shown as root due to a different category than parent, don't show it
                     // again here
                     var notRoot =
@@ -160,7 +160,7 @@ public class StoreSection {
         return new StoreSection(e, cached, filtered, depth);
     }
 
-    private static boolean inCategory(StoreCategoryWrapper categoryWrapper, StoreEntryWrapper entryWrapper) {
+    private static boolean showInCategory(StoreCategoryWrapper categoryWrapper, StoreEntryWrapper entryWrapper) {
         var current = entryWrapper.getCategory().getValue();
         while (current != null) {
             if (categoryWrapper

@@ -44,11 +44,6 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public boolean canMoveCategories() {
-        return false;
-    }
-
-    @Override
     public boolean shouldEdit() {
         return true;
     }
@@ -141,10 +136,8 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
 
         var group = new SimpleObjectProperty<>(st.getGroup());
         Property<ShellDialect> dialect = new SimpleObjectProperty<>(st.getMinimumDialect());
-        var others =
-                new SimpleListProperty<>(FXCollections.observableArrayList(new ArrayList<>(st.getEffectiveScripts())));
+        var others = new SimpleListProperty<>(FXCollections.observableArrayList(new ArrayList<>(st.getEffectiveScripts())));
         Property<String> commandProp = new SimpleObjectProperty<>(st.getCommands());
-        var type = new SimpleObjectProperty<>(st.getExecutionType());
 
         Comp<?> choice = (Comp<?>) Class.forName(
                         AppExtensionManager.getInstance()
@@ -181,9 +174,6 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
                         })),
                         commandProp)
                 .name("executionType")
-                .description("executionTypeDescription")
-                .longDescription("base:executionType")
-                .addComp(new ScriptStoreTypeChoiceComp(type), type)
                 .name("scriptGroup")
                 .description("scriptGroupDescription")
                 .addComp(
@@ -204,7 +194,6 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
                                     .scripts(new ArrayList<>(others.get()))
                                     .description(st.getDescription())
                                     .commands(commandProp.getValue())
-                                    .executionType(type.get())
                                     .build();
                         },
                         store)
@@ -256,12 +245,7 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
         return new SimpleStringProperty((scriptStore.getMinimumDialect() != null
                         ? scriptStore.getMinimumDialect().getDisplayName() + " "
                         : "")
-                + (scriptStore.getExecutionType() == SimpleScriptStore.ExecutionType.TERMINAL_ONLY
-                        ? "Terminal"
-                        : scriptStore.getExecutionType() == SimpleScriptStore.ExecutionType.DUMB_ONLY
-                                ? "Background"
-                                : "")
-                + " Snippet");
+                + " snippet");
     }
 
     @SneakyThrows
@@ -286,7 +270,6 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
     public DataStore defaultStore() {
         return SimpleScriptStore.builder()
                 .scripts(List.of())
-                .executionType(SimpleScriptStore.ExecutionType.TERMINAL_ONLY)
                 .build();
     }
 

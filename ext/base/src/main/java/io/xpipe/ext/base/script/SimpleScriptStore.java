@@ -25,14 +25,10 @@ public class SimpleScriptStore extends ScriptStore implements ScriptSnippet {
 
     private final ShellDialect minimumDialect;
     private final String commands;
-    private final ExecutionType executionType;
 
-    private String assemble(ShellControl shellControl, ExecutionType type) {
-        var targetType = type == ExecutionType.TERMINAL_ONLY
-                ? shellControl.getOriginalShellDialect()
-                : shellControl.getShellDialect();
-        if ((executionType == type || executionType == ExecutionType.BOTH)
-                && minimumDialect.isCompatibleTo(targetType)) {
+    private String assemble(ShellControl shellControl) {
+        var targetType = shellControl.getOriginalShellDialect();
+        if (minimumDialect.isCompatibleTo(targetType)) {
             var shebang = commands.startsWith("#");
             // Fix new lines and shebang
             var fixedCommands = commands.lines()
@@ -48,19 +44,18 @@ public class SimpleScriptStore extends ScriptStore implements ScriptSnippet {
 
     @Override
     public String content(ShellControl shellControl) {
-        return assemble(shellControl, executionType);
+        return assemble(shellControl);
     }
 
     @Override
     public ScriptSnippet.ExecutionType executionType() {
-        return executionType;
+        return ExecutionType.TERMINAL_ONLY;
     }
 
     @Override
     public void checkComplete() throws Throwable {
         Validators.nonNull(group);
         super.checkComplete();
-        Validators.nonNull(executionType);
         Validators.nonNull(minimumDialect);
     }
 
