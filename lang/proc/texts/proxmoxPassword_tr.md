@@ -1,3 +1,3 @@
-## ?ifre
+## Şifre
 
-Sanal makinenizde basit bir parola yerine daha karma??k bir SSH kimlik do?rulamas? kullan?yorsan?z, sistemi XPipe'a normal bir SSH ba?lant?s? olarak ekleyebilirsiniz. D??ar?dan eri?ilemiyorsa, ana PVE sistemini bir SSH a? ge�idi olarak ayarlayabilirsiniz.
+Sanal makinenizde basit bir parola yerine daha karmaşık bir SSH kimlik doğrulaması kullanıyorsanız, sistemi XPipe'a normal bir SSH bağlantısı olarak ekleyebilirsiniz. Dışarıdan erişilemiyorsa, ana PVE sistemini bir SSH ağ geçidi olarak ayarlayabilirsiniz.

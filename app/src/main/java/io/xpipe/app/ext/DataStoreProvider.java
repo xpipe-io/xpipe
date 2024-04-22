@@ -220,6 +220,6 @@ public interface DataStoreProvider {
         TUNNEL,
         SCRIPT,
         CLUSTER,
-        DESKSTOP;
+        DESKTOP
     }
 }

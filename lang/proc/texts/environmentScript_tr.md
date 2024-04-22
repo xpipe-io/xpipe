@@ -1,9 +1,9 @@
-## Ba?lang?� beti?i
+## Başlangıç betiği
 
-Kabu?un ba?lang?� dosyalar? ve profilleri y�r�t�ld�kten sonra �al??t?r?lacak iste?e ba?l? komutlar.
+Kabuğun başlangıç dosyaları ve profilleri yürütüldükten sonra çalıştırılacak isteğe bağlı komutlar.
 
-Buna normal bir kabuk beti?i gibi davranabilirsiniz, yani kabu?un betiklerde destekledi?i t�m s�zdizimini kullanabilirsiniz. �al??t?rd???n?z t�m komutlar kabuk taraf?ndan kaynaklan?r ve ortam? de?i?tirir. Dolay?s?yla, �rne?in bir de?i?ken ayarlarsan?z, bu kabuk oturumunda bu de?i?kene eri?iminiz olacakt?r.
+Buna normal bir kabuk betiği gibi davranabilirsiniz, yani kabuğun betiklerde desteklediği tüm sözdizimini kullanabilirsiniz. Çalıştırdığınız tüm komutlar kabuk tarafından kaynaklanır ve ortamı değiştirir. Dolayısıyla, örneğin bir değişken ayarlarsanız, bu kabuk oturumunda bu değişkene erişiminiz olacaktır.
 
-### Engelleme komutlar?
+### Engelleme komutları
 
-Kullan?c? giri?i gerektiren engelleme komutlar?n?n, XPipe arka planda ilk olarak dahili olarak ba?lat?ld???nda kabuk s�recini dondurabilece?ini unutmay?n. Bunu �nlemek i�in, bu engelleme komutlar?n? yaln?zca `TERM` de?i?keni `dumb` olarak ayarlanmam??sa �a??r?n. XPipe arka planda kabuk oturumunu haz?rlarken `TERM=dumb` de?i?kenini otomatik olarak ayarlar ve daha sonra terminali ger�ekten a�arken `TERM=xterm-256color` de?i?kenini ayarlar.
+Kullanıcı girişi gerektiren engelleme komutlarının, XPipe arka planda ilk olarak dahili olarak başlatıldığında kabuk sürecini dondurabileceğini unutmayın. Bunu önlemek için, bu engelleme komutlarını yalnızca `TERM` değişkeni `dumb` olarak ayarlanmamışsa çağırın. XPipe arka planda kabuk oturumunu hazırlarken `TERM=dumb` değişkenini otomatik olarak ayarlar ve daha sonra terminali gerçekten açarken `TERM=xterm-256color` değişkenini ayarlar.

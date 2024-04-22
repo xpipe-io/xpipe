@@ -1,5 +1,5 @@
-## Ba?lama
+## Bağlama
 
-Sa?lad???n?z ba?lama bilgileri do?rudan `ssh` istemcisine ?u ?ekilde iletilir: `-L [origin_address:]origin_port:remote_address:remote_port`.
+Sağladığınız bağlama bilgileri doğrudan `ssh` istemcisine şu şekilde iletilir: `-L [origin_address:]origin_port:remote_address:remote_port`.
 
-Varsay?lan olarak, aksi belirtilmedi?i takdirde kaynak geri d�ng� aray�z�ne ba?lanacakt?r. Ayr?ca, IPv4 �zerinden eri?ilebilen t�m a? aray�zlerine ba?lanmak i�in adresi `0.0.0.0` olarak ayarlamak gibi herhangi bir adres joker karakterinden de yararlanabilirsiniz. Adresi tamamen atlad???n?zda, t�m a? aray�zlerinde ba?lant?lara izin veren `*` joker karakteri kullan?lacakt?r. Baz? a? aray�zleri g�sterimlerinin t�m i?letim sistemlerinde desteklenmeyebilece?ini unutmay?n. �rne?in Windows sunucular? `*` joker karakterini desteklemez.
+Varsayılan olarak, aksi belirtilmediği takdirde kaynak geri döngü arayüzüne bağlanacaktır. Ayrıca, IPv4 üzerinden erişilebilen tüm ağ arayüzlerine bağlanmak için adresi `0.0.0.0` olarak ayarlamak gibi herhangi bir adres joker karakterinden de yararlanabilirsiniz. Adresi tamamen atladığınızda, tüm ağ arayüzlerinde bağlantılara izin veren `*` joker karakteri kullanılacaktır. Bazı ağ arayüzleri gösterimlerinin tüm işletim sistemlerinde desteklenmeyebileceğini unutmayın. Örneğin Windows sunucuları `*` joker karakterini desteklemez.

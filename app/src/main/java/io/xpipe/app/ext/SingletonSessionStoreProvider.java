@@ -16,7 +16,7 @@ import javafx.beans.value.ObservableBooleanValue;
 public interface SingletonSessionStoreProvider extends DataStoreProvider {
 
     @Override
-    public default ObservableBooleanValue busy(StoreEntryWrapper wrapper) {
+    default ObservableBooleanValue busy(StoreEntryWrapper wrapper) {
         return Bindings.createBooleanBinding(
                 () -> {
                     SingletonSessionStore<?> s = wrapper.getEntry().getStore().asNeeded();
@@ -26,7 +26,7 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
     }
 
     @Override
-    public default StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
+    default StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
         var t = createToggleComp(sec);
         return StoreEntryComp.create(sec.getWrapper(), t, preferLarge);
     }
@@ -53,7 +53,7 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
         return t;
     }
 
-    public default Comp<?> stateDisplay(StoreEntryWrapper w) {
+    default Comp<?> stateDisplay(StoreEntryWrapper w) {
         return new SystemStateComp(Bindings.createObjectBinding(
                 () -> {
                     SingletonSessionStore<?> s = w.getEntry().getStore().asNeeded();

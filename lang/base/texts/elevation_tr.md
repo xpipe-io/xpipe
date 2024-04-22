@@ -1,14 +1,14 @@
-## Y�kseklik
+## Yükseklik
 
-Y�kseltme i?lemi i?letim sistemine �zg�d�r.
+Yükseltme işlemi işletim sistemine özgüdür.
 
 ### Linux ve macOS
 
-Herhangi bir y�kseltilmi? komut `sudo` ile y�r�t�l�r. ?ste?e ba?l? `sudo` parolas? gerekti?inde XPipe arac?l???yla sorgulan?r.
-Parolan?za her ihtiya� duyuldu?unda girmek isteyip istemedi?inizi veya mevcut oturum i�in �nbelle?e almak isteyip istemedi?inizi kontrol etmek i�in ayarlarda y�kseltme davran???n? ayarlama olana??na sahipsiniz.
+Herhangi bir yükseltilmiş komut `sudo` ile yürütülür. İsteğe bağlı `sudo` parolası gerektiğinde XPipe aracılığıyla sorgulanır.
+Parolanıza her ihtiyaç duyulduğunda girmek isteyip istemediğinizi veya mevcut oturum için önbelleğe almak isteyip istemediğinizi kontrol etmek için ayarlarda yükseltme davranışını ayarlama olanağına sahipsiniz.
 
 ### Windows
 
-Windows'ta, �st s�re� de y�kseltilmemi?se bir alt s�reci y�kseltmek m�mk�n de?ildir.
-Bu nedenle, XPipe y�netici olarak �al??t?r?lmazsa, yerel olarak herhangi bir y�kseltme kullanamazs?n?z.
-Uzak ba?lant?lar i�in, ba?l? kullan?c? hesab?na y�netici ayr?cal?klar? verilmelidir.
+Windows'ta, üst süreç de yükseltilmemişse bir alt süreci yükseltmek mümkün değildir.
+Bu nedenle, XPipe yönetici olarak çalıştırılmazsa, yerel olarak herhangi bir yükseltme kullanamazsınız.
+Uzak bağlantılar için, bağlı kullanıcı hesabına yönetici ayrıcalıkları verilmelidir.

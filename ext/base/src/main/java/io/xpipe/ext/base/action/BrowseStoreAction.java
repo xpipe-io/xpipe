@@ -6,7 +6,6 @@ import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.store.ShellStore;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -23,7 +22,8 @@ public class BrowseStoreAction implements ActionProvider {
             public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
                 var state = o.get().getStorePersistentState();
                 if (state instanceof ShellStoreState shellStoreState) {
-                    return shellStoreState.getShellDialect() != ShellDialects.NO_INTERACTION;
+                    return shellStoreState.getShellDialect() == null ||
+                            shellStoreState.getShellDialect().getDumbMode().supportsAnyPossibleInteraction();
                 } else {
                     return true;
                 }

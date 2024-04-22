@@ -196,10 +196,6 @@ public abstract class DataStorage {
         return dir.resolve("data");
     }
 
-    protected Path getStreamsDir() {
-        return dir.resolve("streams");
-    }
-
     protected Path getCategoriesDir() {
         return dir.resolve("categories");
     }
@@ -475,20 +471,6 @@ public abstract class DataStorage {
         saveAsync();
     }
 
-    public DataStoreCategory addStoreCategoryIfNotPresent(@NonNull DataStoreCategory cat) {
-        if (storeCategories.contains(cat)) {
-            return cat;
-        }
-
-        var byId = getStoreCategoryIfPresent(cat.getUuid()).orElse(null);
-        if (byId != null) {
-            return byId;
-        }
-
-        addStoreCategory(cat);
-        return cat;
-    }
-
     public void addStoreCategory(@NonNull DataStoreCategory cat) {
         cat.setDirectory(getCategoriesDir().resolve(cat.getUuid().toString()));
         this.storeCategories.add(cat);
@@ -736,12 +718,6 @@ public abstract class DataStorage {
         return children;
     }
 
-    public List<DataStoreEntry> getUsableEntries() {
-        return new ArrayList<>(getStoreEntries().stream()
-                .filter(entry -> entry.getValidity().isUsable())
-                .toList());
-    }
-
     private List<DataStoreEntry> getHierarchy(DataStoreEntry entry) {
         var es = new ArrayList<DataStoreEntry>();
         es.add(entry);
@@ -786,10 +762,6 @@ public abstract class DataStorage {
             }
         }
         return Optional.empty();
-    }
-
-    public DataStoreEntry getStoreEntry(@NonNull DataStore store) {
-        return getStoreEntryIfPresent(store).orElseThrow(() -> new IllegalArgumentException("Store not found"));
     }
 
     public Optional<DataStoreEntry> getStoreEntryInProgressIfPresent(@NonNull DataStore store) {

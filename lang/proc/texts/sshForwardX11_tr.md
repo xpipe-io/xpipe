@@ -1,9 +1,9 @@
-## X11 Y�nlendirme
+## X11 Yönlendirme
 
-Bu se�enek etkinle?tirildi?inde, SSH ba?lant?s? X11 y�nlendirme kurulumu ile ba?lat?lacakt?r. Linux'ta bu genellikle kutudan �?kar �?kmaz �al???r ve herhangi bir kurulum gerektirmez. MacOS'ta, yerel makinenizde [XQuartz](https://www.xquartz.org/) gibi bir X11 sunucusunun �al???yor olmas? gerekir.
+Bu seçenek etkinleştirildiğinde, SSH bağlantısı X11 yönlendirme kurulumu ile başlatılacaktır. Linux'ta bu genellikle kutudan çıkar çıkmaz çalışır ve herhangi bir kurulum gerektirmez. MacOS'ta, yerel makinenizde [XQuartz](https://www.xquartz.org/) gibi bir X11 sunucusunun çalışıyor olması gerekir.
 
-### Windows �zerinde X11
+### Windows üzerinde X11
 
-XPipe, SSH ba?lant?n?z i�in WSL2 X11 yeteneklerini kullanman?za izin verir. Bunun i�in ihtiyac?n?z olan tek ?ey yerel sisteminizde kurulu bir [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) da??t?m?d?r. XPipe m�mk�nse otomatik olarak uyumlu bir da??t?m se�ecektir, ancak ayarlar men�s�nden ba?ka bir da??t?m da kullanabilirsiniz.
+XPipe, SSH bağlantınız için WSL2 X11 yeteneklerini kullanmanıza izin verir. Bunun için ihtiyacınız olan tek şey yerel sisteminizde kurulu bir [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) dağıtımıdır. XPipe mümkünse otomatik olarak uyumlu bir dağıtım seçecektir, ancak ayarlar menüsünden başka bir dağıtım da kullanabilirsiniz.
 
-Bu, Windows'a ayr? bir X11 sunucusu kurman?za gerek olmad??? anlam?na gelir. Ancak, yine de bir tane kullan?yorsan?z, XPipe bunu alg?layacak ve o anda �al??an X11 sunucusunu kullanacakt?r.
+Bu, Windows'a ayrı bir X11 sunucusu kurmanıza gerek olmadığı anlamına gelir. Ancak, yine de bir tane kullanıyorsanız, XPipe bunu algılayacak ve o anda çalışan X11 sunucusunu kullanacaktır.

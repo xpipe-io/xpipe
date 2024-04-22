@@ -34,7 +34,7 @@ public interface WezTerminalType extends ExternalTerminalType {
         return true;
     }
 
-    static class Windows extends WindowsType implements WezTerminalType {
+    class Windows extends WindowsType implements WezTerminalType {
 
         public Windows() {
             super("app.wezterm", "wezterm-gui");
@@ -61,7 +61,7 @@ public interface WezTerminalType extends ExternalTerminalType {
         }
     }
 
-    static class Linux extends SimplePathType implements WezTerminalType {
+    class Linux extends SimplePathType implements WezTerminalType {
 
         public Linux() {
             super("app.wezterm", "wezterm-gui", true);

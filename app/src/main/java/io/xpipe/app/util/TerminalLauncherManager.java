@@ -37,7 +37,7 @@ public class TerminalLauncherManager {
             }
 
             @Override
-            public FilePath apply(ShellControl shellControl) throws Exception {
+            public FilePath apply(ShellControl shellControl) {
                 if (directory == null) {
                     return null;
                 }

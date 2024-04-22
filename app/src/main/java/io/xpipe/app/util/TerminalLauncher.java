@@ -56,7 +56,7 @@ public class TerminalLauncher {
         var terminalConfig = new TerminalInitScriptConfig(
                 adjustedTitle,
                 type.shouldClear() && AppPrefs.get().clearTerminalOnInit().get(),
-                cc instanceof ShellControl sc ? type.additionalInitCommands() : TerminalInitFunction.none());
+                cc instanceof ShellControl ? type.additionalInitCommands() : TerminalInitFunction.none());
 
         var request = UUID.randomUUID();
         var d = ProcessControlProvider.get().getEffectiveLocalDialect();

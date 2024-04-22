@@ -55,7 +55,7 @@ public interface TabbyTerminalType extends ExternalTerminalType {
         return null;
     }
 
-    static class Windows extends ExternalTerminalType.WindowsType implements TabbyTerminalType {
+    class Windows extends ExternalTerminalType.WindowsType implements TabbyTerminalType {
 
         public Windows() {
             super("app.tabby", "Tabby.exe");

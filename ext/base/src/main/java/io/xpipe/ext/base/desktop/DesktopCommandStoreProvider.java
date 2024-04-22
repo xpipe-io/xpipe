@@ -52,7 +52,7 @@ public class DesktopCommandStoreProvider implements DataStoreProvider {
 
     @Override
     public CreationCategory getCreationCategory() {
-        return CreationCategory.DESKSTOP;
+        return CreationCategory.DESKTOP;
     }
 
     @Override

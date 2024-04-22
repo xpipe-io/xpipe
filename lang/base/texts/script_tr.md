@@ -1,5 +1,5 @@
-## Komut dosyas? i�eri?i
+## Komut dosyası içeriği
 
-�al??t?r?lacak beti?in i�eri?i. Bunu yerinde d�zenlemeyi se�ebilir veya harici bir metin d�zenleyici ba?latmak i�in sa? �st k�?edeki harici d�zenleme d�?mesini kullanabilirsiniz.
+Çalıştırılacak betiğin içeriği. Bunu yerinde düzenlemeyi seçebilir veya harici bir metin düzenleyici başlatmak için sağ üst köşedeki harici düzenleme düğmesini kullanabilirsiniz.
 
-Bunu destekleyen kabuklar i�in bir shebang sat?r? belirtmeniz gerekmez, uygun kabuk t�r�yle otomatik olarak bir tane eklenir.
+Bunu destekleyen kabuklar için bir shebang satırı belirtmeniz gerekmez, uygun kabuk türüyle otomatik olarak bir tane eklenir.

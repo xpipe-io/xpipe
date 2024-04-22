@@ -29,7 +29,7 @@ public interface AlacrittyTerminalType extends ExternalTerminalType {
         return false;
     }
 
-    static class Windows extends SimplePathType implements AlacrittyTerminalType {
+    class Windows extends SimplePathType implements AlacrittyTerminalType {
 
         public Windows() {
             super("app.alacritty", "alacritty", false);
@@ -54,7 +54,7 @@ public interface AlacrittyTerminalType extends ExternalTerminalType {
         }
     }
 
-    static class Linux extends SimplePathType implements AlacrittyTerminalType {
+    class Linux extends SimplePathType implements AlacrittyTerminalType {
 
         public Linux() {
             super("app.alacritty", "alacritty", true);

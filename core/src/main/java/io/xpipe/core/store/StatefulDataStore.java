@@ -21,8 +21,7 @@ public interface StatefulDataStore<T extends DataStoreState> extends DataStore {
 
     @SuppressWarnings("unchecked")
     default T getState() {
-        return (T)
-                DataStateProvider.get().getState(this, this::createDefaultState).deepCopy();
+        return (T) DataStateProvider.get().getState(this, this::createDefaultState).deepCopy();
     }
 
     default void setState(T val) {

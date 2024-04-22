@@ -10,7 +10,7 @@ public interface ExternalPasswordManager extends PrefsChoiceValue {
 
     String getTemplate();
 
-    static ExternalPasswordManager BITWARDEN = new ExternalPasswordManager() {
+    ExternalPasswordManager BITWARDEN = new ExternalPasswordManager() {
         @Override
         public String getTemplate() {
             return "bw get password $KEY --nointeraction --raw";
@@ -22,7 +22,7 @@ public interface ExternalPasswordManager extends PrefsChoiceValue {
         }
     };
 
-    static ExternalPasswordManager ONEPASSWORD = new ExternalPasswordManager() {
+    ExternalPasswordManager ONEPASSWORD = new ExternalPasswordManager() {
         @Override
         public String getTemplate() {
             return "op read $KEY --force";
@@ -34,7 +34,7 @@ public interface ExternalPasswordManager extends PrefsChoiceValue {
         }
     };
 
-    static ExternalPasswordManager DASHLANE = new ExternalPasswordManager() {
+    ExternalPasswordManager DASHLANE = new ExternalPasswordManager() {
         @Override
         public String getTemplate() {
             return "dcli password --output console $KEY";
@@ -46,7 +46,7 @@ public interface ExternalPasswordManager extends PrefsChoiceValue {
         }
     };
 
-    static ExternalPasswordManager LASTPASS = new ExternalPasswordManager() {
+    ExternalPasswordManager LASTPASS = new ExternalPasswordManager() {
         @Override
         public String getTemplate() {
             return "lpass show --password $KEY";
@@ -58,7 +58,7 @@ public interface ExternalPasswordManager extends PrefsChoiceValue {
         }
     };
 
-    static ExternalPasswordManager MACOS_KEYCHAIN = new ExternalPasswordManager() {
+    ExternalPasswordManager MACOS_KEYCHAIN = new ExternalPasswordManager() {
         @Override
         public String getTemplate() {
             return "security find-generic-password -w -l $KEY";
@@ -75,7 +75,7 @@ public interface ExternalPasswordManager extends PrefsChoiceValue {
         }
     };
 
-    static List<ExternalPasswordManager> ALL = Stream.of(ONEPASSWORD, BITWARDEN, DASHLANE, LASTPASS, MACOS_KEYCHAIN)
+    List<ExternalPasswordManager> ALL = Stream.of(ONEPASSWORD, BITWARDEN, DASHLANE, LASTPASS, MACOS_KEYCHAIN)
             .filter(externalPasswordManager -> externalPasswordManager.isSelectable())
             .toList();
 }

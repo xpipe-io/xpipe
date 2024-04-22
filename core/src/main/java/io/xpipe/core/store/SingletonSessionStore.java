@@ -3,7 +3,7 @@ package io.xpipe.core.store;
 public interface SingletonSessionStore<T extends SingletonSessionStore.Session>
         extends ExpandedLifecycleStore, InternalCacheDataStore {
 
-    abstract static class Session {
+    abstract class Session {
 
         public abstract boolean isRunning();
 
@@ -13,7 +13,7 @@ public interface SingletonSessionStore<T extends SingletonSessionStore.Session>
     }
 
     @Override
-    public default void finalizeValidate() throws Exception {
+    default void finalizeValidate() throws Exception {
         stopSessionIfNeeded();
     }
 

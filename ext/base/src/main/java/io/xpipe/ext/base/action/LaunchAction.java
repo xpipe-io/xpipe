@@ -24,7 +24,7 @@ public class LaunchAction implements ActionProvider {
 
     @Override
     public DataStoreCallSite<?> getDataStoreCallSite() {
-        return new DataStoreCallSite<DataStore>() {
+        return new DataStoreCallSite<>() {
 
             @Override
             public boolean canLinkTo() {
@@ -43,9 +43,8 @@ public class LaunchAction implements ActionProvider {
 
             @Override
             public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
-                return o.get().getValidity().isUsable()
-                        && (o.getStore() instanceof LaunchableStore
-                                || o.get().getProvider().launchAction(o.get()) != null);
+                return o.get().getValidity().isUsable() && (o.getStore() instanceof LaunchableStore || o.get().getProvider().launchAction(o.get()) !=
+                        null);
             }
 
             @Override
@@ -62,7 +61,7 @@ public class LaunchAction implements ActionProvider {
 
     @Override
     public DefaultDataStoreCallSite<?> getDefaultDataStoreCallSite() {
-        return new DefaultDataStoreCallSite<DataStore>() {
+        return new DefaultDataStoreCallSite<>() {
 
             @Override
             public ActionProvider.Action createAction(DataStoreEntryRef<DataStore> store) {
@@ -76,9 +75,8 @@ public class LaunchAction implements ActionProvider {
 
             @Override
             public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
-                return o.get().getValidity().isUsable()
-                        && (o.getStore() instanceof LaunchableStore
-                                || o.get().getProvider().launchAction(o.get()) != null);
+                return o.get().getValidity().isUsable() && (o.getStore() instanceof LaunchableStore || o.get().getProvider().launchAction(o.get()) !=
+                        null);
             }
         };
     }

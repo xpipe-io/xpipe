@@ -89,9 +89,6 @@ public class StoreAddExchangeImpl extends StoreAddExchange
 
             DataStore s = creator.getResult();
             String d = "";
-            try {
-            } catch (Exception ignored) {
-            }
             d = d.indent(2);
             return "Successfully created data store " + name.get() + ":\n" + d;
         });

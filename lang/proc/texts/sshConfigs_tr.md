@@ -1,13 +1,13 @@
-### SSH yap?land?rmalar?
+### SSH yapılandırmaları
 
-XPipe t�m ana bilgisayarlar? y�kler ve se�ilen dosyada yap?land?rd???n?z t�m ayarlar? uygular. Dolay?s?yla, bir yap?land?rma se�ene?ini genel veya ana bilgisayara �zel olarak belirtti?inizde, XPipe taraf?ndan kurulan ba?lant?ya otomatik olarak uygulanacakt?r.
+XPipe tüm ana bilgisayarları yükler ve seçilen dosyada yapılandırdığınız tüm ayarları uygular. Dolayısıyla, bir yapılandırma seçeneğini genel veya ana bilgisayara özel olarak belirttiğinizde, XPipe tarafından kurulan bağlantıya otomatik olarak uygulanacaktır.
 
-SSH yap?land?rmalar?n?n nas?l kullan?laca?? hakk?nda daha fazla bilgi edinmek istiyorsan?z, `man ssh_config` kullanabilir veya bu [k?lavuzu] (https://www.ssh.com/academy/ssh/config) okuyabilirsiniz.
+SSH yapılandırmalarının nasıl kullanılacağı hakkında daha fazla bilgi edinmek istiyorsanız, `man ssh_config` kullanabilir veya bu [kılavuzu] (https://www.ssh.com/academy/ssh/config) okuyabilirsiniz.
 
 ### Kimlikler
 
-Burada bir `IdentityFile` se�ene?i de belirtebilece?inizi unutmay?n. Burada herhangi bir kimlik belirtilirse, daha sonra a?a??da belirtilen herhangi bir kimlik g�z ard? edilecektir.
+Burada bir `IdentityFile` seçeneği de belirtebileceğinizi unutmayın. Burada herhangi bir kimlik belirtilirse, daha sonra aşağıda belirtilen herhangi bir kimlik göz ardı edilecektir.
 
-### X11 y�nlendirme
+### X11 yönlendirme
 
-Burada X11 iletimi i�in herhangi bir se�enek belirtilirse, XPipe otomatik olarak WSL arac?l???yla Windows �zerinde X11 iletimi kurmaya �al??acakt?r.
+Burada X11 iletimi için herhangi bir seçenek belirtilirse, XPipe otomatik olarak WSL aracılığıyla Windows üzerinde X11 iletimi kurmaya çalışacaktır.

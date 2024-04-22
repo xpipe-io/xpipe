@@ -27,7 +27,7 @@ public class StoreCreationMenu {
         menu.getItems().add(category("addHost", "mdi2h-home-plus", DataStoreProvider.CreationCategory.HOST, "ssh"));
 
         menu.getItems()
-                .add(category("addDesktop", "mdi2c-camera-plus", DataStoreProvider.CreationCategory.DESKSTOP, null));
+                .add(category("addDesktop", "mdi2c-camera-plus", DataStoreProvider.CreationCategory.DESKTOP, null));
 
         menu.getItems()
                 .add(category("addShell", "mdi2t-text-box-multiple", DataStoreProvider.CreationCategory.SHELL, null));

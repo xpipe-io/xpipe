@@ -10,8 +10,8 @@ import java.nio.file.Path;
 
 public interface WindowsTerminalType extends ExternalTerminalType {
 
-    public static final ExternalTerminalType WINDOWS_TERMINAL = new Standard();
-    public static final ExternalTerminalType WINDOWS_TERMINAL_PREVIEW = new Preview();
+    ExternalTerminalType WINDOWS_TERMINAL = new Standard();
+    ExternalTerminalType WINDOWS_TERMINAL_PREVIEW = new Preview();
 
     private static CommandBuilder toCommand(ExternalTerminalType.LaunchConfiguration configuration) throws Exception {
         // A weird behavior in Windows Terminal causes the trailing

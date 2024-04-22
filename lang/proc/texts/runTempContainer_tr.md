@@ -1,5 +1,5 @@
-## Ge�ici konteynerler
+## Geçici konteynerler
 
-Bu, durduruldu?unda otomatik olarak kald?r?lacak olan belirtilen imaj? kullanarak ge�ici bir konteyner �al??t?racakt?r. Konteyner imaj?nda �al??acak herhangi bir komut belirtilmemi? olsa bile konteyner �al??maya devam edecektir.
+Bu, durdurulduğunda otomatik olarak kaldırılacak olan belirtilen imajı kullanarak geçici bir konteyner çalıştıracaktır. Konteyner imajında çalışacak herhangi bir komut belirtilmemiş olsa bile konteyner çalışmaya devam edecektir.
 
-Bu, belirli bir konteyner imaj?n? kullanarak belirli bir ortam? h?zl? bir ?ekilde kurmak istedi?inizde yararl? olabilir. Daha sonra XPipe'da konteynere normal ?ekilde girebilir, i?lemlerinizi ger�ekle?tirebilir ve art?k ihtiya� duyulmad???nda konteyneri durdurabilirsiniz. Daha sonra otomatik olarak kald?r?l?r.
+Bu, belirli bir konteyner imajını kullanarak belirli bir ortamı hızlı bir şekilde kurmak istediğinizde yararlı olabilir. Daha sonra XPipe'da konteynere normal şekilde girebilir, işlemlerinizi gerçekleştirebilir ve artık ihtiyaç duyulmadığında konteyneri durdurabilirsiniz. Daha sonra otomatik olarak kaldırılır.

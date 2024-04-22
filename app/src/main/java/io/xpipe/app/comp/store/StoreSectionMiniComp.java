@@ -110,9 +110,7 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                         return section.getShownChildren().isEmpty();
                     },
                     section.getShownChildren());
-            Consumer<StoreEntryWrapper> quickAccessAction = w -> {
-                action.accept(w);
-            };
+            Consumer<StoreEntryWrapper> quickAccessAction = action;
             var quickAccessButton = new StoreQuickAccessButtonComp(section, quickAccessAction)
                     .vgrow()
                     .styleClass("quick-access-button")
