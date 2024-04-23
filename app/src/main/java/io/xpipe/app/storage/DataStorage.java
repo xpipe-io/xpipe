@@ -446,6 +446,10 @@ public abstract class DataStorage {
 
     public void deleteChildren(DataStoreEntry e) {
         var c = getDeepStoreChildren(e);
+        if (c.isEmpty()) {
+            return;
+        }
+
         c.forEach(entry -> entry.finalizeEntry());
         this.storeEntriesSet.removeAll(c);
         this.listeners.forEach(l -> l.onStoreRemove(c.toArray(DataStoreEntry[]::new)));
@@ -461,6 +465,9 @@ public abstract class DataStorage {
                     return c.stream();
                 })
                 .toList();
+        if (toDelete.isEmpty()) {
+            return;
+        }
 
         toDelete.forEach(entry -> entry.finalizeEntry());
         toDelete.forEach(this.storeEntriesSet::remove);
@@ -525,6 +532,10 @@ public abstract class DataStorage {
     }
 
     public void addStoreEntriesIfNotPresent(@NonNull DataStoreEntry... es) {
+        if (es.length == 0) {
+            return;
+        }
+
         for (DataStoreEntry e : es) {
             if (storeEntriesSet.contains(e)
                     || getStoreEntryIfPresent(e.getStore(), false).isPresent()) {

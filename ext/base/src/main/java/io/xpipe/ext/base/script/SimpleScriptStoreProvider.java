@@ -50,24 +50,24 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
 
     @Override
     public StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
-        SimpleScriptStore s = sec.getWrapper().getEntry().getStore().asNeeded();
         if (sec.getWrapper().getValidity().getValue() != DataStoreEntry.Validity.COMPLETE) {
             return new DenseStoreEntryComp(sec.getWrapper(), true, null);
         }
 
-        var groupWrapper = StoreViewState.get().getEntryWrapper(s.getGroup().getEntry());
-
-        var def = new StoreToggleComp("base.isDefault", sec, s.getState().isDefault(), aBoolean -> {
+        var def = StoreToggleComp.<SimpleScriptStore>simpleToggle("base.isDefaultGroup", sec, s -> s.getState().isDefault(), (s, aBoolean) -> {
             var state = s.getState();
             state.setDefault(aBoolean);
             s.setState(state);
         });
 
-        var bring = new StoreToggleComp("base.bringToShells", sec, s.getState().isBringToShell(), aBoolean -> {
+        var bring = StoreToggleComp.<SimpleScriptStore>simpleToggle("base.bringToShells", sec, s -> s.getState().isBringToShell(), (s, aBoolean) -> {
             var state = s.getState();
             state.setBringToShell(aBoolean);
             s.setState(state);
         });
+
+        SimpleScriptStore s = sec.getWrapper().getEntry().getStore().asNeeded();
+        var groupWrapper = StoreViewState.get().getEntryWrapper(s.getGroup().getEntry());
 
         // Disable selection if parent group is already made default
         def.disable(BindingsHelper.map(groupWrapper.getPersistentState(), o -> {

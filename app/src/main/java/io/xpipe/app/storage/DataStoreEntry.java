@@ -456,17 +456,23 @@ public class DataStoreEntry extends StorageElement {
             return false;
         }
 
-        store = DataStorageParser.storeFromNode(storeNode);
-        if (store == null) {
+        var newStore = DataStorageParser.storeFromNode(storeNode);
+        if (newStore == null) {
+            store = null;
             validity = Validity.LOAD_FAILED;
-            return false;
+            return true;
         }
 
-        var newComplete = store.isComplete();
+        var newComplete = newStore.isComplete();
         if (!newComplete) {
+            validity = Validity.INCOMPLETE;
+            store = newStore;
             return false;
         }
 
+        if (!newStore.equals(store)) {
+            store = newStore;
+        }
         validity = Validity.COMPLETE;
         // Don't count this as modification as this is done always
         notifyUpdate(false, false);
@@ -482,17 +488,23 @@ public class DataStoreEntry extends StorageElement {
             return false;
         }
 
-        store = DataStorageParser.storeFromNode(storeNode);
-        if (store == null) {
+        var newStore = DataStorageParser.storeFromNode(storeNode);
+        if (newStore == null) {
+            store = null;
             validity = Validity.LOAD_FAILED;
-            return false;
+            return true;
         }
 
-        var newComplete = store.isComplete();
+        var newComplete = newStore.isComplete();
         if (newComplete) {
+            validity = Validity.COMPLETE;
+            store = newStore;
             return false;
         }
 
+        if (!newStore.equals(store)) {
+            store = newStore;
+        }
         validity = Validity.INCOMPLETE;
         notifyUpdate(false, false);
         return true;
