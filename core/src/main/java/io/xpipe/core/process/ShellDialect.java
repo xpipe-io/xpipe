@@ -62,15 +62,11 @@ public interface ShellDialect {
 
     String addToPathVariableCommand(List<String> entries, boolean append);
 
-    default String applyRcFileCommand() {
+    default String applyInitFileCommand() {
         return null;
     }
 
     String changeTitleCommand(String newTitle);
-
-    default String applyProfileFilesCommand() {
-        return null;
-    }
 
     CommandControl createStreamFileWriteCommand(ShellControl shellControl, String file, long totalBytes);
 

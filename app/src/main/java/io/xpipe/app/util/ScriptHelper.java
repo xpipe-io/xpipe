@@ -48,16 +48,11 @@ public class ScriptHelper {
         // Normalize line endings
         content += nl + preInit.stream().flatMap(s -> s.lines()).collect(Collectors.joining(nl)) + nl;
 
-        var applyRcCommand = t.applyRcFileCommand();
-        if (applyRcCommand != null) {
-            content += nl + applyRcCommand + nl;
-        }
-
         // We just apply the profile files always, as we can't be sure that they definitely have been applied.
         // Especially if we launch something that is not the system default shell
-        var applyProfilesCommand = t.applyProfileFilesCommand();
-        if (applyProfilesCommand != null) {
-            content += nl + applyProfilesCommand + nl;
+        var applyCommand = t.applyInitFileCommand();
+        if (applyCommand != null) {
+            content += nl + applyCommand + nl;
         }
 
         if (config.getDisplayName() != null) {
