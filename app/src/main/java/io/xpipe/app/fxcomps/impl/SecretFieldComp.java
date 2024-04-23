@@ -2,7 +2,6 @@ package io.xpipe.app.fxcomps.impl;
 
 import atlantafx.base.layout.InputGroup;
 import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
@@ -18,6 +17,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
@@ -37,10 +38,15 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
 
     private final Property<InPlaceSecretValue> value;
     private final boolean allowCopy;
+    private final List<Comp<?>> additionalButtons = new ArrayList<>();
 
     public SecretFieldComp(Property<InPlaceSecretValue> value, boolean allowCopy) {
         this.value = value;
         this.allowCopy = allowCopy;
+    }
+
+    public void addButton(Comp<?> button) {
+        this.additionalButtons.add(button);
     }
 
     public static SecretFieldComp ofString(Property<String> s) {
@@ -61,7 +67,6 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
     @Override
     public Structure createBase() {
         var text = new PasswordField();
-        text.getStyleClass().add("secret-field-comp");
         text.setText(value.getValue() != null ? value.getValue().getSecretValue() : null);
         text.textProperty().addListener((c, o, n) -> {
             value.setValue(n != null && n.length() > 0 ? encrypt(n.toCharArray()) : null);
@@ -84,10 +89,11 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
         }).grow(false, true).tooltipKey("copyPassword").createRegion();
 
         var ig = new InputGroup(text);
-        AppFont.small(ig);
+        ig.getStyleClass().add("secret-field-comp");
         if (allowCopy) {
             ig.getChildren().add(copyButton);
         }
+        additionalButtons.forEach(comp -> ig.getChildren().add(comp.createRegion()));
 
         ig.focusedProperty().addListener((c, o, n) -> {
             if (n) {
