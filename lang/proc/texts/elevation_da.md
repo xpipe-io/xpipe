@@ -1,10 +1,10 @@
 ## Elevation
 
-Processen med at hæve tilladelser er specifik for operativsystemet.
+Processen med at elevere tilladelser er specifik for operativsystemet.
 
 ### Linux & macOS
 
-Enhver forhøjet kommando udføres med `sudo`. Den valgfrie `sudo` adgangskode forespørges via XPipe, når det er nødvendigt. Du har mulighed for at justere elevation-adfærden i indstillingerne for at kontrollere, om du vil indtaste din adgangskode, hver gang det er nødvendigt, eller om du vil cache den til den aktuelle session.
+Enhver eleveret kommando udføres med `sudo`. Den valgfrie `sudo` adgangskode forespørges via XPipe, når det er nødvendigt. Du har mulighed for at justere elevation-adfærden i indstillingerne for at kontrollere, om du vil indtaste din adgangskode, hver gang det er nødvendigt, eller om du vil cache den til den aktuelle session.
 
 ### Windows
 
