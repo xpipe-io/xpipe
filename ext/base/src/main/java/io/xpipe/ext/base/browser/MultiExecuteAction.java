@@ -1,5 +1,7 @@
-package io.xpipe.app.browser.action;
+package io.xpipe.ext.base.browser;
 
+import io.xpipe.app.browser.action.BranchAction;
+import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.core.AppI18n;
@@ -7,10 +9,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
-
 import javafx.beans.value.ObservableValue;
-
-import org.apache.commons.io.FilenameUtils;
 
 import java.util.List;
 
@@ -30,8 +29,7 @@ public abstract class MultiExecuteAction implements BranchAction {
                                     for (BrowserEntry entry : entries) {
                                         TerminalLauncher.open(
                                                 model.getEntry().getEntry(),
-                                                FilenameUtils.getBaseName(
-                                                        entry.getRawFileEntry().getPath()),
+                                                entry.getRawFileEntry().getName(),
                                                 model.getCurrentDirectory() != null
                                                         ? model.getCurrentDirectory()
                                                                 .getPath()

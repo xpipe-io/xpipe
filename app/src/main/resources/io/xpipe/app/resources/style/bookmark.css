@@ -1,7 +1,7 @@
 
 .bookmark-list > .categories {
     -fx-padding: 1em;
-    -fx-background-color: -color-bg-subtle;
+    -fx-background-color: -color-bg-default;
     -fx-border-color: -color-border-default;
     -fx-border-width: 0 0 1 0;
 }

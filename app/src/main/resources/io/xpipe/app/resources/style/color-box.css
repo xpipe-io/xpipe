@@ -24,7 +24,7 @@
 }
 
 .root:light .color-box.gray {
-    -fx-background-color: derive(-color-bg-default, -2%);
+    -fx-background-color: derive(-color-bg-default, -3%);
     -fx-border-color: derive(-color-border-default, -10%);
 }
 

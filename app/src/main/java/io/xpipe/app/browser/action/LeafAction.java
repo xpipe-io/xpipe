@@ -3,14 +3,13 @@ package io.xpipe.app.browser.action;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.Shortcuts;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.ThreadHelper;
-
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
-
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -65,7 +64,13 @@ public interface LeafAction extends BrowserAction {
     default MenuItem toMenuItem(OpenFileSystemModel model, List<BrowserEntry> selected) {
         var name = getName(model, selected);
         var mi = new MenuItem();
-        mi.textProperty().bind(name);
+        mi.textProperty().bind(BindingsHelper.map(name, s -> {
+            if (getProFeatureId() != null
+                    && !LicenseProvider.get().getFeature(getProFeatureId()).isSupported()) {
+                return s + " (Pro)";
+            }
+            return s;
+        }));
         mi.setOnAction(event -> {
             ThreadHelper.runFailableAsync(() -> {
                 BooleanScope.execute(model.getBusy(), () -> {
@@ -86,10 +91,8 @@ public interface LeafAction extends BrowserAction {
         mi.setMnemonicParsing(false);
         mi.setDisable(!isActive(model, selected));
 
-        if (getProFeatureId() != null
-                && !LicenseProvider.get().getFeature(getProFeatureId()).isSupported()) {
+        if (getProFeatureId() != null && !LicenseProvider.get().getFeature(getProFeatureId()).isSupported()) {
             mi.setDisable(true);
-            mi.setText(mi.getText() + " (Pro)");
         }
 
         return mi;

@@ -40,7 +40,7 @@ public class RenameAction implements LeafAction {
 
     @Override
     public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return AppI18n.observable("openWithDefaultApplication");
+        return AppI18n.observable("rename");
     }
 
     @Override

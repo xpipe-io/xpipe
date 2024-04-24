@@ -1,5 +1,7 @@
-package io.xpipe.app.browser.action;
+package io.xpipe.ext.base.browser;
 
+import io.xpipe.app.browser.action.ApplicationPathAction;
+import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.core.process.ShellControl;
