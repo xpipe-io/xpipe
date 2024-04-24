@@ -94,7 +94,7 @@ public class BrowserStatusBarComp extends SimpleComp {
                 model.getFileList().getAll());
         var selectedComp = new LabelComp(Bindings.createStringBinding(
                 () -> {
-                    if (selectedCount.getValue().intValue() == 0) {
+                    if (selectedCount.getValue() == 0) {
                         return null;
                     } else {
                         return selectedCount.getValue() + " / " + allCount.getValue() + " selected";

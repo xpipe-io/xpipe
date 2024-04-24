@@ -22,11 +22,7 @@ public class BindingsHelper {
     static {
         ThreadHelper.createPlatformThread("referenceGC", true, () -> {
                     while (true) {
-                        for (ReferenceEntry reference : REFERENCES) {
-                            if (reference.canGc()) {
-                                REFERENCES.remove(reference);
-                            }
-                        }
+                        REFERENCES.removeIf(ReferenceEntry::canGc);
                         ThreadHelper.sleep(1000);
 
                         // Use for testing

@@ -23,12 +23,13 @@ XPipe is able to automatically detect your local installation and fetch the requ
 components from it when it is run in a development environment.
 
 Note that in case the current master branch is ahead of the latest release, it might happen that there are some incompatibilities when loading data from your local XPipe installation.
-It is therefore recommended to always check out the matching version tag for your local repository and local XPipe installation.
-You can find the available version tags at https://github.com/xpipe-io/xpipe/tags
+You should therefore always check out the matching version tag for your local repository and local XPipe installation.
+You can find the available version tags at https://github.com/xpipe-io/xpipe/tags.
+So for example if you currently have XPipe `9.0` installed, you should run `git reset --hard 9.0` first to properly compile against it.
 
-You need to have JDK for Java 22 installed to compile the project.
+You need to have JDK for Java 21 installed to compile the project.
 If you are on Linux or macOS, you can easily accomplish that by running the `setup.sh` script.
-On Windows, you have to manually install a JDK, e.g. from [Adoptium](https://adoptium.net/temurin/releases/?version=22).
+On Windows, you have to manually install a JDK, e.g. from [Adoptium](https://adoptium.net/temurin/releases/?version=21).
 
 ## Building and Running
 
@@ -47,7 +48,7 @@ to connect to that debugger through [AttachMe](https://plugins.jetbrains.com/plu
 
 ## Modularity and IDEs
 
-All XPipe components target [Java 22](https://openjdk.java.net/projects/jdk/22/) and make full use of the Java Module System (JPMS).
+All XPipe components target [Java 21](https://openjdk.java.net/projects/jdk/21/) and make full use of the Java Module System (JPMS).
 All components are modularized, including all their dependencies.
 In case a dependency is (sadly) not modularized yet, module information is manually added using [extra-java-module-info](https://github.com/gradlex-org/extra-java-module-info).
 Further, note that as this is a pretty complicated Java project that fully utilizes modularity,
@@ -55,7 +56,7 @@ many IDEs still have problems building this project properly.
 
 For example, you can't build this project in eclipse or vscode as it will complain about missing modules.
 The tested and recommended IDE is IntelliJ.
-When setting up the project in IntelliJ, make sure that the correct JDK (Java 22)
+When setting up the project in IntelliJ, make sure that the correct JDK (Java 21)
 is selected both for the project and for gradle itself.
 
 ## Contributing guide
@@ -68,7 +69,7 @@ All code for handling external editors can be found [here](https://github.com/xp
 
 ### Implementing support for a new terminal
 
-All code for handling external terminals can be found [here](https://github.com/xpipe-io/xpipe/blob/master/app/src/main/java/io/xpipe/app/terminal/ExternalTerminalType.java). There you will find plenty of working examples that you can use as a base for your own implementation.
+All code for handling external terminals can be found [here](https://github.com/xpipe-io/xpipe/blob/master/app/src/main/java/io/xpipe/app/terminal/). There you will find plenty of working examples that you can use as a base for your own implementation.
 
 ### Adding more file icons for specific types
 

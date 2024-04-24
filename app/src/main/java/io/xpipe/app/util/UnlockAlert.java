@@ -41,7 +41,7 @@ public class UnlockAlert {
                         alert.setHeaderText(AppI18n.get("unlockAlertHeader"));
                         alert.setAlertType(Alert.AlertType.CONFIRMATION);
 
-                        var text = new SecretFieldComp(pw).createRegion();
+                        var text = new SecretFieldComp(pw, false).createRegion();
                         text.setStyle("-fx-border-width: 1px");
 
                         var content = new VBox(text);

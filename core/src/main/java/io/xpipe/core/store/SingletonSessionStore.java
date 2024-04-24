@@ -3,7 +3,7 @@ package io.xpipe.core.store;
 public interface SingletonSessionStore<T extends SingletonSessionStore.Session>
         extends ExpandedLifecycleStore, InternalCacheDataStore {
 
-    abstract static class Session {
+    abstract class Session {
 
         public abstract boolean isRunning();
 
@@ -13,24 +13,24 @@ public interface SingletonSessionStore<T extends SingletonSessionStore.Session>
     }
 
     @Override
-    public default void finalizeValidate() throws Exception {
+    default void finalizeValidate() throws Exception {
         stopSessionIfNeeded();
     }
 
-    default void setEnabled(boolean value) {
+    default void setSessionEnabled(boolean value) {
         setCache("sessionEnabled", value);
     }
 
-    default boolean isRunning() {
+    default boolean isSessionRunning() {
         return getCache("sessionRunning", Boolean.class, false);
     }
 
-    default boolean isEnabled() {
+    default boolean isSessionEnabled() {
         return getCache("sessionEnabled", Boolean.class, false);
     }
 
     default void onSessionUpdate(boolean active) {
-        setEnabled(active);
+        setSessionEnabled(active);
         setCache("sessionRunning", active);
     }
 
@@ -46,7 +46,7 @@ public interface SingletonSessionStore<T extends SingletonSessionStore.Session>
     default void startSessionIfNeeded() throws Exception {
         synchronized (this) {
             var s = getSession();
-            setEnabled(true);
+            setSessionEnabled(true);
             if (s != null) {
                 if (s.isRunning()) {
                     return;
@@ -66,7 +66,7 @@ public interface SingletonSessionStore<T extends SingletonSessionStore.Session>
     default void stopSessionIfNeeded() throws Exception {
         synchronized (this) {
             var ex = getSession();
-            setEnabled(false);
+            setSessionEnabled(false);
             if (ex != null) {
                 ex.stop();
                 setCache("session", null);

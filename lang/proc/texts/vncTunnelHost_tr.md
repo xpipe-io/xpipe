@@ -1,5 +1,5 @@
-## VNC T�nel Ana Bilgisayar?
+## VNC Tünel Ana Bilgisayarı
 
-Uzak bir VNC ana bilgisayar?na bir SSH t�neli �zerinden ba?lanabilirsiniz. Bu size daha geli?mi? SSH kimlik do?rulama �zelliklerini kutudan �?kar �?kmaz VNC ile kullanma olana?? verir. VNC temelde g�vensiz ve ?ifrelenmemi? bir protokol oldu?u i�in bu �nemlidir. T�nelleme gerekli g�venlik katman?n? sa?lar.
+Uzak bir VNC ana bilgisayarına bir SSH tüneli üzerinden bağlanabilirsiniz. Bu size daha gelişmiş SSH kimlik doğrulama özelliklerini kutudan çıkar çıkmaz VNC ile kullanma olanağı verir. VNC temelde güvensiz ve şifrelenmemiş bir protokol olduğu için bu önemlidir. Tünelleme gerekli güvenlik katmanını sağlar.
 
-Ayr?ca, yaln?zca SSH �zerinden eri?ilebilir olmas? gerekti?inden, uzak sisteminizdeki VNC ba?lant? noktas?n? a�??a �?karma konusunda endi?elenmenize gerek yoktur.
+Ayrıca, yalnızca SSH üzerinden erişilebilir olması gerektiğinden, uzak sisteminizdeki VNC bağlantı noktasını açığa çıkarma konusunda endişelenmenize gerek yoktur.

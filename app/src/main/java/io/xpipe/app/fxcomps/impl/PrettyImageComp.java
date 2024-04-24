@@ -106,7 +106,7 @@ public class PrettyImageComp extends SimpleComp {
             }
         };
 
-        PlatformThread.sync(value).subscribe(val -> update.accept(val));
+        PlatformThread.sync(value).subscribe(update);
         AppPrefs.get().theme.addListener((observable, oldValue, newValue) -> {
             update.accept(value.getValue());
         });

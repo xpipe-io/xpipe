@@ -1,13 +1,13 @@
-## Komut dosyas? uyumlulu?u
+## Komut dosyası uyumluluğu
 
-Kabuk t�r� bu beti?in nerede �al??t?r?labilece?ini kontrol eder.
-Tam e?le?menin yan? s?ra, yani `zsh` beti?ini `zsh` i�inde �al??t?rman?n yan? s?ra, XPipe daha geni? bir uyumluluk denetimi de i�erecektir.
+Kabuk türü bu betiğin nerede çalıştırılabileceğini kontrol eder.
+Tam eşleşmenin yanı sıra, yani `zsh` betiğini `zsh` içinde çalıştırmanın yanı sıra, XPipe daha geniş bir uyumluluk denetimi de içerecektir.
 
-### Posix Kabuklar?
+### Posix Kabukları
 
-`sh` beti?i olarak bildirilen herhangi bir betik, `bash` veya `zsh` gibi posix ile ilgili herhangi bir kabuk ortam?nda �al??abilir.
-Temel bir beti?i bir�ok farkl? sistemde �al??t?rmay? d�?�n�yorsan?z, yaln?zca `sh` s�zdizimi betiklerini kullanmak bunun i�in en iyi ��z�md�r.
+`sh` betiği olarak bildirilen herhangi bir betik, `bash` veya `zsh` gibi posix ile ilgili herhangi bir kabuk ortamında çalışabilir.
+Temel bir betiği birçok farklı sistemde çalıştırmayı düşünüyorsanız, yalnızca `sh` sözdizimi betiklerini kullanmak bunun için en iyi çözümdür.
 
 ### PowerShell
 
-Normal `powershell` komut dosyalar? olarak bildirilen komut dosyalar? `pwsh` ortamlar?nda da �al??abilir.
+Normal `powershell` komut dosyaları olarak bildirilen komut dosyaları `pwsh` ortamlarında da çalışabilir.

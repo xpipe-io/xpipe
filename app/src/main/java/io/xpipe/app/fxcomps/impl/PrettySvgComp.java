@@ -92,7 +92,7 @@ public class PrettySvgComp extends SimpleComp {
             image.set(fixed);
         };
 
-        syncValue.subscribe(val -> update.accept(val));
+        syncValue.subscribe(update);
         AppPrefs.get().theme.addListener((observable, oldValue, newValue) -> {
             update.accept(syncValue.getValue());
         });

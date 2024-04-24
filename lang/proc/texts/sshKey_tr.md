@@ -1,55 +1,55 @@
 ### Yok
 
-`publickey` kimlik do?rulamas?n? devre d??? b?rak?r.
+`publickey` kimlik doğrulamasını devre dışı bırakır.
 
 ### SSH-Agent
 
-Kimliklerinizin SSH-Agent'ta depolanmas? durumunda, ssh y�r�t�lebilir dosyas?, agent ba?lat?ld???nda bunlar? kullanabilir.
-XPipe, hen�z �al??m?yorsa arac? s�recini otomatik olarak ba?latacakt?r.
+Kimliklerinizin SSH-Agent'ta depolanması durumunda, ssh yürütülebilir dosyası, agent başlatıldığında bunları kullanabilir.
+XPipe, henüz çalışmıyorsa aracı sürecini otomatik olarak başlatacaktır.
 
 ### Pageant (Windows)
 
-Windows �zerinde pageant kullan?yorsan?z, XPipe �nce pageant'?n �al???p �al??mad???n? kontrol edecektir.
-Pageant'?n do?as? gere?i, pageant'a sahip olmak sizin sorumlulu?unuzdad?r
-her seferinde eklemek istedi?iniz t�m anahtarlar? manuel olarak belirtmeniz gerekti?inden �al???yor.
-E?er �al???yorsa, XPipe uygun adland?r?lm?? boruyu
-`-oIdentityAgent=...` ssh i�in, herhangi bir �zel yap?land?rma dosyas? eklemeniz gerekmez.
+Windows üzerinde pageant kullanıyorsanız, XPipe önce pageant'ın çalışıp çalışmadığını kontrol edecektir.
+Pageant'ın doğası gereği, pageant'a sahip olmak sizin sorumluluğunuzdadır
+her seferinde eklemek istediğiniz tüm anahtarları manuel olarak belirtmeniz gerektiğinden çalışıyor.
+Eğer çalışıyorsa, XPipe uygun adlandırılmış boruyu
+`-oIdentityAgent=...` ssh için, herhangi bir özel yapılandırma dosyası eklemeniz gerekmez.
 
-OpenSSH istemcisinde sorunlara neden olabilecek baz? uygulama hatalar? oldu?unu unutmay?n
-kullan?c? ad?n?z bo?luk i�eriyorsa veya �ok uzunsa, en son s�r�m� kullanmaya �al???n.
+OpenSSH istemcisinde sorunlara neden olabilecek bazı uygulama hataları olduğunu unutmayın
+kullanıcı adınız boşluk içeriyorsa veya çok uzunsa, en son sürümü kullanmaya çalışın.
 
 ### Pageant (Linux ve macOS)
 
-Kimliklerinizin pageant arac?s?nda saklanmas? durumunda, arac? ba?lat?l?rsa ssh y�r�t�lebilir dosyas? bunlar? kullanabilir.
-XPipe, hen�z �al??m?yorsa arac? s�recini otomatik olarak ba?latacakt?r.
+Kimliklerinizin pageant aracısında saklanması durumunda, aracı başlatılırsa ssh yürütülebilir dosyası bunları kullanabilir.
+XPipe, henüz çalışmıyorsa aracı sürecini otomatik olarak başlatacaktır.
 
-### Kimlik dosyas?
+### Kimlik dosyası
 
-?ste?e ba?l? bir parola ile bir kimlik dosyas? da belirtebilirsiniz.
-Bu se�enek `ssh -i <dosya>` se�ene?ine e?de?erdir.
+İsteğe bağlı bir parola ile bir kimlik dosyası da belirtebilirsiniz.
+Bu seçenek `ssh -i <dosya>` seçeneğine eşdeğerdir.
 
-Bunun genel de?il *�zel* anahtar olmas? gerekti?ini unutmay?n.
-E?er bunu kar??t?r?rsan?z, ssh size sadece ?ifreli hata mesajlar? verecektir.
+Bunun genel değil *özel* anahtar olması gerektiğini unutmayın.
+Eğer bunu karıştırırsanız, ssh size sadece şifreli hata mesajları verecektir.
 
 ### GPG Agent
 
-Kimlikleriniz �rne?in bir ak?ll? kartta saklan?yorsa, bunlar? SSH istemcisine `gpg-agent` arac?l???yla sa?lamay? se�ebilirsiniz.
-Bu se�enek, hen�z etkinle?tirilmemi?se arac?n?n SSH deste?ini otomatik olarak etkinle?tirecek ve GPG arac? arka plan program?n? do?ru ayarlarla yeniden ba?latacakt?r.
+Kimlikleriniz örneğin bir akıllı kartta saklanıyorsa, bunları SSH istemcisine `gpg-agent` aracılığıyla sağlamayı seçebilirsiniz.
+Bu seçenek, henüz etkinleştirilmemişse aracının SSH desteğini otomatik olarak etkinleştirecek ve GPG aracı arka plan programını doğru ayarlarla yeniden başlatacaktır.
 
 ### Yubikey PIV
 
-Kimlikleriniz Yubikey'in PIV ak?ll? kart i?levi ile saklan?yorsa, ?unlar? geri alabilirsiniz
-yubico PIV Arac? ile birlikte gelen Yubico'nun YKCS11 k�t�phanesi ile.
+Kimlikleriniz Yubikey'in PIV akıllı kart işlevi ile saklanıyorsa, şunları geri alabilirsiniz
+yubico PIV Aracı ile birlikte gelen Yubico'nun YKCS11 kütüphanesi ile.
 
-Bu �zelli?i kullanabilmek i�in g�ncel bir OpenSSH yap?s?na ihtiyac?n?z oldu?unu unutmay?n.
+Bu özelliği kullanabilmek için güncel bir OpenSSH yapısına ihtiyacınız olduğunu unutmayın.
 
-### �zel ajan
+### Özel ajan
 
-Burada soket konumunu veya adland?r?lm?? boru konumunu sa?layarak �zel bir arac? da kullanabilirsiniz.
-Bu, `IdentityAgent` se�ene?i arac?l???yla aktar?lacakt?r.
+Burada soket konumunu veya adlandırılmış boru konumunu sağlayarak özel bir aracı da kullanabilirsiniz.
+Bu, `IdentityAgent` seçeneği aracılığıyla aktarılacaktır.
 
-### �zel PKCS#11 k�t�phanesi
+### Özel PKCS#11 kütüphanesi
 
-Bu, OpenSSH istemcisine kimlik do?rulamas?n? ger�ekle?tirecek olan belirtilen payla??lan k�t�phane dosyas?n? y�klemesi talimat?n? verecektir.
+Bu, OpenSSH istemcisine kimlik doğrulamasını gerçekleştirecek olan belirtilen paylaşılan kütüphane dosyasını yüklemesi talimatını verecektir.
 
-Bu �zelli?i kullanabilmek i�in g�ncel bir OpenSSH yap?s?na ihtiyac?n?z oldu?unu unutmay?n.
+Bu özelliği kullanabilmek için güncel bir OpenSSH yapısına ihtiyacınız olduğunu unutmayın.

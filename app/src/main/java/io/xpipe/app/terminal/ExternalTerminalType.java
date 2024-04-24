@@ -93,6 +93,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType PWSH = new SimplePathType("app.pwsh", "pwsh", true) {
 
         @Override
+        public String getWebsite() {
+            return "https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.4";
+        }
+
+        @Override
         public boolean supportsTabs() {
             return false;
         }
@@ -122,6 +127,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
     ExternalTerminalType GNOME_TERMINAL = new PathCheckType("app.gnomeTerminal", "gnome-terminal", true) {
+        @Override
+        public String getWebsite() {
+            return "https://help.gnome.org/users/gnome-terminal/stable/";
+        }
+
         @Override
         public boolean supportsTabs() {
             return false;
@@ -155,7 +165,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand() {
+        public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand(ShellDialect systemDialect) {
             return launchConfiguration -> {
                 var toExecute = CommandBuilder.of()
                         .add(executable, "-v", "--title")
@@ -167,6 +177,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
     ExternalTerminalType KONSOLE = new SimplePathType("app.konsole", "konsole", true) {
+
+        @Override
+        public String getWebsite() {
+            return "https://konsole.kde.org/download.html";
+        }
 
         @Override
         public boolean supportsTabs() {
@@ -193,6 +208,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
     ExternalTerminalType XFCE = new SimplePathType("app.xfce", "xfce4-terminal", true) {
         @Override
+        public String getWebsite() {
+            return "https://docs.xfce.org/apps/terminal/start";
+        }
+
+        @Override
         public boolean supportsTabs() {
             return true;
         }
@@ -217,6 +237,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
     ExternalTerminalType ELEMENTARY = new SimplePathType("app.elementaryTerminal", "io.elementary.terminal", true) {
+
+        @Override
+        public String getWebsite() {
+            return "https://github.com/elementary/terminal";
+        }
+
         @Override
         public boolean supportsTabs() {
             return true;
@@ -238,6 +264,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
     ExternalTerminalType TILIX = new SimplePathType("app.tilix", "tilix", true) {
+        @Override
+        public String getWebsite() {
+            return "https://gnunn1.github.io/tilix-web/";
+        }
+
         @Override
         public boolean supportsTabs() {
             return false;
@@ -263,6 +294,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
     ExternalTerminalType TERMINATOR = new SimplePathType("app.terminator", "terminator", true) {
+        @Override
+        public String getWebsite() {
+            return "https://gnome-terminator.org/";
+        }
+
         @Override
         public boolean supportsTabs() {
             return true;
@@ -290,6 +326,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
     ExternalTerminalType TERMINOLOGY = new SimplePathType("app.terminology", "terminology", true) {
         @Override
+        public String getWebsite() {
+            return "https://github.com/borisfaure/terminology";
+        }
+
+        @Override
         public boolean supportsTabs() {
             return true;
         }
@@ -314,32 +355,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     .addFile(configuration.getScriptFile());
         }
     };
-    ExternalTerminalType COOL_RETRO_TERM = new SimplePathType("app.coolRetroTerm", "cool-retro-term", true) {
-        @Override
-        public boolean supportsTabs() {
-            return false;
-        }
-
-        @Override
-        public boolean isRecommended() {
-            return false;
-        }
-
-        @Override
-        public boolean supportsColoredTitle() {
-            return true;
-        }
-
-        @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) {
-            return CommandBuilder.of()
-                    .add("-T")
-                    .addQuoted(configuration.getColoredTitle())
-                    .add("-e")
-                    .addFile(configuration.getScriptFile());
-        }
-    };
     ExternalTerminalType GUAKE = new SimplePathType("app.guake", "guake", true) {
+        @Override
+        public String getWebsite() {
+            return "https://github.com/Guake/guake";
+        }
+
         @Override
         public boolean supportsTabs() {
             return true;
@@ -367,6 +388,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
     ExternalTerminalType TILDA = new SimplePathType("app.tilda", "tilda", true) {
         @Override
+        public String getWebsite() {
+            return "https://github.com/lanoxx/tilda";
+        }
+
+        @Override
         public boolean supportsTabs() {
             return true;
         }
@@ -387,6 +413,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
     ExternalTerminalType XTERM = new SimplePathType("app.xterm", "xterm", true) {
+        @Override
+        public String getWebsite() {
+            return "https://invisible-island.net/xterm/";
+        }
+
         @Override
         public boolean supportsTabs() {
             return false;
@@ -413,6 +444,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
     ExternalTerminalType DEEPIN_TERMINAL = new SimplePathType("app.deepinTerminal", "deepin-terminal", true) {
         @Override
+        public String getWebsite() {
+            return "https://www.deepin.org/en/original/deepin-terminal/";
+        }
+
+        @Override
         public boolean supportsTabs() {
             return false;
         }
@@ -433,6 +469,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
     ExternalTerminalType Q_TERMINAL = new SimplePathType("app.qTerminal", "qterminal", true) {
+        @Override
+        public String getWebsite() {
+            return "https://github.com/lxqt/qterminal";
+        }
+
         @Override
         public boolean supportsTabs() {
             return false;
@@ -486,6 +527,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
     ExternalTerminalType ITERM2 = new MacOsType("app.iterm2", "iTerm") {
         @Override
+        public String getWebsite() {
+            return "https://iterm2.com/";
+        }
+
+        @Override
         public boolean supportsTabs() {
             return true;
         }
@@ -537,6 +583,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType WARP = new MacOsType("app.warp", "Warp") {
 
         @Override
+        public String getWebsite() {
+            return "https://www.warp.dev/";
+        }
+
+        @Override
         public boolean supportsTabs() {
             return true;
         }
@@ -566,7 +617,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand() {
+        public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand(ShellDialect systemDialect) {
             return launchConfiguration -> {
                 var toExecute = CommandBuilder.of()
                         .add("open", "-a")
@@ -574,6 +625,22 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                         .addFile(launchConfiguration.getScriptFile());
                 return toExecute.buildSimple();
             };
+        }
+
+        @Override
+        public TerminalInitFunction additionalInitCommands() {
+            return TerminalInitFunction.of(sc -> {
+                if (sc.getShellDialect() == ShellDialects.ZSH) {
+                    return "printf '\\eP$f{\"hook\": \"SourcedRcFileForWarp\", \"value\": { \"shell\": \"zsh\"}}\\x9c'";
+                }
+                if (sc.getShellDialect() == ShellDialects.BASH) {
+                    return "printf '\\eP$f{\"hook\": \"SourcedRcFileForWarp\", \"value\": { \"shell\": \"bash\"}}\\x9c'";
+                }
+                if (sc.getShellDialect() == ShellDialects.FISH) {
+                    return "printf '\\eP$f{\"hook\": \"SourcedRcFileForWarp\", \"value\": { \"shell\": \"fish\"}}\\x9c'";
+                }
+                return null;
+            });
         }
     };
     ExternalTerminalType CUSTOM = new CustomTerminalType();
@@ -596,7 +663,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             TERMINATOR,
             KittyTerminalType.KITTY_LINUX,
             TERMINOLOGY,
-            COOL_RETRO_TERM,
             GUAKE,
             AlacrittyTerminalType.ALACRITTY_LINUX,
             TILDA,
@@ -612,9 +678,9 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             WezTerminalType.WEZTERM_MAC_OS,
             MACOS_TERMINAL);
 
-    List<ExternalTerminalType> APPLICABLE = getTypes(OsType.getLocal(), false, true);
+    List<ExternalTerminalType> ALL = getTypes(OsType.getLocal(), false, true);
 
-    List<ExternalTerminalType> ALL = getTypes(null, false, true);
+    List<ExternalTerminalType> ALL_ON_ALL_PLATFORMS = getTypes(null, false, true);
 
     static List<ExternalTerminalType> getTypes(OsType osType, boolean remote, boolean custom) {
         var all = new ArrayList<ExternalTerminalType>();
@@ -628,7 +694,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             all.addAll(MACOS_TERMINALS);
         }
         if (remote) {
-            all.removeIf(externalTerminalType -> externalTerminalType.remoteLaunchCommand() == null);
+            all.removeIf(externalTerminalType -> externalTerminalType.remoteLaunchCommand(null) == null);
         }
         // Prefer recommended
         all.sort(Comparator.comparingInt(o -> (o.isRecommended() ? -1 : 0)));
@@ -649,11 +715,15 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return existing;
         }
 
-        return APPLICABLE.stream()
+        return ALL.stream()
                 .filter(externalTerminalType -> !externalTerminalType.equals(CUSTOM))
                 .filter(terminalType -> terminalType.isAvailable())
                 .findFirst()
                 .orElse(null);
+    }
+
+    default TerminalInitFunction additionalInitCommands() {
+        return TerminalInitFunction.none();
     }
 
     boolean supportsTabs();
@@ -672,7 +742,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     default void launch(LaunchConfiguration configuration) throws Exception {}
 
-    default FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand() {
+    default FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand(ShellDialect systemDialect) {
         return null;
     }
 
@@ -714,12 +784,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             var open = scriptDialect.getOpenScriptCommand(scriptFile.toString());
             return open;
         }
-
-        public CommandBuilder appendDialectLaunchCommand(CommandBuilder b) {
-            var open = getDialectLaunchCommand();
-            b.add(open);
-            return b;
-        }
     }
 
     abstract class MacOsType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
@@ -751,12 +815,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand() {
+        public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand(ShellDialect systemDialect) {
             return launchConfiguration -> {
                 var args = toCommand(launchConfiguration);
                 args.add(0, executable);
                 if (explicityAsync) {
-                    args = launchConfiguration.getScriptDialect().launchAsnyc(args);
+                    args = systemDialect.launchAsnyc(args);
                 }
                 return args.buildSimple();
             };

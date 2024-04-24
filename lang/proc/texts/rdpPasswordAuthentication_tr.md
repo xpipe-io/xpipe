@@ -1,3 +1,3 @@
-## RDP Parola Kimlik Do?rulamas?
+## RDP Parola Kimlik Doğrulaması
 
-Mevcut her RDP istemcisi otomatik olarak parola sa?lamay? desteklemez. Se�ili istemciniz bu �zelli?i desteklemiyorsa, ba?lan?rken parolay? manuel olarak girmeniz gerekecektir.
+Mevcut her RDP istemcisi otomatik olarak parola sağlamayı desteklemez. Seçili istemciniz bu özelliği desteklemiyorsa, XPipe parolayı 10 saniye boyunca otomatik olarak panonuza kopyalar, böylece hızlı bir şekilde yapıştırabilirsiniz.

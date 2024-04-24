@@ -51,7 +51,7 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
 
     @Override
     public CreationCategory getCreationCategory() {
-        return CreationCategory.DESKSTOP;
+        return CreationCategory.DESKTOP;
     }
 
     @Override

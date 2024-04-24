@@ -1,4 +1,4 @@
-### ?ifre
+### Şifre
 
-VMware aray�z� �zerinden bu i?levi kullanmak i�in bir parolaya sahip olmak gerekir.
-Misafir kullan?c? hesab?n?z?n ?u anda bir parolas? yoksa, l�tfen bir parola belirleyin.
+VMware arayüzü üzerinden bu işlevi kullanmak için bir parolaya sahip olmak gerekir.
+Misafir kullanıcı hesabınızın şu anda bir parolası yoksa, lütfen bir parola belirleyin.

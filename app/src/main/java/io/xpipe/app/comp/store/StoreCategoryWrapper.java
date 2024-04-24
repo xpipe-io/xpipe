@@ -107,17 +107,7 @@ public class StoreCategoryWrapper {
         });
 
         share.addListener((observable, oldValue, newValue) -> {
-            category.setShare(newValue);
-
-            DataStoreCategory p = category;
-            if (newValue) {
-                while ((p = DataStorage.get()
-                                .getStoreCategoryIfPresent(p.getParentCategory())
-                                .orElse(null))
-                        != null) {
-                    p.setShare(true);
-                }
-            }
+            DataStorage.get().shareCategory(category, newValue);
         });
     }
 

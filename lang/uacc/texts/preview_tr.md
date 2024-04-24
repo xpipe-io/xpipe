@@ -1,11 +1,11 @@
-# XPipe Pro �nizleme
+# XPipe Pro Önizleme
 
-Kullanmaya �al??t???n?z �zellik, ilgilenen herkesin yeni yay?nlanan profesyonellere �zel �zellikleri yay?nland?ktan sonra iki hafta boyunca denemesine olanak tan?yan profesyonel �nizlemede mevcuttur. Ayr?ca, herhangi bir ?ey sat?n almak zorunda kalmadan deneme yapman?za, geri bildirim payla?man?za ve t�m yeni �zelliklere bir g�z atman?za olanak tan?r.
+Kullanmaya çalıştığınız özellik, ilgilenen herkesin yeni yayınlanan profesyonellere özel özellikleri yayınlandıktan sonra iki hafta boyunca denemesine olanak tanıyan profesyonel önizlemede mevcuttur. Ayrıca, herhangi bir şey satın almak zorunda kalmadan deneme yapmanıza, geri bildirim paylaşmanıza ve tüm yeni özelliklere bir göz atmanıza olanak tanır.
 
-Bir yan etki olarak, yeni �zellikler herkes i�in �nizleme olmadan m�mk�n olabilecek daha iyi bir test kapsam?na da sahip olur.
+Bir yan etki olarak, yeni özellikler herkes için önizleme olmadan mümkün olabilecek daha iyi bir test kapsamına da sahip olur.
 
-## Do?rulama
+## Doğrulama
 
-�nizleme plan? etkinle?tirildikten sonra, uygulama her ?eyin yolunda oldu?unu do?rulamak i�in her ba?lang?�ta lisans sunucusuyla ileti?im kuracakt?r. Buradan, ?u anda hangi �zelliklerin yeni oldu?u ve hala �nizlemeye dahil oldu?u bilgisini de al?r.
+Önizleme planı etkinleştirildikten sonra, uygulama her şeyin yolunda olduğunu doğrulamak için her başlangıçta lisans sunucusuyla iletişim kuracaktır. Buradan, şu anda hangi özelliklerin yeni olduğu ve hala önizlemeye dahil olduğu bilgisini de alır.
 
-Ayr?ca �nizlemeyi istedi?iniz zaman tekrar devre d??? b?rakabilirsiniz.
+Ayrıca önizlemeyi istediğiniz zaman tekrar devre dışı bırakabilirsiniz.

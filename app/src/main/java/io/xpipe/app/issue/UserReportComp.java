@@ -1,5 +1,7 @@
 package io.xpipe.app.issue;
 
+import atlantafx.base.controls.Popover;
+import atlantafx.base.controls.Spacer;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.comp.base.MarkdownComp;
@@ -7,7 +9,6 @@ import io.xpipe.app.comp.base.TitledPaneComp;
 import io.xpipe.app.core.*;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
-
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -22,14 +23,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
-import atlantafx.base.controls.Popover;
-import atlantafx.base.controls.Spacer;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import static atlantafx.base.theme.Styles.ACCENT;
-import static atlantafx.base.theme.Styles.BUTTON_OUTLINED;
 
 public class UserReportComp extends SimpleComp {
 
@@ -130,7 +125,7 @@ public class UserReportComp extends SimpleComp {
             event1.consume();
         });
         var sendButton = new ButtonComp(AppI18n.observable("sendReport"), null, this::send)
-                .apply(struc -> struc.get().getStyleClass().addAll(BUTTON_OUTLINED, ACCENT))
+                .apply(struc -> struc.get().setDefaultButton(true))
                 .createRegion();
         var spacer = new Region();
         var agree = new Label("Note the issue reporter ");

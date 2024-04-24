@@ -1,5 +1,5 @@
-## Betik ba??ml?l?klar?
+## Betik bağımlılıkları
 
-�nce �al??t?r?lacak komut dosyalar? ve komut dosyas? gruplar?. Bir grubun tamam? ba??ml?l?k haline getirilirse, bu gruptaki t�m komut dosyalar? ba??ml?l?k olarak kabul edilecektir.
+Önce çalıştırılacak komut dosyaları ve komut dosyası grupları. Bir grubun tamamı bağımlılık haline getirilirse, bu gruptaki tüm komut dosyaları bağımlılık olarak kabul edilecektir.
 
-Komut dosyalar?n?n ��z�mlenmi? ba??ml?l?k grafi?i d�zle?tirilir, filtrelenir ve benzersiz hale getirilir. Yani, yaln?zca uyumlu komut dosyalar? �al??t?r?lacak ve bir komut dosyas? birden �ok kez �al??t?r?lacaksa, yaln?zca ilk seferde �al??t?r?lacakt?r.
+Komut dosyalarının çözümlenmiş bağımlılık grafiği düzleştirilir, filtrelenir ve benzersiz hale getirilir. Yani, yalnızca uyumlu komut dosyaları çalıştırılacak ve bir komut dosyası birden çok kez çalıştırılacaksa, yalnızca ilk seferde çalıştırılacaktır.

@@ -19,11 +19,15 @@ has to be transformed into
 #custom
 key=Correct translation
 ```
-to mark it being a custom string that should be kept.
+to mark it being a custom string that should be kept. It is important to include the `#custom` annotation.
 
 ### Correcting texts
 
 If you want to correct something in a text in a `.md` file, you don't have to do anything special as these are not being overwritten later on. Just perform and submit your changes.
+
+### Improving automatic translations
+
+If a string translated from english is wrong in many languages, it might also make sense to adjust the initial translation and context setting to improve the automatic translation. It is possible to augment the original english string and regenerate the translations for that by adding a `#context: ...` annotation to an original english string that is not translated correctly to improve the accuracy. You will already see some english strings that have this information added.
 
 ### Trying them out in action
 

@@ -206,15 +206,6 @@ public class XPipeInstallation {
         return v;
     }
 
-    public static String queryInstallationVersion(ShellControl p, String exec) throws Exception {
-        try (CommandControl c =
-                p.command(CommandBuilder.of().addFile(exec).add("version")).start()) {
-            return c.readStdoutOrThrow();
-        } catch (ProcessOutputException ex) {
-            return "?";
-        }
-    }
-
     public static Path getLocalBundledToolsDirectory() {
         Path path = getCurrentInstallationBasePath();
 
@@ -274,20 +265,6 @@ public class XPipeInstallation {
             var base = System.getenv("LOCALAPPDATA");
             path = FileNames.join(base, isStaging() ? "XPipe PTB" : "XPipe");
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
-            path = isStaging() ? "/opt/xpipe-ptb" : "/opt/xpipe";
-        } else {
-            path = isStaging() ? "/Applications/XPipe PTB.app" : "/Applications/XPipe.app";
-        }
-
-        return path;
-    }
-
-    public static String getDefaultInstallationBasePath(ShellControl p) throws Exception {
-        String path;
-        if (p.getOsType().equals(OsType.WINDOWS)) {
-            var base = p.executeSimpleStringCommand(p.getShellDialect().getPrintVariableCommand("LOCALAPPDATA"));
-            path = FileNames.join(base, isStaging() ? "XPipe PTB" : "XPipe");
-        } else if (p.getOsType().equals(OsType.LINUX)) {
             path = isStaging() ? "/opt/xpipe-ptb" : "/opt/xpipe";
         } else {
             path = isStaging() ? "/Applications/XPipe PTB.app" : "/Applications/XPipe.app";

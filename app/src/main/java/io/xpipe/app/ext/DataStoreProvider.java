@@ -36,10 +36,6 @@ public interface DataStoreProvider {
         return false;
     }
 
-    default boolean canMoveCategories() {
-        return true;
-    }
-
     default boolean alwaysShowSummary() {
         return false;
     }
@@ -220,6 +216,6 @@ public interface DataStoreProvider {
         TUNNEL,
         SCRIPT,
         CLUSTER,
-        DESKSTOP;
+        DESKTOP
     }
 }

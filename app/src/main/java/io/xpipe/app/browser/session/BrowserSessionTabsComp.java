@@ -123,7 +123,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
             });
         });
 
-        model.getSessionEntries().addListener((ListChangeListener<? super BrowserSessionTab>) c -> {
+        model.getSessionEntries().addListener((ListChangeListener<? super BrowserSessionTab<?>>) c -> {
             while (c.next()) {
                 for (var r : c.getRemoved()) {
                     PlatformThread.runLaterIfNeeded(() -> {

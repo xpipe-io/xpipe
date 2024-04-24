@@ -27,7 +27,7 @@ public class SecretRetrievalStrategyHelper {
                         ? p.getValue().getValue().getInternalSecret()
                         : null);
         return new OptionsBuilder()
-                .addComp(new SecretFieldComp(secretProperty), secretProperty)
+                .addComp(new SecretFieldComp(secretProperty, true), secretProperty)
                 .bind(
                         () -> {
                             var newSecret = secretProperty.get();
@@ -45,16 +45,20 @@ public class SecretRetrievalStrategyHelper {
                 new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getKey() : null);
         var content = new HorizontalComp(List.of(
                         new TextFieldComp(keyProperty)
-                                .apply(struc -> struc.get().setPromptText("Password key"))
+                                .apply(struc -> struc.get().setPromptText("$KEY"))
                                 .hgrow(),
                         new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
                                     AppPrefs.get().selectCategory("passwordManager");
                                     App.getApp().getStage().requestFocus();
                                 })
                                 .grow(false, true)))
-                .apply(struc -> struc.get().setSpacing(10));
+                .apply(struc -> struc.get().setSpacing(10))
+                .apply(struc -> struc.get().focusedProperty().addListener((c, o, n) -> {
+                    if (n) {
+                        struc.get().getChildren().getFirst().requestFocus();
+                    }
+                }));
         return new OptionsBuilder()
-                .name("passwordKey")
                 .addComp(content, keyProperty)
                 .nonNull()
                 .bind(

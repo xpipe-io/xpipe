@@ -28,11 +28,11 @@ public class LockChangeAlert {
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
 
                     var label1 = new LabelComp(AppI18n.observable("passphrase")).createRegion();
-                    var p1 = new SecretFieldComp(prop1).createRegion();
+                    var p1 = new SecretFieldComp(prop1, false).createRegion();
                     p1.setStyle("-fx-border-width: 1px");
 
                     var label2 = new LabelComp(AppI18n.observable("repeatPassphrase")).createRegion();
-                    var p2 = new SecretFieldComp(prop2).createRegion();
+                    var p2 = new SecretFieldComp(prop2, false).createRegion();
                     p1.setStyle("-fx-border-width: 1px");
 
                     var content = new VBox(label1, p1, new Spacer(15), label2, p2);

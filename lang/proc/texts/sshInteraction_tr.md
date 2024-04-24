@@ -1,5 +1,5 @@
-## Sistem etkile?imi
+## Sistem etkileşimi
 
-XPipe, her ?eyin do?ru �al??t???n? do?rulamak ve sistem bilgilerini g�r�nt�lemek i�in ne t�r bir kabukta oturum a�t???n? tespit etmeye �al???r. Bu, bash gibi normal komut kabuklar? i�in i?e yarar, ancak bir�ok g�m�l� sistem i�in standart olmayan ve �zel oturum a�ma kabuklar? i�in ba?ar?s?z olur. Bu sistemlere yap?lan ba?lant?lar?n ba?ar?l? olmas? i�in bu davran??? devre d??? b?rakman?z gerekir.
+XPipe, her şeyin doğru çalıştığını doğrulamak ve sistem bilgilerini görüntülemek için ne tür bir kabukta oturum açtığını tespit etmeye çalışır. Bu, bash gibi normal komut kabukları için işe yarar, ancak birçok gömülü sistem için standart olmayan ve özel oturum açma kabukları için başarısız olur. Bu sistemlere yapılan bağlantıların başarılı olması için bu davranışı devre dışı bırakmanız gerekir.
 
-Bu etkile?im devre d??? b?rak?ld???nda, herhangi bir sistem bilgisini tan?mlamaya �al??mayacakt?r. Bu, sistemin dosya taray?c?s?nda veya di?er ba?lant?lar i�in bir proxy/ge�it sistemi olarak kullan?lmas?n? �nleyecektir. XPipe daha sonra esasen sadece ba?lant? i�in bir ba?lat?c? olarak hareket edecektir.
+Bu etkileşim devre dışı bırakıldığında, herhangi bir sistem bilgisini tanımlamaya çalışmayacaktır. Bu, sistemin dosya tarayıcısında veya diğer bağlantılar için bir proxy/geçit sistemi olarak kullanılmasını önleyecektir. XPipe daha sonra esasen sadece bağlantı için bir başlatıcı olarak hareket edecektir.

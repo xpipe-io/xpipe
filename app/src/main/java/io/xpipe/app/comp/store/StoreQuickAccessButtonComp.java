@@ -80,12 +80,12 @@ public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
     public CompStructure<Button> createBase() {
         var button = new IconButtonComp("mdi2c-chevron-double-right");
         button.apply(struc -> {
-            var cm = createMenu();
-            if (cm == null) {
-                return;
-            }
-
             struc.get().setOnAction(event -> {
+                var cm = createMenu();
+                if (cm == null) {
+                    return;
+                }
+
                 ContextMenuHelper.toggleShow(cm, struc.get(), Side.RIGHT);
                 event.consume();
             });

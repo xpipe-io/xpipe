@@ -7,8 +7,9 @@ public class TerminalInitScriptConfig {
 
     String displayName;
     boolean clearScreen;
+    TerminalInitFunction terminalSpecificCommands;
 
     public static TerminalInitScriptConfig ofName(String name) {
-        return new TerminalInitScriptConfig(name, true);
+        return new TerminalInitScriptConfig(name, true, null);
     }
 }

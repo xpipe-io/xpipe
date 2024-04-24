@@ -1,9 +1,9 @@
-## Kabuk ba?lant? a? ge�itleri
+## Kabuk bağlantı ağ geçitleri
 
-Etkinle?tirilirse, XPipe �nce a? ge�idine bir kabuk ba?lant?s? a�ar ve buradan belirtilen ana bilgisayara bir SSH ba?lant?s? a�ar. `ssh` komutunun kullan?labilir olmas? ve se�ti?iniz a? ge�idinde `PATH` i�inde bulunmas? gerekir.
+Etkinleştirilirse, XPipe önce ağ geçidine bir kabuk bağlantısı açar ve buradan belirtilen ana bilgisayara bir SSH bağlantısı açar. `ssh` komutunun kullanılabilir olması ve seçtiğiniz ağ geçidinde `PATH` içinde bulunması gerekir.
 
-### Jump sunucular?
+### Jump sunucuları
 
-Bu mekanizma atlama sunucular?na benzer, ancak e?de?er de?ildir. SSH protokol�nden tamamen ba??ms?zd?r, bu nedenle herhangi bir kabuk ba?lant?s?n? a? ge�idi olarak kullanabilirsiniz.
+Bu mekanizma atlama sunucularına benzer, ancak eşdeğer değildir. SSH protokolünden tamamen bağımsızdır, bu nedenle herhangi bir kabuk bağlantısını ağ geçidi olarak kullanabilirsiniz.
 
-Uygun SSH atlama sunucular? ar?yorsan?z, belki de ajan y�nlendirme ile birlikte, `ProxyJump` yap?land?rma se�ene?i ile �zel SSH ba?lant? i?levselli?ini kullan?n.
+Uygun SSH atlama sunucuları arıyorsanız, belki de ajan yönlendirme ile birlikte, `ProxyJump` yapılandırma seçeneği ile özel SSH bağlantı işlevselliğini kullanın.

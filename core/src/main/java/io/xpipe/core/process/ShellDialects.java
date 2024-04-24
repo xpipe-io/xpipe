@@ -23,7 +23,7 @@ public class ShellDialects {
     public static ShellDialect CSH;
     public static ShellDialect FISH;
 
-    public static ShellDialect UNSUPPORTED;
+    public static ShellDialect NO_INTERACTION;
     public static ShellDialect CISCO;
     public static ShellDialect MIKROTIK;
     public static ShellDialect RBASH;
@@ -74,7 +74,7 @@ public class ShellDialects {
             CSH = byId("csh");
             ASH = byId("ash");
             SH = byId("sh");
-            UNSUPPORTED = byId("unsupported");
+            NO_INTERACTION = byId("unsupported");
             CISCO = byId("cisco");
             MIKROTIK = byId("mikrotik");
             RBASH = byId("rbash");

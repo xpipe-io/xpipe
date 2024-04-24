@@ -5,10 +5,9 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ScanAlert;
+import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.store.ShellStore;
-
 import javafx.beans.value.ObservableValue;
-
 import lombok.Value;
 
 public class ScanAction implements ActionProvider {
@@ -34,7 +33,17 @@ public class ScanAction implements ActionProvider {
 
             @Override
             public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
-                return o.get().getProvider().canHaveSubShells();
+                if (!o.get().getProvider().canHaveSubShells()) {
+                    return false;
+                }
+
+                var state = o.get().getStorePersistentState();
+                if (state instanceof ShellStoreState shellStoreState) {
+                    return shellStoreState.getShellDialect() == null ||
+                            shellStoreState.getShellDialect().getDumbMode().supportsAnyPossibleInteraction();
+                } else {
+                    return true;
+                }
             }
 
             @Override

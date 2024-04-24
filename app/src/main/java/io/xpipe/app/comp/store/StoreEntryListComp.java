@@ -25,7 +25,7 @@ public class StoreEntryListComp extends SimpleComp {
                             return new HorizontalComp(List.of(Comp.hspacer(8), custom, Comp.hspacer(10)))
                                     .styleClass("top");
                         })
-                .apply(struc -> ((Region) struc.get().getContent()).setPadding(new Insets(10, 0, 10, 0)));
+                .apply(struc -> ((Region) struc.get().getContent()).setPadding(new Insets(8, 0, 8, 0)));
         return content.styleClass("store-list-comp");
     }
 

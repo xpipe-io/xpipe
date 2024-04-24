@@ -4,6 +4,7 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellDialects;
+import io.xpipe.core.process.TerminalInitFunction;
 
 import java.nio.file.Path;
 import java.util.Optional;
@@ -33,7 +34,28 @@ public interface TabbyTerminalType extends ExternalTerminalType {
         return true;
     }
 
-    static class Windows extends ExternalTerminalType.WindowsType implements TabbyTerminalType {
+    @Override
+    default TerminalInitFunction additionalInitCommands() {
+//        return TerminalInitFunction.of(sc -> {
+//            if (sc.getShellDialect() == ShellDialects.ZSH) {
+//                return "export PS1=\"$PS1\\[\\e]1337;CurrentDir=\"'$(pwd)\\a\\]'";
+//            }
+//            if (sc.getShellDialect() == ShellDialects.BASH) {
+//                return "precmd () { echo -n \"\\x1b]1337;CurrentDir=$(pwd)\\x07\" }";
+//            }
+//            if (sc.getShellDialect() == ShellDialects.FISH) {
+//                return """
+//                       function __tabby_working_directory_reporting --on-event fish_prompt
+//                           echo -en "\\e]1337;CurrentDir=$PWD\\x7"
+//                       end
+//                       """;
+//            }
+//            return null;
+//        });
+        return null;
+    }
+
+    class Windows extends ExternalTerminalType.WindowsType implements TabbyTerminalType {
 
         public Windows() {
             super("app.tabby", "Tabby.exe");

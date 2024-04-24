@@ -28,6 +28,7 @@ import lombok.Value;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class AppPrefs {
 
@@ -137,21 +138,22 @@ public class AppPrefs {
     private AppPrefsStorageHandler vaultStorageHandler;
 
     private AppPrefs() {
-        this.categories = List.of(
+        this.categories = Stream.of(
                 new AboutCategory(),
                 new SystemCategory(),
                 new AppearanceCategory(),
                 new SyncCategory(),
                 new VaultCategory(),
                 new PasswordManagerCategory(),
-                new SecurityCategory(),
                 new TerminalCategory(),
                 new EditorCategory(),
                 new RdpCategory(),
                 new SshCategory(),
                 new LocalShellCategory(),
+                new SecurityCategory(),
                 new TroubleshootCategory(),
-                new DeveloperCategory());
+                new DeveloperCategory())
+                .filter(appPrefsCategory -> appPrefsCategory.show()).toList();
         var selected = AppCache.get("selectedPrefsCategory", Integer.class, () -> 0);
         if (selected == null) {
             selected = 0;

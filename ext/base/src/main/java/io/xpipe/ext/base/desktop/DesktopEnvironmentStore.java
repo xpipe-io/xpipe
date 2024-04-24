@@ -50,8 +50,7 @@ public class DesktopEnvironmentStore extends JacksonizedValue
         var f = ScriptStore.flatten(scripts);
         var filtered = f.stream()
                 .filter(simpleScriptStore ->
-                        simpleScriptStore.getMinimumDialect().isCompatibleTo(dialect)
-                                && simpleScriptStore.getExecutionType().runInTerminal())
+                        simpleScriptStore.getMinimumDialect().isCompatibleTo(dialect))
                 .toList();
         var initCommands = new ArrayList<>(filtered.stream()
                 .map(simpleScriptStore -> simpleScriptStore.getCommands())
@@ -89,17 +88,16 @@ public class DesktopEnvironmentStore extends JacksonizedValue
     }
 
     public void runDesktopTerminal(String name, String script) throws Exception {
-        var launchCommand = terminal.remoteLaunchCommand();
+        var launchCommand = terminal.remoteLaunchCommand(base.getStore().getUsedDialect());
         var toExecute = (script != null
                 ? getMergedInitCommands(
                         script + "\n" + dialect.getPauseCommand() + "\n" + dialect.getNormalExitCommand())
                 : getMergedInitCommands(null));
         var scriptFile = base.getStore().createScript(dialect, toExecute);
         var launchScriptFile = base.getStore()
-                .createScript(
-                        dialect, dialect.prepareTerminalInitFileOpenCommand(dialect, null, scriptFile.toString()));
+                .createScript(dialect, dialect.prepareTerminalInitFileOpenCommand(dialect, null, scriptFile.toString()));
         var launchConfig =
-                new ExternalTerminalType.LaunchConfiguration(null, name, name, launchScriptFile, getUsedDialect());
+                new ExternalTerminalType.LaunchConfiguration(null, name, name, launchScriptFile, dialect);
         base.getStore().runDesktopScript(name, launchCommand.apply(launchConfig));
     }
 

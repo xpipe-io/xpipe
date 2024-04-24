@@ -1,12 +1,10 @@
 
 .bar {
     -fx-padding: 0.8em 1.0em 0.8em 1.0em;
-    -fx-background-color: -color-bg-subtle;
-    -fx-border-color: -color-border-default;
 }
 
 .root:pretty .bar {
-    -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 3px, 0.5, 0, 1);
+    -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 3, 0.5, 1, 1);
 }
 
 .store-header-bar {
@@ -88,8 +86,6 @@
 
 .store-category-bar {
     -fx-padding: 0.8em 0.5em 0.8em 0.5em;
-    -fx-background-color: -color-bg-subtle;
-    -fx-border-color: -color-border-default;
 }
 
 .store-sort-bar {
@@ -110,47 +106,30 @@
     -fx-background-color: transparent;
 }
 
-.bar .button-comp {
+.store-header-bar .button-comp {
     -fx-padding: 0.2em 0em 0.2em 0em;
 }
 
-.collections-bar {
-    -fx-background-radius: 0 0 4px 0;
-    -fx-border-radius: 0 0 4px 0;
-    -fx-border-width: 0 4px 4px 0;
-}
-
-.entry-bar {
-    -fx-background-radius: 0 0 4px 4px;
-    -fx-border-radius: 0 0 4px 4px;
-    -fx-border-width: 0 4px 4px 4px;
-    -fx-background-color: -color-neutral-muted;
-}
-
-.entry-bar .horizontal-comp {
-    -fx-spacing: 5px;
-}
-
-.bar .icon-button-comp {
+.store-header-bar .icon-button-comp {
     -fx-text-fill: -color-fg-default;
 }
 
-.bar .name {
+.store-header-bar .name {
     -fx-font-weight: BOLD;
     -fx-text-fill: -color-fg-default;
 }
 
-.bar .count-comp {
+.store-header-bar .count-comp {
     -fx-font-weight: BOLD;
     -fx-padding: 0.0em 0em 0.0em 0.4em;
     -fx-text-fill: -color-fg-muted;
 }
 
-.bar .filter-bar .text-field {
+.store-header-bar .filter-bar .text-field {
     -fx-text-fill: -color-fg-default;
 }
 
-.bar .filter-bar {
+.store-header-bar .filter-bar {
     -fx-background-radius: 3px;
     -fx-background-color: -color-bg-default;
     -fx-border-color: -color-fg-default;
@@ -159,7 +138,7 @@
 }
 
 
-.bar .filter-bar .filter-background {
+.store-header-bar .filter-bar .filter-background {
     -fx-opacity: 0.7;
 }
 

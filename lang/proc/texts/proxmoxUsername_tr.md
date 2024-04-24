@@ -1,5 +1,5 @@
-## Kullan?c? ad?
+## Kullanıcı adı
 
-Oturum a�?lacak kullan?c? ad?. XPipe, sa?lanan kimlik bilgilerini kullanarak SSH �zerinden ba?lanmay? deneyecektir.
+Oturum açılacak kullanıcı adı. XPipe, sağlanan kimlik bilgilerini kullanarak SSH üzerinden bağlanmayı deneyecektir.
 
-E?er hi�bir SSH sunucusu �al??m?yorsa, kurulu SSH sunucusunu ba?latmay? deneyecektir. Bu davran??? g�venlik ayarlar? men�s�nden devre d??? b?rakabilece?inizi unutmay?n.
+Eğer hiçbir SSH sunucusu çalışmıyorsa, kurulu SSH sunucusunu başlatmayı deneyecektir. Bu davranışı güvenlik ayarları menüsünden devre dışı bırakabileceğinizi unutmayın.

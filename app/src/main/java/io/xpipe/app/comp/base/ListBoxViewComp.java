@@ -27,7 +27,7 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
     private final ObservableList<T> shown;
     private final ObservableList<T> all;
     private final Function<T, Comp<?>> compFunction;
-    private int limit = Integer.MAX_VALUE;
+    private final int limit = Integer.MAX_VALUE;
 
     public ListBoxViewComp(ObservableList<T> shown, ObservableList<T> all, Function<T, Comp<?>> compFunction) {
         this.shown = PlatformThread.sync(shown);

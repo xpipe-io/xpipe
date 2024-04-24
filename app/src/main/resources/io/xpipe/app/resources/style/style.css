@@ -3,7 +3,7 @@
 }
 
 .root:dark.background {
-    -fx-background-color: derive(-color-bg-default, 5%);
+    -fx-background-color: derive(-color-bg-default, 1%);
 }
 
 .root:light.background {
@@ -59,4 +59,3 @@
 .root:dark .loading-comp {
     -fx-background-color: rgba(0, 0, 0, 0.5);
 }
-

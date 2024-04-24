@@ -10,6 +10,7 @@ import lombok.SneakyThrows;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class ScriptHelper {
 
@@ -31,9 +32,10 @@ public class ScriptHelper {
             ShellDialect t,
             ShellControl processControl,
             WorkingDirectoryFunction workingDirectory,
-            List<String> init,
-            String toExecuteInShell,
-            TerminalInitScriptConfig config)
+            List<String> preInit,
+            List<String> postInit,
+            TerminalInitScriptConfig config,
+            boolean exit)
             throws Exception {
         String nl = t.getNewLine().getNewLineString();
         var content = "";
@@ -43,16 +45,14 @@ public class ScriptHelper {
             content += clear + nl;
         }
 
-        var applyRcCommand = t.applyRcFileCommand();
-        if (applyRcCommand != null) {
-            content += nl + applyRcCommand + nl;
-        }
+        // Normalize line endings
+        content += nl + preInit.stream().flatMap(s -> s.lines()).collect(Collectors.joining(nl)) + nl;
 
         // We just apply the profile files always, as we can't be sure that they definitely have been applied.
         // Especially if we launch something that is not the system default shell
-        var applyProfilesCommand = t.applyProfileFilesCommand();
-        if (applyProfilesCommand != null) {
-            content += nl + applyProfilesCommand + nl;
+        var applyCommand = t.applyInitFileCommand();
+        if (applyCommand != null) {
+            content += nl + applyCommand + nl;
         }
 
         if (config.getDisplayName() != null) {
@@ -66,12 +66,11 @@ public class ScriptHelper {
             }
         }
 
-        content += nl + String.join(nl, init.stream().filter(s -> s != null).toList()) + nl;
+        // Normalize line endings
+        content += nl + postInit.stream().flatMap(s -> s.lines()).collect(Collectors.joining(nl)) + nl;
 
-        if (toExecuteInShell != null) {
-            // Normalize line endings
-            content += String.join(nl, toExecuteInShell.lines().toList()) + nl;
-            content += nl + t.getPassthroughExitCommand() + nl;
+        if (exit) {
+            content += nl + t.getPassthroughExitCommand();
         }
 
         return createExecScript(t, processControl, new FilePath(t.initFileName(processControl)), content);

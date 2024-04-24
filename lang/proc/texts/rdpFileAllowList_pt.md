@@ -1,24 +1,24 @@
-# IntegraÁ„o do ambiente de trabalho RDP
+# Integra√ß√£o do ambiente de trabalho RDP
 
-Podes utilizar esta ligaÁ„o RDP no XPipe para lanÁar rapidamente aplicaÁıes e scripts. No entanto, devido ‡ natureza do RDP, tens de editar a lista de permissıes de aplicaÁıes remotas no teu servidor para que isto funcione. AlÈm disso, esta opÁ„o permite a partilha de unidades para executar os teus scripts no teu servidor remoto.
+Podes utilizar esta liga√ß√£o RDP no XPipe para lan√ßar rapidamente aplica√ß√µes e scripts. No entanto, devido √† natureza do RDP, tens de editar a lista de permiss√µes de aplica√ß√µes remotas no teu servidor para que isto funcione. Al√©m disso, esta op√ß√£o permite a partilha de unidades para executar os teus scripts no teu servidor remoto.
 
-TambÈm podes optar por n„o fazer isto e utilizar apenas o XPipe para lanÁar o cliente RDP sem utilizar quaisquer funcionalidades avanÁadas de integraÁ„o do ambiente de trabalho.
+Tamb√©m podes optar por n√£o fazer isto e utilizar apenas o XPipe para lan√ßar o cliente RDP sem utilizar quaisquer funcionalidades avan√ßadas de integra√ß√£o do ambiente de trabalho.
 
-## Listas de permissıes RDP
+## Listas de permiss√µes RDP
 
-Um servidor RDP usa o conceito de listas de permiss„o para lidar com lanÁamentos de aplicativos. Isso significa essencialmente que, a menos que a lista de permissıes esteja desativada ou que aplicativos especÌficos tenham sido explicitamente adicionados ‡ lista de permissıes, o lanÁamento de qualquer aplicativo remoto diretamente falhar·.
+Um servidor RDP usa o conceito de listas de permiss√£o para lidar com lan√ßamentos de aplicativos. Isso significa essencialmente que, a menos que a lista de permiss√µes esteja desativada ou que aplicativos espec√≠ficos tenham sido explicitamente adicionados √† lista de permiss√µes, o lan√ßamento de qualquer aplicativo remoto diretamente falhar√°.
 
-Podes encontrar as definiÁıes da lista de permissıes no registo do teu servidor em `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList`.
+Podes encontrar as defini√ß√µes da lista de permiss√µes no registo do teu servidor em `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList`.
 
-### Permitir todas as aplicaÁıes
+### Permitir todas as aplica√ß√µes
 
-Podes desativar a lista de permissıes para permitir que todas as aplicaÁıes remotas sejam iniciadas diretamente a partir do XPipe. Para tal, podes executar o seguinte comando no teu servidor em PowerShell: `Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList' -Name "fDisabledAllowList" -Value 1`.
+Podes desativar a lista de permiss√µes para permitir que todas as aplica√ß√µes remotas sejam iniciadas diretamente a partir do XPipe. Para tal, podes executar o seguinte comando no teu servidor em PowerShell: `Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList' -Name "fDisabledAllowList" -Value 1`.
 
-### Adicionar aplicaÁıes permitidas
+### Adicionar aplica√ß√µes permitidas
 
-Em alternativa, podes tambÈm adicionar aplicaÁıes remotas individuais ‡ lista. Isto permitir-te-· iniciar as aplicaÁıes listadas diretamente a partir do XPipe.
+Em alternativa, podes tamb√©m adicionar aplica√ß√µes remotas individuais √† lista. Isto permitir-te-√° iniciar as aplica√ß√µes listadas diretamente a partir do XPipe.
 
-Sob a chave `Applications` de `TSAppAllowList`, cria uma nova chave com um nome arbitr·rio. O ˙nico requisito para o nome È que ele seja exclusivo dentro dos filhos da chave "Applications". Essa nova chave deve ter os seguintes valores: `Name`, `Path` e `CommandLineSetting`. Podes fazer isto no PowerShell com os seguintes comandos:
+Sob a chave `Applications` de `TSAppAllowList`, cria uma nova chave com um nome arbitr√°rio. O √∫nico requisito para o nome √© que ele seja exclusivo dentro dos filhos da chave "Applications". Essa nova chave deve ter os seguintes valores: `Name`, `Path` e `CommandLineSetting`. Podes fazer isto no PowerShell com os seguintes comandos:
 
 ```
 $appName="Bloco de Notas"
@@ -29,10 +29,10 @@ Novo item -Path "$regKey\$appName"
 Novo-ItemProperty -Path "$regKey\$appName" -Name "Nome" -Value "$appName" -Force
 Novo-ItemProperty -Path "$regKey\$appName" -Nome "Caminho" -Valor "$appPath" -Force
 Novo-ItemProperty -Path "$regKey\$appName" -Name "CommandLineSetting" -Value "1" -PropertyType DWord -Force
-<cÛdigo>`</cÛdigo>
+<c√≥digo>`</c√≥digo>
 
-Se quiseres permitir que o XPipe tambÈm execute scripts e abra sessıes de terminal, tens de adicionar `C:\Windows\System32\cmd.exe` ‡ lista de permissıes tambÈm.
+Se quiseres permitir que o XPipe tamb√©m execute scripts e abra sess√µes de terminal, tens de adicionar `C:\Windows\System32\cmd.exe` √† lista de permiss√µes tamb√©m.
 
-## ConsideraÁıes de seguranÁa
+## Considera√ß√µes de seguran√ßa
 
-Isto n„o torna o teu servidor inseguro de forma alguma, uma vez que podes sempre executar as mesmas aplicaÁıes manualmente quando inicias uma ligaÁ„o RDP. As listas de permiss„o s„o mais destinadas a impedir que os clientes executem instantaneamente qualquer aplicativo sem a entrada do usu·rio. No final do dia, cabe-te a ti decidir se confias no XPipe para fazer isto. Podes iniciar esta ligaÁ„o sem problemas, isto sÛ È ˙til se quiseres utilizar qualquer uma das funcionalidades avanÁadas de integraÁ„o de ambiente de trabalho no XPipe.
+Isto n√£o torna o teu servidor inseguro de forma alguma, uma vez que podes sempre executar as mesmas aplica√ß√µes manualmente quando inicias uma liga√ß√£o RDP. As listas de permiss√£o s√£o mais destinadas a impedir que os clientes executem instantaneamente qualquer aplicativo sem a entrada do usu√°rio. No final do dia, cabe-te a ti decidir se confias no XPipe para fazer isto. Podes iniciar esta liga√ß√£o sem problemas, isto s√≥ √© √∫til se quiseres utilizar qualquer uma das funcionalidades avan√ßadas de integra√ß√£o de ambiente de trabalho no XPipe.

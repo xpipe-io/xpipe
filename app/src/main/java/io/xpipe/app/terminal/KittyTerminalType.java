@@ -12,8 +12,8 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 public interface KittyTerminalType extends ExternalTerminalType {
 
-    public static final ExternalTerminalType KITTY_LINUX = new Linux();
-    public static final ExternalTerminalType KITTY_MACOS = new MacOs();
+    ExternalTerminalType KITTY_LINUX = new Linux();
+    ExternalTerminalType KITTY_MACOS = new MacOs();
 
     private static FilePath getSocket() throws Exception {
         try (var sc = LocalShell.getShell().start()) {

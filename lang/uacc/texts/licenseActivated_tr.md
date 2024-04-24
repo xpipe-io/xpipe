@@ -1,3 +1,3 @@
-## Lisans?n?z ba?ar?yla etkinle?tirildi!
+## Lisansınız başarıyla etkinleştirildi!
 
-Yeni �zelliklerinize eri?mek i�in l�tfen XPipe uygulamas?n? yeniden ba?lat?n.
+Yeni özelliklerinize erişmek için lütfen XPipe uygulamasını yeniden başlatın.

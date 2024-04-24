@@ -4,6 +4,8 @@ import java.util.List;
 
 public interface ShellLaunchCommand {
 
+    String inlineCdCommand(String cd);
+
     List<String> localCommand();
 
     default String loginCommand() {
