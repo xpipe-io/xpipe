@@ -19,5 +19,7 @@ for (def ext : file("ext").list()) {
 }
 
 include 'app'
-include 'cli'
+if (file("cli").exists()) {
+    include 'cli'
+}
 include 'dist'

@@ -161,8 +161,12 @@ def testTasks = [
         project(':base').getTasksByName('localTest', true),
         project(':jdbc').getTasksByName('localTest', true),
         project(':proc').getTasksByName('localTest', true),
-        project(':cli').getTasksByName('remoteTest', true),
 ]
+
+
+if (file("cli").exists()) {
+    testTasks += [project(':cli').getTasksByName('remoteTest', true)]
+}
 
 tasks.register('testReport', TestReport) {
     getDestinationDirectory().set(file("$rootProject.buildDir/reports/all"))
