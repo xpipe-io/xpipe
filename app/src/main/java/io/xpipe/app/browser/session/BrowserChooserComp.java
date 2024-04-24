@@ -117,6 +117,11 @@ public class BrowserChooserComp extends SimpleComp {
         var dialogPane = new DialogComp() {
 
             @Override
+            protected String finishKey() {
+                return "select";
+            }
+
+            @Override
             protected Comp<?> pane(Comp<?> content) {
                 return content;
             }
