@@ -3,20 +3,20 @@ package io.xpipe.app.core;
 import io.xpipe.app.ext.ExtensionException;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.ModuleLayerLoader;
 import io.xpipe.core.util.XPipeInstallation;
-
 import lombok.Getter;
 import lombok.Value;
 
-import java.io.IOException;
 import java.lang.module.Configuration;
 import java.lang.module.ModuleFinder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,7 +37,7 @@ public class AppExtensionManager {
         this.loadedProviders = loadedProviders;
     }
 
-    public static void init(boolean loadProviders) {
+    public static void init(boolean loadProviders) throws Exception {
         var load = INSTANCE == null || !INSTANCE.loadedProviders && loadProviders;
 
         if (INSTANCE == null) {
@@ -78,7 +78,7 @@ public class AppExtensionManager {
         loadedExtensions.add(baseModule.get());
     }
 
-    private void determineExtensionDirectories() {
+    private void determineExtensionDirectories() throws Exception {
         if (!AppProperties.get().isImage()) {
             extensionBaseDirectories.add(Path.of(System.getProperty("user.dir"))
                     .resolve("app")
@@ -94,6 +94,15 @@ public class AppExtensionManager {
                         "Required local XPipe installation was not found but is required for development");
             }
 
+            var iv = getLocalInstallVersion();
+            var installVersion = AppVersion.parse(iv).orElseThrow(() -> new IllegalArgumentException("Invalid installation version: " + iv));
+            var sv = !AppProperties.get().isImage() ? Files.readString(Path.of("version")).trim() : AppProperties.get().getVersion();
+            var sourceVersion = AppVersion.parse(sv).orElseThrow(() -> new IllegalArgumentException("Invalid source version: " + sv));
+            if (!installVersion.equals(sourceVersion)) {
+                throw new IllegalStateException(
+                        "Incompatible development version. Source: " + iv + ", Installation: " + sv + "\n\nPlease try to check out the matching release version in the repository.");
+            }
+
             var extensions = XPipeInstallation.getLocalExtensionsDirectory(p);
             extensionBaseDirectories.add(extensions);
         }
@@ -104,6 +113,16 @@ public class AppExtensionManager {
         var currentInstallation = XPipeInstallation.getCurrentInstallationBasePath();
         var productionRoot = XPipeInstallation.getLocalExtensionsDirectory(currentInstallation);
         extensionBaseDirectories.add(productionRoot);
+    }
+
+    private static String getLocalInstallVersion() throws Exception {
+        var localInstallation = XPipeInstallation.getLocalDefaultInstallationBasePath();
+        var exec = Path.of(localInstallation, XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()));
+        var fc = new ProcessBuilder(exec.toString(), "version").redirectError(ProcessBuilder.Redirect.DISCARD);
+        var proc = fc.start();
+        var out = new String(proc.getInputStream().readAllBytes());
+        proc.waitFor(1, TimeUnit.SECONDS);
+        return out.trim();
     }
 
     public Set<Module> getContentModules() {
@@ -152,8 +171,8 @@ public class AppExtensionManager {
 
         if (loadedExtensions.stream().anyMatch(extension -> dir.equals(extension.dir))
                 || loadedExtensions.stream()
-                        .anyMatch(extension ->
-                                extension.id.equals(dir.getFileName().toString()))) {
+                .anyMatch(extension ->
+                        extension.id.equals(dir.getFileName().toString()))) {
             return Optional.empty();
         }
 
@@ -228,36 +247,6 @@ public class AppExtensionManager {
                 })
                 .flatMap(Optional::stream)
                 .findFirst();
-    }
-
-    private void addNativeLibrariesToPath() {
-        var libsDir =
-                AppProperties.get().isImage() ? XPipeInstallation.getLocalDynamicLibraryDirectory() : Path.of("lib");
-        if (!Files.exists(libsDir)) {
-            try {
-                Files.createDirectories(libsDir);
-            } catch (IOException e) {
-                ErrorEvent.fromThrowable(e).handle();
-                return;
-            }
-        }
-
-        for (var ext : loadedExtensions) {
-            AppResources.withResourceInLayer(ext.getModule().getName(), "lib", extendedLayer, path -> {
-                if (Files.exists(path)) {
-                    Files.list(path).forEach(lib -> {
-                        try {
-                            var target = libsDir.resolve(lib.getFileName().toString());
-                            if (!Files.exists(target)) {
-                                Files.copy(lib, target);
-                            }
-                        } catch (IOException e) {
-                            ErrorEvent.fromThrowable(e).handle();
-                        }
-                    });
-                }
-            });
-        }
     }
 
     @Value
