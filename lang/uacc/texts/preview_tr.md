@@ -1,8 +1,6 @@
 # XPipe Pro Önizleme
 
-Kullanmaya çalıştığınız özellik, ilgilenen herkesin yeni yayınlanan profesyonellere özel özellikleri yayınlandıktan sonra iki hafta boyunca denemesine olanak tanıyan profesyonel önizlemede mevcuttur. Ayrıca, herhangi bir şey satın almak zorunda kalmadan deneme yapmanıza, geri bildirim paylaşmanıza ve tüm yeni özelliklere bir göz atmanıza olanak tanır.
-
-Bir yan etki olarak, yeni özellikler herkes için önizleme olmadan mümkün olabilecek daha iyi bir test kapsamına da sahip olur.
+Kullanmaya çalıştığınız özellik, ilgilenen herkesin ilk sürümden sonra iki hafta boyunca yeni yayınlanan profesyonel sürüm özelliklerini denemesine olanak tanıyan profesyonel sürüm önizlemesinde mevcuttur. Herhangi bir şey satın almak zorunda kalmadan deneme yapmanıza, geri bildirim paylaşmanıza ve tüm yeni özelliklere bir göz atmanıza olanak tanır.
 
 ## Doğrulama
 
