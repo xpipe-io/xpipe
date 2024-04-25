@@ -28,14 +28,6 @@
     -fx-opacity: 1.0;
 }
 
-.browser .welcome .entry-button {
-    -fx-background-radius: 4px 0 0 4px;
-}
-
-.browser .welcome .directory-button {
-    -fx-background-radius: 0 4px 4px 0;
-}
-
 .browser .welcome .button:hover {
     -fx-background-color: -color-neutral-muted;
 }
@@ -221,6 +213,11 @@
 
 .browser .tab:selected {
     -fx-opacity: 1.0;
+}
+
+.root.nord .browser .tab-container {
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
 }
 
 .browser .quick-access-button {

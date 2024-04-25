@@ -1,5 +1,6 @@
 package io.xpipe.app.browser;
 
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
@@ -98,7 +99,7 @@ public class BrowserWelcomeComp extends SimpleComp {
                     var disable = new SimpleBooleanProperty();
                     var entryButton = entryButton(e, disable);
                     var dirButton = dirButton(e, disable);
-                    return new HorizontalComp(List.of(entryButton, dirButton)).apply(struc -> {
+                    return new HorizontalComp(List.of(entryButton, dirButton, Comp.hspacer(10))).apply(struc -> {
                         ((Region) struc.get().getChildren().get(0))
                                 .prefHeightProperty()
                                 .bind(struc.get().heightProperty());
@@ -138,8 +139,7 @@ public class BrowserWelcomeComp extends SimpleComp {
 
     private Comp<?> entryButton(BrowserSavedState.Entry e, BooleanProperty disable) {
         var entry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
-        var graphic =
-                entry.get().getProvider().getDisplayIconFileName(entry.get().getStore());
+        var graphic = entry.get().getProvider().getDisplayIconFileName(entry.get().getStore());
         var view = PrettyImageHelper.ofFixedSize(graphic, 30, 24);
         return new ButtonComp(
                         new SimpleStringProperty(DataStorage.get().getStoreDisplayName(entry.get())),
@@ -153,11 +153,11 @@ public class BrowserWelcomeComp extends SimpleComp {
                 .accessibleText(DataStorage.get().getStoreDisplayName(entry.get()))
                 .disable(disable)
                 .styleClass("entry-button")
+                .styleClass(Styles.LEFT_PILL)
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
     }
 
     private Comp<?> dirButton(BrowserSavedState.Entry e, BooleanProperty disable) {
-        var entry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
         return new ButtonComp(new SimpleStringProperty(e.getPath()), null, () -> {
                     ThreadHelper.runAsync(() -> {
                         model.restoreStateAsync(e, disable);
@@ -167,6 +167,7 @@ public class BrowserWelcomeComp extends SimpleComp {
                 .disable(disable)
                 .styleClass("directory-button")
                 .apply(struc -> struc.get().setMaxWidth(2000))
+                .styleClass(Styles.RIGHT_PILL)
                 .grow(true, false)
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
     }

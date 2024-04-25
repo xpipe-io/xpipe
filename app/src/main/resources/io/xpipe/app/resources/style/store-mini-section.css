@@ -90,18 +90,21 @@
     -fx-pref-height: 1;
 }
 
-.root:light .store-section-mini-comp:top {
-    -fx-background-color: #9991;
+.root:light .store-section-mini-comp:sub:expanded {
+    -fx-border-color: #9999;
 }
 
-.root:dark .store-section-mini-comp:top {
-    -fx-background-color: #0001;
+.root:dark .store-section-mini-comp:sub:expanded {
+    -fx-border-color: #4449;
+}
+
+.root.nord .store-section-mini-comp:sub:expanded {
+    -fx-border-radius: 0;
 }
 
 .store-section-mini-comp:sub:expanded {
     -fx-border-radius: 4 0 0 4;
     -fx-border-width: 1px 0 1px 1px;
-    -fx-border-color: -color-border-default;
 }
 
 .store-section-mini-comp:root {

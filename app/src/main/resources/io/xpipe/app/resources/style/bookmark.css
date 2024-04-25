@@ -6,6 +6,12 @@
     -fx-border-width: 0 0 1 0;
 }
 
+
+.root.nord .bookmark-list .filter-comp {
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
+
 .bookmark-list .filter-comp {
     -fx-border-width: 1;
     -fx-border-radius: 0 4px 4px 0;

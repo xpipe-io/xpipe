@@ -5,6 +5,7 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.Hyperlinks;
 
+import io.xpipe.app.util.ThreadHelper;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
@@ -67,6 +68,10 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
     }
 
     private void handleProbableUpdate() {
+        if (AppProperties.get().isDevelopmentEnvironment()) {
+            return;
+        }
+
         try {
             var rel = XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheck();
             if (rel != null && rel.isUpdate()) {
@@ -86,6 +91,7 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
                         .orElse(false);
                 if (update) {
                     Hyperlinks.open(rel.getReleaseUrl());
+                    ThreadHelper.sleep(1000);
                 }
             }
         } catch (Throwable t) {

@@ -62,6 +62,7 @@ public class FilterComp extends Comp<FilterComp.Structure> {
 
         var stack = new StackPane(bgLabel, filter);
         stack.getStyleClass().add("filter-comp");
+        stack.minWidthProperty().bind(bgLabel.prefWidthProperty());
 
         return Structure.builder()
                 .inactiveIcon(fi)

@@ -134,11 +134,6 @@
     -fx-spacing: 0.2em;
 }
 
-.store-entry-section-comp.none {
-    -fx-background-color: -color-bg-default;
-    -fx-border-color: -color-border-default;
-}
-
 /* Light sub backgrounds */
 
 .root:light .store-entry-section-comp:sub:expanded {

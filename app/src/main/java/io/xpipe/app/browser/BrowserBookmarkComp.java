@@ -84,11 +84,12 @@ public final class BrowserBookmarkComp extends SimpleComp {
                         StoreViewState.get().getAllConnectionsCategory(),
                         StoreViewState.get().getActiveCategory(),
                         selectedCategory)
-                .styleClass(Styles.LEFT_PILL);
+                .styleClass(Styles.LEFT_PILL)
+                .minWidth(Region.USE_PREF_SIZE);
         var filter =
-                new FilterComp(filterText).styleClass(Styles.RIGHT_PILL).hgrow().apply(struc -> {});
+                new FilterComp(filterText).hgrow();
 
-        var top = new HorizontalComp(List.of(category.minWidth(Region.USE_PREF_SIZE), filter.hgrow()))
+        var top = new HorizontalComp(List.of(category, filter))
                 .styleClass("categories")
                 .apply(struc -> {
                     AppFont.medium(struc.get());
