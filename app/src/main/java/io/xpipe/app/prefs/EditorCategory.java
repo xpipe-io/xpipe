@@ -30,7 +30,6 @@ public class EditorCategory extends AppPrefsCategory {
         var prefs = AppPrefs.get();
         var terminalTest = new StackComp(
                         List.of(new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
-                            prefs.save();
                             ThreadHelper.runFailableAsync(() -> {
                                 var editor = AppPrefs.get().externalEditor().getValue();
                                 if (editor != null) {

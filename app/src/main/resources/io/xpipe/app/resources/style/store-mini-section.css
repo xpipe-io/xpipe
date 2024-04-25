@@ -23,6 +23,10 @@
     -fx-background-radius: 0;
 }
 
+.root.nord .store-section-mini-comp .item:hover, .root.nord:key-navigation .store-section-mini-comp .item:focused {
+    -fx-background-color: -color-accent-muted;
+}
+
 .store-section-mini-comp .item:hover, .root:key-navigation .store-section-mini-comp .item:focused {
     -fx-background-color: -color-accent-subtle;
 }

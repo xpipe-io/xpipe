@@ -40,10 +40,6 @@ public class DialogHelper {
                 });
     }
 
-    public static Dialog dataStoreFlowQuery(DataFlow flow, DataFlow[] available) {
-        return Dialog.choice("Flow", (DataFlow o) -> o.getDisplayName(), true, false, flow, available);
-    }
-
     public static Dialog shellQuery(String displayName, DataStore store) {
         var storeName = DataStorage.get().getStoreDisplayName(store).orElse("localhost");
         return Dialog.query(displayName, false, true, false, storeName, QueryConverter.STRING)

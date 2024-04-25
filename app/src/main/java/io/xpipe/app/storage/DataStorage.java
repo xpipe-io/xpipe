@@ -5,10 +5,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.DataStoreId;
-import io.xpipe.core.store.FixedChildStore;
-import io.xpipe.core.store.LocalStore;
+import io.xpipe.core.store.*;
 import io.xpipe.core.util.UuidHelper;
 import javafx.util.Pair;
 import lombok.Getter;
@@ -421,9 +418,6 @@ public abstract class DataStorage {
         deleteWithChildren(toRemove.toArray(DataStoreEntry[]::new));
         addStoreEntriesIfNotPresent(toAdd.stream().map(DataStoreEntryRef::get).toArray(DataStoreEntry[]::new));
         toUpdate.forEach(pair -> {
-            // TODO do we need this, it erases any custom information?
-            // pair.getKey().setStoreInternal(pair.getValue().getStore(), false);
-
             // Update state by merging
             if (pair.getKey().getStorePersistentState() != null
                     && pair.getValue().get().getStorePersistentState() != null) {
@@ -434,6 +428,11 @@ public abstract class DataStorage {
                 // Children classes might not be the same, the same goes for state classes
                 // This can happen when there are multiple child classes and the ids got switched around
                 if (classMatch) {
+                    DataStore merged = ((FixedChildStore) pair.getKey().getStore()).merge(pair.getValue().getStore().asNeeded());
+                    if (merged != pair.getKey().getStore()) {
+                        pair.getKey().setStoreInternal(merged, false);
+                    }
+
                     var mergedState = pair.getKey().getStorePersistentState().deepCopy();
                     mergedState.merge(pair.getValue().get().getStorePersistentState());
                     pair.getKey().setStorePersistentState(mergedState);

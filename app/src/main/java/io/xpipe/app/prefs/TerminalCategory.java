@@ -37,7 +37,6 @@ public class TerminalCategory extends AppPrefsCategory {
         var prefs = AppPrefs.get();
         var terminalTest = new StackComp(
                         List.of(new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
-                            prefs.save();
                             ThreadHelper.runFailableAsync(() -> {
                                 var term = AppPrefs.get().terminalType().getValue();
                                 if (term != null) {
@@ -58,12 +57,6 @@ public class TerminalCategory extends AppPrefsCategory {
                                 .apply(struc -> struc.get().setPromptText("myterminal -e $CMD"))
                                 .hide(prefs.terminalType.isNotEqualTo(ExternalTerminalType.CUSTOM)))
                         .addComp(terminalTest)
-                        .disable(Bindings.createBooleanBinding(
-                                () -> {
-                                    return prefs.terminalType().getValue() != null
-                                            && !prefs.terminalType.get().supportsTabs();
-                                },
-                                prefs.terminalType()))
                         .nameAndDescription("clearTerminalOnInit")
                         .addToggle(prefs.clearTerminalOnInit))
                 .buildComp();

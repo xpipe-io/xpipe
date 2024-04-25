@@ -10,6 +10,6 @@ public class TerminalInitScriptConfig {
     TerminalInitFunction terminalSpecificCommands;
 
     public static TerminalInitScriptConfig ofName(String name) {
-        return new TerminalInitScriptConfig(name, true, null);
+        return new TerminalInitScriptConfig(name, true, TerminalInitFunction.none());
     }
 }

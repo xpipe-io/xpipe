@@ -94,12 +94,12 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
     public abstract static class PathApplication extends ExternalApplicationType {
 
         protected final String executable;
-        protected final boolean explicityAsync;
+        protected final boolean explicitlyAsync;
 
-        public PathApplication(String id, String executable, boolean explicityAsync) {
+        public PathApplication(String id, String executable, boolean explicitlyAsync) {
             super(id);
             this.executable = executable;
-            this.explicityAsync = explicityAsync;
+            this.explicitlyAsync = explicitlyAsync;
         }
 
         public boolean isAvailable() {
@@ -121,7 +121,7 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
                 }
 
                 args.add(0, executable);
-                if (explicityAsync) {
+                if (explicitlyAsync) {
                     ExternalApplicationHelper.startAsync(args);
                 } else {
                     pc.executeSimpleCommand(args);

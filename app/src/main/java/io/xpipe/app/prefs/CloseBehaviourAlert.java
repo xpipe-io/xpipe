@@ -47,7 +47,7 @@ public class CloseBehaviourAlert {
                             rb.setSelected(true);
                         }
                         vb.getChildren().add(rb);
-                        vb.setMinHeight(150);
+                        vb.setMinHeight(130);
                     }
                     alert.getDialogPane().setContent(vb);
                 })

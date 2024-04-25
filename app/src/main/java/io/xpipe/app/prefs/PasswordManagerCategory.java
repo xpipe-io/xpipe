@@ -52,7 +52,6 @@ public class PasswordManagerCategory extends AppPrefsCategory {
         var prefs = AppPrefs.get();
         var testPasswordManagerValue = new SimpleStringProperty();
         Runnable test = () -> {
-            prefs.save();
             var cmd = prefs.passwordManagerString(testPasswordManagerValue.get());
             if (cmd == null) {
                 return;

@@ -215,7 +215,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         @Override
         public void launch(Path file) throws Exception {
             var builder = CommandBuilder.of().addFile(executable).addFile(file.toString());
-            if (explicityAsync) {
+            if (explicitlyAsync) {
                 ExternalApplicationHelper.startAsync(builder);
             } else {
                 LocalShell.getShell().executeSimpleCommand(builder);

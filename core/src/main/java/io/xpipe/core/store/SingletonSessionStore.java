@@ -56,10 +56,15 @@ public interface SingletonSessionStore<T extends SingletonSessionStore.Session>
                 return;
             }
 
-            s = newSession();
-            s.start();
-            setCache("session", s);
-            onSessionUpdate(true);
+            try {
+                s = newSession();
+                s.start();
+                setCache("session", s);
+                onSessionUpdate(true);
+            } catch (Exception ex) {
+                onSessionUpdate(false);
+                throw ex;
+            }
         }
     }
 

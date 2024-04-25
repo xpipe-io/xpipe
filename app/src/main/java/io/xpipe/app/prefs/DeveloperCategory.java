@@ -31,7 +31,6 @@ public class DeveloperCategory extends AppPrefsCategory {
         var prefs = AppPrefs.get();
         var localCommand = new SimpleStringProperty();
         Runnable test = () -> {
-            prefs.save();
             var cmd = localCommand.get();
             if (cmd == null) {
                 return;

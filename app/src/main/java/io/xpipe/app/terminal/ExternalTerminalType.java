@@ -161,6 +161,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                         // In order to fix this bug which also affects us:
                         // https://askubuntu.com/questions/1148475/launching-gnome-terminal-from-vscode
                         .envrironment("GNOME_TERMINAL_SCREEN", sc -> "");
+                pc.executeSimpleCommand(toExecute);
             }
         }
 
@@ -819,7 +820,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return launchConfiguration -> {
                 var args = toCommand(launchConfiguration);
                 args.add(0, executable);
-                if (explicityAsync) {
+                if (explicitlyAsync) {
                     args = systemDialect.launchAsnyc(args);
                 }
                 return args.buildSimple();

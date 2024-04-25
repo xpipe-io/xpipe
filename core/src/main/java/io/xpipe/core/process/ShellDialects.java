@@ -74,7 +74,7 @@ public class ShellDialects {
             CSH = byId("csh");
             ASH = byId("ash");
             SH = byId("sh");
-            NO_INTERACTION = byId("unsupported");
+            NO_INTERACTION = byId("noInteraction");
             CISCO = byId("cisco");
             MIKROTIK = byId("mikrotik");
             RBASH = byId("rbash");
