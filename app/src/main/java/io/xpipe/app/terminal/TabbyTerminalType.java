@@ -52,7 +52,7 @@ public interface TabbyTerminalType extends ExternalTerminalType {
 //            }
 //            return null;
 //        });
-        return null;
+        return TerminalInitFunction.none();
     }
 
     class Windows extends ExternalTerminalType.WindowsType implements TabbyTerminalType {

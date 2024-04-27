@@ -32,7 +32,7 @@ public class TerminalLauncher {
                             title,
                             type.shouldClear()
                                     && AppPrefs.get().clearTerminalOnInit().get(),
-                    null),
+                    TerminalInitFunction.none()),
                     true);
             var config = new ExternalTerminalType.LaunchConfiguration(null, title, title, script, sc.getShellDialect());
             type.launch(config);
