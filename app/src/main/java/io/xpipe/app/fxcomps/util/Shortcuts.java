@@ -47,7 +47,7 @@ public class Shortcuts {
             }
 
             if (scene.get() != null) {
-                scene.get().removeEventFilter(KeyEvent.KEY_PRESSED, filter);
+                scene.get().removeEventHandler(KeyEvent.KEY_PRESSED, filter);
                 DISPLAY_SHORTCUTS.remove(region);
                 scene.set(null);
             }
@@ -55,7 +55,7 @@ public class Shortcuts {
             if (s != null) {
                 scene.set(s);
                 DISPLAY_SHORTCUTS.put(region, comb);
-                s.addEventFilter(KeyEvent.KEY_PRESSED, filter);
+                s.addEventHandler(KeyEvent.KEY_PRESSED, filter);
             }
         });
     }

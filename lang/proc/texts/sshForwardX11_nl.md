@@ -7,3 +7,7 @@ Als deze optie is ingeschakeld, wordt de SSH verbinding gestart met X11 forwardi
 Met XPipe kun je de WSL2 X11 mogelijkheden gebruiken voor je SSH verbinding. Het enige wat je hiervoor nodig hebt is een [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) distributie geïnstalleerd op je lokale systeem. XPipe zal automatisch een compatibele geïnstalleerde distributie kiezen als dat mogelijk is, maar je kunt ook een andere gebruiken in het instellingenmenu.
 
 Dit betekent dat je geen aparte X11 server op Windows hoeft te installeren. Maar als je er toch een gebruikt, zal XPipe dat detecteren en de huidige X11 server gebruiken.
+
+### X11 verbindingen als bureaublad
+
+Elke SSH-verbinding waarbij X11-forwarding is ingeschakeld, kan worden gebruikt als bureaubladhost. Dit betekent dat je bureaubladapplicaties en bureaubladomgevingen kunt starten via deze verbinding. Wanneer een bureaubladapplicatie wordt gestart, zal deze verbinding automatisch op de achtergrond worden gestart om de X11 tunnel te starten.

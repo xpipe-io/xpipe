@@ -19,11 +19,10 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeInstallation;
-
 import javafx.application.Platform;
-
 import lombok.Getter;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.desktop.AppReopenedEvent;
 import java.awt.desktop.AppReopenedListener;
@@ -31,7 +30,6 @@ import java.awt.desktop.SystemEventListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-import javax.imageio.ImageIO;
 
 public abstract class OperationMode {
 
@@ -242,7 +240,7 @@ public abstract class OperationMode {
     public static void restart() {
         OperationMode.executeAfterShutdown(() -> {
             var exec = XPipeInstallation.createExternalAsyncLaunchCommand(
-                    XPipeInstallation.getLocalDefaultInstallationBasePath(), XPipeDaemonMode.GUI, "");
+                    XPipeInstallation.getCurrentInstallationBasePath().toString(), XPipeDaemonMode.GUI, "");
             LocalShell.getShell().executeSimpleCommand(exec);
         });
     }

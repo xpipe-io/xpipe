@@ -7,7 +7,6 @@ import io.xpipe.app.util.BooleanAnimationTimer;
 import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FileKind;
-
 import io.xpipe.core.store.FileSystem;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -20,13 +19,11 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
-
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -70,9 +67,8 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
                 return;
             }
 
-            var actionsMenu = new AtomicReference<ContextMenu>();
             var r = new Menu();
-            var newItems = updateMenuItems(r, entry, true);
+            updateMenuItems(r, entry, true);
             Platform.runLater(() -> {
                 getItems().addAll(r.getItems());
                 show(anchor, Side.RIGHT, 0, 0);
@@ -148,7 +144,6 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
         }
 
         private void createFileMenu() {
-            var fileEntry = browserEntry.getRawFileEntry();
             menu.setMnemonicParsing(false);
             menu.addEventFilter(Menu.ON_SHOWN, event -> {
                 menu.hide();
@@ -175,12 +170,11 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
         }
 
         private void createDirectoryMenu() {
-            var fileEntry = browserEntry.getRawFileEntry().resolved();
             menu.setMnemonicParsing(false);
             var empty = new MenuItem("...");
             empty.setDisable(true);
             menu.getItems().add(empty);
-            addHoverHandling(menu, empty);
+            addHoverHandling(empty);
 
             menu.setOnAction(event -> {
                 if (event.getTarget() != menu) {
@@ -220,7 +214,7 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
             });
         }
 
-        private void addHoverHandling(Menu m, MenuItem empty) {
+        private void addHoverHandling(MenuItem empty) {
             var hover = new SimpleBooleanProperty();
             menu.addEventFilter(Menu.ON_SHOWING, event -> {
                 if (!keyBasedNavigation) {

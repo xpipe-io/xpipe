@@ -76,6 +76,7 @@ public class UserReportComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var emailHeader = new Label(AppI18n.get("provideEmail"));
+        emailHeader.setWrapText(true);
         AppFont.medium(emailHeader);
         var email = new TextField();
         this.email.bind(email.textProperty());
