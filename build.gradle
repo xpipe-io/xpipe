@@ -17,6 +17,10 @@ allprojects { subproject ->
 }
 
 subprojects {subproject ->
+    if (subproject.name == 'dist') {
+        return
+    }
+
     apply plugin: 'com.diffplug.spotless'
     spotless {
         java {
