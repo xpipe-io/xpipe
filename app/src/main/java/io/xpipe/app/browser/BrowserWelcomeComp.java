@@ -146,7 +146,10 @@ public class BrowserWelcomeComp extends SimpleComp {
                         view.createRegion(),
                         () -> {
                             ThreadHelper.runAsync(() -> {
-                                model.restoreStateAsync(e, disable);
+                                var storageEntry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
+                                if (storageEntry.isPresent()) {
+                                    model.openFileSystemAsync(storageEntry.get().ref(), null, disable);
+                                }
                             });
                         })
                 .minWidth(250)

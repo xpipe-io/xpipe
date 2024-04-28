@@ -94,7 +94,7 @@
 
 /* Section */
 
-.store-entry-section-comp .separator {
+.store-entry-section-comp > .separator {
     -fx-padding: 0 12px 0 35px;
     -fx-border-insets: 0px;
 }
@@ -103,7 +103,7 @@
     -fx-padding: 5px 0 5px 25px;
 }
 
-.store-entry-section-comp .separator .line {
+.store-entry-section-comp > .separator .line {
     -fx-padding: 0;
     -fx-border-insets: 0px;
     -fx-background-color: -color-border-subtle;
@@ -111,7 +111,7 @@
 }
 
 .root:pretty .top > .store-entry-section-comp {
-    -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 2px, 0.5, 0, 1);
+    -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 2, 0.5, 0, 1);
 }
 
 .store-entry-section-comp:root {

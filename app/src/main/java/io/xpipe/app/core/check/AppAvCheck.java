@@ -65,7 +65,7 @@ public class AppAvCheck {
                 alert.getDialogPane().setPadding(new Insets(15));
             });
 
-            alert.getButtonTypes().add(new ButtonType(AppI18n.get("gotIt"), ButtonBar.ButtonData.OK_DONE));
+            alert.getButtonTypes().add(new ButtonType(AppI18n.get("ok"), ButtonBar.ButtonData.OK_DONE));
         });
         a.filter(b -> b.getButtonData().isDefaultButton())
                 .ifPresentOrElse(buttonType -> {}, () -> OperationMode.halt(1));

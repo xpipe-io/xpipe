@@ -49,7 +49,7 @@ public class UpdateChangelogAlert {
                     var markdown = new MarkdownComp(update.getRawDescription(), s -> "&nbsp;" + s).createRegion();
                     alert.getDialogPane().setContent(markdown);
 
-                    alert.getButtonTypes().add(new ButtonType(AppI18n.get("gotIt"), ButtonBar.ButtonData.OK_DONE));
+                    alert.getButtonTypes().add(new ButtonType(AppI18n.get("ok"), ButtonBar.ButtonData.OK_DONE));
                     ((Stage) alert.getDialogPane().getScene().getWindow()).setAlwaysOnTop(true);
                 },
                 r -> r.filter(b -> b.getButtonData().isDefaultButton()).ifPresent(t -> {}));

@@ -1,16 +1,7 @@
 package io.xpipe.core.store;
 
-public interface SingletonSessionStore<T extends SingletonSessionStore.Session>
+public interface SingletonSessionStore<T extends Session>
         extends ExpandedLifecycleStore, InternalCacheDataStore {
-
-    abstract class Session {
-
-        public abstract boolean isRunning();
-
-        public abstract void start() throws Exception;
-
-        public abstract void stop() throws Exception;
-    }
 
     @Override
     default void finalizeValidate() throws Exception {
