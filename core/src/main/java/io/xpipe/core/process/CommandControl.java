@@ -1,7 +1,6 @@
 package io.xpipe.core.process;
 
 import io.xpipe.core.util.FailableConsumer;
-import io.xpipe.core.util.FailableFunction;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -64,11 +63,7 @@ public interface CommandControl extends ProcessControl {
 
     long getExitCode();
 
-    default CommandControl elevated(String message) {
-        return elevated(message, (v) -> true);
-    }
-
-    CommandControl elevated(String message, FailableFunction<ShellControl, Boolean, Exception> elevationFunction);
+    CommandControl elevated(ElevationFunction function);
 
     void withStdoutOrThrow(FailableConsumer<InputStreamReader, Exception> c);
 

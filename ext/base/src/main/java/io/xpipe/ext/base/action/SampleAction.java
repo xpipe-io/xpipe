@@ -5,6 +5,7 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.process.CommandControl;
+import io.xpipe.core.process.ElevationFunction;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.LocalStore;
@@ -125,7 +126,7 @@ public class SampleAction implements ActionProvider {
                 // by using the information from the connection store.
                 // You can also set a custom working directory.
                 try (CommandControl cc = sc.command("kill <pid>")
-                        .elevated("kill")
+                        .elevated(ElevationFunction.elevated("kill"))
                         .withWorkingDirectory("/")
                         .start()) {
                     // Discard any output but throw an exception with the stderr contents if the exit code is not 0

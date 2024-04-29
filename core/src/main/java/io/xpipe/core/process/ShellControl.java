@@ -171,7 +171,7 @@ public interface ShellControl extends ProcessControl {
 
     OsType.Any getOsType();
 
-    ShellControl elevated(String message, FailableFunction<ShellControl, Boolean, Exception> elevationFunction);
+    ShellControl elevated(ElevationFunction elevationFunction);
 
     ShellControl withInitSnippet(ScriptSnippet snippet);
 
