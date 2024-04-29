@@ -7,11 +7,12 @@
 }
 
 .store-header-bar .menu-button .context-menu {
-    -fx-padding: 3px;
-    -fx-background-radius: 4px;
-    -fx-border-radius: 4px;
-    -fx-border-color: -color-neutral-muted;
+    -fx-padding: 0;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-border-color: -color-border-default;
 }
+
 
 .context-menu > * > * {
     -fx-padding: 3px 10px 3px 10px;
