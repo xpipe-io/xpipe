@@ -81,9 +81,10 @@ public interface WezTerminalType extends ExternalTerminalType {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
+            var path = LocalShell.getShell().command(String.format(
+                    "mdfind -name '%s' -onlyin /Applications -onlyin ~/Applications -onlyin /System/Applications 2>/dev/null", applicationName)).readStdoutOrThrow();
             var c = CommandBuilder.of()
-                    .addFile(getApplicationPath()
-                            .orElseThrow()
+                    .addFile(Path.of(path)
                             .resolve("Contents")
                             .resolve("MacOS")
                             .resolve("wezterm-gui")

@@ -549,33 +549,23 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
-            var app = this.getApplicationPath();
-            if (app.isEmpty()) {
-                throw new IllegalStateException("iTerm installation not found");
-            }
-
             try (ShellControl pc = LocalShell.getShell()) {
-                var a = app.get().toString();
                 pc.osascriptCommand(String.format(
                                 """
-                                if application "%s" is not running then
-                                    launch application "%s"
+                                if application "iTerm" is not running then
+                                    launch application "iTerm"
                                     delay 1
-                                    tell application "%s"
+                                    tell application "iTerm"
                                         tell current tab of current window
                                             close
                                         end tell
                                     end tell
                                 end if
-                                tell application "%s"
+                                tell application "iTerm"
                                     activate
                                     create window with default profile command "%s"
                                 end tell
                                 """,
-                                a,
-                                a,
-                                a,
-                                a,
                                 configuration.getScriptFile().toString().replaceAll("\"", "\\\\\"")))
                         .execute();
             }

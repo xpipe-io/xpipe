@@ -11,7 +11,6 @@ import io.xpipe.core.process.ShellControl;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Comparator;
 import java.util.Optional;
 
 public abstract class ExternalApplicationType implements PrefsChoiceValue {
@@ -43,46 +42,15 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
             this.applicationName = applicationName;
         }
 
-        protected Optional<Path> getApplicationPath() {
-            try (ShellControl pc = LocalShell.getShell().start()) {
-                try (var c = pc.command(String.format(
-                                "/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister "
-                                        + "-dump | grep -o \"/.*%s.app\" | grep -v -E \"Caches|TimeMachine|Temporary|.Trash|/Volumes/%s\" | uniq",
-                                applicationName, applicationName))
-                        .start()) {
-                    var path = c.readStdoutDiscardErr();
-                    if (c.getExitCode() != 0 || path.isBlank()) {
-                        return Optional.empty();
-                    }
-
-                    // Check if returned paths are actually valid
-                    // Also sort them by length to prevent finding a deeply buried app
-                    var valid = path.lines()
-                            .filter(s -> {
-                                try {
-                                    return Files.exists(Path.of(s));
-                                } catch (Exception ex) {
-                                    return false;
-                                }
-                            })
-                            .sorted(Comparator.comparingInt(value -> value.length()))
-                            .toList();
-
-                    // Require app in proper applications directory
-                    var app = valid.stream()
-                            .filter(s -> s.contains("Applications"))
-                            .findFirst();
-                    return app.map(Path::of);
-                }
-            } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).omit().handle();
-                return Optional.empty();
-            }
-        }
-
         @Override
         public boolean isAvailable() {
-            return getApplicationPath().isPresent();
+            try (ShellControl pc = LocalShell.getShell().start()) {
+                return pc.command(String.format(
+                        "mdfind -name '%s' -onlyin /Applications -onlyin ~/Applications -onlyin /System/Applications", applicationName)).executeAndCheck();
+            } catch (Exception e) {
+                ErrorEvent.fromThrowable(e).handle();
+                return false;
+            }
         }
 
         @Override

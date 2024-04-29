@@ -194,14 +194,9 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public void launch(Path file) throws Exception {
-            var execFile = getApplicationPath();
-            if (execFile.isEmpty()) {
-                throw new IOException("Application " + applicationName + ".app not found");
-            }
-
             ExternalApplicationHelper.startAsync(CommandBuilder.of()
                     .add("open", "-a")
-                    .addFile(execFile.orElseThrow().toString())
+                    .addQuoted(applicationName)
                     .addFile(file.toString()));
         }
     }
