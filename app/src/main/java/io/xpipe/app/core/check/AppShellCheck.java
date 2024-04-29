@@ -54,8 +54,8 @@ public class AppShellCheck {
                 The most likely causes are:
                 - On Windows, an AntiVirus program might block required programs and commands
                 - The system shell is restricted or blocked
+                - Your PATH environment variable is corrupt / incomplete. You can check this by manually trying to run some commands in a terminal
                 - Some elementary command-line tools are not available or not working correctly
-                - Your PATH environment variable is corrupt / incomplete
 
                 %s
                 """
