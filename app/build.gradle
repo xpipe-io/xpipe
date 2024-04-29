@@ -57,7 +57,7 @@ dependencies {
     api group: 'org.slf4j', name: 'slf4j-api', version: '2.0.13'
     api group: 'org.slf4j', name: 'slf4j-jdk-platform-logging', version: '2.0.13'
     api 'io.xpipe:modulefs:0.1.5'
-    api 'net.synedra:validatorfx:0.4.2'
+    api 'net.synedra:validatorfx:0.5.1'
     api ('io.github.mkpaz:atlantafx-base:2.0.1') {
         exclude group: 'org.openjfx', module: 'javafx-base'
         exclude group: 'org.openjfx', module: 'javafx-controls'
