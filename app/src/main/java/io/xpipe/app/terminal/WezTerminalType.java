@@ -81,8 +81,11 @@ public interface WezTerminalType extends ExternalTerminalType {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
-            var path = LocalShell.getShell().command(String.format(
-                    "mdfind -name '%s' -onlyin /Applications -onlyin ~/Applications -onlyin /System/Applications 2>/dev/null", applicationName)).readStdoutOrThrow();
+            var path = LocalShell.getShell()
+                    .command(String.format(
+                            "mdfind -name '%s' -onlyin /Applications -onlyin ~/Applications -onlyin /System/Applications 2>/dev/null",
+                            applicationName))
+                    .readStdoutOrThrow();
             var c = CommandBuilder.of()
                     .addFile(Path.of(path)
                             .resolve("Contents")

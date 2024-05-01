@@ -2,6 +2,7 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.core.util.SecretValue;
+
 import javafx.animation.PauseTransition;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
@@ -21,9 +22,16 @@ public class ClipboardHelper {
 
         PlatformThread.runLaterIfNeeded(() -> {
             Clipboard clipboard = Clipboard.getSystemClipboard();
-            Map<DataFormat, Object> previous = Stream.of(DataFormat.PLAIN_TEXT, DataFormat.URL, DataFormat.RTF, DataFormat.HTML, DataFormat.IMAGE, DataFormat.FILES)
-                    .map(dataFormat -> new AbstractMap.SimpleEntry<>(dataFormat, clipboard.getContent(dataFormat))).filter(o -> o.getValue() != null)
-                    .collect(HashMap::new, (m,v)->m.put(v.getKey(), v.getValue()), HashMap::putAll);
+            Map<DataFormat, Object> previous = Stream.of(
+                            DataFormat.PLAIN_TEXT,
+                            DataFormat.URL,
+                            DataFormat.RTF,
+                            DataFormat.HTML,
+                            DataFormat.IMAGE,
+                            DataFormat.FILES)
+                    .map(dataFormat -> new AbstractMap.SimpleEntry<>(dataFormat, clipboard.getContent(dataFormat)))
+                    .filter(o -> o.getValue() != null)
+                    .collect(HashMap::new, (m, v) -> m.put(v.getKey(), v.getValue()), HashMap::putAll);
 
             var withPassword = new HashMap<>(previous);
             withPassword.put(DataFormat.PLAIN_TEXT, pass.getSecretValue());

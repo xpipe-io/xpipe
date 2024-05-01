@@ -43,8 +43,9 @@ public class LaunchAction implements ActionProvider {
 
             @Override
             public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
-                return o.get().getValidity().isUsable() && (o.getStore() instanceof LaunchableStore || o.get().getProvider().launchAction(o.get()) !=
-                        null);
+                return o.get().getValidity().isUsable()
+                        && (o.getStore() instanceof LaunchableStore
+                                || o.get().getProvider().launchAction(o.get()) != null);
             }
 
             @Override
@@ -75,8 +76,9 @@ public class LaunchAction implements ActionProvider {
 
             @Override
             public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
-                return o.get().getValidity().isUsable() && (o.getStore() instanceof LaunchableStore || o.get().getProvider().launchAction(o.get()) !=
-                        null);
+                return o.get().getValidity().isUsable()
+                        && (o.getStore() instanceof LaunchableStore
+                                || o.get().getProvider().launchAction(o.get()) != null);
             }
         };
     }

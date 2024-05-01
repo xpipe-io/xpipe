@@ -166,7 +166,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand(ShellDialect systemDialect) {
+        public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand(
+                ShellDialect systemDialect) {
             return launchConfiguration -> {
                 var toExecute = CommandBuilder.of()
                         .add(executable, "-v", "--title")
@@ -608,7 +609,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand(ShellDialect systemDialect) {
+        public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand(
+                ShellDialect systemDialect) {
             return launchConfiguration -> {
                 var toExecute = CommandBuilder.of()
                         .add("open", "-a")
@@ -806,7 +808,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand(ShellDialect systemDialect) {
+        public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand(
+                ShellDialect systemDialect) {
             return launchConfiguration -> {
                 var args = toCommand(launchConfiguration);
                 args.add(0, executable);

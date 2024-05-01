@@ -46,7 +46,9 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
         public boolean isAvailable() {
             try (ShellControl pc = LocalShell.getShell().start()) {
                 return pc.command(String.format(
-                        "mdfind -name '%s' -onlyin /Applications -onlyin ~/Applications -onlyin /System/Applications", applicationName)).executeAndCheck();
+                                "mdfind -name '%s' -onlyin /Applications -onlyin ~/Applications -onlyin /System/Applications",
+                                applicationName))
+                        .executeAndCheck();
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).handle();
                 return false;

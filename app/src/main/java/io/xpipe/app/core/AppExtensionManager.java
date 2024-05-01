@@ -8,6 +8,7 @@ import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.ModuleLayerLoader;
 import io.xpipe.core.util.XPipeInstallation;
+
 import lombok.Getter;
 import lombok.Value;
 
@@ -95,12 +96,16 @@ public class AppExtensionManager {
             }
 
             var iv = getLocalInstallVersion();
-            var installVersion = AppVersion.parse(iv).orElseThrow(() -> new IllegalArgumentException("Invalid installation version: " + iv));
-            var sv = !AppProperties.get().isImage() ? Files.readString(Path.of("version")).trim() : AppProperties.get().getVersion();
-            var sourceVersion = AppVersion.parse(sv).orElseThrow(() -> new IllegalArgumentException("Invalid source version: " + sv));
+            var installVersion = AppVersion.parse(iv)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid installation version: " + iv));
+            var sv = !AppProperties.get().isImage()
+                    ? Files.readString(Path.of("version")).trim()
+                    : AppProperties.get().getVersion();
+            var sourceVersion = AppVersion.parse(sv)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid source version: " + sv));
             if (!installVersion.equals(sourceVersion)) {
-                throw new IllegalStateException(
-                        "Incompatible development version. Source: " + iv + ", Installation: " + sv + "\n\nPlease try to check out the matching release version in the repository.");
+                throw new IllegalStateException("Incompatible development version. Source: " + iv + ", Installation: "
+                        + sv + "\n\nPlease try to check out the matching release version in the repository.");
             }
 
             var extensions = XPipeInstallation.getLocalExtensionsDirectory(p);
@@ -171,8 +176,8 @@ public class AppExtensionManager {
 
         if (loadedExtensions.stream().anyMatch(extension -> dir.equals(extension.dir))
                 || loadedExtensions.stream()
-                .anyMatch(extension ->
-                        extension.id.equals(dir.getFileName().toString()))) {
+                        .anyMatch(extension ->
+                                extension.id.equals(dir.getFileName().toString()))) {
             return Optional.empty();
         }
 

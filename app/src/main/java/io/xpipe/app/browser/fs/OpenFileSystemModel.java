@@ -22,8 +22,10 @@ import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.ShellOpenFunction;
 import io.xpipe.core.store.*;
 import io.xpipe.core.util.FailableConsumer;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -297,7 +299,8 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
         loadFilesSync(path);
     }
 
-    public void withFiles(String dir, FailableConsumer<Stream<FileSystem.FileEntry>, Exception> consumer) throws Exception {
+    public void withFiles(String dir, FailableConsumer<Stream<FileSystem.FileEntry>, Exception> consumer)
+            throws Exception {
         BooleanScope.executeExclusive(busy, () -> {
             if (dir != null) {
                 startIfNeeded();

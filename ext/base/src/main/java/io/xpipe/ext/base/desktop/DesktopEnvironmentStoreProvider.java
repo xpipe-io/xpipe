@@ -127,7 +127,9 @@ public class DesktopEnvironmentStoreProvider implements DataStoreProvider {
                 .nonNull()
                 .nameAndDescription("desktopTerminal")
                 .addComp(
-                        ChoiceComp.ofTranslatable(terminal, ExternalTerminalType.getTypes(st.getUsedOsType(), true, false), true).maxWidth(2000),
+                        ChoiceComp.ofTranslatable(
+                                        terminal, ExternalTerminalType.getTypes(st.getUsedOsType(), true, false), true)
+                                .maxWidth(2000),
                         terminal)
                 .nonNull()
                 .nameAndDescription("desktopShellDialect")

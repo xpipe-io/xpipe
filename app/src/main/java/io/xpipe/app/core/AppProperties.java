@@ -55,7 +55,9 @@ public class AppProperties {
                 .orElse(UUID.randomUUID());
         sentryUrl = System.getProperty("io.xpipe.app.sentryUrl");
         arch = System.getProperty("io.xpipe.app.arch");
-        languages = Arrays.stream(System.getProperty("io.xpipe.app.languages").split(";")).sorted().toList();
+        languages = Arrays.stream(System.getProperty("io.xpipe.app.languages").split(";"))
+                .sorted()
+                .toList();
         staging = XPipeInstallation.isStaging();
         useVirtualThreads = Optional.ofNullable(System.getProperty("io.xpipe.app.useVirtualThreads"))
                 .map(Boolean::parseBoolean)

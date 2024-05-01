@@ -7,7 +7,9 @@ import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.*;
 import io.xpipe.core.util.UuidHelper;
+
 import javafx.util.Pair;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -311,8 +313,8 @@ public abstract class DataStorage {
         DataStoreCategory p = category;
         if (share) {
             while ((p = DataStorage.get()
-                    .getStoreCategoryIfPresent(p.getParentCategory())
-                    .orElse(null))
+                            .getStoreCategoryIfPresent(p.getParentCategory())
+                            .orElse(null))
                     != null) {
                 p.setShare(true);
             }
@@ -428,7 +430,8 @@ public abstract class DataStorage {
                 // Children classes might not be the same, the same goes for state classes
                 // This can happen when there are multiple child classes and the ids got switched around
                 if (classMatch) {
-                    DataStore merged = ((FixedChildStore) pair.getKey().getStore()).merge(pair.getValue().getStore().asNeeded());
+                    DataStore merged = ((FixedChildStore) pair.getKey().getStore())
+                            .merge(pair.getValue().getStore().asNeeded());
                     if (merged != pair.getKey().getStore()) {
                         pair.getKey().setStoreInternal(merged, false);
                     }
@@ -781,9 +784,11 @@ public abstract class DataStorage {
     public Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull DataStore store, boolean identityOnly) {
         return storeEntriesSet.stream()
                 .filter(n -> n.getStore() == store
-                        || (!identityOnly && (n.getStore() != null
-                                && Objects.equals(store.getClass(), n.getStore().getClass())
-                                && store.equals(n.getStore()))))
+                        || (!identityOnly
+                                && (n.getStore() != null
+                                        && Objects.equals(
+                                                store.getClass(), n.getStore().getClass())
+                                        && store.equals(n.getStore()))))
                 .findFirst();
     }
 

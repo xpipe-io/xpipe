@@ -74,7 +74,8 @@ public class DesktopCommandStoreProvider implements DataStoreProvider {
                                 entry,
                                 env,
                                 DesktopEnvironmentStore.class,
-                                desktopStoreDataStoreEntryRef -> desktopStoreDataStoreEntryRef.getStore().supportsDesktopAccess(),
+                                desktopStoreDataStoreEntryRef ->
+                                        desktopStoreDataStoreEntryRef.getStore().supportsDesktopAccess(),
                                 StoreViewState.get().getAllConnectionsCategory()),
                         env)
                 .nonNull()

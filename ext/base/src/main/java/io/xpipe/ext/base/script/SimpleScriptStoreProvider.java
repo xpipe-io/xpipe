@@ -54,17 +54,19 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
             return new DenseStoreEntryComp(sec.getWrapper(), true, null);
         }
 
-        var def = StoreToggleComp.<SimpleScriptStore>simpleToggle("base.isDefaultGroup", sec, s -> s.getState().isDefault(), (s, aBoolean) -> {
-            var state = s.getState();
-            state.setDefault(aBoolean);
-            s.setState(state);
-        });
+        var def = StoreToggleComp.<SimpleScriptStore>simpleToggle(
+                "base.isDefaultGroup", sec, s -> s.getState().isDefault(), (s, aBoolean) -> {
+                    var state = s.getState();
+                    state.setDefault(aBoolean);
+                    s.setState(state);
+                });
 
-        var bring = StoreToggleComp.<SimpleScriptStore>simpleToggle("base.bringToShells", sec, s -> s.getState().isBringToShell(), (s, aBoolean) -> {
-            var state = s.getState();
-            state.setBringToShell(aBoolean);
-            s.setState(state);
-        });
+        var bring = StoreToggleComp.<SimpleScriptStore>simpleToggle(
+                "base.bringToShells", sec, s -> s.getState().isBringToShell(), (s, aBoolean) -> {
+                    var state = s.getState();
+                    state.setBringToShell(aBoolean);
+                    s.setState(state);
+                });
 
         SimpleScriptStore s = sec.getWrapper().getEntry().getStore().asNeeded();
         var groupWrapper = StoreViewState.get().getEntryWrapper(s.getGroup().getEntry());
@@ -136,7 +138,8 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
 
         var group = new SimpleObjectProperty<>(st.getGroup());
         Property<ShellDialect> dialect = new SimpleObjectProperty<>(st.getMinimumDialect());
-        var others = new SimpleListProperty<>(FXCollections.observableArrayList(new ArrayList<>(st.getEffectiveScripts())));
+        var others =
+                new SimpleListProperty<>(FXCollections.observableArrayList(new ArrayList<>(st.getEffectiveScripts())));
         Property<String> commandProp = new SimpleObjectProperty<>(st.getCommands());
 
         Comp<?> choice = (Comp<?>) Class.forName(
@@ -268,9 +271,7 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
 
     @Override
     public DataStore defaultStore() {
-        return SimpleScriptStore.builder()
-                .scripts(List.of())
-                .build();
+        return SimpleScriptStore.builder().scripts(List.of()).build();
     }
 
     @Override

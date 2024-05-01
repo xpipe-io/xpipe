@@ -86,8 +86,7 @@ public final class BrowserBookmarkComp extends SimpleComp {
                         selectedCategory)
                 .styleClass(Styles.LEFT_PILL)
                 .minWidth(Region.USE_PREF_SIZE);
-        var filter =
-                new FilterComp(filterText).hgrow();
+        var filter = new FilterComp(filterText).hgrow();
 
         var top = new HorizontalComp(List.of(category, filter))
                 .styleClass("categories")

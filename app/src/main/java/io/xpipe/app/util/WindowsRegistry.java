@@ -1,10 +1,11 @@
 package io.xpipe.app.util;
 
-import com.sun.jna.platform.win32.Advapi32Util;
-import com.sun.jna.platform.win32.WinReg;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
+
+import com.sun.jna.platform.win32.Advapi32Util;
+import com.sun.jna.platform.win32.WinReg;
 
 import java.util.Optional;
 
@@ -56,7 +57,8 @@ public class WindowsRegistry {
         }
     }
 
-    public static Optional<String> findRemoteValuesRecursive(ShellControl shellControl, int hkey, String key, String valueName) throws Exception {
+    public static Optional<String> findRemoteValuesRecursive(
+            ShellControl shellControl, int hkey, String key, String valueName) throws Exception {
         var command = CommandBuilder.of()
                 .add("reg", "query")
                 .addQuoted((hkey == HKEY_LOCAL_MACHINE ? "HKEY_LOCAL_MACHINE" : "HKEY_CURRENT_USER") + "\\" + key)

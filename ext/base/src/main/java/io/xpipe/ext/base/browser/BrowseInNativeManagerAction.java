@@ -8,6 +8,7 @@ import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
+
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;
@@ -21,7 +22,8 @@ public class BrowseInNativeManagerAction implements LeafAction {
             var e = entry.getRawFileEntry().getPath();
             var localFile = sc.getLocalSystemAccess().translateToLocalSystemPath(e);
             try (var local = LocalShell.getShell().start()) {
-                DesktopHelper.browsePathRemote(local,localFile, entry.getRawFileEntry().getKind());
+                DesktopHelper.browsePathRemote(
+                        local, localFile, entry.getRawFileEntry().getKind());
             }
         }
     }

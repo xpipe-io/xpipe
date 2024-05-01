@@ -8,6 +8,7 @@ import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.ShellStore;
+
 import javafx.beans.value.ObservableValue;
 
 import java.util.function.IntFunction;
@@ -32,7 +33,8 @@ public class DataStoreFormatter {
                     return null;
                 }
 
-                if (s.getShellDialect() != null && !s.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
+                if (s.getShellDialect() != null
+                        && !s.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
                     if (s.getOsName() != null) {
                         return formattedOsName(s.getOsName());
                     }

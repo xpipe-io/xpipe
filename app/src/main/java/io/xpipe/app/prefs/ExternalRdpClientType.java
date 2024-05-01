@@ -5,8 +5,8 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
-
 import io.xpipe.core.util.SecretValue;
+
 import lombok.Value;
 
 import java.nio.file.Files;
@@ -59,8 +59,8 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
 
         private String encrypt(SecretValue password) throws Exception {
             var ps = LocalShell.getLocalPowershell();
-            var cmd = ps.command(
-                    "(\"" + password.getSecretValue() + "\" | ConvertTo-SecureString -AsPlainText -Force) | ConvertFrom-SecureString;");
+            var cmd = ps.command("(\"" + password.getSecretValue()
+                    + "\" | ConvertTo-SecureString -AsPlainText -Force) | ConvertFrom-SecureString;");
             cmd.setSensitive();
             return cmd.readStdoutOrThrow();
         }

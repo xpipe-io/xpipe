@@ -1,18 +1,20 @@
 package io.xpipe.app.fxcomps.impl;
 
-import atlantafx.base.layout.InputGroup;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.ClipboardHelper;
 import io.xpipe.core.util.InPlaceSecretValue;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+
+import atlantafx.base.layout.InputGroup;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -27,6 +29,7 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
     public static class Structure implements CompStructure<InputGroup> {
 
         private final InputGroup inputGroup;
+
         @Getter
         private final TextField field;
 
@@ -85,8 +88,11 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
         HBox.setHgrow(text, Priority.ALWAYS);
 
         var copyButton = new ButtonComp(null, new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
-            ClipboardHelper.copyPassword(value.getValue());
-        }).grow(false, true).tooltipKey("copyPassword").createRegion();
+                    ClipboardHelper.copyPassword(value.getValue());
+                })
+                .grow(false, true)
+                .tooltipKey("copyPassword")
+                .createRegion();
 
         var ig = new InputGroup(text);
         ig.getStyleClass().add("secret-field-comp");

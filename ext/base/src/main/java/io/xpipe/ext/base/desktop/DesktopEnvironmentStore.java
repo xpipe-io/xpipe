@@ -95,9 +95,9 @@ public class DesktopEnvironmentStore extends JacksonizedValue
                 : getMergedInitCommands(null));
         var scriptFile = base.getStore().createScript(dialect, toExecute);
         var launchScriptFile = base.getStore()
-                .createScript(dialect, dialect.prepareTerminalInitFileOpenCommand(dialect, null, scriptFile.toString()));
-        var launchConfig =
-                new ExternalTerminalType.LaunchConfiguration(null, name, name, launchScriptFile, dialect);
+                .createScript(
+                        dialect, dialect.prepareTerminalInitFileOpenCommand(dialect, null, scriptFile.toString()));
+        var launchConfig = new ExternalTerminalType.LaunchConfiguration(null, name, name, launchScriptFile, dialect);
         base.getStore().runDesktopScript(name, launchCommand.apply(launchConfig));
     }
 

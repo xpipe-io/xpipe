@@ -29,17 +29,19 @@ public class ScriptGroupStoreProvider implements DataStoreProvider {
             return new DenseStoreEntryComp(sec.getWrapper(), true, null);
         }
 
-        var def = StoreToggleComp.<ScriptGroupStore>simpleToggle("base.isDefaultGroup", sec, s -> s.getState().isDefault(), (s, aBoolean) -> {
-            var state = s.getState();
-            state.setDefault(aBoolean);
-            s.setState(state);
-        });
+        var def = StoreToggleComp.<ScriptGroupStore>simpleToggle(
+                "base.isDefaultGroup", sec, s -> s.getState().isDefault(), (s, aBoolean) -> {
+                    var state = s.getState();
+                    state.setDefault(aBoolean);
+                    s.setState(state);
+                });
 
-        var bring = StoreToggleComp.<ScriptGroupStore>simpleToggle("base.bringToShells", sec, s -> s.getState().isBringToShell(), (s, aBoolean) -> {
-            var state = s.getState();
-            state.setBringToShell(aBoolean);
-            s.setState(state);
-        });
+        var bring = StoreToggleComp.<ScriptGroupStore>simpleToggle(
+                "base.bringToShells", sec, s -> s.getState().isBringToShell(), (s, aBoolean) -> {
+                    var state = s.getState();
+                    state.setBringToShell(aBoolean);
+                    s.setState(state);
+                });
 
         var dropdown = new DropdownComp(List.of(def, bring));
         return new DenseStoreEntryComp(sec.getWrapper(), true, dropdown);

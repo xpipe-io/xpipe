@@ -1,6 +1,5 @@
 package io.xpipe.app.browser;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
@@ -32,6 +31,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import atlantafx.base.controls.Spacer;
+import atlantafx.base.theme.Styles;
 
 import java.util.List;
 
@@ -139,7 +139,8 @@ public class BrowserWelcomeComp extends SimpleComp {
 
     private Comp<?> entryButton(BrowserSavedState.Entry e, BooleanProperty disable) {
         var entry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
-        var graphic = entry.get().getProvider().getDisplayIconFileName(entry.get().getStore());
+        var graphic =
+                entry.get().getProvider().getDisplayIconFileName(entry.get().getStore());
         var view = PrettyImageHelper.ofFixedSize(graphic, 30, 24);
         return new ButtonComp(
                         new SimpleStringProperty(DataStorage.get().getStoreDisplayName(entry.get())),

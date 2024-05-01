@@ -1,7 +1,6 @@
 package io.xpipe.core.store;
 
-public interface SingletonSessionStore<T extends Session>
-        extends ExpandedLifecycleStore, InternalCacheDataStore {
+public interface SingletonSessionStore<T extends Session> extends ExpandedLifecycleStore, InternalCacheDataStore {
 
     @Override
     default void finalizeValidate() throws Exception {
