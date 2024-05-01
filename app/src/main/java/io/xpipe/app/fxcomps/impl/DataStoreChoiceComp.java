@@ -206,7 +206,12 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                             16);
                     struc.get().setGraphic(graphic.createRegion());
                     struc.get().setOnAction(event -> {
-                        getPopover().show(struc.get());
+                        if (popover == null || !popover.isShowing()) {
+                            var p = getPopover();
+                            p.show(struc.get());
+                        } else {
+                            popover.hide();
+                        }
                         event.consume();
                     });
                 })
