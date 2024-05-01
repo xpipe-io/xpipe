@@ -726,7 +726,7 @@ public abstract class DataStorage {
         return children;
     }
 
-    private List<DataStoreEntry> getHierarchy(DataStoreEntry entry) {
+    public List<DataStoreEntry> getStoreParentHierarchy(DataStoreEntry entry) {
         var es = new ArrayList<DataStoreEntry>();
         es.add(entry);
 
@@ -743,7 +743,7 @@ public abstract class DataStorage {
     }
 
     public DataStoreId getId(DataStoreEntry entry) {
-        return DataStoreId.create(getHierarchy(entry).stream()
+        return DataStoreId.create(getStoreParentHierarchy(entry).stream()
                 .filter(e -> !(e.getStore() instanceof LocalStore))
                 .map(e -> e.getName().replaceAll(":", "_"))
                 .toArray(String[]::new));

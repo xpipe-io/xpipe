@@ -65,8 +65,7 @@ public class StoreToggleComp extends SimpleComp {
                         return false;
                     }
 
-                    return section.getWrapper().getValidity().getValue() == DataStoreEntry.Validity.COMPLETE
-                            && section.getShowDetails().get();
+                    return section.getWrapper().getValidity().getValue() == DataStoreEntry.Validity.COMPLETE;
                 },
                 section.getWrapper().getValidity(),
                 section.getShowDetails(),

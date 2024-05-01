@@ -68,6 +68,10 @@ public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
         m.getItems().setAll(items);
         m.setOnAction(event -> {
             if (event.getTarget() == m) {
+                if (m.getItems().isEmpty()) {
+                    return;
+                }
+
                 action.accept(w);
                 contextMenu.hide();
                 event.consume();
