@@ -65,6 +65,10 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
         getItems().clear();
         ThreadHelper.runFailableAsync(() -> {
             var entry = base.get();
+            if (entry == null) {
+                return;
+            }
+
             if (entry.getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY) {
                 return;
             }
