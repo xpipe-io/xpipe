@@ -62,7 +62,7 @@ public class DesktopEnvironmentStore extends JacksonizedValue
             initCommands.add(command);
         }
         var joined = String.join(dialect.getNewLine().getNewLineString(), initCommands);
-        return !joined.isBlank() ? joined : null;
+        return joined;
     }
 
     @Override
