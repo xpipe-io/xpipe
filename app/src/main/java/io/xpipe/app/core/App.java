@@ -2,21 +2,15 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.comp.AppLayoutComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.LicenseProvider;
-import io.xpipe.core.process.OsType;
-
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.stage.Stage;
-
 import lombok.Getter;
 import lombok.SneakyThrows;
-
-import java.awt.*;
 
 @Getter
 public class App extends Application {
@@ -35,25 +29,6 @@ public class App extends Application {
         APP = this;
         stage = primaryStage;
         stage.opacityProperty().bind(AppPrefs.get().windowOpacity());
-
-        if (OsType.getLocal().equals(OsType.MACOS)) {
-            Desktop.getDesktop().setPreferencesHandler(e -> {
-                AppLayoutModel.get().selectSettings();
-            });
-        }
-
-        if (OsType.getLocal().equals(OsType.LINUX)) {
-            try {
-                Toolkit xToolkit = Toolkit.getDefaultToolkit();
-                java.lang.reflect.Field awtAppClassNameField =
-                        xToolkit.getClass().getDeclaredField("awtAppClassName");
-                awtAppClassNameField.setAccessible(true);
-                awtAppClassNameField.set(xToolkit, "XPipe");
-            } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).omit().handle();
-            }
-        }
-
         AppWindowHelper.addIcons(stage);
     }
 

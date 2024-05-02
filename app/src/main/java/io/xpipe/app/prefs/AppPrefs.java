@@ -96,6 +96,8 @@ public class AppPrefs {
             map(new SimpleBooleanProperty(false), "condenseConnectionDisplay", Boolean.class);
     final BooleanProperty showChildCategoriesInParentCategory =
             map(new SimpleBooleanProperty(true), "showChildrenConnectionsInParentCategory", Boolean.class);
+    final BooleanProperty lockVaultOnHibernation =
+            map(new SimpleBooleanProperty(false), "lockVaultOnHibernation", Boolean.class);
     final BooleanProperty openConnectionSearchWindowOnConnectionCreation =
             map(new SimpleBooleanProperty(true), "openConnectionSearchWindowOnConnectionCreation", Boolean.class);
     final ObjectProperty<Path> storageDirectory =
@@ -261,6 +263,10 @@ public class AppPrefs {
 
     public ObservableBooleanValue disableTerminalRemotePasswordPreparation() {
         return disableTerminalRemotePasswordPreparation;
+    }
+
+    public ObservableBooleanValue lockVaultOnHibernation() {
+        return lockVaultOnHibernation;
     }
 
     public ObservableValue<Boolean> alwaysConfirmElevation() {

@@ -52,7 +52,11 @@ public class VaultCategory extends AppPrefsCategory {
                                                 },
                                                 prefs.getLockCrypt()),
                                         LockChangeAlert::show),
-                                prefs.getLockCrypt()));
+                                prefs.getLockCrypt())
+                        .nameAndDescription("lockVaultOnHibernation")
+                        .addToggle(prefs.lockVaultOnHibernation)
+                        .hide(prefs.getLockCrypt().isNull().or(prefs.getLockCrypt().isEmpty()))
+                        );
         return builder.buildComp();
     }
 }
