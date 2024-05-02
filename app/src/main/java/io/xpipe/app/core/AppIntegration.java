@@ -20,7 +20,7 @@ public class AppIntegration {
             Desktop.getDesktop().addAppEventListener(new SystemSleepListener() {
                 @Override
                 public void systemAboutToSleep(SystemSleepEvent e) {
-                    if (AppPrefs.get() != null && AppPrefs.get().lockVaultOnHibernation().get()) {
+                    if (AppPrefs.get() != null && AppPrefs.get().lockVaultOnHibernation().get() && AppPrefs.get().getLockCrypt().get() != null && !AppPrefs.get().getLockCrypt().get().isBlank()) {
                         OperationMode.close();
                     }
                 }
