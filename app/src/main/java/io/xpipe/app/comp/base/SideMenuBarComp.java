@@ -2,7 +2,6 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
@@ -10,12 +9,9 @@ import io.xpipe.app.fxcomps.augment.Augment;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.issue.UserReportComp;
 import io.xpipe.app.update.UpdateAvailableAlert;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.Hyperlinks;
-
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -126,26 +122,8 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         };
 
         {
-            var b = new IconButtonComp("mdal-bug_report", () -> {
-                        var event = ErrorEvent.fromMessage("User Report");
-                        if (AppLogs.get().isWriteToFile()) {
-                            event.attachment(AppLogs.get().getSessionLogsDirectory());
-                        }
-                        UserReportComp.show(event.build());
-                    })
-                    .shortcut(new KeyCodeCombination(KeyCode.values()[KeyCode.DIGIT1.ordinal() + entries.size()]))
-                    .apply(new TooltipAugment<>("reportIssue"))
-                    .apply(simpleBorders)
-                    .accessibleTextKey("reportIssue");
-            b.apply(struc -> {
-                AppFont.setSize(struc.get(), 2);
-            });
-            vbox.getChildren().add(b.createRegion());
-        }
-
-        {
             var b = new IconButtonComp("mdi2g-github", () -> Hyperlinks.open(Hyperlinks.GITHUB))
-                    .shortcut(new KeyCodeCombination(KeyCode.values()[KeyCode.DIGIT1.ordinal() + entries.size() + 1]))
+                    .shortcut(new KeyCodeCombination(KeyCode.values()[KeyCode.DIGIT1.ordinal() + entries.size()]))
                     .apply(new TooltipAugment<>("visitGithubRepository"))
                     .apply(simpleBorders)
                     .accessibleTextKey("visitGithubRepository");
@@ -157,7 +135,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
 
         {
             var b = new IconButtonComp("mdi2d-discord", () -> Hyperlinks.open(Hyperlinks.DISCORD))
-                    .shortcut(new KeyCodeCombination(KeyCode.values()[KeyCode.DIGIT1.ordinal() + entries.size() + 2]))
+                    .shortcut(new KeyCodeCombination(KeyCode.values()[KeyCode.DIGIT1.ordinal() + entries.size() + 1]))
                     .apply(new TooltipAugment<>("discord"))
                     .apply(simpleBorders)
                     .accessibleTextKey("discord");
@@ -169,7 +147,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
 
         {
             var b = new IconButtonComp("mdi2t-translate", () -> Hyperlinks.open(Hyperlinks.TRANSLATE))
-                    .shortcut(new KeyCodeCombination(KeyCode.values()[KeyCode.DIGIT1.ordinal() + entries.size() + 3]))
+                    .shortcut(new KeyCodeCombination(KeyCode.values()[KeyCode.DIGIT1.ordinal() + entries.size() + 2]))
                     .apply(new TooltipAugment<>("translate"))
                     .apply(simpleBorders)
                     .accessibleTextKey("translate");
