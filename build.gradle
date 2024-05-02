@@ -117,7 +117,7 @@ project.ext {
             "--add-opens", "javafx.graphics/com.sun.javafx.tk.quantum=io.xpipe.app",
             "-Xmx8g",
             "-Dio.xpipe.app.arch=$rootProject.arch",
-            "-Dio.xpipe.app.languages=${String.join(";", languages)}",
+            "-Dio.xpipe.app.languages=${String.join(",", languages)}",
             "-Dfile.encoding=UTF-8",
             // Disable this for now as it requires Windows 10+
             // '-XX:+UseZGC',

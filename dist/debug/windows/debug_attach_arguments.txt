@@ -1,2 +1,3 @@
 -javaagent:%userprofile%\\.attachme\\attachme-agent-1.2.4.jar=port:7857,host:localhost
 -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=127.0.0.1:0
+-XX:+EnableDynamicAgentLoading

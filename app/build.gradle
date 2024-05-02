@@ -75,7 +75,6 @@ application {
     mainModule = 'io.xpipe.app'
     mainClass = 'io.xpipe.app.Main'
     applicationDefaultJvmArgs = jvmRunArgs
-    applicationDefaultJvmArgs.add('-XX:+EnableDynamicAgentLoading')
 }
 
 run {
