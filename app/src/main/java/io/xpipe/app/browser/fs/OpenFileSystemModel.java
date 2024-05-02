@@ -304,7 +304,12 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
         BooleanScope.executeExclusive(busy, () -> {
             if (dir != null) {
                 startIfNeeded();
-                var stream = getFileSystem().listFiles(dir);
+                var fs = getFileSystem();
+                if (fs == null) {
+                    return;
+                }
+
+                var stream = fs.listFiles(dir);
                 consumer.accept(stream);
             } else {
                 consumer.accept(Stream.of());
