@@ -319,9 +319,10 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
 
     private boolean loadFilesSync(String dir) {
         try {
-            if (dir != null) {
-                startIfNeeded();
-                var stream = getFileSystem().listFiles(dir);
+            startIfNeeded();
+            var fs = getFileSystem();
+            if (dir != null && fs != null) {
+                var stream = fs.listFiles(dir);
                 fileList.setAll(stream);
             } else {
                 fileList.setAll(Stream.of());

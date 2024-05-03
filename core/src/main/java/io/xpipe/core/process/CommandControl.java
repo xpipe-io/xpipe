@@ -83,7 +83,11 @@ public interface CommandControl extends ProcessControl {
 
     String readStdoutOrThrow() throws Exception;
 
+    String readStderrOrThrow() throws Exception;
+
     String readStdoutAndWait() throws Exception;
+
+    String readStderrAndWait() throws Exception;
 
     Optional<String> readStdoutIfPossible() throws Exception;
 

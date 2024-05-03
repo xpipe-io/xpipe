@@ -5,6 +5,7 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.launcher.LauncherInput;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 
 import javax.imageio.ImageIO;
@@ -21,7 +22,13 @@ public class AppIntegration {
                 @Override
                 public void systemAboutToSleep(SystemSleepEvent e) {
                     if (AppPrefs.get() != null && AppPrefs.get().lockVaultOnHibernation().get() && AppPrefs.get().getLockCrypt().get() != null && !AppPrefs.get().getLockCrypt().get().isBlank()) {
-                        OperationMode.close();
+                        // If we run this at the same time as the system is sleeping, there might be exceptions
+                        // because the platform does not like being shut down while sleeping
+                        // This hopefully assures that it will be run later, probably on system wake
+                        ThreadHelper.runAsync(() -> {
+                            ThreadHelper.sleep(1000);
+                            OperationMode.close();
+                        });
                     }
                 }
 
