@@ -12,6 +12,7 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.update.UpdateAvailableAlert;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.Hyperlinks;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
