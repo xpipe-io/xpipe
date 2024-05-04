@@ -4,6 +4,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 
+import io.xpipe.app.fxcomps.util.PlatformThread;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -46,7 +47,7 @@ public class ButtonComp extends Comp<CompStructure<Button>> {
     public CompStructure<Button> createBase() {
         var button = new Button(null);
         if (name != null) {
-            button.textProperty().bind(name);
+            button.textProperty().bind(PlatformThread.sync(name));
         }
         var graphic = getGraphic();
         if (graphic instanceof FontIcon f) {

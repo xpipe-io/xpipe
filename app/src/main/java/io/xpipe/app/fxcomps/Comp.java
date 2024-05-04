@@ -5,6 +5,7 @@ import io.xpipe.app.fxcomps.augment.Augment;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.Shortcuts;
 
 import javafx.application.Platform;
@@ -148,13 +149,15 @@ public abstract class Comp<S extends CompStructure<?>> {
             var region = struc.get();
             BindingsHelper.preserve(region, o);
             o.subscribe(n -> {
-                if (!n) {
-                    region.setVisible(true);
-                    region.setManaged(true);
-                } else {
-                    region.setVisible(false);
-                    region.setManaged(false);
-                }
+                PlatformThread.runLaterIfNeeded(() -> {
+                    if (!n) {
+                        region.setVisible(true);
+                        region.setManaged(true);
+                    } else {
+                        region.setVisible(false);
+                        region.setManaged(false);
+                    }
+                });
             });
         });
     }
