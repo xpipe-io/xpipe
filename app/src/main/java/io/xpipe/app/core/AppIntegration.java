@@ -8,35 +8,37 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.desktop.*;
 import java.util.List;
-import javax.imageio.ImageIO;
 
 public class AppIntegration {
 
     public static void setupDesktopIntegrations() {
         try {
-            Desktop.getDesktop().addAppEventListener(new SystemSleepListener() {
-                @Override
-                public void systemAboutToSleep(SystemSleepEvent e) {
-                    if (AppPrefs.get() != null
-                            && AppPrefs.get().lockVaultOnHibernation().get()
-                            && AppPrefs.get().getLockCrypt().get() != null
-                            && !AppPrefs.get().getLockCrypt().get().isBlank()) {
-                        // If we run this at the same time as the system is sleeping, there might be exceptions
-                        // because the platform does not like being shut down while sleeping
-                        // This hopefully assures that it will be run later, probably on system wake
-                        ThreadHelper.runAsync(() -> {
-                            ThreadHelper.sleep(1000);
-                            OperationMode.close();
-                        });
+            if (Desktop.isDesktopSupported()) {
+                Desktop.getDesktop().addAppEventListener(new SystemSleepListener() {
+                    @Override
+                    public void systemAboutToSleep(SystemSleepEvent e) {
+                        if (AppPrefs.get() != null &&
+                                AppPrefs.get().lockVaultOnHibernation().get() &&
+                                AppPrefs.get().getLockCrypt().get() != null &&
+                                !AppPrefs.get().getLockCrypt().get().isBlank()) {
+                            // If we run this at the same time as the system is sleeping, there might be exceptions
+                            // because the platform does not like being shut down while sleeping
+                            // This hopefully assures that it will be run later, probably on system wake
+                            ThreadHelper.runAsync(() -> {
+                                ThreadHelper.sleep(1000);
+                                OperationMode.close();
+                            });
+                        }
                     }
-                }
 
-                @Override
-                public void systemAwoke(SystemSleepEvent e) {}
-            });
+                    @Override
+                    public void systemAwoke(SystemSleepEvent e) {}
+                });
+            }
 
             // This will initialize the toolkit on macos and create the dock icon
             // macOS does not like applications that run fully in the background, so always do it
