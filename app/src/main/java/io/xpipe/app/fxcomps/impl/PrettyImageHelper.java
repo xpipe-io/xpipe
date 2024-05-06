@@ -28,6 +28,15 @@ public class PrettyImageHelper {
         return ofFixedSize(img, size, size);
     }
 
+    public static Comp<?> ofFixedRasterized(String img, int w, int h) {
+        if (img == null) {
+            return new PrettyImageComp(new SimpleStringProperty(null), w, h);
+        }
+
+        var rasterized = rasterizedImageIfExists(img, w, h);
+        return new PrettyImageComp(new SimpleStringProperty(rasterized.orElse(null)), w, h);
+    }
+
     public static Comp<?> ofFixedSize(String img, int w, int h) {
         if (img == null) {
             return new PrettyImageComp(new SimpleStringProperty(null), w, h);

@@ -11,6 +11,8 @@ public class FileIconManager {
 
     public static synchronized void loadIfNecessary() {
         if (!loaded) {
+            BrowserIconFileType.loadDefinitions();
+            BrowserIconDirectoryType.loadDefinitions();
             AppImages.loadDirectory(AppResources.XPIPE_MODULE, "browser_icons", true, false);
             loaded = true;
         }
