@@ -3,13 +3,11 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.browser.BrowserClipboard;
 import io.xpipe.app.browser.BrowserSelectionListComp;
 import io.xpipe.core.store.FileKind;
-
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
-
 import lombok.Getter;
 
 import java.io.File;
@@ -157,7 +155,7 @@ public class BrowserFileListCompEntry {
             var target = item != null && item.getRawFileEntry().getKind() == FileKind.DIRECTORY
                     ? item.getRawFileEntry()
                     : model.getFileSystemModel().getCurrentDirectory();
-            model.getFileSystemModel().dropFilesIntoAsync(target, files.stream().map(browserEntry -> browserEntry.getRawFileEntry()).toList(), false);
+            model.getFileSystemModel().dropFilesIntoAsync(target, files.stream().map(browserEntry -> browserEntry.getRawFileEntry()).toList(), db.getMode());
             event.setDropCompleted(true);
             event.consume();
         }
@@ -184,7 +182,7 @@ public class BrowserFileListCompEntry {
 
         var selected = model.getSelection();
         Dragboard db = row.startDragAndDrop(TransferMode.COPY);
-        db.setContent(BrowserClipboard.startDrag(model.getFileSystemModel().getCurrentDirectory(), selected));
+        db.setContent(BrowserClipboard.startDrag(model.getFileSystemModel().getCurrentDirectory(), selected, event.isAltDown() ? BrowserFileTransferMode.MOVE : BrowserFileTransferMode.NORMAL));
 
         Image image = BrowserSelectionListComp.snapshot(selected);
         db.setDragView(image, -20, 15);

@@ -21,23 +21,23 @@ public class BrowserFileTransferOperation {
 
     private final FileSystem.FileEntry target;
     private final List<FileSystem.FileEntry> files;
-    private final boolean explicitCopy;
+    private final BrowserFileTransferMode transferMode;
     private final boolean checkConflicts;
     private final Consumer<BrowserTransferProgress> progress;
 
     BrowserAlerts.FileConflictChoice lastConflictChoice;
 
-    public BrowserFileTransferOperation(FileSystem.FileEntry target, List<FileSystem.FileEntry> files, boolean explicitCopy, boolean checkConflicts,
+    public BrowserFileTransferOperation(FileSystem.FileEntry target, List<FileSystem.FileEntry> files, BrowserFileTransferMode transferMode, boolean checkConflicts,
                                         Consumer<BrowserTransferProgress> progress
     ) {
         this.target = target;
         this.files = files;
-        this.explicitCopy = explicitCopy;
+        this.transferMode = transferMode;
         this.checkConflicts = checkConflicts;
         this.progress = progress;
     }
 
-    public static BrowserFileTransferOperation ofLocal(FileSystem.FileEntry target, List<Path> files, boolean explicitCopy, boolean checkConflicts, Consumer<BrowserTransferProgress> progress) {
+    public static BrowserFileTransferOperation ofLocal(FileSystem.FileEntry target, List<Path> files,  BrowserFileTransferMode transferMode, boolean checkConflicts, Consumer<BrowserTransferProgress> progress) {
         var entries = files.stream()
                 .map(path -> {
                     try {
@@ -47,7 +47,7 @@ public class BrowserFileTransferOperation {
                     }
                 })
                 .toList();
-        return new BrowserFileTransferOperation(target, entries, explicitCopy, checkConflicts, progress);
+        return new BrowserFileTransferOperation(target, entries, transferMode, checkConflicts, progress);
     }
 
     private void updateProgress(BrowserTransferProgress progress) {
@@ -103,7 +103,8 @@ public class BrowserFileTransferOperation {
         }
 
         var same = files.getFirst().getFileSystem().equals(target.getFileSystem());
-        if (same && !explicitCopy) {
+        var doesMove = transferMode == BrowserFileTransferMode.MOVE || (same && transferMode == BrowserFileTransferMode.NORMAL);
+        if (doesMove) {
             if (!BrowserAlerts.showMoveAlert(files, target)) {
                 return;
             }
@@ -142,10 +143,12 @@ public class BrowserFileTransferOperation {
             return;
         }
 
-        if (explicitCopy) {
-            target.getFileSystem().copy(sourceFile, targetFile);
-        } else {
+        var same = files.getFirst().getFileSystem().equals(target.getFileSystem());
+        var doesMove = transferMode == BrowserFileTransferMode.MOVE || (same && transferMode == BrowserFileTransferMode.NORMAL);
+        if (doesMove) {
             target.getFileSystem().move(sourceFile, targetFile);
+        } else {
+            target.getFileSystem().copy(sourceFile, targetFile);
         }
     }
 

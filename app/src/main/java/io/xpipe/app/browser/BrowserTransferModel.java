@@ -1,6 +1,7 @@
 package io.xpipe.app.browser;
 
 import io.xpipe.app.browser.file.BrowserEntry;
+import io.xpipe.app.browser.file.BrowserFileTransferMode;
 import io.xpipe.app.browser.file.BrowserFileTransferOperation;
 import io.xpipe.app.browser.file.LocalFileSystem;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
@@ -125,11 +126,11 @@ public class BrowserTransferModel {
                 }
 
                 try {
-                    try (var b = new BooleanScope(downloading).start()) {
+                    try (var ignored = new BooleanScope(downloading).start()) {
                         var op = new BrowserFileTransferOperation(
                                 LocalFileSystem.getLocalFileEntry(TEMP),
                                 List.of(item.getBrowserEntry().getRawFileEntry()),
-                                true,
+                                BrowserFileTransferMode.COPY,
                                 false,
                                 progress -> {
                                     item.getProgress().setValue(progress);

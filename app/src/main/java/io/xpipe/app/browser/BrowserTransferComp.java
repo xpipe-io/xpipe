@@ -1,5 +1,6 @@
 package io.xpipe.app.browser;
 
+import io.xpipe.app.browser.file.BrowserFileTransferMode;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.AppI18n;
@@ -150,7 +151,7 @@ public class BrowserTransferComp extends SimpleComp {
                                         .toList();
                                 Dragboard db = struc.get().startDragAndDrop(TransferMode.COPY);
 
-                                var cc = BrowserClipboard.startDrag(null, selected);
+                                var cc = BrowserClipboard.startDrag(null, selected, BrowserFileTransferMode.NORMAL);
                                 if (cc == null) {
                                     return;
                                 }

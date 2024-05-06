@@ -1,6 +1,7 @@
 package io.xpipe.app.browser;
 
 import io.xpipe.app.browser.file.BrowserEntry;
+import io.xpipe.app.browser.file.BrowserFileTransferMode;
 import io.xpipe.app.browser.file.LocalFileSystem;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ThreadHelper;
@@ -54,7 +55,7 @@ public class BrowserClipboard {
                                 entries.add(LocalFileSystem.getLocalBrowserEntry(file));
                             }
 
-                            currentCopyClipboard.setValue(new Instance(UUID.randomUUID(), null, entries));
+                            currentCopyClipboard.setValue(new Instance(UUID.randomUUID(), null, entries, BrowserFileTransferMode.COPY));
                         } catch (Exception e) {
                             ErrorEvent.fromThrowable(e).expected().omit().handle();
                         }
@@ -63,14 +64,14 @@ public class BrowserClipboard {
     }
 
     @SneakyThrows
-    public static ClipboardContent startDrag(FileSystem.FileEntry base, List<BrowserEntry> selected) {
+    public static ClipboardContent startDrag(FileSystem.FileEntry base, List<BrowserEntry> selected, BrowserFileTransferMode mode) {
         if (selected.isEmpty()) {
             return null;
         }
 
         var content = new ClipboardContent();
         var id = UUID.randomUUID();
-        currentDragClipboard = new Instance(id, base, new ArrayList<>(selected));
+        currentDragClipboard = new Instance(id, base, new ArrayList<>(selected), mode);
         content.putString(currentDragClipboard.toClipboardString());
         return content;
     }
@@ -83,7 +84,7 @@ public class BrowserClipboard {
         }
 
         var id = UUID.randomUUID();
-        currentCopyClipboard.setValue(new Instance(id, base, new ArrayList<>(selected)));
+        currentCopyClipboard.setValue(new Instance(id, base, new ArrayList<>(selected), BrowserFileTransferMode.COPY));
     }
 
     public static Instance retrieveCopy() {
@@ -118,6 +119,7 @@ public class BrowserClipboard {
         UUID uuid;
         FileSystem.FileEntry baseDirectory;
         List<BrowserEntry> entries;
+        BrowserFileTransferMode mode;
 
         public String toClipboardString() {
             return entries.stream()
