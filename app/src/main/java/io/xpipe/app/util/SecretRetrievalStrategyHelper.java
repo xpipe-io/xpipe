@@ -90,12 +90,12 @@ public class SecretRetrievalStrategyHelper {
                 new SimpleObjectProperty<>(strat instanceof SecretRetrievalStrategy.CustomCommand i ? i : null);
         var map = new LinkedHashMap<String, OptionsBuilder>();
         if (allowNone) {
-            map.put("none", new OptionsBuilder());
+            map.put("app.none", new OptionsBuilder());
         }
-        map.put("password", inPlace(inPlace));
-        map.put("passwordManager", passwordManager(passwordManager));
-        map.put("customCommand", customCommand(customCommand));
-        map.put("prompt", new OptionsBuilder());
+        map.put("app.password", inPlace(inPlace));
+        map.put("app.passwordManager", passwordManager(passwordManager));
+        map.put("app.customCommand", customCommand(customCommand));
+        map.put("app.prompt", new OptionsBuilder());
 
         int offset = allowNone ? 0 : -1;
         var selected = new SimpleIntegerProperty(

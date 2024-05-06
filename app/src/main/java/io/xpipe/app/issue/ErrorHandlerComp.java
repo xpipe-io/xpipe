@@ -11,7 +11,6 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.util.LicenseRequiredException;
 import io.xpipe.app.util.PlatformState;
-
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -25,7 +24,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -243,24 +241,23 @@ public class ErrorHandlerComp extends SimpleComp {
                     return true;
                 }
             });
+            event.setDisableDefaultActions(true);
         }
 
         var custom = event.getCustomActions();
         for (var c : custom) {
             var ac = createActionComp(c);
+            ac.getStyleClass().addAll(BUTTON_OUTLINED, ACCENT);
             actionBox.getChildren().add(ac);
         }
 
-        for (var action : List.of(ErrorAction.automaticallyReport(), ErrorAction.reportOnGithub())) {
-            var ac = createActionComp(action);
-            actionBox.getChildren().add(ac);
+        if (!event.isDisableDefaultActions() || event.getCustomActions().isEmpty()) {
+            for (var action : List.of(ErrorAction.automaticallyReport(), ErrorAction.reportOnGithub(), ErrorAction.ignore())) {
+                var ac = createActionComp(action);
+                actionBox.getChildren().add(ac);
+            }
+            actionBox.getChildren().get(1).getStyleClass().addAll(BUTTON_OUTLINED, ACCENT);
         }
-
-        for (var action : List.of(ErrorAction.ignore())) {
-            var ac = createActionComp(action);
-            actionBox.getChildren().add(ac);
-        }
-        actionBox.getChildren().get(1).getStyleClass().addAll(BUTTON_OUTLINED, ACCENT);
 
         content.getChildren().addAll(actionBox, new Separator(Orientation.HORIZONTAL));
 

@@ -90,6 +90,10 @@ public class AppI18n {
     private static String getCallerModuleName() {
         var callers = CallingClass.INSTANCE.getCallingClasses();
         for (Class<?> caller : callers) {
+            if (caller.isSynthetic()) {
+                continue;
+            }
+
             if (caller.equals(CallingClass.class)
                     || caller.equals(ModuleHelper.class)
                     || caller.equals(ModalOverlayComp.class)

@@ -23,6 +23,9 @@ public class ErrorEvent {
     @Builder.Default
     private final boolean reportable = true;
 
+    @Setter
+    private boolean disableDefaultActions;
+
     private final Throwable throwable;
 
     @Singular
@@ -151,6 +154,10 @@ public class ErrorEvent {
 
         public ErrorEventBuilder discard() {
             return omit().expected();
+        }
+
+        public ErrorEventBuilder noDefaultActions() {
+            return disableDefaultActions(true);
         }
 
         public void handle() {

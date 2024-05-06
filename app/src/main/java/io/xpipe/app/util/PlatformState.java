@@ -71,7 +71,6 @@ public enum PlatformState {
         try {
             // Weird fix to ensure that macOS quit operation works while in tray.
             // Maybe related to https://bugs.openjdk.org/browse/JDK-8318129 as it prints the same error if not called
-            // The headless check is not needed though but still done
             GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
 
             // Catch more than just the headless exception in case the graphics environment initialization completely
@@ -84,9 +83,9 @@ public enum PlatformState {
                             + " You don't have to install XPipe on any system like a server, a WSL distribution, a hypervisor, etc.,"
                             + " to have full access to that system, a shell connection to it is enough for XPipe to work from your local machine."
                     : h.getMessage();
-            TrackEvent.warn(h.getMessage());
+            TrackEvent.warn(msg);
             PlatformState.setCurrent(PlatformState.EXITED);
-            return Optional.of(ErrorEvent.expected(new HeadlessException(msg)));
+            return Optional.of(ErrorEvent.expected(new UnsupportedOperationException(msg)));
         } catch (Throwable t) {
             TrackEvent.warn(t.getMessage());
             PlatformState.setCurrent(PlatformState.EXITED);
