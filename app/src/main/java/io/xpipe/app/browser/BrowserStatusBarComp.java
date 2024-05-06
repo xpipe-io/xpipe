@@ -87,9 +87,7 @@ public class BrowserStatusBarComp extends SimpleComp {
 
         var allCount = Bindings.createIntegerBinding(
                 () -> {
-                    return (int) model.getFileList().getAll().getValue().stream()
-                            .filter(entry -> !entry.isSynthetic())
-                            .count();
+                    return model.getFileList().getAll().getValue().size();
                 },
                 model.getFileList().getAll());
         var selectedComp = new LabelComp(Bindings.createStringBinding(

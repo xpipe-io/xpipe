@@ -109,7 +109,7 @@ public class BrowserFileListCompEntry {
 
         if (!Objects.equals(
                 model.getFileSystemModel().getFileSystem(),
-                cb.getEntries().getFirst().getFileSystem())) {
+                cb.getEntries().getFirst().getRawFileEntry().getFileSystem())) {
             return true;
         }
 
@@ -157,7 +157,7 @@ public class BrowserFileListCompEntry {
             var target = item != null && item.getRawFileEntry().getKind() == FileKind.DIRECTORY
                     ? item.getRawFileEntry()
                     : model.getFileSystemModel().getCurrentDirectory();
-            model.getFileSystemModel().dropFilesIntoAsync(target, files, false);
+            model.getFileSystemModel().dropFilesIntoAsync(target, files.stream().map(browserEntry -> browserEntry.getRawFileEntry()).toList(), false);
             event.setDropCompleted(true);
             event.consume();
         }
@@ -182,7 +182,7 @@ public class BrowserFileListCompEntry {
             return;
         }
 
-        var selected = model.getSelectedRaw();
+        var selected = model.getSelection();
         Dragboard db = row.startDragAndDrop(TransferMode.COPY);
         db.setContent(BrowserClipboard.startDrag(model.getFileSystemModel().getCurrentDirectory(), selected));
 
@@ -244,7 +244,7 @@ public class BrowserFileListCompEntry {
             return;
         }
 
-        if (item == null || item.isSynthetic()) {
+        if (item == null) {
             return;
         }
 

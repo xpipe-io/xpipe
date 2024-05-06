@@ -101,7 +101,7 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
             newItems.add(empty);
         } else {
             var browserEntries = list.stream()
-                    .map(fileEntry -> new BrowserEntry(fileEntry, model.getFileList(), false))
+                    .map(fileEntry -> new BrowserEntry(fileEntry, model.getFileList()))
                     .toList();
             var menus = browserEntries.stream()
                     .sorted(model.getFileList().order())

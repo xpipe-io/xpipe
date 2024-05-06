@@ -1,7 +1,8 @@
 package io.xpipe.app.browser.file;
 
+import atlantafx.base.controls.Spacer;
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.action.BrowserAction;
-import io.xpipe.app.browser.icon.FileIconManager;
 import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.SimpleComp;
@@ -16,7 +17,6 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystem;
-
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -37,9 +37,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-
-import atlantafx.base.controls.Spacer;
-import atlantafx.base.theme.Styles;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -137,29 +134,7 @@ public final class BrowserFileListComp extends SimpleComp {
         table.getSelectionModel().setCellSelectionEnabled(false);
 
         table.getSelectionModel().getSelectedItems().addListener((ListChangeListener<? super BrowserEntry>) c -> {
-            var toSelect = new ArrayList<>(c.getList());
-            // Explicitly unselect synthetic entries since we can't use a custom selection model as that is bugged in
-            // JavaFX
-            toSelect.removeIf(entry -> fileList.getFileSystemModel().getCurrentParentDirectory() != null
-                    && entry.getRawFileEntry()
-                            .getPath()
-                            .equals(fileList.getFileSystemModel()
-                                    .getCurrentParentDirectory()
-                                    .getPath()));
-            // Remove unsuitable selection
-            toSelect.removeIf(browserEntry -> (browserEntry.getRawFileEntry().getKind() == FileKind.DIRECTORY
-                            && !fileList.getSelectionMode().isAcceptsDirectories())
-                    || (browserEntry.getRawFileEntry().getKind() != FileKind.DIRECTORY
-                            && !fileList.getSelectionMode().isAcceptsFiles()));
-            fileList.getSelection().setAll(toSelect);
-
-            Platform.runLater(() -> {
-                var toUnselect = table.getSelectionModel().getSelectedItems().stream()
-                        .filter(entry -> !toSelect.contains(entry))
-                        .toList();
-                toUnselect.forEach(entry -> table.getSelectionModel()
-                        .clearSelection(table.getItems().indexOf(entry)));
-            });
+            fileList.getSelection().setAll(c.getList());
         });
 
         fileList.getSelection().addListener((ListChangeListener<? super BrowserEntry>) c -> {
@@ -174,7 +149,6 @@ public final class BrowserFileListComp extends SimpleComp {
                 }
 
                 var indices = c.getList().stream()
-                        .skip(1)
                         .mapToInt(entry -> table.getItems().indexOf(entry))
                         .toArray();
                 table.getSelectionModel()
@@ -276,10 +250,6 @@ public final class BrowserFileListComp extends SimpleComp {
                             },
                             null,
                             () -> {
-                                if (row.getItem() != null && row.getItem().isSynthetic()) {
-                                    return null;
-                                }
-
                                 return new BrowserContextMenu(fileList.getFileSystemModel(), row.getItem());
                             })
                     .augment(new SimpleCompStructure<>(row));
@@ -573,15 +543,7 @@ public final class BrowserFileListComp extends SimpleComp {
                     // Visibility seems to be bugged, so use opacity
                     setOpacity(0.0);
                 } else {
-                    var isParentLink = getTableRow()
-                            .getItem()
-                            .getRawFileEntry()
-                            .equals(fileList.getFileSystemModel().getCurrentParentDirectory());
-                    img.set(FileIconManager.getFileIcon(
-                            isParentLink
-                                    ? fileList.getFileSystemModel().getCurrentDirectory()
-                                    : getTableRow().getItem().getRawFileEntry(),
-                            isParentLink));
+                    img.set(getTableRow().getItem().getIcon());
 
                     var isDirectory = getTableRow().getItem().getRawFileEntry().getKind() == FileKind.DIRECTORY;
                     pseudoClassStateChanged(FOLDER, isDirectory);
@@ -594,9 +556,8 @@ public final class BrowserFileListComp extends SimpleComp {
                                             .resolved()
                                             .getPath()
                             : getTableRow().getItem().getFileName();
-                    var fileName = isParentLink ? ".." : normalName;
-                    var hidden = !isParentLink
-                            && (getTableRow().getItem().getRawFileEntry().isHidden() || fileName.startsWith("."));
+                    var fileName = normalName;
+                    var hidden = getTableRow().getItem().getRawFileEntry().isHidden() || fileName.startsWith(".");
                     getTableRow().pseudoClassStateChanged(HIDDEN, hidden);
                     text.set(fileName);
                     // Visibility seems to be bugged, so use opacity

@@ -32,8 +32,7 @@ public final class BrowserContextMenu extends ContextMenu {
                 ? selected.stream()
                         .map(browserEntry -> new BrowserEntry(
                                 browserEntry.getRawFileEntry().resolved(),
-                                browserEntry.getModel(),
-                                browserEntry.isSynthetic()))
+                                browserEntry.getModel()))
                         .toList()
                 : selected;
     }
@@ -44,7 +43,7 @@ public final class BrowserContextMenu extends ContextMenu {
         var empty = source == null;
         var selected = new ArrayList<>(
                 empty
-                        ? List.of(new BrowserEntry(model.getCurrentDirectory(), model.getFileList(), false))
+                        ? List.of(new BrowserEntry(model.getCurrentDirectory(), model.getFileList()))
                         : model.getFileList().getSelection());
         if (source != null && !selected.contains(source)) {
             selected.add(source);

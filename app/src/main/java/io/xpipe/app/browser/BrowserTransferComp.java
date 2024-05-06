@@ -9,10 +9,7 @@ import io.xpipe.app.fxcomps.augment.DragOverPseudoClassAugment;
 import io.xpipe.app.fxcomps.impl.*;
 import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.store.FileNames;
-
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
@@ -21,7 +18,6 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
-
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.File;
@@ -50,25 +46,21 @@ public class BrowserTransferComp extends SimpleComp {
         var backgroundStack =
                 new StackComp(List.of(background)).grow(true, true).styleClass("download-background");
 
-        var binding = ListBindingsHelper.mappedContentBinding(syncItems, item -> item.getFileEntry());
+        var binding = ListBindingsHelper.mappedContentBinding(syncItems, item -> item.getBrowserEntry());
         var list = new BrowserSelectionListComp(
                         binding,
                         entry -> Bindings.createStringBinding(
                                 () -> {
                                     var sourceItem = syncItems.stream()
-                                            .filter(item -> item.getFileEntry() == entry)
+                                            .filter(item -> item.getBrowserEntry() == entry)
                                             .findAny();
                                     if (sourceItem.isEmpty()) {
                                         return "?";
                                     }
-                                    var name =
-                                            sourceItem.get().downloadFinished().get()
+                                    var name = entry.getModel() == null || sourceItem.get().downloadFinished().get()
                                                     ? "Local"
-                                                    : DataStorage.get()
-                                                            .getStoreDisplayName(entry.getFileSystem()
-                                                                    .getStore())
-                                                            .orElse("?");
-                                    return FileNames.getFileName(entry.getPath()) + " (" + name + ")";
+                                                    : entry.getModel().getFileSystemModel().getName();
+                                    return entry.getFileName() + " (" + name + ")";
                                 },
                                 syncAllDownloaded))
                 .apply(struc -> struc.get().setMinHeight(150))
@@ -154,7 +146,7 @@ public class BrowserTransferComp extends SimpleComp {
                                 }
 
                                 var selected = syncItems.stream()
-                                        .map(BrowserTransferModel.Item::getFileEntry)
+                                        .map(item -> item.getBrowserEntry())
                                         .toList();
                                 Dragboard db = struc.get().startDragAndDrop(TransferMode.COPY);
 

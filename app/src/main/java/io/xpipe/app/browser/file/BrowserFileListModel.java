@@ -59,10 +59,7 @@ public final class BrowserFileListModel {
 
     public void setAll(Stream<FileSystem.FileEntry> newFiles) {
         try (var s = newFiles) {
-            var parent = fileSystemModel.getCurrentParentDirectory();
-            var l = Stream.concat(
-                            parent != null ? Stream.of(new BrowserEntry(parent, this, true)) : Stream.of(),
-                            s.filter(entry -> entry != null).map(entry -> new BrowserEntry(entry, this, false)))
+            var l = s.filter(entry -> entry != null).map(entry -> new BrowserEntry(entry, this))
                     .toList();
             all.setValue(l);
             refreshShown();
@@ -94,14 +91,13 @@ public final class BrowserFileListModel {
     }
 
     public Comparator<BrowserEntry> order() {
-        var syntheticFirst = Comparator.<BrowserEntry, Boolean>comparing(path -> !path.isSynthetic());
         var dirsFirst = Comparator.<BrowserEntry, Boolean>comparing(
                 path -> path.getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY);
         var comp = comparatorProperty.getValue();
 
         Comparator<BrowserEntry> us = comp != null
-                ? syntheticFirst.thenComparing(dirsFirst).thenComparing(comp)
-                : syntheticFirst.thenComparing(dirsFirst);
+                ? dirsFirst.thenComparing(comp)
+                : dirsFirst;
         return us;
     }
 

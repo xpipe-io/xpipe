@@ -13,14 +13,12 @@ public class BrowserEntry {
 
     private final BrowserFileListModel model;
     private final FileSystem.FileEntry rawFileEntry;
-    private final boolean synthetic;
     private final BrowserIconFileType fileType;
     private final BrowserIconDirectoryType directoryType;
 
-    public BrowserEntry(FileSystem.FileEntry rawFileEntry, BrowserFileListModel model, boolean synthetic) {
+    public BrowserEntry(FileSystem.FileEntry rawFileEntry, BrowserFileListModel model) {
         this.rawFileEntry = rawFileEntry;
         this.model = model;
-        this.synthetic = synthetic;
         this.fileType = fileType(rawFileEntry);
         this.directoryType = directoryType(rawFileEntry);
     }
@@ -52,6 +50,17 @@ public class BrowserEntry {
 
         return null;
     }
+    public String getIcon() {
+        if (fileType != null) {
+            return fileType.getIcon();
+        } else if (directoryType != null) {
+            return directoryType.getIcon(rawFileEntry, false);
+        } else {
+            return rawFileEntry.getKind() == FileKind.DIRECTORY
+                    ? "default_folder.svg"
+                    : "default_file.svg";
+        }
+    }
 
     public String getFileName() {
         return getRawFileEntry().getName();
@@ -59,11 +68,6 @@ public class BrowserEntry {
 
     public String getOptionallyQuotedFileName() {
         var n = getFileName();
-        return FileNames.quoteIfNecessary(n);
-    }
-
-    public String getOptionallyQuotedFilePath() {
-        var n = rawFileEntry.getPath();
         return FileNames.quoteIfNecessary(n);
     }
 }

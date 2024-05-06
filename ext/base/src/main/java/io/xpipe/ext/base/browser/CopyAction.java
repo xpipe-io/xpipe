@@ -22,7 +22,7 @@ public class CopyAction implements LeafAction {
     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
         BrowserClipboard.startCopy(
                 model.getCurrentDirectory(),
-                entries.stream().map(entry -> entry.getRawFileEntry()).toList());
+                entries);
     }
 
     @Override
