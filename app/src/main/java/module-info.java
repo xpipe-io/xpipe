@@ -49,7 +49,6 @@ open module io.xpipe.app {
     requires org.slf4j;
     requires org.slf4j.jdk.platform.logging;
     requires atlantafx.base;
-    requires org.ocpsoft.prettytime;
     requires com.vladsch.flexmark;
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;

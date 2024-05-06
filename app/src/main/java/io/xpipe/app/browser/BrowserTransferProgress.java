@@ -39,7 +39,7 @@ public class BrowserTransferProgress {
     public Duration expectedTimeRemaining() {
         var elapsed = elapsedTime();
         var share = (double) transferred / total;
-        var rest = 1.0 - share;
+        var rest = (1.0 - share) / share;
         var restMillis = (long) (elapsed.toMillis() * rest);
         return Duration.of(restMillis, ChronoUnit.MILLIS);
     }
