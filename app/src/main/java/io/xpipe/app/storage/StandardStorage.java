@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
@@ -226,7 +227,18 @@ public class StandardStorage extends DataStorage {
     }
 
     public void save(boolean dispose) {
-        if (!busyIo.tryLock()) {
+        try {
+            // If another save operation is in progress, we have to wait on dispose
+            // Otherwise the application may quit and kill the daemon thread that is performing the other save operation
+            if (dispose && !busyIo.tryLock(1, TimeUnit.MINUTES)) {
+                return;
+            }
+        } catch (InterruptedException e) {
+            return;
+        }
+
+        // We don't need to wait on normal saves though
+        if (!dispose && !busyIo.tryLock()) {
             return;
         }
 
