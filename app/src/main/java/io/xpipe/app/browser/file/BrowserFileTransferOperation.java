@@ -111,11 +111,17 @@ public class BrowserFileTransferOperation {
         }
 
         for (var file : files) {
-            if (file.getFileSystem().equals(target.getFileSystem())) {
+            if (same) {
                 handleSingleOnSameFileSystem(file);
                 updateProgress(BrowserTransferProgress.finished(file.getName(), file.getSize()));
             } else {
                 handleSingleAcrossFileSystems(file);
+            }
+        }
+
+        if (!same && doesMove) {
+            for (var file : files) {
+                deleteSingle(file);
             }
         }
     }
@@ -143,8 +149,7 @@ public class BrowserFileTransferOperation {
             return;
         }
 
-        var same = files.getFirst().getFileSystem().equals(target.getFileSystem());
-        var doesMove = transferMode == BrowserFileTransferMode.MOVE || (same && transferMode == BrowserFileTransferMode.NORMAL);
+        var doesMove = transferMode == BrowserFileTransferMode.MOVE || transferMode == BrowserFileTransferMode.NORMAL;
         if (doesMove) {
             target.getFileSystem().move(sourceFile, targetFile);
         } else {
@@ -264,6 +269,10 @@ public class BrowserFileTransferOperation {
             }
         }
         updateProgress(BrowserTransferProgress.finished(source.getName(), totalSize.get()));
+    }
+
+    private void deleteSingle(FileSystem.FileEntry source) throws Exception {
+        source.getFileSystem().delete(source.getPath());
     }
 
     private static final int DEFAULT_BUFFER_SIZE = 1024;
