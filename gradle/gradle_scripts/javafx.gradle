@@ -18,11 +18,26 @@ configurations {
     javafx
 }
 
-// Always use maven version for now
-dependencies {
-    javafx "org.openjfx:javafx-base:${javafxVersion}:${platform}"
-    javafx "org.openjfx:javafx-controls:${javafxVersion}:${platform}"
-    javafx "org.openjfx:javafx-graphics:${javafxVersion}:${platform}"
-    javafx "org.openjfx:javafx-media:${javafxVersion}:${platform}"
-    javafx "org.openjfx:javafx-web:${javafxVersion}:${platform}"
+if (customJavaFxPath != null) {
+    repositories {
+        flatDir {
+            dirs customJavaFxPath
+        }
+    }
+    dependencies {
+        javafx name: "org.openjfx:javafx-base"
+        javafx name: "org.openjfx:javafx-controls"
+        javafx name: "org.openjfx:javafx-graphics"
+        javafx name: "org.openjfx:javafx-media"
+        javafx name: "org.openjfx:javafx-web"
+    }
+} else {
+    // Always use maven version for now
+    dependencies {
+        javafx "org.openjfx:javafx-base:${javafxVersion}:${platform}"
+        javafx "org.openjfx:javafx-controls:${javafxVersion}:${platform}"
+        javafx "org.openjfx:javafx-graphics:${javafxVersion}:${platform}"
+        javafx "org.openjfx:javafx-media:${javafxVersion}:${platform}"
+        javafx "org.openjfx:javafx-web:${javafxVersion}:${platform}"
+    }
 }
