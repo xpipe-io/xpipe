@@ -25,11 +25,7 @@ if (customJavaFxPath != null) {
         }
     }
     dependencies {
-        javafx name: "org.openjfx:javafx-base"
-        javafx name: "org.openjfx:javafx-controls"
-        javafx name: "org.openjfx:javafx-graphics"
-        javafx name: "org.openjfx:javafx-media"
-        javafx name: "org.openjfx:javafx-web"
+        javafx fileTree(dir: customJavaFxPath, include: '*.jar')
     }
 } else {
     // Always use maven version for now

@@ -75,14 +75,17 @@ public class PrettySvgComp extends SimpleComp {
                 ar);
 
         var stack = new StackPane();
-        var node = storeIcon.createWebview();
-        node.prefWidthProperty().bind(widthProperty);
-        node.maxWidthProperty().bind(widthProperty);
-        node.minWidthProperty().bind(widthProperty);
-        node.prefHeightProperty().bind(heightProperty);
-        node.maxHeightProperty().bind(heightProperty);
-        node.minHeightProperty().bind(heightProperty);
-        stack.getChildren().add(node);
+        var wv = storeIcon.createWebview();
+        if (wv.isPresent()) {
+            var node = wv.get();
+            node.prefWidthProperty().bind(widthProperty);
+            node.maxWidthProperty().bind(widthProperty);
+            node.minWidthProperty().bind(widthProperty);
+            node.prefHeightProperty().bind(heightProperty);
+            node.maxHeightProperty().bind(heightProperty);
+            node.minHeightProperty().bind(heightProperty);
+            stack.getChildren().add(node);
+        }
 
         Consumer<String> update = val -> {
             var fixed = val != null

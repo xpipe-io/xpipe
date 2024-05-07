@@ -3,7 +3,7 @@ package io.xpipe.app.fxcomps.impl;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-
+import io.xpipe.app.issue.ErrorEvent;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
@@ -13,12 +13,12 @@ import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebView;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.Value;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Getter
@@ -27,6 +27,8 @@ public class SvgView {
     private final ObservableValue<Number> width;
     private final ObservableValue<Number> height;
     private final ObservableValue<String> svgContent;
+
+    private static boolean canCreateWebview = true;
 
     private SvgView(ObservableValue<Number> width, ObservableValue<Number> height, ObservableValue<String> svgContent) {
         this.width = PlatformThread.sync(width);
@@ -55,7 +57,20 @@ public class SvgView {
     }
 
     private WebView createWebView() {
-        var wv = new WebView();
+        if (!canCreateWebview) {
+            return null;
+        }
+
+        WebView wv;
+        try {
+            // This can happen if we are using a custom JavaFX build without webkit
+            wv = new WebView();
+        } catch (Throwable t) {
+            ErrorEvent.fromThrowable(t).omit().expected().handle();
+            canCreateWebview = false;
+            return null;
+        }
+
         wv.getEngine()
                 .setUserDataDirectory(
                         AppProperties.get().getDataDir().resolve("webview").toFile());
@@ -109,10 +124,10 @@ public class SvgView {
         return wv;
     }
 
-    public WebView createWebview() {
+    public Optional<WebView> createWebview() {
         var wv = createWebView();
         wv.getStyleClass().add("svg-comp");
-        return wv;
+        return Optional.ofNullable(wv);
     }
 
     @Value
