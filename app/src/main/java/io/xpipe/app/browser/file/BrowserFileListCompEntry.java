@@ -42,11 +42,13 @@ public class BrowserFileListCompEntry {
             // Only clear for normal clicks
             if (t.isStillSincePress()) {
                 model.getSelection().clear();
+                tv.requestFocus();
             }
             t.consume();
             return;
         }
 
+        row.requestFocus();
         if (t.getClickCount() == 2 && t.getButton() == MouseButton.PRIMARY) {
             model.onDoubleClick(item);
             t.consume();
@@ -56,7 +58,7 @@ public class BrowserFileListCompEntry {
     }
 
     public void onMouseShiftClick(MouseEvent t) {
-        if (isSynthetic()) {
+        if (t.getButton() != MouseButton.PRIMARY) {
             return;
         }
 
@@ -83,11 +85,6 @@ public class BrowserFileListCompEntry {
         }
         model.getSelection().addAll(toSelect);
         t.consume();
-    }
-
-    public boolean isSynthetic() {
-        return item != null
-                && item.getRawFileEntry().equals(model.getFileSystemModel().getCurrentParentDirectory());
     }
 
     private boolean acceptsDrop(DragEvent event) {
@@ -121,7 +118,7 @@ public class BrowserFileListCompEntry {
         }
 
         // Prevent dropping items onto themselves
-        if (item != null && cb.getEntries().contains(item.getRawFileEntry())) {
+        if (item != null && cb.getEntries().contains(item)) {
             return false;
         }
 
@@ -172,11 +169,10 @@ public class BrowserFileListCompEntry {
 
     public void startDrag(MouseEvent event) {
         if (item == null) {
-            row.startFullDrag();
             return;
         }
 
-        if (isSynthetic()) {
+        if (event.getButton() != MouseButton.PRIMARY) {
             return;
         }
 
@@ -222,7 +218,7 @@ public class BrowserFileListCompEntry {
                 model.getFileSystemModel().cdAsync(item.getRawFileEntry().getPath());
             }
         };
-        DROP_TIMER.schedule(activeTask, 1000);
+        DROP_TIMER.schedule(activeTask, 1200);
     }
 
     public void onDragEntered(DragEvent event) {

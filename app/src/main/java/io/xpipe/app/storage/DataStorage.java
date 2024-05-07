@@ -120,7 +120,6 @@ public abstract class DataStorage {
     }
 
     private synchronized void dispose() {
-        onReset();
         save(true);
     }
 
@@ -182,8 +181,6 @@ public abstract class DataStorage {
             }
         });
     }
-
-    protected void onReset() {}
 
     protected Path getStoresDir() {
         return dir.resolve("stores");
