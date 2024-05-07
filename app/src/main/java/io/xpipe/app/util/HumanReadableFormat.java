@@ -2,6 +2,7 @@ package io.xpipe.app.util;
 
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -79,5 +80,14 @@ public final class HumanReadableFormat {
 
     private static int getWeekNumber(LocalDateTime date) {
         return date.get(WeekFields.of(Locale.getDefault()).weekOfYear());
+    }
+
+
+    public static String duration(Duration duration) {
+        return duration.toString()
+                .substring(2)
+                .replaceAll("(\\d[HMS])(?!$)", "$1 ")
+                .replaceAll("\\.\\d+", "")
+                .toLowerCase();
     }
 }

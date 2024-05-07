@@ -1,5 +1,6 @@
 package io.xpipe.app.core.mode;
 
+import io.xpipe.app.browser.file.LocalFileSystem;
 import io.xpipe.app.browser.icon.FileIconManager;
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppGreetings;
@@ -49,8 +50,12 @@ public class GuiMode extends PlatformMode {
         });
         TrackEvent.info("Window setup complete");
 
-        ThreadHelper.runAsync(() -> {
+        // Can be loaded async
+        ThreadHelper.runFailableAsync(() -> {
             FileIconManager.loadIfNecessary();
+        });
+        ThreadHelper.runFailableAsync(() -> {
+            LocalFileSystem.init();
         });
 
         UpdateChangelogAlert.showIfNeeded();

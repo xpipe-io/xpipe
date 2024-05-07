@@ -1,5 +1,6 @@
 package io.xpipe.app.browser;
 
+import atlantafx.base.controls.Spacer;
 import io.xpipe.app.browser.file.BrowserContextMenu;
 import io.xpipe.app.browser.file.BrowserFileListCompEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
@@ -11,15 +12,15 @@ import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.impl.LabelComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.util.HumanReadableFormat;
-
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
-
-import atlantafx.base.controls.Spacer;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 
 @Value
 @EqualsAndHashCode(callSuper = true)
@@ -56,7 +57,9 @@ public class BrowserStatusBarComp extends SimpleComp {
                 var transferred = HumanReadableFormat.progressByteCount(p.getTransferred());
                 var all = HumanReadableFormat.byteCount(p.getTotal());
                 var name = (p.getName() != null ? " @ " + p.getName() + " " : "");
-                return transferred + " / " + all + name;
+                var time = p.getTotal() > 50_000_000 && p.elapsedTime().compareTo(Duration.of(200, ChronoUnit.MILLIS)) > 0 ? " | "
+                        + HumanReadableFormat.duration(p.expectedTimeRemaining()) : " | ...";
+                return transferred + " / " + all + name + time;
             }
         });
         var progressComp = new LabelComp(text).styleClass("progress");
@@ -87,9 +90,7 @@ public class BrowserStatusBarComp extends SimpleComp {
 
         var allCount = Bindings.createIntegerBinding(
                 () -> {
-                    return (int) model.getFileList().getAll().getValue().stream()
-                            .filter(entry -> !entry.isSynthetic())
-                            .count();
+                    return model.getFileList().getAll().getValue().size();
                 },
                 model.getFileList().getAll());
         var selectedComp = new LabelComp(Bindings.createStringBinding(

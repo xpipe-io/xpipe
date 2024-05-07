@@ -1,17 +1,17 @@
 package io.xpipe.app.browser;
 
-import io.xpipe.app.browser.file.FileSystemHelper;
+import io.xpipe.app.browser.file.BrowserEntry;
+import io.xpipe.app.browser.file.BrowserFileTransferMode;
+import io.xpipe.app.browser.file.LocalFileSystem;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.util.FailableRunnable;
-
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
-
 import lombok.SneakyThrows;
 import lombok.Value;
 
@@ -45,17 +45,17 @@ public class BrowserClipboard {
 
                             List<File> data = (List<File>) clipboard.getData(DataFlavor.javaFileListFlavor);
                             var files =
-                                    data.stream().map(string -> string.toPath()).toList();
+                                    data.stream().map(f -> f.toPath()).toList();
                             if (files.size() == 0) {
                                 return;
                             }
 
-                            var entries = new ArrayList<FileSystem.FileEntry>();
+                            var entries = new ArrayList<BrowserEntry>();
                             for (Path file : files) {
-                                entries.add(FileSystemHelper.getLocal(file));
+                                entries.add(LocalFileSystem.getLocalBrowserEntry(file));
                             }
 
-                            currentCopyClipboard.setValue(new Instance(UUID.randomUUID(), null, entries));
+                            currentCopyClipboard.setValue(new Instance(UUID.randomUUID(), null, entries, BrowserFileTransferMode.COPY));
                         } catch (Exception e) {
                             ErrorEvent.fromThrowable(e).expected().omit().handle();
                         }
@@ -64,27 +64,27 @@ public class BrowserClipboard {
     }
 
     @SneakyThrows
-    public static ClipboardContent startDrag(FileSystem.FileEntry base, List<FileSystem.FileEntry> selected) {
+    public static ClipboardContent startDrag(FileSystem.FileEntry base, List<BrowserEntry> selected, BrowserFileTransferMode mode) {
         if (selected.isEmpty()) {
             return null;
         }
 
         var content = new ClipboardContent();
         var id = UUID.randomUUID();
-        currentDragClipboard = new Instance(id, base, new ArrayList<>(selected));
+        currentDragClipboard = new Instance(id, base, new ArrayList<>(selected), mode);
         content.putString(currentDragClipboard.toClipboardString());
         return content;
     }
 
     @SneakyThrows
-    public static void startCopy(FileSystem.FileEntry base, List<FileSystem.FileEntry> selected) {
+    public static void startCopy(FileSystem.FileEntry base, List<BrowserEntry> selected) {
         if (selected.isEmpty()) {
             currentCopyClipboard.setValue(null);
             return;
         }
 
         var id = UUID.randomUUID();
-        currentCopyClipboard.setValue(new Instance(id, base, new ArrayList<>(selected)));
+        currentCopyClipboard.setValue(new Instance(id, base, new ArrayList<>(selected), BrowserFileTransferMode.COPY));
     }
 
     public static Instance retrieveCopy() {
@@ -118,11 +118,12 @@ public class BrowserClipboard {
     public static class Instance {
         UUID uuid;
         FileSystem.FileEntry baseDirectory;
-        List<FileSystem.FileEntry> entries;
+        List<BrowserEntry> entries;
+        BrowserFileTransferMode mode;
 
         public String toClipboardString() {
             return entries.stream()
-                    .map(fileEntry -> "\"" + fileEntry.getPath() + "\"")
+                    .map(fileEntry -> "\"" + fileEntry.getRawFileEntry().getPath() + "\"")
                     .collect(Collectors.joining(ProcessControlProvider.get()
                             .getEffectiveLocalDialect()
                             .getNewLine()

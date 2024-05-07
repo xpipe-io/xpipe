@@ -3,13 +3,11 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.browser.BrowserClipboard;
 import io.xpipe.app.browser.BrowserSelectionListComp;
 import io.xpipe.core.store.FileKind;
-
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
-
 import lombok.Getter;
 
 import java.io.File;
@@ -44,11 +42,13 @@ public class BrowserFileListCompEntry {
             // Only clear for normal clicks
             if (t.isStillSincePress()) {
                 model.getSelection().clear();
+                tv.requestFocus();
             }
             t.consume();
             return;
         }
 
+        row.requestFocus();
         if (t.getClickCount() == 2 && t.getButton() == MouseButton.PRIMARY) {
             model.onDoubleClick(item);
             t.consume();
@@ -58,7 +58,7 @@ public class BrowserFileListCompEntry {
     }
 
     public void onMouseShiftClick(MouseEvent t) {
-        if (isSynthetic()) {
+        if (t.getButton() != MouseButton.PRIMARY) {
             return;
         }
 
@@ -87,11 +87,6 @@ public class BrowserFileListCompEntry {
         t.consume();
     }
 
-    public boolean isSynthetic() {
-        return item != null
-                && item.getRawFileEntry().equals(model.getFileSystemModel().getCurrentParentDirectory());
-    }
-
     private boolean acceptsDrop(DragEvent event) {
         // Accept drops from outside the app window
         if (event.getGestureSource() == null) {
@@ -109,7 +104,7 @@ public class BrowserFileListCompEntry {
 
         if (!Objects.equals(
                 model.getFileSystemModel().getFileSystem(),
-                cb.getEntries().getFirst().getFileSystem())) {
+                cb.getEntries().getFirst().getRawFileEntry().getFileSystem())) {
             return true;
         }
 
@@ -123,7 +118,7 @@ public class BrowserFileListCompEntry {
         }
 
         // Prevent dropping items onto themselves
-        if (item != null && cb.getEntries().contains(item.getRawFileEntry())) {
+        if (item != null && cb.getEntries().contains(item)) {
             return false;
         }
 
@@ -157,7 +152,7 @@ public class BrowserFileListCompEntry {
             var target = item != null && item.getRawFileEntry().getKind() == FileKind.DIRECTORY
                     ? item.getRawFileEntry()
                     : model.getFileSystemModel().getCurrentDirectory();
-            model.getFileSystemModel().dropFilesIntoAsync(target, files, false);
+            model.getFileSystemModel().dropFilesIntoAsync(target, files.stream().map(browserEntry -> browserEntry.getRawFileEntry()).toList(), db.getMode());
             event.setDropCompleted(true);
             event.consume();
         }
@@ -174,17 +169,16 @@ public class BrowserFileListCompEntry {
 
     public void startDrag(MouseEvent event) {
         if (item == null) {
-            row.startFullDrag();
             return;
         }
 
-        if (isSynthetic()) {
+        if (event.getButton() != MouseButton.PRIMARY) {
             return;
         }
 
-        var selected = model.getSelectedRaw();
+        var selected = model.getSelection();
         Dragboard db = row.startDragAndDrop(TransferMode.COPY);
-        db.setContent(BrowserClipboard.startDrag(model.getFileSystemModel().getCurrentDirectory(), selected));
+        db.setContent(BrowserClipboard.startDrag(model.getFileSystemModel().getCurrentDirectory(), selected, event.isAltDown() ? BrowserFileTransferMode.MOVE : BrowserFileTransferMode.NORMAL));
 
         Image image = BrowserSelectionListComp.snapshot(selected);
         db.setDragView(image, -20, 15);
@@ -224,7 +218,7 @@ public class BrowserFileListCompEntry {
                 model.getFileSystemModel().cdAsync(item.getRawFileEntry().getPath());
             }
         };
-        DROP_TIMER.schedule(activeTask, 1000);
+        DROP_TIMER.schedule(activeTask, 1200);
     }
 
     public void onDragEntered(DragEvent event) {
@@ -244,7 +238,7 @@ public class BrowserFileListCompEntry {
             return;
         }
 
-        if (item == null || item.isSynthetic()) {
+        if (item == null) {
             return;
         }
 

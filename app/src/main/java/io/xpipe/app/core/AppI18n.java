@@ -6,21 +6,17 @@ import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.prefs.SupportedLocale;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.Translatable;
 import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.XPipeInstallation;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
-
 import lombok.SneakyThrows;
 import lombok.Value;
 import org.apache.commons.io.FilenameUtils;
-import org.ocpsoft.prettytime.PrettyTime;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -131,7 +127,7 @@ public class AppI18n {
         }
     }
 
-    private LoadedTranslations getLoaded() {
+    public LoadedTranslations getLoaded() {
         return currentLanguage.getValue() != null ? currentLanguage.getValue() : english;
     }
 
@@ -278,21 +274,15 @@ public class AppI18n {
             });
         }
 
-        var prettyTime = new PrettyTime(
-                AppPrefs.get() != null
-                        ? AppPrefs.get().language().getValue().getLocale()
-                        : SupportedLocale.getEnglish().getLocale());
-
-        return new LoadedTranslations(l, translations, markdownDocumentations, prettyTime);
+        return new LoadedTranslations(l, translations, markdownDocumentations);
     }
 
     @Value
-    static class LoadedTranslations {
+    public static class LoadedTranslations {
 
         Locale locale;
         Map<String, String> translations;
         Map<String, String> markdownDocumentations;
-        PrettyTime prettyTime;
     }
 
     @SuppressWarnings("removal")

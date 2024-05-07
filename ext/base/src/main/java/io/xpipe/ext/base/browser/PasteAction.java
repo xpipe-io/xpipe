@@ -3,6 +3,7 @@ package io.xpipe.ext.base.browser;
 import io.xpipe.app.browser.BrowserClipboard;
 import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
+import io.xpipe.app.browser.file.BrowserFileTransferMode;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.store.FileKind;
@@ -34,7 +35,7 @@ public class PasteAction implements LeafAction {
             return;
         }
 
-        model.dropFilesIntoAsync(target, files, true);
+        model.dropFilesIntoAsync(target, files.stream().map(browserEntry -> browserEntry.getRawFileEntry()).toList(), BrowserFileTransferMode.COPY);
     }
 
     @Override

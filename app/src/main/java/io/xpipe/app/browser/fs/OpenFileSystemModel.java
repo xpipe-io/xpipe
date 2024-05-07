@@ -4,6 +4,8 @@ import io.xpipe.app.browser.BrowserSavedState;
 import io.xpipe.app.browser.BrowserTransferProgress;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.file.BrowserFileListModel;
+import io.xpipe.app.browser.file.BrowserFileTransferMode;
+import io.xpipe.app.browser.file.BrowserFileTransferOperation;
 import io.xpipe.app.browser.file.FileSystemHelper;
 import io.xpipe.app.browser.session.BrowserAbstractSessionModel;
 import io.xpipe.app.browser.session.BrowserSessionModel;
@@ -22,10 +24,8 @@ import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.ShellOpenFunction;
 import io.xpipe.core.store.*;
 import io.xpipe.core.util.FailableConsumer;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -343,14 +343,16 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
                 }
 
                 startIfNeeded();
-                FileSystemHelper.dropLocalFilesInto(entry, files, progress::setValue, true);
+                var op = BrowserFileTransferOperation.ofLocal(entry, files,BrowserFileTransferMode.COPY,true, progress::setValue);
+                op.execute();
                 refreshSync();
             });
         });
     }
 
     public void dropFilesIntoAsync(
-            FileSystem.FileEntry target, List<FileSystem.FileEntry> files, boolean explicitCopy) {
+            FileSystem.FileEntry target, List<FileSystem.FileEntry> files, BrowserFileTransferMode mode
+            ) {
         // We don't have to do anything in this case
         if (files.isEmpty()) {
             return;
@@ -363,9 +365,8 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
                 }
 
                 startIfNeeded();
-                FileSystemHelper.dropFilesInto(target, files, explicitCopy, true, browserTransferProgress -> {
-                    progress.setValue(browserTransferProgress);
-                });
+                var op = new BrowserFileTransferOperation(target, files, mode,true, progress::setValue);
+                op.execute();
                 refreshSync();
             });
         });

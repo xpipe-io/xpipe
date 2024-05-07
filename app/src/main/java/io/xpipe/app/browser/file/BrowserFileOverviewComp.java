@@ -37,7 +37,7 @@ public class BrowserFileOverviewComp extends SimpleComp {
                 var graphic = new HorizontalComp(List.of(
                         icon,
                         new BrowserQuickAccessButtonComp(
-                                () -> new BrowserEntry(entry, model.getFileList(), false), model)));
+                                () -> new BrowserEntry(entry, model.getFileList()), model)));
                 var l = new Button(entry.getPath(), graphic.createRegion());
                 l.setGraphicTextGap(1);
                 l.setOnAction(event -> {

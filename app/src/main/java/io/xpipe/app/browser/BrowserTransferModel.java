@@ -1,14 +1,14 @@
 package io.xpipe.app.browser;
 
-import io.xpipe.app.browser.file.FileSystemHelper;
+import io.xpipe.app.browser.file.BrowserEntry;
+import io.xpipe.app.browser.file.BrowserFileTransferMode;
+import io.xpipe.app.browser.file.BrowserFileTransferOperation;
+import io.xpipe.app.browser.file.LocalFileSystem;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ShellTemp;
-import io.xpipe.core.store.FileNames;
-import io.xpipe.core.store.FileSystem;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -17,7 +17,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
 import lombok.Value;
 import org.apache.commons.io.FileUtils;
 
@@ -66,9 +65,9 @@ public class BrowserTransferModel {
         items.clear();
     }
 
-    public void drop(OpenFileSystemModel model, List<FileSystem.FileEntry> entries) {
+    public void drop(OpenFileSystemModel model, List<BrowserEntry> entries) {
         entries.forEach(entry -> {
-            var name = FileNames.getFileName(entry.getPath());
+            var name = entry.getFileName();
             if (items.stream().anyMatch(item -> item.getName().equals(name))) {
                 return;
             }
@@ -89,14 +88,14 @@ public class BrowserTransferModel {
         try {
             var paths = entries.stream().map(File::toPath).filter(Files::exists).toList();
             for (Path path : paths) {
-                var entry = FileSystemHelper.getLocal(path);
-                var name = entry.getName();
+                var entry = LocalFileSystem.getLocalBrowserEntry(path);
+                var name = entry.getFileName();
                 if (items.stream().anyMatch(item -> item.getName().equals(name))) {
                     return;
                 }
 
                 var item = new Item(null, name, entry, path);
-                item.progress.setValue(BrowserTransferProgress.finished(entry.getName(), entry.getSize()));
+                item.progress.setValue(BrowserTransferProgress.finished(entry.getFileName(), entry.getRawFileEntry().getSize()));
                 items.add(item);
             }
         } catch (Exception ex) {
@@ -127,16 +126,17 @@ public class BrowserTransferModel {
                 }
 
                 try {
-                    try (var b = new BooleanScope(downloading).start()) {
-                        FileSystemHelper.dropFilesInto(
-                                FileSystemHelper.getLocal(TEMP),
-                                List.of(item.getFileEntry()),
-                                true,
+                    try (var ignored = new BooleanScope(downloading).start()) {
+                        var op = new BrowserFileTransferOperation(
+                                LocalFileSystem.getLocalFileEntry(TEMP),
+                                List.of(item.getBrowserEntry().getRawFileEntry()),
+                                BrowserFileTransferMode.COPY,
                                 false,
                                 progress -> {
                                     item.getProgress().setValue(progress);
                                     item.getOpenFileSystemModel().getProgress().setValue(progress);
                                 });
+                        op.execute();
                     }
                 } catch (Throwable t) {
                     ErrorEvent.fromThrowable(t).handle();
@@ -151,15 +151,15 @@ public class BrowserTransferModel {
     public static class Item {
         OpenFileSystemModel openFileSystemModel;
         String name;
-        FileSystem.FileEntry fileEntry;
+        BrowserEntry browserEntry;
         Path localFile;
         Property<BrowserTransferProgress> progress;
 
         public Item(
-                OpenFileSystemModel openFileSystemModel, String name, FileSystem.FileEntry fileEntry, Path localFile) {
+                OpenFileSystemModel openFileSystemModel, String name, BrowserEntry browserEntry, Path localFile) {
             this.openFileSystemModel = openFileSystemModel;
             this.name = name;
-            this.fileEntry = fileEntry;
+            this.browserEntry = browserEntry;
             this.localFile = localFile;
             this.progress = new SimpleObjectProperty<>();
         }
