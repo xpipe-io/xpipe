@@ -71,6 +71,7 @@ public class SvgView {
             return null;
         }
 
+        wv.getStyleClass().add("svg-comp");
         wv.getEngine()
                 .setUserDataDirectory(
                         AppProperties.get().getDataDir().resolve("webview").toFile());
@@ -126,7 +127,6 @@ public class SvgView {
 
     public Optional<WebView> createWebview() {
         var wv = createWebView();
-        wv.getStyleClass().add("svg-comp");
         return Optional.ofNullable(wv);
     }
 
