@@ -39,7 +39,7 @@ public class BrowserFilterComp extends Comp<BrowserFilterComp.Structure> {
             button.fire();
             keyEvent.consume();
         });
-        new TooltipAugment<>("app.search", new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN)).augment(button);
+        new TooltipAugment<>("app.search", new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN)).augment(button);
         text.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue && filterString.getValue() == null) {
                 if (button.isFocused()) {

@@ -12,27 +12,6 @@ import java.util.function.Consumer;
 
 public class InputHelper {
 
-    public static void onCtrlKeyCode(EventTarget target, KeyCode code, boolean filter, Consumer<KeyEvent> r) {
-        EventHandler<KeyEvent> keyEventEventHandler = event -> {
-            if (event.isAltDown() || event.isShiftDown()) {
-                return;
-            }
-
-            if (!event.isShortcutDown()) {
-                return;
-            }
-
-            if (code == event.getCode()) {
-                r.accept(event);
-            }
-        };
-        if (filter) {
-            target.addEventFilter(KeyEvent.KEY_PRESSED, keyEventEventHandler);
-        } else {
-            target.addEventHandler(KeyEvent.KEY_PRESSED, keyEventEventHandler);
-        }
-    }
-
     public static void onKeyCombination(EventTarget target, KeyCombination c, boolean filter, Consumer<KeyEvent> r) {
         EventHandler<KeyEvent> keyEventEventHandler = event -> {
             if (c.match(event)) {

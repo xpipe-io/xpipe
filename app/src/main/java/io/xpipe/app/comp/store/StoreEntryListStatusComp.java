@@ -19,9 +19,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -102,9 +99,6 @@ public class StoreEntryListStatusComp extends SimpleComp {
             });
         });
         var filter = new FilterComp(StoreViewState.get().getFilterString());
-        filter.shortcut(new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN), s -> {
-            s.getText().requestFocus();
-        });
         filter.apply(struc -> struc.get().sceneProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 struc.getText().requestFocus();

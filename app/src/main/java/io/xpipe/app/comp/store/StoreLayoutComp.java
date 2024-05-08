@@ -5,18 +5,13 @@ import io.xpipe.app.core.AppActionLinkDetector;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.fxcomps.SimpleComp;
 
+import io.xpipe.app.util.InputHelper;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.Region;
 
 public class StoreLayoutComp extends SimpleComp {
-
-    public StoreLayoutComp() {
-        shortcut(new KeyCodeCombination(KeyCode.V, KeyCombination.SHORTCUT_DOWN), structure -> {
-            AppActionLinkDetector.detectOnPaste();
-        });
-    }
 
     @Override
     protected Region createSimple() {
@@ -29,6 +24,10 @@ public class StoreLayoutComp extends SimpleComp {
         struc.getLeft().setMinWidth(260);
         struc.getLeft().setMaxWidth(500);
         struc.get().getStyleClass().add("store-layout");
+        InputHelper.onKeyCombination(struc.get(),new KeyCodeCombination(KeyCode.V, KeyCombination.SHORTCUT_DOWN), true, keyEvent -> {
+            AppActionLinkDetector.detectOnPaste();
+            keyEvent.consume();
+        });
         return struc.get();
     }
 }

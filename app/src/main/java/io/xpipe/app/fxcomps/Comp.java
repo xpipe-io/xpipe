@@ -7,7 +7,6 @@ import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.Shortcuts;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -21,7 +20,6 @@ import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -177,14 +175,6 @@ public abstract class Comp<S extends CompStructure<?>> {
 
     public Comp<S> grow(boolean width, boolean height) {
         return apply(GrowAugment.create(width, height));
-    }
-
-    public Comp<S> shortcut(KeyCombination shortcut, Consumer<S> con) {
-        return apply(struc -> Shortcuts.addShortcut(struc.get(), shortcut, r -> con.accept(struc)));
-    }
-
-    public Comp<S> displayOnlyShortcut(KeyCombination shortcut) {
-        return apply(struc -> Shortcuts.addDisplayShortcut(struc.get(), shortcut));
     }
 
     public Comp<S> tooltip(ObservableValue<String> text) {

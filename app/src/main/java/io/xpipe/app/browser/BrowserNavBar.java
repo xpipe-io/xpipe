@@ -10,6 +10,7 @@ import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.TextFieldComp;
+import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
@@ -75,9 +76,6 @@ public class BrowserNavBar extends Comp<BrowserNavBar.Structure> {
 
                     struc.get().setPromptText("Overview of " + model.getName());
                 })
-                .shortcut(new KeyCodeCombination(KeyCode.P, KeyCombination.SHORTCUT_DOWN), s -> {
-                    s.get().requestFocus();
-                })
                 .accessibleText("Current path");
 
         var graphic = Bindings.createStringBinding(
@@ -105,6 +103,7 @@ public class BrowserNavBar extends Comp<BrowserNavBar.Structure> {
         historyButton.getStyleClass().add(Styles.RIGHT_PILL);
         new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, null, this::createContextMenu)
                 .augment(new SimpleCompStructure<>(historyButton));
+        new TooltipAugment<>("history", new KeyCodeCombination(KeyCode.H, KeyCombination.ALT_DOWN)).augment(historyButton);
 
         var breadcrumbs = new BrowserBreadcrumbBar(model).grow(false, true);
 
@@ -114,6 +113,7 @@ public class BrowserNavBar extends Comp<BrowserNavBar.Structure> {
             pathRegion.requestFocus();
             event.consume();
         });
+        breadcrumbsRegion.setFocusTraversable(false);
         breadcrumbsRegion.visibleProperty()
                 .bind(Bindings.createBooleanBinding(
                         () -> {

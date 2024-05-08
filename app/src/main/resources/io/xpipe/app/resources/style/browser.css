@@ -79,7 +79,11 @@
     -fx-background-color: transparent;
 }
 
-.browser .top-bar > .button:hover {
+.browser .top-bar .button:hover, .root:key-navigation .browser .top-bar .button:focused {
+    -fx-background-color: -color-accent-subtle;
+}
+
+.browser .top-bar .menu-button:hover, .root:key-navigation .browser .top-bar .menu-button:focused {
     -fx-background-color: -color-accent-subtle;
 }
 

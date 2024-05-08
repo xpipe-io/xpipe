@@ -101,13 +101,24 @@ public class OpenFileSystemComp extends SimpleComp {
         root.getChildren().addAll(topBar, content);
         VBox.setVgrow(content, Priority.ALWAYS);
         root.setPadding(Insets.EMPTY);
-        InputHelper.onCtrlKeyCode(root, KeyCode.F, true, keyEvent -> {
+        InputHelper.onKeyCombination(root, new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN), true, keyEvent -> {
             filter.toggleButton().fire();
             filter.textField().requestFocus();
             keyEvent.consume();
         });
-        InputHelper.onCtrlKeyCode(root, KeyCode.L, true, keyEvent -> {
+        InputHelper.onKeyCombination(root, new KeyCodeCombination(KeyCode.L, KeyCombination.CONTROL_DOWN), true, keyEvent -> {
             navBar.textField().requestFocus();
+            keyEvent.consume();
+        });
+        InputHelper.onKeyCombination(root, new KeyCodeCombination(KeyCode.H, KeyCombination.ALT_DOWN), true, keyEvent -> {
+            navBar.historyButton().fire();
+            keyEvent.consume();
+        });
+        InputHelper.onKeyCombination(root, new KeyCodeCombination(KeyCode.UP, KeyCombination.ALT_DOWN), true, keyEvent -> {
+            var p = model.getCurrentParentDirectory();
+            if (p != null) {
+                model.cdAsync(p.getPath());
+            }
             keyEvent.consume();
         });
         return root;
