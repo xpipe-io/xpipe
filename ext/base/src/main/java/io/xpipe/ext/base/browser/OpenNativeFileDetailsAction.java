@@ -10,6 +10,9 @@ import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FileNames;
 
 import javafx.beans.value.ObservableValue;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 
 import java.util.List;
 
@@ -60,6 +63,11 @@ public class OpenNativeFileDetailsAction implements LeafAction {
                 }
             }
         }
+    }
+
+    @Override
+    public KeyCombination getShortcut() {
+        return new KeyCodeCombination(KeyCode.ENTER,KeyCombination.ALT_DOWN);
     }
 
     @Override

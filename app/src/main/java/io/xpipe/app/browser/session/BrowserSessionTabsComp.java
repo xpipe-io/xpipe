@@ -10,6 +10,7 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BooleanScope;
 
+import io.xpipe.app.util.InputHelper;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -21,6 +22,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.DragEvent;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
@@ -164,6 +166,24 @@ public class BrowserSessionTabsComp extends SimpleComp {
                 }
             }
         });
+
+        InputHelper.onInput(tabs, true, keyEvent -> {
+            var current = tabs.getSelectionModel().getSelectedItem();
+            if (current == null) {
+                return;
+            }
+
+            if (keyEvent.getCode() == KeyCode.W && keyEvent.isShortcutDown()) {
+                tabs.getTabs().remove(current);
+                keyEvent.consume();
+            }
+
+            if (keyEvent.getCode() == KeyCode.W && keyEvent.isShortcutDown() && keyEvent.isShiftDown()) {
+                tabs.getTabs().clear();
+                keyEvent.consume();
+            }
+        });
+
         return tabs;
     }
 
@@ -216,7 +236,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
                     if (color != null) {
                         c.getStyleClass().add(color.getId());
                     }
-                    new TooltipAugment<>(new SimpleStringProperty(model.getTooltip())).augment(c);
+                    new TooltipAugment<>(new SimpleStringProperty(model.getTooltip()), null).augment(c);
                     c.addEventHandler(
                             DragEvent.DRAG_ENTERED,
                             mouseEvent -> Platform.runLater(

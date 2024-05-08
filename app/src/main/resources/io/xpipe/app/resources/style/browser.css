@@ -182,8 +182,12 @@
     -fx-background-color: -color-accent-subtle;
 }
 
-.browser .table-row-cell:selected, .browser .table-row-cell:hover:selected {
+.browser .table-row-cell:selected, .browser .table-row-cell:hover:selected, .root:key-navigation .browser .table-row-cell:focused:selected {
     -fx-background-color: -color-success-subtle;
+}
+
+.root:key-navigation .browser .table-row-cell:focused {
+    -fx-background-color: -color-warning-subtle;
 }
 
 .root.nord .browser .table-row-cell:selected, .root.nord .browser .table-row-cell:hover:selected {

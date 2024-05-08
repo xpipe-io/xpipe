@@ -190,7 +190,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         var imageComp = PrettyImageHelper.ofFixedSize(img, w, h);
         var storeIcon = imageComp.createRegion();
         if (wrapper.getValidity().getValue().isUsable()) {
-            new TooltipAugment<>(wrapper.getEntry().getProvider().displayName()).augment(storeIcon);
+            new TooltipAugment<>(wrapper.getEntry().getProvider().displayName(), null).augment(storeIcon);
         }
 
         var stack = new StackPane(storeIcon);
@@ -227,7 +227,7 @@ public abstract class StoreEntryComp extends SimpleComp {
             button.accessibleText(
                     actionProvider.getName(wrapper.getEntry().ref()).getValue());
             button.apply(new TooltipAugment<>(
-                    actionProvider.getName(wrapper.getEntry().ref())));
+                    actionProvider.getName(wrapper.getEntry().ref()), null));
             if (actionProvider.activeType() == ActionProvider.DataStoreCallSite.ActiveType.ONLY_SHOW_IF_ENABLED) {
                 button.hide(Bindings.not(p.getValue()));
             } else if (actionProvider.activeType() == ActionProvider.DataStoreCallSite.ActiveType.ALWAYS_SHOW) {
@@ -266,7 +266,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                 event -> event.getButton() == MouseButton.PRIMARY,
                 null,
                 () -> StoreEntryComp.this.createContextMenu()));
-        settingsButton.apply(new TooltipAugment<>("more"));
+        settingsButton.tooltipKey("more");
         return settingsButton;
     }
 

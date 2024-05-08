@@ -7,12 +7,10 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.FilterComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
-import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -29,7 +27,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
-
 import org.kordamp.ikonli.javafx.FontIcon;
 
 public class StoreEntryListStatusComp extends SimpleComp {
@@ -186,7 +183,7 @@ public class StoreEntryListStatusComp extends SimpleComp {
                             sortMode));
         });
         alphabetical.accessibleTextKey("sortAlphabetical");
-        alphabetical.apply(new TooltipAugment<>("sortAlphabetical"));
+        alphabetical.tooltipKey("sortAlphabetical");
         return alphabetical;
     }
 
@@ -225,7 +222,7 @@ public class StoreEntryListStatusComp extends SimpleComp {
                             sortMode));
         });
         date.accessibleTextKey("sortLastUsed");
-        date.apply(new TooltipAugment<>("sortLastUsed"));
+        date.tooltipKey("sortLastUsed");
         return date;
     }
 

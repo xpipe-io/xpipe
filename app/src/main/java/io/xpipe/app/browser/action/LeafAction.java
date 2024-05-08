@@ -4,14 +4,13 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
-import io.xpipe.app.fxcomps.util.Shortcuts;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.ThreadHelper;
-
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
-
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Region;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -20,7 +19,7 @@ public interface LeafAction extends BrowserAction {
 
     void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception;
 
-    default Button toButton(OpenFileSystemModel model, List<BrowserEntry> selected) {
+    default Button toButton(Region root, OpenFileSystemModel model, List<BrowserEntry> selected) {
         var b = new Button();
         b.setOnAction(event -> {
             // Only accept shortcut actions in the current tab
@@ -37,17 +36,20 @@ public interface LeafAction extends BrowserAction {
             });
             event.consume();
         });
-        if (getShortcut() != null) {
-            Shortcuts.addShortcut(b, getShortcut());
-        }
         var name = getName(model, selected);
-        new TooltipAugment<>(name).augment(b);
+        new TooltipAugment<>(name, getShortcut()).augment(b);
         var graphic = getIcon(model, selected);
         if (graphic != null) {
             b.setGraphic(graphic);
         }
         b.setMnemonicParsing(false);
         b.accessibleTextProperty().bind(name);
+        root.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (getShortcut() != null && getShortcut().match(event)) {
+                b.fire();
+                event.consume();
+            }
+        });
 
         b.setDisable(!isActive(model, selected));
         model.getCurrentPath().addListener((observable, oldValue, newValue) -> {

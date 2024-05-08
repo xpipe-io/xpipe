@@ -4,9 +4,6 @@ import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.util.InputHelper;
-
-import javafx.application.Platform;
-import javafx.scene.control.Menu;
 import javafx.scene.layout.Region;
 
 import java.util.function.Supplier;
@@ -33,11 +30,6 @@ public class BrowserQuickAccessButtonComp extends SimpleComp {
                     cm.hide();
                 }
                 event.consume();
-            });
-            cm.addEventFilter(Menu.ON_HIDDEN, e -> {
-                Platform.runLater(() -> {
-                    struc.get().requestFocus();
-                });
             });
             InputHelper.onRight(struc.get(), false, keyEvent -> {
                 cm.showMenu(struc.get());

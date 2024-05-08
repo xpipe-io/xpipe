@@ -1,19 +1,17 @@
 package io.xpipe.app.browser;
 
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.file.BrowserContextMenu;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.browser.icon.FileIconManager;
 import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
-import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
-import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.fxcomps.impl.TextFieldComp;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
-
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -25,25 +23,16 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-
-import atlantafx.base.theme.Styles;
+import javafx.scene.layout.StackPane;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.util.List;
-
-public class BrowserNavBar extends SimpleComp {
-
-    private static final PseudoClass INVISIBLE = PseudoClass.getPseudoClass("invisible");
-
-    private final OpenFileSystemModel model;
-
-    public BrowserNavBar(OpenFileSystemModel model) {
-        this.model = model;
-    }
+public class BrowserNavBar extends Comp<BrowserNavBar.Structure> {
 
     @Override
-    protected Region createSimple() {
+    public Structure createBase() {
         var path = new SimpleStringProperty(model.getCurrentPath().get());
         model.getCurrentPath().subscribe((newValue) -> {
             path.set(newValue);
@@ -107,62 +96,61 @@ public class BrowserNavBar extends SimpleComp {
         homeButton.getStyleClass().add(Styles.LEFT_PILL);
         homeButton.getStyleClass().add("path-graphic-button");
         new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, null, () -> {
-                    return model.getInOverview().get() ? null : new BrowserContextMenu(model, null);
-                })
+            return model.getInOverview().get() ? null : new BrowserContextMenu(model, null);
+        })
                 .augment(new SimpleCompStructure<>(homeButton));
 
         var historyButton = new Button(null, new FontIcon("mdi2h-history"));
         historyButton.setAccessibleText("History");
         historyButton.getStyleClass().add(Styles.RIGHT_PILL);
-        // historyButton.getStyleClass().add("path-graphic-button");
         new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, null, this::createContextMenu)
                 .augment(new SimpleCompStructure<>(historyButton));
 
         var breadcrumbs = new BrowserBreadcrumbBar(model).grow(false, true);
-        var stack = new StackComp(List.of(pathBar, breadcrumbs))
-                .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
-                .hgrow()
-                .apply(struc -> {
-                    var t = struc.get().getChildren().get(0);
-                    var b = struc.get().getChildren().get(1);
-                    b.setOnMouseClicked(event -> {
-                        t.requestFocus();
-                        event.consume();
-                    });
-                    b.visibleProperty()
-                            .bind(Bindings.createBooleanBinding(
-                                    () -> {
-                                        return !t.isFocused()
-                                                && !model.getInOverview().get();
-                                    },
-                                    t.focusedProperty(),
-                                    model.getInOverview()));
-                })
-                .grow(false, true);
 
-        var topBox = new HorizontalComp(List.of(Comp.of(() -> homeButton), stack, Comp.of(() -> historyButton)))
-                .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
-                .apply(struc -> {
-                    ((Region) struc.get().getChildren().get(0))
-                            .minHeightProperty()
-                            .bind(((Region) struc.get().getChildren().get(1)).heightProperty());
-                    ((Region) struc.get().getChildren().get(0))
-                            .maxHeightProperty()
-                            .bind(((Region) struc.get().getChildren().get(1)).heightProperty());
+        var pathRegion = pathBar.createStructure().get();
+        var breadcrumbsRegion = breadcrumbs.createRegion();
+        breadcrumbsRegion.setOnMouseClicked(event -> {
+            pathRegion.requestFocus();
+            event.consume();
+        });
+        breadcrumbsRegion.visibleProperty()
+                .bind(Bindings.createBooleanBinding(
+                        () -> {
+                            return !pathRegion.isFocused()
+                                    && !model.getInOverview().get();
+                        },
+                        pathRegion.focusedProperty(),
+                        model.getInOverview()));
+        var stack = new StackPane(pathRegion, breadcrumbsRegion);
+        stack.setAlignment(Pos.CENTER_LEFT);
+        HBox.setHgrow(stack, Priority.ALWAYS);
 
-                    ((Region) struc.get().getChildren().get(2))
-                            .minHeightProperty()
-                            .bind(((Region) struc.get().getChildren().get(1)).heightProperty());
-                    ((Region) struc.get().getChildren().get(2))
-                            .maxHeightProperty()
-                            .bind(((Region) struc.get().getChildren().get(1)).heightProperty());
-                })
-                .apply(struc -> {
-                    struc.get().setPickOnBounds(false);
-                })
-                .hgrow();
+        var topBox = new HBox(homeButton, stack, historyButton);
+        homeButton.minHeightProperty().bind(stack.heightProperty());
+        homeButton.maxHeightProperty().bind(stack.heightProperty());
+        historyButton.minHeightProperty().bind(stack.heightProperty());
+        historyButton.maxHeightProperty().bind(stack.heightProperty());
+        topBox.setPickOnBounds(false);
+        HBox.setHgrow(topBox, Priority.ALWAYS);
 
-        return topBox.createRegion();
+        return new Structure(topBox,pathRegion, historyButton);
+    }
+
+    public record Structure(HBox box, TextField textField, Button historyButton) implements CompStructure<HBox> {
+
+        @Override
+        public HBox get() {
+            return box;
+        }
+    }
+
+    private static final PseudoClass INVISIBLE = PseudoClass.getPseudoClass("invisible");
+
+    private final OpenFileSystemModel model;
+
+    public BrowserNavBar(OpenFileSystemModel model) {
+        this.model = model;
     }
 
     private ContextMenu createContextMenu() {

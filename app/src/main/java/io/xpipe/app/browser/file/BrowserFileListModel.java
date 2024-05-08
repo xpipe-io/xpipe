@@ -1,19 +1,16 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
-import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystem;
-
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -37,8 +34,6 @@ public final class BrowserFileListModel {
     private final Property<List<BrowserEntry>> shown = new SimpleObjectProperty<>(new ArrayList<>());
     private final ObservableList<BrowserEntry> previousSelection = FXCollections.observableArrayList();
     private final ObservableList<BrowserEntry> selection = FXCollections.observableArrayList();
-    private final ObservableList<FileSystem.FileEntry> selectedRaw =
-            ListBindingsHelper.mappedContentBinding(selection, entry -> entry.getRawFileEntry());
 
     private final Property<BrowserEntry> draggedOverDirectory = new SimpleObjectProperty<>();
     private final Property<Boolean> draggedOverEmpty = new SimpleBooleanProperty();

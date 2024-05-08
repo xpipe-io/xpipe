@@ -5,6 +5,7 @@ import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.LicenseProvider;
 
 import javafx.scene.control.ContextMenu;
@@ -38,6 +39,11 @@ public final class BrowserContextMenu extends ContextMenu {
     }
 
     private void createMenu() {
+        InputHelper.onLeft(this, false, e -> {
+            hide();
+            e.consume();
+        });
+
         AppFont.normal(this.getStyleableNode());
 
         var empty = source == null;

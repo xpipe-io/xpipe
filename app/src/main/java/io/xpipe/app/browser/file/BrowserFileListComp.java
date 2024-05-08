@@ -10,9 +10,7 @@ import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.util.BooleanScope;
-import io.xpipe.app.util.HumanReadableFormat;
-import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileNames;
@@ -26,12 +24,16 @@ import javafx.collections.ListChangeListener;
 import javafx.css.PseudoClass;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
+import javafx.geometry.Side;
 import javafx.scene.AccessibleRole;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.skin.TableViewSkin;
 import javafx.scene.control.skin.VirtualFlow;
-import javafx.scene.input.*;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -128,7 +130,6 @@ public final class BrowserFileListComp extends SimpleComp {
         } else {
             table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         }
-
         table.getSelectionModel().setCellSelectionEnabled(false);
 
         table.getSelectionModel().getSelectedItems().addListener((ListChangeListener<? super BrowserEntry>) c -> {
@@ -158,18 +159,24 @@ public final class BrowserFileListComp extends SimpleComp {
     private void prepareTableShortcuts(TableView<BrowserEntry> table) {
         table.setOnKeyPressed(event -> {
             var selected = fileList.getSelection();
-            BrowserAction.getFlattened(fileList.getFileSystemModel(), selected).stream()
-                    .filter(browserAction -> browserAction.isApplicable(fileList.getFileSystemModel(), selected)
-                            && browserAction.isActive(fileList.getFileSystemModel(), selected))
-                    .filter(browserAction -> browserAction.getShortcut() != null)
-                    .filter(browserAction -> browserAction.getShortcut().match(event))
-                    .findAny()
-                    .ifPresent(browserAction -> {
+            var action = BrowserAction.getFlattened(fileList.getFileSystemModel(), selected).stream().filter(
+                    browserAction -> browserAction.isApplicable(fileList.getFileSystemModel(), selected) &&
+                            browserAction.isActive(fileList.getFileSystemModel(), selected)).filter(
+                    browserAction -> browserAction.getShortcut() != null).filter(browserAction -> browserAction.getShortcut().match(event)).findAny();
+            action.ifPresent(browserAction -> {
                         ThreadHelper.runFailableAsync(() -> {
                             browserAction.execute(fileList.getFileSystemModel(), selected);
                         });
                         event.consume();
                     });
+            if (action.isPresent()) {
+                return;
+            }
+
+            if (event.getCode() == KeyCode.ESCAPE) {
+                table.getSelectionModel().clearSelection();
+                event.consume();
+            }
         });
     }
 
@@ -344,7 +351,6 @@ public final class BrowserFileListComp extends SimpleComp {
                     // Sort the list ourselves as sorting the table would incur a lot of cell updates
                     var obs = FXCollections.observableList(newItems);
                     table.getItems().setAll(obs);
-                    // table.sort();
                 }
 
                 var currentDirectory = fileList.getFileSystemModel().getCurrentDirectory();
@@ -488,9 +494,6 @@ public final class BrowserFileListComp extends SimpleComp {
                             .not()
                             .not())
                     .focusTraversable(false)
-                    .apply(struc -> struc.get().focusedProperty().addListener((observable, oldValue, newValue) -> {
-                        getTableRow().requestFocus();
-                    }))
                     .createRegion();
 
             editing.addListener((observable, oldValue, newValue) -> {
@@ -520,13 +523,20 @@ public final class BrowserFileListComp extends SimpleComp {
             graphic.setAlignment(Pos.CENTER_LEFT);
             setGraphic(graphic);
 
-            tableView.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-                if (event.getCode() == KeyCode.RIGHT) {
-                    var selected = fileList.getSelection();
-                    if (selected.size() == 1 && selected.getFirst() == getTableRow().getItem()) {
-                        ((ButtonBase) quickAccess).fire();
-                        event.consume();
-                    }
+            InputHelper.onExactKeyCode(tableView, KeyCode.RIGHT, true, event -> {
+                var selected = fileList.getSelection();
+                if (selected.size() == 1 && selected.getFirst() == getTableRow().getItem()) {
+                    ((ButtonBase) quickAccess).fire();
+                    event.consume();
+                }
+            });
+            InputHelper.onExactKeyCode(tableView, KeyCode.SPACE, true, event -> {
+                var selected = fileList.getSelection();
+                // Only show one menu across all selected entries
+                if (selected.size() > 0 && selected.getLast() == getTableRow().getItem()) {
+                    var cm = new BrowserContextMenu(fileList.getFileSystemModel(), getTableRow().getItem());
+                    ContextMenuHelper.toggleShow(cm, this, Side.RIGHT);
+                    event.consume();
                 }
             });
         }

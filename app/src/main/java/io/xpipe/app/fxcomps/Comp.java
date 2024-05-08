@@ -1,5 +1,6 @@
 package io.xpipe.app.fxcomps;
 
+import atlantafx.base.controls.Spacer;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.augment.Augment;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
@@ -7,20 +8,16 @@ import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.Shortcuts;
-
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
-import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Separator;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-
-import atlantafx.base.controls.Spacer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -186,20 +183,20 @@ public abstract class Comp<S extends CompStructure<?>> {
         return apply(struc -> Shortcuts.addShortcut(struc.get(), shortcut, r -> con.accept(struc)));
     }
 
-    public Comp<S> shortcut(KeyCombination shortcut) {
-        return apply(struc -> Shortcuts.addShortcut((ButtonBase) struc.get(), shortcut));
-    }
-
     public Comp<S> displayOnlyShortcut(KeyCombination shortcut) {
         return apply(struc -> Shortcuts.addDisplayShortcut(struc.get(), shortcut));
     }
 
     public Comp<S> tooltip(ObservableValue<String> text) {
-        return apply(new TooltipAugment<>(text));
+        return apply(new TooltipAugment<>(text, null));
     }
 
     public Comp<S> tooltipKey(String key) {
-        return apply(new TooltipAugment<>(key));
+        return apply(new TooltipAugment<>(key, null));
+    }
+
+    public Comp<S> tooltipKey(String key, KeyCombination shortcut) {
+        return apply(new TooltipAugment<>(key, shortcut));
     }
 
     public Region createRegion() {

@@ -124,7 +124,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                 ErrorEvent.fromThrowable(e).handle();
             }
         });
-        gitShareButton.apply(new TooltipAugment<>("gitShareFileTooltip"));
+        gitShareButton.tooltipKey("gitShareFileTooltip");
         gitShareButton.styleClass(Styles.RIGHT_PILL).grow(false, true);
 
         var layout = new HorizontalComp(List.of(fileNameComp, fileBrowseButton, gitShareButton))

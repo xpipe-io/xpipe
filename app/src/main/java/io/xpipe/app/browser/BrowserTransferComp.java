@@ -78,7 +78,7 @@ public class BrowserTransferComp extends SimpleComp {
                 })
                 .hide(Bindings.isEmpty(syncItems))
                 .disable(syncAllDownloaded)
-                .apply(new TooltipAugment<>("downloadStageDescription"));
+                .tooltipKey("downloadStageDescription");
         var clearButton = new IconButtonComp("mdi2c-close", () -> {
                     model.clear();
                 })

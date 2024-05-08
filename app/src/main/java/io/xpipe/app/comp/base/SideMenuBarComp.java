@@ -70,8 +70,8 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         for (int i = 0; i < entries.size(); i++) {
             var e = entries.get(i);
             var b = new IconButtonComp(e.icon(), () -> value.setValue(e));
-            b.shortcut(new KeyCodeCombination(KeyCode.values()[KeyCode.DIGIT1.ordinal() + i]));
-            b.apply(new TooltipAugment<>(e.name()));
+            var shortcut = new KeyCodeCombination(KeyCode.values()[KeyCode.DIGIT1.ordinal() + i]);
+            b.apply(new TooltipAugment<>(e.name(), shortcut));
             b.apply(struc -> {
                 AppFont.setSize(struc.get(), 2);
                 struc.get().pseudoClassStateChanged(selected, value.getValue().equals(e));
@@ -123,9 +123,9 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         };
 
         {
+            var shortcut = new KeyCodeCombination(KeyCode.values()[KeyCode.DIGIT1.ordinal() + entries.size()]);
             var b = new IconButtonComp("mdi2g-github", () -> Hyperlinks.open(Hyperlinks.GITHUB))
-                    .shortcut(new KeyCodeCombination(KeyCode.values()[KeyCode.DIGIT1.ordinal() + entries.size()]))
-                    .apply(new TooltipAugment<>("visitGithubRepository"))
+                    .tooltipKey("visitGithubRepository", shortcut)
                     .apply(simpleBorders)
                     .accessibleTextKey("visitGithubRepository");
             b.apply(struc -> {
@@ -135,9 +135,9 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         }
 
         {
+            var shortcut = new KeyCodeCombination(KeyCode.values()[KeyCode.DIGIT1.ordinal() + entries.size() + 1]);
             var b = new IconButtonComp("mdi2d-discord", () -> Hyperlinks.open(Hyperlinks.DISCORD))
-                    .shortcut(new KeyCodeCombination(KeyCode.values()[KeyCode.DIGIT1.ordinal() + entries.size() + 1]))
-                    .apply(new TooltipAugment<>("discord"))
+                    .tooltipKey("discord", shortcut)
                     .apply(simpleBorders)
                     .accessibleTextKey("discord");
             b.apply(struc -> {
@@ -147,9 +147,9 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         }
 
         {
+            var shortcut = new KeyCodeCombination(KeyCode.values()[KeyCode.DIGIT1.ordinal() + entries.size() + 2]);
             var b = new IconButtonComp("mdi2t-translate", () -> Hyperlinks.open(Hyperlinks.TRANSLATE))
-                    .shortcut(new KeyCodeCombination(KeyCode.values()[KeyCode.DIGIT1.ordinal() + entries.size() + 2]))
-                    .apply(new TooltipAugment<>("translate"))
+                    .tooltipKey("translate", shortcut)
                     .apply(simpleBorders)
                     .accessibleTextKey("translate");
             b.apply(struc -> {
@@ -160,7 +160,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
 
         {
             var b = new IconButtonComp("mdi2u-update", () -> UpdateAvailableAlert.showIfNeeded())
-                    .apply(new TooltipAugment<>("updateAvailableTooltip"))
+                    .tooltipKey("updateAvailableTooltip")
                     .accessibleTextKey("updateAvailableTooltip");
             b.apply(struc -> {
                 AppFont.setSize(struc.get(), 2);

@@ -4,47 +4,46 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.augment.Augment;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.Shortcuts;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.Window;
 
 public class TooltipAugment<S extends CompStructure<?>> implements Augment<S> {
 
     private final ObservableValue<String> text;
+    private final KeyCombination shortcut;
 
-    public TooltipAugment(ObservableValue<String> text) {
-        this.text = PlatformThread.sync(text);
+    public TooltipAugment(ObservableValue<String> text, KeyCombination shortcut) {
+        this.text = text;
+        this.shortcut = shortcut;
     }
 
-    public TooltipAugment(String key) {
+    public TooltipAugment(String key, KeyCombination shortcut) {
         this.text = AppI18n.observable(key);
+        this.shortcut = shortcut;
     }
 
     @Override
     public void augment(S struc) {
-        var region = struc.get();
         var tt = new FixedTooltip();
-        if (Shortcuts.getDisplayShortcut(region) != null) {
+        if (shortcut != null) {
             var s = AppI18n.observable("shortcut");
             var binding = Bindings.createStringBinding(
                     () -> {
-                        return text.getValue() + "\n\n" + s.getValue() + ": "
-                                + Shortcuts.getDisplayShortcut(region).getDisplayText();
+                        return text.getValue() + "\n\n" + s.getValue() + ": " + shortcut.getDisplayText();
                     },
                     text,
                     s);
-            tt.textProperty().bind(binding);
+            tt.textProperty().bind(PlatformThread.sync(binding));
         } else {
-            tt.textProperty().bind(text);
+            tt.textProperty().bind(PlatformThread.sync(text));
         }
         tt.setStyle("-fx-font-size: 11pt;");
         tt.setWrapText(true);
         tt.setMaxWidth(400);
         tt.getStyleClass().add("fancy-tooltip");
-
         Tooltip.install(struc.get(), tt);
     }
 

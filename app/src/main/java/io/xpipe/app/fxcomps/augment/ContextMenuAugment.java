@@ -42,7 +42,7 @@ public class ContextMenuAugment<S extends CompStructure<?>> implements Augment<S
         };
 
         var r = struc.get();
-        r.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+        r.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             if (mouseEventCheck != null && mouseEventCheck.test(event)) {
                 if (!hide.get()) {
                     var cm = contextMenu.get();
@@ -55,18 +55,18 @@ public class ContextMenuAugment<S extends CompStructure<?>> implements Augment<S
                 event.consume();
             }
         });
-        r.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+        r.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
             if (mouseEventCheck != null && mouseEventCheck.test(event)) {
                 event.consume();
             }
         });
 
-        r.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
+        r.addEventHandler(KeyEvent.KEY_RELEASED, event -> {
             if (keyEventCheck != null && keyEventCheck.test(event)) {
                 event.consume();
             }
         });
-        r.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+        r.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             if (keyEventCheck != null && keyEventCheck.test(event)) {
                 if (!hide.get()) {
                     var cm = contextMenu.get();
@@ -80,7 +80,7 @@ public class ContextMenuAugment<S extends CompStructure<?>> implements Augment<S
         });
 
         if (r instanceof ButtonBase buttonBase && keyEventCheck == null) {
-            buttonBase.addEventFilter(ActionEvent.ACTION, event -> {
+            buttonBase.addEventHandler(ActionEvent.ACTION, event -> {
                 if (buttonBase.getOnAction() != null) {
                     return;
                 }

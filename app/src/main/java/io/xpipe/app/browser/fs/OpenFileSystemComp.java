@@ -1,5 +1,6 @@
 package io.xpipe.app.browser.fs;
 
+import atlantafx.base.controls.Spacer;
 import io.xpipe.app.browser.BrowserFilterComp;
 import io.xpipe.app.browser.BrowserNavBar;
 import io.xpipe.app.browser.BrowserOverviewComp;
@@ -13,9 +14,9 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
+import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
-import io.xpipe.app.fxcomps.util.Shortcuts;
-
+import io.xpipe.app.util.InputHelper;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -28,8 +29,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-
-import atlantafx.base.controls.Spacer;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.ArrayList;
@@ -53,17 +52,24 @@ public class OpenFileSystemComp extends SimpleComp {
     }
 
     private Region createContent() {
+        var root = new VBox();
         var overview = new Button(null, new FontIcon("mdi2m-monitor"));
         overview.setOnAction(e -> model.cdAsync(null));
+        new TooltipAugment<>("overview", new KeyCodeCombination(KeyCode.HOME, KeyCombination.ALT_DOWN)).augment(overview);
         overview.disableProperty().bind(model.getInOverview());
         overview.setAccessibleText("System overview");
+        InputHelper.onKeyCombination(root, new KeyCodeCombination(KeyCode.HOME, KeyCombination.ALT_DOWN), true, keyEvent -> {
+            overview.fire();
+            keyEvent.consume();
+        });
 
-        var backBtn = BrowserAction.byId("back", model, List.of()).toButton(model, List.of());
-        var forthBtn = BrowserAction.byId("forward", model, List.of()).toButton(model, List.of());
-        var refreshBtn = BrowserAction.byId("refresh", model, List.of()).toButton(model, List.of());
-        var terminalBtn = BrowserAction.byId("openTerminal", model, List.of()).toButton(model, List.of());
+        var backBtn = BrowserAction.byId("back", model, List.of()).toButton(root, model, List.of());
+        var forthBtn = BrowserAction.byId("forward", model, List.of()).toButton(root, model, List.of());
+        var refreshBtn = BrowserAction.byId("refresh", model, List.of()).toButton(root, model, List.of());
+        var terminalBtn = BrowserAction.byId("openTerminal", model, List.of()).toButton(root, model, List.of());
 
-        var menuButton = new MenuButton(null, new FontIcon("mdral-folder_open"));
+        var menuButton = new MenuButton(null, new FontIcon
+                ("mdral-folder_open"));
         new ContextMenuAugment<>(
                         event -> event.getButton() == MouseButton.PRIMARY,
                         null,
@@ -73,18 +79,18 @@ public class OpenFileSystemComp extends SimpleComp {
         menuButton.setAccessibleText("Directory options");
 
         var filter = new BrowserFilterComp(model, model.getFilter()).createStructure();
-        Shortcuts.addShortcut(filter.toggleButton(), new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN));
 
         var topBar = new HBox();
         topBar.setAlignment(Pos.CENTER);
         topBar.getStyleClass().add("top-bar");
+        var navBar = new BrowserNavBar(model).createStructure();
         topBar.getChildren()
                 .setAll(
                         overview,
                         backBtn,
                         forthBtn,
                         new Spacer(10),
-                        new BrowserNavBar(model).hgrow().createRegion(),
+                        navBar.get(),
                         new Spacer(5),
                         filter.get(),
                         refreshBtn,
@@ -92,9 +98,18 @@ public class OpenFileSystemComp extends SimpleComp {
                         menuButton);
 
         var content = createFileListContent();
-        var root = new VBox(topBar, content);
+        root.getChildren().addAll(topBar, content);
         VBox.setVgrow(content, Priority.ALWAYS);
         root.setPadding(Insets.EMPTY);
+        InputHelper.onCtrlKeyCode(root, KeyCode.F, true, keyEvent -> {
+            filter.toggleButton().fire();
+            filter.textField().requestFocus();
+            keyEvent.consume();
+        });
+        InputHelper.onCtrlKeyCode(root, KeyCode.L, true, keyEvent -> {
+            navBar.textField().requestFocus();
+            keyEvent.consume();
+        });
         return root;
     }
 

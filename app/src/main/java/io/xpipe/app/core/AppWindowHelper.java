@@ -161,12 +161,10 @@ public class AppWindowHelper {
                 event.consume();
             });
             a.getDialogPane().getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-                if (OsType.getLocal().equals(OsType.LINUX) || OsType.getLocal().equals(OsType.MACOS)) {
-                    if (event.getCode().equals(KeyCode.W) && event.isShortcutDown()) {
-                        s.close();
-                        event.consume();
-                        return;
-                    }
+                if (event.getCode().equals(KeyCode.W) && event.isShortcutDown()) {
+                    s.close();
+                    event.consume();
+                    return;
                 }
 
                 if (event.getCode().equals(KeyCode.ESCAPE)) {
@@ -274,11 +272,9 @@ public class AppWindowHelper {
         });
 
         scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (OsType.getLocal().equals(OsType.LINUX) || OsType.getLocal().equals(OsType.MACOS)) {
-                if (event.getCode().equals(KeyCode.W) && event.isShortcutDown()) {
-                    stage.close();
-                    event.consume();
-                }
+            if (event.getCode().equals(KeyCode.W) && event.isShortcutDown()) {
+                stage.close();
+                event.consume();
             }
         });
     }
