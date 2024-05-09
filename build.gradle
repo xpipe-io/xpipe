@@ -121,7 +121,8 @@ project.ext {
             // Disable this for now as it requires Windows 10+
             // '-XX:+UseZGC',
             "-Dvisualvm.display.name=XPipe",
-            "-Dapple.awt.application.appearance=system"
+            "-Dapple.awt.application.appearance=system",
+            "-Djavafx.preloader=io.xpipe.app.core.AppPreloader"
     ]
     useBundledJavaFx = fullVersion
     useBundledJna = fullVersion
