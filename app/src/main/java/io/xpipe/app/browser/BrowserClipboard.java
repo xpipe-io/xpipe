@@ -11,6 +11,7 @@ import io.xpipe.core.util.FailableRunnable;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DataFormat;
 import javafx.scene.input.Dragboard;
 import lombok.SneakyThrows;
 import lombok.Value;
@@ -29,6 +30,7 @@ public class BrowserClipboard {
 
     public static final Property<Instance> currentCopyClipboard = new SimpleObjectProperty<>();
     public static Instance currentDragClipboard;
+    private static final DataFormat DATA_FORMAT = new DataFormat("application/xpipe-file-list");
 
     static {
         Toolkit.getDefaultToolkit()
@@ -72,7 +74,7 @@ public class BrowserClipboard {
         var content = new ClipboardContent();
         var id = UUID.randomUUID();
         currentDragClipboard = new Instance(id, base, new ArrayList<>(selected), mode);
-        content.putString(currentDragClipboard.toClipboardString());
+        content.put(DATA_FORMAT, currentDragClipboard.toClipboardString());
         return content;
     }
 
@@ -92,16 +94,12 @@ public class BrowserClipboard {
     }
 
     public static Instance retrieveDrag(Dragboard dragboard) {
-        if (dragboard.getString() == null) {
-            return null;
-        }
-
         if (currentDragClipboard == null) {
             return null;
         }
 
         try {
-            var s = dragboard.getString();
+            var s = dragboard.getContent(DATA_FORMAT);
             if (s != null && s.equals(currentDragClipboard.toClipboardString())) {
                 var current = currentDragClipboard;
                 currentDragClipboard = null;
