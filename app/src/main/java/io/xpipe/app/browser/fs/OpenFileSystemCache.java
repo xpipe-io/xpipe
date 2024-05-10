@@ -18,7 +18,8 @@ public class OpenFileSystemCache extends ShellControlCache {
 
         ShellControl sc = model.getFileSystem().getShell().get();
         ShellDialect d = sc.getShellDialect();
-        username = d.printUsernameCommand(sc).readStdoutOrThrow();
+        // If there is no id command, we should still be fine with just assuming root
+        username = d.printUsernameCommand(sc).readStdoutIfPossible().orElse("root");
     }
 
     public boolean isRoot() {

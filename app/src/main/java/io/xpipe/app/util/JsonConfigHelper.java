@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.util.JacksonMapper;
 
@@ -26,8 +27,10 @@ public class JsonConfigHelper {
                 var read = o.readTree(Files.readAllBytes(in));
                 return read;
             }
+        } catch (JsonParseException e) {
+            ErrorEvent.fromThrowable("Unable to parse file " + in, e).expected().build().handle();
         } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).build().handle();
+            ErrorEvent.fromThrowable("Unable to parse file " + in, e).build().handle();
         }
         return JsonNodeFactory.instance.missingNode();
     }
@@ -57,7 +60,7 @@ public class JsonConfigHelper {
             var newContent = writer.toString();
             Files.writeString(out, newContent);
         } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).build().handle();
+            ErrorEvent.fromThrowable("Unable to write file " + out, e).build().handle();
         }
     }
 }

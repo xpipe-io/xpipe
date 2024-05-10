@@ -1,5 +1,6 @@
 package io.xpipe.app.fxcomps.impl;
 
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.session.BrowserChooserComp;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
@@ -15,17 +16,13 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystemStore;
-
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-
-import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.nio.file.Files;
@@ -84,38 +81,26 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                 .styleClass(Styles.CENTER_PILL)
                 .grow(false, true);
 
-        var canGitShare = Bindings.createBooleanBinding(
-                () -> {
-                    if (!AppPrefs.get().enableGitStorage().get()
-                            || filePath.getValue() == null
-                            || ContextualFileReference.of(filePath.getValue()).isInDataDirectory()) {
-                        return false;
-                    }
-
-                    return true;
-                },
-                filePath,
-                AppPrefs.get().enableGitStorage());
         var gitShareButton = new ButtonComp(null, new FontIcon("mdi2g-git"), () -> {
             if (!AppPrefs.get().enableGitStorage().get()) {
                 AppLayoutModel.get().selectSettings();
-                AppPrefs.get().selectCategory("synchronization");
+                AppPrefs.get().selectCategory("sync");
                 return;
             }
 
-            if (filePath.getValue() == null
-                    || ContextualFileReference.of(filePath.getValue()).isInDataDirectory()) {
+            var currentPath = filePath.getValue();
+            if (currentPath == null || currentPath.isBlank()) {
                 return;
             }
 
-            if (filePath.getValue() == null || filePath.getValue().isBlank() || !canGitShare.get()) {
+            if (ContextualFileReference.of(currentPath).isInDataDirectory()) {
                 return;
             }
 
             try {
                 var data = DataStorage.get().getDataDir();
-                var f = data.resolve(FileNames.getFileName(filePath.getValue().trim()));
-                var source = Path.of(filePath.getValue().trim());
+                var f = data.resolve(FileNames.getFileName(currentPath.trim()));
+                var source = Path.of(currentPath.trim());
                 if (Files.exists(source)) {
                     var shouldCopy = AppWindowHelper.showBlockingAlert(alert -> {
                                 alert.setTitle(AppI18n.get("confirmGitShareTitle"));
