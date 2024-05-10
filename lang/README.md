@@ -41,4 +41,4 @@ Here you can see the current status of the translations. Verified means that the
 |----------|----------------|
 | English  | Reference      |
 | German   | Verified @ 9.0 |
-| Danish   | Verified @ 9.0 |
+| Danish   | Verified @ 9.2 |
