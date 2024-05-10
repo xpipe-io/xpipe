@@ -1,13 +1,12 @@
 package io.xpipe.ext.base.script;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.Validators;
-import io.xpipe.core.process.ScriptSnippet;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialect;
-
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.core.process.ShellInitCommand;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -15,13 +14,14 @@ import lombok.extern.jackson.Jacksonized;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @SuperBuilder
 @Getter
 @Jacksonized
 @JsonTypeName("script")
-public class SimpleScriptStore extends ScriptStore implements ScriptSnippet {
+public class SimpleScriptStore extends ScriptStore implements ShellInitCommand.Terminal {
 
     private final ShellDialect minimumDialect;
     private final String commands;
@@ -40,16 +40,6 @@ public class SimpleScriptStore extends ScriptStore implements ScriptSnippet {
         }
 
         return null;
-    }
-
-    @Override
-    public String content(ShellControl shellControl) {
-        return assemble(shellControl);
-    }
-
-    @Override
-    public ScriptSnippet.ExecutionType executionType() {
-        return ExecutionType.TERMINAL_ONLY;
     }
 
     @Override
@@ -74,5 +64,10 @@ public class SimpleScriptStore extends ScriptStore implements ScriptSnippet {
     @Override
     public List<DataStoreEntryRef<ScriptStore>> getEffectiveScripts() {
         return scripts != null ? scripts.stream().filter(Objects::nonNull).toList() : List.of();
+    }
+
+    @Override
+    public Optional<String> terminalContent(ShellControl shellControl) throws Exception {
+        return Optional.ofNullable(assemble(shellControl));
     }
 }

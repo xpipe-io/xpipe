@@ -6,15 +6,13 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ShellTemp;
 import io.xpipe.app.util.Validators;
-import io.xpipe.core.process.ScriptSnippet;
+import io.xpipe.core.process.ShellInitCommand;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.SimpleScriptSnippet;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.DataStoreState;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.StatefulDataStore;
 import io.xpipe.core.util.JacksonizedValue;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
@@ -56,36 +54,35 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
                 return pc;
             }
 
-            pc.onInit(shellControl -> {
-                passInitScripts(pc, initFlattened);
-
-                var dir = initScriptsDirectory(shellControl, bringFlattened);
-                if (dir != null) {
-                    shellControl.withInitSnippet(new SimpleScriptSnippet(
-                            shellControl.getShellDialect().addToPathVariableCommand(List.of(dir), true),
-                            ScriptSnippet.ExecutionType.TERMINAL_ONLY));
-                }
+            initFlattened.forEach(simpleScriptStore -> {
+                pc.withInitSnippet(simpleScriptStore);
             });
+            if (!bringFlattened.isEmpty()) {
+                pc.withInitSnippet(new ShellInitCommand() {
+
+                    String dir;
+
+                    @Override
+                    public Optional<String> terminalContent(ShellControl shellControl) throws Exception {
+                        if (dir == null) {
+                            dir = initScriptsDirectory(shellControl, bringFlattened);
+                        }
+
+                        return Optional.ofNullable(shellControl.getShellDialect().addToPathVariableCommand(List.of(dir), true));
+                    }
+
+                    @Override
+                    public boolean runInTerminal() {
+                        return true;
+                    }
+                });
+            }
             return pc;
         } catch (StackOverflowError t) {
             throw new RuntimeException("Unable to set up scripts. Is there a circular script dependency?", t);
         } catch (Throwable t) {
             throw new RuntimeException("Unable to set up scripts", t);
         }
-    }
-
-    private static void passInitScripts(ShellControl pc, List<SimpleScriptStore> scriptStores) {
-        scriptStores.forEach(simpleScriptStore -> {
-            if (pc.getInitCommands().contains(simpleScriptStore)) {
-                return;
-            }
-
-            if (!simpleScriptStore.getMinimumDialect().isCompatibleTo(pc.getShellDialect())) {
-                return;
-            }
-
-            pc.withInitSnippet(simpleScriptStore);
-        });
     }
 
     private static String initScriptsDirectory(ShellControl proc, List<SimpleScriptStore> scriptStores)

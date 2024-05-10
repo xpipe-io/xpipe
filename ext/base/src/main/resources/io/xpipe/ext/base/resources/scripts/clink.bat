@@ -15,5 +15,5 @@ $defaultCreds = [System.Net.CredentialCache]::DefaultCredentials;^
 if ($defaultCreds) {^
     $downloader.Credentials = $defaultCreds^
 }^
-$downloader.DownloadFile("https://github.com/chrisant996/clink/releases/download/v1.6.5/clink.1.6.5.8f46a4.zip", "$env:TEMP\clink.zip");^
+$downloader.DownloadFile("https://github.com/chrisant996/clink/releases/download/v1.6.13/clink.1.6.13.eb61b2.zip", "$env:TEMP\clink.zip");^
 Expand-Archive -Force -LiteralPath "$env:TEMP\clink.zip" -DestinationPath "$env:TEMP\xpipe\scriptdata\clink"; | powershell -NoLogo >NUL

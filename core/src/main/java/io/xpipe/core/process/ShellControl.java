@@ -30,7 +30,7 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl withSourceStore(ShellStore store);
 
-    List<ScriptSnippet> getInitCommands();
+    List<ShellInitCommand> getInitCommands();
 
     ParentSystemAccess getParentSystemAccess();
 
@@ -173,7 +173,7 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl elevated(ElevationFunction elevationFunction);
 
-    ShellControl withInitSnippet(ScriptSnippet snippet);
+    ShellControl withInitSnippet(ShellInitCommand snippet);
 
     default ShellControl subShell(@NonNull ShellDialect type) {
         var o = new ShellOpenFunction() {
