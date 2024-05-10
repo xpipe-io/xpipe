@@ -15,6 +15,10 @@ repositories {
 task dist(type: DefaultTask) {}
 
 
+run {
+    enabled = false
+}
+
 distTar {
     enabled = false;
 }
@@ -22,7 +26,6 @@ distTar {
 distZip {
     enabled = false;
 }
-
 
 import org.gradle.crypto.checksum.Checksum
 
