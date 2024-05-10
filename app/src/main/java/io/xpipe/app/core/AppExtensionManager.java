@@ -88,7 +88,7 @@ public class AppExtensionManager {
         }
 
         if (!AppProperties.get().isFullVersion()) {
-            var localInstallation = XPipeInstallation.getLocalDefaultInstallationBasePath();
+            var localInstallation = XPipeInstallation.getLocalDefaultInstallationBasePath(AppProperties.get().isStaging() || AppProperties.get().isLocatePtb());
             Path p = Path.of(localInstallation);
             if (!Files.exists(p)) {
                 throw new IllegalStateException(
@@ -103,7 +103,7 @@ public class AppExtensionManager {
                     : AppProperties.get().getVersion();
             var sourceVersion = AppVersion.parse(sv)
                     .orElseThrow(() -> new IllegalArgumentException("Invalid source version: " + sv));
-            if (!installVersion.equals(sourceVersion)) {
+            if (AppProperties.get().isLocatorVersionCheck() && !installVersion.equals(sourceVersion)) {
                 throw new IllegalStateException("Incompatible development version. Source: " + iv + ", Installation: "
                         + sv + "\n\nPlease try to check out the matching release version in the repository.");
             }

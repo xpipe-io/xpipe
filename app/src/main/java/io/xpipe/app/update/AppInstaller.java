@@ -1,5 +1,6 @@
 package io.xpipe.app.update;
 
+import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
@@ -72,7 +73,7 @@ public class AppInstaller {
                                 : XPipeInstallation.getCurrentInstallationBasePath())
                         .resolve(XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()))
                         .toString();
-                var logsDir = FileNames.join(XPipeInstallation.getDataDir().toString(), "logs");
+                var logsDir = AppLogs.get().getSessionLogsDirectory().getParent().toString();
                 var logFile = FileNames.join(logsDir, "installer_" + FileNames.getFileName(file) + ".log");
                 var command = LocalShell.getShell().getShellDialect().equals(ShellDialects.CMD)
                         ? getCmdCommand(file, logFile, exec)

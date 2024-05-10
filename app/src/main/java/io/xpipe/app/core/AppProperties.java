@@ -1,23 +1,20 @@
 package io.xpipe.app.core;
 
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.util.ModuleHelper;
-import io.xpipe.core.util.XPipeInstallation;
-
 import lombok.Getter;
 import lombok.Value;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Value
 public class AppProperties {
 
-    private static final String EXTENSION_PATHS_PROP = "io.xpipe.app.extensions";
     private static AppProperties INSTANCE;
     boolean fullVersion;
 
@@ -41,8 +38,22 @@ public class AppProperties {
     Path dataDir;
     boolean showcase;
     AppVersion canonicalVersion;
+    boolean locatePtb;
+    boolean locatorVersionCheck;
 
     public AppProperties() {
+        var appDir = Path.of(System.getProperty("user.dir")).resolve("app");
+        Path propsFile = appDir.resolve("dev.properties");
+        if (Files.exists(propsFile)) {
+            try {
+                Properties props = new Properties();
+                props.load(Files.newInputStream(propsFile));
+                props.forEach((key, value) -> System.setProperty(key.toString(), value.toString()));
+            } catch (IOException e) {
+                ErrorEvent.fromThrowable(e).handle();
+            }
+        }
+
         image = ModuleHelper.isImage();
         fullVersion = Optional.ofNullable(System.getProperty("io.xpipe.app.fullVersion"))
                 .map(Boolean::parseBoolean)
@@ -58,18 +69,34 @@ public class AppProperties {
         languages = Arrays.stream(System.getProperty("io.xpipe.app.languages").split(","))
                 .sorted()
                 .toList();
-        staging = XPipeInstallation.isStaging();
+        staging = Optional.ofNullable(System.getProperty("io.xpipe.app.staging"))
+                .map(Boolean::parseBoolean)
+                .orElse(false);
         useVirtualThreads = Optional.ofNullable(System.getProperty("io.xpipe.app.useVirtualThreads"))
                 .map(Boolean::parseBoolean)
                 .orElse(true);
         debugThreads = Optional.ofNullable(System.getProperty("io.xpipe.app.debugThreads"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
-        dataDir = XPipeInstallation.getDataDir();
+        dataDir = Optional.ofNullable(System.getProperty("io.xpipe.app.dataDir"))
+                .map(s -> {
+                    var p = Path.of(s);
+                    if (!p.isAbsolute()) {
+                        p = appDir.resolve(p);
+                    }
+                    return p;
+                })
+                .orElse(Path.of(System.getProperty("user.home"), isStaging() ? ".xpipe-ptb" : ".xpipe"));
         showcase = Optional.ofNullable(System.getProperty("io.xpipe.app.showcase"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
         canonicalVersion = AppVersion.parse(version).orElse(null);
+        locatePtb = Optional.ofNullable(System.getProperty("io.xpipe.app.locator.usePtbInstallation"))
+                .map(Boolean::parseBoolean)
+                .orElse(false);
+        locatorVersionCheck = Optional.ofNullable(System.getProperty("io.xpipe.app.locator.disableInstallationVersionCheck"))
+                .map(Boolean::parseBoolean)
+                .orElse(false);
     }
 
     public static void logSystemProperties() {

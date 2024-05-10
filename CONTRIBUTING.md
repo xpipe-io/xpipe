@@ -28,7 +28,14 @@ You can find the available version tags at https://github.com/xpipe-io/xpipe/tag
 So for example if you currently have XPipe `9.0` installed, you should run `git reset --hard 9.0` first to properly compile against it.
 
 You need to have JDK for Java 21 installed to compile the project.
-If you are on Linux or macOS, you can easily accomplish that by running the `setup.sh` script.
+If you are on Linux or macOS, you can easily accomplish that by running
+```bash
+curl -s "https://get.sdkman.io" | bash
+. "$HOME/.sdkman/bin/sdkman-init.sh"
+sdk install java 21.0.1-graalce
+sdk default java 21.0.1-graalce
+```
+.
 On Windows, you have to manually install a JDK, e.g. from [Adoptium](https://adoptium.net/temurin/releases/?version=21).
 
 ## Building and Running

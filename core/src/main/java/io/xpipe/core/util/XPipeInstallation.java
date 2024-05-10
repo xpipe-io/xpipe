@@ -1,15 +1,13 @@
 package io.xpipe.core.util;
 
-import io.xpipe.core.process.*;
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileNames;
-
 import lombok.Getter;
 import lombok.SneakyThrows;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.Optional;
 
@@ -30,17 +28,6 @@ public class XPipeInstallation {
         } else {
             return 21721 + 2 + offset;
         }
-    }
-
-    public static Path getDataDir() {
-        if (System.getProperty(DATA_DIR_PROP) != null) {
-            try {
-                return Path.of(System.getProperty(DATA_DIR_PROP));
-            } catch (InvalidPathException ignored) {
-            }
-        }
-
-        return Path.of(System.getProperty("user.home"), isStaging() ? ".xpipe-ptb" : ".xpipe");
     }
 
     private static String getPkgId() {
@@ -260,14 +247,18 @@ public class XPipeInstallation {
     }
 
     public static String getLocalDefaultInstallationBasePath() {
+        return getLocalDefaultInstallationBasePath(staging);
+    }
+
+    public static String getLocalDefaultInstallationBasePath(boolean stage) {
         String path;
         if (OsType.getLocal().equals(OsType.WINDOWS)) {
             var base = System.getenv("LOCALAPPDATA");
-            path = FileNames.join(base, isStaging() ? "XPipe PTB" : "XPipe");
+            path = FileNames.join(base, stage ? "XPipe PTB" : "XPipe");
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
-            path = isStaging() ? "/opt/xpipe-ptb" : "/opt/xpipe";
+            path = stage ? "/opt/xpipe-ptb" : "/opt/xpipe";
         } else {
-            path = isStaging() ? "/Applications/XPipe PTB.app" : "/Applications/XPipe.app";
+            path = stage ? "/Applications/XPipe PTB.app" : "/Applications/XPipe.app";
         }
 
         return path;

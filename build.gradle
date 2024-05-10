@@ -22,7 +22,7 @@ allprojects { subproject ->
     extraJavaModuleInfo {
         failOnMissingModuleInfo.set(false)
     }
-    apply from: "$rootDir/modules.gradle"
+    apply from: "$rootDir/gradle/gradle_scripts/modules.gradle"
 }
 
 subprojects {subproject ->
@@ -39,6 +39,11 @@ subprojects {subproject ->
             importOrder('io.xpipe', 'javafx', '', 'java', '\\#')
         }
     }
+}
+
+var devProps = file("$rootDir/app/dev.properties")
+if (!devProps.exists()) {
+    devProps.text = file("$rootDir/gradle/gradle_scripts/dev_default.properties").text
 }
 
 def getArchName() {

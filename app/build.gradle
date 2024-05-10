@@ -79,13 +79,11 @@ application {
 run {
     systemProperty 'io.xpipe.app.useVirtualThreads', 'false'
     systemProperty 'io.xpipe.app.mode', 'gui'
-    systemProperty 'io.xpipe.app.dataDir', "$projectDir/local_git23/"
     systemProperty 'io.xpipe.app.writeLogs', "true"
     systemProperty 'io.xpipe.app.writeSysOut', "true"
     systemProperty 'io.xpipe.app.developerMode', "true"
     systemProperty 'io.xpipe.app.logLevel', "trace"
     systemProperty 'io.xpipe.app.fullVersion', rootProject.fullVersion
-    systemProperty 'io.xpipe.app.showcase', 'true'
     systemProperty 'io.xpipe.app.staging', isStage
     // systemProperty "io.xpipe.beacon.port", "21724"
     // systemProperty "io.xpipe.beacon.printMessages", "true"
