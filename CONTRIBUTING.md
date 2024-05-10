@@ -38,6 +38,8 @@ sdk default java 21.0.1-graalce
 .
 On Windows, you have to manually install a JDK, e.g. from [Adoptium](https://adoptium.net/temurin/releases/?version=21).
 
+You can configure a few development options in the file `app/dev.properties` which will be automatically generated when gradle is first run.
+
 ## Building and Running
 
 You can use the gradle wrapper to build and run the project:
