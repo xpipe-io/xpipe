@@ -95,8 +95,8 @@ public class AppProperties {
                 .map(Boolean::parseBoolean)
                 .orElse(false);
         locatorVersionCheck = Optional.ofNullable(System.getProperty("io.xpipe.app.locator.disableInstallationVersionCheck"))
-                .map(Boolean::parseBoolean)
-                .orElse(false);
+                .map(s -> !Boolean.parseBoolean(s))
+                .orElse(true);
     }
 
     public static void logSystemProperties() {
