@@ -47,6 +47,19 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
         this.filePath = filePath;
     }
 
+
+    public <T extends FileSystemStore> ContextualFileReferenceChoiceComp(
+            Property<DataStoreEntryRef<T>> fileSystem, Property<String> filePath) {
+        this.fileSystem = new SimpleObjectProperty<>();
+        fileSystem.subscribe(val -> {
+            this.fileSystem.setValue(val);
+        });
+        this.fileSystem.addListener((observable, oldValue, newValue) -> {
+            fileSystem.setValue(newValue.get().ref());
+        });
+        this.filePath = filePath;
+    }
+
     @Override
     public CompStructure<HBox> createBase() {
         var fileNameComp = new TextFieldComp(filePath)
