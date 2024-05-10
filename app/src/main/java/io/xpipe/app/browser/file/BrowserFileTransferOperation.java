@@ -10,6 +10,7 @@ import io.xpipe.core.store.FileSystem;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.LinkedHashMap;
@@ -40,12 +41,17 @@ public class BrowserFileTransferOperation {
     public static BrowserFileTransferOperation ofLocal(FileSystem.FileEntry target, List<Path> files,  BrowserFileTransferMode transferMode, boolean checkConflicts, Consumer<BrowserTransferProgress> progress) {
         var entries = files.stream()
                 .map(path -> {
+                    if (!Files.exists(path)) {
+                        return null;
+                    }
+
                     try {
                         return LocalFileSystem.getLocalFileEntry(path);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                 })
+                .filter(entry -> entry != null)
                 .toList();
         return new BrowserFileTransferOperation(target, entries, transferMode, checkConflicts, progress);
     }

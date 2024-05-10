@@ -36,6 +36,7 @@ public class DesktopEnvironmentStore extends JacksonizedValue
     public void checkComplete() throws Throwable {
         Validators.nonNull(base);
         Validators.isType(base, DesktopBaseStore.class);
+        base.checkComplete();
         Validators.nonNull(terminal);
         Validators.nonNull(dialect);
     }

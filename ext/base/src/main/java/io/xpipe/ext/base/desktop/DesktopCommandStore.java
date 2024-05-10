@@ -24,6 +24,7 @@ public class DesktopCommandStore extends JacksonizedValue implements DataStore, 
     public void checkComplete() throws Throwable {
         Validators.nonNull(environment);
         Validators.isType(environment, DesktopEnvironmentStore.class);
+        environment.checkComplete();
         Validators.nonNull(script);
     }
 }

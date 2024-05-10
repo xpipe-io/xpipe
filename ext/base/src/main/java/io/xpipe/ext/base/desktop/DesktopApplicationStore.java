@@ -26,6 +26,7 @@ public class DesktopApplicationStore extends JacksonizedValue implements DataSto
     public void checkComplete() throws Throwable {
         Validators.nonNull(desktop);
         Validators.isType(desktop, DesktopBaseStore.class);
+        desktop.checkComplete();
         Validators.nonNull(path);
     }
 
