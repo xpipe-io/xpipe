@@ -129,7 +129,7 @@ public class BrowserNavBar extends Comp<BrowserNavBar.Structure> {
         var topBox = new HBox(homeButton, stack, historyButton);
         topBox.setAlignment(Pos.CENTER);
         homeButton.minWidthProperty().bind(pathRegion.heightProperty());
-        homeButton.maxWidthProperty().bind(pathRegion.heightProperty());
+        homeButton.maxWidthProperty().bind(pathRegion.heightProperty().multiply(1.3));
         homeButton.minHeightProperty().bind(pathRegion.heightProperty());
         homeButton.maxHeightProperty().bind(pathRegion.heightProperty());
         historyButton.minHeightProperty().bind(pathRegion.heightProperty());

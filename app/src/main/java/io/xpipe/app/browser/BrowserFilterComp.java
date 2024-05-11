@@ -107,6 +107,7 @@ public class BrowserFilterComp extends Comp<BrowserFilterComp.Structure> {
             }
         });
         button.prefHeightProperty().bind(text.heightProperty());
+        button.prefWidthProperty().bind(text.heightProperty());
         return new Structure(box, (TextField) text, button);
     }
 
