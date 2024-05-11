@@ -1,12 +1,13 @@
 package io.xpipe.app.comp.base;
 
+import atlantafx.base.controls.ModalPane;
+import atlantafx.base.layout.ModalBox;
 import atlantafx.base.theme.Styles;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.geometry.Insets;
@@ -16,9 +17,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-
-import atlantafx.base.controls.ModalPane;
-import atlantafx.base.layout.ModalBox;
 import lombok.Value;
 
 public class ModalOverlayComp extends SimpleComp {
@@ -37,8 +35,9 @@ public class ModalOverlayComp extends SimpleComp {
         var modal = new ModalPane();
         AppFont.small(modal);
         modal.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-                modal.getContent().requestFocus();
+            var c = modal.getContent();
+            if (newValue && c != null) {
+                c.requestFocus();
             }
         });
         modal.getStyleClass().add("modal-overlay-comp");

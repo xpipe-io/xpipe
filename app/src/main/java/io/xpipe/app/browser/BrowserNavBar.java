@@ -82,7 +82,7 @@ public class BrowserNavBar extends Comp<BrowserNavBar.Structure> {
                 () -> {
                     return model.getCurrentDirectory() != null
                             ? FileIconManager.getFileIcon(model.getCurrentDirectory(), false)
-                            : "home_icon.svg";
+                            : null;
                 },
                 model.getCurrentPath());
         var breadcrumbsGraphic = PrettyImageHelper.ofFixedSize(graphic, 24, 24)
@@ -108,7 +108,6 @@ public class BrowserNavBar extends Comp<BrowserNavBar.Structure> {
         var breadcrumbs = new BrowserBreadcrumbBar(model).grow(false, true);
 
         var pathRegion = pathBar.createStructure().get();
-        homeButton.maxWidthProperty().bind(pathRegion.heightProperty());
         var breadcrumbsRegion = breadcrumbs.createRegion();
         breadcrumbsRegion.setOnMouseClicked(event -> {
             pathRegion.requestFocus();
@@ -129,6 +128,8 @@ public class BrowserNavBar extends Comp<BrowserNavBar.Structure> {
 
         var topBox = new HBox(homeButton, stack, historyButton);
         topBox.setAlignment(Pos.CENTER);
+        homeButton.minWidthProperty().bind(pathRegion.heightProperty());
+        homeButton.maxWidthProperty().bind(pathRegion.heightProperty());
         homeButton.minHeightProperty().bind(pathRegion.heightProperty());
         homeButton.maxHeightProperty().bind(pathRegion.heightProperty());
         historyButton.minHeightProperty().bind(pathRegion.heightProperty());

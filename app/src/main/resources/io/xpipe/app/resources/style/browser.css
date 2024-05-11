@@ -179,7 +179,7 @@
 
 .table-view .column-header-background .label {
     -fx-font-size: 0.9em;
-    -fx-font-weight: SEMIBOLD;
+    -fx-font-weight: NORMAL;
 }
 
 .browser .table-row-cell:empty {
