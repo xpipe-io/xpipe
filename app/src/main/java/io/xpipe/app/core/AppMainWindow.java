@@ -150,7 +150,6 @@ public class AppMainWindow {
             // Close other windows
             Stage.getWindows().stream().filter(w -> !w.equals(stage)).toList().forEach(w -> w.fireEvent(e));
             stage.close();
-
             AppPrefs.get().closeBehaviour().getValue().run();
             e.consume();
         });
@@ -158,6 +157,7 @@ public class AppMainWindow {
         stage.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode().equals(KeyCode.Q) && event.isShortcutDown()) {
                 stage.close();
+                AppPrefs.get().closeBehaviour().getValue().run();
                 event.consume();
             }
         });

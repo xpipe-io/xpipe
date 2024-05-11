@@ -42,7 +42,9 @@ public class BrowserFileListCompEntry {
             // Only clear for normal clicks
             if (t.isStillSincePress()) {
                 model.getSelection().clear();
-                tv.requestFocus();
+                if (tv != null) {
+                    tv.requestFocus();
+                }
             }
             t.consume();
             return;

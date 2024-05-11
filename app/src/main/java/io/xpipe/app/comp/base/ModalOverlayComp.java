@@ -1,5 +1,6 @@
 package io.xpipe.app.comp.base;
 
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
@@ -35,6 +36,11 @@ public class ModalOverlayComp extends SimpleComp {
         var bgRegion = background.createRegion();
         var modal = new ModalPane();
         AppFont.small(modal);
+        modal.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                modal.getContent().requestFocus();
+            }
+        });
         modal.getStyleClass().add("modal-overlay-comp");
         var pane = new StackPane(bgRegion, modal);
         pane.setPickOnBounds(false);
@@ -62,12 +68,17 @@ public class ModalOverlayComp extends SimpleComp {
                 AppFont.normal(l);
                 var r = newValue.content.createRegion();
                 var box = new VBox(l, r);
+                box.focusedProperty().addListener((o, old, n) -> {
+                    if (n) {
+                        r.requestFocus();
+                    }
+                });
                 box.setSpacing(10);
                 box.setPadding(new Insets(10, 15, 15, 15));
 
                 if (newValue.finishKey != null) {
                     var finishButton = new Button(AppI18n.get(newValue.finishKey));
-                    finishButton.setDefaultButton(true);
+                    finishButton.getStyleClass().add(Styles.ACCENT);
                     finishButton.setOnAction(event -> {
                         newValue.onFinish.run();
                         overlayContent.setValue(null);
@@ -88,12 +99,17 @@ public class ModalOverlayComp extends SimpleComp {
                 modalBox.prefHeightProperty().bind(box.heightProperty());
                 modalBox.maxWidthProperty().bind(box.widthProperty());
                 modalBox.maxHeightProperty().bind(box.heightProperty());
+                modalBox.focusedProperty().addListener((o, old, n) -> {
+                    if (n) {
+                        box.requestFocus();
+                    }
+                });
                 modal.show(modalBox);
 
                 // Wait 2 pulses before focus so that the scene can be assigned to r
                 Platform.runLater(() -> {
                     Platform.runLater(() -> {
-                        r.requestFocus();
+                        modalBox.requestFocus();
                     });
                 });
             }

@@ -21,7 +21,7 @@ public class AppPreloader extends Preloader {
         var c = Class.forName(
                 ModuleLayer.boot().findModule("javafx.graphics").orElseThrow(), "com.sun.glass.ui.Application");
         var m = c.getDeclaredMethod("setName", String.class);
-        m.invoke(c.getMethod("GetApplication").invoke(null), "XPipe");
+        m.invoke(c.getMethod("GetApplication").invoke(null), AppProperties.get().isStaging() ? "XPipe PTB" : "XPipe");
         TrackEvent.info("Application preloader run");
     }
 }

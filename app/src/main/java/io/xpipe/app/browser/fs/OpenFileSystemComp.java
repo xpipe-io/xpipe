@@ -65,7 +65,8 @@ public class OpenFileSystemComp extends SimpleComp {
         var backBtn = BrowserAction.byId("back", model, List.of()).toButton(root, model, List.of());
         var forthBtn = BrowserAction.byId("forward", model, List.of()).toButton(root, model, List.of());
         var refreshBtn = BrowserAction.byId("refresh", model, List.of()).toButton(root, model, List.of());
-        var terminalBtn = BrowserAction.byId("openTerminal", model, List.of()).toButton(root, model, List.of());
+        // Don't handle key events for this button, we also have that available as a menu item
+        var terminalBtn = BrowserAction.byId("openTerminal", model, List.of()).toButton(new Region(), model, List.of());
 
         var menuButton = new MenuButton(null, new FontIcon
                 ("mdral-folder_open"));
