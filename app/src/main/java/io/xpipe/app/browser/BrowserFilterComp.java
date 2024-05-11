@@ -33,6 +33,7 @@ public class BrowserFilterComp extends Comp<BrowserFilterComp.Structure> {
         var expanded = new SimpleBooleanProperty();
         var text = new TextFieldComp(filterString, false).createStructure().get();
         var button = new Button();
+        button.minWidthProperty().bind(button.heightProperty());
         button.setFocusTraversable(true);
         InputHelper.onExactKeyCode(text, KeyCode.ESCAPE, true, keyEvent -> {
             text.clear();

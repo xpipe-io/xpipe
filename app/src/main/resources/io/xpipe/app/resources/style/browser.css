@@ -66,15 +66,16 @@
 .browser .top-bar {
     -fx-border-width: 1 0 1 0;
     -fx-border-color: -color-border-default;
-    -fx-padding: 5px 10px;
+    -fx-padding: 9px 6px;
 }
 
-.browser .top-bar > .button {
+.browser .top-bar > .button, .browser .browser-filter > .button {
     -fx-background-insets: 0;
     -fx-background-color: transparent;
 }
 
 .browser .top-bar > .menu-button {
+    -fx-padding: 0;
     -fx-background-insets: 0;
     -fx-background-color: transparent;
 }
@@ -125,6 +126,10 @@
     -fx-background-color: -color-neutral-muted;
 }
 
+.browser .path-text, .browser .browser-filter .text-field {
+    -fx-padding: 6 12;
+}
+
 .browser .path-text:invisible {
     -fx-text-fill: transparent;
 }
@@ -166,6 +171,15 @@
 
 .browser .table-view {
     -fx-border-width: 0;
+}
+
+.table-view .column-header {
+    -fx-pref-height: 2em;
+}
+
+.table-view .column-header-background .label {
+    -fx-font-size: 0.9em;
+    -fx-font-weight: SEMIBOLD;
 }
 
 .browser .table-row-cell:empty {

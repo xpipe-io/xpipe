@@ -68,8 +68,7 @@ public class OpenFileSystemComp extends SimpleComp {
         // Don't handle key events for this button, we also have that available as a menu item
         var terminalBtn = BrowserAction.byId("openTerminal", model, List.of()).toButton(new Region(), model, List.of());
 
-        var menuButton = new MenuButton(null, new FontIcon
-                ("mdral-folder_open"));
+        var menuButton = new MenuButton(null, new FontIcon("mdral-folder_open"));
         new ContextMenuAugment<>(
                         event -> event.getButton() == MouseButton.PRIMARY,
                         null,
@@ -96,6 +95,12 @@ public class OpenFileSystemComp extends SimpleComp {
                         refreshBtn,
                         terminalBtn,
                         menuButton);
+        squaredSize(navBar.get(),overview,true);
+        squaredSize(navBar.get(),backBtn,true);
+        squaredSize(navBar.get(),forthBtn,true);
+        squaredSize(navBar.get(),refreshBtn,true);
+        squaredSize(navBar.get(),terminalBtn,true);
+        squaredSize(navBar.get(),menuButton,false);
 
         var content = createFileListContent();
         root.getChildren().addAll(topBar, content);
@@ -127,6 +132,17 @@ public class OpenFileSystemComp extends SimpleComp {
             keyEvent.consume();
         });
         return root;
+    }
+
+    private void squaredSize(Region ref, Region toResize, boolean width) {
+        if (width) {
+            toResize.minWidthProperty().bind(ref.heightProperty());
+        }
+        toResize.minHeightProperty().bind(ref.heightProperty());
+        if (width) {
+            toResize.maxWidthProperty().bind(ref.heightProperty());
+        }
+        toResize.maxHeightProperty().bind(ref.heightProperty());
     }
 
     private Region createFileListContent() {

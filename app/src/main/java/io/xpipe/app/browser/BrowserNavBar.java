@@ -108,6 +108,7 @@ public class BrowserNavBar extends Comp<BrowserNavBar.Structure> {
         var breadcrumbs = new BrowserBreadcrumbBar(model).grow(false, true);
 
         var pathRegion = pathBar.createStructure().get();
+        homeButton.maxWidthProperty().bind(pathRegion.heightProperty());
         var breadcrumbsRegion = breadcrumbs.createRegion();
         breadcrumbsRegion.setOnMouseClicked(event -> {
             pathRegion.requestFocus();
@@ -127,14 +128,15 @@ public class BrowserNavBar extends Comp<BrowserNavBar.Structure> {
         HBox.setHgrow(stack, Priority.ALWAYS);
 
         var topBox = new HBox(homeButton, stack, historyButton);
-        homeButton.minHeightProperty().bind(stack.heightProperty());
-        homeButton.maxHeightProperty().bind(stack.heightProperty());
-        historyButton.minHeightProperty().bind(stack.heightProperty());
-        historyButton.maxHeightProperty().bind(stack.heightProperty());
+        topBox.setAlignment(Pos.CENTER);
+        homeButton.minHeightProperty().bind(pathRegion.heightProperty());
+        homeButton.maxHeightProperty().bind(pathRegion.heightProperty());
+        historyButton.minHeightProperty().bind(pathRegion.heightProperty());
+        historyButton.maxHeightProperty().bind(pathRegion.heightProperty());
         topBox.setPickOnBounds(false);
         HBox.setHgrow(topBox, Priority.ALWAYS);
 
-        return new Structure(topBox,pathRegion, historyButton);
+        return new Structure(topBox, pathRegion, historyButton);
     }
 
     public record Structure(HBox box, TextField textField, Button historyButton) implements CompStructure<HBox> {
