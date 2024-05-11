@@ -96,8 +96,8 @@ public final class BrowserFileListModel {
         return us;
     }
 
-    public boolean rename(String filename, String newName) {
-        var fullPath = FileNames.join(fileSystemModel.getCurrentPath().get(), filename);
+    public BrowserEntry rename(BrowserEntry old, String newName) {
+        var fullPath = FileNames.join(fileSystemModel.getCurrentPath().get(), old.getFileName());
         var newFullPath = FileNames.join(fileSystemModel.getCurrentPath().get(), newName);
 
         boolean exists;
@@ -106,7 +106,7 @@ public final class BrowserFileListModel {
                     || fileSystemModel.getFileSystem().directoryExists(newFullPath);
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).handle();
-            return false;
+            return old;
         }
 
         if (exists) {
@@ -114,16 +114,17 @@ public final class BrowserFileListModel {
                     .expected()
                     .handle();
             fileSystemModel.refresh();
-            return false;
+            return old;
         }
 
         try {
             fileSystemModel.getFileSystem().move(fullPath, newFullPath);
             fileSystemModel.refresh();
-            return true;
+            var b = all.getValue().stream().filter(browserEntry -> browserEntry.getRawFileEntry().getPath().equals(newFullPath)).findFirst().orElse(old);
+            return b;
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).handle();
-            return false;
+            return old;
         }
     }
 

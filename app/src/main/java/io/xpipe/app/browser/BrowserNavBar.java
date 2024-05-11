@@ -94,7 +94,7 @@ public class BrowserNavBar extends Comp<BrowserNavBar.Structure> {
         homeButton.getStyleClass().add(Styles.LEFT_PILL);
         homeButton.getStyleClass().add("path-graphic-button");
         new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, null, () -> {
-            return model.getInOverview().get() ? null : new BrowserContextMenu(model, null);
+            return model.getInOverview().get() ? null : new BrowserContextMenu(model, null, false);
         })
                 .augment(new SimpleCompStructure<>(homeButton));
 

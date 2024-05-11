@@ -38,6 +38,16 @@ public class ModalOverlayComp extends SimpleComp {
         modal.getStyleClass().add("modal-overlay-comp");
         var pane = new StackPane(bgRegion, modal);
         pane.setPickOnBounds(false);
+        pane.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                if (modal.isDisplay()) {
+                    modal.requestFocus();
+                } else {
+                    bgRegion.requestFocus();
+                }
+            }
+        });
+
         PlatformThread.sync(overlayContent).addListener((observable, oldValue, newValue) -> {
             if (oldValue != null && newValue == null && modal.isDisplay()) {
                 modal.hide(true);

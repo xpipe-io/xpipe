@@ -68,6 +68,10 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
                             dir = initScriptsDirectory(shellControl, bringFlattened);
                         }
 
+                        if (dir == null) {
+                            return Optional.empty();
+                        }
+
                         return Optional.ofNullable(shellControl.getShellDialect().addToPathVariableCommand(List.of(dir), true));
                     }
 

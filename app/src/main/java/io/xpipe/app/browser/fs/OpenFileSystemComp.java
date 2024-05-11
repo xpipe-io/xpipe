@@ -17,7 +17,6 @@ import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.util.InputHelper;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuButton;
@@ -73,7 +72,7 @@ public class OpenFileSystemComp extends SimpleComp {
         new ContextMenuAugment<>(
                         event -> event.getButton() == MouseButton.PRIMARY,
                         null,
-                        () -> new BrowserContextMenu(model, null))
+                        () -> new BrowserContextMenu(model, null, false))
                 .augment(new SimpleCompStructure<>(menuButton));
         menuButton.disableProperty().bind(model.getInOverview());
         menuButton.setAccessibleText("Directory options");
@@ -100,7 +99,12 @@ public class OpenFileSystemComp extends SimpleComp {
         var content = createFileListContent();
         root.getChildren().addAll(topBar, content);
         VBox.setVgrow(content, Priority.ALWAYS);
-        root.setPadding(Insets.EMPTY);
+        root.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                content.requestFocus();
+            }
+        });
+
         InputHelper.onKeyCombination(root, new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN), true, keyEvent -> {
             filter.toggleButton().fire();
             filter.textField().requestFocus();
@@ -133,7 +137,13 @@ public class OpenFileSystemComp extends SimpleComp {
             var statusBar = new BrowserStatusBarComp(model);
             fileListElements.add(statusBar);
         }
-        var fileList = new VerticalComp(fileListElements);
+        var fileList = new VerticalComp(fileListElements).apply(struc -> {
+            struc.get().focusedProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue) {
+                    struc.get().getChildren().getFirst().requestFocus();
+                }
+            });
+        });
 
         var home = new BrowserOverviewComp(model);
         var stack = new MultiContentComp(Map.of(
@@ -141,6 +151,16 @@ public class OpenFileSystemComp extends SimpleComp {
                 model.getCurrentPath().isNull(),
                 fileList,
                 model.getCurrentPath().isNull().not()));
-        return stack.createRegion();
+        var r = stack.createRegion();
+        r.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                if (r.getChildrenUnmodifiable().get(0).isVisible()) {
+                    r.getChildrenUnmodifiable().getFirst().requestFocus();
+                } else {
+                    r.getChildrenUnmodifiable().get(1).requestFocus();
+                }
+            }
+        });
+        return r;
     }
 }

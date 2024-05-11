@@ -21,10 +21,12 @@ public final class BrowserContextMenu extends ContextMenu {
 
     private final OpenFileSystemModel model;
     private final BrowserEntry source;
+    private final boolean quickAccess;
 
-    public BrowserContextMenu(OpenFileSystemModel model, BrowserEntry source) {
+    public BrowserContextMenu(OpenFileSystemModel model, BrowserEntry source, boolean quickAccess) {
         this.model = model;
         this.source = source;
+        this.quickAccess = quickAccess;
         createMenu();
     }
 
@@ -50,7 +52,7 @@ public final class BrowserContextMenu extends ContextMenu {
         var selected = new ArrayList<>(
                 empty
                         ? List.of(new BrowserEntry(model.getCurrentDirectory(), model.getFileList()))
-                        : model.getFileList().getSelection());
+                        : quickAccess ? List.of() : model.getFileList().getSelection());
         if (source != null && !selected.contains(source)) {
             selected.add(source);
         }

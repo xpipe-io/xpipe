@@ -122,6 +122,9 @@ public class BrowserSessionTabsComp extends SimpleComp {
                 }
 
                 tabs.getSelectionModel().select(toSelect);
+                Platform.runLater(() -> {
+                    toSelect.getContent().requestFocus();
+                });
             });
         });
 

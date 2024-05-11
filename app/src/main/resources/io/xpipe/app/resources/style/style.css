@@ -1,3 +1,10 @@
+/* For development
+*:focused {
+    -fx-border-width: 1;
+    -fx-border-color: red;
+}
+*/
+
 .store-layout .split-pane-divider {
     -fx-background-color: transparent;
 }

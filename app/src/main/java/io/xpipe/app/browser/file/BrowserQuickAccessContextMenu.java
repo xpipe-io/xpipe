@@ -125,8 +125,12 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
         private final BrowserEntry browserEntry;
         private final Menu menu;
         private ContextMenu browserActionMenu;
+        private final MenuItem empty;
 
         public QuickAccessMenu(BrowserEntry browserEntry) {
+            empty = new Menu("...");
+            empty.getStyleClass().add("leaf");
+
             this.browserEntry = browserEntry;
             this.menu = new Menu(
                     // Use original name, not the link target
@@ -165,18 +169,13 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
                 }
             });
             menu.getStyleClass().add("leaf");
-
-            var empty = new MenuItem("...");
-            empty.setDisable(true);
             menu.getItems().add(empty);
         }
 
         private void createDirectoryMenu() {
             menu.setMnemonicParsing(false);
-            var empty = new MenuItem("...");
-            empty.setDisable(true);
             menu.getItems().add(empty);
-            addHoverHandling(empty);
+            addHoverHandling();
 
             menu.setOnAction(event -> {
                 if (event.getTarget() != menu) {
@@ -216,7 +215,7 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
             });
         }
 
-        private void addHoverHandling(MenuItem empty) {
+        private void addHoverHandling() {
             var hover = new SimpleBooleanProperty();
             menu.addEventFilter(Menu.ON_SHOWING, event -> {
                 if (!keyBasedNavigation) {
@@ -239,7 +238,7 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
                 if (contextMenu != null) {
                     contextMenu.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
                         keyBasedNavigation = true;
-                        if (event.getCode().equals(KeyCode.ENTER)) {
+                        if (event.getCode().equals(KeyCode.SPACE) || event.getCode().equals(KeyCode.ENTER)) {
                             expandBrowserActionMenuKey = true;
                         } else {
                             expandBrowserActionMenuKey = false;
@@ -290,7 +289,7 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
 
         private void showBrowserActionsMenu() {
             if (browserActionMenu == null) {
-                this.browserActionMenu = new BrowserContextMenu(model, browserEntry);
+                this.browserActionMenu = new BrowserContextMenu(model, browserEntry, true);
                 this.browserActionMenu.setOnAction(e -> {
                     hide();
                 });

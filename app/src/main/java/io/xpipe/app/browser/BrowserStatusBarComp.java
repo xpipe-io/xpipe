@@ -134,7 +134,7 @@ public class BrowserStatusBarComp extends SimpleComp {
         new ContextMenuAugment<>(
                         mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY,
                         null,
-                        () -> new BrowserContextMenu(model, null))
+                        () -> new BrowserContextMenu(model, null, false))
                 .augment(new SimpleCompStructure<>(r));
     }
 }

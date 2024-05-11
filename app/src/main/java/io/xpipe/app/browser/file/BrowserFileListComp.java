@@ -255,7 +255,7 @@ public final class BrowserFileListComp extends SimpleComp {
                             },
                             null,
                             () -> {
-                                return new BrowserContextMenu(fileList.getFileSystemModel(), row.getItem());
+                                return new BrowserContextMenu(fileList.getFileSystemModel(), row.getItem(), false);
                             })
                     .augment(new SimpleCompStructure<>(row));
             var listEntry = Bindings.createObjectBinding(
@@ -507,10 +507,17 @@ public final class BrowserFileListComp extends SimpleComp {
                     return;
                 }
 
-                fileList.rename(oldValue, newValue);
-                textField.getScene().getRoot().requestFocus();
+                getTableRow().requestFocus();
+                var it = getTableRow().getItem();
                 editing.setValue(null);
-                updateItem(getItem(), isEmpty());
+                ThreadHelper.runAsync(() -> {
+                    var r = fileList.rename(it, newValue);
+                    Platform.runLater(() -> {
+                        updateItem(getItem(), isEmpty());
+                        fileList.getSelection().setAll(r);
+                        getTableView().scrollTo(r);
+                    });
+                });
             };
             text.addListener(listener);
 
@@ -534,7 +541,7 @@ public final class BrowserFileListComp extends SimpleComp {
                 var selected = fileList.getSelection();
                 // Only show one menu across all selected entries
                 if (selected.size() > 0 && selected.getLast() == getTableRow().getItem()) {
-                    var cm = new BrowserContextMenu(fileList.getFileSystemModel(), getTableRow().getItem());
+                    var cm = new BrowserContextMenu(fileList.getFileSystemModel(), getTableRow().getItem(), false);
                     ContextMenuHelper.toggleShow(cm, this, Side.RIGHT);
                     event.consume();
                 }
