@@ -322,6 +322,10 @@ public class AppPrefs {
     }
 
     public void changeLock(InPlaceSecretValue newLockPw) {
+        if (lockCrypt.get() == null && newLockPw == null) {
+            return;
+        }
+
         if (newLockPw == null) {
             lockPassword.setValue(null);
             lockCrypt.setValue(null);

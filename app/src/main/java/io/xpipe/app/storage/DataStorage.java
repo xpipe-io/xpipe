@@ -119,7 +119,7 @@ public abstract class DataStorage {
         });
     }
 
-    private synchronized void dispose() {
+    private void dispose() {
         save(true);
     }
 
