@@ -121,7 +121,7 @@ public abstract class OperationMode {
         setup(args);
         LauncherCommand.runLauncher(usedArgs);
         inStartup = false;
-        AppIntegration.setupDesktopIntegrations();
+        AppDesktopIntegration.setupDesktopIntegrations();
     }
 
     public static void switchToAsync(OperationMode newMode) {

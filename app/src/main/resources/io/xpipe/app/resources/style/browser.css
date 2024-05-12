@@ -69,7 +69,7 @@
     -fx-padding: 9px 6px;
 }
 
-.browser .top-bar > .button, .browser .browser-filter > .button {
+.browser .top-bar > .button {
     -fx-background-insets: 0;
     -fx-background-color: transparent;
 }

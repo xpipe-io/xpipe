@@ -13,7 +13,7 @@ import java.awt.*;
 import java.awt.desktop.*;
 import java.util.List;
 
-public class AppIntegration {
+public class AppDesktopIntegration {
 
     public static void setupDesktopIntegrations() {
         try {
@@ -42,7 +42,7 @@ public class AppIntegration {
 
             // This will initialize the toolkit on macos and create the dock icon
             // macOS does not like applications that run fully in the background, so always do it
-            if (OsType.getLocal().equals(OsType.MACOS)) {
+            if (OsType.getLocal().equals(OsType.MACOS) && Desktop.isDesktopSupported()) {
                 Desktop.getDesktop().setPreferencesHandler(e -> {
                     AppLayoutModel.get().selectSettings();
                 });
@@ -65,7 +65,7 @@ public class AppIntegration {
 
                 // Set dock icon explicitly on mac
                 // This is necessary in case XPipe was started through a script as it will have no icon otherwise
-                if (AppProperties.get().isDeveloperMode() && AppLogs.get().isWriteToSysout()) {
+                if (AppProperties.get().isDeveloperMode() && AppLogs.get().isWriteToSysout() && Taskbar.isTaskbarSupported()) {
                     try {
                         var iconUrl = Main.class.getResourceAsStream("resources/img/logo/padded/logo_128x128.png");
                         if (iconUrl != null) {
@@ -78,7 +78,7 @@ public class AppIntegration {
                 }
             }
 
-            if (OsType.getLocal().equals(OsType.LINUX)) {
+            if (OsType.getLocal().equals(OsType.LINUX) && !GraphicsEnvironment.isHeadless()) {
                 try {
                     Toolkit xToolkit = Toolkit.getDefaultToolkit();
                     java.lang.reflect.Field awtAppClassNameField =
