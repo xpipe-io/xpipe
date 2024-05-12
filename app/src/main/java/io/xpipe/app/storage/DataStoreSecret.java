@@ -36,9 +36,21 @@ public class DataStoreSecret {
     }
 
     public boolean requiresRewrite() {
-        return AppPrefs.get() != null
-                && AppPrefs.get().getLockCrypt().get() != null
-                && !Objects.equals(AppPrefs.get().getLockCrypt().get(), usedPasswordLockCrypt);
+        if (AppPrefs.get() == null) {
+            return false;
+        }
+
+        // Special check for empty passphrases
+        var wasEmpty = usedPasswordLockCrypt == null || usedPasswordLockCrypt.isEmpty();
+        var isEmpty = AppPrefs.get().getLockCrypt().get() == null || AppPrefs.get().getLockCrypt().get().isEmpty();
+        if (wasEmpty && isEmpty) {
+            return false;
+        }
+        if (wasEmpty != isEmpty) {
+            return true;
+        }
+
+        return !Objects.equals(AppPrefs.get().getLockCrypt().get(), usedPasswordLockCrypt);
     }
 
     public char[] getSecret() {
