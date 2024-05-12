@@ -340,7 +340,7 @@ public class StandardStorage extends DataStorage {
                         gitStorageHandler.handleDeletion(file, uuid.toString());
                     }
                 } catch (Exception ex) {
-                    ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
+                    ErrorEvent.fromThrowable(ex).expected().omit().build().handle();
                 }
             });
         } catch (Exception ex) {
@@ -373,7 +373,7 @@ public class StandardStorage extends DataStorage {
                         gitStorageHandler.handleDeletion(file, uuid.toString());
                     }
                 } catch (Exception ex) {
-                    ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
+                    ErrorEvent.fromThrowable(ex).expected().omit().build().handle();
                 }
             });
         } catch (Exception ex) {
