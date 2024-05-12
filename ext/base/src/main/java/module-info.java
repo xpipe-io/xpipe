@@ -22,6 +22,7 @@ open module io.xpipe.ext.base {
     requires java.desktop;
     requires io.xpipe.core;
     requires com.fasterxml.jackson.databind;
+    requires com.fasterxml.jackson.annotation;
     requires java.net.http;
     requires static lombok;
     requires static javafx.controls;

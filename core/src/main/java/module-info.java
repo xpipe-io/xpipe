@@ -11,8 +11,8 @@ open module io.xpipe.core {
     exports io.xpipe.core.process;
 
     requires com.fasterxml.jackson.datatype.jsr310;
-    requires com.fasterxml.jackson.module.paramnames;
     requires static com.fasterxml.jackson.core;
+    requires static com.fasterxml.jackson.annotation;
     requires static com.fasterxml.jackson.databind;
     requires java.net.http;
     requires static lombok;

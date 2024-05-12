@@ -14,6 +14,7 @@ open module io.xpipe.beacon {
     exports io.xpipe.beacon.test;
 
     requires static com.fasterxml.jackson.core;
+    requires static com.fasterxml.jackson.annotation;
     requires static com.fasterxml.jackson.databind;
     requires transitive io.xpipe.core;
     requires static lombok;

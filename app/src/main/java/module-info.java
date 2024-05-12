@@ -52,6 +52,7 @@ open module io.xpipe.app {
     requires com.vladsch.flexmark;
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
+    requires com.fasterxml.jackson.annotation;
     requires net.synedra.validatorfx;
     requires org.kordamp.ikonli.feather;
     requires io.xpipe.modulefs;
@@ -78,14 +79,6 @@ open module io.xpipe.app {
     requires jdk.management.agent;
     requires net.steppschuh.markdowngenerator;
     requires com.shinyhut.vernacular;
-
-    // Required by extensions
-    requires java.security.jgss;
-    requires java.security.sasl;
-    requires java.xml;
-    requires java.xml.crypto;
-    requires java.sql;
-    requires java.sql.rowset;
 
     // Required runtime modules
     requires jdk.charsets;
