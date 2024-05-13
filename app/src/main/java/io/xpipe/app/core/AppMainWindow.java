@@ -8,6 +8,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviourAlert;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Rectangle2D;
@@ -146,7 +147,9 @@ public class AppMainWindow {
         stage.setOnShown(event -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 if (state == null && !shown.get()) {
-                    stage.centerOnScreen();
+                    Platform.runLater(() -> {
+                        stage.centerOnScreen();
+                    });
                 }
                 stage.requestFocus();
                 shown.set(true);
