@@ -55,9 +55,6 @@ public class App extends Application {
         appWindow.initialize();
         appWindow.setContent(content);
         TrackEvent.info("Application window initialized");
-        stage.setOnShown(event -> {
-            focus();
-        });
     }
 
     public void focus() {

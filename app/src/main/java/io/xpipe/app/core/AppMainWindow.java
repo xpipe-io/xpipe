@@ -1,6 +1,7 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -27,6 +28,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AppMainWindow {
 
@@ -92,8 +94,7 @@ public class AppMainWindow {
                 .handle();
     }
 
-    private void initializeWindow() {
-        var state = loadState();
+    private void initializeWindow(WindowState state) {
         applyState(state);
 
         TrackEvent.withDebug("Window initialized")
@@ -106,7 +107,7 @@ public class AppMainWindow {
                 .handle();
     }
 
-    private void setupListeners() {
+    private void setupListeners(WindowState state) {
         stage.xProperty().addListener((c, o, n) -> {
             if (windowActive.get()) {
                 onChange();
@@ -139,6 +140,17 @@ public class AppMainWindow {
 
         stage.setOnHidden(e -> {
             windowActive.set(false);
+        });
+
+        AtomicBoolean shown = new AtomicBoolean(false);
+        stage.setOnShown(event -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                if (state == null && !shown.get()) {
+                    stage.centerOnScreen();
+                }
+                stage.requestFocus();
+                shown.set(true);
+            });
         });
 
         stage.setOnCloseRequest(e -> {
@@ -237,8 +249,9 @@ public class AppMainWindow {
         stage.setMinWidth(550);
         stage.setMinHeight(400);
 
-        initializeWindow();
-        setupListeners();
+        var state = loadState();
+        initializeWindow(state);
+        setupListeners(state);
         windowActive.set(true);
         TrackEvent.debug("Window set to active");
     }
