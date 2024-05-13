@@ -97,6 +97,13 @@ public class CommandBuilder {
         return this;
     }
 
+    public CommandBuilder add(int index, Element... s) {
+        for (var s1 : s) {
+            elements.add(index++, s1);
+        }
+        return this;
+    }
+
     public CommandBuilder remove(String s) {
         elements.removeIf(element -> element instanceof Fixed fixed && s.equals(fixed.string));
         return this;
