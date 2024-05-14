@@ -81,6 +81,12 @@ public class BrowserChooserComp extends SimpleComp {
                     return;
                 }
 
+                // Don't open same system again
+                var current = model.getSelectedEntry().getValue();
+                if (current != null && entry.ref().equals(current.getEntry())) {
+                    return;
+                }
+
                 if (entry.getStore() instanceof ShellStore fileSystem) {
                     model.openFileSystemAsync(entry.ref(), null, busy);
                 }
