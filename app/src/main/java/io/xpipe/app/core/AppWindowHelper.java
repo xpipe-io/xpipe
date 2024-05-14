@@ -85,12 +85,14 @@ public class AppWindowHelper {
 
         stage.setOnShown(e -> {
             AppTheme.initThemeHandlers(stage);
-            centerToMainWindow(stage);
-            clampWindow(stage).ifPresent(rectangle2D -> {
-                stage.setX(rectangle2D.getMinX());
-                stage.setY(rectangle2D.getMinY());
-                stage.setWidth(rectangle2D.getWidth());
-                stage.setHeight(rectangle2D.getHeight());
+            Platform.runLater(() -> {
+                centerToMainWindow(stage);
+                clampWindow(stage).ifPresent(rectangle2D -> {
+                    stage.setX(rectangle2D.getMinX());
+                    stage.setY(rectangle2D.getMinY());
+                    stage.setWidth(rectangle2D.getWidth());
+                    stage.setHeight(rectangle2D.getHeight());
+                });
             });
         });
         return stage;
@@ -98,6 +100,7 @@ public class AppWindowHelper {
 
     private static void centerToMainWindow(Window childStage) {
         if (App.getApp() == null) {
+            childStage.centerOnScreen();
             return;
         }
 

@@ -146,6 +146,8 @@ public class AppMainWindow {
         AtomicBoolean shown = new AtomicBoolean(false);
         stage.setOnShown(event -> {
             PlatformThread.runLaterIfNeeded(() -> {
+                // On some platforms, e.g. KDE with wayland, the screen size is not known when the window is first shown
+                // This fixes the alignment in these cases
                 if (state == null && !shown.get()) {
                     Platform.runLater(() -> {
                         stage.centerOnScreen();
