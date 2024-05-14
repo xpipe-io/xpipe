@@ -10,12 +10,11 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.beacon.BeaconServer;
-import io.xpipe.beacon.exchange.FocusExchange;
-import io.xpipe.beacon.exchange.OpenExchange;
+import io.xpipe.beacon.api.FocusExchange;
+import io.xpipe.beacon.api.OpenExchange;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeInstallation;
-
 import lombok.SneakyThrows;
 import picocli.CommandLine;
 
@@ -83,10 +82,8 @@ public class LauncherCommand implements Callable<Integer> {
         try {
             if (BeaconServer.isReachable()) {
                 try (var con = new LauncherConnection()) {
-                    con.constructSocket();
-                    con.performSimpleExchange(FocusExchange.Request.builder()
-                            .mode(getEffectiveMode())
-                            .build());
+                    con.establishConnection();
+                    con.performSimpleExchange(FocusExchange.Request.builder().mode(getEffectiveMode()).build());
                     if (!inputs.isEmpty()) {
                         con.performSimpleExchange(
                                 OpenExchange.Request.builder().arguments(inputs).build());
@@ -94,9 +91,11 @@ public class LauncherCommand implements Callable<Integer> {
 
                     if (OsType.getLocal().equals(OsType.MACOS)) {
                         Desktop.getDesktop().setOpenURIHandler(e -> {
-                            con.performSimpleExchange(OpenExchange.Request.builder()
-                                    .arguments(List.of(e.getURI().toString()))
-                                    .build());
+                            try {
+                                con.performSimpleExchange(OpenExchange.Request.builder().arguments(List.of(e.getURI().toString())).build());
+                            } catch (Exception ex) {
+                                ErrorEvent.fromThrowable(ex).expected().omit().handle();
+                            }
                         });
                         ThreadHelper.sleep(1000);
                     }

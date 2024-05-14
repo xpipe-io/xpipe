@@ -58,9 +58,14 @@ public class ShellDialects {
 
         @Override
         public void init(ModuleLayer layer) {
-            ServiceLoader.load(layer, ShellDialect.class).stream().forEach(moduleLayerLoaderProvider -> {
+            var services = layer != null ? ServiceLoader.load(layer, ShellDialect.class) : ServiceLoader.load(ShellDialect.class);
+            services.stream().forEach(moduleLayerLoaderProvider -> {
                 ALL.add(moduleLayerLoaderProvider.get());
             });
+
+            if (ALL.isEmpty()) {
+                return;
+            }
 
             CMD = byId("cmd");
             POWERSHELL = byId("powershell");

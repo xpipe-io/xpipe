@@ -1,6 +1,6 @@
 package io.xpipe.beacon;
 
-import io.xpipe.beacon.exchange.StopExchange;
+import io.xpipe.beacon.api.StopExchange;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.util.XPipeDaemonMode;
@@ -108,8 +108,7 @@ public class BeaconServer {
     }
 
     public static boolean tryStop(BeaconClient client) throws Exception {
-        client.sendRequest(StopExchange.Request.builder().build());
-        StopExchange.Response res = client.receiveResponse();
+        StopExchange.Response res = client.performRequest(StopExchange.Request.builder().build());
         return res.isSuccess();
     }
 

@@ -1,6 +1,7 @@
 package io.xpipe.beacon.test;
 
 import io.xpipe.beacon.BeaconClient;
+import io.xpipe.beacon.BeaconClientInformation;
 import io.xpipe.beacon.BeaconServer;
 import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeInstallation;
@@ -41,7 +42,7 @@ public class BeaconDaemonController {
             return;
         }
 
-        var client = BeaconClient.establishConnection(BeaconClient.ApiClientInformation.builder()
+        var client = BeaconClient.establishConnection(BeaconClientInformation.ApiClientInformation.builder()
                 .version("?")
                 .language("Java API Test")
                 .build());
@@ -67,7 +68,7 @@ public class BeaconDaemonController {
             } catch (InterruptedException ignored) {
             }
 
-            var s = BeaconClient.tryEstablishConnection(BeaconClient.ApiClientInformation.builder()
+            var s = BeaconClient.tryEstablishConnection(BeaconClientInformation.ApiClientInformation.builder()
                     .version("?")
                     .language("Java")
                     .build());
