@@ -89,7 +89,7 @@ public class ContextualFileReference {
     public String serialize() {
         var start = getDataDir();
         var normalizedPath = normalized(path);
-        if (normalizedPath.startsWith(start)) {
+        if (normalizedPath.startsWith(start) && !normalizedPath.equals(start)) {
             return "<DATA>" + "/" + FileNames.relativize(start, normalizedPath);
         }
         return path;
