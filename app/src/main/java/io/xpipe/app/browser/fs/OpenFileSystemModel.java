@@ -100,25 +100,27 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
 
     @Override
     public void close() {
-        if (fileSystem == null) {
-            return;
-        }
-
-        if (DataStorage.get().getStoreEntries().contains(getEntry().get())
-                && savedState != null
-                && getCurrentPath().get() != null) {
-            if (getBrowserModel() instanceof BrowserSessionModel bm) {
-                bm.getSavedState()
-                        .add(new BrowserSavedState.Entry(
-                                getEntry().get().getUuid(), getCurrentPath().get()));
+        BooleanScope.execute(busy, () -> {
+            if (fileSystem == null) {
+                return;
             }
-        }
-        try {
-            fileSystem.close();
-        } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).handle();
-        }
-        fileSystem = null;
+
+            if (DataStorage.get().getStoreEntries().contains(getEntry().get())
+                    && savedState != null
+                    && getCurrentPath().get() != null) {
+                if (getBrowserModel() instanceof BrowserSessionModel bm) {
+                    bm.getSavedState()
+                            .add(new BrowserSavedState.Entry(
+                                    getEntry().get().getUuid(), getCurrentPath().get()));
+                }
+            }
+            try {
+                fileSystem.close();
+            } catch (IOException e) {
+                ErrorEvent.fromThrowable(e).handle();
+            }
+            fileSystem = null;
+        });
     }
 
     private void startIfNeeded() throws Exception {
