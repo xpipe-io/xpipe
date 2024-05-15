@@ -75,6 +75,11 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
             updateMenuItems(r, entry, true);
             Platform.runLater(() -> {
                 getItems().addAll(r.getItems());
+
+                // Prevent NPE in show()
+                if (getScene() == null) {
+                    return;
+                }
                 show(anchor, Side.RIGHT, 0, 0);
             });
         });
