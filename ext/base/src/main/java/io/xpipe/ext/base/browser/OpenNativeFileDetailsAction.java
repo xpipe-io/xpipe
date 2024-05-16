@@ -56,7 +56,10 @@ public class OpenNativeFileDetailsAction implements LeafAction {
                     sc.osascriptCommand(String.format(
                                     """
                              set fileEntry to (POSIX file "%s") as text
-                             tell application "Finder" to open information window of alias fileEntry
+                             tell application "Finder"
+                                 activate
+                                 open information window of alias fileEntry
+                             end tell
                              """,
                                     localFile))
                             .execute();
