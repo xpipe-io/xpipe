@@ -12,6 +12,7 @@ public interface WindowsTerminalType extends ExternalTerminalType {
 
     ExternalTerminalType WINDOWS_TERMINAL = new Standard();
     ExternalTerminalType WINDOWS_TERMINAL_PREVIEW = new Preview();
+    ExternalTerminalType WINDOWS_TERMINAL_CANARY = new Canary();
 
     private static CommandBuilder toCommand(ExternalTerminalType.LaunchConfiguration configuration) throws Exception {
         // A weird behavior in Windows Terminal causes the trailing
@@ -55,7 +56,7 @@ public interface WindowsTerminalType extends ExternalTerminalType {
 
         @Override
         public String getWebsite() {
-            return "https://aka.ms/terminal-preview";
+            return "https://aka.ms/terminal";
         }
 
         @Override
@@ -68,7 +69,7 @@ public interface WindowsTerminalType extends ExternalTerminalType {
 
         @Override
         public String getWebsite() {
-            return "https://aka.ms/terminal";
+            return "https://aka.ms/terminal-preview";
         }
 
         @Override
@@ -92,6 +93,38 @@ public interface WindowsTerminalType extends ExternalTerminalType {
         @Override
         public String getId() {
             return "app.windowsTerminalPreview";
+        }
+    }
+
+
+    class Canary implements WindowsTerminalType {
+
+        @Override
+        public String getWebsite() {
+            return "https://devblogs.microsoft.com/commandline/introducing-windows-terminal-canary/";
+        }
+
+        @Override
+        public void launch(LaunchConfiguration configuration) throws Exception {
+            LocalShell.getShell()
+                    .executeSimpleCommand(
+                            CommandBuilder.of().addFile(getPath().toString()).add(toCommand(configuration)));
+        }
+
+        private Path getPath() {
+            var local = System.getenv("LOCALAPPDATA");
+            return Path.of(local)
+                    .resolve("Microsoft\\WindowsApps\\Microsoft.WindowsTerminalCanary_8wekyb3d8bbwe\\wt.exe");
+        }
+
+        @Override
+        public boolean isAvailable() {
+            return Files.exists(getPath());
+        }
+
+        @Override
+        public String getId() {
+            return "app.windowsTerminalCanary";
         }
     }
 }
