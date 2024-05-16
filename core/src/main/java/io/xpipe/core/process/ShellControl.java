@@ -207,7 +207,10 @@ public interface ShellControl extends ProcessControl {
                 return CommandBuilder.ofString(command);
             }
         };
-        return singularSubShell(o);
+        var sc = singularSubShell(o);
+        sc.withSourceStore(getSourceStore().orElse(null));
+        sc.setParentSystemAccess(ParentSystemAccess.identity());
+        return sc;
     }
 
     default <T> T enforceDialect(@NonNull ShellDialect type, FailableFunction<ShellControl, T, Exception> sc)

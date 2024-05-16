@@ -4,6 +4,34 @@ import io.xpipe.core.util.FailableFunction;
 
 public interface ElevationFunction {
 
+    static ElevationFunction ifNotRoot(ElevationFunction function) {
+        return new ElevationFunction() {
+            @Override
+            public String getPrefix() {
+                return function.getPrefix();
+            }
+
+            @Override
+            public boolean isSpecified() {
+                return true;
+            }
+
+            @Override
+            public boolean apply(ShellControl shellControl) throws Exception {
+                if (shellControl.getOsType() == OsType.WINDOWS) {
+                    return false;
+                }
+
+                var isRoot = shellControl.executeSimpleBooleanCommand("test \"${EUID:-$(id -u)}\" -eq 0");
+                if (isRoot) {
+                    return false;
+                }
+
+                return function.apply(shellControl);
+            }
+        };
+    }
+
     static ElevationFunction of(String prefix, FailableFunction<ShellControl, Boolean, Exception> f) {
         return new ElevationFunction() {
             @Override
