@@ -1,24 +1,25 @@
 package io.xpipe.app.prefs;
 
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.TextFieldComp;
+import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.CommandControl;
+import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.store.LocalStore;
-
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
-
-import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -69,11 +70,15 @@ public class PasswordManagerCategory extends AppPrefsCategory {
             });
         };
 
-        var c = new TextFieldComp(prefs.passwordManagerCommand, true)
-                .apply(struc -> struc.get().setPromptText("mypassmgr get $KEY"))
-                .minWidth(350);
+        var c = new IntegratedTextAreaComp(prefs.passwordManagerCommand, true, "pw", new SimpleStringProperty(
+                ProcessControlProvider.get().getEffectiveLocalDialect().getScriptFileEnding()))
+                .apply(struc -> {
+                    struc.getTextArea().setPromptText("mypassmgr get $KEY");
+                })
+                .minWidth(350)
+                .minHeight(120);
         var visit = createTemplateChoice();
-        var choice = new HorizontalComp(List.of(c, visit)).apply(struc -> {
+        var choice = new VerticalComp(List.of(c, visit)).apply(struc -> {
             struc.get().setAlignment(Pos.CENTER_LEFT);
             struc.get().setSpacing(10);
         });

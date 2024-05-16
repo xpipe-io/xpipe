@@ -1,23 +1,24 @@
 package io.xpipe.app.comp.base;
 
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.TextAreaComp;
 import io.xpipe.app.util.FileOpener;
-
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-
-import atlantafx.base.theme.Styles;
+import lombok.Builder;
+import lombok.Value;
 
 import java.nio.file.Files;
 
-public class IntegratedTextAreaComp extends SimpleComp {
+public class IntegratedTextAreaComp extends Comp<IntegratedTextAreaComp.Structure> {
 
     private final Property<String> value;
     private final boolean lazy;
@@ -32,26 +33,7 @@ public class IntegratedTextAreaComp extends SimpleComp {
         this.fileType = fileType;
     }
 
-    @Override
-    protected Region createSimple() {
-        var fileDrop = new FileDropOverlayComp<>(
-                Comp.of(() -> {
-                    var textArea = new TextAreaComp(value, lazy).createRegion();
-                    var copyButton = createOpenButton(textArea);
-                    var pane = new AnchorPane(copyButton);
-                    pane.setPickOnBounds(false);
-                    AnchorPane.setTopAnchor(copyButton, 10.0);
-                    AnchorPane.setRightAnchor(copyButton, 10.0);
-
-                    var c = new StackPane();
-                    c.getChildren().addAll(textArea, pane);
-                    return c;
-                }),
-                paths -> value.setValue(Files.readString(paths.getFirst())));
-        return fileDrop.createRegion();
-    }
-
-    private Region createOpenButton(Region container) {
+    private Region createOpenButton() {
         return new IconButtonComp(
                         "mdal-edit",
                         () -> FileOpener.openString(
@@ -64,5 +46,50 @@ public class IntegratedTextAreaComp extends SimpleComp {
                 .styleClass("edit-button")
                 .apply(struc -> struc.get().getStyleClass().remove(Styles.FLAT))
                 .createRegion();
+    }
+
+    @Override
+    public Structure createBase() {
+        var fileDrop = new FileDropOverlayComp<>(new Comp<TextAreaStructure>() {
+            @Override
+            public TextAreaStructure createBase() {
+                var textArea = new TextAreaComp(value, lazy).createStructure();
+                var copyButton = createOpenButton();
+                var pane = new AnchorPane(copyButton);
+                pane.setPickOnBounds(false);
+                AnchorPane.setTopAnchor(copyButton, 10.0);
+                AnchorPane.setRightAnchor(copyButton, 10.0);
+
+                var c = new StackPane();
+                c.getChildren().addAll(textArea.get(), pane);
+                return new TextAreaStructure(c, textArea.getTextArea());
+            }
+        }, paths -> value.setValue(Files.readString(paths.getFirst())));
+        var struc = fileDrop.createStructure();
+        return new Structure(struc.get(), struc.getCompStructure().getTextArea());
+    }
+
+    @Value
+    @Builder
+    public static class TextAreaStructure implements CompStructure<StackPane> {
+        StackPane pane;
+        TextArea textArea;
+
+        @Override
+        public StackPane get() {
+            return pane;
+        }
+    }
+
+    @Value
+    @Builder
+    public static class Structure implements CompStructure<StackPane> {
+        StackPane pane;
+        TextArea textArea;
+
+        @Override
+        public StackPane get() {
+            return pane;
+        }
     }
 }
