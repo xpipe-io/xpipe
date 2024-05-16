@@ -259,9 +259,7 @@ public class ErrorHandlerComp extends SimpleComp {
             actionBox.getChildren().get(1).getStyleClass().addAll(BUTTON_OUTLINED, ACCENT);
         }
 
-        content.getChildren().addAll(actionBox, new Separator(Orientation.HORIZONTAL));
-
-        var details = createDetails();
+        content.getChildren().addAll(actionBox);
         content.getStyleClass().add("top");
         content.setFillWidth(true);
         content.setPrefWidth(600);
@@ -269,8 +267,13 @@ public class ErrorHandlerComp extends SimpleComp {
 
         var layout = new BorderPane();
         layout.setCenter(content);
-        layout.setBottom(details);
         layout.getStyleClass().add("error-handler-comp");
+
+        if (event.getThrowable() != null) {
+            content.getChildren().add(new Separator(Orientation.HORIZONTAL));
+            var details = createDetails();
+            layout.setBottom(details);
+        }
 
         return layout;
     }
