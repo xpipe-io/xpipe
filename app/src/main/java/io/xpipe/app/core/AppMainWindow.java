@@ -7,7 +7,6 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviourAlert;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
-import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Rectangle2D;
@@ -106,7 +105,8 @@ public class AppMainWindow {
                 .handle();
     }
 
-    private void setupListeners(WindowState state) {
+    private void setupListeners() {
+        AppWindowHelper.fixInvalidStagePosition(stage);
         stage.xProperty().addListener((c, o, n) -> {
             if (windowActive.get()) {
                 onChange();
@@ -142,13 +142,6 @@ public class AppMainWindow {
         });
 
         stage.setOnShown(event -> {
-            // On some platforms, e.g. KDE with wayland, the screen size is not known when the window is first shown
-            // This fixes the alignment in these cases
-            if (state == null && stage.getX() == 0 && stage.getY() == 0) {
-                Platform.runLater(() -> {
-                    stage.centerOnScreen();
-                });
-            }
             stage.requestFocus();
         });
 
@@ -250,7 +243,7 @@ public class AppMainWindow {
 
         var state = loadState();
         initializeWindow(state);
-        setupListeners(state);
+        setupListeners();
         windowActive.set(true);
         TrackEvent.debug("Window set to active");
     }

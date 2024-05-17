@@ -23,10 +23,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
-import javafx.stage.Modality;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
-import javafx.stage.Window;
+import javafx.stage.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,6 +35,27 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class AppWindowHelper {
+
+    public static void fixInvalidStagePosition(Stage stage) {
+        if (OsType.getLocal() != OsType.LINUX) {
+            return;
+        }
+
+        stage.xProperty().addListener((observable, oldValue, newValue) -> {
+            var n = newValue.doubleValue();
+            var o = oldValue.doubleValue();
+            if (stage.isShowing() && areNumbersValid(o, n) && n == 0.0 && o != 0.0 && Math.abs(n - o) > 100) {
+                stage.setX(o);
+            }
+        });
+        stage.yProperty().addListener((observable, oldValue, newValue) -> {
+            var n = newValue.doubleValue();
+            var o = oldValue.doubleValue();
+            if (stage.isShowing() && areNumbersValid(o, n) && n == 0.0 && o != 0.0 && Math.abs(n - o) > 100) {
+                stage.setY(o);
+            }
+        });
+    }
 
     public static Node alertContentText(String s) {
         var text = new Text(s);
