@@ -7,7 +7,6 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
-
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
@@ -23,12 +22,16 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
-import javafx.stage.*;
+import javafx.stage.Modality;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -41,18 +44,25 @@ public class AppWindowHelper {
             return;
         }
 
+        var xSet = new AtomicBoolean();
         stage.xProperty().addListener((observable, oldValue, newValue) -> {
             var n = newValue.doubleValue();
             var o = oldValue.doubleValue();
-            if (stage.isShowing() && areNumbersValid(o, n) && n == 0.0 && o != 0.0 && Math.abs(n - o) > 100) {
-                stage.setX(o);
+            if (stage.isShowing() && areNumbersValid(o, n)) {
+                if (!xSet.getAndSet(true) && !stage.isMaximized() && n <= 0.0 && o > 0.0 && Math.abs(n - o) > 100) {
+                    stage.setX(o);
+                }
             }
         });
+
+        var ySet = new AtomicBoolean();
         stage.yProperty().addListener((observable, oldValue, newValue) -> {
             var n = newValue.doubleValue();
             var o = oldValue.doubleValue();
-            if (stage.isShowing() && areNumbersValid(o, n) && n == 0.0 && o != 0.0 && Math.abs(n - o) > 20) {
-                stage.setY(o);
+            if (stage.isShowing() && areNumbersValid(o, n)) {
+                if (!ySet.getAndSet(true) && !stage.isMaximized() && n <= 0.0 && o > 0.0 && Math.abs(n - o) > 20) {
+                    stage.setY(o);
+                }
             }
         });
     }
@@ -172,7 +182,7 @@ public class AppWindowHelper {
             Alert a = AppWindowHelper.createEmptyAlert();
             AppFont.normal(a.getDialogPane());
             var s = (Stage) a.getDialogPane().getScene().getWindow();
-            fixInvalidStagePosition(new Stage());
+            fixInvalidStagePosition(s);
             s.setOnShown(event -> {
                 Platform.runLater(() -> {
                     clampWindow(s).ifPresent(rectangle2D -> {
