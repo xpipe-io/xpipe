@@ -96,6 +96,7 @@ public class AppWindowHelper {
         addIcons(stage);
         setupContent(stage, contentFunc, bindSize, loading);
         setupStylesheets(stage.getScene());
+        fixInvalidStagePosition(stage);
 
         if (AppPrefs.get() != null && AppPrefs.get().enforceWindowModality().get()) {
             stage.initModality(Modality.WINDOW_MODAL);
@@ -171,13 +172,9 @@ public class AppWindowHelper {
             Alert a = AppWindowHelper.createEmptyAlert();
             AppFont.normal(a.getDialogPane());
             var s = (Stage) a.getDialogPane().getScene().getWindow();
+            fixInvalidStagePosition(new Stage());
             s.setOnShown(event -> {
                 Platform.runLater(() -> {
-                    // On some platforms, e.g. KDE with wayland, the screen size is not known when the window is first shown
-                    // This fixes the alignment in these cases
-                    if (s.getX() == 0 && s.getY() == 0) {
-                        s.centerOnScreen();
-                    }
                     clampWindow(s).ifPresent(rectangle2D -> {
                         s.setX(rectangle2D.getMinX());
                         s.setY(rectangle2D.getMinY());
