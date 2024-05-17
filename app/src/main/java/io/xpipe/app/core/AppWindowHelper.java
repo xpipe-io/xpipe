@@ -51,7 +51,7 @@ public class AppWindowHelper {
         stage.yProperty().addListener((observable, oldValue, newValue) -> {
             var n = newValue.doubleValue();
             var o = oldValue.doubleValue();
-            if (stage.isShowing() && areNumbersValid(o, n) && n == 0.0 && o != 0.0 && Math.abs(n - o) > 100) {
+            if (stage.isShowing() && areNumbersValid(o, n) && n == 0.0 && o != 0.0 && Math.abs(n - o) > 20) {
                 stage.setY(o);
             }
         });
