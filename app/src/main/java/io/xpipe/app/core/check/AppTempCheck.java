@@ -12,9 +12,11 @@ public class AppTempCheck {
 
     private static void checkTemp(String tmpdir) {
         Path dir = null;
-        try {
-            dir = Path.of(tmpdir);
-        } catch (InvalidPathException ignored) {
+        if (tmpdir != null) {
+            try {
+                dir = Path.of(tmpdir);
+            } catch (InvalidPathException ignored) {
+            }
         }
 
         if (dir == null || !Files.exists(dir) || !Files.isDirectory(dir)) {
@@ -27,9 +29,11 @@ public class AppTempCheck {
     }
 
     public static void check() {
-        if (OsType.getLocal().equals(OsType.WINDOWS)) {
-            checkTemp(System.getProperty("java.io.tmpdir"));
-            checkTemp(System.getenv("TEMP"));
+        if (!OsType.getLocal().equals(OsType.WINDOWS)) {
+            return;
         }
+
+        checkTemp(System.getProperty("java.io.tmpdir"));
+        checkTemp(System.getenv("TEMP"));
     }
 }
