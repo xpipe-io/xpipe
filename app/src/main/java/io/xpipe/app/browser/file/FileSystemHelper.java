@@ -66,7 +66,7 @@ public class FileSystemHelper {
         }
     }
 
-    public static String resolveDirectoryPath(OpenFileSystemModel model, String path) throws Exception {
+    public static String resolveDirectoryPath(OpenFileSystemModel model, String path, boolean allowRewrite) throws Exception {
         if (path == null) {
             return null;
         }
@@ -90,14 +90,14 @@ public class FileSystemHelper {
             throw new IllegalArgumentException(String.format("Directory %s is not absolute", resolved));
         }
 
-        if (model.getFileSystem().fileExists(path)) {
+        if (allowRewrite && model.getFileSystem().fileExists(path)) {
             return FileNames.toDirectory(FileNames.getParent(path));
         }
 
         return FileNames.toDirectory(resolved);
     }
 
-    public static void validateDirectoryPath(OpenFileSystemModel model, String path) throws Exception {
+    public static void validateDirectoryPath(OpenFileSystemModel model, String path, boolean verifyExists) throws Exception {
         if (path == null) {
             return;
         }
@@ -111,7 +111,7 @@ public class FileSystemHelper {
             return;
         }
 
-        if (!model.getFileSystem().directoryExists(path)) {
+        if (verifyExists && !model.getFileSystem().directoryExists(path)) {
             throw ErrorEvent.expected(new IllegalArgumentException(String.format("Directory %s does not exist", path)));
         }
 

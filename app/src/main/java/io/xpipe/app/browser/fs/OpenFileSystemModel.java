@@ -200,7 +200,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
         cdSyncOrRetry(path, false).ifPresent(s -> cdSyncOrRetry(s, false));
     }
 
-    public Optional<String> cdSyncOrRetry(String path, boolean allowCommands) {
+    public Optional<String> cdSyncOrRetry(String path, boolean customInput) {
         if (Objects.equals(path, currentPath.get())) {
             return Optional.empty();
         }
@@ -233,7 +233,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
         }
 
         // Handle commands typed into navigation bar
-        if (allowCommands
+        if (customInput
                 && evaluatedPath != null
                 && !evaluatedPath.isBlank()
                 && !FileNames.isAbsolute(evaluatedPath)
@@ -263,7 +263,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
         // Evaluate optional links
         String resolvedPath;
         try {
-            resolvedPath = FileSystemHelper.resolveDirectoryPath(this, evaluatedPath);
+            resolvedPath = FileSystemHelper.resolveDirectoryPath(this, evaluatedPath, customInput);
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
             return Optional.ofNullable(currentPath.get());
@@ -274,7 +274,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
         }
 
         try {
-            FileSystemHelper.validateDirectoryPath(this, resolvedPath);
+            FileSystemHelper.validateDirectoryPath(this, resolvedPath, customInput);
             cdSyncWithoutCheck(path);
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
