@@ -154,12 +154,19 @@ public class AppWindowHelper {
             AppFont.normal(a.getDialogPane());
             var s = (Stage) a.getDialogPane().getScene().getWindow();
             s.setOnShown(event -> {
-                clampWindow(s).ifPresent(rectangle2D -> {
-                    s.setX(rectangle2D.getMinX());
-                    s.setY(rectangle2D.getMinY());
-                    // Somehow we have to set max size as setting the normal size does not work?
-                    s.setMaxWidth(rectangle2D.getWidth());
-                    s.setMaxHeight(rectangle2D.getHeight());
+                Platform.runLater(() -> {
+                    // On some platforms, e.g. KDE with wayland, the screen size is not known when the window is first shown
+                    // This fixes the alignment in these cases
+                    if (s.getX() == 0 && s.getY() == 0) {
+                        s.centerOnScreen();
+                    }
+                    clampWindow(s).ifPresent(rectangle2D -> {
+                        s.setX(rectangle2D.getMinX());
+                        s.setY(rectangle2D.getMinY());
+                        // Somehow we have to set max size as setting the normal size does not work?
+                        s.setMaxWidth(rectangle2D.getWidth());
+                        s.setMaxHeight(rectangle2D.getHeight());
+                    });
                 });
                 event.consume();
             });

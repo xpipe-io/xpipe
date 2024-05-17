@@ -83,19 +83,12 @@ public class InputHelper {
         target.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             var c = event.getCode();
             var list = List.of(
-                    KeyCode.LEFT,
-                    KeyCode.RIGHT,
-                    KeyCode.UP,
-                    KeyCode.DOWN,
                     KeyCode.SPACE,
                     KeyCode.ENTER,
                     KeyCode.SHIFT,
-                    KeyCode.TAB,
-                    KeyCode.NUMPAD2,
-                    KeyCode.NUMPAD4,
-                    KeyCode.NUMPAD6,
-                    KeyCode.NUMPAD8);
-            r.accept(list.stream().anyMatch(keyCode -> keyCode == c));
+                    KeyCode.TAB
+            );
+            r.accept(list.stream().anyMatch(keyCode -> keyCode == c) || event.getCode().isNavigationKey());
         });
         target.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
             r.accept(false);

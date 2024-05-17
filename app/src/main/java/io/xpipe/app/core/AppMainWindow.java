@@ -1,7 +1,6 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -29,7 +28,6 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AppMainWindow {
 
@@ -143,19 +141,15 @@ public class AppMainWindow {
             windowActive.set(false);
         });
 
-        AtomicBoolean shown = new AtomicBoolean(false);
         stage.setOnShown(event -> {
-            PlatformThread.runLaterIfNeeded(() -> {
-                // On some platforms, e.g. KDE with wayland, the screen size is not known when the window is first shown
-                // This fixes the alignment in these cases
-                if (state == null && !shown.get()) {
-                    Platform.runLater(() -> {
-                        stage.centerOnScreen();
-                    });
-                }
-                stage.requestFocus();
-                shown.set(true);
-            });
+            // On some platforms, e.g. KDE with wayland, the screen size is not known when the window is first shown
+            // This fixes the alignment in these cases
+            if (state == null && stage.getX() == 0 && stage.getY() == 0) {
+                Platform.runLater(() -> {
+                    stage.centerOnScreen();
+                });
+            }
+            stage.requestFocus();
         });
 
         stage.setOnCloseRequest(e -> {
