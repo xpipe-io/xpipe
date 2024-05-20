@@ -1,10 +1,10 @@
-## Conexões de shell personalizadas
+## Ligações shell personalizadas
 
 Abre um shell usando o comando personalizado, executando o comando dado no sistema host selecionado. Esta shell pode ser local ou remota.
 
-Observe que essa funcionalidade espera que o shell seja de um tipo padrão, como `cmd`, `bash`, etc. Se quiseres abrir quaisquer outros tipos de shells e comandos num terminal, podes utilizar o tipo de comando de terminal personalizado. A utilização de shells padrão permite-te também abrir esta ligação no navegador de ficheiros.
+Observa que essa funcionalidade espera que o shell seja de um tipo padrão, como `cmd`, `bash`, etc. Se quiseres abrir quaisquer outros tipos de shells e comandos num terminal, podes utilizar o tipo de comando de terminal personalizado. A utilização de shells padrão permite-te também abrir esta ligação no navegador de ficheiros.
 
-### Pedidos interactivos
+### Prompts interactivos
 
 O processo do shell pode expirar ou travar no caso de haver um prompt de entrada
 inesperado, como um prompt de senha. Portanto, deves sempre certificar-te de que não há prompts de entrada interativos.

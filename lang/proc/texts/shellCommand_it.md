@@ -13,7 +13,7 @@ Ad esempio, un comando come `ssh user@host` funzionerà bene se non è richiesta
 
 ### Gusci locali personalizzati
 
-In molti casi, è utile lanciare una shell con alcune opzioni che di solito sono disabilitate per impostazione predefinita, in modo da far funzionare correttamente alcuni script e comandi. Ad esempio:
+In molti casi, è utile lanciare una shell con alcune opzioni che di solito sono disabilitate per impostazione predefinita, al fine di far funzionare correttamente alcuni script e comandi. Ad esempio:
 
 -   [Espansione ritardata in
     cmd](https://ss64.com/nt/delayedexpansion.html)

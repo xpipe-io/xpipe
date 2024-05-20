@@ -1,6 +1,6 @@
 # RDP Remote-Anwendungen
 
-Du kannst RDP-Verbindungen in XPipe nutzen, um schnell entfernte Anwendungen und Skripte zu starten, ohne einen vollständigen Desktop zu öffnen. Damit das funktioniert, musst du jedoch die Liste der zulässigen Fernanwendungen auf deinem Server bearbeiten, da es sich um eine Art RDP handelt.
+Du kannst RDP-Verbindungen in XPipe nutzen, um entfernte Anwendungen und Skripte schnell zu starten, ohne einen vollständigen Desktop zu öffnen. Damit das funktioniert, musst du allerdings die Liste der zugelassenen Fernanwendungen auf deinem Server bearbeiten, da es sich um ein RDP-Verfahren handelt.
 
 ## RDP-Zulassungslisten
 
@@ -33,4 +33,4 @@ Wenn du XPipe auch das Ausführen von Skripten und das Öffnen von Terminalsitzu
 
 ## Sicherheitsüberlegungen
 
-Das macht deinen Server in keiner Weise unsicher, denn du kannst dieselben Anwendungen immer manuell ausführen, wenn du eine RDP-Verbindung startest. Erlaubt-Listen sind eher dazu gedacht, Clients daran zu hindern, jede Anwendung ohne Benutzereingabe sofort auszuführen. Letzten Endes liegt es an dir, ob du XPipe in dieser Hinsicht vertraust. Du kannst diese Verbindung ganz einfach starten. Das ist nur dann sinnvoll, wenn du eine der erweiterten Desktop-Integrationsfunktionen von XPipe nutzen willst.
+Das macht deinen Server in keiner Weise unsicher, denn du kannst die gleichen Anwendungen immer manuell ausführen, wenn du eine RDP-Verbindung startest. Die Zulassen-Listen sollen eher verhindern, dass Clients ohne Benutzereingabe sofort jede Anwendung ausführen. Letzten Endes liegt es an dir, ob du XPipe in dieser Hinsicht vertraust. Du kannst diese Verbindung ganz einfach starten. Das ist nur dann sinnvoll, wenn du eine der erweiterten Desktop-Integrationsfunktionen von XPipe nutzen willst.

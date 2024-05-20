@@ -13,7 +13,7 @@ Ein Befehl wie `ssh user@host` funktioniert hier zum Beispiel problemlos, solang
 
 ### Benutzerdefinierte lokale Shells
 
-In vielen Fällen ist es sinnvoll, eine Shell mit bestimmten Optionen zu starten, die normalerweise standardmäßig deaktiviert sind, damit einige Skripte und Befehle richtig funktionieren. Zum Beispiel:
+In vielen Fällen ist es nützlich, eine Shell mit bestimmten Optionen zu starten, die normalerweise standardmäßig deaktiviert sind, damit einige Skripte und Befehle richtig funktionieren. Zum Beispiel:
 
 -   [Verzögerte Erweiterung in
     cmd](https://ss64.com/nt/delayedexpansion.html)

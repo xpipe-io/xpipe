@@ -6,7 +6,7 @@
 
 Сервер RDP использует концепцию списков разрешений для обработки запуска приложений. По сути, это означает, что если список разрешений не отключен или конкретные приложения не были явно добавлены в список разрешений, запуск любых удаленных приложений напрямую будет неудачным.
 
-Ты можешь найти настройки разрешительного списка в реестре своего сервера по адресу `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList`.
+Настройки разрешительного списка ты можешь найти в реестре своего сервера по адресу `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList`.
 
 ### Разрешение всех приложений
 
@@ -29,7 +29,7 @@ New-ItemProperty -Path "$regKey\$appName" -Name "Path" -Value "$appPath" -Force
 New-ItemProperty -Path "$regKey\$appName" -Name "CommandLineSetting" -Value "1" -PropertyType DWord -Force
 ```
 
-Если ты хочешь разрешить XPipe также запускать скрипты и открывать терминальные сессии, тебе нужно добавить `C:\Windows\System32\cmd.exe` также в список разрешенных. 
+Если ты хочешь разрешить XPipe также запускать скрипты и открывать терминальные сессии, то тебе нужно добавить `C:\Windows\System32\cmd.exe` в список разрешенных также. 
 
 ## Соображения безопасности
 

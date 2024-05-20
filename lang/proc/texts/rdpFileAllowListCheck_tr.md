@@ -16,7 +16,7 @@ Tüm uzak uygulamaların doğrudan XPipe'dan başlatılmasına izin vermek için
 
 Alternatif olarak, listeye tek tek uzak uygulamalar da ekleyebilirsiniz. Bu sayede listelenen uygulamaları doğrudan XPipe'tan başlatabilirsiniz.
 
-`TSAppAllowList`'in `Applications` anahtarının altında, rastgele bir adla yeni bir anahtar oluşturun. İsim için tek gereklilik, "Uygulamalar" anahtarının alt anahtarları içinde benzersiz olmasıdır. Bu yeni anahtar, içinde şu değerlere sahip olmalıdır: `Name`, `Path` ve `CommandLineSetting`. Bunu PowerShell'de aşağıdaki komutlarla yapabilirsiniz:
+`TSAppAllowList`'in `Applications` anahtarının altında, rastgele bir adla yeni bir anahtar oluşturun. Ad için tek gereklilik, "Uygulamalar" anahtarının alt öğeleri içinde benzersiz olmasıdır. Bu yeni anahtar, içinde şu değerlere sahip olmalıdır: `Name`, `Path` ve `CommandLineSetting`. Bunu PowerShell'de aşağıdaki komutlarla yapabilirsiniz:
 
 ```
 $appName="Notepad"
@@ -29,7 +29,7 @@ New-ItemProperty -Path "$regKey\$appName" -Name "Path" -Value "$appPath" -Force
 New-ItemProperty -Path "$regKey\$appName" -Name "CommandLineSetting" -Value "1" -PropertyType DWord -Force
 ```
 
-XPipe'ın komut dosyaları çalıştırmasına ve terminal oturumları açmasına da izin vermek istiyorsanız, `C:\Windows\System32\cmd.exe` dosyasını da izin verilenler listesine eklemeniz gerekir. 
+XPipe'ın komut dosyaları çalıştırmasına ve terminal oturumları açmasına da izin vermek istiyorsanız, izin ver listesine `C:\Windows\System32\cmd.exe` dosyasını da eklemeniz gerekir. 
 
 ## Güvenlik hususları
 

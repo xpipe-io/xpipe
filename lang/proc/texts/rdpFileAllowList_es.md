@@ -16,7 +16,7 @@ Puedes desactivar la lista de permitidas para permitir que todas las aplicacione
 
 ### Añadir aplicaciones permitidas
 
-También puedes añadir aplicaciones remotas individuales a la lista. Esto te permitirá lanzar las aplicaciones de la lista directamente desde XPipe.
+Alternativamente, también puedes añadir aplicaciones remotas individuales a la lista. Esto te permitirá lanzar las aplicaciones de la lista directamente desde XPipe.
 
 En la clave `Aplicaciones` de `TSAppAllowList`, crea una nueva clave con un nombre arbitrario. El único requisito para el nombre es que sea único dentro de los hijos de la clave "Aplicaciones". Esta nueva clave debe contener los siguientes valores: `Nombre`, `Ruta` y `Configuración de la línea de comandos`. Puedes hacerlo en PowerShell con los siguientes comandos:
 
@@ -28,8 +28,8 @@ $regKey="HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAp
 Nuevo-elemento -Ruta "$regKey\$appName"
 Nuevo-elemento-Propiedad -Ruta "$regKey$$appName" -Nombre "Name" -Valor "$appName" -Force
 Nueva-Propiedad-Artículo -Ruta "$regKey\$NombreDeLaAplicacion" -Nombre "Ruta" -Valor "$rutaDeLaAplicacion" -Forzar
-Nuevo-Item-Propiedad -Ruta "$regKey\$NombreDeLaAplicacion" -Nombre "CommandLineSetting" -Valor "1" -PropertyType DWord -Force
-<código>`</código
+Nuevo-Item-Propiedad -Ruta "$regKey\$NombreDeLaAplicación" -Nombre "ConfiguraciónDeLíneaDeComandos" -Valor "1" -TipoDePropiedadDWord -Fuerza
+```
 
 Si quieres permitir que XPipe ejecute también scripts y abra sesiones de terminal, tienes que añadir también `C:\Windows\System32\cmd.exe` a la lista de permitidos.
 

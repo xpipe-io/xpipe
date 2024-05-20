@@ -2,7 +2,7 @@
 
 Abre un shell utilizando el comando personalizado ejecutando el comando dado en el sistema anfitrión seleccionado. Este shell puede ser local o remoto.
 
-Ten en cuenta que esta funcionalidad espera que el intérprete de comandos sea de tipo estándar, como `cmd`, `bash`, etc. Si quieres abrir cualquier otro tipo de shell y comandos en un terminal, puedes utilizar en su lugar el tipo de comando terminal personalizado. Si utilizas shells estándar, también podrás abrir esta conexión en el explorador de archivos.
+Ten en cuenta que esta funcionalidad espera que el shell sea de tipo estándar, como `cmd`, `bash`, etc. Si quieres abrir cualquier otro tipo de shell y comandos en un terminal, puedes utilizar en su lugar el tipo de comando terminal personalizado. Si utilizas shells estándar, también podrás abrir esta conexión en el explorador de archivos.
 
 ### Avisos interactivos
 
@@ -25,6 +25,6 @@ En muchos casos, es útil lanzar un intérprete de comandos con determinadas opc
 
 Esto se puede conseguir creando comandos de shell personalizados con, por ejemplo, los siguientes comandos:
 
--   <code>cmd /v</code
--   <código>powershell -ModoEjecución Bypass</código
--   <código>bash --posix</código
+-   `cmd /v`
+-   `powershell -EjecuciónModo Bypass`
+-   `bash --posix`

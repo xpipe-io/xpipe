@@ -13,10 +13,10 @@ Wenn du Pageant unter Windows verwendest, prüft XPipe zuerst, ob Pageant läuft
 Aufgrund der Natur von Pageant liegt es in deiner Verantwortung, dass es
 da du jedes Mal alle Schlüssel, die du hinzufügen möchtest, manuell eingeben musst.
 Wenn es läuft, übergibt XPipe die richtig benannte Pipe über
-`-oIdentityAgent=...` an ssh weiter, du musst keine eigenen Konfigurationsdateien einbinden.
+`-oIdentityAgent=...` an ssh weiter, du musst keine benutzerdefinierten Konfigurationsdateien einfügen.
 
 Beachte, dass es einige Implementierungsfehler im OpenSSH-Client gibt, die Probleme verursachen können
-wenn dein Benutzername Leerzeichen enthält oder zu lang ist.
+wenn dein Benutzername Leerzeichen enthält oder zu lang ist, solltest du die neueste Version verwenden.
 
 ### Pageant (Linux & macOS)
 

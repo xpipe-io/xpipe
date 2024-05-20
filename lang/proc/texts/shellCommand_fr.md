@@ -13,7 +13,7 @@ Par exemple, une commande comme `ssh user@host` fonctionnera bien ici tant qu'il
 
 ### Les interpréteurs de commandes locaux personnalisés
 
-Dans de nombreux cas, il est utile de lancer un shell avec certaines options qui sont généralement désactivées par défaut afin que certains scripts et certaines commandes fonctionnent correctement. Par exemple :
+Dans de nombreux cas, il est utile de lancer un shell avec certaines options qui sont généralement désactivées par défaut afin de faire fonctionner correctement certains scripts et certaines commandes. Par exemple :
 
 -   [Expansion retardée dans
     cmd](https://ss64.com/nt/delayedexpansion.html)

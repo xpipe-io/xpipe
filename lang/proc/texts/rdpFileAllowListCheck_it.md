@@ -6,7 +6,7 @@ Puoi utilizzare le connessioni RDP in XPipe per lanciare rapidamente applicazion
 
 Un server RDP utilizza il concetto di elenchi di permessi per gestire l'avvio delle applicazioni. Questo significa essenzialmente che, a meno che l'elenco dei permessi non sia disabilitato o che non siano state aggiunte esplicitamente applicazioni specifiche all'elenco dei permessi, l'avvio diretto di qualsiasi applicazione remota fallirà.
 
-Puoi trovare le impostazioni dell'elenco di permessi nel registro del tuo server in `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList`.
+Puoi trovare le impostazioni dell'elenco di permessi nel registro di sistema del tuo server in `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList`.
 
 ### Consentire tutte le applicazioni
 
@@ -16,7 +16,7 @@ Puoi disabilitare l'elenco dei permessi per consentire l'avvio di tutte le appli
 
 In alternativa, puoi anche aggiungere singole applicazioni remote all'elenco. In questo modo potrai lanciare le applicazioni elencate direttamente da XPipe.
 
-Sotto la chiave `Applications` di `TSAppAllowList`, crea una nuova chiave con un nome arbitrario. L'unico requisito per il nome è che sia unico tra i figli della chiave "Applications". Questa nuova chiave deve contenere i seguenti valori: `Name`, `Path` e `CommandLineSetting`. Puoi farlo in PowerShell con i seguenti comandi:
+Sotto la chiave `Applicazioni` di `TSAppAllowList`, crea una nuova chiave con un nome arbitrario. L'unico requisito per il nome è che sia unico tra i figli della chiave "Applications". Questa nuova chiave deve contenere i seguenti valori: `Name`, `Path` e `CommandLineSetting`. Puoi farlo in PowerShell con i seguenti comandi:
 
 ```
 $appName="Notepad"

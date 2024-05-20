@@ -1,8 +1,8 @@
 ### Não tens nada
 
-Desativa a autenticação `publickey`.
+Desabilita a autenticação por `chave pública`.
 
-### SSH-Agent
+### Agente SSH
 
 Caso as tuas identidades estejam armazenadas no SSH-Agent, o executável ssh pode usá-las se o agente for iniciado.
 O XPipe iniciará automaticamente o processo do agente se ele ainda não estiver em execução.
@@ -12,7 +12,7 @@ O XPipe iniciará automaticamente o processo do agente se ele ainda não estiver
 Caso estejas a utilizar o pageant no Windows, o XPipe irá verificar se o pageant está a ser executado primeiro.
 Devido à natureza do pageant, é da tua responsabilidade tê-lo
 a responsabilidade de o ter em execução, uma vez que tens de especificar manualmente todas as chaves que gostarias de adicionar de cada vez.
-Se estiver em execução, o XPipe passará o pipe nomeado apropriado via
+Se ele estiver em execução, o XPipe passará o pipe nomeado apropriado via
 `-oIdentityAgent=...` para o ssh, não tens de incluir quaisquer ficheiros de configuração personalizados.
 
 Nota que existem alguns bugs de implementação no cliente OpenSSH que podem causar problemas
@@ -33,7 +33,7 @@ Se misturares isso, o ssh apenas te dará mensagens de erro crípticas.
 
 ### Agente GPG
 
-Se as tuas identidades estão armazenadas, por exemplo, num smartcard, podes escolher fornecê-las ao cliente SSH através do `gpg-agent`.
+Se as tuas identidades estão armazenadas, por exemplo, num smartcard, podes escolher fornecê-las ao cliente SSH através do `agente GPG`.
 Esta opção habilitará automaticamente o suporte SSH do agente se ainda não estiver habilitado e reiniciará o daemon do agente GPG com as configurações corretas.
 
 ### Yubikey PIV

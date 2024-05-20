@@ -10,7 +10,7 @@ Um servidor RDP usa o conceito de listas de permissão para lidar com lançament
 
 Podes encontrar as definições da lista de permissões no registo do teu servidor em `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList`.
 
-### Permitir todas as aplicações
+### Permite todas as aplicações
 
 Podes desativar a lista de permissões para permitir que todas as aplicações remotas sejam iniciadas diretamente a partir do XPipe. Para tal, podes executar o seguinte comando no teu servidor em PowerShell: `Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList' -Name "fDisabledAllowList" -Value 1`.
 
@@ -21,15 +21,15 @@ Em alternativa, podes também adicionar aplicações remotas individuais à list
 Sob a chave `Applications` de `TSAppAllowList`, cria uma nova chave com um nome arbitrário. O único requisito para o nome é que ele seja exclusivo dentro dos filhos da chave "Applications". Essa nova chave deve ter os seguintes valores: `Name`, `Path` e `CommandLineSetting`. Podes fazer isto no PowerShell com os seguintes comandos:
 
 ```
-$appName="Bloco de Notas"
+$appName="Bloco de notas"
 $appPath="C:\Windows\System32\notepad.exe"
 
 $regKey="HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList\Applications"
 Novo item -Path "$regKey\$appName"
 Novo-ItemProperty -Path "$regKey\$appName" -Name "Nome" -Value "$appName" -Force
 Novo-ItemProperty -Path "$regKey\$appName" -Nome "Caminho" -Valor "$appPath" -Force
-Novo-ItemProperty -Path "$regKey\$appName" -Name "CommandLineSetting" -Value "1" -PropertyType DWord -Force
-<código>`</código>
+New-ItemProperty -Path "$regKey\$appName" -Name "CommandLineSetting" -Value "1" -PropertyType DWord -Force
+```
 
 Se quiseres permitir que o XPipe também execute scripts e abra sessões de terminal, tens de adicionar `C:\Windows\System32\cmd.exe` à lista de permissões também.
 

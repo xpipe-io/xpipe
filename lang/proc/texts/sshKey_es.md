@@ -26,7 +26,7 @@ XPipe iniciará automáticamente el proceso del agente si aún no se está ejecu
 ### Archivo de identidad
 
 También puedes especificar un archivo de identidad con una frase de contraseña opcional.
-Esta opción equivale a `ssh -i <archivo>`.
+Esta opción es equivalente a `ssh -i <archivo>`.
 
 Ten en cuenta que ésta debe ser la clave *privada*, no la pública.
 Si te confundes, ssh sólo te dará crípticos mensajes de error.

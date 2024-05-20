@@ -1,8 +1,8 @@
 ## 自定义 shell 连接
 
-在选定的主机系统上执行给定命令，使用自定义命令打开一个 shell。此 shell 可以是本地的，也可以是远程的。
+通过在选定主机系统上执行给定命令，使用自定义命令打开一个 shell。此 shell 可以是本地的，也可以是远程的。
 
-请注意，此功能希望 shell 是标准类型的，如 `cmd`, `bash` 等。如果你想在终端中打开任何其他类型的 shell 和命令，可以使用自定义终端命令类型来代替。使用标准 shell 还可以在文件浏览器中打开此连接。
+请注意，此功能希望 shell 是标准类型的，如 `cmd`、`bash` 等。如果你想在终端中打开任何其他类型的 shell 和命令，可以使用自定义终端命令类型来代替。使用标准 shell 还可以在文件浏览器中打开此连接。
 
 ### 交互式提示
 
@@ -25,6 +25,6 @@
 
 这可以通过创建自定义 shell 命令来实现，例如使用以下命令：
 
--   <代码>cmd /v</code
--   <代码>powershell -ExecutionMode Bypass</代码
--   <code>bash --posix</code
+-   `cmd /v`
+-   `powershell -ExecutionMode Bypass`
+-   `bash--posix`

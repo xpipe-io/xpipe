@@ -1,6 +1,6 @@
 ### Nessuno
 
-Disabilita l'autenticazione a `chiave pubblica`.
+Disabilita l'autenticazione `a chiave pubblica`.
 
 ### Agente SSH
 
@@ -45,7 +45,7 @@ Per poter utilizzare questa funzione, è necessario disporre di una versione agg
 
 ### Agente personalizzato
 
-Puoi anche utilizzare un agente personalizzato fornendo qui la posizione del socket o della named pipe.
+Puoi anche utilizzare un agente personalizzato fornendo la posizione del socket o della named pipe.
 Questo verrà passato attraverso l'opzione `IdentityAgent`.
 
 ### Libreria PKCS#11 personalizzata
