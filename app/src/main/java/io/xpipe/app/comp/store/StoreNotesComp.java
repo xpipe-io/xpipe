@@ -12,11 +12,10 @@ import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.storage.DataStorage;
 import javafx.application.Platform;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
-import javafx.geometry.Insets;
 import javafx.scene.control.Button;
-import javafx.scene.layout.Region;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -37,20 +36,50 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
                 .styleClass("notes-button")
                 .grow(false, true)
                 .hide(BindingsHelper.map(n, s -> s.getCommited() == null && s.getCurrent() == null))
-                .padding(new Insets(5))
                 .createStructure().get();
         button.prefWidthProperty().bind(button.heightProperty());
 
         var prop = new SimpleStringProperty(n.getValue().getCurrent());
-        var md = new MarkdownEditorComp(prop,"notes-" + wrapper.getName().getValue()).createStructure();
 
         var popover = new AtomicReference<Popover>();
+        button.setOnAction(e -> {
+            if (n.getValue().getCurrent() == null) {
+                return;
+            }
+
+            if (popover.get() != null && popover.get().isShowing()) {
+                e.consume();
+                return;
+            }
+
+            popover.set(createPopover(popover, prop));
+            popover.get().show(button);
+            e.consume();
+        });
+        prop.addListener((observable, oldValue, newValue) -> {
+            n.setValue(new StoreNotes(n.getValue().getCommited(), newValue));
+        });
+        n.addListener((observable, oldValue, s) -> {
+            prop.set(s.getCurrent());
+            if (s.getCurrent() != null && oldValue.getCommited() == null && oldValue.isCommited()) {
+                Platform.runLater(() -> {
+                    popover.set(createPopover(popover, prop));
+                    popover.get().show(button);
+                });
+            }
+        });
+        return new Structure(popover.get(), button);
+    }
+
+    private Popover createPopover(AtomicReference<Popover> ref, Property<String> prop) {
+        var n = wrapper.getNotes();
+        var md = new MarkdownEditorComp(prop, "notes-" + wrapper.getName().getValue()).createStructure();
         var dialog = new DialogComp() {
 
             @Override
             protected void finish() {
                 n.setValue(new StoreNotes(n.getValue().getCurrent(), n.getValue().getCurrent()));
-                popover.get().hide();
+                ref.get().hide();
             }
 
             @Override
@@ -68,7 +97,7 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
             @Override
             protected List<Comp<?>> customButtons() {
                 return List.of(new ButtonComp(AppI18n.observable("cancel"), () -> {
-                    popover.get().hide();
+                    ref.get().hide();
                 }));
             }
 
@@ -78,23 +107,25 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
             }
         }.createRegion();
 
-        popover.set(createPopover(dialog));
-        button.setOnAction(e -> {
-            if (n.getValue().getCurrent() == null) {
-                return;
+        var popover = new Popover(dialog);
+        popover.setCloseButtonEnabled(true);
+        popover.setHeaderAlwaysVisible(true);
+        popover.setDetachable(true);
+        popover.setTitle(wrapper.getName().getValue());
+        popover.setMaxWidth(400);
+        popover.setHeight(600);
+        popover.showingProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                n.setValue(new StoreNotes(n.getValue().getCommited(), n.getValue().getCommited()));
+                DataStorage.get().saveAsync();
+                ref.set(null);
             }
-
-            if (popover.get().isShowing()) {
-                e.consume();
-                return;
-            }
-
-            popover.get().show(button);
-            e.consume();
         });
+        AppFont.small(popover.getContentNode());
+
         md.getEditButton().addEventFilter(ActionEvent.ANY, event -> {
-            if (!popover.get().isDetached()) {
-                popover.get().setDetached(true);
+            if (!popover.isDetached()) {
+                popover.setDetached(true);
                 event.consume();
                 Platform.runLater(() -> {
                     Platform.runLater(() -> {
@@ -103,35 +134,7 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
                 });
             }
         });
-        popover.get().showingProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue) {
-                n.setValue(new StoreNotes(n.getValue().getCommited(), n.getValue().getCommited()));
-                DataStorage.get().saveAsync();
-            }
-        });
-        prop.addListener((observable, oldValue, newValue) -> {
-            n.setValue(new StoreNotes(n.getValue().getCommited(), newValue));
-        });
-        n.addListener((observable, oldValue, s) -> {
-            prop.set(s.getCurrent());
-            if (s.getCurrent() != null && oldValue.getCommited() == null && oldValue.isCommited()) {
-                Platform.runLater(() -> {
-                    popover.get().show(button);
-                });
-            }
-        });
-        return new Structure(popover.get(), button);
-    }
 
-    private Popover createPopover(Region content) {
-        var popover = new Popover(content);
-        popover.setCloseButtonEnabled(true);
-        popover.setHeaderAlwaysVisible(true);
-        popover.setDetachable(true);
-        popover.setTitle(wrapper.getName().getValue());
-        popover.setMaxWidth(400);
-        popover.setHeight(600);
-        AppFont.small(popover.getContentNode());
         return popover;
     }
 

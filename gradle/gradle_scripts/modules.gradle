@@ -42,6 +42,12 @@ extraJavaModuleInfo {
         mergeJar('com.vladsch.flexmark:flexmark-util-collection')
         mergeJar('com.vladsch.flexmark:flexmark-util-misc')
         mergeJar('com.vladsch.flexmark:flexmark-util-visitor')
+        mergeJar('com.vladsch.flexmark:flexmark-ext-tables')
+        mergeJar('com.vladsch.flexmark:flexmark-ext-gfm-strikethrough')
+        mergeJar('com.vladsch.flexmark:flexmark-ext-gfm-tasklist')
+        mergeJar('com.vladsch.flexmark:flexmark-ext-footnotes')
+        mergeJar('com.vladsch.flexmark:flexmark-ext-definition')
+        mergeJar('com.vladsch.flexmark:flexmark-ext-anchorlink')
         exportAllPackages()
     }
 }

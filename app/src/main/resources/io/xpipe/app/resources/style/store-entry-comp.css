@@ -76,7 +76,7 @@
     -fx-opacity: 1.0;
 }
 
-.expand-button:hover, .root:key-navigation .expand-button:focused, .quick-access-button:hover, .root:key-navigation .quick-access-button:focused {
+.notes-button:hover, .root:key-navigation .notes-button:focused, .expand-button:hover, .root:key-navigation .expand-button:focused, .quick-access-button:hover, .root:key-navigation .quick-access-button:focused {
     -fx-background-color: -color-neutral-muted;
 }
 

@@ -662,17 +662,21 @@ html {
     margin-bottom: 16px;
 }
 
-.markdown-body table th {
+.markdown-body table {
+    color: #24292f;
+}
+
+.markdown-body table thead th {
     font-weight: 600;
 }
 
-.markdown-body table th,
-.markdown-body table td {
-    padding: 6px 13px;
+.markdown-body table thead th,
+.markdown-body table tbody td {
+    padding: 6px 13px !important;
     border: 1px solid #d0d7de;
 }
 
-.markdown-body table tr {
+.markdown-body table thead tr .markdown-body table tbody tr {
     background-color: #ffffff;
     border-top: 1px solid hsla(210, 18%, 87%, 1);
 }

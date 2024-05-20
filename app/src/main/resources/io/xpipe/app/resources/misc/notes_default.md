@@ -99,28 +99,13 @@ doc](#an-h2-header). Here's a footnote [^1].
 
 Tables can look like this:
 
-size  material      color
-----  ------------  ------------
-9     leather       brown
-10    hemp canvas   natural
-11    glass         transparent
+| size | material    | color       |
+|------|-------------|-------------|
+| 9    | leather     | brown       |
+| 10   | hemp canvas | natural     |
+| 11   | glass       | transparent |
 
 Table: Shoes, their sizes, and what they're made of
-
-(The above is the caption for the table.) Pandoc also supports
-multi-line tables:
-
---------  -----------------------
-keyword   text
---------  -----------------------
-red       Sunsets, apples, and
-other red or reddish
-things.
-
-green     Leaves, grass, frogs
-and other things it's
-not easy being.
---------  -----------------------
 
 A horizontal rule follows.
 
@@ -146,7 +131,7 @@ Here's a "line block":
 
 and images can be specified like so:
 
-![example image](example-image.jpg "An exemplary image")
+![example image](__IMAGE__ "An exemplary image")
 
 Inline math equations go in like so: $\omega = d\phi / dt$. Display
 math should get its own line and be put in in double-dollarsigns:
