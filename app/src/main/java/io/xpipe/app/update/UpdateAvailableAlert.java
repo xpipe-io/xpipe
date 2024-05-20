@@ -3,7 +3,8 @@ package io.xpipe.app.update;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
-
+import io.xpipe.app.util.Hyperlinks;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
@@ -44,6 +45,13 @@ public class UpdateAvailableAlert {
                         alert.getDialogPane().setContent(markdown);
                         alert.getButtonTypes()
                                 .add(new ButtonType(AppI18n.get("install"), ButtonBar.ButtonData.OK_DONE));
+                        var visit = new ButtonType(AppI18n.get("checkOutUpdate"), ButtonBar.ButtonData.FINISH);
+                        alert.getButtonTypes().add(visit);
+                        var button = alert.getDialogPane().lookupButton(visit);
+                        button.addEventFilter(ActionEvent.ANY, event -> {
+                            Hyperlinks.open(uh.getPreparedUpdate().getValue().getReleaseUrl());
+                            event.consume();
+                        });
                     }
 
                     alert.getButtonTypes().add(new ButtonType(AppI18n.get("ignore"), ButtonBar.ButtonData.NO));
