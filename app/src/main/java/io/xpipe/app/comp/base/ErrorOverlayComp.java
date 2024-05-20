@@ -48,7 +48,8 @@ public class ErrorOverlayComp extends SimpleComp {
                             return new StackPane(graphic);
                         }),
                         null,
-                        () -> {}));
+                        () -> {},
+                        false));
             });
         });
         content.addListener((observable, oldValue, newValue) -> {

@@ -14,6 +14,8 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -81,6 +83,7 @@ public class ModalOverlayComp extends SimpleComp {
                     finishButton.setOnAction(event -> {
                         newValue.onFinish.run();
                         overlayContent.setValue(null);
+                        event.consume();
                     });
 
                     var buttonBar = new ButtonBar();
@@ -105,6 +108,16 @@ public class ModalOverlayComp extends SimpleComp {
                 });
                 modal.show(modalBox);
 
+                if (newValue.finishOnEnter) {
+                    modalBox.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                        if (event.getCode() == KeyCode.ENTER) {
+                            newValue.onFinish.run();
+                            overlayContent.setValue(null);
+                            event.consume();
+                        }
+                    });
+                }
+
                 // Wait 2 pulses before focus so that the scene can be assigned to r
                 Platform.runLater(() -> {
                     Platform.runLater(() -> {
@@ -124,5 +137,6 @@ public class ModalOverlayComp extends SimpleComp {
         Comp<?> graphic;
         String finishKey;
         Runnable onFinish;
+        boolean finishOnEnter;
     }
 }

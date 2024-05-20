@@ -11,12 +11,10 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.process.OsType;
-
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
-
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -66,12 +64,13 @@ public class NewItemAction implements BrowserAction, BranchAction {
                                             var creationName = new TextField();
                                             creationName.textProperty().bindBidirectional(name);
                                             return creationName;
-                                        }),
+                                        }).prefWidth(350),
                                         null,
                                         "finish",
                                         () -> {
                                             model.createFileAsync(name.getValue());
-                                        }));
+                                        },
+                                        true));
                     }
 
                     @Override
@@ -95,12 +94,13 @@ public class NewItemAction implements BrowserAction, BranchAction {
                                             var creationName = new TextField();
                                             creationName.textProperty().bindBidirectional(name);
                                             return creationName;
-                                        }),
+                                        }).prefWidth(350),
                                         null,
                                         "finish",
                                         () -> {
                                             model.createDirectoryAsync(name.getValue());
-                                        }));
+                                        },
+                                        true));
                     }
 
                     @Override
@@ -132,7 +132,8 @@ public class NewItemAction implements BrowserAction, BranchAction {
                                         "finish",
                                         () -> {
                                             model.createLinkAsync(linkName.getValue(), target.getValue());
-                                        }));
+                                        },
+                                        true));
                     }
 
                     @Override
