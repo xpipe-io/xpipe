@@ -20,6 +20,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
 
     protected Region createContent() {
         var name = createName().createRegion();
+        var notes = new StoreNotesComp(wrapper).createRegion();
 
         var grid = new GridPane();
         grid.setHgap(7);
@@ -29,7 +30,10 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         grid.add(storeIcon, 0, 0, 1, 2);
         grid.getColumnConstraints().add(new ColumnConstraints(66));
 
-        grid.add(name, 1, 0);
+        var nameAndNotes = new HBox(name, notes);
+        nameAndNotes.setSpacing(8);
+        nameAndNotes.setAlignment(Pos.CENTER_LEFT);
+        grid.add(nameAndNotes, 1, 0);
         grid.add(createSummary(), 1, 1);
         var nameCC = new ColumnConstraints();
         nameCC.setMinWidth(100);

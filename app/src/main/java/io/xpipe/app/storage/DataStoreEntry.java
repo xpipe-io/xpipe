@@ -68,6 +68,9 @@ public class DataStoreEntry extends StorageElement {
     @Setter
     Set<DataStoreEntry> childrenCache = null;
 
+    @NonFinal
+    String notes;
+
     private DataStoreEntry(
             Path directory,
             UUID uuid,
@@ -81,7 +84,8 @@ public class DataStoreEntry extends StorageElement {
             Configuration configuration,
             JsonNode storePersistentState,
             boolean expanded,
-            DataStoreColor color) {
+            DataStoreColor color,
+            String notes) {
         super(directory, uuid, name, lastUsed, lastModified, dirty);
         this.categoryUuid = categoryUuid;
         this.store = DataStorageParser.storeFromNode(storeNode);
@@ -94,6 +98,7 @@ public class DataStoreEntry extends StorageElement {
                 ? DataStoreProviders.byStoreClass(store.getClass()).orElse(null)
                 : null;
         this.storePersistentStateNode = storePersistentState;
+        this.notes = notes;
     }
 
     private DataStoreEntry(
@@ -152,6 +157,7 @@ public class DataStoreEntry extends StorageElement {
                 Configuration.defaultConfiguration(),
                 null,
                 false,
+                null,
                 null);
         return entry;
     }
@@ -168,7 +174,8 @@ public class DataStoreEntry extends StorageElement {
             Configuration configuration,
             JsonNode storePersistentState,
             boolean expanded,
-            DataStoreColor color) {
+            DataStoreColor color,
+            String notes) {
         return new DataStoreEntry(
                 directory,
                 uuid,
@@ -182,7 +189,8 @@ public class DataStoreEntry extends StorageElement {
                 configuration,
                 storePersistentState,
                 expanded,
-                color);
+                color,
+                notes);
     }
 
     public static Optional<DataStoreEntry> fromDirectory(Path dir) throws Exception {
@@ -191,6 +199,7 @@ public class DataStoreEntry extends StorageElement {
         var entryFile = dir.resolve("entry.json");
         var storeFile = dir.resolve("store.json");
         var stateFile = dir.resolve("state.json");
+        var notesFile = dir.resolve("notes.md");
         if (!Files.exists(entryFile) || !Files.exists(storeFile)) {
             return Optional.empty();
         }
@@ -238,6 +247,14 @@ public class DataStoreEntry extends StorageElement {
                 })
                 .orElse(null);
 
+        String notes = null;
+        if (Files.exists(notesFile)) {
+            notes = Files.readString(notesFile);
+        }
+        if (notes != null && notes.isBlank()) {
+            notes = null;
+        }
+
         // Store loading is prone to errors.
         JsonNode storeNode = null;
         try {
@@ -256,7 +273,9 @@ public class DataStoreEntry extends StorageElement {
                 configuration,
                 persistentState,
                 expanded,
-                color));
+                color,
+                notes
+        ));
     }
 
     @Override
@@ -363,12 +382,26 @@ public class DataStoreEntry extends StorageElement {
         Files.writeString(directory.resolve("state.json"), stateString);
         Files.writeString(directory.resolve("entry.json"), entryString);
         Files.writeString(directory.resolve("store.json"), storeString);
+        var notesFile = directory.resolve("notes.md");
+        if (Files.exists(notesFile) && notes == null) {
+            Files.delete(notesFile);
+        } else {
+            Files.writeString(notesFile, notes);
+        }
         dirty = false;
     }
 
     public void setExpanded(boolean expanded) {
         var changed = expanded != this.expanded;
         this.expanded = expanded;
+        if (changed) {
+            notifyUpdate(false, true);
+        }
+    }
+
+    public void setNotes(String newNotes) {
+        var changed = !Objects.equals(notes, newNotes);
+        this.notes = newNotes;
         if (changed) {
             notifyUpdate(false, true);
         }

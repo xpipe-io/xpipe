@@ -72,6 +72,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
                             return grid.getWidth() / 2.5;
                         },
                         grid.widthProperty()));
+        var notes = new StoreNotesComp(wrapper).createRegion();
 
         if (showIcon) {
             var storeIcon = createIcon(30, 24);
@@ -92,7 +93,8 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         nameCC.setMinWidth(100);
         nameCC.setHgrow(Priority.ALWAYS);
         grid.getColumnConstraints().addAll(nameCC);
-        var nameBox = new HBox(name);
+        var nameBox = new HBox(name, notes);
+        nameBox.setSpacing(8);
         nameBox.setAlignment(Pos.CENTER_LEFT);
         grid.addRow(0, nameBox);
 

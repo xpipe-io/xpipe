@@ -39,6 +39,7 @@ public class StoreEntryWrapper {
     private final Property<DataStoreColor> color = new SimpleObjectProperty<>();
     private final Property<StoreCategoryWrapper> category = new SimpleObjectProperty<>();
     private final Property<String> summary = new SimpleObjectProperty<>();
+    private final Property<StoreNotes> notes;
 
     public StoreEntryWrapper(DataStoreEntry entry) {
         this.entry = entry;
@@ -60,6 +61,7 @@ public class StoreEntryWrapper {
                     actionProviders.put(dataStoreActionProvider, new SimpleBooleanProperty(true));
                 });
         this.defaultActionProvider = new SimpleObjectProperty<>();
+        this.notes = new SimpleObjectProperty<>(new StoreNotes(entry.getNotes(), entry.getNotes()));
         setupListeners();
     }
 
@@ -96,6 +98,12 @@ public class StoreEntryWrapper {
         entry.addListener(() -> PlatformThread.runLaterIfNeeded(() -> {
             update();
         }));
+
+        notes.addListener((observable, oldValue, newValue) -> {
+            if (newValue.isCommited()) {
+                entry.setNotes(newValue.getCurrent());
+            }
+        });
     }
 
     public void update() {
@@ -120,6 +128,7 @@ public class StoreEntryWrapper {
             cache.setValue(new HashMap<>(entry.getStoreCache()));
         }
         color.setValue(entry.getColor());
+        notes.setValue(new StoreNotes(entry.getNotes(), entry.getNotes()));
 
         busy.setValue(entry.isInRefresh());
         deletable.setValue(entry.getConfiguration().isDeletable()

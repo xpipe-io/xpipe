@@ -1,12 +1,3 @@
-.popover {
-    -fx-background-radius: 0;
-}
-
-.popover > .content {
-    -fx-padding: 10px 0 0 0;
-    -fx-background-radius: 4px;
-}
-
 .store-mini-list-comp > * > * > .content {
     -fx-spacing: 0.5em;
 }

@@ -1,0 +1,31 @@
+.popover {
+    -fx-background-radius: 5;
+}
+
+.popover > .content {
+    -fx-padding: 1;
+    -fx-background-radius: 5px;
+}
+
+.popover > .content > .title > .icon {
+    -fx-padding: 10 10 0 0;
+    -fx-background-color: transparent;
+}
+
+.popover > .content > .title > .text {
+}
+
+.popover > .content > .title > .icon:hover > .graphics * {
+    -fx-fill: -color-neutral-muted;
+}
+
+.popover > .content > .title  {
+    -fx-background-color: -color-bg-subtle;
+    -fx-background-radius: 5 5 0 0;
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: -color-border-default;
+}
+
+.popover > .content > .title > .text {
+    -fx-padding: 10 0 0 0;
+}

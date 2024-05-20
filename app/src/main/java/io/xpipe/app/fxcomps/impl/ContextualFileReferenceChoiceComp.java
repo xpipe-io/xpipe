@@ -52,7 +52,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
             this.fileSystem.setValue(val);
         });
         this.fileSystem.addListener((observable, oldValue, newValue) -> {
-            fileSystem.setValue(newValue.get() != null ? newValue.get().ref() : null);
+            fileSystem.setValue(newValue != null ? newValue.get().ref() : null);
         });
         this.filePath = filePath;
     }

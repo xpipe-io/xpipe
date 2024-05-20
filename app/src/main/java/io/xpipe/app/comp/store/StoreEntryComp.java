@@ -1,10 +1,8 @@
 package io.xpipe.app.comp.store;
 
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
-import io.xpipe.app.core.App;
-import io.xpipe.app.core.AppActionLinkDetector;
-import io.xpipe.app.core.AppFont;
-import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.*;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
@@ -12,13 +10,13 @@ import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.*;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.*;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableDoubleValue;
@@ -29,13 +27,11 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-
-import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -422,6 +418,14 @@ public abstract class StoreEntryComp extends SimpleComp {
             contextMenu.getItems().add(color);
         }
 
+        var notes = new MenuItem(AppI18n.get("addNotes"), new FontIcon("mdi2n-note-text"));
+        notes.setOnAction(event -> {
+            wrapper.getNotes().setValue(new StoreNotes(null, getDefaultNotes()));
+            event.consume();
+        });
+        notes.visibleProperty().bind(BindingsHelper.map(wrapper.getNotes(), s -> s.getCommited() == null));
+        contextMenu.getItems().add(notes);
+
         var del = new MenuItem(AppI18n.get("remove"), new FontIcon("mdal-delete_outline"));
         del.disableProperty()
                 .bind(Bindings.createBooleanBinding(
@@ -439,9 +443,15 @@ public abstract class StoreEntryComp extends SimpleComp {
         return contextMenu;
     }
 
-    protected ColumnConstraints createShareConstraint(Region r, double share) {
-        var cc = new ColumnConstraints();
-        cc.prefWidthProperty().bind(Bindings.createDoubleBinding(() -> r.getWidth() * share, r.widthProperty()));
-        return cc;
+
+    private static String DEFAULT_NOTES = null;
+
+    private static String getDefaultNotes() {
+        if (DEFAULT_NOTES == null) {
+            AppResources.with(AppResources.XPIPE_MODULE, "misc/notes_default.md", f -> {
+                DEFAULT_NOTES = Files.readString(f);
+            });
+        }
+        return DEFAULT_NOTES;
     }
 }
