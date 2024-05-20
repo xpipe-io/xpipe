@@ -1,7 +1,5 @@
 package io.xpipe.app.comp.store;
 
-import io.xpipe.app.storage.DataStoreEntry;
-
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
@@ -104,12 +102,6 @@ public interface StoreSortMode {
         }
     };
     List<StoreSortMode> ALL = List.of(ALPHABETICAL_DESC, ALPHABETICAL_ASC, DATE_DESC, DATE_ASC);
-
-    static Stream<DataStoreEntry> flatten(StoreSection section) {
-        return Stream.concat(
-                Stream.of(section.getWrapper().getEntry()),
-                section.getAllChildren().stream().flatMap(section1 -> flatten(section1)));
-    }
 
     static Optional<StoreSortMode> fromId(String id) {
         return ALL.stream()

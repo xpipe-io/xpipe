@@ -94,7 +94,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         nameCC.setHgrow(Priority.ALWAYS);
         grid.getColumnConstraints().addAll(nameCC);
         var nameBox = new HBox(name, notes);
-        nameBox.setSpacing(8);
+        nameBox.setSpacing(1);
         nameBox.setAlignment(Pos.CENTER_LEFT);
         grid.addRow(0, nameBox);
 

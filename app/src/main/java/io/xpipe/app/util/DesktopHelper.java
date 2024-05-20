@@ -59,6 +59,10 @@ public class DesktopHelper {
     }
 
     public static void browsePathLocal(Path file) {
+        if (file == null) {
+            return;
+        }
+
         if (!Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
             return;
         }

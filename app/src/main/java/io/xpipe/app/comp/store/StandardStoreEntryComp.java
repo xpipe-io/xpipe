@@ -31,7 +31,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         grid.getColumnConstraints().add(new ColumnConstraints(66));
 
         var nameAndNotes = new HBox(name, notes);
-        nameAndNotes.setSpacing(8);
+        nameAndNotes.setSpacing(1);
         nameAndNotes.setAlignment(Pos.CENTER_LEFT);
         grid.add(nameAndNotes, 1, 0);
         grid.add(createSummary(), 1, 1);

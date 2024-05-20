@@ -348,8 +348,11 @@ public class DataStoreEntry extends StorageElement {
     }
 
     public void setCategoryUuid(UUID categoryUuid) {
+        var changed = !Objects.equals(this.categoryUuid, categoryUuid);
         this.categoryUuid = categoryUuid;
-        notifyUpdate(false, true);
+        if (changed) {
+            notifyUpdate(false, true);
+        }
     }
 
     @Override
@@ -388,7 +391,7 @@ public class DataStoreEntry extends StorageElement {
         var notesFile = directory.resolve("notes.md");
         if (Files.exists(notesFile) && notes == null) {
             Files.delete(notesFile);
-        } else {
+        } else if (notes != null) {
             Files.writeString(notesFile, notes);
         }
         dirty = false;

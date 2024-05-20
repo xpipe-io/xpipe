@@ -413,6 +413,12 @@ public abstract class DataStorage {
         if (!newChildren.isEmpty()) {
             e.setExpanded(true);
         }
+        // Force instant to be later in case we are really quick
+        ThreadHelper.sleep(1);
+        toAdd.forEach(nc -> {
+            // Update after parent entry
+            nc.get().notifyUpdate(false, true);
+        });
 
         deleteWithChildren(toRemove.toArray(DataStoreEntry[]::new));
         addStoreEntriesIfNotPresent(toAdd.stream().map(DataStoreEntryRef::get).toArray(DataStoreEntry[]::new));
@@ -535,12 +541,14 @@ public abstract class DataStorage {
             return;
         }
 
-        for (DataStoreEntry e : es) {
+        var toAdd = Arrays.stream(es).filter(e -> {
             if (storeEntriesSet.contains(e)
                     || getStoreEntryIfPresent(e.getStore(), false).isPresent()) {
-                return;
+                return false;
             }
-
+            return true;
+        }).toList();
+        for (DataStoreEntry e : toAdd) {
             var syntheticParent = getSyntheticParent(e);
             if (syntheticParent.isPresent()) {
                 addStoreEntryIfNotPresent(syntheticParent.get());
@@ -558,8 +566,8 @@ public abstract class DataStorage {
                 p.setChildrenCache(null);
             });
         }
-        this.listeners.forEach(l -> l.onStoreAdd(es));
-        for (DataStoreEntry e : es) {
+        this.listeners.forEach(l -> l.onStoreAdd(toAdd.toArray(DataStoreEntry[]::new)));
+        for (DataStoreEntry e : toAdd) {
             e.initializeEntry();
         }
         refreshValidities(true);
