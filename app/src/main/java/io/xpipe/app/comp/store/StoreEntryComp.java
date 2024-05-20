@@ -17,7 +17,6 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.*;
-import io.xpipe.core.util.XPipeInstallation;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableDoubleValue;
@@ -450,7 +449,7 @@ public abstract class StoreEntryComp extends SimpleComp {
     private static String getDefaultNotes() {
         if (DEFAULT_NOTES == null) {
             AppResources.with(AppResources.XPIPE_MODULE, "misc/notes_default.md", f -> {
-                DEFAULT_NOTES = Files.readString(f).replace("__IMAGE__", XPipeInstallation.getLocalDefaultInstallationIcon().toString());
+                DEFAULT_NOTES = Files.readString(f);
             });
         }
         return DEFAULT_NOTES;

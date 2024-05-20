@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Value
 public class DataStoreEntry extends StorageElement {
@@ -353,7 +354,9 @@ public class DataStoreEntry extends StorageElement {
 
     @Override
     public Path[] getShareableFiles() {
-        return new Path[] {directory.resolve("store.json"), directory.resolve("entry.json")};
+        var notes = directory.resolve("notes.md");
+        var list = List.of(directory.resolve("store.json"), directory.resolve("entry.json"), notes);
+        return Stream.concat(list.stream(), Files.exists(notes) ? Stream.of(notes) : Stream.of()).toArray(Path[]::new);
     }
 
     public void writeDataToDisk() throws Exception {
