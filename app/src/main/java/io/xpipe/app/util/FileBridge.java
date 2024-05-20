@@ -95,8 +95,15 @@ public class FileBridge {
             if (e.hasChanged()) {
                 event("Registering change for file " + TEMP.relativize(e.file) + " for editor entry " + e.getName());
                 e.registerChange();
+                var expectedSize = Files.size(e.file);
                 try (var in = Files.newInputStream(e.file)) {
-                    e.writer.accept(in, (long) in.available());
+                    var actualSize = (long) in.available();
+                    if (expectedSize != actualSize) {
+                        event("Expected file size " + expectedSize + " but got size " + actualSize + ". Ignoring change ...");
+                        return;
+                    }
+
+                    e.writer.accept(in, actualSize);
                 }
             }
         } catch (Exception ex) {
