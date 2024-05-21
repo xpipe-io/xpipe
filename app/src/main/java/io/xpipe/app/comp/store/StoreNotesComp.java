@@ -73,7 +73,7 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
 
     private Popover createPopover(AtomicReference<Popover> ref, Property<String> prop) {
         var n = wrapper.getNotes();
-        var md = new MarkdownEditorComp(prop, "notes-" + wrapper.getName().getValue()).createStructure();
+        var md = new MarkdownEditorComp(prop, "notes-" + wrapper.getName().getValue()).prefWidth(600).prefHeight(600).createStructure();
         var dialog = new DialogComp() {
 
             @Override
@@ -112,8 +112,6 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
         popover.setHeaderAlwaysVisible(true);
         popover.setDetachable(true);
         popover.setTitle(wrapper.getName().getValue());
-        popover.setMaxWidth(400);
-        popover.setHeight(600);
         popover.showingProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
                 n.setValue(new StoreNotes(n.getValue().getCommited(), n.getValue().getCommited()));

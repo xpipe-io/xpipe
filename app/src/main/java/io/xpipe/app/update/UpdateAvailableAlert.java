@@ -31,7 +31,7 @@ public class UpdateAvailableAlert {
                     alert.setTitle(AppI18n.get("updateReadyAlertTitle"));
                     alert.setAlertType(Alert.AlertType.NONE);
                     var markdown =
-                            new MarkdownComp(u.getBody() != null ? u.getBody() : "", s -> "&nbsp;" + s).createRegion();
+                            new MarkdownComp(u.getBody() != null ? u.getBody() : "", s -> s).createRegion();
                     alert.getButtonTypes().clear();
                     var updaterContent = uh.createInterface();
                     if (updaterContent != null) {

@@ -46,7 +46,7 @@ public class UpdateChangelogAlert {
                     alert.setAlertType(Alert.AlertType.NONE);
                     alert.initModality(Modality.NONE);
 
-                    var markdown = new MarkdownComp(update.getRawDescription(), s -> "&nbsp;" + s).createRegion();
+                    var markdown = new MarkdownComp(update.getRawDescription(), s -> s).createRegion();
                     alert.getDialogPane().setContent(markdown);
 
                     alert.getButtonTypes().add(new ButtonType(AppI18n.get("ok"), ButtonBar.ButtonData.OK_DONE));

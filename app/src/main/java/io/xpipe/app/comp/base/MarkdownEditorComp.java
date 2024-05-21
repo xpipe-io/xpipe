@@ -50,6 +50,8 @@ public class MarkdownEditorComp extends Comp<MarkdownEditorComp.Structure> {
         pane.setPickOnBounds(false);
         AnchorPane.setTopAnchor(editButton, 10.0);
         AnchorPane.setRightAnchor(editButton, 10.0);
+        markdown.prefWidthProperty().bind(pane.prefWidthProperty());
+        markdown.prefHeightProperty().bind(pane.prefHeightProperty());
         return new Structure(pane, markdown, editButton);
     }
 
