@@ -358,7 +358,7 @@ public class DataStoreEntry extends StorageElement {
     @Override
     public Path[] getShareableFiles() {
         var notes = directory.resolve("notes.md");
-        var list = List.of(directory.resolve("store.json"), directory.resolve("entry.json"), notes);
+        var list = List.of(directory.resolve("store.json"), directory.resolve("entry.json"));
         return Stream.concat(list.stream(), Files.exists(notes) ? Stream.of(notes) : Stream.of()).toArray(Path[]::new);
     }
 

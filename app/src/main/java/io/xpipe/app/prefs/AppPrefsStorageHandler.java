@@ -101,7 +101,7 @@ public class AppPrefsStorageHandler {
             TrackEvent.debug("Loading preferences value for key " + id + " from value " + tree);
             return JacksonMapper.getDefault().treeToValue(tree, type);
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).omit().handle();
+            ErrorEvent.fromThrowable(ex).expected().omit().handle();
             return defaultObject;
         }
     }
