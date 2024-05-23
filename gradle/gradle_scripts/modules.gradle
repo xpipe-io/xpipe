@@ -32,6 +32,8 @@ extraJavaModuleInfo {
 
 extraJavaModuleInfo {
     module("com.vladsch.flexmark:flexmark", "com.vladsch.flexmark") {
+        mergeJar('com.vladsch.flexmark:flexmark-util')
+        mergeJar('com.vladsch.flexmark:flexmark-util-options')
         mergeJar('com.vladsch.flexmark:flexmark-util-data')
         mergeJar('com.vladsch.flexmark:flexmark-util-format')
         mergeJar('com.vladsch.flexmark:flexmark-util-ast')
