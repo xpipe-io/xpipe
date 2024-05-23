@@ -44,11 +44,17 @@ public class AppProperties {
     public AppProperties() {
         var appDir = Path.of(System.getProperty("user.dir")).resolve("app");
         Path propsFile = appDir.resolve("dev.properties");
-        if (!isJUnitTest() && Files.exists(propsFile)) {
+        if (Files.exists(propsFile)) {
             try {
                 Properties props = new Properties();
                 props.load(Files.newInputStream(propsFile));
-                props.forEach((key, value) -> System.setProperty(key.toString(), value.toString()));
+                props.forEach((key, value) -> {
+                    if (System.getProperty(key.toString()) != null) {
+                        return;
+                    }
+
+                    System.setProperty(key.toString(), value.toString());
+                });
             } catch (IOException e) {
                 ErrorEvent.fromThrowable(e).handle();
             }
@@ -97,15 +103,6 @@ public class AppProperties {
         locatorVersionCheck = Optional.ofNullable(System.getProperty("io.xpipe.app.locator.disableInstallationVersionCheck"))
                 .map(s -> !Boolean.parseBoolean(s))
                 .orElse(true);
-    }
-
-    private static boolean isJUnitTest() {
-        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
-            if (element.getClassName().startsWith("org.junit.")) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public static void logSystemProperties() {
