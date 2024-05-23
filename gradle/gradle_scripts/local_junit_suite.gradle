@@ -21,6 +21,7 @@ testing {
                         jvmArgs += ["-Xmx2g"]
                         jvmArgs += jvmRunArgs
 
+                        systemProperty 'io.xpipe.app.fullVersion', "true"
                         systemProperty 'io.xpipe.beacon.printDaemonOutput', "false"
                         systemProperty 'io.xpipe.app.useVirtualThreads', "false"
                         systemProperty "io.xpipe.beacon.port", "21725"
