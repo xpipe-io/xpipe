@@ -638,16 +638,18 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
     ExternalTerminalType CUSTOM = new CustomTerminalType();
     List<ExternalTerminalType> WINDOWS_TERMINALS = List.of(
-            TabbyTerminalType.TABBY_WINDOWS,
-            AlacrittyTerminalType.ALACRITTY_WINDOWS,
-            WezTerminalType.WEZTERM_WINDOWS,
             WindowsTerminalType.WINDOWS_TERMINAL_CANARY,
             WindowsTerminalType.WINDOWS_TERMINAL_PREVIEW,
             WindowsTerminalType.WINDOWS_TERMINAL,
+            TabbyTerminalType.TABBY_WINDOWS,
+            AlacrittyTerminalType.ALACRITTY_WINDOWS,
+            WezTerminalType.WEZTERM_WINDOWS,
             CMD,
             PWSH,
             POWERSHELL);
     List<ExternalTerminalType> LINUX_TERMINALS = List.of(
+            KittyTerminalType.KITTY_LINUX,
+            AlacrittyTerminalType.ALACRITTY_LINUX,
             WezTerminalType.WEZTERM_LINUX,
             KONSOLE,
             XFCE,
@@ -655,20 +657,18 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             GNOME_TERMINAL,
             TILIX,
             TERMINATOR,
-            KittyTerminalType.KITTY_LINUX,
             TERMINOLOGY,
             GUAKE,
-            AlacrittyTerminalType.ALACRITTY_LINUX,
             TILDA,
             XTERM,
             DEEPIN_TERMINAL,
             Q_TERMINAL);
     List<ExternalTerminalType> MACOS_TERMINALS = List.of(
+            KittyTerminalType.KITTY_MACOS,
+            WARP,
             ITERM2,
             TabbyTerminalType.TABBY_MAC_OS,
             AlacrittyTerminalType.ALACRITTY_MAC_OS,
-            KittyTerminalType.KITTY_MACOS,
-            WARP,
             WezTerminalType.WEZTERM_MAC_OS,
             MACOS_TERMINAL);
 
