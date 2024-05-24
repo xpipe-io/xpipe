@@ -1,12 +1,13 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.util.StreamCharset;
-
 import lombok.Value;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -23,6 +24,10 @@ public class RdpConfig {
                 StreamCharset.detectedReader(new BufferedInputStream(Files.newInputStream(Path.of(file)))))) {
             var content = in.lines().collect(Collectors.joining("\n"));
             return parseContent(content);
+        } catch (NoSuchFileException e) {
+            // Users deleting files is expected
+            ErrorEvent.expected(e);
+            throw e;
         }
     }
 

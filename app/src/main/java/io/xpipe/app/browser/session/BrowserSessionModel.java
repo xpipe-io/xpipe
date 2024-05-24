@@ -11,10 +11,8 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystemStore;
 import io.xpipe.core.util.FailableFunction;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -33,7 +31,8 @@ public class BrowserSessionModel extends BrowserAbstractSessionModel<BrowserSess
 
     public void restoreState(BrowserSavedState state) {
         ThreadHelper.runAsync(() -> {
-            state.getEntries().forEach(e -> {
+            var l = new ArrayList<>(state.getEntries());
+            l.forEach(e -> {
                 restoreStateAsync(e, null);
                 // Don't try to run everything in parallel as that can be taxing
                 ThreadHelper.sleep(1000);
