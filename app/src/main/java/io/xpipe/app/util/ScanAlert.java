@@ -110,7 +110,7 @@ public class ScanAlert {
                         window.close();
                     });
 
-                    BooleanScope.execute(busy, () -> {
+                    BooleanScope.executeExclusive(busy, () -> {
                         entry.get().get().setExpanded(true);
                         var copy = new ArrayList<>(selected);
                         for (var a : copy) {
@@ -177,7 +177,7 @@ public class ScanAlert {
                 }
 
                 ThreadHelper.runFailableAsync(() -> {
-                    BooleanScope.execute(busy, () -> {
+                    BooleanScope.executeExclusive(busy, () -> {
                         if (shellControl != null) {
                             shellControl.close();
                             shellControl = null;

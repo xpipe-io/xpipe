@@ -79,7 +79,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
 
     @Override
     public void init() throws Exception {
-        BooleanScope.execute(busy, () -> {
+        BooleanScope.executeExclusive(busy, () -> {
             var fs = entry.getStore().createFileSystem();
             if (fs.getShell().isPresent()) {
                 ProcessControlProvider.get().withDefaultScripts(fs.getShell().get());
@@ -100,7 +100,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
 
     @Override
     public void close() {
-        BooleanScope.execute(busy, () -> {
+        BooleanScope.executeExclusive(busy, () -> {
             if (fileSystem == null) {
                 return;
             }
@@ -140,7 +140,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
                 return;
             }
 
-            BooleanScope.execute(busy, () -> {
+            BooleanScope.executeExclusive(busy, () -> {
                 if (entry.getStore() instanceof ShellStore s) {
                     c.accept(fileSystem.getShell().orElseThrow());
                     if (refresh) {
@@ -153,7 +153,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
 
     @SneakyThrows
     public void refresh() {
-        BooleanScope.execute(busy, () -> {
+        BooleanScope.executeExclusive(busy, () -> {
             cdSyncWithoutCheck(currentPath.get());
         });
     }
@@ -339,7 +339,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
 
     public void dropLocalFilesIntoAsync(FileSystem.FileEntry entry, List<Path> files) {
         ThreadHelper.runFailableAsync(() -> {
-            BooleanScope.execute(busy, () -> {
+            BooleanScope.executeExclusive(busy, () -> {
                 if (fileSystem == null) {
                     return;
                 }
@@ -361,7 +361,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
         }
 
         ThreadHelper.runFailableAsync(() -> {
-            BooleanScope.execute(busy, () -> {
+            BooleanScope.executeExclusive(busy, () -> {
                 if (fileSystem == null) {
                     return;
                 }
@@ -384,7 +384,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
         }
 
         ThreadHelper.runFailableAsync(() -> {
-            BooleanScope.execute(busy, () -> {
+            BooleanScope.executeExclusive(busy, () -> {
                 if (fileSystem == null) {
                     return;
                 }
@@ -408,7 +408,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
         }
 
         ThreadHelper.runFailableAsync(() -> {
-            BooleanScope.execute(busy, () -> {
+            BooleanScope.executeExclusive(busy, () -> {
                 if (fileSystem == null) {
                     return;
                 }
@@ -431,7 +431,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
         }
 
         ThreadHelper.runFailableAsync(() -> {
-            BooleanScope.execute(busy, () -> {
+            BooleanScope.executeExclusive(busy, () -> {
                 if (fileSystem == null) {
                     return;
                 }
@@ -466,7 +466,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
                 return;
             }
 
-            BooleanScope.execute(busy, () -> {
+            BooleanScope.executeExclusive(busy, () -> {
                 if (fileSystem.getShell().isPresent()) {
                     var connection = fileSystem.getShell().get();
                     var name = (directory != null ? directory + " - " : "")

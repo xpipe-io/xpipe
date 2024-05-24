@@ -5,63 +5,19 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.CommandControl;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.store.FileNames;
-import io.xpipe.core.store.FileSystem;
 
 import lombok.SneakyThrows;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FilterInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public class FileOpener {
-
-    public static void openWithAnyApplication(FileSystem.FileEntry entry) {
-        var file = entry.getPath();
-        var key = entry.getPath().hashCode() + entry.getFileSystem().hashCode();
-        FileBridge.get()
-                .openIO(
-                        FileNames.getFileName(file),
-                        key,
-                        () -> {
-                            return entry.getFileSystem().openInput(file);
-                        },
-                        (size) -> entry.getFileSystem().openOutput(file, size),
-                        s -> openWithAnyApplication(s));
-    }
-
-    public static void openInDefaultApplication(FileSystem.FileEntry entry) {
-        var file = entry.getPath();
-        var key = entry.getPath().hashCode() + entry.getFileSystem().hashCode();
-        FileBridge.get()
-                .openIO(
-                        FileNames.getFileName(file),
-                        key,
-                        () -> {
-                            return entry.getFileSystem().openInput(file);
-                        },
-                        (size) -> entry.getFileSystem().openOutput(file, size),
-                        s -> openInDefaultApplication(s));
-    }
-
-    public static void openInTextEditor(FileSystem.FileEntry entry) {
-        var editor = AppPrefs.get().externalEditor().getValue();
-        if (editor == null) {
-            return;
-        }
-
-        var file = entry.getPath();
-        var key = entry.getPath().hashCode() + entry.getFileSystem().hashCode();
-        FileBridge.get()
-                .openIO(
-                        FileNames.getFileName(file),
-                        key,
-                        () -> {
-                            return entry.getFileSystem().openInput(file);
-                        },
-                        (size) -> entry.getFileSystem().openOutput(file, size),
-                        FileOpener::openInTextEditor);
-    }
 
     public static void openInTextEditor(String localFile) {
         var editor = AppPrefs.get().externalEditor().getValue();
@@ -119,11 +75,40 @@ public class FileOpener {
     }
 
     public static void openReadOnlyString(String input) {
-        FileBridge.get().openReadOnlyString(input, s -> openInTextEditor(s));
+        if (input == null) {
+            input = "";
+        }
+
+        var id = UUID.randomUUID();
+        String s = input;
+        FileBridge.get().openIO(
+                id.toString(),
+                id,
+                null,
+                () -> new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)),
+                null,
+                v -> openInTextEditor(v));
     }
 
     public static void openString(String keyName, Object key, String input, Consumer<String> output) {
-        FileBridge.get().openString(keyName, key, input, output, file -> openInTextEditor(file));
+        if (input == null) {
+            input = "";
+        }
+
+        String s = input;
+        FileBridge.get().openIO(
+                keyName,
+                key,
+                null,
+                () -> new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)),
+                (size) -> new ByteArrayOutputStream(s.length()) {
+                    @Override
+                    public void close() throws IOException {
+                        super.close();
+                        output.accept(new String(toByteArray(), StandardCharsets.UTF_8));
+                    }
+                },
+                file -> openInTextEditor(file));
     }
 
     public static void openCommandOutput(String keyName, Object key, CommandControl cc) {
@@ -131,6 +116,7 @@ public class FileOpener {
                 .openIO(
                         keyName,
                         key,
+                        null,
                         () -> new FilterInputStream(cc.getStdout()) {
                             @Override
                             @SneakyThrows

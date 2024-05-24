@@ -1,10 +1,10 @@
 package io.xpipe.ext.base.browser;
 
+import io.xpipe.app.browser.BrowserFileOpener;
 import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.FileOpener;
 import io.xpipe.core.store.FileKind;
 
 import javafx.beans.value.ObservableValue;
@@ -22,7 +22,7 @@ public class OpenFileDefaultAction implements LeafAction {
     @Override
     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
         for (var entry : entries) {
-            FileOpener.openInDefaultApplication(entry.getRawFileEntry());
+            BrowserFileOpener.openInDefaultApplication(model, entry.getRawFileEntry());
         }
     }
 

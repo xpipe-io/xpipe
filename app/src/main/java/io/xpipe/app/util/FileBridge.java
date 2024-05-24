@@ -7,22 +7,55 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.FailableFunction;
 import io.xpipe.core.util.FailableSupplier;
-
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class FileBridge {
+
+    private static class FixedSizeInputStream extends SimpleFilterInputStream {
+
+        private long count;
+        private final long size;
+
+        protected FixedSizeInputStream(InputStream in, long size) {
+            super(in);
+            this.size = size;
+        }
+
+        @Override
+        public int read() throws IOException {
+            if (count >= size) {
+                return -1;
+            }
+
+            var read = in.read();
+            count++;
+            if (read == -1) {
+                return 0;
+            } else {
+                return read;
+            }
+        }
+
+        @Override
+        public int available() throws IOException {
+            return (int) (size - count);
+        }
+    }
 
     private static final Path TEMP = ShellTemp.getLocalTempDataDirectory("bridge");
     private static FileBridge INSTANCE;
@@ -95,16 +128,17 @@ public class FileBridge {
             if (e.hasChanged()) {
                 event("Registering change for file " + TEMP.relativize(e.file) + " for editor entry " + e.getName());
                 e.registerChange();
-                var expectedSize = Files.size(e.file);
                 try (var in = Files.newInputStream(e.file)) {
                     var actualSize = (long) in.available();
-                    if (expectedSize != actualSize) {
-                        event("Expected file size " + expectedSize + " but got size " + actualSize + ". Ignoring change ...");
-                        return;
+                    var started = Instant.now();
+                    try (var fixedIn = new FixedSizeInputStream(new BufferedInputStream(in), actualSize)) {
+                        e.writer.accept(fixedIn, actualSize);
                     }
-
-                    e.writer.accept(in, actualSize);
+                    var taken = Duration.between(started, Instant.now());
+                    event("Wrote " + HumanReadableFormat.byteCount(actualSize) + " in " + taken.toMillis() + "ms");
                 }
+            } else {
+                event("File doesn't seem to be changed");
             }
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).omit().handle();
@@ -134,45 +168,10 @@ public class FileBridge {
         return Optional.empty();
     }
 
-    public void openReadOnlyString(String input, Consumer<String> fileConsumer) {
-        if (input == null) {
-            input = "";
-        }
-
-        var id = UUID.randomUUID();
-        String s = input;
-        openIO(
-                id.toString(),
-                id,
-                () -> new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)),
-                null,
-                fileConsumer);
-    }
-
-    public void openString(
-            String keyName, Object key, String input, Consumer<String> output, Consumer<String> fileConsumer) {
-        if (input == null) {
-            input = "";
-        }
-
-        String s = input;
-        openIO(
-                keyName,
-                key,
-                () -> new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)),
-                (size) -> new ByteArrayOutputStream(s.length()) {
-                    @Override
-                    public void close() throws IOException {
-                        super.close();
-                        output.accept(new String(toByteArray(), StandardCharsets.UTF_8));
-                    }
-                },
-                fileConsumer);
-    }
-
     public synchronized void openIO(
             String keyName,
             Object key,
+            BooleanScope scope,
             FailableSupplier<InputStream> input,
             FailableFunction<Long, OutputStream, Exception> output,
             Consumer<String> consumer) {
@@ -206,12 +205,22 @@ public class FileBridge {
             return;
         }
 
-        var entry = new Entry(file, key, keyName, (in, size) -> {
+        var entry = new Entry(file, key, keyName, scope, (in, size) -> {
             if (output != null) {
-                try (var out = output.apply(size)) {
-                    in.transferTo(out);
-                } catch (Exception ex) {
-                    ErrorEvent.fromThrowable(ex).handle();
+                if (scope != null) {
+                    try (var ignored = scope.start()) {
+                        try (var out = output.apply(size)) {
+                            in.transferTo(out);
+                        } catch (Exception ex) {
+                            ErrorEvent.fromThrowable(ex).handle();
+                        }
+                    }
+                } else {
+                    try (var out = output.apply(size)) {
+                        in.transferTo(out);
+                    } catch (Exception ex) {
+                        ErrorEvent.fromThrowable(ex).handle();
+                    }
                 }
             }
         });
@@ -227,13 +236,15 @@ public class FileBridge {
         private final Path file;
         private final Object key;
         private final String name;
+        private final BooleanScope scope;
         private final BiConsumer<InputStream, Long> writer;
         private Instant lastModified;
 
-        public Entry(Path file, Object key, String name, BiConsumer<InputStream, Long> writer) {
+        public Entry(Path file, Object key, String name, BooleanScope scope, BiConsumer<InputStream, Long> writer) {
             this.file = file;
             this.key = key;
             this.name = name;
+            this.scope = scope;
             this.writer = writer;
         }
 
