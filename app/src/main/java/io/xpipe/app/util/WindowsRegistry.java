@@ -33,15 +33,15 @@ public abstract class WindowsRegistry {
 
     public abstract boolean valueExists(int hkey, String key, String valueName) throws Exception;
 
-    public abstract Optional<String> readString(int hkey, String key, String valueName) throws Exception;
+    public abstract Optional<String> readValue(int hkey, String key, String valueName) throws Exception;
 
-    public Optional<String> readString(int hkey, String key) throws Exception {
-        return readString(hkey, key, null);
+    public Optional<String> readValue(int hkey, String key) throws Exception {
+        return readValue(hkey, key, null);
     }
 
     public abstract Optional<String> findValuesRecursive(int hkey, String key, String valueName) throws Exception;
 
-    public abstract Optional<Key> findKeyForEqualMatchRecursive(int hkey, String key, String match) throws Exception;
+    public abstract Optional<Key> findKeyForEqualValueMatchRecursive(int hkey, String key, String match) throws Exception;
 
 
     public static class Local extends WindowsRegistry {
@@ -73,7 +73,7 @@ public abstract class WindowsRegistry {
         }
 
         @Override
-        public Optional<String> readString(int hkey, String key, String valueName) {
+        public Optional<String> readValue(int hkey, String key, String valueName) {
             // This can fail even with errors in case the jna native library extraction or loading fails
             try {
                 if (!Advapi32Util.registryValueExists(
@@ -98,9 +98,9 @@ public abstract class WindowsRegistry {
         }
 
         @Override
-        public Optional<Key> findKeyForEqualMatchRecursive(int hkey, String key, String match) throws Exception {
+        public Optional<Key> findKeyForEqualValueMatchRecursive(int hkey, String key, String match) throws Exception {
             try (var sc = LocalShell.getShell().start()) {
-                return new Remote(sc).findKeyForEqualMatchRecursive(hkey, key, match);
+                return new Remote(sc).findKeyForEqualValueMatchRecursive(hkey, key, match);
             }
         }
     }
@@ -140,7 +140,7 @@ public abstract class WindowsRegistry {
         }
 
         @Override
-        public Optional<String> readString(int hkey, String key, String valueName) throws Exception {
+        public Optional<String> readValue(int hkey, String key, String valueName) throws Exception {
             var command = CommandBuilder.of()
                     .add("reg", "query")
                     .addQuoted(hkey(hkey) + "\\" + key)
@@ -189,7 +189,7 @@ public abstract class WindowsRegistry {
         }
 
         @Override
-        public Optional<Key> findKeyForEqualMatchRecursive(int hkey, String key, String match) throws Exception {
+        public Optional<Key> findKeyForEqualValueMatchRecursive(int hkey, String key, String match) throws Exception {
             var command = CommandBuilder.of()
                     .add("reg", "query")
                     .addQuoted(hkey(hkey) + "\\" + key)

@@ -52,7 +52,7 @@ public interface WezTerminalType extends ExternalTerminalType {
         @Override
         protected Optional<Path> determineInstallation() {
             Optional<String> launcherDir;
-            launcherDir = WindowsRegistry.local().readString(
+            launcherDir = WindowsRegistry.local().readValue(
                             WindowsRegistry.HKEY_LOCAL_MACHINE,
                             "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{BCF6F0DA-5B9A-408D-8562-F680AE6E1EAF}_is1",
                             "InstallLocation")
