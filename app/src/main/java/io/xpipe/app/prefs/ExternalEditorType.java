@@ -64,11 +64,11 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         protected Optional<Path> determineInstallation() {
-            var found = WindowsRegistry.readString(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Notepad++", null);
+            var found = WindowsRegistry.local().readString(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Notepad++", null);
 
             // Check 32 bit install
             if (found.isEmpty()) {
-                found = WindowsRegistry.readString(
+                found = WindowsRegistry.local().readString(
                         WindowsRegistry.HKEY_LOCAL_MACHINE, "WOW6432Node\\SOFTWARE\\Notepad++", null);
             }
             return found.map(p -> p + "\\notepad++.exe").map(Path::of);
