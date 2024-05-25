@@ -41,9 +41,6 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
                 return input;
             }
 
-            var address = input.get("full address")
-                    .map(typedValue -> typedValue.getValue())
-                    .orElse("?");
             var pass = configuration.getPassword();
             if (pass == null) {
                 return input;

@@ -33,6 +33,10 @@ public class RdpConfig {
 
     public static RdpConfig parseContent(String content) {
         var map = new LinkedHashMap<String, TypedValue>();
+        if (content == null) {
+            return new RdpConfig(map);
+        }
+
         content.lines().forEach(s -> {
             var split = s.split(":");
             if (split.length < 2) {

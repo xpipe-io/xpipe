@@ -473,7 +473,7 @@ public class AppPrefs {
         try {
             Files.createDirectories(storageDirectory.get());
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).build().handle();
+            ErrorEvent.fromThrowable(e).expected().build().handle();
             storageDirectory.setValue(DEFAULT_STORAGE_DIR);
         }
     }

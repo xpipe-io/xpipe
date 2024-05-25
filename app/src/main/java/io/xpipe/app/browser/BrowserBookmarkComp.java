@@ -76,7 +76,7 @@ public final class BrowserBookmarkComp extends SimpleComp {
 
         var section = new StoreSectionMiniComp(
                 StoreSection.createTopLevel(
-                        StoreViewState.get().getAllEntries(), storeEntryWrapper -> true, filterText, selectedCategory),
+                        StoreViewState.get().getAllEntries(), this::filter, filterText, selectedCategory),
                 augment,
                 entryWrapper -> action.accept(entryWrapper, busy),
                 true);
@@ -101,5 +101,9 @@ public final class BrowserBookmarkComp extends SimpleComp {
 
         content.getStyleClass().add("bookmark-list");
         return content;
+    }
+
+    private boolean filter(StoreEntryWrapper w) {
+        return applicable.test(w);
     }
 }
