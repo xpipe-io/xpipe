@@ -55,6 +55,7 @@ public class DesktopShortcuts {
                 exec, target);
 
         try (var pc = LocalShell.getShell()) {
+            pc.getShellDialect().deleteFileOrDirectory(pc, base.toString()).executeAndCheck();
             pc.executeSimpleCommand(pc.getShellDialect().getMkdirsCommand(base + "/Contents/MacOS"));
             pc.executeSimpleCommand(pc.getShellDialect().getMkdirsCommand(base + "/Contents/Resources"));
 

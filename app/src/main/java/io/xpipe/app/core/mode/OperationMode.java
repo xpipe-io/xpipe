@@ -190,8 +190,9 @@ public abstract class OperationMode {
 
     public static void restart() {
         OperationMode.executeAfterShutdown(() -> {
-            var exec = XPipeInstallation.createExternalAsyncLaunchCommand(
-                    XPipeInstallation.getCurrentInstallationBasePath().toString(), XPipeDaemonMode.GUI, "");
+            var loc = AppProperties.get().isDevelopmentEnvironment() ?
+                    XPipeInstallation.getLocalDefaultInstallationBasePath() : XPipeInstallation.getCurrentInstallationBasePath().toString();
+            var exec = XPipeInstallation.createExternalAsyncLaunchCommand(loc, XPipeDaemonMode.GUI, "", true);
             LocalShell.getShell().executeSimpleCommand(exec);
         });
     }
@@ -233,6 +234,7 @@ public abstract class OperationMode {
     }
 
     public static void halt(int code) {
+        TrackEvent.info("Halting now!");
         AppLogs.teardown();
         Runtime.getRuntime().halt(code);
     }
@@ -288,6 +290,10 @@ public abstract class OperationMode {
     //    }
 
     private static synchronized void set(OperationMode newMode) {
+        if (inShutdown) {
+            return;
+        }
+
         if (CURRENT == null && newMode == null) {
             return;
         }

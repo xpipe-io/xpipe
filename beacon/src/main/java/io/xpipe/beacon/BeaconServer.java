@@ -48,7 +48,7 @@ public class BeaconServer {
         String command;
         if (!BeaconConfig.launchDaemonInDebugMode()) {
             command = XPipeInstallation.createExternalAsyncLaunchCommand(
-                    installationBase, mode, BeaconConfig.getDaemonArguments());
+                    installationBase, mode, BeaconConfig.getDaemonArguments(), false);
         } else {
             command = XPipeInstallation.createExternalLaunchCommand(
                     getDaemonDebugExecutable(installationBase), BeaconConfig.getDaemonArguments(), mode);

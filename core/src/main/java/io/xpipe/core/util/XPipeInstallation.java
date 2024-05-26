@@ -35,13 +35,17 @@ public class XPipeInstallation {
     }
 
     public static String createExternalAsyncLaunchCommand(
-            String installationBase, XPipeDaemonMode mode, String arguments) {
+            String installationBase, XPipeDaemonMode mode, String arguments, boolean restart) {
         var suffix = (arguments != null ? " " + arguments : "");
         var modeOption = mode != null ? " --mode " + mode.getDisplayName() : "";
         if (OsType.getLocal().equals(OsType.LINUX)) {
             return "nohup \"" + installationBase + "/app/bin/xpiped\"" + modeOption + suffix + " & disown";
         } else if (OsType.getLocal().equals(OsType.MACOS)) {
-            return "open \"" + installationBase + "\" --args" + modeOption + suffix;
+            if (restart) {
+                return "(sleep 1;open \"" + installationBase + "\" --args" + modeOption + suffix + "</dev/null &>/dev/null) & disown";
+            } else {
+                return "open \"" + installationBase + "\" --args" + modeOption + suffix;
+            }
         }
 
         return "\"" + FileNames.join(installationBase, XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()))
