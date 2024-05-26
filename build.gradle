@@ -126,9 +126,11 @@ project.ext {
             // Disable this for now as it requires Windows 10+
             // '-XX:+UseZGC',
             "-Dvisualvm.display.name=XPipe",
-            "-Dapple.awt.application.appearance=system",
             "-Djavafx.preloader=io.xpipe.app.core.AppPreloader"
     ]
+    if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+        jvmRunArgs += ["-Dapple.awt.application.appearance=system"]
+    }
     useBundledJavaFx = fullVersion
     useBundledJna = fullVersion
     announce = System.getenv('SKIP_ANNOUNCEMENT') == null || !Boolean.parseBoolean(System.getenv('SKIP_ANNOUNCEMENT'))

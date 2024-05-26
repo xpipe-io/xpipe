@@ -53,8 +53,13 @@ jlink {
             // '--strip-debug',
             '--no-header-files',
             '--no-man-pages',
-            // '--strip-native-commands'
+            '--include-locales', "${String.join(",", languages)}",
+            '--compress', 'zip-9'
     ]
+
+    if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
+        options += ['--strip-native-debug-symbols']
+    }
 
     if (useBundledJavaFx) {
         addExtraModulePath(layout.projectDirectory.dir("javafx/${platformName}/${arch}").toString())
