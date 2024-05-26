@@ -3,6 +3,7 @@ package io.xpipe.ext.base.action;
 import io.xpipe.app.comp.store.StoreCreationComp;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.store.DataStore;
@@ -56,6 +57,13 @@ public class XPipeUrlAction implements ActionProvider {
                         var entry = DataStorage.get()
                                 .getStoreEntryIfPresent(UUID.fromString(args.get(2)))
                                 .orElseThrow();
+
+                        TrackEvent.withDebug("Parsed action")
+                                .tag("id", id)
+                                .tag("provider", provider.getId())
+                                .tag("entry", entry.getUuid())
+                                .handle();
+
                         if (!entry.getValidity().isUsable()) {
                             return null;
                         }

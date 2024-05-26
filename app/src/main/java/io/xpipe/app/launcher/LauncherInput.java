@@ -79,6 +79,7 @@ public abstract class LauncherInput {
                     try {
                         a = found.get().getLauncherCallSite().createAction(uri);
                     } catch (Exception e) {
+                        ErrorEvent.fromThrowable(e).omit().expected().handle();
                         return List.of();
                     }
                     return a != null ? List.of(a) : List.of();

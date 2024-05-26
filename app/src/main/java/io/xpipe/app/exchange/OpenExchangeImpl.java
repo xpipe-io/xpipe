@@ -3,6 +3,7 @@ package io.xpipe.app.exchange;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.launcher.LauncherInput;
 import io.xpipe.app.util.PlatformState;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.beacon.BeaconHandler;
 import io.xpipe.beacon.ServerException;
 import io.xpipe.beacon.exchange.OpenExchange;
@@ -16,6 +17,11 @@ public class OpenExchangeImpl extends OpenExchange
             if (!OperationMode.switchToSyncIfPossible(OperationMode.GUI)) {
                 throw new ServerException(PlatformState.getLastError());
             }
+        }
+
+        // Wait for startup
+        while (OperationMode.get() == null) {
+            ThreadHelper.sleep(100);
         }
 
         LauncherInput.handle(msg.getArguments());
