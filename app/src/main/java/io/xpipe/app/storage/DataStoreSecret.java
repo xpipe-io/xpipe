@@ -1,13 +1,11 @@
 package io.xpipe.app.storage;
 
+import com.fasterxml.jackson.core.TreeNode;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.PasswordLockSecretValue;
 import io.xpipe.app.util.VaultKeySecretValue;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.SecretValue;
-
-import com.fasterxml.jackson.core.TreeNode;
-import lombok.Setter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
@@ -18,9 +16,8 @@ import java.util.Objects;
 public class DataStoreSecret {
 
     InPlaceSecretValue internalSecret;
+    @NonFinal
     String usedPasswordLockCrypt;
-
-    @Setter
     @NonFinal
     TreeNode originalNode;
 
@@ -51,6 +48,11 @@ public class DataStoreSecret {
         }
 
         return !Objects.equals(AppPrefs.get().getLockCrypt().get(), usedPasswordLockCrypt);
+    }
+
+    public void rewrite(TreeNode updatedNode) {
+        originalNode = updatedNode;
+        usedPasswordLockCrypt = AppPrefs.get().getLockCrypt().get();
     }
 
     public char[] getSecret() {

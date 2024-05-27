@@ -94,7 +94,7 @@ public class AppJacksonModule extends SimpleModule {
             var tree = JsonNodeFactory.instance.objectNode();
             tree.set("secret", valTree);
             jgen.writeTree(tree);
-            value.setOriginalNode(valTree);
+            value.rewrite(valTree);
         }
     }
 
