@@ -7,8 +7,6 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.storage.DataStorage;
-
-import lombok.Getter;
 import lombok.Value;
 
 import java.net.URI;
@@ -66,7 +64,7 @@ public abstract class LauncherInput {
             if (scheme != null) {
                 if (scheme.equalsIgnoreCase("file")) {
                     var path = Path.of(uri);
-                    return List.of(new LocalFileInput(path));
+                    return List.of(new BrowseFileAction(path));
                 }
 
                 var action = uri.getScheme();
@@ -91,7 +89,7 @@ public abstract class LauncherInput {
         try {
             var path = Path.of(input);
             if (Files.exists(path)) {
-                return List.of(new LocalFileInput(path));
+                return List.of(new BrowseFileAction(path));
             }
         } catch (InvalidPathException ignored) {
         }
@@ -100,7 +98,7 @@ public abstract class LauncherInput {
     }
 
     @Value
-    public static class LocalFileInput implements ActionProvider.Action {
+    public static class BrowseFileAction implements ActionProvider.Action {
 
         Path file;
 
@@ -123,16 +121,6 @@ public abstract class LauncherInput {
             AppLayoutModel.get().selectBrowser();
             BrowserSessionModel.DEFAULT.openFileSystemAsync(
                     DataStorage.get().local().ref(), model -> dir.toString(), null);
-        }
-    }
-
-    @Getter
-    public abstract static class ActionInput extends LauncherInput {
-
-        private final List<String> args;
-
-        protected ActionInput(List<String> args) {
-            this.args = args;
         }
     }
 }

@@ -43,7 +43,7 @@ public abstract class TestModule<V> {
         return argumentBuilder.build();
     }
 
-    protected abstract void init(Map<String, Supplier<V>> list);
+    protected abstract void init(Map<String, Supplier<V>> list) throws Exception;
 
     protected abstract Class<V> getValueClass();
 }
