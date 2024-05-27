@@ -101,7 +101,7 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                                         + section.getWrapper().getName().getValue();
                             },
                             section.getWrapper().getName()))
-                    .disable(Bindings.size(section.getAllChildren()).isEqualTo(0))
+                    .disable(Bindings.size(section.getShownChildren()).isEqualTo(0))
                     .grow(false, true)
                     .styleClass("expand-button");
 
