@@ -40,6 +40,7 @@ public class AppProperties {
     AppVersion canonicalVersion;
     boolean locatePtb;
     boolean locatorVersionCheck;
+    boolean isTest;
 
     public AppProperties() {
         var appDir = Path.of(System.getProperty("user.dir")).resolve("app");
@@ -103,6 +104,16 @@ public class AppProperties {
         locatorVersionCheck = Optional.ofNullable(System.getProperty("io.xpipe.app.locator.disableInstallationVersionCheck"))
                 .map(s -> !Boolean.parseBoolean(s))
                 .orElse(true);
+        isTest = isJUnitTest();
+    }
+
+    private static boolean isJUnitTest() {
+        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
+            if (element.getClassName().startsWith("org.junit.")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static void logSystemProperties() {
