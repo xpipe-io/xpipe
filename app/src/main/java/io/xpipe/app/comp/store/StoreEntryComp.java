@@ -372,11 +372,38 @@ public abstract class StoreEntryComp extends SimpleComp {
             contextMenu.getItems().add(new SeparatorMenuItem());
         }
 
+        var notes = new MenuItem(AppI18n.get("addNotes"), new FontIcon("mdi2n-note-text"));
+        notes.setOnAction(event -> {
+            wrapper.getNotes().setValue(new StoreNotes(null, getDefaultNotes()));
+            event.consume();
+        });
+        notes.visibleProperty().bind(BindingsHelper.map(wrapper.getNotes(), s -> s.getCommited() == null));
+        contextMenu.getItems().add(notes);
+
         if (AppPrefs.get().developerMode().getValue()) {
             var browse = new MenuItem(AppI18n.get("browseInternalStorage"), new FontIcon("mdi2f-folder-open-outline"));
             browse.setOnAction(
                     event -> DesktopHelper.browsePathLocal(wrapper.getEntry().getDirectory()));
             contextMenu.getItems().add(browse);
+        }
+
+        if (DataStorage.get().isRootEntry(wrapper.getEntry())) {
+            var color = new Menu(AppI18n.get("color"), new FontIcon("mdi2f-format-color-fill"));
+            var none = new MenuItem("None");
+            none.setOnAction(event -> {
+                wrapper.getEntry().setColor(null);
+                event.consume();
+            });
+            color.getItems().add(none);
+            Arrays.stream(DataStoreColor.values()).forEach(dataStoreColor -> {
+                MenuItem m = new MenuItem(DataStoreFormatter.capitalize(dataStoreColor.getId()));
+                m.setOnAction(event -> {
+                    wrapper.getEntry().setColor(dataStoreColor);
+                    event.consume();
+                });
+                color.getItems().add(m);
+            });
+            contextMenu.getItems().add(color);
         }
 
         if (wrapper.getEntry().getProvider() != null) {
@@ -399,32 +426,45 @@ public abstract class StoreEntryComp extends SimpleComp {
             contextMenu.getItems().add(move);
         }
 
-        if (DataStorage.get().isRootEntry(wrapper.getEntry())) {
-            var color = new Menu(AppI18n.get("color"), new FontIcon("mdi2f-format-color-fill"));
-            var none = new MenuItem("None");
-            none.setOnAction(event -> {
-                wrapper.getEntry().setColor(null);
-                event.consume();
-            });
-            color.getItems().add(none);
-            Arrays.stream(DataStoreColor.values()).forEach(dataStoreColor -> {
-                MenuItem m = new MenuItem(DataStoreFormatter.capitalize(dataStoreColor.getId()));
-                m.setOnAction(event -> {
-                    wrapper.getEntry().setColor(dataStoreColor);
-                    event.consume();
-                });
-                color.getItems().add(m);
-            });
-            contextMenu.getItems().add(color);
-        }
-
-        var notes = new MenuItem(AppI18n.get("addNotes"), new FontIcon("mdi2n-note-text"));
-        notes.setOnAction(event -> {
-            wrapper.getNotes().setValue(new StoreNotes(null, getDefaultNotes()));
+        var order = new Menu(AppI18n.get("order"), new FontIcon("mdal-bookmarks"));
+        var noOrder = new MenuItem("None");
+        noOrder.setOnAction(event -> {
+            DataStorage.get().orderBefore(wrapper.getEntry(), null);
             event.consume();
         });
-        notes.visibleProperty().bind(BindingsHelper.map(wrapper.getNotes(), s -> s.getCommited() == null));
-        contextMenu.getItems().add(notes);
+        if (wrapper.getEntry().getOrderBefore() == null) {
+            noOrder.setDisable(true);
+        }
+        order.getItems().add(noOrder);
+        var stick = new MenuItem(AppI18n.get("stickToTop"));
+        stick.setOnAction(event -> {
+            DataStorage.get().orderBefore(wrapper.getEntry(), wrapper.getEntry());
+            event.consume();
+        });
+        if (wrapper.getEntry().getUuid().equals(wrapper.getEntry().getOrderBefore())) {
+            stick.setDisable(true);
+        }
+        order.getItems().add(stick);
+        order.getItems().add(new SeparatorMenuItem());
+        var section = StoreViewState.get().getParentSectionForWrapper(wrapper);
+        section.get().getAllChildren().forEach(other -> {
+            var ow = other.getWrapper();
+            var op = ow.getEntry().getProvider();
+            MenuItem m = new MenuItem(ow.getName().getValue(),
+                    op != null ? PrettyImageHelper.ofFixedSizeSquare(op.getDisplayIconFileName(ow.getEntry().getStore()),
+                            16).createRegion() : null);
+            if (ow.getEntry().getUuid().equals(wrapper.getEntry().getOrderBefore())) {
+                m.setDisable(true);
+            }
+            m.setOnAction(event -> {
+                wrapper.orderBefore(ow);
+                event.consume();
+            });
+            order.getItems().add(m);
+        });
+        contextMenu.getItems().add(order);
+
+        contextMenu.getItems().add(new SeparatorMenuItem());
 
         var del = new MenuItem(AppI18n.get("remove"), new FontIcon("mdal-delete_outline"));
         del.disableProperty()

@@ -65,8 +65,32 @@ public class StoreSection {
             return list;
         }
 
-        var c = Comparator.<StoreSection>comparingInt(
+        var explicitOrderComp = new Comparator<StoreSection>() {
+            @Override
+            public int compare(StoreSection o1, StoreSection o2) {
+                var explicit1 = o1.getWrapper().getEntry().getOrderBefore();
+                var explicit2 = o2.getWrapper().getEntry().getOrderBefore();
+                if (explicit1 == null && explicit2 == null) {
+                    return 0;
+                }
+                if (explicit1 != null && explicit2 == null) {
+                    return -1;
+                }
+                if (explicit2 != null && explicit1 == null) {
+                    return 1;
+                }
+                if (explicit1.equals(o2.getWrapper().getEntry().getUuid())) {
+                    return -1;
+                }
+                if (explicit2.equals(o1.getWrapper().getEntry().getUuid())) {
+                    return -1;
+                }
+                return 0;
+            }
+        };
+        var usableComp = Comparator.<StoreSection>comparingInt(
                 value -> value.getWrapper().getEntry().getValidity().isUsable() ? -1 : 1);
+        var comp = explicitOrderComp.thenComparing(usableComp);
         var mappedSortMode = BindingsHelper.flatMap(
                 category,
                 storeCategoryWrapper -> storeCategoryWrapper != null ? storeCategoryWrapper.getSortMode() : null);
@@ -75,10 +99,10 @@ public class StoreSection {
                 (o1, o2) -> {
                     var current = mappedSortMode.getValue();
                     if (current != null) {
-                        return c.thenComparing(current.comparator())
+                        return comp.thenComparing(current.comparator())
                                 .compare(current.representative(o1), current.representative(o2));
                     } else {
-                        return c.compare(o1, o2);
+                        return comp.compare(o1, o2);
                     }
                 },
                 mappedSortMode);

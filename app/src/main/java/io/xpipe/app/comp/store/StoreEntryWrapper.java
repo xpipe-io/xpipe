@@ -71,6 +71,12 @@ public class StoreEntryWrapper {
         });
     }
 
+    public void orderBefore(StoreEntryWrapper other) {
+        ThreadHelper.runAsync(() -> {
+            DataStorage.get().orderBefore(getEntry(),other.getEntry());
+        });
+    }
+
     public boolean isInStorage() {
         return DataStorage.get().getStoreEntries().contains(entry);
     }

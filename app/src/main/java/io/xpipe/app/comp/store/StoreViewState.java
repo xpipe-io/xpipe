@@ -240,6 +240,23 @@ public class StoreViewState {
         });
     }
 
+    public Optional<StoreSection> getParentSectionForWrapper(StoreEntryWrapper wrapper) {
+        StoreSection current = getCurrentTopLevelSection();
+        while (true) {
+            var child = current.getAllChildren().stream().filter(section -> section.getWrapper().equals(wrapper)).findFirst();
+            if (child.isPresent()) {
+                return Optional.of(current);
+            }
+
+            var traverse = current.getAllChildren().stream().filter(section -> section.anyMatches(w -> w.equals(wrapper))).findFirst();
+            if (traverse.isPresent()) {
+                current = traverse.get();
+            } else {
+                return Optional.empty();
+            }
+        }
+    }
+
     public ObservableList<StoreCategoryWrapper> getSortedCategories(StoreCategoryWrapper root) {
         Comparator<StoreCategoryWrapper> comparator = new Comparator<>() {
             @Override
