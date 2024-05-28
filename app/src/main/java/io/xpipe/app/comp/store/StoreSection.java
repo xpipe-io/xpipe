@@ -103,7 +103,7 @@ public class StoreSection {
         var shown = ListBindingsHelper.filteredContentBinding(
                 ordered,
                 section -> {
-                    var showFilter = filterString == null || section.shouldShow(filterString.get());
+                    var showFilter = filterString == null || section.matchesFilter(filterString.get());
                     var matchesSelector = section.anyMatches(entryFilter);
                     var sameCategory = category == null
                             || category.getValue() == null
@@ -134,8 +134,11 @@ public class StoreSection {
             //                    .orElse(false);
 
             // This check is fast as the children are cached in the storage
-            return DataStorage.get().getStoreChildren(e.getEntry()).contains(other.getEntry());
-        });
+            var isChildren = DataStorage.get().getStoreChildren(e.getEntry()).contains(other.getEntry());
+            var showProvider = other.getEntry().getProvider() == null ||
+                    other.getEntry().getProvider().shouldShow(other);
+            return isChildren && showProvider;
+        }, e.getPersistentState(), e.getCache());
         var cached = ListBindingsHelper.cachedMappedContentBinding(
                 allChildren,
                 allChildren,
@@ -144,7 +147,7 @@ public class StoreSection {
         var filtered = ListBindingsHelper.filteredContentBinding(
                 ordered,
                 section -> {
-                    var showFilter = filterString == null || section.shouldShow(filterString.get());
+                    var showFilter = filterString == null || section.matchesFilter(filterString.get());
                     var matchesSelector = section.anyMatches(entryFilter);
                     var sameCategory = category == null
                             || category.getValue() == null
@@ -153,10 +156,14 @@ public class StoreSection {
                     // again here
                     var notRoot =
                             !DataStorage.get().isRootEntry(section.getWrapper().getEntry());
-                    return showFilter && matchesSelector && sameCategory && notRoot;
+                    var showProvider = section.getWrapper().getEntry().getProvider() == null ||
+                            section.getWrapper().getEntry().getProvider().shouldShow(section.getWrapper());
+                    return showFilter && matchesSelector && sameCategory && notRoot && showProvider;
                 },
                 category,
-                filterString);
+                filterString,
+                e.getPersistentState(),
+                e.getCache());
         return new StoreSection(e, cached, filtered, depth);
     }
 
@@ -179,7 +186,7 @@ public class StoreSection {
         return false;
     }
 
-    public boolean shouldShow(String filter) {
+    public boolean matchesFilter(String filter) {
         return anyMatches(storeEntryWrapper -> storeEntryWrapper.shouldShow(filter));
     }
 

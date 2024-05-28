@@ -28,6 +28,10 @@ import java.util.List;
 
 public interface DataStoreProvider {
 
+    default boolean shouldShow(StoreEntryWrapper w) {
+        return true;
+    }
+
     default ObservableBooleanValue busy(StoreEntryWrapper wrapper) {
         return new SimpleBooleanProperty(false);
     }

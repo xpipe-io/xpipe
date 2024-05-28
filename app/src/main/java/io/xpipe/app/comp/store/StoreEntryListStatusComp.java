@@ -59,12 +59,13 @@ public class StoreEntryListStatusComp extends SimpleComp {
         var all = ListBindingsHelper.filteredContentBinding(
                 StoreViewState.get().getAllEntries(),
                 storeEntryWrapper -> {
-                    var storeRoot = storeEntryWrapper.getCategory().getValue().getRoot();
-                    return StoreViewState.get()
-                            .getActiveCategory()
-                            .getValue()
-                            .getRoot()
-                            .equals(storeRoot);
+                    var rootCategory = storeEntryWrapper.getCategory().getValue().getRoot();
+                    var inRootCategory = StoreViewState.get().getActiveCategory().getValue().getRoot().equals(rootCategory);
+                    // Sadly the all binding does not update when the individual visibility of entries changes
+                    // But it is good enough.
+                    var showProvider = storeEntryWrapper.getEntry().getProvider() == null ||
+                            storeEntryWrapper.getEntry().getProvider().shouldShow(storeEntryWrapper);
+                    return inRootCategory && showProvider;
                 },
                 StoreViewState.get().getActiveCategory());
         var shownList = ListBindingsHelper.filteredContentBinding(
