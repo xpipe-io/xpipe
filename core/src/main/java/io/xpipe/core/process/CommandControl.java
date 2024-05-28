@@ -1,5 +1,6 @@
 package io.xpipe.core.process;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.core.util.FailableConsumer;
 
 import java.io.InputStream;
@@ -82,6 +83,8 @@ public interface CommandControl extends ProcessControl {
     byte[] readRawBytesOrThrow() throws Exception;
 
     String readStdoutOrThrow() throws Exception;
+
+    JsonNode readStdoutJsonOrThrow() throws Exception;
 
     String readStderrOrThrow() throws Exception;
 
