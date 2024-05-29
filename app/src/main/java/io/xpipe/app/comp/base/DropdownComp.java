@@ -4,8 +4,9 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
-import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.value.ObservableValue;
 import javafx.css.Size;
 import javafx.css.SizeUnits;
 import javafx.scene.control.Button;
@@ -38,10 +39,13 @@ public class DropdownComp extends Comp<CompStructure<Button>> {
                 }))
                 .createRegion();
 
+        List<? extends ObservableValue<Boolean>> l = cm.getItems().stream()
+                .map(menuItem -> menuItem.getGraphic().visibleProperty())
+                .toList();
         button.visibleProperty()
-                .bind(ListBindingsHelper.anyMatch(cm.getItems().stream()
-                        .map(menuItem -> menuItem.getGraphic().visibleProperty())
-                        .toList()));
+                .bind(Bindings.createBooleanBinding(() -> {
+                    return l.stream().anyMatch(booleanObservableValue -> booleanObservableValue.getValue());
+                }, l.toArray(ObservableValue[]::new)));
 
         var graphic = new FontIcon("mdi2c-chevron-double-down");
         button.fontProperty().subscribe(c -> {

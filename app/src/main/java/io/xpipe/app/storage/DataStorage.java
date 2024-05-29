@@ -329,13 +329,8 @@ public abstract class DataStorage {
         }
 
         var children = getDeepStoreChildren(entry);
-        var arr = Stream.concat(Stream.of(entry), children.stream()).toArray(DataStoreEntry[]::new);
-        listeners.forEach(storageListener -> storageListener.onStoreRemove(arr));
-
         entry.setCategoryUuid(newCategory.getUuid());
         children.forEach(child -> child.setCategoryUuid(newCategory.getUuid()));
-
-        listeners.forEach(storageListener -> storageListener.onStoreAdd(arr));
         saveAsync();
     }
 

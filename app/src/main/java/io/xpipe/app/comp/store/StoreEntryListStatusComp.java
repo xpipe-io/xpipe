@@ -8,7 +8,6 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.FilterComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
-import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 import javafx.beans.binding.Bindings;
@@ -56,8 +55,7 @@ public class StoreEntryListStatusComp extends SimpleComp {
         label.textProperty().bind(name);
         label.getStyleClass().add("name");
 
-        var all = ListBindingsHelper.filteredContentBinding(
-                StoreViewState.get().getAllEntries(),
+        var all = StoreViewState.get().getAllEntries().filtered(
                 storeEntryWrapper -> {
                     var rootCategory = storeEntryWrapper.getCategory().getValue().getRoot();
                     var inRootCategory = StoreViewState.get().getActiveCategory().getValue().getRoot().equals(rootCategory);
@@ -68,14 +66,13 @@ public class StoreEntryListStatusComp extends SimpleComp {
                     return inRootCategory && showProvider;
                 },
                 StoreViewState.get().getActiveCategory());
-        var shownList = ListBindingsHelper.filteredContentBinding(
-                all,
+        var shownList = all.filtered(
                 storeEntryWrapper -> {
                     return storeEntryWrapper.shouldShow(
                             StoreViewState.get().getFilterString().getValue());
                 },
                 StoreViewState.get().getFilterString());
-        var count = new CountComp<>(shownList, all);
+        var count = new CountComp<>(shownList.getList(), all.getList());
 
         var c = count.createRegion();
         var topBar = new HBox(

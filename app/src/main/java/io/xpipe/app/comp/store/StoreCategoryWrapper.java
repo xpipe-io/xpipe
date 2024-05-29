@@ -60,7 +60,7 @@ public class StoreCategoryWrapper {
     }
 
     public StoreCategoryWrapper getParent() {
-        return StoreViewState.get().getCategories().stream()
+        return StoreViewState.get().getCategories().getList().stream()
                 .filter(storeCategoryWrapper ->
                         storeCategoryWrapper.getCategory().getUuid().equals(category.getParentCategory()))
                 .findAny()
@@ -122,7 +122,7 @@ public class StoreCategoryWrapper {
         sortMode.setValue(category.getSortMode());
         share.setValue(category.isShare());
 
-        containedEntries.setAll(StoreViewState.get().getAllEntries().stream()
+        containedEntries.setAll(StoreViewState.get().getAllEntries().getList().stream()
                 .filter(entry -> {
                     return entry.getEntry().getCategoryUuid().equals(category.getUuid())
                             || (AppPrefs.get()
@@ -132,7 +132,7 @@ public class StoreCategoryWrapper {
                                             .anyMatch(storeCategoryWrapper -> storeCategoryWrapper.contains(entry)));
                 })
                 .toList());
-        children.setAll(StoreViewState.get().getCategories().stream()
+        children.setAll(StoreViewState.get().getCategories().getList().stream()
                 .filter(storeCategoryWrapper -> getCategory()
                         .getUuid()
                         .equals(storeCategoryWrapper.getCategory().getParentCategory()))

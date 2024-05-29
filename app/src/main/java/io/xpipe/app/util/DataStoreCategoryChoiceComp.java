@@ -40,7 +40,7 @@ public class DataStoreCategoryChoiceComp extends SimpleComp {
                 value.setValue(newValue);
             }
         });
-        var box = new ComboBox<>(StoreViewState.get().getSortedCategories(root));
+        var box = new ComboBox<>(StoreViewState.get().getSortedCategories(root).getList());
         box.setValue(value.getValue());
         box.valueProperty().addListener((observable, oldValue, newValue) -> {
             value.setValue(newValue);

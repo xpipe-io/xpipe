@@ -6,18 +6,16 @@ import io.xpipe.app.comp.base.SimpleTitledPaneComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
-import io.xpipe.app.fxcomps.util.ListBindingsHelper;
+import io.xpipe.app.fxcomps.util.DerivedObservableList;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FileSystem;
-
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-
 import lombok.SneakyThrows;
 
 import java.util.List;
@@ -70,9 +68,8 @@ public class BrowserOverviewComp extends SimpleComp {
         var rootsOverview = new BrowserFileOverviewComp(model, FXCollections.observableArrayList(roots), false);
         var rootsPane = new SimpleTitledPaneComp(AppI18n.observable("roots"), rootsOverview);
 
-        var recent = ListBindingsHelper.mappedContentBinding(
-                model.getSavedState().getRecentDirectories(),
-                s -> FileSystem.FileEntry.ofDirectory(model.getFileSystem(), s.getDirectory()));
+        var recent = new DerivedObservableList<>(model.getSavedState().getRecentDirectories(), true).mapped(
+                s -> FileSystem.FileEntry.ofDirectory(model.getFileSystem(), s.getDirectory())).getList();
         var recentOverview = new BrowserFileOverviewComp(model, recent, true);
         var recentPane = new SimpleTitledPaneComp(AppI18n.observable("recent"), recentOverview);
 

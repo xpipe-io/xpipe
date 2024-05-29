@@ -48,7 +48,7 @@ public interface StoreSortMode {
         @Override
         public StoreSection representative(StoreSection s) {
             return Stream.concat(
-                            s.getShownChildren().stream()
+                            s.getShownChildren().getList().stream()
                                     .filter(section -> section.getWrapper()
                                             .getEntry()
                                             .getValidity()
@@ -76,7 +76,7 @@ public interface StoreSortMode {
         @Override
         public StoreSection representative(StoreSection s) {
             return Stream.concat(
-                            s.getShownChildren().stream()
+                            s.getShownChildren().getList().stream()
                                     .filter(section -> section.getWrapper()
                                             .getEntry()
                                             .getValidity()

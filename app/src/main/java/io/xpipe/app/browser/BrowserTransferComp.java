@@ -8,7 +8,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.augment.DragOverPseudoClassAugment;
 import io.xpipe.app.fxcomps.impl.*;
-import io.xpipe.app.fxcomps.util.ListBindingsHelper;
+import io.xpipe.app.fxcomps.util.DerivedObservableList;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.core.process.OsType;
 import javafx.beans.binding.Bindings;
@@ -47,7 +47,7 @@ public class BrowserTransferComp extends SimpleComp {
         var backgroundStack =
                 new StackComp(List.of(background)).grow(true, true).styleClass("download-background");
 
-        var binding = ListBindingsHelper.mappedContentBinding(syncItems, item -> item.getBrowserEntry());
+        var binding = new DerivedObservableList<>(syncItems, true).mapped(item -> item.getBrowserEntry()).getList();
         var list = new BrowserSelectionListComp(
                         binding,
                         entry -> Bindings.createStringBinding(

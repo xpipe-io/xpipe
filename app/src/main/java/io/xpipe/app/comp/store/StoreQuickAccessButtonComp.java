@@ -26,7 +26,7 @@ public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
     }
 
     private ContextMenu createMenu() {
-        if (section.getShownChildren().isEmpty()) {
+        if (section.getShownChildren().getList().isEmpty()) {
             return null;
         }
 
@@ -42,7 +42,7 @@ public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
         var w = section.getWrapper();
         var graphic =
                 w.getEntry().getProvider().getDisplayIconFileName(w.getEntry().getStore());
-        if (c.isEmpty()) {
+        if (c.getList().isEmpty()) {
             var item = ContextMenuHelper.item(
                     PrettyImageHelper.ofFixedSizeSquare(graphic, 16),
                     w.getName().getValue());
@@ -55,7 +55,7 @@ public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
         }
 
         var items = new ArrayList<MenuItem>();
-        for (StoreSection sub : c) {
+        for (StoreSection sub : c.getList()) {
             if (!sub.getWrapper().getValidity().getValue().isUsable()) {
                 continue;
             }
