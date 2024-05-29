@@ -24,6 +24,10 @@ public class BrowserEntry {
     }
 
     private static BrowserIconFileType fileType(FileSystem.FileEntry rawFileEntry) {
+        if (rawFileEntry == null) {
+            return null;
+        }
+
         if (rawFileEntry.getKind() == FileKind.DIRECTORY) {
             return null;
         }
@@ -38,6 +42,10 @@ public class BrowserEntry {
     }
 
     private static BrowserIconDirectoryType directoryType(FileSystem.FileEntry rawFileEntry) {
+        if (rawFileEntry == null) {
+            return null;
+        }
+
         if (rawFileEntry.getKind() != FileKind.DIRECTORY) {
             return null;
         }

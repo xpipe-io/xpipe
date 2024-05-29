@@ -58,12 +58,13 @@ public interface ShellControl extends ProcessControl {
 
     default <T extends ShellStoreState> ShellControl withShellStateInit(StatefulDataStore<T> store) {
         return onInit(shellControl -> {
-            var s = store.getState();
-            s.setOsType(shellControl.getOsType());
-            s.setShellDialect(shellControl.getOriginalShellDialect());
-            s.setRunning(true);
-            s.setOsName(shellControl.getOsName());
-            store.setState(s);
+            var s = store.getState().toBuilder()
+                    .osType(shellControl.getOsType())
+                    .shellDialect(shellControl.getOriginalShellDialect())
+                    .running(true)
+                    .osName(shellControl.getOsName())
+                    .build();
+            store.setState(s.asNeeded());
         });
     }
 
@@ -74,9 +75,8 @@ public interface ShellControl extends ProcessControl {
                 return;
             }
 
-            var s = store.getState();
-            s.setRunning(false);
-            store.setState(s);
+            var s = store.getState().toBuilder().running(false).build();
+            store.setState(s.asNeeded());
         });
     }
 

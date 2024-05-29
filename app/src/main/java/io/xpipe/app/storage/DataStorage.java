@@ -448,8 +448,8 @@ public abstract class DataStorage {
                         pair.getKey().setStoreInternal(merged, false);
                     }
 
-                    var mergedState = pair.getKey().getStorePersistentState().copy();
-                    mergedState.merge(pair.getValue().get().getStorePersistentState());
+                    var s = pair.getKey().getStorePersistentState();
+                    var mergedState = s.mergeCopy(pair.getValue().get().getStorePersistentState());
                     pair.getKey().setStorePersistentState(mergedState);
                 }
             }

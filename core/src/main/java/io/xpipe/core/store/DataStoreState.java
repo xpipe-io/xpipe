@@ -1,49 +1,22 @@
 package io.xpipe.core.store;
 
-import io.xpipe.core.util.JacksonMapper;
-
-import lombok.SneakyThrows;
 import lombok.experimental.SuperBuilder;
 
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 public abstract class DataStoreState {
 
     public DataStoreState() {}
+
+    @SuppressWarnings("unchecked")
+    public <DS extends DataStoreState> DS asNeeded() {
+        return (DS) this;
+    }
 
     protected static <T> T useNewer(T older, T newer) {
         return newer != null ? newer : older;
     }
 
-    public abstract void merge(DataStoreState newer);
-
-    @SneakyThrows
-    public DataStoreState deepCopy() {
-        return JacksonMapper.getDefault().treeToValue(JacksonMapper.getDefault().valueToTree(this), getClass());
-    }
-
-    @Override
-    public final int hashCode() {
-        var tree = JacksonMapper.getDefault().valueToTree(this);
-        return tree.hashCode();
-    }
-
-    @Override
-    public final boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o != null && getClass() != o.getClass()) {
-            return false;
-        }
-
-        var tree = JacksonMapper.getDefault().valueToTree(this);
-        var otherTree = JacksonMapper.getDefault().valueToTree(o);
-        return tree.equals(otherTree);
-    }
-
-    @SneakyThrows
-    public String toString() {
-        var tree = JacksonMapper.getDefault().valueToTree(this);
-        return tree.toPrettyString();
+    public DataStoreState mergeCopy(DataStoreState newer) {
+        return this;
     }
 }
