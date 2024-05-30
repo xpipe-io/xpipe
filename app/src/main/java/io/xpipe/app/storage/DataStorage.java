@@ -328,20 +328,16 @@ public abstract class DataStorage {
             return;
         }
 
-        var children = getDeepStoreChildren(entry);
         entry.setCategoryUuid(newCategory.getUuid());
+        var children = getDeepStoreChildren(entry);
         children.forEach(child -> child.setCategoryUuid(newCategory.getUuid()));
+        listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
         saveAsync();
     }
 
     public void orderBefore(DataStoreEntry entry, DataStoreEntry reference) {
-        var children = getDeepStoreChildren(entry);
-        var arr = Stream.concat(Stream.of(entry), children.stream()).toArray(DataStoreEntry[]::new);
-        listeners.forEach(storageListener -> storageListener.onStoreRemove(arr));
-
         entry.setOrderBefore(reference != null ? reference.getUuid() : null);
-
-        listeners.forEach(storageListener -> storageListener.onStoreAdd(arr));
+        listeners.forEach(storageListener -> storageListener.onStoreOrderUpdate());
     }
 
     public boolean refreshChildren(DataStoreEntry e) {

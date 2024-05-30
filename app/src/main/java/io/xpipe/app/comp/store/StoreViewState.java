@@ -10,7 +10,6 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.StorageListener;
 import javafx.application.Platform;
 import javafx.beans.property.*;
-import javafx.beans.value.ObservableIntegerValue;
 import javafx.collections.FXCollections;
 import lombok.Getter;
 
@@ -31,7 +30,11 @@ public class StoreViewState {
     private final DerivedObservableList<StoreCategoryWrapper> categories =
             new DerivedObservableList<>(FXCollections.observableList(new CopyOnWriteArrayList<>()), true);
 
-    private final ObservableIntegerValue updateObservable = new SimpleIntegerProperty();
+    @Getter
+    private final IntegerProperty entriesOrderChangeObservable = new SimpleIntegerProperty();
+
+    @Getter
+    private final IntegerProperty entriesListChangeObservable = new SimpleIntegerProperty();
 
     @Getter
     private final Property<StoreCategoryWrapper> activeCategory = new SimpleObjectProperty<>();
@@ -129,6 +132,20 @@ public class StoreViewState {
 
         // Watch out for synchronizing all calls to the entries and categories list!
         DataStorage.get().addListener(new StorageListener() {
+
+            @Override
+            public void onStoreOrderUpdate() {
+                Platform.runLater(() -> {
+                    entriesOrderChangeObservable.set(entriesOrderChangeObservable.get() + 1);
+                });
+            }
+
+            @Override
+            public void onStoreListUpdate() {
+                Platform.runLater(() -> {
+                    entriesListChangeObservable.set(entriesListChangeObservable.get() + 1);
+                });
+            }
 
             @Override
             public void onStoreAdd(DataStoreEntry... entry) {

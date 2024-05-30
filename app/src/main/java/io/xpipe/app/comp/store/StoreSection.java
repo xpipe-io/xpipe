@@ -100,7 +100,8 @@ public class StoreSection {
                         return comp.compare(o1, o2);
                     }
                 },
-                mappedSortMode);
+                mappedSortMode,
+                StoreViewState.get().getEntriesOrderChangeObservable());
     }
 
     public static StoreSection createTopLevel(
@@ -111,7 +112,8 @@ public class StoreSection {
         var topLevel = all.filtered(section -> {
                     return DataStorage.get().isRootEntry(section.getEntry());
                 },
-                category);
+                category,
+                StoreViewState.get().getEntriesListChangeObservable());
         var cached = topLevel.mapped(
                 storeEntryWrapper -> create(storeEntryWrapper, 1, all, entryFilter, filterString, category));
         var ordered = sorted(cached, category);
@@ -154,7 +156,7 @@ public class StoreSection {
             var showProvider = other.getEntry().getProvider() == null ||
                     other.getEntry().getProvider().shouldShow(other);
             return isChildren && showProvider;
-        }, e.getPersistentState(), e.getCache());
+        }, e.getPersistentState(), e.getCache(), StoreViewState.get().getEntriesListChangeObservable());
         var cached = allChildren.mapped(
                 entry1 -> create(entry1, depth + 1, all, entryFilter, filterString, category));
         var ordered = sorted(cached, category);
