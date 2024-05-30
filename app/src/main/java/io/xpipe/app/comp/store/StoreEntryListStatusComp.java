@@ -8,6 +8,7 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.FilterComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 import javafx.beans.binding.Bindings;
@@ -55,24 +56,25 @@ public class StoreEntryListStatusComp extends SimpleComp {
         label.textProperty().bind(name);
         label.getStyleClass().add("name");
 
-        var all = StoreViewState.get().getAllEntries().filtered(
+        var all = ListBindingsHelper.filteredContentBinding(
+                StoreViewState.get().getAllEntries(),
                 storeEntryWrapper -> {
-                    var rootCategory = storeEntryWrapper.getCategory().getValue().getRoot();
-                    var inRootCategory = StoreViewState.get().getActiveCategory().getValue().getRoot().equals(rootCategory);
-                    // Sadly the all binding does not update when the individual visibility of entries changes
-                    // But it is good enough.
-                    var showProvider = storeEntryWrapper.getEntry().getProvider() == null ||
-                            storeEntryWrapper.getEntry().getProvider().shouldShow(storeEntryWrapper);
-                    return inRootCategory && showProvider;
+                    var storeRoot = storeEntryWrapper.getCategory().getValue().getRoot();
+                    return StoreViewState.get()
+                            .getActiveCategory()
+                            .getValue()
+                            .getRoot()
+                            .equals(storeRoot);
                 },
                 StoreViewState.get().getActiveCategory());
-        var shownList = all.filtered(
+        var shownList = ListBindingsHelper.filteredContentBinding(
+                all,
                 storeEntryWrapper -> {
                     return storeEntryWrapper.shouldShow(
                             StoreViewState.get().getFilterString().getValue());
                 },
                 StoreViewState.get().getFilterString());
-        var count = new CountComp<>(shownList.getList(), all.getList());
+        var count = new CountComp<>(shownList, all);
 
         var c = count.createRegion();
         var topBar = new HBox(

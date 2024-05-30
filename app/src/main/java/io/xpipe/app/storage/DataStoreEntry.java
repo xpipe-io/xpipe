@@ -72,9 +72,6 @@ public class DataStoreEntry extends StorageElement {
     @NonFinal
     String notes;
 
-    @NonFinal
-    UUID orderBefore;
-
     private DataStoreEntry(
             Path directory,
             UUID uuid,
@@ -89,8 +86,7 @@ public class DataStoreEntry extends StorageElement {
             JsonNode storePersistentState,
             boolean expanded,
             DataStoreColor color,
-            String notes, UUID orderBefore
-    ) {
+            String notes) {
         super(directory, uuid, name, lastUsed, lastModified, dirty);
         this.categoryUuid = categoryUuid;
         this.store = DataStorageParser.storeFromNode(storeNode);
@@ -99,7 +95,6 @@ public class DataStoreEntry extends StorageElement {
         this.configuration = configuration;
         this.expanded = expanded;
         this.color = color;
-        this.orderBefore = orderBefore;
         this.provider = store != null
                 ? DataStoreProviders.byStoreClass(store.getClass()).orElse(null)
                 : null;
@@ -114,12 +109,10 @@ public class DataStoreEntry extends StorageElement {
             String name,
             Instant lastUsed,
             Instant lastModified,
-            DataStore store, UUID orderBefore
-    ) {
+            DataStore store) {
         super(directory, uuid, name, lastUsed, lastModified, false);
         this.categoryUuid = categoryUuid;
         this.store = store;
-        this.orderBefore = orderBefore;
         this.storeNode = null;
         this.validity = Validity.INCOMPLETE;
         this.configuration = Configuration.defaultConfiguration();
@@ -137,8 +130,7 @@ public class DataStoreEntry extends StorageElement {
                 UUID.randomUUID().toString(),
                 Instant.now(),
                 Instant.now(),
-                store,
-                null);
+                store);
     }
 
     public static DataStoreEntry createNew(@NonNull String name, @NonNull DataStore store) {
@@ -167,7 +159,6 @@ public class DataStoreEntry extends StorageElement {
                 null,
                 false,
                 null,
-                null,
                 null);
         return entry;
     }
@@ -185,8 +176,7 @@ public class DataStoreEntry extends StorageElement {
             JsonNode storePersistentState,
             boolean expanded,
             DataStoreColor color,
-            String notes,
-            UUID orderBeforeEntry) {
+            String notes) {
         return new DataStoreEntry(
                 directory,
                 uuid,
@@ -201,8 +191,7 @@ public class DataStoreEntry extends StorageElement {
                 storePersistentState,
                 expanded,
                 color,
-                notes,
-                orderBeforeEntry);
+                notes);
     }
 
     public static Optional<DataStoreEntry> fromDirectory(Path dir) throws Exception {
@@ -237,15 +226,6 @@ public class DataStoreEntry extends StorageElement {
                 .map(jsonNode -> jsonNode.textValue())
                 .map(Instant::parse)
                 .orElse(Instant.EPOCH);
-        var order = Optional.ofNullable(stateJson.get("orderBefore"))
-                .map(node -> {
-                    try {
-                        return mapper.treeToValue(node, UUID.class);
-                    } catch (JsonProcessingException e) {
-                        return null;
-                    }
-                })
-                .orElse(null);
         var configuration = Optional.ofNullable(json.get("configuration"))
                 .map(node -> {
                     try {
@@ -295,17 +275,8 @@ public class DataStoreEntry extends StorageElement {
                 persistentState,
                 expanded,
                 color,
-                notes,
-                order
+                notes
         ));
-    }
-
-    public void setOrderBefore(UUID uuid) {
-        var changed = !Objects.equals(orderBefore, uuid);
-        this.orderBefore = uuid;
-        if (changed) {
-            notifyUpdate(false, true);
-        }
     }
 
     @Override
@@ -359,7 +330,7 @@ public class DataStoreEntry extends StorageElement {
                 storePersistentStateNode = JacksonMapper.getDefault().valueToTree(storePersistentState);
             }
         }
-        return (T) storePersistentState;
+        return (T) sds.getStateClass().cast(storePersistentState);
     }
 
     public void setStorePersistentState(DataStoreState value) {
@@ -408,7 +379,6 @@ public class DataStoreEntry extends StorageElement {
         stateObj.set("persistentState", storePersistentStateNode);
         obj.set("configuration", mapper.valueToTree(configuration));
         stateObj.put("expanded", expanded);
-        stateObj.put("orderBefore", orderBefore != null ? orderBefore.toString() : null);
 
         var entryString = mapper.writeValueAsString(obj);
         var stateString = mapper.writeValueAsString(stateObj);

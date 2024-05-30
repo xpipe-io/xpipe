@@ -2,16 +2,19 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
-import io.xpipe.app.fxcomps.util.DerivedObservableList;
+import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableStringValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import lombok.Value;
 
 import java.util.Comparator;
@@ -21,15 +24,15 @@ import java.util.function.Predicate;
 public class StoreSection {
 
     StoreEntryWrapper wrapper;
-    DerivedObservableList<StoreSection> allChildren;
-    DerivedObservableList<StoreSection> shownChildren;
+    ObservableList<StoreSection> allChildren;
+    ObservableList<StoreSection> shownChildren;
     int depth;
     ObservableBooleanValue showDetails;
 
     public StoreSection(
             StoreEntryWrapper wrapper,
-            DerivedObservableList<StoreSection> allChildren,
-            DerivedObservableList<StoreSection> shownChildren,
+            ObservableList<StoreSection> allChildren,
+            ObservableList<StoreSection> shownChildren,
             int depth) {
         this.wrapper = wrapper;
         this.allChildren = allChildren;
@@ -38,10 +41,10 @@ public class StoreSection {
         if (wrapper != null) {
             this.showDetails = Bindings.createBooleanBinding(
                     () -> {
-                        return wrapper.getExpanded().get() || allChildren.getList().isEmpty();
+                        return wrapper.getExpanded().get() || allChildren.isEmpty();
                     },
                     wrapper.getExpanded(),
-                    allChildren.getList());
+                    allChildren);
         } else {
             this.showDetails = new SimpleBooleanProperty(true);
         }
@@ -56,68 +59,51 @@ public class StoreSection {
         }
     }
 
-    private static DerivedObservableList<StoreSection> sorted(
-            DerivedObservableList<StoreSection> list, ObservableValue<StoreCategoryWrapper> category) {
+    private static ObservableList<StoreSection> sorted(
+            ObservableList<StoreSection> list, ObservableValue<StoreCategoryWrapper> category) {
         if (category == null) {
             return list;
         }
 
-        var explicitOrderComp = new Comparator<StoreSection>() {
-            @Override
-            public int compare(StoreSection o1, StoreSection o2) {
-                var explicit1 = o1.getWrapper().getEntry().getOrderBefore();
-                var explicit2 = o2.getWrapper().getEntry().getOrderBefore();
-                if (explicit1 == null && explicit2 == null) {
-                    return 0;
-                }
-                if (explicit1 != null && explicit2 == null) {
-                    return -1;
-                }
-                if (explicit2 != null && explicit1 == null) {
-                    return 1;
-                }
-                if (explicit1.equals(o2.getWrapper().getEntry().getUuid())) {
-                    return -1;
-                }
-                if (explicit2.equals(o1.getWrapper().getEntry().getUuid())) {
-                    return -1;
-                }
-                return 0;
-            }
-        };
-        var usableComp = Comparator.<StoreSection>comparingInt(
+        var c = Comparator.<StoreSection>comparingInt(
                 value -> value.getWrapper().getEntry().getValidity().isUsable() ? -1 : 1);
-        var comp = explicitOrderComp.thenComparing(usableComp);
         var mappedSortMode = BindingsHelper.flatMap(
                 category,
                 storeCategoryWrapper -> storeCategoryWrapper != null ? storeCategoryWrapper.getSortMode() : null);
-        return list.sorted((o1, o2) -> {
+        return ListBindingsHelper.orderedContentBinding(
+                list,
+                (o1, o2) -> {
                     var current = mappedSortMode.getValue();
                     if (current != null) {
-                        return comp.thenComparing(current.comparator())
+                        return c.thenComparing(current.comparator())
                                 .compare(current.representative(o1), current.representative(o2));
                     } else {
-                        return comp.compare(o1, o2);
+                        return c.compare(o1, o2);
                     }
                 },
                 mappedSortMode);
     }
 
     public static StoreSection createTopLevel(
-            DerivedObservableList<StoreEntryWrapper> all,
+            ObservableList<StoreEntryWrapper> all,
             Predicate<StoreEntryWrapper> entryFilter,
             ObservableStringValue filterString,
             ObservableValue<StoreCategoryWrapper> category) {
-        var topLevel = all.filtered(section -> {
+        var topLevel = ListBindingsHelper.filteredContentBinding(
+                all,
+                section -> {
                     return DataStorage.get().isRootEntry(section.getEntry());
                 },
                 category);
-        var cached = topLevel.mapped(
+        var cached = ListBindingsHelper.cachedMappedContentBinding(
+                topLevel,
+                topLevel,
                 storeEntryWrapper -> create(storeEntryWrapper, 1, all, entryFilter, filterString, category));
         var ordered = sorted(cached, category);
-        var shown = ordered.filtered(
+        var shown = ListBindingsHelper.filteredContentBinding(
+                ordered,
                 section -> {
-                    var showFilter = filterString == null || section.matchesFilter(filterString.get());
+                    var showFilter = filterString == null || section.shouldShow(filterString.get());
                     var matchesSelector = section.anyMatches(entryFilter);
                     var sameCategory = category == null
                             || category.getValue() == null
@@ -132,17 +118,15 @@ public class StoreSection {
     private static StoreSection create(
             StoreEntryWrapper e,
             int depth,
-            DerivedObservableList<StoreEntryWrapper> all,
+            ObservableList<StoreEntryWrapper> all,
             Predicate<StoreEntryWrapper> entryFilter,
             ObservableStringValue filterString,
             ObservableValue<StoreCategoryWrapper> category) {
         if (e.getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
-            return new StoreSection(e, new DerivedObservableList<>(
-                    FXCollections.observableArrayList(), true), new DerivedObservableList<>(
-                            FXCollections.observableArrayList(), true), depth);
+            return new StoreSection(e, FXCollections.observableArrayList(), FXCollections.observableArrayList(), depth);
         }
 
-        var allChildren = all.filtered(other -> {
+        var allChildren = ListBindingsHelper.filteredContentBinding(all, other -> {
             // Legacy implementation that does not use children caches. Use for testing
             //            if (true) return DataStorage.get()
             //                    .getDisplayParent(other.getEntry())
@@ -150,35 +134,29 @@ public class StoreSection {
             //                    .orElse(false);
 
             // This check is fast as the children are cached in the storage
-            var isChildren = DataStorage.get().getStoreChildren(e.getEntry()).contains(other.getEntry());
-            var showProvider = other.getEntry().getProvider() == null ||
-                    other.getEntry().getProvider().shouldShow(other);
-            return isChildren && showProvider;
-        }, e.getPersistentState(), e.getCache());
-        var cached = allChildren.mapped(
+            return DataStorage.get().getStoreChildren(e.getEntry()).contains(other.getEntry());
+        });
+        var cached = ListBindingsHelper.cachedMappedContentBinding(
+                allChildren,
+                allChildren,
                 entry1 -> create(entry1, depth + 1, all, entryFilter, filterString, category));
         var ordered = sorted(cached, category);
-        var filtered = ordered.filtered(
+        var filtered = ListBindingsHelper.filteredContentBinding(
+                ordered,
                 section -> {
-                    var showFilter = filterString == null || section.matchesFilter(filterString.get());
+                    var showFilter = filterString == null || section.shouldShow(filterString.get());
                     var matchesSelector = section.anyMatches(entryFilter);
-                    // Prevent updates for children on category switching by checking depth
-                    var showCategory = category == null
+                    var sameCategory = category == null
                             || category.getValue() == null
-                            || showInCategory(category.getValue(), section.getWrapper())
-                            || depth > 0;
+                            || showInCategory(category.getValue(), section.getWrapper());
                     // If this entry is already shown as root due to a different category than parent, don't show it
                     // again here
                     var notRoot =
                             !DataStorage.get().isRootEntry(section.getWrapper().getEntry());
-                    var showProvider = section.getWrapper().getEntry().getProvider() == null ||
-                            section.getWrapper().getEntry().getProvider().shouldShow(section.getWrapper());
-                    return showFilter && matchesSelector && showCategory && notRoot && showProvider;
+                    return showFilter && matchesSelector && sameCategory && notRoot;
                 },
                 category,
-                filterString,
-                e.getPersistentState(),
-                e.getCache());
+                filterString);
         return new StoreSection(e, cached, filtered, depth);
     }
 
@@ -201,13 +179,13 @@ public class StoreSection {
         return false;
     }
 
-    public boolean matchesFilter(String filter) {
+    public boolean shouldShow(String filter) {
         return anyMatches(storeEntryWrapper -> storeEntryWrapper.shouldShow(filter));
     }
 
     public boolean anyMatches(Predicate<StoreEntryWrapper> c) {
         return c == null
                 || c.test(wrapper)
-                || allChildren.getList().stream().anyMatch(storeEntrySection -> storeEntrySection.anyMatches(c));
+                || allChildren.stream().anyMatch(storeEntrySection -> storeEntrySection.anyMatches(c));
     }
 }

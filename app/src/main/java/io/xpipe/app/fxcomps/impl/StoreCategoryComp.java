@@ -11,10 +11,11 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
-import io.xpipe.app.fxcomps.util.DerivedObservableList;
+import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.util.ContextMenuHelper;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.css.PseudoClass;
@@ -25,6 +26,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
+
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -77,12 +79,13 @@ public class StoreCategoryComp extends SimpleComp {
                             showing.bind(cm.showingProperty());
                             return cm;
                         }));
-        var shownList = new DerivedObservableList<>(category.getContainedEntries(), true).filtered(
+        var shownList = ListBindingsHelper.filteredContentBinding(
+                category.getContainedEntries(),
                 storeEntryWrapper -> {
                     return storeEntryWrapper.shouldShow(
                             StoreViewState.get().getFilterString().getValue());
                 },
-                StoreViewState.get().getFilterString()).getList();
+                StoreViewState.get().getFilterString());
         var count = new CountComp<>(shownList, category.getContainedEntries(), string -> "(" + string + ")");
         var hover = new SimpleBooleanProperty();
         var focus = new SimpleBooleanProperty();

@@ -1,17 +1,22 @@
 package io.xpipe.app.comp.store;
 
 import io.xpipe.app.core.AppCache;
-import io.xpipe.app.fxcomps.util.DerivedObservableList;
+import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.StorageListener;
+
 import javafx.application.Platform;
-import javafx.beans.property.*;
-import javafx.beans.value.ObservableIntegerValue;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import lombok.Getter;
 
 import java.util.*;
@@ -24,14 +29,12 @@ public class StoreViewState {
     private final StringProperty filter = new SimpleStringProperty();
 
     @Getter
-    private final DerivedObservableList<StoreEntryWrapper> allEntries =
-            new DerivedObservableList<>(FXCollections.observableList(new CopyOnWriteArrayList<>()), true);
+    private final ObservableList<StoreEntryWrapper> allEntries =
+            FXCollections.observableList(new CopyOnWriteArrayList<>());
 
     @Getter
-    private final DerivedObservableList<StoreCategoryWrapper> categories =
-            new DerivedObservableList<>(FXCollections.observableList(new CopyOnWriteArrayList<>()), true);
-
-    private final ObservableIntegerValue updateObservable = new SimpleIntegerProperty();
+    private final ObservableList<StoreCategoryWrapper> categories =
+            FXCollections.observableList(new CopyOnWriteArrayList<>());
 
     @Getter
     private final Property<StoreCategoryWrapper> activeCategory = new SimpleObjectProperty<>();
@@ -73,8 +76,8 @@ public class StoreViewState {
     }
 
     private void updateContent() {
-        categories.getList().forEach(c -> c.update());
-        allEntries.getList().forEach(e -> e.update());
+        categories.forEach(c -> c.update());
+        allEntries.forEach(e -> e.update());
     }
 
     private void initSections() {
@@ -83,19 +86,16 @@ public class StoreViewState {
                     StoreSection.createTopLevel(allEntries, storeEntryWrapper -> true, filter, activeCategory);
         } catch (Exception exception) {
             currentTopLevelSection =
-                    new StoreSection(null,
-                            new DerivedObservableList<>(FXCollections.observableArrayList(), true),
-                            new DerivedObservableList<>(FXCollections.observableArrayList(), true),
-                            0);
+                    new StoreSection(null, FXCollections.emptyObservableList(), FXCollections.emptyObservableList(), 0);
             ErrorEvent.fromThrowable(exception).handle();
         }
     }
 
     private void initContent() {
-        allEntries.getList().setAll(FXCollections.observableArrayList(DataStorage.get().getStoreEntries().stream()
+        allEntries.setAll(FXCollections.observableArrayList(DataStorage.get().getStoreEntries().stream()
                 .map(StoreEntryWrapper::new)
                 .toList()));
-        categories.getList().setAll(FXCollections.observableArrayList(DataStorage.get().getStoreCategories().stream()
+        categories.setAll(FXCollections.observableArrayList(DataStorage.get().getStoreCategories().stream()
                 .map(StoreCategoryWrapper::new)
                 .toList()));
 
@@ -103,11 +103,11 @@ public class StoreViewState {
             DataStorage.get().setSelectedCategory(newValue.getCategory());
         });
         var selected = AppCache.get("selectedCategory", UUID.class, () -> DataStorage.DEFAULT_CATEGORY_UUID);
-        activeCategory.setValue(categories.getList().stream()
+        activeCategory.setValue(categories.stream()
                 .filter(storeCategoryWrapper ->
                         storeCategoryWrapper.getCategory().getUuid().equals(selected))
                 .findFirst()
-                .orElse(categories.getList().stream()
+                .orElse(categories.stream()
                         .filter(storeCategoryWrapper ->
                                 storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.DEFAULT_CATEGORY_UUID))
                         .findFirst()
@@ -119,9 +119,9 @@ public class StoreViewState {
             AppPrefs.get().condenseConnectionDisplay().addListener((observable, oldValue, newValue) -> {
                 Platform.runLater(() -> {
                     synchronized (this) {
-                        var l = new ArrayList<>(allEntries.getList());
-                        allEntries.getList().clear();
-                        allEntries.getList().setAll(l);
+                        var l = new ArrayList<>(allEntries);
+                        allEntries.clear();
+                        allEntries.setAll(l);
                     }
                 });
             });
@@ -129,7 +129,6 @@ public class StoreViewState {
 
         // Watch out for synchronizing all calls to the entries and categories list!
         DataStorage.get().addListener(new StorageListener() {
-
             @Override
             public void onStoreAdd(DataStoreEntry... entry) {
                 var l = Arrays.stream(entry)
@@ -143,11 +142,11 @@ public class StoreViewState {
                     }
 
                     synchronized (this) {
-                        allEntries.getList().addAll(l);
+                        allEntries.addAll(l);
                     }
                     synchronized (this) {
-                        categories.getList().stream()
-                                .filter(storeCategoryWrapper -> allEntries.getList().stream()
+                        categories.stream()
+                                .filter(storeCategoryWrapper -> allEntries.stream()
                                         .anyMatch(storeEntryWrapper -> storeEntryWrapper
                                                 .getEntry()
                                                 .getCategoryUuid()
@@ -164,14 +163,14 @@ public class StoreViewState {
                 var a = Arrays.stream(entry).collect(Collectors.toSet());
                 List<StoreEntryWrapper> l;
                 synchronized (this) {
-                    l = allEntries.getList().stream()
+                    l = allEntries.stream()
                             .filter(storeEntryWrapper -> a.contains(storeEntryWrapper.getEntry()))
                             .toList();
                 }
                 List<StoreCategoryWrapper> cats;
                 synchronized (this) {
-                    cats = categories.getList().stream()
-                            .filter(storeCategoryWrapper -> allEntries.getList().stream()
+                    cats = categories.stream()
+                            .filter(storeCategoryWrapper -> allEntries.stream()
                                     .anyMatch(storeEntryWrapper -> storeEntryWrapper
                                             .getEntry()
                                             .getCategoryUuid()
@@ -187,7 +186,7 @@ public class StoreViewState {
                     }
 
                     synchronized (this) {
-                        allEntries.getList().removeAll(l);
+                        allEntries.removeAll(l);
                     }
                     cats.forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
                 });
@@ -204,7 +203,7 @@ public class StoreViewState {
                     }
 
                     synchronized (this) {
-                        categories.getList().add(l);
+                        categories.add(l);
                     }
                     l.update();
                 });
@@ -214,7 +213,7 @@ public class StoreViewState {
             public void onCategoryRemove(DataStoreCategory category) {
                 Optional<StoreCategoryWrapper> found;
                 synchronized (this) {
-                    found = categories.getList().stream()
+                    found = categories.stream()
                             .filter(storeCategoryWrapper ->
                                     storeCategoryWrapper.getCategory().equals(category))
                             .findFirst();
@@ -230,7 +229,7 @@ public class StoreViewState {
                     }
 
                     synchronized (this) {
-                        categories.getList().remove(found.get());
+                        categories.remove(found.get());
                     }
                     var p = found.get().getParent();
                     if (p != null) {
@@ -241,24 +240,7 @@ public class StoreViewState {
         });
     }
 
-    public Optional<StoreSection> getParentSectionForWrapper(StoreEntryWrapper wrapper) {
-        StoreSection current = getCurrentTopLevelSection();
-        while (true) {
-            var child = current.getAllChildren().getList().stream().filter(section -> section.getWrapper().equals(wrapper)).findFirst();
-            if (child.isPresent()) {
-                return Optional.of(current);
-            }
-
-            var traverse = current.getAllChildren().getList().stream().filter(section -> section.anyMatches(w -> w.equals(wrapper))).findFirst();
-            if (traverse.isPresent()) {
-                current = traverse.get();
-            } else {
-                return Optional.empty();
-            }
-        }
-    }
-
-    public DerivedObservableList<StoreCategoryWrapper> getSortedCategories(StoreCategoryWrapper root) {
+    public ObservableList<StoreCategoryWrapper> getSortedCategories(StoreCategoryWrapper root) {
         Comparator<StoreCategoryWrapper> comparator = new Comparator<>() {
             @Override
             public int compare(StoreCategoryWrapper o1, StoreCategoryWrapper o2) {
@@ -295,11 +277,13 @@ public class StoreViewState {
                         .compareToIgnoreCase(o2.nameProperty().getValue());
             }
         };
-        return categories.filtered(cat -> root == null || cat.getRoot().equals(root)).sorted(comparator);
+        return ListBindingsHelper.filteredContentBinding(
+                        categories, cat -> root == null || cat.getRoot().equals(root))
+                .sorted(comparator);
     }
 
     public StoreCategoryWrapper getAllConnectionsCategory() {
-        return categories.getList().stream()
+        return categories.stream()
                 .filter(storeCategoryWrapper ->
                         storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.ALL_CONNECTIONS_CATEGORY_UUID))
                 .findFirst()
@@ -307,7 +291,7 @@ public class StoreViewState {
     }
 
     public StoreCategoryWrapper getAllScriptsCategory() {
-        return categories.getList().stream()
+        return categories.stream()
                 .filter(storeCategoryWrapper ->
                         storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID))
                 .findFirst()
@@ -315,14 +299,14 @@ public class StoreViewState {
     }
 
     public StoreEntryWrapper getEntryWrapper(DataStoreEntry entry) {
-        return allEntries.getList().stream()
+        return allEntries.stream()
                 .filter(storeCategoryWrapper -> storeCategoryWrapper.getEntry().equals(entry))
                 .findFirst()
                 .orElseThrow();
     }
 
     public StoreCategoryWrapper getCategoryWrapper(DataStoreCategory entry) {
-        return categories.getList().stream()
+        return categories.stream()
                 .filter(storeCategoryWrapper ->
                         storeCategoryWrapper.getCategory().equals(entry))
                 .findFirst()

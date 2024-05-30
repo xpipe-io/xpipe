@@ -52,6 +52,7 @@ public class StoreToggleComp extends SimpleComp {
                         initial.apply(section.getWrapper().getEntry().getStore().asNeeded())),
                 v -> {
                     setter.accept(section.getWrapper().getEntry().getStore().asNeeded(), v);
+                    section.getWrapper().refreshChildren();
                 });
     }
 

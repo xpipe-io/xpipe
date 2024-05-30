@@ -7,8 +7,10 @@ import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
+import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.beans.binding.Bindings;
 import javafx.css.PseudoClass;
 import javafx.scene.control.Button;
@@ -40,9 +42,9 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
     private Comp<CompStructure<Button>> createQuickAccessButton() {
         var quickAccessDisabled = Bindings.createBooleanBinding(
                 () -> {
-                    return section.getShownChildren().getList().isEmpty();
+                    return section.getShownChildren().isEmpty();
                 },
-                section.getShownChildren().getList());
+                section.getShownChildren());
         Consumer<StoreEntryWrapper> quickAccessAction = w -> {
             ThreadHelper.runFailableAsync(() -> {
                 w.executeDefaultAction();
@@ -69,11 +71,11 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
         var expandButton = new IconButtonComp(
                 Bindings.createStringBinding(
                         () -> section.getWrapper().getExpanded().get()
-                                        && section.getShownChildren().getList().size() > 0
+                                        && section.getShownChildren().size() > 0
                                 ? "mdal-keyboard_arrow_down"
                                 : "mdal-keyboard_arrow_right",
                         section.getWrapper().getExpanded(),
-                        section.getShownChildren().getList()),
+                        section.getShownChildren()),
                 () -> {
                     section.getWrapper().toggleExpanded();
                 });
@@ -87,7 +89,7 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                             return "Expand " + section.getWrapper().getName().getValue();
                         },
                         section.getWrapper().getName()))
-                .disable(Bindings.size(section.getShownChildren().getList()).isEqualTo(0))
+                .disable(Bindings.size(section.getShownChildren()).isEqualTo(0))
                 .styleClass("expand-button")
                 .maxHeight(100)
                 .vgrow();
@@ -126,12 +128,13 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
 
         // Optimization for large sections. If there are more than 20 children, only add the nodes to the scene if the
         // section is actually expanded
-        var listSections = section.getShownChildren().filtered(
-                storeSection -> section.getAllChildren().getList().size() <= 20
+        var listSections = ListBindingsHelper.filteredContentBinding(
+                section.getShownChildren(),
+                storeSection -> section.getAllChildren().size() <= 20
                         || section.getWrapper().getExpanded().get(),
                 section.getWrapper().getExpanded(),
-                section.getAllChildren().getList());
-        var content = new ListBoxViewComp<>(listSections.getList(), section.getAllChildren().getList(), (StoreSection e) -> {
+                section.getAllChildren());
+        var content = new ListBoxViewComp<>(listSections, section.getAllChildren(), (StoreSection e) -> {
                     return StoreSection.customSection(e, false).apply(GrowAugment.create(true, false));
                 })
                 .minHeight(0)
@@ -140,10 +143,10 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
         var expanded = Bindings.createBooleanBinding(
                 () -> {
                     return section.getWrapper().getExpanded().get()
-                            && section.getShownChildren().getList().size() > 0;
+                            && section.getShownChildren().size() > 0;
                 },
                 section.getWrapper().getExpanded(),
-                section.getShownChildren().getList());
+                section.getShownChildren());
         var full = new VerticalComp(List.of(
                 topEntryList,
                 Comp.separator().hide(expanded.not()),
@@ -152,7 +155,7 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                         .apply(struc -> struc.get().setFillHeight(true))
                         .hide(Bindings.or(
                                 Bindings.not(section.getWrapper().getExpanded()),
-                                Bindings.size(section.getShownChildren().getList()).isEqualTo(0)))));
+                                Bindings.size(section.getShownChildren()).isEqualTo(0)))));
         return full.styleClass("store-entry-section-comp")
                 .apply(struc -> {
                     struc.get().setFillWidth(true);

@@ -372,19 +372,31 @@ public abstract class StoreEntryComp extends SimpleComp {
             contextMenu.getItems().add(new SeparatorMenuItem());
         }
 
-        var notes = new MenuItem(AppI18n.get("addNotes"), new FontIcon("mdi2n-note-text"));
-        notes.setOnAction(event -> {
-            wrapper.getNotes().setValue(new StoreNotes(null, getDefaultNotes()));
-            event.consume();
-        });
-        notes.visibleProperty().bind(BindingsHelper.map(wrapper.getNotes(), s -> s.getCommited() == null));
-        contextMenu.getItems().add(notes);
-
         if (AppPrefs.get().developerMode().getValue()) {
             var browse = new MenuItem(AppI18n.get("browseInternalStorage"), new FontIcon("mdi2f-folder-open-outline"));
             browse.setOnAction(
                     event -> DesktopHelper.browsePathLocal(wrapper.getEntry().getDirectory()));
             contextMenu.getItems().add(browse);
+        }
+
+        if (wrapper.getEntry().getProvider() != null) {
+            var move = new Menu(AppI18n.get("moveTo"), new FontIcon("mdi2f-folder-move-outline"));
+            StoreViewState.get()
+                    .getSortedCategories(wrapper.getCategory().getValue().getRoot())
+                    .forEach(storeCategoryWrapper -> {
+                        MenuItem m = new MenuItem();
+                        m.textProperty().setValue("  ".repeat(storeCategoryWrapper.getDepth()) + storeCategoryWrapper.getName().getValue());
+                        m.setOnAction(event -> {
+                            wrapper.moveTo(storeCategoryWrapper.getCategory());
+                            event.consume();
+                        });
+                        if (storeCategoryWrapper.getParent() == null) {
+                            m.setDisable(true);
+                        }
+
+                        move.getItems().add(m);
+                    });
+            contextMenu.getItems().add(move);
         }
 
         if (DataStorage.get().isRootEntry(wrapper.getEntry())) {
@@ -406,66 +418,13 @@ public abstract class StoreEntryComp extends SimpleComp {
             contextMenu.getItems().add(color);
         }
 
-        if (wrapper.getEntry().getProvider() != null) {
-            var move = new Menu(AppI18n.get("moveTo"), new FontIcon("mdi2f-folder-move-outline"));
-            StoreViewState.get()
-                    .getSortedCategories(wrapper.getCategory().getValue().getRoot())
-                    .getList()
-                    .forEach(storeCategoryWrapper -> {
-                        MenuItem m = new MenuItem();
-                        m.textProperty().setValue("  ".repeat(storeCategoryWrapper.getDepth()) + storeCategoryWrapper.getName().getValue());
-                        m.setOnAction(event -> {
-                            wrapper.moveTo(storeCategoryWrapper.getCategory());
-                            event.consume();
-                        });
-                        if (storeCategoryWrapper.getParent() == null) {
-                            m.setDisable(true);
-                        }
-
-                        move.getItems().add(m);
-                    });
-            contextMenu.getItems().add(move);
-        }
-
-        var order = new Menu(AppI18n.get("order"), new FontIcon("mdal-bookmarks"));
-        var noOrder = new MenuItem("None");
-        noOrder.setOnAction(event -> {
-            DataStorage.get().orderBefore(wrapper.getEntry(), null);
+        var notes = new MenuItem(AppI18n.get("addNotes"), new FontIcon("mdi2n-note-text"));
+        notes.setOnAction(event -> {
+            wrapper.getNotes().setValue(new StoreNotes(null, getDefaultNotes()));
             event.consume();
         });
-        if (wrapper.getEntry().getOrderBefore() == null) {
-            noOrder.setDisable(true);
-        }
-        order.getItems().add(noOrder);
-        var stick = new MenuItem(AppI18n.get("stickToTop"));
-        stick.setOnAction(event -> {
-            DataStorage.get().orderBefore(wrapper.getEntry(), wrapper.getEntry());
-            event.consume();
-        });
-        if (wrapper.getEntry().getUuid().equals(wrapper.getEntry().getOrderBefore())) {
-            stick.setDisable(true);
-        }
-        order.getItems().add(stick);
-        order.getItems().add(new SeparatorMenuItem());
-        var section = StoreViewState.get().getParentSectionForWrapper(wrapper);
-        section.get().getAllChildren().getList().forEach(other -> {
-            var ow = other.getWrapper();
-            var op = ow.getEntry().getProvider();
-            MenuItem m = new MenuItem(ow.getName().getValue(),
-                    op != null ? PrettyImageHelper.ofFixedSizeSquare(op.getDisplayIconFileName(ow.getEntry().getStore()),
-                            16).createRegion() : null);
-            if (ow.getEntry().getUuid().equals(wrapper.getEntry().getOrderBefore())) {
-                m.setDisable(true);
-            }
-            m.setOnAction(event -> {
-                wrapper.orderBefore(ow);
-                event.consume();
-            });
-            order.getItems().add(m);
-        });
-        contextMenu.getItems().add(order);
-
-        contextMenu.getItems().add(new SeparatorMenuItem());
+        notes.visibleProperty().bind(BindingsHelper.map(wrapper.getNotes(), s -> s.getCommited() == null));
+        contextMenu.getItems().add(notes);
 
         var del = new MenuItem(AppI18n.get("remove"), new FontIcon("mdal-delete_outline"));
         del.disableProperty()

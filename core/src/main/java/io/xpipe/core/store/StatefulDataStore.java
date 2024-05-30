@@ -1,9 +1,11 @@
 package io.xpipe.core.store;
 
 import io.xpipe.core.util.DataStateProvider;
+
 import lombok.SneakyThrows;
 
 import java.util.Arrays;
+import java.util.function.Supplier;
 
 public interface StatefulDataStore<T extends DataStoreState> extends DataStore {
 
@@ -17,12 +19,18 @@ public interface StatefulDataStore<T extends DataStoreState> extends DataStore {
         return getStateClass().cast(m.invoke(b));
     }
 
+    @SuppressWarnings("unchecked")
     default T getState() {
-        return DataStateProvider.get().getState(this, this::createDefaultState);
+        return (T)
+                DataStateProvider.get().getState(this, this::createDefaultState).deepCopy();
     }
 
     default void setState(T val) {
         DataStateProvider.get().setState(this, val);
+    }
+
+    default T getState(Supplier<T> def) {
+        return DataStateProvider.get().getState(this, def);
     }
 
     @SneakyThrows

@@ -6,14 +6,15 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ShellTemp;
 import io.xpipe.app.util.Validators;
-import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellInitCommand;
+import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.DataStoreState;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.StatefulDataStore;
 import io.xpipe.core.util.JacksonizedValue;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -221,12 +222,20 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
 
     public abstract List<DataStoreEntryRef<ScriptStore>> getEffectiveScripts();
 
-    @Value
-    @EqualsAndHashCode(callSuper=true)
-    @SuperBuilder(toBuilder = true)
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    @Setter
+    @Getter
+    @SuperBuilder
     @Jacksonized
     public static class State extends DataStoreState {
         boolean isDefault;
         boolean bringToShell;
+
+        @Override
+        public void merge(DataStoreState newer) {
+            var s = (State) newer;
+            isDefault = s.isDefault;
+            bringToShell = s.bringToShell;
+        }
     }
 }

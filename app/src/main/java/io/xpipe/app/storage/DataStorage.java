@@ -329,19 +329,15 @@ public abstract class DataStorage {
         }
 
         var children = getDeepStoreChildren(entry);
+        var toRemove = Stream.concat(Stream.of(entry), children.stream()).toArray(DataStoreEntry[]::new);
+        listeners.forEach(storageListener -> storageListener.onStoreRemove(toRemove));
+
         entry.setCategoryUuid(newCategory.getUuid());
         children.forEach(child -> child.setCategoryUuid(newCategory.getUuid()));
+
+        var toAdd = Stream.concat(Stream.of(entry), children.stream()).toArray(DataStoreEntry[]::new);
+        listeners.forEach(storageListener -> storageListener.onStoreAdd(toAdd));
         saveAsync();
-    }
-
-    public void orderBefore(DataStoreEntry entry, DataStoreEntry reference) {
-        var children = getDeepStoreChildren(entry);
-        var arr = Stream.concat(Stream.of(entry), children.stream()).toArray(DataStoreEntry[]::new);
-        listeners.forEach(storageListener -> storageListener.onStoreRemove(arr));
-
-        entry.setOrderBefore(reference != null ? reference.getUuid() : null);
-
-        listeners.forEach(storageListener -> storageListener.onStoreAdd(arr));
     }
 
     public boolean refreshChildren(DataStoreEntry e) {
@@ -443,8 +439,8 @@ public abstract class DataStorage {
                         pair.getKey().setStoreInternal(merged, false);
                     }
 
-                    var s = pair.getKey().getStorePersistentState();
-                    var mergedState = s.mergeCopy(pair.getValue().get().getStorePersistentState());
+                    var mergedState = pair.getKey().getStorePersistentState().deepCopy();
+                    mergedState.merge(pair.getValue().get().getStorePersistentState());
                     pair.getKey().setStorePersistentState(mergedState);
                 }
             }
@@ -792,7 +788,9 @@ public abstract class DataStorage {
 
     public Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull DataStore store, boolean identityOnly) {
         return storeEntriesSet.stream()
-                .filter(n -> n.getStore() == store || (!identityOnly && (n.getStore() != null
+                .filter(n -> n.getStore() == store
+                        || (!identityOnly
+                                && (n.getStore() != null
                                         && Objects.equals(
                                                 store.getClass(), n.getStore().getClass())
                                         && store.equals(n.getStore()))))

@@ -9,13 +9,17 @@ import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.ThreadHelper;
-import javafx.beans.Observable;
+
 import javafx.beans.property.*;
+
 import lombok.Getter;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Getter
 public class StoreEntryWrapper {
@@ -61,19 +65,9 @@ public class StoreEntryWrapper {
         setupListeners();
     }
 
-    public List<Observable> getUpdateObservables() {
-        return List.of(category);
-    }
-
     public void moveTo(DataStoreCategory category) {
         ThreadHelper.runAsync(() -> {
             DataStorage.get().updateCategory(entry, category);
-        });
-    }
-
-    public void orderBefore(StoreEntryWrapper other) {
-        ThreadHelper.runAsync(() -> {
-            DataStorage.get().orderBefore(getEntry(),other.getEntry());
         });
     }
 
