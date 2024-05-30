@@ -15,7 +15,10 @@ import javafx.collections.FXCollections;
 import lombok.Value;
 
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Predicate;
+import java.util.function.ToIntFunction;
 
 @Value
 public class StoreSection {
@@ -62,29 +65,36 @@ public class StoreSection {
             return list;
         }
 
-        var explicitOrderComp = new Comparator<StoreSection>() {
+        var explicitOrderComp = Comparator.<StoreSection>comparingInt(new ToIntFunction<>() {
             @Override
-            public int compare(StoreSection o1, StoreSection o2) {
-                var explicit1 = o1.getWrapper().getEntry().getOrderBefore();
-                var explicit2 = o2.getWrapper().getEntry().getOrderBefore();
-                if (explicit1 == null && explicit2 == null) {
-                    return 0;
-                }
-                if (explicit1 != null && explicit2 == null) {
-                    return -1;
-                }
-                if (explicit2 != null && explicit1 == null) {
+            public int applyAsInt(StoreSection value) {
+                var explicit = value.getWrapper().getEntry().getOrderBefore();
+                if (explicit == null) {
                     return 1;
                 }
-                if (explicit1.equals(o2.getWrapper().getEntry().getUuid())) {
-                    return -1;
+
+                if (explicit.equals(value.getWrapper().getEntry().getUuid())) {
+                    return Integer.MIN_VALUE;
                 }
-                if (explicit2.equals(o1.getWrapper().getEntry().getUuid())) {
-                    return -1;
-                }
-                return 0;
+
+                return -count(value.getWrapper(), new HashSet<>());
             }
-        };
+
+            private int count(StoreEntryWrapper wrapper, Set<StoreEntryWrapper> seen) {
+                if (seen.contains(wrapper)) {
+                    // Loop!
+                    return 0;
+                }
+                seen.add(wrapper);
+
+                var found = list.getList().stream().filter(section -> wrapper.getEntry().getOrderBefore().equals(section.getWrapper().getEntry().getUuid())).findFirst();
+                if (found.isPresent()) {
+                    return count(found.get().getWrapper(), seen);
+                } else {
+                    return seen.size();
+                }
+            }
+        });
         var usableComp = Comparator.<StoreSection>comparingInt(
                 value -> value.getWrapper().getEntry().getValidity().isUsable() ? -1 : 1);
         var comp = explicitOrderComp.thenComparing(usableComp);

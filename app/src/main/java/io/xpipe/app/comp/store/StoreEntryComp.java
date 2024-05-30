@@ -428,7 +428,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         }
 
         var order = new Menu(AppI18n.get("order"), new FontIcon("mdal-bookmarks"));
-        var noOrder = new MenuItem("None");
+        var noOrder = new MenuItem(AppI18n.get("none"), new FontIcon("mdi2r-reorder-horizontal"));
         noOrder.setOnAction(event -> {
             DataStorage.get().orderBefore(wrapper.getEntry(), null);
             event.consume();
@@ -437,7 +437,8 @@ public abstract class StoreEntryComp extends SimpleComp {
             noOrder.setDisable(true);
         }
         order.getItems().add(noOrder);
-        var stick = new MenuItem(AppI18n.get("stickToTop"));
+        order.getItems().add(new SeparatorMenuItem());
+        var stick = new MenuItem(AppI18n.get("stickToTop"), new FontIcon("mdi2o-order-bool-descending"));
         stick.setOnAction(event -> {
             DataStorage.get().orderBefore(wrapper.getEntry(), wrapper.getEntry());
             event.consume();
@@ -447,22 +448,27 @@ public abstract class StoreEntryComp extends SimpleComp {
         }
         order.getItems().add(stick);
         order.getItems().add(new SeparatorMenuItem());
+        var desc = new MenuItem(AppI18n.get("orderAheadOf"), new FontIcon("mdi2o-order-bool-descending-variant"));
+        desc.setDisable(true);
+        order.getItems().add(desc);
         var section = StoreViewState.get().getParentSectionForWrapper(wrapper);
-        section.get().getAllChildren().getList().forEach(other -> {
-            var ow = other.getWrapper();
-            var op = ow.getEntry().getProvider();
-            MenuItem m = new MenuItem(ow.getName().getValue(),
-                    op != null ? PrettyImageHelper.ofFixedSizeSquare(op.getDisplayIconFileName(ow.getEntry().getStore()),
-                            16).createRegion() : null);
-            if (ow.getEntry().getUuid().equals(wrapper.getEntry().getOrderBefore())) {
-                m.setDisable(true);
-            }
-            m.setOnAction(event -> {
-                wrapper.orderBefore(ow);
-                event.consume();
+        if (section.isPresent()) {
+            section.get().getAllChildren().getList().forEach(other -> {
+                var ow = other.getWrapper();
+                var op = ow.getEntry().getProvider();
+                MenuItem m = new MenuItem(ow.getName().getValue(),
+                        op != null ? PrettyImageHelper.ofFixedSizeSquare(op.getDisplayIconFileName(ow.getEntry().getStore()),
+                                16).createRegion() : null);
+                if (other.getWrapper().equals(wrapper) || ow.getEntry().getUuid().equals(wrapper.getEntry().getOrderBefore())) {
+                    m.setDisable(true);
+                }
+                m.setOnAction(event -> {
+                    wrapper.orderBefore(ow);
+                    event.consume();
+                });
+                order.getItems().add(m);
             });
-            order.getItems().add(m);
-        });
+        }
         contextMenu.getItems().add(order);
 
         contextMenu.getItems().add(new SeparatorMenuItem());
