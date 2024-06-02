@@ -113,7 +113,6 @@ open module io.xpipe.app {
             AppJacksonModule;
     provides ModuleLayerLoader with
             DataStorageExtensionProvider.Loader,
-            MessageExchangeImpls.Loader,
             DataStoreProviders.Loader,
             ActionProvider.Loader,
             PrefsProvider.Loader,
