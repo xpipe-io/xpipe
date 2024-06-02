@@ -144,7 +144,6 @@ public class StoreSection {
         var filtered = ListBindingsHelper.filteredContentBinding(
                 ordered,
                 section -> {
-                    var showFilter = filterString == null || section.shouldShow(filterString.get());
                     var matchesSelector = section.anyMatches(entryFilter);
                     var sameCategory = category == null
                             || category.getValue() == null
@@ -153,7 +152,7 @@ public class StoreSection {
                     // again here
                     var notRoot =
                             !DataStorage.get().isRootEntry(section.getWrapper().getEntry());
-                    return showFilter && matchesSelector && sameCategory && notRoot;
+                    return matchesSelector && sameCategory && notRoot;
                 },
                 category,
                 filterString);
