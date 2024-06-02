@@ -1,314 +1,124 @@
 package io.xpipe.beacon;
 
-import io.xpipe.beacon.exchange.MessageExchanges;
-import io.xpipe.beacon.exchange.data.ClientErrorMessage;
-import io.xpipe.beacon.exchange.data.ServerErrorMessage;
-import io.xpipe.core.util.Deobfuscator;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.xpipe.beacon.api.HandshakeExchange;
 import io.xpipe.core.util.JacksonMapper;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Value;
-import lombok.extern.jackson.Jacksonized;
-
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringWriter;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Optional;
 
-import static io.xpipe.beacon.BeaconConfig.BODY_SEPARATOR;
+public class BeaconClient {
 
-public class BeaconClient implements AutoCloseable {
+    private final int port;
+    private String token;
 
-    @Getter
-    private final AutoCloseable base;
+    public BeaconClient(int port) {this.port = port;}
 
-    private final InputStream in;
-    private final OutputStream out;
-
-    private BeaconClient(AutoCloseable base, InputStream in, OutputStream out) {
-        this.base = base;
-        this.in = in;
-        this.out = out;
-    }
-
-    public static BeaconClient establishConnection(ClientInformation information) throws Exception {
-        var socket = new Socket();
-        socket.connect(new InetSocketAddress(InetAddress.getLoopbackAddress(), BeaconConfig.getUsedPort()), 5000);
-        socket.setSoTimeout(5000);
-        var client = new BeaconClient(socket, socket.getInputStream(), socket.getOutputStream());
-        client.sendObject(JacksonMapper.getDefault().valueToTree(information));
-        var res = client.receiveObject();
-        if (!res.isTextual() || !"ACK".equals(res.asText())) {
-            throw new BeaconException("Daemon responded with invalid acknowledgement");
-        }
-        socket.setSoTimeout(0);
+    public static BeaconClient establishConnection(int port, BeaconClientInformation information) throws Exception {
+        var client = new BeaconClient(port);
+        HandshakeExchange.Response response = client.performRequest(HandshakeExchange.Request.builder().client(information).build());
+        client.token = response.getToken();
         return client;
     }
 
-    public static Optional<BeaconClient> tryEstablishConnection(ClientInformation information) {
+    public static Optional<BeaconClient> tryEstablishConnection(int port, BeaconClientInformation information) {
         try {
-            return Optional.of(establishConnection(information));
+            return Optional.of(establishConnection(port, information));
         } catch (Exception ex) {
             return Optional.empty();
         }
     }
 
-    public void close() throws ConnectorException {
-        try {
-            base.close();
-        } catch (Exception ex) {
-            throw new ConnectorException("Couldn't close client", ex);
-        }
-    }
 
-    public InputStream receiveBody() throws ConnectorException {
-        try {
-            var sep = in.readNBytes(BODY_SEPARATOR.length);
-            if (sep.length != 0 && !Arrays.equals(BODY_SEPARATOR, sep)) {
-                throw new ConnectorException("Invalid body separator");
-            }
-            return BeaconFormat.readBlocks(in);
-        } catch (IOException ex) {
-            throw new ConnectorException(ex);
-        }
-    }
-
-    public OutputStream sendBody() throws ConnectorException {
-        try {
-            out.write(BODY_SEPARATOR);
-            return BeaconFormat.writeBlocks(out);
-        } catch (IOException ex) {
-            throw new ConnectorException(ex);
-        }
-    }
-
-    public <T extends RequestMessage> void sendRequest(T req) throws ClientException, ConnectorException {
-        ObjectNode json = JacksonMapper.getDefault().valueToTree(req);
-        var prov = MessageExchanges.byRequest(req);
-        if (prov.isEmpty()) {
-            throw new ClientException("Unknown request class " + req.getClass());
-        }
-
-        json.set("messageType", new TextNode(prov.get().getId()));
-        json.set("messagePhase", new TextNode("request"));
-        // json.set("id", new TextNode(UUID.randomUUID().toString()));
-        var msg = JsonNodeFactory.instance.objectNode();
-        msg.set("xPipeMessage", json);
-
-        if (BeaconConfig.printMessages()) {
-            System.out.println(
-                    "Sending request to server of type " + req.getClass().getName());
-        }
-
-        sendObject(msg);
-    }
-
-    public void sendEOF() throws ConnectorException {
-        try (OutputStream ignored = BeaconFormat.writeBlocks(out)) {
-        } catch (IOException ex) {
-            throw new ConnectorException("Couldn't write to socket", ex);
-        }
-    }
-
-    public void sendObject(JsonNode node) throws ConnectorException {
-        var writer = new StringWriter();
-        var mapper = JacksonMapper.getDefault();
-        try (JsonGenerator g = mapper.createGenerator(writer).setPrettyPrinter(new DefaultPrettyPrinter())) {
-            g.writeTree(node);
-        } catch (IOException ex) {
-            throw new ConnectorException("Couldn't serialize request", ex);
-        }
-
-        var content = writer.toString();
+    @SuppressWarnings("unchecked")
+    public <RES> RES performRequest(BeaconInterface<?> prov, String rawNode) throws
+            BeaconConnectorException, BeaconClientException, BeaconServerException {
+        var content = rawNode;
         if (BeaconConfig.printMessages()) {
             System.out.println("Sending raw request:");
             System.out.println(content);
         }
 
-        try (OutputStream blockOut = BeaconFormat.writeBlocks(out)) {
-            blockOut.write(content.getBytes(StandardCharsets.UTF_8));
-        } catch (IOException ex) {
-            throw new ConnectorException("Couldn't write to socket", ex);
-        }
-    }
-
-    public <T extends ResponseMessage> T receiveResponse() throws ConnectorException, ClientException, ServerException {
-        return parseResponse(receiveObject());
-    }
-
-    private JsonNode receiveObject() throws ConnectorException, ClientException, ServerException {
-        JsonNode node;
-        try (InputStream blockIn = BeaconFormat.readBlocks(in)) {
-            node = JacksonMapper.getDefault().readTree(blockIn);
-        } catch (IOException ex) {
-            throw new ConnectorException("Couldn't read from socket", ex);
+        var client = HttpClient.newHttpClient();
+        HttpResponse<String> response;
+        try {
+            var uri = URI.create("http://localhost:" + port + prov.getPath());
+            var builder = HttpRequest.newBuilder();
+            if (token != null) {
+                builder.header("Authorization", "Bearer " + token);
+            }
+            var httpRequest = builder
+                    .uri(uri).POST(HttpRequest.BodyPublishers.ofString(content)).build();
+            response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception ex) {
+            throw new BeaconConnectorException("Couldn't send request", ex);
         }
 
         if (BeaconConfig.printMessages()) {
-            System.out.println("Received response:");
-            System.out.println(node.toPrettyString());
+            System.out.println("Received raw response:");
+            System.out.println(response.body());
         }
 
-        if (node.isMissingNode()) {
-            throw new ConnectorException("Received unexpected EOF");
-        }
-
-        var se = parseServerError(node);
+        var se = parseServerError(response);
         if (se.isPresent()) {
             se.get().throwError();
         }
 
-        var ce = parseClientError(node);
+        var ce = parseClientError(response);
         if (ce.isPresent()) {
             throw ce.get().throwException();
         }
 
-        return node;
-    }
-
-    private Optional<ClientErrorMessage> parseClientError(JsonNode node) throws ConnectorException {
-        ObjectNode content = (ObjectNode) node.get("xPipeClientError");
-        if (content == null) {
-            return Optional.empty();
-        }
-
         try {
-            var message = JacksonMapper.getDefault().treeToValue(content, ClientErrorMessage.class);
-            return Optional.of(message);
+            var reader = JacksonMapper.getDefault().readerFor(prov.getResponseClass());
+            var v = (RES) reader.readValue(response.body());
+            return v;
         } catch (IOException ex) {
-            throw new ConnectorException("Couldn't parse client error message", ex);
+            throw new BeaconConnectorException("Couldn't parse response", ex);
         }
     }
 
-    private Optional<ServerErrorMessage> parseServerError(JsonNode node) throws ConnectorException {
-        ObjectNode content = (ObjectNode) node.get("xPipeServerError");
-        if (content == null) {
-            return Optional.empty();
-        }
-
-        try {
-            var message = JacksonMapper.getDefault().treeToValue(content, ServerErrorMessage.class);
-            Deobfuscator.deobfuscate(message.getError());
-            return Optional.of(message);
-        } catch (IOException ex) {
-            throw new ConnectorException("Couldn't parse server error message", ex);
-        }
-    }
-
-    private <T extends ResponseMessage> T parseResponse(JsonNode header) throws ConnectorException {
-        ObjectNode content = (ObjectNode) header.required("xPipeMessage");
-
-        var type = content.required("messageType").textValue();
-        var phase = content.required("messagePhase").textValue();
-        // var requestId = UUID.fromString(content.required("id").textValue());
-        if (!phase.equals("response")) {
-            throw new IllegalArgumentException();
-        }
-        content.remove("messageType");
-        content.remove("messagePhase");
-        // content.remove("id");
-
-        var prov = MessageExchanges.byId(type);
+    public <REQ, RES> RES performRequest(REQ req) throws BeaconConnectorException, BeaconClientException, BeaconServerException {
+        ObjectNode node = JacksonMapper.getDefault().valueToTree(req);
+        var prov = BeaconInterface.byRequest(req);
         if (prov.isEmpty()) {
-            throw new IllegalArgumentException("Unknown response id " + type);
+            throw new IllegalArgumentException("Unknown request class " + req.getClass());
+        }
+        if (BeaconConfig.printMessages()) {
+            System.out.println("Sending request to server of type " + req.getClass().getName());
+        }
+
+        return performRequest(prov.get(), node.toPrettyString());
+    }
+
+    private Optional<BeaconClientErrorResponse> parseClientError(HttpResponse<String> response) throws BeaconConnectorException {
+        if (response.statusCode() < 400 || response.statusCode() > 499) {
+            return Optional.empty();
         }
 
         try {
-            var reader = JacksonMapper.getDefault().readerFor(prov.get().getResponseClass());
-            return reader.readValue(content);
+            var v = JacksonMapper.getDefault().readValue(response.body(), BeaconClientErrorResponse.class);
+            return Optional.of(v);
         } catch (IOException ex) {
-            throw new ConnectorException("Couldn't parse response", ex);
+            throw new BeaconConnectorException("Couldn't parse client error message", ex);
         }
     }
 
-    public InputStream getRawInputStream() {
-        return in;
-    }
-
-    public OutputStream getRawOutputStream() {
-        return out;
-    }
-
-    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-    public abstract static class ClientInformation {
-
-        public final CliClientInformation cli() {
-            return (CliClientInformation) this;
+    private Optional<BeaconServerErrorResponse> parseServerError(HttpResponse<String> response) throws BeaconConnectorException {
+        if (response.statusCode() < 500 || response.statusCode() > 599) {
+            return Optional.empty();
         }
 
-        public abstract String toDisplayString();
-    }
-
-    @JsonTypeName("cli")
-    @Value
-    @Builder
-    @Jacksonized
-    @EqualsAndHashCode(callSuper = false)
-    public static class CliClientInformation extends ClientInformation {
-
-        @Override
-        public String toDisplayString() {
-            return "XPipe CLI";
+        try {
+            var v = JacksonMapper.getDefault().readValue(response.body(), BeaconServerErrorResponse.class);
+            return Optional.of(v);
+        } catch (IOException ex) {
+            throw new BeaconConnectorException("Couldn't parse client error message", ex);
         }
     }
 
-    @JsonTypeName("daemon")
-    @Value
-    @Builder
-    @Jacksonized
-    @EqualsAndHashCode(callSuper = false)
-    public static class DaemonInformation extends ClientInformation {
-
-        @Override
-        public String toDisplayString() {
-            return "Daemon";
-        }
-    }
-
-    @JsonTypeName("gateway")
-    @Value
-    @Builder
-    @Jacksonized
-    @EqualsAndHashCode(callSuper = false)
-    public static class GatewayClientInformation extends ClientInformation {
-
-        String version;
-
-        @Override
-        public String toDisplayString() {
-            return "XPipe Gateway " + version;
-        }
-    }
-
-    @JsonTypeName("api")
-    @Value
-    @Builder
-    @Jacksonized
-    @EqualsAndHashCode(callSuper = false)
-    public static class ApiClientInformation extends ClientInformation {
-
-        String version;
-        String language;
-
-        @Override
-        public String toDisplayString() {
-            return String.format("XPipe %s API v%s", language, version);
-        }
-    }
 }

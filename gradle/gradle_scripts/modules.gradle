@@ -25,12 +25,6 @@ extraJavaModuleInfo {
 }
 
 extraJavaModuleInfo {
-    module("org.ocpsoft.prettytime:prettytime", "org.ocpsoft.prettytime") {
-        exportAllPackages()
-    }
-}
-
-extraJavaModuleInfo {
     module("com.vladsch.flexmark:flexmark", "com.vladsch.flexmark") {
         mergeJar('com.vladsch.flexmark:flexmark-util')
         mergeJar('com.vladsch.flexmark:flexmark-util-options')

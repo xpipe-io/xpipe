@@ -2,6 +2,7 @@ import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.util.CoreJacksonModule;
+import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.core.util.ModuleLayerLoader;
 
 open module io.xpipe.core {
@@ -11,9 +12,9 @@ open module io.xpipe.core {
     exports io.xpipe.core.process;
 
     requires com.fasterxml.jackson.datatype.jsr310;
-    requires com.fasterxml.jackson.module.paramnames;
-    requires static com.fasterxml.jackson.core;
-    requires static com.fasterxml.jackson.databind;
+    requires com.fasterxml.jackson.core;
+    requires com.fasterxml.jackson.annotation;
+    requires com.fasterxml.jackson.databind;
     requires java.net.http;
     requires static lombok;
 
@@ -24,7 +25,7 @@ open module io.xpipe.core {
     uses ModuleLayerLoader;
     uses ShellDialect;
 
-    provides ModuleLayerLoader with
+    provides ModuleLayerLoader with JacksonMapper.Loader,
             ShellDialects.Loader;
     provides com.fasterxml.jackson.databind.Module with
             CoreJacksonModule;

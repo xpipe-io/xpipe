@@ -6,6 +6,7 @@ import io.xpipe.app.core.check.AppTempCheck;
 import io.xpipe.app.core.check.AppUserDirectoryCheck;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.launcher.LauncherCommand;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.ThreadHelper;
@@ -109,6 +110,9 @@ public abstract class OperationMode {
             AppProperties.logArguments(args);
             AppProperties.logSystemProperties();
             AppProperties.logPassedProperties();
+            AppExtensionManager.init(true);
+            AppI18n.init();
+            AppPrefs.initLocal();
             TrackEvent.info("Finished initial setup");
         } catch (Throwable ex) {
             ErrorEvent.fromThrowable(ex).term().handle();

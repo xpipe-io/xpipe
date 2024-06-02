@@ -1,13 +1,12 @@
 package io.xpipe.app.util;
 
-import io.xpipe.beacon.ClientException;
-import io.xpipe.beacon.ServerException;
+import io.xpipe.beacon.BeaconClientException;
+import io.xpipe.beacon.BeaconServerException;
 import io.xpipe.core.process.ProcessControl;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.TerminalInitScriptConfig;
 import io.xpipe.core.process.WorkingDirectoryFunction;
 import io.xpipe.core.store.FilePath;
-
 import lombok.Setter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
@@ -73,10 +72,10 @@ public class TerminalLauncherManager {
         return latch;
     }
 
-    public static Path waitForCompletion(UUID request) throws ClientException, ServerException {
+    public static Path waitForCompletion(UUID request) throws BeaconClientException, BeaconServerException {
         var e = entries.get(request);
         if (e == null) {
-            throw new ClientException("Unknown launch request " + request);
+            throw new BeaconClientException("Unknown launch request " + request);
         }
 
         while (true) {
@@ -89,21 +88,21 @@ public class TerminalLauncherManager {
             if (r instanceof ResultFailure failure) {
                 entries.remove(request);
                 var t = failure.getThrowable();
-                throw new ServerException(t);
+                throw new BeaconServerException(t);
             }
 
             return ((ResultSuccess) r).getTargetScript();
         }
     }
 
-    public static Path performLaunch(UUID request) throws ClientException {
+    public static Path performLaunch(UUID request) throws BeaconClientException {
         var e = entries.remove(request);
         if (e == null) {
-            throw new ClientException("Unknown launch request " + request);
+            throw new BeaconClientException("Unknown launch request " + request);
         }
 
         if (!(e.result instanceof ResultSuccess)) {
-            throw new ClientException("Invalid launch request state " + request);
+            throw new BeaconClientException("Invalid launch request state " + request);
         }
 
         return ((ResultSuccess) e.getResult()).getTargetScript();

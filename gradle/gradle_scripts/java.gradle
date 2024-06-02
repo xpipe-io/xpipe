@@ -22,7 +22,7 @@ javadoc{
         addStringOption('link', 'https://docs.oracle.com/en/java/javase/21/docs/api/')
         addBooleanOption('html5', true)
         addStringOption('Xdoclint:none', '-quiet')
-        addBooleanOption('-enable-preview', true)
+        // addBooleanOption('-enable-preview', true)
     }
 }
 

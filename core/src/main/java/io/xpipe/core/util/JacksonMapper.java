@@ -49,14 +49,14 @@ public class JacksonMapper {
         mapper.accept(INSTANCE);
     }
 
-    public static synchronized void initClassBased() {
-        initModularized(null);
-    }
+    public static class Loader implements ModuleLayerLoader {
 
-    public static synchronized void initModularized(ModuleLayer layer) {
-        List<Module> MODULES = findModules(layer);
-        INSTANCE.registerModules(MODULES);
-        init = true;
+        @Override
+        public void init(ModuleLayer layer) {
+            List<Module> MODULES = findModules(layer);
+            INSTANCE.registerModules(MODULES);
+            init = true;
+        }
     }
 
     private static List<Module> findModules(ModuleLayer layer) {

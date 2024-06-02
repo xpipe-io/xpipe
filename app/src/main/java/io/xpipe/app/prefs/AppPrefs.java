@@ -14,14 +14,13 @@ import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.util.PasswordLockSecretValue;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.ModuleHelper;
-
+import io.xpipe.core.util.XPipeInstallation;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableStringValue;
 import javafx.beans.value.ObservableValue;
-
 import lombok.Getter;
 import lombok.Value;
 
@@ -121,6 +120,13 @@ public class AppPrefs {
     private final StringProperty lockCrypt =
             mapVaultSpecific(new SimpleStringProperty(), "workspaceLock", String.class);
 
+    final Property<Integer> httpServerPort =
+            map(new SimpleObjectProperty<>(XPipeInstallation.getDefaultBeaconPort()), "httpServerPort", Integer.class);
+
+    public ObservableValue<Integer> httpServerPort() {
+        return httpServerPort;
+    }
+
     private final IntegerProperty editorReloadTimeout =
             map(new SimpleIntegerProperty(1000), "editorReloadTimeout", Integer.class);
     private final BooleanProperty confirmDeletions =
@@ -153,6 +159,7 @@ public class AppPrefs {
                         new SshCategory(),
                         new LocalShellCategory(),
                         new SecurityCategory(),
+                        new HttpServerCategory(),
                         new TroubleshootCategory(),
                         new DeveloperCategory())
                 .filter(appPrefsCategory -> appPrefsCategory.show())

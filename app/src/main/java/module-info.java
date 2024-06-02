@@ -1,7 +1,7 @@
+import com.fasterxml.jackson.databind.Module;
+import io.xpipe.app.beacon.impl.*;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.core.AppLogs;
-import io.xpipe.app.exchange.*;
-import io.xpipe.app.exchange.cli.*;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.issue.EventHandler;
 import io.xpipe.app.issue.EventHandlerImpl;
@@ -10,15 +10,15 @@ import io.xpipe.app.util.AppJacksonModule;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.ProxyManagerProviderImpl;
 import io.xpipe.app.util.TerminalLauncher;
+import io.xpipe.beacon.BeaconInterface;
 import io.xpipe.core.util.DataStateProvider;
 import io.xpipe.core.util.ModuleLayerLoader;
 import io.xpipe.core.util.ProxyFunction;
 import io.xpipe.core.util.ProxyManagerProvider;
-
-import com.fasterxml.jackson.databind.Module;
 import org.slf4j.spi.SLF4JServiceProvider;
 
 open module io.xpipe.app {
+    exports io.xpipe.app.beacon;
     exports io.xpipe.app.core;
     exports io.xpipe.app.util;
     exports io.xpipe.app;
@@ -52,6 +52,7 @@ open module io.xpipe.app {
     requires com.vladsch.flexmark;
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
+    requires com.fasterxml.jackson.annotation;
     requires net.synedra.validatorfx;
     requires org.kordamp.ikonli.feather;
     requires io.xpipe.modulefs;
@@ -79,14 +80,6 @@ open module io.xpipe.app {
     requires net.steppschuh.markdowngenerator;
     requires com.shinyhut.vernacular;
 
-    // Required by extensions
-    requires java.security.jgss;
-    requires java.security.sasl;
-    requires java.xml;
-    requires java.xml.crypto;
-    requires java.sql;
-    requires java.sql.rowset;
-
     // Required runtime modules
     requires jdk.charsets;
     requires jdk.crypto.cryptoki;
@@ -100,8 +93,8 @@ open module io.xpipe.app {
     // For debugging
     requires jdk.jdwp.agent;
     requires org.kordamp.ikonli.core;
+    requires jdk.httpserver;
 
-    uses MessageExchangeImpl;
     uses TerminalLauncher;
     uses io.xpipe.app.ext.ActionProvider;
     uses EventHandler;
@@ -113,11 +106,11 @@ open module io.xpipe.app {
     uses BrowserAction;
     uses LicenseProvider;
     uses io.xpipe.app.util.LicensedFeature;
+    uses io.xpipe.beacon.BeaconInterface;
 
     provides Module with
             AppJacksonModule;
     provides ModuleLayerLoader with
-            MessageExchangeImpls.Loader,
             DataStoreProviders.Loader,
             ActionProvider.Loader,
             PrefsProvider.Loader,
@@ -132,26 +125,15 @@ open module io.xpipe.app {
             AppLogs.Slf4jProvider;
     provides EventHandler with
             EventHandlerImpl;
-    provides MessageExchangeImpl with
-            ReadDrainExchangeImpl,
-            EditStoreExchangeImpl,
-            StoreProviderListExchangeImpl,
+    provides BeaconInterface with
             OpenExchangeImpl,
-            LaunchExchangeImpl,
             FocusExchangeImpl,
             StatusExchangeImpl,
-            DrainExchangeImpl,
-            SinkExchangeImpl,
             StopExchangeImpl,
+            HandshakeExchangeImpl,
             ModeExchangeImpl,
-            DialogExchangeImpl,
-            RemoveStoreExchangeImpl,
-            RenameStoreExchangeImpl,
-            ListStoresExchangeImpl,
-            StoreAddExchangeImpl,
             AskpassExchangeImpl,
             TerminalWaitExchangeImpl,
             TerminalLaunchExchangeImpl,
-            QueryStoreExchangeImpl,
             VersionExchangeImpl;
 }

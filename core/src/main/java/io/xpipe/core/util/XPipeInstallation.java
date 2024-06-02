@@ -23,11 +23,7 @@ public class XPipeInstallation {
 
     public static int getDefaultBeaconPort() {
         var offset = isStaging() ? 1 : 0;
-        if (OsType.getLocal().equals(OsType.WINDOWS)) {
-            return 21721 + offset;
-        } else {
-            return 21721 + 2 + offset;
-        }
+        return 21721 + offset;
     }
 
     private static String getPkgId() {

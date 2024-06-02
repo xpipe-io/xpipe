@@ -27,7 +27,7 @@ testing {
                             systemProperty "io.xpipe.beacon.customDaemonCommand", "\"$rootDir/gradlew\" --console=plain $daemonCommand"
                         }
                         systemProperty "io.xpipe.beacon.daemonArgs",
-                                       " -Dio.xpipe.beacon.port=21725" +
+                                       " -Dio.xpipe.beacon.port=21723" +
                                                " -Dio.xpipe.app.dataDir=$projectDir/local/" +
                                                " -Dio.xpipe.storage.persist=false" +
                                                " -Dio.xpipe.app.writeSysOut=true" +
@@ -36,7 +36,7 @@ testing {
                                                " -Dio.xpipe.app.logLevel=trace"
 
                         systemProperty 'io.xpipe.beacon.printDaemonOutput', "true"
-                        systemProperty "io.xpipe.beacon.port", "21725"
+                        systemProperty "io.xpipe.beacon.port", "21723"
                         systemProperty "io.xpipe.beacon.launchDebugDaemon", "true"
                     }
                 }
