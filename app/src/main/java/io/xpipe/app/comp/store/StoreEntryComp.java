@@ -390,7 +390,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                             wrapper.moveTo(storeCategoryWrapper.getCategory());
                             event.consume();
                         });
-                        if (storeCategoryWrapper.getParent() == null) {
+                        if (storeCategoryWrapper.getParent() == null || storeCategoryWrapper.equals(wrapper.getCategory().getValue())) {
                             m.setDisable(true);
                         }
 

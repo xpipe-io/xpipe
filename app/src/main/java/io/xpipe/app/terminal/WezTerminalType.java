@@ -1,9 +1,14 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
+import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.process.CommandBuilder;
+import io.xpipe.core.process.OsType;
+import io.xpipe.core.process.ShellControl;
 
 import java.nio.file.Path;
 import java.util.Optional;
@@ -26,7 +31,7 @@ public interface WezTerminalType extends ExternalTerminalType {
 
     @Override
     default boolean isRecommended() {
-        return false;
+        return OsType.getLocal() != OsType.WINDOWS;
     }
 
     @Override
@@ -51,25 +56,62 @@ public interface WezTerminalType extends ExternalTerminalType {
 
         @Override
         protected Optional<Path> determineInstallation() {
-            Optional<String> launcherDir;
-            launcherDir = WindowsRegistry.local().readValue(
-                            WindowsRegistry.HKEY_LOCAL_MACHINE,
-                            "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{BCF6F0DA-5B9A-408D-8562-F680AE6E1EAF}_is1",
-                            "InstallLocation")
-                    .map(p -> p + "\\wezterm-gui.exe");
-            return launcherDir.map(Path::of);
+            try {
+                var foundKey = WindowsRegistry.local().findKeyForEqualValueMatchRecursive(WindowsRegistry.HKEY_LOCAL_MACHINE,
+                        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall", "http://wezfurlong.org/wezterm");
+                if (foundKey.isPresent()) {
+                    var installKey = WindowsRegistry.local().readValue(
+                            foundKey.get().getHkey(),
+                            foundKey.get().getKey(),
+                            "InstallLocation");
+                    if (installKey.isPresent()) {
+                        return installKey.map(p -> p + "\\wezterm-gui.exe").map(Path::of);
+                    }
+                }
+            } catch (Exception ex) {
+                ErrorEvent.fromThrowable(ex).omit().handle();
+            }
+
+            try (ShellControl pc = LocalShell.getShell()) {
+                if (pc.executeSimpleBooleanCommand(pc.getShellDialect().getWhichCommand("wezterm-gui"))) {
+                    return Optional.of(Path.of("wezterm-gui"));
+                }
+            } catch (Exception e) {
+                ErrorEvent.fromThrowable(e).omit().handle();
+            }
+
+            return Optional.empty();
         }
     }
 
-    class Linux extends SimplePathType implements WezTerminalType {
+    class Linux extends ExternalApplicationType implements WezTerminalType {
 
         public Linux() {
-            super("app.wezterm", "wezterm-gui", true);
+            super("app.wezterm");
+        }
+
+        public boolean isAvailable() {
+            try (ShellControl pc = LocalShell.getShell()) {
+                return pc.executeSimpleBooleanCommand(pc.getShellDialect().getWhichCommand("wezterm")) &&
+                        pc.executeSimpleBooleanCommand(pc.getShellDialect().getWhichCommand("wezterm-gui"));
+            } catch (Exception e) {
+                ErrorEvent.fromThrowable(e).omit().handle();
+                return false;
+            }
         }
 
         @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) {
-            return CommandBuilder.of().add("start").addFile(configuration.getScriptFile());
+        public void launch(LaunchConfiguration configuration) throws Exception {
+            var spawn = LocalShell.getShell().command(CommandBuilder.of().addFile("wezterm")
+                    .add("cli", "spawn")
+                    .addFile(configuration.getScriptFile()))
+                    .executeAndCheck();
+            if (!spawn) {
+                ExternalApplicationHelper.startAsync(CommandBuilder.of()
+                        .addFile("wezterm-gui")
+                        .add("start")
+                        .addFile(configuration.getScriptFile()));
+            }
         }
     }
 
@@ -81,20 +123,27 @@ public interface WezTerminalType extends ExternalTerminalType {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
-            var path = LocalShell.getShell()
-                    .command(String.format(
-                            "mdfind -name '%s' -onlyin /Applications -onlyin ~/Applications -onlyin /System/Applications 2>/dev/null",
-                            applicationName))
-                    .readStdoutOrThrow();
-            var c = CommandBuilder.of()
-                    .addFile(Path.of(path)
-                            .resolve("Contents")
-                            .resolve("MacOS")
-                            .resolve("wezterm-gui")
-                            .toString())
-                    .add("start")
-                    .add(configuration.getDialectLaunchCommand());
-            ExternalApplicationHelper.startAsync(c);
+            try (var sc = LocalShell.getShell()) {
+                var path = sc.command(
+                        String.format("mdfind -name '%s' -onlyin /Applications -onlyin ~/Applications -onlyin /System/Applications 2>/dev/null",
+                                applicationName)).readStdoutOrThrow();
+                var spawn = sc.command(CommandBuilder.of().addFile(Path.of(path)
+                                        .resolve("Contents")
+                                        .resolve("MacOS")
+                                        .resolve("wezterm").toString())
+                                .add("cli", "spawn", "--pane-id", "0")
+                                .addFile(configuration.getScriptFile()))
+                        .executeAndCheck();
+                if (!spawn) {
+                    ExternalApplicationHelper.startAsync(CommandBuilder.of()
+                            .addFile(Path.of(path)
+                                    .resolve("Contents")
+                                    .resolve("MacOS")
+                                    .resolve("wezterm-gui").toString())
+                            .add("start")
+                            .addFile(configuration.getScriptFile()));
+                }
+            }
         }
     }
 }

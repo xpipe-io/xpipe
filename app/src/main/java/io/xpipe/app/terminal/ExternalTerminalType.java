@@ -514,17 +514,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
-            try (ShellControl pc = LocalShell.getShell()) {
-                var suffix = "\"" + configuration.getScriptFile().toString().replaceAll("\"", "\\\\\"") + "\"";
-                pc.osascriptCommand(String.format(
-                                """
-                                activate application "Terminal"
-                                delay 1
-                                tell app "Terminal" to do script %s
-                                """,
-                                suffix))
-                        .execute();
-            }
+            LocalShell.getShell()
+                    .executeSimpleCommand(CommandBuilder.of()
+                            .add("open", "-a")
+                            .addQuoted("Terminal.app")
+                            .addFile(configuration.getScriptFile()));
         }
     };
     ExternalTerminalType ITERM2 = new MacOsType("app.iterm2", "iTerm") {
@@ -550,26 +544,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
-            try (ShellControl pc = LocalShell.getShell()) {
-                pc.osascriptCommand(String.format(
-                                """
-                                if application "iTerm" is not running then
-                                    launch application "iTerm"
-                                    delay 1
-                                    tell application "iTerm"
-                                        tell current tab of current window
-                                            close
-                                        end tell
-                                    end tell
-                                end if
-                                tell application "iTerm"
-                                    activate
-                                    create window with default profile command "%s"
-                                end tell
-                                """,
-                                configuration.getScriptFile().toString().replaceAll("\"", "\\\\\"")))
-                        .execute();
-            }
+            LocalShell.getShell()
+                    .executeSimpleCommand(CommandBuilder.of()
+                            .add("open", "-a")
+                            .addQuoted("iTerm.app")
+                            .addFile(configuration.getScriptFile()));
         }
     };
     ExternalTerminalType WARP = new MacOsType("app.warp", "Warp") {

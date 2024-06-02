@@ -246,11 +246,9 @@ public class StoreViewState {
             public int compare(StoreCategoryWrapper o1, StoreCategoryWrapper o2) {
                 var o1Root = o1.getRoot();
                 var o2Root = o2.getRoot();
-
                 if (o1Root.equals(getAllConnectionsCategory()) && !o1Root.equals(o2Root)) {
                     return -1;
                 }
-
                 if (o2Root.equals(getAllConnectionsCategory()) && !o1Root.equals(o2Root)) {
                     return 1;
                 }
@@ -265,6 +263,22 @@ public class StoreViewState {
 
                 if (o2.getParent() == null) {
                     return 1;
+                }
+
+                if (o1.getDepth() > o2.getDepth()) {
+                    if (o1.getParent() == o2) {
+                        return 1;
+                    }
+
+                    return compare(o1.getParent(), o2);
+                }
+
+                if (o1.getDepth() < o2.getDepth()) {
+                    if (o2.getParent() == o1) {
+                        return -1;
+                    }
+
+                    return compare(o1, o2.getParent());
                 }
 
                 var parent = compare(o1.getParent(), o2.getParent());
