@@ -40,11 +40,15 @@ public class StoreCreationMenu {
 
         menu.getItems()
                 .add(category(
-                        "addCommand", "mdi2c-code-greater-than", DataStoreProvider.CreationCategory.COMMAND, "cmd"));
+                        "addService", "mdi2c-cloud-braces", DataStoreProvider.CreationCategory.SERVICE, null));
 
         menu.getItems()
                 .add(category(
                         "addTunnel", "mdi2v-vector-polyline-plus", DataStoreProvider.CreationCategory.TUNNEL, null));
+
+        menu.getItems()
+                .add(category(
+                        "addCommand", "mdi2c-code-greater-than", DataStoreProvider.CreationCategory.COMMAND, "cmd"));
 
         menu.getItems()
                 .add(category("addDatabase", "mdi2d-database-plus", DataStoreProvider.CreationCategory.DATABASE, null));

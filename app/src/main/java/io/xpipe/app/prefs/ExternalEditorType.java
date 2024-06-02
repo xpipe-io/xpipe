@@ -194,10 +194,10 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public void launch(Path file) throws Exception {
-            ExternalApplicationHelper.startAsync(CommandBuilder.of()
-                    .add("open", "-a")
-                    .addQuoted(applicationName)
-                    .addFile(file.toString()));
+            try (var sc = LocalShell.getShell().start()) {
+                sc.executeSimpleCommand(CommandBuilder.of()
+                        .add("open", "-a").addQuoted(applicationName).addFile(file.toString()));
+            }
         }
     }
 

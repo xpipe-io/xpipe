@@ -31,7 +31,9 @@ public interface DataStoreProvider {
     default boolean shouldShow(StoreEntryWrapper w) {
         return true;
     }
-
+	
+    default void onChildrenRefresh(DataStoreEntry entry) {}
+	
     default ObservableBooleanValue busy(StoreEntryWrapper wrapper) {
         return new SimpleBooleanProperty(false);
     }
@@ -216,6 +218,7 @@ public interface DataStoreProvider {
         HOST,
         DATABASE,
         SHELL,
+        SERVICE,
         COMMAND,
         TUNNEL,
         SCRIPT,

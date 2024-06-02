@@ -172,7 +172,6 @@ public class StoreSection {
         var ordered = sorted(cached, category);
         var filtered = ordered.filtered(
                 section -> {
-                    var showFilter = filterString == null || section.matchesFilter(filterString.get());
                     var matchesSelector = section.anyMatches(entryFilter);
                     // Prevent updates for children on category switching by checking depth
                     var showCategory = category == null
@@ -185,7 +184,7 @@ public class StoreSection {
                             !DataStorage.get().isRootEntry(section.getWrapper().getEntry());
                     var showProvider = section.getWrapper().getEntry().getProvider() == null ||
                             section.getWrapper().getEntry().getProvider().shouldShow(section.getWrapper());
-                    return showFilter && matchesSelector && showCategory && notRoot && showProvider;
+                    return matchesSelector && showCategory && notRoot && showProvider;
                 },
                 category,
                 filterString,
