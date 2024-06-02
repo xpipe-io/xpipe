@@ -516,28 +516,23 @@ public class DataStoreEntry extends StorageElement {
         }
     }
 
-    public boolean tryMakeValid() {
+    public void refreshStore() {
         if (validity == Validity.LOAD_FAILED) {
-            return false;
-        }
-
-        var complete = validity == Validity.COMPLETE;
-        if (complete) {
-            return false;
+            return;
         }
 
         var newStore = DataStorageParser.storeFromNode(storeNode);
         if (newStore == null) {
             store = null;
             validity = Validity.LOAD_FAILED;
-            return true;
+            return;
         }
 
         var newComplete = newStore.isComplete();
         if (!newComplete) {
             validity = Validity.INCOMPLETE;
             store = newStore;
-            return false;
+            return;
         }
 
         if (!newStore.equals(store)) {
@@ -546,38 +541,6 @@ public class DataStoreEntry extends StorageElement {
         validity = Validity.COMPLETE;
         // Don't count this as modification as this is done always
         notifyUpdate(false, false);
-        return true;
-    }
-
-    public boolean tryMakeInvalid() {
-        if (validity == Validity.LOAD_FAILED) {
-            return false;
-        }
-
-        if (validity == Validity.INCOMPLETE) {
-            return false;
-        }
-
-        var newStore = DataStorageParser.storeFromNode(storeNode);
-        if (newStore == null) {
-            store = null;
-            validity = Validity.LOAD_FAILED;
-            return true;
-        }
-
-        var newComplete = newStore.isComplete();
-        if (newComplete) {
-            validity = Validity.COMPLETE;
-            store = newStore;
-            return false;
-        }
-
-        if (!newStore.equals(store)) {
-            store = newStore;
-        }
-        validity = Validity.INCOMPLETE;
-        notifyUpdate(false, false);
-        return true;
     }
 
     @SneakyThrows

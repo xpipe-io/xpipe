@@ -12,14 +12,12 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.DataStoreChoiceComp;
 import io.xpipe.app.fxcomps.impl.DataStoreListChoiceComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.MarkdownBuilder;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.Identifiers;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleListProperty;
@@ -27,13 +25,10 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-
 import lombok.SneakyThrows;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class SimpleScriptStoreProvider implements DataStoreProvider {
@@ -199,45 +194,6 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
                         },
                         store)
                 .buildDialog();
-    }
-
-    @Override
-    public void init() {
-        DataStorage.get()
-                .addStoreEntryIfNotPresent(DataStoreEntry.createNew(
-                        UUID.fromString("a9945ad2-db61-4304-97d7-5dc4330691a7"),
-                        DataStorage.CUSTOM_SCRIPTS_CATEGORY_UUID,
-                        "My scripts",
-                        ScriptGroupStore.builder().build()));
-
-        for (PredefinedScriptGroup value : PredefinedScriptGroup.values()) {
-            ScriptGroupStore store = ScriptGroupStore.builder()
-                    .description(value.getDescription())
-                    .build();
-            var e = DataStorage.get()
-                    .addStoreEntryIfNotPresent(DataStoreEntry.createNew(
-                            UUID.nameUUIDFromBytes(("a " + value.getName()).getBytes(StandardCharsets.UTF_8)),
-                            DataStorage.PREDEFINED_SCRIPTS_CATEGORY_UUID,
-                            value.getName(),
-                            store));
-            e.setStoreInternal(store, false);
-            e.setExpanded(value.isExpanded());
-            value.setEntry(e.ref());
-        }
-
-        for (PredefinedScriptStore value : PredefinedScriptStore.values()) {
-            var previous = DataStorage.get().getStoreEntryIfPresent(value.getUuid());
-            var store = value.getScriptStore().get();
-            if (previous.isPresent()) {
-                previous.get().setStoreInternal(store, false);
-                value.setEntry(previous.get().ref());
-            } else {
-                var e = DataStoreEntry.createNew(
-                        value.getUuid(), DataStorage.PREDEFINED_SCRIPTS_CATEGORY_UUID, value.getName(), store);
-                DataStorage.get().addStoreEntryIfNotPresent(e);
-                value.setEntry(e.ref());
-            }
-        }
     }
 
     @Override

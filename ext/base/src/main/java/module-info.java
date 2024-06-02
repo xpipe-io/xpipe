@@ -1,11 +1,13 @@
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.ext.DataStorageExtensionProvider;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.ext.base.action.*;
 import io.xpipe.ext.base.browser.*;
 import io.xpipe.ext.base.desktop.DesktopApplicationStoreProvider;
 import io.xpipe.ext.base.desktop.DesktopCommandStoreProvider;
 import io.xpipe.ext.base.desktop.DesktopEnvironmentStoreProvider;
+import io.xpipe.ext.base.script.ScriptDataStorageProvider;
 import io.xpipe.ext.base.script.ScriptGroupStoreProvider;
 import io.xpipe.ext.base.script.SimpleScriptStoreProvider;
 import io.xpipe.ext.base.service.FixedServiceStoreProvider;
@@ -79,4 +81,5 @@ open module io.xpipe.ext.base {
             DesktopApplicationStoreProvider,
             DesktopCommandStoreProvider,
             ScriptGroupStoreProvider;
+    provides DataStorageExtensionProvider with ScriptDataStorageProvider;
 }

@@ -5,11 +5,12 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.*;
+import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.DataStoreId;
+import io.xpipe.core.store.FixedChildStore;
+import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.util.UuidHelper;
-
 import javafx.util.Pair;
-
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -20,7 +21,6 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -260,16 +260,10 @@ public abstract class DataStorage {
         return true;
     }
 
-    protected void refreshValidities(boolean makeValid) {
-        var changed = new AtomicBoolean(false);
-        do {
-            changed.set(false);
-            storeEntries.keySet().forEach(dataStoreEntry -> {
-                if (makeValid ? dataStoreEntry.tryMakeValid() : dataStoreEntry.tryMakeInvalid()) {
-                    changed.set(true);
-                }
-            });
-        } while (changed.get());
+    protected void refreshEntries() {
+        storeEntries.keySet().forEach(dataStoreEntry -> {
+            dataStoreEntry.refreshStore();
+        });
     }
 
     public void updateEntry(DataStoreEntry entry, DataStoreEntry newEntry) {
@@ -299,8 +293,7 @@ public abstract class DataStorage {
             var toAdd = Stream.concat(Stream.of(entry), children.stream()).toArray(DataStoreEntry[]::new);
             listeners.forEach(storageListener -> storageListener.onStoreAdd(toAdd));
         }
-        refreshValidities(true);
-
+        refreshEntries();
         saveAsync();
     }
 
@@ -460,7 +453,7 @@ public abstract class DataStorage {
         c.forEach(entry -> entry.finalizeEntry());
         this.storeEntriesSet.removeAll(c);
         this.listeners.forEach(l -> l.onStoreRemove(c.toArray(DataStoreEntry[]::new)));
-        refreshValidities(false);
+        refreshEntries();
         saveAsync();
     }
 
@@ -479,7 +472,7 @@ public abstract class DataStorage {
         toDelete.forEach(entry -> entry.finalizeEntry());
         toDelete.forEach(this.storeEntriesSet::remove);
         this.listeners.forEach(l -> l.onStoreRemove(toDelete.toArray(DataStoreEntry[]::new)));
-        refreshValidities(false);
+        refreshEntries();
         saveAsync();
     }
 
@@ -534,7 +527,7 @@ public abstract class DataStorage {
 
         this.listeners.forEach(l -> l.onStoreAdd(e));
         e.initializeEntry();
-        refreshValidities(true);
+        e.refreshStore();
         return e;
     }
 
@@ -568,11 +561,13 @@ public abstract class DataStorage {
                 p.setChildrenCache(null);
             });
         }
+        for (DataStoreEntry e : toAdd) {
+            e.refreshStore();
+        }
         this.listeners.forEach(l -> l.onStoreAdd(toAdd.toArray(DataStoreEntry[]::new)));
         for (DataStoreEntry e : toAdd) {
             e.initializeEntry();
         }
-        refreshValidities(true);
         saveAsync();
     }
 
@@ -600,7 +595,7 @@ public abstract class DataStorage {
         this.storeEntries.remove(store);
         getDefaultDisplayParent(store).ifPresent(p -> p.setChildrenCache(null));
         this.listeners.forEach(l -> l.onStoreRemove(store));
-        refreshValidities(false);
+        refreshEntries();
         saveAsync();
     }
 

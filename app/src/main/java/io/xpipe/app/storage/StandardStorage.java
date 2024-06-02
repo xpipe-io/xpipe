@@ -1,11 +1,11 @@
 package io.xpipe.app.storage;
 
+import io.xpipe.app.ext.DataStorageExtensionProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.LocalStore;
-
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 
@@ -197,14 +197,15 @@ public class StandardStorage extends DataStorage {
             local.setColor(DataStoreColor.BLUE);
         }
 
-        refreshValidities(true);
+        callProviders();
+        refreshEntries();
         storeEntriesSet.forEach(entry -> {
             var syntheticParent = getSyntheticParent(entry);
             syntheticParent.ifPresent(entry1 -> {
                 addStoreEntryIfNotPresent(entry1);
             });
         });
-        refreshValidities(true);
+        refreshEntries();
 
         // Save to apply changes
         if (!hasFixedLocal) {
@@ -224,6 +225,16 @@ public class StandardStorage extends DataStorage {
         loaded = true;
         busyIo.unlock();
         this.gitStorageHandler.afterStorageLoad();
+    }
+
+    private void callProviders() {
+        DataStorageExtensionProvider.getAll().forEach(p -> {
+            try {
+                p.storageInit();
+            } catch (Exception e) {
+                ErrorEvent.fromThrowable(e).omit().handle();
+            }
+        });
     }
 
     public void save(boolean dispose) {

@@ -107,10 +107,13 @@ open module io.xpipe.app {
     uses LicenseProvider;
     uses io.xpipe.app.util.LicensedFeature;
     uses io.xpipe.beacon.BeaconInterface;
+    uses DataStorageExtensionProvider;
 
     provides Module with
             AppJacksonModule;
     provides ModuleLayerLoader with
+            DataStorageExtensionProvider.Loader,
+            MessageExchangeImpls.Loader,
             DataStoreProviders.Loader,
             ActionProvider.Loader,
             PrefsProvider.Loader,
