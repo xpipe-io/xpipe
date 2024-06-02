@@ -5,14 +5,14 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.BeaconServerException;
-import io.xpipe.beacon.api.QueryExchange;
+import io.xpipe.beacon.api.ConnectionQueryExchange;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class QueryExchangeImpl extends QueryExchange {
+public class ConnectionQueryExchangeImpl extends ConnectionQueryExchange {
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) throws IOException, BeaconClientException, BeaconServerException {
@@ -46,7 +46,7 @@ public class QueryExchangeImpl extends QueryExchange {
         var mapped = new ArrayList<QueryResponse>();
         for (DataStoreEntry e : found) {
             var cat = DataStorage.get().getStorePath(DataStorage.get().getStoreCategoryIfPresent(e.getCategoryUuid()).orElseThrow());
-            var obj = QueryExchange.QueryResponse.builder()
+            var obj = ConnectionQueryExchange.QueryResponse.builder()
                     .uuid(e.getUuid()).category(cat).connection(DataStorage.get()
                     .getStorePath(e)).type(e.getProvider().getId()).build();
             mapped.add(obj);

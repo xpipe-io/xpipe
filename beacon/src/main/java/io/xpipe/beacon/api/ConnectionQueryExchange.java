@@ -10,11 +10,11 @@ import lombok.extern.jackson.Jacksonized;
 import java.util.List;
 import java.util.UUID;
 
-public class QueryExchange extends BeaconInterface<QueryExchange.Request> {
+public class ConnectionQueryExchange extends BeaconInterface<ConnectionQueryExchange.Request> {
 
     @Override
     public String getPath() {
-        return "/query";
+        return "/connection/query";
     }
 
     @Jacksonized
