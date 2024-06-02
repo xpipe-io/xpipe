@@ -4,11 +4,11 @@ import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.BeaconServerException;
-import io.xpipe.beacon.api.VersionExchange;
+import io.xpipe.beacon.api.DaemonVersionExchange;
 
 import java.io.IOException;
 
-public class VersionExchangeImpl extends VersionExchange {
+public class DaemonVersionExchangeImpl extends DaemonVersionExchange {
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) throws IOException, BeaconClientException, BeaconServerException {

@@ -24,9 +24,9 @@ open module io.xpipe.beacon {
             BeaconInterface.Loader;
     provides Module with
             BeaconJacksonModule;
-    provides BeaconInterface with ModeExchange,StatusExchange, FocusExchange, OpenExchange, StopExchange, HandshakeExchange,
+    provides BeaconInterface with ShellStartExchange, ShellStopExchange, ShellExecExchange, DaemonModeExchange, DaemonStatusExchange, DaemonFocusExchange, DaemonOpenExchange, DaemonStopExchange, HandshakeExchange,
+            QueryExchange,
             AskpassExchange,
             TerminalWaitExchange,
-            TerminalLaunchExchange,
-            VersionExchange;
+            TerminalLaunchExchange, DaemonVersionExchange;
 }

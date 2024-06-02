@@ -5,10 +5,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.DataStoreId;
-import io.xpipe.core.store.FixedChildStore;
-import io.xpipe.core.store.LocalStore;
+import io.xpipe.core.store.*;
 import io.xpipe.core.util.UuidHelper;
 import javafx.util.Pair;
 import lombok.Getter;
@@ -731,6 +728,22 @@ public abstract class DataStorage {
         return children;
     }
 
+    public List<DataStoreCategory> getCategoryParentHierarchy(DataStoreCategory cat) {
+        var es = new ArrayList<DataStoreCategory>();
+        es.add(cat);
+
+        DataStoreCategory current = cat;
+        while ((current = getStoreCategoryIfPresent(current.getParentCategory()).orElse(null)) != null) {
+            if (es.contains(current)) {
+                break;
+            }
+
+            es.addFirst(current);
+        }
+
+        return es;
+    }
+
     public List<DataStoreEntry> getStoreParentHierarchy(DataStoreEntry entry) {
         var es = new ArrayList<DataStoreEntry>();
         es.add(entry);
@@ -747,34 +760,17 @@ public abstract class DataStorage {
         return es;
     }
 
-    public DataStoreId getId(DataStoreEntry entry) {
-        return DataStoreId.create(getStoreParentHierarchy(entry).stream()
+    public StorePath getStorePath(DataStoreEntry entry) {
+        return StorePath.create(getStoreParentHierarchy(entry).stream()
                 .filter(e -> !(e.getStore() instanceof LocalStore))
-                .map(e -> e.getName().replaceAll(":", "_"))
+                .map(e -> e.getName().replaceAll("/", "_"))
                 .toArray(String[]::new));
     }
 
-    public Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull DataStoreId id) {
-        var current = getStoreEntryIfPresent(id.getNames().getFirst());
-        if (current.isPresent()) {
-            for (int i = 1; i < id.getNames().size(); i++) {
-                var children = getStoreChildren(current.get());
-                int finalI = i;
-                current = children.stream()
-                        .filter(dataStoreEntry -> dataStoreEntry
-                                .getName()
-                                .equalsIgnoreCase(id.getNames().get(finalI)))
-                        .findFirst();
-                if (current.isEmpty()) {
-                    break;
-                }
-            }
-
-            if (current.isPresent()) {
-                return current;
-            }
-        }
-        return Optional.empty();
+    public StorePath getStorePath(DataStoreCategory entry) {
+        return StorePath.create(getCategoryParentHierarchy(entry).stream()
+                .map(e -> e.getName().replaceAll("/", "_"))
+                .toArray(String[]::new));
     }
 
     public Optional<DataStoreEntry> getStoreEntryInProgressIfPresent(@NonNull DataStore store) {

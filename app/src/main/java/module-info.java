@@ -127,15 +127,9 @@ open module io.xpipe.app {
             AppLogs.Slf4jProvider;
     provides EventHandler with
             EventHandlerImpl;
-    provides BeaconInterface with
-            OpenExchangeImpl,
-            FocusExchangeImpl,
-            StatusExchangeImpl,
-            StopExchangeImpl,
-            HandshakeExchangeImpl,
-            ModeExchangeImpl,
+    provides BeaconInterface with ShellStartExchangeImpl, ShellStopExchangeImpl, ShellExecExchangeImpl, QueryExchangeImpl, DaemonOpenExchangeImpl, DaemonFocusExchangeImpl, DaemonStatusExchangeImpl, DaemonStopExchangeImpl,
+            HandshakeExchangeImpl, DaemonModeExchangeImpl,
             AskpassExchangeImpl,
             TerminalWaitExchangeImpl,
-            TerminalLaunchExchangeImpl,
-            VersionExchangeImpl;
+            TerminalLaunchExchangeImpl, DaemonVersionExchangeImpl;
 }

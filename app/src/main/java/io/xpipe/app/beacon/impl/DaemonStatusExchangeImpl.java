@@ -5,11 +5,11 @@ import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.BeaconServerException;
-import io.xpipe.beacon.api.StatusExchange;
+import io.xpipe.beacon.api.DaemonStatusExchange;
 
 import java.io.IOException;
 
-public class StatusExchangeImpl extends StatusExchange {
+public class DaemonStatusExchangeImpl extends DaemonStatusExchange {
 
     @Override
     public Object handle(HttpExchange exchange, Request body) throws IOException, BeaconClientException, BeaconServerException {

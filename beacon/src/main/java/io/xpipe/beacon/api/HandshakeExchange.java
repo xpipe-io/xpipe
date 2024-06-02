@@ -1,8 +1,10 @@
 package io.xpipe.beacon.api;
 
+import io.xpipe.beacon.BeaconAuthMethod;
 import io.xpipe.beacon.BeaconClientInformation;
 import io.xpipe.beacon.BeaconInterface;
 import lombok.Builder;
+import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
@@ -22,6 +24,9 @@ public class HandshakeExchange extends BeaconInterface<HandshakeExchange.Request
     @Builder
     @Value
     public static class Request {
+        @NonNull
+        BeaconAuthMethod auth;
+        @NonNull
         BeaconClientInformation client;
     }
 

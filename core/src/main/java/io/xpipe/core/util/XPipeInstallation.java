@@ -30,6 +30,10 @@ public class XPipeInstallation {
         return isStaging() ? "io.xpipe.xpipe-ptb" : "io.xpipe.xpipe";
     }
 
+    public static Path getLocalBeaconAuthFile() {
+        return Path.of(System.getProperty("java.io.tmpdir"), "xpipe_auth");
+    }
+
     public static String createExternalAsyncLaunchCommand(
             String installationBase, XPipeDaemonMode mode, String arguments, boolean restart) {
         var suffix = (arguments != null ? " " + arguments : "");

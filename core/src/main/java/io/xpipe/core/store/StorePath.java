@@ -1,5 +1,6 @@
 package io.xpipe.core.store;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -8,35 +9,33 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Represents a reference to an XPipe data source.
- * This reference consists out of a collection name and an entry name to allow for better organisation.
+ * Represents a reference to an XPipe storage location.
  * <p>
- * To allow for a simple usage of data source ids, the collection and entry names are trimmed and
+ * To allow for a simple usage, the names are trimmed and
  * converted to lower case names when creating them.
- * The two names are separated by a colon and are therefore not allowed to contain colons themselves.
- * <p>
- * A missing collection name indicates that the data source exists only temporarily.
+ * The names are separated by a slash and are therefore not allowed to contain slashes themselves.
  *
  * @see #fromString(String)
  */
 @EqualsAndHashCode
 @Getter
-public class DataStoreId {
+public class StorePath {
 
-    public static final char SEPARATOR = ':';
+    public static final char SEPARATOR = '/';
 
     private final List<String> names;
 
-    public DataStoreId(List<String> names) {
+    @JsonCreator
+    public StorePath(List<String> names) {
         this.names = names;
     }
 
     /**
-     * Creates a new data source id from a collection name and an entry name.
+     * Creates a new store path.
      *
      * @throws IllegalArgumentException if any name is not valid
      */
-    public static DataStoreId create(String... names) {
+    public static StorePath create(String... names) {
         if (names == null) {
             throw new IllegalArgumentException("Names are null");
         }
@@ -53,17 +52,16 @@ public class DataStoreId {
             throw new IllegalArgumentException("Trimmed entry name is empty");
         }
 
-        return new DataStoreId(Arrays.stream(names).toList());
+        return new StorePath(Arrays.stream(names).toList());
     }
 
     /**
-     * Creates a new data source id from a string representation.
-     * The string must contain exactly one colon and non-empty names.
+     * Creates a new store path from a string representation.
      *
      * @param s the string representation, must be not null and fulfill certain requirements
      * @throws IllegalArgumentException if the string is not valid
      */
-    public static DataStoreId fromString(String s) {
+    public static StorePath fromString(String s) {
         if (s == null) {
             throw new IllegalArgumentException("String is null");
         }
@@ -76,7 +74,7 @@ public class DataStoreId {
             throw new IllegalArgumentException("Name must not be empty");
         }
 
-        return new DataStoreId(names);
+        return new StorePath(names);
     }
 
     @Override

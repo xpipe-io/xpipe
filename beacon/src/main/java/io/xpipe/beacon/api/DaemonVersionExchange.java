@@ -5,11 +5,11 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-public class VersionExchange extends BeaconInterface<VersionExchange.Request> {
+public class DaemonVersionExchange extends BeaconInterface<DaemonVersionExchange.Request> {
 
     @Override
     public String getPath() {
-        return "/version";
+        return "/daemon/version";
     }
 
     @Jacksonized

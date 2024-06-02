@@ -6,11 +6,11 @@ import io.xpipe.app.launcher.LauncherInput;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.BeaconServerException;
-import io.xpipe.beacon.api.OpenExchange;
+import io.xpipe.beacon.api.DaemonOpenExchange;
 
 import java.io.IOException;
 
-public class OpenExchangeImpl extends OpenExchange {
+public class DaemonOpenExchangeImpl extends DaemonOpenExchange {
     @Override
     public Object handle(HttpExchange exchange, Request msg) throws IOException, BeaconClientException, BeaconServerException {
         if (msg.getArguments().isEmpty()) {

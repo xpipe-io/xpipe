@@ -8,11 +8,11 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.util.List;
 
-public class OpenExchange extends BeaconInterface<OpenExchange.Request> {
+public class DaemonOpenExchange extends BeaconInterface<DaemonOpenExchange.Request> {
 
     @Override
     public String getPath() {
-        return "/open";
+        return "/daemon/open";
     }
 
     @Jacksonized

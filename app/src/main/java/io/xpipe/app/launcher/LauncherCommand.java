@@ -12,8 +12,8 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.beacon.BeaconClient;
 import io.xpipe.beacon.BeaconClientInformation;
-import io.xpipe.beacon.api.FocusExchange;
-import io.xpipe.beacon.api.OpenExchange;
+import io.xpipe.beacon.api.DaemonFocusExchange;
+import io.xpipe.beacon.api.DaemonOpenExchange;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeInstallation;
@@ -85,16 +85,16 @@ public class LauncherCommand implements Callable<Integer> {
             var port = AppBeaconServer.get().getPort();
             var client = BeaconClient.tryEstablishConnection(port, BeaconClientInformation.DaemonInformation.builder().build());
             if (client.isPresent()) {
-                    client.get().performRequest(FocusExchange.Request.builder().mode(getEffectiveMode()).build());
+                    client.get().performRequest(DaemonFocusExchange.Request.builder().mode(getEffectiveMode()).build());
                     if (!inputs.isEmpty()) {
                         client.get().performRequest(
-                                OpenExchange.Request.builder().arguments(inputs).build());
+                                DaemonOpenExchange.Request.builder().arguments(inputs).build());
                     }
 
                     if (OsType.getLocal().equals(OsType.MACOS)) {
                         Desktop.getDesktop().setOpenURIHandler(e -> {
                             try {
-                                client.get().performRequest(OpenExchange.Request.builder().arguments(List.of(e.getURI().toString())).build());
+                                client.get().performRequest(DaemonOpenExchange.Request.builder().arguments(List.of(e.getURI().toString())).build());
                             } catch (Exception ex) {
                                 ErrorEvent.fromThrowable(ex).expected().omit().handle();
                             }

@@ -4,11 +4,11 @@ import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.BeaconServerException;
-import io.xpipe.beacon.api.FocusExchange;
+import io.xpipe.beacon.api.DaemonFocusExchange;
 
 import java.io.IOException;
 
-public class FocusExchangeImpl extends FocusExchange {
+public class DaemonFocusExchangeImpl extends DaemonFocusExchange {
 
 
 @Override

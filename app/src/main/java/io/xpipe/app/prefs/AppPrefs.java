@@ -122,9 +122,15 @@ public class AppPrefs {
 
     final Property<Integer> httpServerPort =
             map(new SimpleObjectProperty<>(XPipeInstallation.getDefaultBeaconPort()), "httpServerPort", Integer.class);
+    final StringProperty apiKey =
+            map(new SimpleStringProperty(UUID.randomUUID().toString()), "apiKey", String.class);
 
     public ObservableValue<Integer> httpServerPort() {
         return httpServerPort;
+    }
+
+    public ObservableStringValue apiKey() {
+        return apiKey;
     }
 
     private final IntegerProperty editorReloadTimeout =

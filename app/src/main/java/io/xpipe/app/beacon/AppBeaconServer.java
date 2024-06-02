@@ -6,12 +6,15 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.beacon.BeaconConfig;
 import io.xpipe.beacon.BeaconInterface;
+import io.xpipe.core.util.XPipeInstallation;
 import lombok.Getter;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 
 public class AppBeaconServer {
@@ -25,6 +28,10 @@ public class AppBeaconServer {
     private HttpServer server;
     @Getter
     private final Set<BeaconSession> sessions = new HashSet<>();
+    @Getter
+    private final Set<BeaconShellSession> shellSessions = new HashSet<>();
+    @Getter
+    private String localAuthSecret;
 
     static {
         int port;
@@ -46,6 +53,7 @@ public class AppBeaconServer {
 
     public static void init() {
         try {
+            INSTANCE.initAuthSecret();
             INSTANCE.start();
             TrackEvent.withInfo("Started http server")
                     .tag("port", INSTANCE.getPort())
@@ -83,6 +91,13 @@ public class AppBeaconServer {
 
         running = false;
         server.stop(1);
+    }
+
+    private void initAuthSecret() throws IOException {
+        var file = XPipeInstallation.getLocalBeaconAuthFile();
+        var id = UUID.randomUUID().toString();
+        Files.writeString(file, id);
+        localAuthSecret = id;
     }
 
     private void start() throws IOException {

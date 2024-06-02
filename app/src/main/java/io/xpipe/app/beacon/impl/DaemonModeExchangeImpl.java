@@ -5,11 +5,11 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.BeaconServerException;
-import io.xpipe.beacon.api.ModeExchange;
+import io.xpipe.beacon.api.DaemonModeExchange;
 
 import java.io.IOException;
 
-public class ModeExchangeImpl extends ModeExchange {
+public class DaemonModeExchangeImpl extends DaemonModeExchange {
     @Override
     public Object handle(HttpExchange exchange, Request msg) throws IOException, BeaconClientException, BeaconServerException {
         // Wait for startup
@@ -29,7 +29,7 @@ public class ModeExchangeImpl extends ModeExchange {
         }
 
         OperationMode.switchToSyncIfPossible(mode);
-        return ModeExchange.Response.builder()
+        return DaemonModeExchange.Response.builder()
                 .usedMode(OperationMode.map(OperationMode.get()))
                 .build();
     }

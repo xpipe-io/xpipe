@@ -1,17 +1,18 @@
 package io.xpipe.beacon.api;
 
 import io.xpipe.beacon.BeaconInterface;
-import io.xpipe.core.util.XPipeDaemonMode;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-public class ModeExchange extends BeaconInterface<ModeExchange.Request> {
+import java.util.UUID;
+
+public class ShellExecExchange extends BeaconInterface<ShellExecExchange.Request> {
 
     @Override
     public String getPath() {
-        return "/mode";
+        return "/shell/exec";
     }
 
     @Jacksonized
@@ -19,14 +20,19 @@ public class ModeExchange extends BeaconInterface<ModeExchange.Request> {
     @Value
     public static class Request {
         @NonNull
-        XPipeDaemonMode mode;
+        UUID connection;
+        @NonNull
+        String command;
     }
 
     @Jacksonized
     @Builder
     @Value
-    public static class Response  {
+    public static class Response {
+        long exitCode;
         @NonNull
-        XPipeDaemonMode usedMode;
+        String stdout;
+        @NonNull
+        String stderr;
     }
 }
