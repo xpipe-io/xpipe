@@ -20,6 +20,10 @@ public class HttpServerCategory extends AppPrefsCategory {
                         .nameAndDescription("httpServerPort")
                         .addInteger(prefs.httpServerPort)
                         .disable(AppBeaconServer.get().isPropertyPort())
+                        .nameAndDescription("apiKey")
+                        .addString(prefs.apiKey)
+                        .nameAndDescription("disableApiAuthentication")
+                        .addToggle(prefs.disableApiAuthentication)
                 )
                 .buildComp();
     }

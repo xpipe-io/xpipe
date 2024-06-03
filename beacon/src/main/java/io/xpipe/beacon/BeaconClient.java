@@ -3,12 +3,14 @@ package io.xpipe.beacon;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.xpipe.beacon.api.HandshakeExchange;
 import io.xpipe.core.util.JacksonMapper;
+import io.xpipe.core.util.XPipeInstallation;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
 import java.util.Optional;
 
 public class BeaconClient {
@@ -20,7 +22,10 @@ public class BeaconClient {
 
     public static BeaconClient establishConnection(int port, BeaconClientInformation information) throws Exception {
         var client = new BeaconClient(port);
-        HandshakeExchange.Response response = client.performRequest(HandshakeExchange.Request.builder().client(information).build());
+        var auth = Files.readString(XPipeInstallation.getLocalBeaconAuthFile());
+        HandshakeExchange.Response response = client.performRequest(HandshakeExchange.Request.builder()
+                .client(information)
+                .auth(BeaconAuthMethod.Local.builder().authFileContent(auth).build()).build());
         client.token = response.getToken();
         return client;
     }

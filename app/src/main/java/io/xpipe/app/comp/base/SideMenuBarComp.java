@@ -9,6 +9,7 @@ import io.xpipe.app.fxcomps.augment.Augment;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.UpdateAvailableAlert;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.Hyperlinks;
@@ -147,11 +148,21 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         }
 
         {
-            var shortcut = new KeyCodeCombination(KeyCode.values()[KeyCode.DIGIT1.ordinal() + entries.size() + 2]);
             var b = new IconButtonComp("mdi2t-translate", () -> Hyperlinks.open(Hyperlinks.TRANSLATE))
-                    .tooltipKey("translate", shortcut)
+                    .tooltipKey("translate")
                     .apply(simpleBorders)
                     .accessibleTextKey("translate");
+            b.apply(struc -> {
+                AppFont.setSize(struc.get(), 2);
+            });
+            vbox.getChildren().add(b.createRegion());
+        }
+
+        {
+            var b = new IconButtonComp("mdi2c-code-json", () -> Hyperlinks.open("http://localhost:" + AppPrefs.get().httpServerPort().getValue()))
+                    .tooltipKey("api")
+                    .apply(simpleBorders)
+                    .accessibleTextKey("api");
             b.apply(struc -> {
                 AppFont.setSize(struc.get(), 2);
             });

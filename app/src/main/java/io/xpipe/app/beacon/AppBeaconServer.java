@@ -1,9 +1,12 @@
 package io.xpipe.app.beacon;
 
+import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import io.xpipe.app.core.AppResources;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.MarkdownHelper;
 import io.xpipe.beacon.BeaconConfig;
 import io.xpipe.beacon.BeaconInterface;
 import io.xpipe.core.util.XPipeInstallation;
@@ -11,10 +14,9 @@ import lombok.Getter;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.Executors;
 
 public class AppBeaconServer {
@@ -32,6 +34,9 @@ public class AppBeaconServer {
     private final Set<BeaconShellSession> shellSessions = new HashSet<>();
     @Getter
     private String localAuthSecret;
+
+    private String notFoundHtml;
+    private Map<String, String> resources = new HashMap<>();
 
     static {
         int port;
@@ -62,8 +67,7 @@ public class AppBeaconServer {
         } catch (Exception ex) {
             // Not terminal!
             // We can still continue without the running server
-            ErrorEvent.fromThrowable(ex)
-                    .description("Unable to start local http server on port " + INSTANCE.getPort())
+            ErrorEvent.fromThrowable("Unable to start local http server on port " + INSTANCE.getPort(), ex)
                     .build()
                     .handle();
         }
@@ -113,7 +117,57 @@ public class AppBeaconServer {
             });
             return t;
         }));
+
+        var resourceMap = Map.of(
+                "markdown.css", "misc/github-markdown-dark.css",
+                "highlight.min.js", "misc/highlight.min.js",
+                "github-dark.min.css", "misc/github-dark.min.css"
+        );
+        resourceMap.forEach((s, s2) -> {
+            server.createContext("/" + s, exchange -> {
+                handleResource(exchange, s2);
+            });
+        });
+
+        server.createContext("/", exchange -> {
+            handleCatchAll(exchange);
+        });
+
         server.start();
         running = true;
+    }
+
+    private void handleResource(HttpExchange exchange, String resource) throws IOException {
+        if (!resources.containsKey(resource)) {
+            AppResources.with(AppResources.XPIPE_MODULE, resource, file -> {
+                resources.put(resource, Files.readString(file));
+            });
+        }
+        var body = resources.get(resource).getBytes(StandardCharsets.UTF_8);
+        exchange.sendResponseHeaders(200,body.length);
+        try (var out = exchange.getResponseBody()) {
+            out.write(body);
+        }
+    }
+
+    private void handleCatchAll(HttpExchange exchange) throws IOException {
+        if (notFoundHtml == null) {
+            AppResources.with(AppResources.XPIPE_MODULE, "misc/api.md", file -> {
+                notFoundHtml = MarkdownHelper.toHtml(Files.readString(file), head -> {
+                    return head + "\n" +
+                            "<link rel=\"stylesheet\" href=\"markdown.css\">" + "\n" +
+                            "<link rel=\"stylesheet\" href=\"github-dark.min.css\">" + "\n" +
+                            "<script src=\"highlight.min.js\"></script>" + "\n" +
+                            "<script>hljs.highlightAll();</script>";
+                }, s -> {
+                    return "<div style=\"max-width: 800px;margin: auto;\">" + s + "</div>";
+                });
+            });
+        }
+        var body = notFoundHtml.getBytes(StandardCharsets.UTF_8);
+        exchange.sendResponseHeaders(200,body.length);
+        try (var out = exchange.getResponseBody()) {
+            out.write(body);
+        }
     }
 }

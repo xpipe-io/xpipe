@@ -3,7 +3,6 @@ package io.xpipe.beacon.api;
 import io.xpipe.beacon.BeaconInterface;
 import io.xpipe.core.util.SecretValue;
 import lombok.Builder;
-import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
@@ -22,7 +21,6 @@ public class AskpassExchange extends BeaconInterface<AskpassExchange.Request> {
     public static class Request {
         UUID secretId;
 
-        @NonNull
         UUID request;
 
         String prompt;

@@ -34,6 +34,7 @@ public class HandshakeExchange extends BeaconInterface<HandshakeExchange.Request
     @Builder
     @Value
     public static class Response {
+        @NonNull
         String token;
     }
 }

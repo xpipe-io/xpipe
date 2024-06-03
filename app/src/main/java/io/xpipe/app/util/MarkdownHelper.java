@@ -6,6 +6,8 @@ import com.vladsch.flexmark.ext.footnotes.FootnoteExtension;
 import com.vladsch.flexmark.ext.gfm.strikethrough.StrikethroughExtension;
 import com.vladsch.flexmark.ext.gfm.tasklist.TaskListExtension;
 import com.vladsch.flexmark.ext.tables.TablesExtension;
+import com.vladsch.flexmark.ext.toc.TocExtension;
+import com.vladsch.flexmark.ext.yaml.front.matter.YamlFrontMatterExtension;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Document;
@@ -16,14 +18,16 @@ import java.util.function.UnaryOperator;
 
 public class MarkdownHelper {
 
-    public static String toHtml(String value, UnaryOperator<String> htmlTransformation) {
+    public static String toHtml(String value, UnaryOperator<String> headTransformation, UnaryOperator<String> bodyTransformation) {
         MutableDataSet options = new MutableDataSet().set(Parser.EXTENSIONS, Arrays.asList(
                         StrikethroughExtension.create(),
                         TaskListExtension.create(),
                         TablesExtension.create(),
                         FootnoteExtension.create(),
                         DefinitionExtension.create(),
-                        AnchorLinkExtension.create()
+                        AnchorLinkExtension.create(),
+                        YamlFrontMatterExtension.create(),
+                        TocExtension.create()
                 ))
                 .set(FootnoteExtension.FOOTNOTE_BACK_LINK_REF_CLASS,"footnotes")
                 .set(TablesExtension.WITH_CAPTION, false)
@@ -38,7 +42,8 @@ public class MarkdownHelper {
         HtmlRenderer renderer = HtmlRenderer.builder(options).build();
         Document document = parser.parse(value);
         var html = renderer.render(document);
-        var result = htmlTransformation.apply(html);
-        return "<meta charset=\"utf-8\"/><article class=\"markdown-body\">" + result + "</article>";
+        var result = bodyTransformation.apply(html);
+        var headContent = headTransformation.apply("<meta charset=\"utf-8\"/>");
+        return "<html><head>" + headContent + "</head><body><article class=\"markdown-body\">" + result + "</article></body></html>";
     }
 }

@@ -12,7 +12,7 @@ import lombok.extern.jackson.Jacksonized;
         property = "type")
 public interface BeaconAuthMethod {
 
-    @JsonTypeName("local")
+    @JsonTypeName("Local")
     @Value
     @Builder
     @Jacksonized
@@ -22,7 +22,7 @@ public interface BeaconAuthMethod {
         String authFileContent;
     }
 
-    @JsonTypeName("apiKey")
+    @JsonTypeName("ApiKey")
     @Value
     @Builder
     @Jacksonized

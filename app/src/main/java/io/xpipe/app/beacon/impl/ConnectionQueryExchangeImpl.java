@@ -55,6 +55,6 @@ public class ConnectionQueryExchangeImpl extends ConnectionQueryExchange {
     }
 
     private String toRegex(String pattern) {
-        return pattern.replaceAll("\\*","[^\\\\]*?");
+        return pattern.replaceAll("\\*\\*", ".*?").replaceAll("\\*","[^\\\\]*?");
     }
 }

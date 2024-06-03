@@ -17,6 +17,7 @@ open module io.xpipe.beacon {
     requires static org.junit.jupiter.api;
     requires jdk.httpserver;
     requires java.net.http;
+    requires java.desktop;
 
     uses io.xpipe.beacon.BeaconInterface;
 

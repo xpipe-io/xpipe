@@ -1,0 +1,264 @@
+openapi: 3.0.1
+info:
+  title: XPipe API Documentation
+  description: The XPipe API provides programmatic access to XPipe’s features.
+  termsOfService: https://docs.xpipe.io/terms-of-service
+  contact:
+    name: XPipe - Contact us
+    url: mailto:hello@xpipe.io
+  version: "10.0"
+externalDocs:
+  description: XPipe - Plans and pricing
+  url: https://xpipe.io/pricing
+servers:
+- url: https://localhost:21721
+  description: XPipe Daemon API
+- url: https://localhost:21722
+  description: XPipe PTB Daemon API
+paths:
+  /handshake:
+    post:
+      summary: Create new session
+      description: Creates a new API session, allowing you to send requests to the daemon once it is established.
+      operationId: handshake
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HandshakeRequest'
+            examples:
+              standard:
+                summary: Standard handshake
+                value: {"auth": {"type": "ApiKey", "key": "<API key>"}, "client": {"type": "Api", "name": "My client name"}}
+              local:
+                summary: Local application handshake
+                value: {"auth": {"type": "Local", "authFileContent": "<Contents of the local file $TEMP/xpipe_auth>"}, "client": {"type": "Api", "name": "My client name"}}
+      responses:
+        200:
+          description: The handshake was successful. The returned token can be used for authentication in this session. The token is valid as long as XPipe is running.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HandshakeResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /connection/query:
+    post:
+      summary: Query connections
+      description: Queries all connections using various filters
+      operationId: connectionQuery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectionQueryRequest'
+            examples:
+              all:
+                summary: All
+                value: {"categoryFilter": "**", "connectionFilter": "**", "typeFilter": "*"}
+              simple:
+                summary: Simple filter
+                value: {"categoryFilter": "default", "connectionFilter": "local machine", "typeFilter": "*"}
+              globs:
+                summary: Globs
+                value: {"categoryFilter": "**", "connectionFilter": "**/podman/*", "typeFilter": "*"}
+      responses:
+        200:
+          description: The query was successful. The body contains all matched connections.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectionQueryResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /daemon/open:
+    post:
+      summary: Open URLs
+      description: Opens main window or executes given actions.
+      operationId: daemonOpen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                arguments:
+                  description: |-
+                    Arguments to open. These can be URLs of various different types to perform certain actions.
+                  type: array
+                  minItems: 0
+                  items:
+                    type: string
+                    example: file:///home/user/.ssh/
+      responses:
+        200:
+          $ref: '#/components/responses/Success'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+components:
+  schemas:
+    ConnectionQueryRequest:
+      type: object
+      properties:
+        categoryFilter:
+          type: string
+          description: The filter string to match categories. Categories are delimited by / if they are hierarchical. The filter supports globs with * and **.
+        connectionFilter:
+          type: string
+          description: The filter string to match connection names. Connection names are delimited by / if they are hierarchical. The filter supports globs with * and **.
+        typeFilter:
+          type: string
+          description: The filter string to connection types. Every unique type of connection like SSH or docker has its own type identifier that you can match. The filter supports globs with *.
+      required:
+      - categoryFilter
+      - connectionFilter
+      - typeFilter
+    ConnectionQueryResponse:
+      type: object
+      properties:
+        found:
+          type: array
+          description: The found connections
+          items:
+            type: object
+            properties:
+              uuid:
+                type: string
+                description: The unique id of the connection
+              category:
+                type: string
+                description: The full category path
+              connection:
+                type: string
+                description: The full connection name path
+              type:
+                type: string
+                description: The type identifier of the connection
+            required:
+            - uuid
+            - category
+            - connection
+            - type
+      required:
+      - found
+    HandshakeRequest:
+      type: object
+      properties:
+        auth:
+          $ref: '#/components/schemas/AuthMethod'
+        client:
+          $ref: '#/components/schemas/ClientInformation'
+      required:
+      - auth
+      - client
+    HandshakeResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: The generated bearer token that can be used for authentication in this session
+      required:
+      - token
+    AuthMethod:
+      type: object
+      discriminator:
+        propertyName: type
+      properties:
+        type:
+          type: string
+      required:
+      - type
+      oneOf:
+      - $ref: '#/components/schemas/ApiKey'
+      - $ref: '#/components/schemas/Local'
+    ApiKey:
+      description: API key authentication
+      allOf:
+      - $ref: '#/components/schemas/AuthMethod'
+      - type: object
+        properties:
+          key:
+            type: string
+            description: The API key
+        required:
+        - key
+    Local:
+      description: Authentication method for local applications. Uses file system access as proof of authentication.
+      allOf:
+      - $ref: '#/components/schemas/AuthMethod'
+      - type: object
+        properties:
+          authFileContent:
+            type: string
+            description: The contents of the local file $TEMP/xpipe_auth. This file is automatically generated when XPipe starts.
+        required:
+        - authFileContent
+    ClientInformation:
+      type: object
+      discriminator:
+        propertyName: type
+      properties:
+        type:
+          type: string
+      required:
+      - type
+    ApiClientInformation:
+      description: Provides information about the client that connected to the XPipe API.
+      allOf:
+      - $ref: '#/components/schemas/ClientInformation'
+      - type: object
+        properties:
+          name:
+            type: string
+            description: The name of the client.
+        required:
+        - name
+  responses:
+    Success:
+      description: The action was successfully performed.
+    BadRequest:
+      description: Bad request. Please check error message and your parameters.
+    Unauthorized:
+      description: Authorization failed. Please supply a `Bearer` token via
+        the `Authorization` header.
+    Forbidden:
+      description: Authorization failed. Please supply a valid `Bearer` token via
+        the `Authorization` header.
+    NotFound:
+      description: The requested resource could not be found.
+    InternalServerError:
+      description: Internal error.
+  securitySchemes:
+    auth_header:
+      type: apiKey
+      description: Authentication with `Authorization` header and `Bearer`
+        authentication scheme
+      name: Authorization
+      in: header

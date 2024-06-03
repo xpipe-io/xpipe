@@ -44,6 +44,8 @@ extraJavaModuleInfo {
         mergeJar('com.vladsch.flexmark:flexmark-ext-footnotes')
         mergeJar('com.vladsch.flexmark:flexmark-ext-definition')
         mergeJar('com.vladsch.flexmark:flexmark-ext-anchorlink')
+        mergeJar('com.vladsch.flexmark:flexmark-ext-yaml-front-matter')
+        mergeJar('com.vladsch.flexmark:flexmark-ext-toc')
         exportAllPackages()
     }
 }

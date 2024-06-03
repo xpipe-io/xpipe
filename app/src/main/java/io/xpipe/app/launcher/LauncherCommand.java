@@ -83,7 +83,7 @@ public class LauncherCommand implements Callable<Integer> {
     private void checkStart() {
         try {
             var port = AppBeaconServer.get().getPort();
-            var client = BeaconClient.tryEstablishConnection(port, BeaconClientInformation.DaemonInformation.builder().build());
+            var client = BeaconClient.tryEstablishConnection(port, BeaconClientInformation.Daemon.builder().build());
             if (client.isPresent()) {
                     client.get().performRequest(DaemonFocusExchange.Request.builder().mode(getEffectiveMode()).build());
                     if (!inputs.isEmpty()) {

@@ -1,6 +1,7 @@
 package io.xpipe.app.beacon.impl;
 
 import com.sun.net.httpserver.HttpExchange;
+import io.xpipe.app.util.AskpassAlert;
 import io.xpipe.app.util.SecretManager;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.BeaconServerException;
@@ -12,6 +13,11 @@ public class AskpassExchangeImpl extends AskpassExchange {
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) throws IOException, BeaconClientException, BeaconServerException {
+        if (msg.getRequest() == null) {
+            var r = AskpassAlert.queryRaw(msg.getPrompt(), null);
+            return Response.builder().value(r.getSecret()).build();
+        }
+
         var found = msg.getSecretId() != null
                 ? SecretManager.getProgress(msg.getRequest(), msg.getSecretId())
                 : SecretManager.getProgress(msg.getRequest());

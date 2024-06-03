@@ -33,6 +33,7 @@ public class ConnectionQueryExchange extends BeaconInterface<ConnectionQueryExch
     @Builder
     @Value
     public static class Response {
+        @NonNull
         List<QueryResponse> found;
     }
 
@@ -40,9 +41,13 @@ public class ConnectionQueryExchange extends BeaconInterface<ConnectionQueryExch
     @Builder
     @Value
     public static class QueryResponse {
+        @NonNull
         UUID uuid;
+        @NonNull
         StorePath category;
+        @NonNull
         StorePath connection;
+        @NonNull
         String type;
     }
 }

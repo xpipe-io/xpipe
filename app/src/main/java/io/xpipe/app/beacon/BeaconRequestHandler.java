@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.beacon.*;
 import io.xpipe.core.util.JacksonMapper;
 import lombok.SneakyThrows;
@@ -21,7 +22,7 @@ public class BeaconRequestHandler<T> implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        if (beaconInterface.requiresAuthentication()) {
+        if (!AppPrefs.get().disableApiAuthentication().get() && beaconInterface.requiresAuthentication()) {
             var auth = exchange.getRequestHeaders().getFirst("Authorization");
             if (auth == null) {
                 writeError(exchange, new BeaconClientErrorResponse("Missing Authorization header"), 401);

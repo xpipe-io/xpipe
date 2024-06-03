@@ -121,9 +121,11 @@ public class AppPrefs {
             mapVaultSpecific(new SimpleStringProperty(), "workspaceLock", String.class);
 
     final Property<Integer> httpServerPort =
-            map(new SimpleObjectProperty<>(XPipeInstallation.getDefaultBeaconPort()), "httpServerPort", Integer.class);
+            mapVaultSpecific(new SimpleObjectProperty<>(XPipeInstallation.getDefaultBeaconPort()), "httpServerPort", Integer.class);
     final StringProperty apiKey =
-            map(new SimpleStringProperty(UUID.randomUUID().toString()), "apiKey", String.class);
+            mapVaultSpecific(new SimpleStringProperty(UUID.randomUUID().toString()), "apiKey", String.class);
+    final BooleanProperty disableApiAuthentication =
+            mapVaultSpecific(new SimpleBooleanProperty(false), "disableApiAuthentication", Boolean.class);
 
     public ObservableValue<Integer> httpServerPort() {
         return httpServerPort;
@@ -131,6 +133,10 @@ public class AppPrefs {
 
     public ObservableStringValue apiKey() {
         return apiKey;
+    }
+
+    public ObservableBooleanValue disableApiAuthentication() {
+        return disableApiAuthentication;
     }
 
     private final IntegerProperty editorReloadTimeout =
