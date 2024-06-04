@@ -119,6 +119,7 @@ public class AppBeaconServer {
         }));
 
         var resourceMap = Map.of(
+                "openapi.yaml", "misc/openapi.yaml",
                 "markdown.css", "misc/github-markdown-dark.css",
                 "highlight.min.js", "misc/highlight.min.js",
                 "github-dark.min.css", "misc/github-dark.min.css"

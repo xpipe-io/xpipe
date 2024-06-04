@@ -1,7 +1,22 @@
 openapi: 3.0.1
 info:
   title: XPipe API Documentation
-  description: The XPipe API provides programmatic access to XPipe’s features.
+  description: |
+    The XPipe API provides programmatic access to XPipe’s features.
+    
+    The XPipe application will start up an HTTP server that can be used to send requests.
+    You can change the port of it in the settings menu.
+    Note that this server is HTTP-only for now as it runs only on localhost. HTTPS requests are not accepted.
+    
+    The main use case for the API right now is programmatically managing remote systems.
+    To start off, you can query connections based on various filters.
+    With the matched connections, you can start remote shell sessions for each one and run arbitrary commands in them.
+    You get the command exit code and output as a response, allowing you to adapt your control flow based on command outputs.
+    Any kind of passwords another secret are automatically provided by XPipe when establishing a shell connection.
+    If required password is not stored and is set to be dynamically prompted, the running XPipe application will ask you to enter any required passwords.
+    
+    You can quickly get started by either using this page as an API reference or alternatively import the [OpenAPI definition file](/openapi.yaml) into your API client of choice.
+    See the authentication handshake below on how to authenticate prior to sending requests.
   termsOfService: https://docs.xpipe.io/terms-of-service
   contact:
     name: XPipe - Contact us
@@ -11,16 +26,21 @@ externalDocs:
   description: XPipe - Plans and pricing
   url: https://xpipe.io/pricing
 servers:
-- url: https://localhost:21721
-  description: XPipe Daemon API
-- url: https://localhost:21722
-  description: XPipe PTB Daemon API
+  - url: http://localhost:21721
+    description: XPipe Daemon API
 paths:
   /handshake:
     post:
-      summary: Create new session
-      description: Creates a new API session, allowing you to send requests to the daemon once it is established.
+      summary: Establish a new API session
+      description: |
+        Prior to sending requests to the API, you first have to establish a new API session via the handshake endpoint.
+        In the response you will receive a session token that you can use to authenticate during this session.
+        
+        This is done so that the daemon knows what kind of clients are connected and can manage individual capabilities for clients.
+        
+        Note that for development you can also turn off the required authentication in the XPipe settings menu, allowing you to send unauthenticated requests.
       operationId: handshake
+      security: []
       requestBody:
         required: true
         content:
@@ -30,10 +50,10 @@ paths:
             examples:
               standard:
                 summary: Standard handshake
-                value: {"auth": {"type": "ApiKey", "key": "<API key>"}, "client": {"type": "Api", "name": "My client name"}}
+                value: { "auth": { "type": "ApiKey", "key": "<API key>" }, "client": { "type": "Api", "name": "My client name" } }
               local:
                 summary: Local application handshake
-                value: {"auth": {"type": "Local", "authFileContent": "<Contents of the local file $TEMP/xpipe_auth>"}, "client": {"type": "Api", "name": "My client name"}}
+                value: { "auth": { "type": "Local", "authFileContent": "<Contents of the local file $TEMP/xpipe_auth>" }, "client": { "type": "Api", "name": "My client name" } }
       responses:
         200:
           description: The handshake was successful. The returned token can be used for authentication in this session. The token is valid as long as XPipe is running.
@@ -54,7 +74,11 @@ paths:
   /connection/query:
     post:
       summary: Query connections
-      description: Queries all connections using various filters
+      description: |
+        Queries all connections using various filters.
+        
+        The filters support globs and can match the category names and connection names.
+        All matching is case insensitive.
       operationId: connectionQuery
       requestBody:
         required: true
@@ -65,13 +89,13 @@ paths:
             examples:
               all:
                 summary: All
-                value: {"categoryFilter": "**", "connectionFilter": "**", "typeFilter": "*"}
+                value: { "categoryFilter": "*", "connectionFilter": "*", "typeFilter": "*" }
               simple:
                 summary: Simple filter
-                value: {"categoryFilter": "default", "connectionFilter": "local machine", "typeFilter": "*"}
+                value: { "categoryFilter": "default", "connectionFilter": "local machine", "typeFilter": "*" }
               globs:
                 summary: Globs
-                value: {"categoryFilter": "**", "connectionFilter": "**/podman/*", "typeFilter": "*"}
+                value: { "categoryFilter": "*", "connectionFilter": "*/podman/*", "typeFilter": "*" }
       responses:
         200:
           description: The query was successful. The body contains all matched connections.
@@ -79,6 +103,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConnectionQueryResponse'
+              examples:
+                standard:
+                  summary: Matched connections
+                  value: { "found": [ { "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b", "category": ["default"] ,
+                                        "connection": ["local machine"], "type": "local" },
+                    { "uuid": "e1462ddc-9beb-484c-bd91-bb666027e300", "category": ["default", "category 1"],
+                      "connection": ["ssh system", "shell environments", "bash"], "type": "shellEnvironment" } ] }
         400:
           $ref: '#/components/responses/BadRequest'
         401:
@@ -89,29 +120,107 @@ paths:
           $ref: '#/components/responses/NotFound'
         500:
           $ref: '#/components/responses/InternalServerError'
-  /daemon/open:
+  /shell/start:
     post:
-      summary: Open URLs
-      description: Opens main window or executes given actions.
-      operationId: daemonOpen
+      summary: Start shell connection
+      description: |
+        Starts a new shell session for a connection. If an existing shell session is already running for that connection, this operation will do nothing.
+        
+        Note that there are a variety of possible errors that can occur here when establishing the shell connection.
+        These errors will be returned with the HTTP return code 500.
+      operationId: shellStart
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                arguments:
-                  description: |-
-                    Arguments to open. These can be URLs of various different types to perform certain actions.
-                  type: array
-                  minItems: 0
-                  items:
-                    type: string
-                    example: file:///home/user/.ssh/
+              $ref: '#/components/schemas/ShellStartRequest'
+            examples:
+              local:
+                summary: Start local shell
+                value: { "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b" }
       responses:
         200:
-          $ref: '#/components/responses/Success'
+          description: The operation was successful. The shell session was started.
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /shell/stop:
+    post:
+      summary: Stop shell connection
+      description: |
+        Stops an existing shell session for a connection.
+        
+        This operation will return once the shell has exited.
+        If the shell is busy or stuck, you might have to work with timeouts to account for these cases.
+      operationId: shellStop
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShellStopRequest'
+            examples:
+              local:
+                summary: Stop local shell
+                value: { "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b" }
+      responses:
+        200:
+          description: The operation was successful. The shell session was stopped.
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /shell/exec:
+    post:
+      summary: Execute command in a shell session
+      description: |
+        Runs a command in an active shell session and waits for it to finish. The exit code and output will be returned in the response.
+        
+        Note that a variety of different errors can occur when executing the command.
+        If the command finishes, even with an error code, a normal HTTP 200 response will be returned.
+        However, if any other error occurs like the shell not responding or exiting unexpectedly, an HTTP 500 response will be returned.
+      operationId: shellExec
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShellExecRequest'
+            examples:
+              user:
+                summary: echo $USER
+                value: { "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b", "command": "echo $USER" }
+              invalid:
+                summary: invalid
+                value: { "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b", "command": "invalid" }
+      responses:
+        200:
+          description: The operation was successful. The shell command finished.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShellExecResponse'
+              examples:
+                user:
+                  summary: echo $USER
+                  value: { "exitCode": 0, "stdout": "root", "stderr": "" }
+                fail:
+                  summary: invalid
+                  value: { "exitCode": 127, "stdout": "", "stderr": "invalid: command not found" }
         400:
           $ref: '#/components/responses/BadRequest'
         401:
@@ -124,22 +233,66 @@ paths:
           $ref: '#/components/responses/InternalServerError'
 components:
   schemas:
+    ShellStartRequest:
+      type: object
+      properties:
+        connection:
+          type: string
+          description: The connection uuid
+      required:
+        - connection
+    ShellStopRequest:
+      type: object
+      properties:
+        connection:
+          type: string
+          description: The connection uuid
+      required:
+        - connection
+    ShellExecRequest:
+      type: object
+      properties:
+        connection:
+          type: string
+          description: The connection uuid
+        command:
+          type: string
+          description: The command to execute
+      required:
+        - connection
+        - command
+    ShellExecResponse:
+      type: object
+      properties:
+        exitCode:
+          type: integer
+          description: The exit code of the command
+        stdout:
+          type: string
+          description: The stdout output of the command
+        stderr:
+          type: string
+          description: The stderr output of the command
+      required:
+        - exitCode
+        - stdout
+        - stderr
     ConnectionQueryRequest:
       type: object
       properties:
         categoryFilter:
           type: string
-          description: The filter string to match categories. Categories are delimited by / if they are hierarchical. The filter supports globs with * and **.
+          description: The filter string to match categories. Categories are delimited by / if they are hierarchical. The filter supports globs.
         connectionFilter:
           type: string
-          description: The filter string to match connection names. Connection names are delimited by / if they are hierarchical. The filter supports globs with * and **.
+          description: The filter string to match connection names. Connection names are delimited by / if they are hierarchical. The filter supports globs.
         typeFilter:
           type: string
-          description: The filter string to connection types. Every unique type of connection like SSH or docker has its own type identifier that you can match. The filter supports globs with *.
+          description: The filter string to connection types. Every unique type of connection like SSH or docker has its own type identifier that you can match. The filter supports globs.
       required:
-      - categoryFilter
-      - connectionFilter
-      - typeFilter
+        - categoryFilter
+        - connectionFilter
+        - typeFilter
     ConnectionQueryResponse:
       type: object
       properties:
@@ -153,21 +306,27 @@ components:
                 type: string
                 description: The unique id of the connection
               category:
-                type: string
-                description: The full category path
+                type: array
+                description: The full category path as an array
+                items:
+                  type: string
+                  description: Individual category name
               connection:
-                type: string
-                description: The full connection name path
+                type: array
+                description: The full connection name path as an array
+                items:
+                  type: string
+                  description: Individual connection name
               type:
                 type: string
                 description: The type identifier of the connection
             required:
-            - uuid
-            - category
-            - connection
-            - type
+              - uuid
+              - category
+              - connection
+              - type
       required:
-      - found
+        - found
     HandshakeRequest:
       type: object
       properties:
@@ -176,16 +335,16 @@ components:
         client:
           $ref: '#/components/schemas/ClientInformation'
       required:
-      - auth
-      - client
+        - auth
+        - client
     HandshakeResponse:
       type: object
       properties:
-        token:
+        sessionToken:
           type: string
           description: The generated bearer token that can be used for authentication in this session
       required:
-      - token
+        - sessionToken
     AuthMethod:
       type: object
       discriminator:
@@ -194,32 +353,32 @@ components:
         type:
           type: string
       required:
-      - type
+        - type
       oneOf:
-      - $ref: '#/components/schemas/ApiKey'
-      - $ref: '#/components/schemas/Local'
+        - $ref: '#/components/schemas/ApiKey'
+        - $ref: '#/components/schemas/Local'
     ApiKey:
       description: API key authentication
       allOf:
-      - $ref: '#/components/schemas/AuthMethod'
-      - type: object
-        properties:
-          key:
-            type: string
-            description: The API key
-        required:
-        - key
+        - $ref: '#/components/schemas/AuthMethod'
+        - type: object
+          properties:
+            key:
+              type: string
+              description: The API key
+          required:
+            - key
     Local:
       description: Authentication method for local applications. Uses file system access as proof of authentication.
       allOf:
-      - $ref: '#/components/schemas/AuthMethod'
-      - type: object
-        properties:
-          authFileContent:
-            type: string
-            description: The contents of the local file $TEMP/xpipe_auth. This file is automatically generated when XPipe starts.
-        required:
-        - authFileContent
+        - $ref: '#/components/schemas/AuthMethod'
+        - type: object
+          properties:
+            authFileContent:
+              type: string
+              description: The contents of the local file $TEMP/xpipe_auth. This file is automatically generated when XPipe starts.
+          required:
+            - authFileContent
     ClientInformation:
       type: object
       discriminator:
@@ -228,18 +387,18 @@ components:
         type:
           type: string
       required:
-      - type
+        - type
     ApiClientInformation:
       description: Provides information about the client that connected to the XPipe API.
       allOf:
-      - $ref: '#/components/schemas/ClientInformation'
-      - type: object
-        properties:
-          name:
-            type: string
-            description: The name of the client.
-        required:
-        - name
+        - $ref: '#/components/schemas/ClientInformation'
+        - type: object
+          properties:
+            name:
+              type: string
+              description: The name of the client.
+          required:
+            - name
   responses:
     Success:
       description: The action was successfully performed.
@@ -256,9 +415,9 @@ components:
     InternalServerError:
       description: Internal error.
   securitySchemes:
-    auth_header:
-      type: apiKey
-      description: Authentication with `Authorization` header and `Bearer`
-        authentication scheme
-      name: Authorization
-      in: header
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: The bearer token used is the session token that you receive from the handshake exchange.
+security:
+  - bearerAuth: []

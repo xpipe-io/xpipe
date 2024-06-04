@@ -35,6 +35,6 @@ public class HandshakeExchange extends BeaconInterface<HandshakeExchange.Request
     @Value
     public static class Response {
         @NonNull
-        String token;
+        String sessionToken;
     }
 }

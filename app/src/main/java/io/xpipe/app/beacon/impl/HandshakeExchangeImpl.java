@@ -23,7 +23,7 @@ public class HandshakeExchangeImpl extends HandshakeExchange {
 
         var session = new BeaconSession(body.getClient(), UUID.randomUUID().toString());
         AppBeaconServer.get().addSession(session);
-        return Response.builder().token(session.getToken()).build();
+        return Response.builder().sessionToken(session.getToken()).build();
     }
 
     private boolean checkAuth(BeaconAuthMethod authMethod) {

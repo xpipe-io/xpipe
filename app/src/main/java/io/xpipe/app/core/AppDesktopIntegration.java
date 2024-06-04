@@ -5,6 +5,7 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.launcher.LauncherInput;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 
@@ -16,6 +17,10 @@ import java.util.List;
 public class AppDesktopIntegration {
 
     public static void setupDesktopIntegrations() {
+        if (PlatformState.getCurrent() != PlatformState.RUNNING) {
+            return;
+        }
+
         try {
             if (Desktop.isDesktopSupported()) {
                 Desktop.getDesktop().addAppEventListener(new SystemSleepListener() {

@@ -763,13 +763,13 @@ public abstract class DataStorage {
     public StorePath getStorePath(DataStoreEntry entry) {
         return StorePath.create(getStoreParentHierarchy(entry).stream()
                 .filter(e -> !(e.getStore() instanceof LocalStore))
-                .map(e -> e.getName().replaceAll("/", "_"))
+                .map(e -> e.getName().toLowerCase().replaceAll("/", "_"))
                 .toArray(String[]::new));
     }
 
     public StorePath getStorePath(DataStoreCategory entry) {
         return StorePath.create(getCategoryParentHierarchy(entry).stream()
-                .map(e -> e.getName().replaceAll("/", "_"))
+                .map(e -> e.getName().toLowerCase().replaceAll("/", "_"))
                 .toArray(String[]::new));
     }
 

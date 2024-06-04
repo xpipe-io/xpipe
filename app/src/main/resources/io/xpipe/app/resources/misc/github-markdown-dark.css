@@ -70,6 +70,12 @@ html {
     font-style: italic;
 }
 
+.markdown-body summary {
+    font-weight: 600;
+    padding-bottom: .3em;
+    font-size: 1.4em;
+}
+
 .markdown-body h1 {
     margin: .67em 0;
     font-weight: 600;
@@ -416,7 +422,7 @@ html {
 .markdown-body table,
 .markdown-body pre,
 .markdown-body details {
-    margin-top: 0;
+    margin-top: 16px;
     margin-bottom: 16px;
 }
 

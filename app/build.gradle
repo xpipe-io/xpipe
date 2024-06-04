@@ -150,6 +150,13 @@ processResources {
             into resourcesDir
         }
     }
+
+    doLast {
+        copy {
+            from file("$rootDir/openapi.yaml")
+            into file("${sourceSets.main.output.resourcesDir}/io/xpipe/app/resources/misc");
+        }
+    }
 }
 
 distTar {

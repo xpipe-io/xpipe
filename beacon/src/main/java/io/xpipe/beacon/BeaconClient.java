@@ -26,7 +26,7 @@ public class BeaconClient {
         HandshakeExchange.Response response = client.performRequest(HandshakeExchange.Request.builder()
                 .client(information)
                 .auth(BeaconAuthMethod.Local.builder().authFileContent(auth).build()).build());
-        client.token = response.getToken();
+        client.token = response.getSessionToken();
         return client;
     }
 

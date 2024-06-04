@@ -1,14 +1,17 @@
 ---
 title: XPipe API Documentation v10.0
 language_tabs:
-  - shell: Shell
-  - http: HTTP
   - javascript: JavaScript
-  - ruby: Ruby
   - python: Python
-  - php: PHP
   - java: Java
   - go: Go
+  - shell: Shell
+language_clients:
+  - javascript: ""
+  - python: ""
+  - java: ""
+  - go: ""
+  - shell: ""
 toc_footers:
   - <a href="https://xpipe.io/pricing">XPipe - Plans and pricing</a>
 includes: []
@@ -20,29 +23,47 @@ headingLevel: 2
 
 <h1 id="xpipe-api-documentation">XPipe API Documentation v10.0</h1>
 
-[TOC]
-
-> Scroll down for code samples, example requests and responses. Select a language for code samples from the tabs above or the mobile navigation menu.
-
 The XPipe API provides programmatic access to XPipe’s features.
+
+The XPipe application will start up an HTTP server that can be used to send requests.
+You can change the port of it in the settings menu.
+Note that this server is HTTP-only for now as it runs only on localhost. HTTPS requests are not accepted.
+
+The main use case for the API right now is programmatically managing remote systems.
+To start off, you can query connections based on various filters.
+With the matched connections, you can start remote shell sessions for each one and run arbitrary commands in them.
+You get the command exit code and output as a response, allowing you to adapt your control flow based on command outputs.
+Any kind of passwords another secret are automatically provided by XPipe when establishing a shell connection.
+If required password is not stored and is set to be dynamically prompted, the running XPipe application will ask you to enter any required passwords.
+
+You can quickly get started by either using this page as an API reference or alternatively import the [OpenAPI definition file](/openapi.yaml) into your API client of choice.
+See the authentication handshake below on how to authenticate prior to sending requests.
 
 Base URLs:
 
-* <a href="https://localhost:21721">https://localhost:21721</a>
+* <a href="http://localhost:21721">http://localhost:21721</a>
 
-* <a href="https://localhost:21722">https://localhost:21722</a>
+Table of contents:
+[TOC]
 
-undefined
+# Authentication
+
+- HTTP Authentication, scheme: bearer The bearer token used is the session token that you receive from the handshake exchange.
 
 <h1 id="xpipe-api-documentation-default">Default</h1>
 
-## Create new session
+## Establish a new API session
 
 <a id="opIdhandshake"></a>
 
 `POST /handshake`
 
-Creates a new API session, allowing you to send requests to the daemon once it is established.
+Prior to sending requests to the API, you first have to establish a new API session via the handshake endpoint.
+In the response you will receive a session token that you can use to authenticate during this session.
+
+This is done so that the daemon knows what kind of clients are connected and can manage individual capabilities for clients.
+
+Note that for development you can also turn off the required authentication in the XPipe settings menu, allowing you to send unauthenticated requests.
 
 > Body parameter
 
@@ -59,31 +80,40 @@ Creates a new API session, allowing you to send requests to the daemon once it i
 }
 ```
 
-undefined
+<h3 id="establish-a-new-api-session-parameters">Parameters</h3>
 
-undefined
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|body|body|[HandshakeRequest](#schemahandshakerequest)|true|none|
 
-undefined
+> Example responses
 
-undefined
+> 200 Response
 
-> Code samples
-
-```shell
-# You can also use wget
-curl -X POST https://localhost:21721/handshake \
-  -H 'Content-Type: application/json' \
-  -H 'Accept: application/json'
-
+```json
+{
+  "sessionToken": "string"
+}
 ```
 
-```http
-POST https://localhost:21721/handshake HTTP/1.1
-Host: localhost:21721
-Content-Type: application/json
-Accept: application/json
+<h3 id="establish-a-new-api-session-responses">Responses</h3>
 
-```
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The handshake was successful. The returned token can be used for authentication in this session. The token is valid as long as XPipe is running.|[HandshakeResponse](#schemahandshakeresponse)|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|None|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
+|403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
+|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|None|
+
+<aside class="success">
+This operation does not require authentication
+</aside>
+
+<details>
+
+<summary>Code samples</summary>
 
 ```javascript
 const inputBody = '{
@@ -101,7 +131,7 @@ const headers = {
   'Accept':'application/json'
 };
 
-fetch('https://localhost:21721/handshake',
+fetch('http://localhost:21721/handshake',
 {
   method: 'POST',
   body: inputBody,
@@ -115,23 +145,6 @@ fetch('https://localhost:21721/handshake',
 
 ```
 
-```ruby
-require 'rest-client'
-require 'json'
-
-headers = {
-  'Content-Type' => 'application/json',
-  'Accept' => 'application/json'
-}
-
-result = RestClient.post 'https://localhost:21721/handshake',
-  params: {
-  }, headers: headers
-
-p JSON.parse(result)
-
-```
-
 ```python
 import requests
 headers = {
@@ -139,46 +152,14 @@ headers = {
   'Accept': 'application/json'
 }
 
-r = requests.post('https://localhost:21721/handshake', headers = headers)
+r = requests.post('http://localhost:21721/handshake', headers = headers)
 
 print(r.json())
 
 ```
 
-```php
-<?php
-
-require 'vendor/autoload.php';
-
-$headers = array(
-    'Content-Type' => 'application/json',
-    'Accept' => 'application/json',
-);
-
-$client = new \GuzzleHttp\Client();
-
-// Define array of request body.
-$request_body = array();
-
-try {
-    $response = $client->request('POST','https://localhost:21721/handshake', array(
-        'headers' => $headers,
-        'json' => $request_body,
-       )
-    );
-    print_r($response->getBody()->getContents());
- }
- catch (\GuzzleHttp\Exception\BadResponseException $e) {
-    // handle exception or api errors.
-    print_r($e->getMessage());
- }
-
- // ...
-
-```
-
 ```java
-URL obj = new URL("https://localhost:21721/handshake");
+URL obj = new URL("http://localhost:21721/handshake");
 HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 con.setRequestMethod("POST");
 int responseCode = con.getResponseCode();
@@ -210,7 +191,7 @@ func main() {
     }
 
     data := bytes.NewBuffer([]byte{jsonReq})
-    req, err := http.NewRequest("POST", "https://localhost:21721/handshake", data)
+    req, err := http.NewRequest("POST", "http://localhost:21721/handshake", data)
     req.Header = headers
 
     client := &http.Client{}
@@ -219,6 +200,16 @@ func main() {
 }
 
 ```
+
+```shell
+# You can also use wget
+curl -X POST http://localhost:21721/handshake \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json'
+
+```
+
+</details>
 
 ## Query connections
 
@@ -226,56 +217,94 @@ func main() {
 
 `POST /connection/query`
 
-Queries all connections using various filters
+Queries all connections using various filters.
+
+The filters support globs and can match the category names and connection names.
+All matching is case insensitive.
 
 > Body parameter
 
 ```json
 {
-  "categoryFilter": "**",
-  "connectionFilter": "**",
+  "categoryFilter": "*",
+  "connectionFilter": "*",
   "typeFilter": "*"
 }
 ```
 
-undefined
+<h3 id="query-connections-parameters">Parameters</h3>
 
-undefined
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|body|body|[ConnectionQueryRequest](#schemaconnectionqueryrequest)|true|none|
 
-undefined
+> Example responses
 
-undefined
+> The query was successful. The body contains all matched connections.
 
-> Code samples
-
-```shell
-# You can also use wget
-curl -X POST https://localhost:21721/connection/query \
-  -H 'Content-Type: application/json' \
-  -H 'Accept: application/json'
-
+```json
+{
+  "found": [
+    {
+      "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+      "category": [
+        "default"
+      ],
+      "connection": [
+        "local machine"
+      ],
+      "type": "local"
+    },
+    {
+      "uuid": "e1462ddc-9beb-484c-bd91-bb666027e300",
+      "category": [
+        "default",
+        "category 1"
+      ],
+      "connection": [
+        "ssh system",
+        "shell environments",
+        "bash"
+      ],
+      "type": "shellEnvironment"
+    }
+  ]
+}
 ```
 
-```http
-POST https://localhost:21721/connection/query HTTP/1.1
-Host: localhost:21721
-Content-Type: application/json
-Accept: application/json
+<h3 id="query-connections-responses">Responses</h3>
 
-```
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The query was successful. The body contains all matched connections.|[ConnectionQueryResponse](#schemaconnectionqueryresponse)|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|None|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
+|403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
+|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|None|
+
+<aside class="warning">
+To perform this operation, you must be authenticated by means of one of the following methods:
+bearerAuth
+</aside>
+
+<details>
+
+<summary>Code samples</summary>
 
 ```javascript
 const inputBody = '{
-  "categoryFilter": "**",
-  "connectionFilter": "**",
+  "categoryFilter": "*",
+  "connectionFilter": "*",
   "typeFilter": "*"
 }';
 const headers = {
   'Content-Type':'application/json',
-  'Accept':'application/json'
+  'Accept':'application/json',
+  'Authorization':'Bearer {access-token}'
 };
 
-fetch('https://localhost:21721/connection/query',
+fetch('http://localhost:21721/connection/query',
 {
   method: 'POST',
   body: inputBody,
@@ -289,70 +318,22 @@ fetch('https://localhost:21721/connection/query',
 
 ```
 
-```ruby
-require 'rest-client'
-require 'json'
-
-headers = {
-  'Content-Type' => 'application/json',
-  'Accept' => 'application/json'
-}
-
-result = RestClient.post 'https://localhost:21721/connection/query',
-  params: {
-  }, headers: headers
-
-p JSON.parse(result)
-
-```
-
 ```python
 import requests
 headers = {
   'Content-Type': 'application/json',
-  'Accept': 'application/json'
+  'Accept': 'application/json',
+  'Authorization': 'Bearer {access-token}'
 }
 
-r = requests.post('https://localhost:21721/connection/query', headers = headers)
+r = requests.post('http://localhost:21721/connection/query', headers = headers)
 
 print(r.json())
 
 ```
 
-```php
-<?php
-
-require 'vendor/autoload.php';
-
-$headers = array(
-    'Content-Type' => 'application/json',
-    'Accept' => 'application/json',
-);
-
-$client = new \GuzzleHttp\Client();
-
-// Define array of request body.
-$request_body = array();
-
-try {
-    $response = $client->request('POST','https://localhost:21721/connection/query', array(
-        'headers' => $headers,
-        'json' => $request_body,
-       )
-    );
-    print_r($response->getBody()->getContents());
- }
- catch (\GuzzleHttp\Exception\BadResponseException $e) {
-    // handle exception or api errors.
-    print_r($e->getMessage());
- }
-
- // ...
-
-```
-
 ```java
-URL obj = new URL("https://localhost:21721/connection/query");
+URL obj = new URL("http://localhost:21721/connection/query");
 HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 con.setRequestMethod("POST");
 int responseCode = con.getResponseCode();
@@ -381,10 +362,11 @@ func main() {
     headers := map[string][]string{
         "Content-Type": []string{"application/json"},
         "Accept": []string{"application/json"},
+        "Authorization": []string{"Bearer {access-token}"},
     }
 
     data := bytes.NewBuffer([]byte{jsonReq})
-    req, err := http.NewRequest("POST", "https://localhost:21721/connection/query", data)
+    req, err := http.NewRequest("POST", "http://localhost:21721/connection/query", data)
     req.Header = headers
 
     client := &http.Client{}
@@ -394,59 +376,72 @@ func main() {
 
 ```
 
-## Open URLs
+```shell
+# You can also use wget
+curl -X POST http://localhost:21721/connection/query \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json' \
+  -H 'Authorization: Bearer {access-token}'
 
-<a id="opIddaemonOpen"></a>
+```
 
-`POST /daemon/open`
+</details>
 
-Opens main window or executes given actions.
+## Start shell connection
+
+<a id="opIdshellStart"></a>
+
+`POST /shell/start`
+
+Starts a new shell session for a connection. If an existing shell session is already running for that connection, this operation will do nothing.
+
+Note that there are a variety of possible errors that can occur here when establishing the shell connection.
+These errors will be returned with the HTTP return code 500.
 
 > Body parameter
 
 ```json
 {
-  "arguments": [
-    "file:///home/user/.ssh/"
-  ]
+  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
 }
 ```
 
-undefined
+<h3 id="start-shell-connection-parameters">Parameters</h3>
 
-undefined
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|body|body|[ShellStartRequest](#schemashellstartrequest)|true|none|
 
-undefined
+<h3 id="start-shell-connection-responses">Responses</h3>
 
-undefined
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The operation was successful. The shell session was started.|None|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|None|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
+|403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
+|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|None|
 
-> Code samples
+<aside class="warning">
+To perform this operation, you must be authenticated by means of one of the following methods:
+bearerAuth
+</aside>
 
-```shell
-# You can also use wget
-curl -X POST https://localhost:21721/daemon/open \
-  -H 'Content-Type: application/json'
+<details>
 
-```
-
-```http
-POST https://localhost:21721/daemon/open HTTP/1.1
-Host: localhost:21721
-Content-Type: application/json
-
-```
+<summary>Code samples</summary>
 
 ```javascript
 const inputBody = '{
-  "arguments": [
-    "file:///home/user/.ssh/"
-  ]
+  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
 }';
 const headers = {
-  'Content-Type':'application/json'
+  'Content-Type':'application/json',
+  'Authorization':'Bearer {access-token}'
 };
 
-fetch('https://localhost:21721/daemon/open',
+fetch('http://localhost:21721/shell/start',
 {
   method: 'POST',
   body: inputBody,
@@ -460,67 +455,21 @@ fetch('https://localhost:21721/daemon/open',
 
 ```
 
-```ruby
-require 'rest-client'
-require 'json'
-
-headers = {
-  'Content-Type' => 'application/json'
-}
-
-result = RestClient.post 'https://localhost:21721/daemon/open',
-  params: {
-  }, headers: headers
-
-p JSON.parse(result)
-
-```
-
 ```python
 import requests
 headers = {
-  'Content-Type': 'application/json'
+  'Content-Type': 'application/json',
+  'Authorization': 'Bearer {access-token}'
 }
 
-r = requests.post('https://localhost:21721/daemon/open', headers = headers)
+r = requests.post('http://localhost:21721/shell/start', headers = headers)
 
 print(r.json())
 
 ```
 
-```php
-<?php
-
-require 'vendor/autoload.php';
-
-$headers = array(
-    'Content-Type' => 'application/json',
-);
-
-$client = new \GuzzleHttp\Client();
-
-// Define array of request body.
-$request_body = array();
-
-try {
-    $response = $client->request('POST','https://localhost:21721/daemon/open', array(
-        'headers' => $headers,
-        'json' => $request_body,
-       )
-    );
-    print_r($response->getBody()->getContents());
- }
- catch (\GuzzleHttp\Exception\BadResponseException $e) {
-    // handle exception or api errors.
-    print_r($e->getMessage());
- }
-
- // ...
-
-```
-
 ```java
-URL obj = new URL("https://localhost:21721/daemon/open");
+URL obj = new URL("http://localhost:21721/shell/start");
 HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 con.setRequestMethod("POST");
 int responseCode = con.getResponseCode();
@@ -548,10 +497,11 @@ func main() {
 
     headers := map[string][]string{
         "Content-Type": []string{"application/json"},
+        "Authorization": []string{"Bearer {access-token}"},
     }
 
     data := bytes.NewBuffer([]byte{jsonReq})
-    req, err := http.NewRequest("POST", "https://localhost:21721/daemon/open", data)
+    req, err := http.NewRequest("POST", "http://localhost:21721/shell/start", data)
     req.Header = headers
 
     client := &http.Client{}
@@ -561,7 +511,398 @@ func main() {
 
 ```
 
+```shell
+# You can also use wget
+curl -X POST http://localhost:21721/shell/start \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer {access-token}'
+
+```
+
+</details>
+
+## Stop shell connection
+
+<a id="opIdshellStop"></a>
+
+`POST /shell/stop`
+
+Stops an existing shell session for a connection.
+
+This operation will return once the shell has exited.
+If the shell is busy or stuck, you might have to work with timeouts to account for these cases.
+
+> Body parameter
+
+```json
+{
+  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+}
+```
+
+<h3 id="stop-shell-connection-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|body|body|[ShellStopRequest](#schemashellstoprequest)|true|none|
+
+<h3 id="stop-shell-connection-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The operation was successful. The shell session was stopped.|None|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|None|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
+|403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
+|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|None|
+
+<aside class="warning">
+To perform this operation, you must be authenticated by means of one of the following methods:
+bearerAuth
+</aside>
+
+<details>
+
+<summary>Code samples</summary>
+
+```javascript
+const inputBody = '{
+  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+}';
+const headers = {
+  'Content-Type':'application/json',
+  'Authorization':'Bearer {access-token}'
+};
+
+fetch('http://localhost:21721/shell/stop',
+{
+  method: 'POST',
+  body: inputBody,
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```python
+import requests
+headers = {
+  'Content-Type': 'application/json',
+  'Authorization': 'Bearer {access-token}'
+}
+
+r = requests.post('http://localhost:21721/shell/stop', headers = headers)
+
+print(r.json())
+
+```
+
+```java
+URL obj = new URL("http://localhost:21721/shell/stop");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("POST");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Content-Type": []string{"application/json"},
+        "Authorization": []string{"Bearer {access-token}"},
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("POST", "http://localhost:21721/shell/stop", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+```shell
+# You can also use wget
+curl -X POST http://localhost:21721/shell/stop \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer {access-token}'
+
+```
+
+</details>
+
+## Execute command in a shell session
+
+<a id="opIdshellExec"></a>
+
+`POST /shell/exec`
+
+Runs a command in an active shell session and waits for it to finish. The exit code and output will be returned in the response.
+
+Note that a variety of different errors can occur when executing the command.
+If the command finishes, even with an error code, a normal HTTP 200 response will be returned.
+However, if any other error occurs like the shell not responding or exiting unexpectedly, an HTTP 500 response will be returned.
+
+> Body parameter
+
+```json
+{
+  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+  "command": "echo $USER"
+}
+```
+
+<h3 id="execute-command-in-a-shell-session-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|body|body|[ShellExecRequest](#schemashellexecrequest)|true|none|
+
+> Example responses
+
+> The operation was successful. The shell command finished.
+
+```json
+{
+  "exitCode": 0,
+  "stdout": "root",
+  "stderr": ""
+}
+```
+
+```json
+{
+  "exitCode": 127,
+  "stdout": "",
+  "stderr": "invalid: command not found"
+}
+```
+
+<h3 id="execute-command-in-a-shell-session-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The operation was successful. The shell command finished.|[ShellExecResponse](#schemashellexecresponse)|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|None|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
+|403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
+|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|None|
+
+<aside class="warning">
+To perform this operation, you must be authenticated by means of one of the following methods:
+bearerAuth
+</aside>
+
+<details>
+
+<summary>Code samples</summary>
+
+```javascript
+const inputBody = '{
+  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+  "command": "echo $USER"
+}';
+const headers = {
+  'Content-Type':'application/json',
+  'Accept':'application/json',
+  'Authorization':'Bearer {access-token}'
+};
+
+fetch('http://localhost:21721/shell/exec',
+{
+  method: 'POST',
+  body: inputBody,
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```python
+import requests
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json',
+  'Authorization': 'Bearer {access-token}'
+}
+
+r = requests.post('http://localhost:21721/shell/exec', headers = headers)
+
+print(r.json())
+
+```
+
+```java
+URL obj = new URL("http://localhost:21721/shell/exec");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("POST");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Content-Type": []string{"application/json"},
+        "Accept": []string{"application/json"},
+        "Authorization": []string{"Bearer {access-token}"},
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("POST", "http://localhost:21721/shell/exec", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+```shell
+# You can also use wget
+curl -X POST http://localhost:21721/shell/exec \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json' \
+  -H 'Authorization: Bearer {access-token}'
+
+```
+
+</details>
+
 # Schemas
+
+<h2 id="tocS_ShellStartRequest">ShellStartRequest</h2>
+
+<a id="schemashellstartrequest"></a>
+<a id="schema_ShellStartRequest"></a>
+<a id="tocSshellstartrequest"></a>
+<a id="tocsshellstartrequest"></a>
+
+```json
+{
+  "connection": "string"
+}
+
+```
+
+<h3>Properties</h3>
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|connection|string|true|none|The connection uuid|
+
+<h2 id="tocS_ShellStopRequest">ShellStopRequest</h2>
+
+<a id="schemashellstoprequest"></a>
+<a id="schema_ShellStopRequest"></a>
+<a id="tocSshellstoprequest"></a>
+<a id="tocsshellstoprequest"></a>
+
+```json
+{
+  "connection": "string"
+}
+
+```
+
+<h3>Properties</h3>
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|connection|string|true|none|The connection uuid|
+
+<h2 id="tocS_ShellExecRequest">ShellExecRequest</h2>
+
+<a id="schemashellexecrequest"></a>
+<a id="schema_ShellExecRequest"></a>
+<a id="tocSshellexecrequest"></a>
+<a id="tocsshellexecrequest"></a>
+
+```json
+{
+  "connection": "string",
+  "command": "string"
+}
+
+```
+
+<h3>Properties</h3>
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|connection|string|true|none|The connection uuid|
+|command|string|true|none|The command to execute|
+
+<h2 id="tocS_ShellExecResponse">ShellExecResponse</h2>
+
+<a id="schemashellexecresponse"></a>
+<a id="schema_ShellExecResponse"></a>
+<a id="tocSshellexecresponse"></a>
+<a id="tocsshellexecresponse"></a>
+
+```json
+{
+  "exitCode": 0,
+  "stdout": "string",
+  "stderr": "string"
+}
+
+```
+
+<h3>Properties</h3>
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|exitCode|integer|true|none|The exit code of the command|
+|stdout|string|true|none|The stdout output of the command|
+|stderr|string|true|none|The stderr output of the command|
 
 <h2 id="tocS_ConnectionQueryRequest">ConnectionQueryRequest</h2>
 
@@ -579,13 +920,13 @@ func main() {
 
 ```
 
-### Properties
+<h3>Properties</h3>
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|categoryFilter|string|true|none|The filter string to match categories. Categories are delimited by / if they are hierarchical. The filter supports globs with * and **.|
-|connectionFilter|string|true|none|The filter string to match connection names. Connection names are delimited by / if they are hierarchical. The filter supports globs with * and **.|
-|typeFilter|string|true|none|The filter string to connection types. Every unique type of connection like SSH or docker has its own type identifier that you can match. The filter supports globs with *.|
+|categoryFilter|string|true|none|The filter string to match categories. Categories are delimited by / if they are hierarchical. The filter supports globs.|
+|connectionFilter|string|true|none|The filter string to match connection names. Connection names are delimited by / if they are hierarchical. The filter supports globs.|
+|typeFilter|string|true|none|The filter string to connection types. Every unique type of connection like SSH or docker has its own type identifier that you can match. The filter supports globs.|
 
 <h2 id="tocS_ConnectionQueryResponse">ConnectionQueryResponse</h2>
 
@@ -599,8 +940,12 @@ func main() {
   "found": [
     {
       "uuid": "string",
-      "category": "string",
-      "connection": "string",
+      "category": [
+        "string"
+      ],
+      "connection": [
+        "string"
+      ],
       "type": "string"
     }
   ]
@@ -608,14 +953,14 @@ func main() {
 
 ```
 
-### Properties
+<h3>Properties</h3>
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
 |found|[object]|true|none|The found connections|
 |» uuid|string|true|none|The unique id of the connection|
-|» category|string|true|none|The full category path|
-|» connection|string|true|none|The full connection name path|
+|» category|[string]|true|none|The full category path as an array|
+|» connection|[string]|true|none|The full connection name path as an array|
 |» type|string|true|none|The type identifier of the connection|
 
 <h2 id="tocS_HandshakeRequest">HandshakeRequest</h2>
@@ -638,7 +983,7 @@ func main() {
 
 ```
 
-### Properties
+<h3>Properties</h3>
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
@@ -654,16 +999,16 @@ func main() {
 
 ```json
 {
-  "token": "string"
+  "sessionToken": "string"
 }
 
 ```
 
-### Properties
+<h3>Properties</h3>
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|token|string|true|none|The generated bearer token that can be used for authentication in this session|
+|sessionToken|string|true|none|The generated bearer token that can be used for authentication in this session|
 
 <h2 id="tocS_AuthMethod">AuthMethod</h2>
 
@@ -680,7 +1025,7 @@ func main() {
 
 ```
 
-### Properties
+<h3>Properties</h3>
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
@@ -715,7 +1060,7 @@ xor
 
 API key authentication
 
-### Properties
+<h3>Properties</h3>
 
 allOf - discriminator: AuthMethod.type
 
@@ -748,7 +1093,7 @@ and
 
 Authentication method for local applications. Uses file system access as proof of authentication.
 
-### Properties
+<h3>Properties</h3>
 
 allOf - discriminator: AuthMethod.type
 
@@ -777,7 +1122,7 @@ and
 
 ```
 
-### Properties
+<h3>Properties</h3>
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
@@ -800,7 +1145,7 @@ and
 
 Provides information about the client that connected to the XPipe API.
 
-### Properties
+<h3>Properties</h3>
 
 allOf - discriminator: ClientInformation.type
 
@@ -814,6 +1159,4 @@ and
 |---|---|---|---|---|
 |*anonymous*|object|false|none|none|
 |» name|string|true|none|The name of the client.|
-
-undefined
 
