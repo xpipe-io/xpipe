@@ -365,6 +365,10 @@ public abstract class DataStorage {
                 .toList();
         var toAdd = newChildren.stream()
                 .filter(nc -> {
+                    if (nc.getStore() == null) {
+                        return false;
+                    }
+
                     var nid = nc.getStore().getFixedId();
                     // These can't be automatically generated
                     if (nid.isEmpty()) {

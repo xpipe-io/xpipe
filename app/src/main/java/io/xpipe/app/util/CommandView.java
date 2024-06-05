@@ -1,13 +1,19 @@
 package io.xpipe.app.util;
 
 import io.xpipe.core.process.CommandBuilder;
+import io.xpipe.core.process.CommandControl;
 import io.xpipe.core.process.ShellControl;
-import lombok.experimental.SuperBuilder;
 
-@SuperBuilder
-public abstract class CommandView {
+import java.util.function.Consumer;
 
-    protected final ShellControl shellControl;
+public abstract class CommandView implements AutoCloseable {
 
-    protected abstract CommandBuilder base();
+    protected abstract CommandControl build(Consumer<CommandBuilder> builder);
+
+    protected abstract ShellControl getShellControl();
+
+    @Override
+    public void close() throws Exception {
+        getShellControl().close();
+    }
 }

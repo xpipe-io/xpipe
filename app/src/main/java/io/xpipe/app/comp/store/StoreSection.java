@@ -163,7 +163,7 @@ public class StoreSection {
 
             // This check is fast as the children are cached in the storage
             var isChildren = DataStorage.get().getStoreChildren(e.getEntry()).contains(other.getEntry());
-            var showProvider = other.getEntry().getProvider() == null ||
+            var showProvider = !other.getEntry().getValidity().isUsable() ||
                     other.getEntry().getProvider().shouldShow(other);
             return isChildren && showProvider;
         }, e.getPersistentState(), e.getCache(), StoreViewState.get().getEntriesListChangeObservable());
