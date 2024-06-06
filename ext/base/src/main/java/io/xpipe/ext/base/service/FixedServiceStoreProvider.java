@@ -1,6 +1,7 @@
 package io.xpipe.ext.base.service;
 
 import io.xpipe.app.comp.store.StoreEntryWrapper;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -10,9 +11,9 @@ import java.util.List;
 public class FixedServiceStoreProvider extends AbstractServiceStoreProvider {
 
     @Override
-    public DataStoreEntry getDisplayParent(DataStoreEntry store) {
+    public DataStoreEntry getSyntheticParent(DataStoreEntry store) {
         FixedServiceStore s = store.getStore().asNeeded();
-        return s.getParent().get();
+        return DataStorage.get().getOrCreateNewSyntheticEntry(s.getHost().get(), "Services", FixedServiceGroupStore.builder().parent(s.getDisplayParent().get().ref()).build());
     }
 
     @Override

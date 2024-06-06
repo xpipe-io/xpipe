@@ -2,6 +2,7 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.fxcomps.util.DerivedObservableList;
+import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
@@ -117,6 +118,18 @@ public class StoreViewState {
                         .orElseThrow()));
     }
 
+    public void toggleStoreOrderUpdate() {
+        PlatformThread.runLaterIfNeeded(() -> {
+            entriesOrderChangeObservable.set(entriesOrderChangeObservable.get() + 1);
+        });
+    }
+
+    public void toggleStoreListUpdate() {
+        PlatformThread.runLaterIfNeeded(() -> {
+            entriesListChangeObservable.set(entriesListChangeObservable.get() + 1);
+        });
+    }
+
     private void addListeners() {
         if (AppPrefs.get() != null) {
             AppPrefs.get().condenseConnectionDisplay().addListener((observable, oldValue, newValue) -> {
@@ -136,14 +149,14 @@ public class StoreViewState {
             @Override
             public void onStoreOrderUpdate() {
                 Platform.runLater(() -> {
-                    entriesOrderChangeObservable.set(entriesOrderChangeObservable.get() + 1);
+                    toggleStoreOrderUpdate();
                 });
             }
 
             @Override
             public void onStoreListUpdate() {
                 Platform.runLater(() -> {
-                    entriesListChangeObservable.set(entriesListChangeObservable.get() + 1);
+                    toggleStoreListUpdate();
                 });
             }
 

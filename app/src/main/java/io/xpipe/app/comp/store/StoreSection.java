@@ -163,8 +163,7 @@ public class StoreSection {
 
             // This check is fast as the children are cached in the storage
             var isChildren = DataStorage.get().getStoreChildren(e.getEntry()).contains(other.getEntry());
-            var showProvider = !other.getEntry().getValidity().isUsable() ||
-                    other.getEntry().getProvider().shouldShow(other);
+            var showProvider = !other.getEntry().getValidity().isUsable() || other.getEntry().getProvider().shouldShow(other);
             return isChildren && showProvider;
         }, e.getPersistentState(), e.getCache(), StoreViewState.get().getEntriesListChangeObservable());
         var cached = allChildren.mapped(
@@ -182,9 +181,7 @@ public class StoreSection {
                     // again here
                     var notRoot =
                             !DataStorage.get().isRootEntry(section.getWrapper().getEntry());
-                    var showProvider = section.getWrapper().getEntry().getProvider() == null ||
-                            section.getWrapper().getEntry().getProvider().shouldShow(section.getWrapper());
-                    return matchesSelector && showCategory && notRoot && showProvider;
+                    return matchesSelector && showCategory && notRoot;
                 },
                 category,
                 filterString,
@@ -213,7 +210,7 @@ public class StoreSection {
     }
 
     public boolean matchesFilter(String filter) {
-        return anyMatches(storeEntryWrapper -> storeEntryWrapper.shouldShow(filter));
+        return anyMatches(storeEntryWrapper -> storeEntryWrapper.matchesFilter(filter));
     }
 
     public boolean anyMatches(Predicate<StoreEntryWrapper> c) {

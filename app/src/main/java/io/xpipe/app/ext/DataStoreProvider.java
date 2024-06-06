@@ -12,10 +12,8 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.JacksonizedValue;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -196,10 +194,6 @@ public interface DataStoreProvider {
         }
 
         return getModuleName() + ":" + getId() + "_icon.svg";
-    }
-
-    default Dialog dialogForStore(DataStore store) {
-        return null;
     }
 
     default DataStore defaultStore() {

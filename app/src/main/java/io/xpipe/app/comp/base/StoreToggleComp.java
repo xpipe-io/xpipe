@@ -1,6 +1,7 @@
 package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.store.StoreSection;
+import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -52,6 +53,7 @@ public class StoreToggleComp extends SimpleComp {
                         initial.apply(section.getWrapper().getEntry().getStore().asNeeded())),
                 v -> {
                     setter.accept(section.getWrapper().getEntry().getStore().asNeeded(), v);
+                    StoreViewState.get().toggleStoreListUpdate();
                 });
     }
 

@@ -10,10 +10,7 @@ import io.xpipe.ext.base.desktop.DesktopEnvironmentStoreProvider;
 import io.xpipe.ext.base.script.ScriptDataStorageProvider;
 import io.xpipe.ext.base.script.ScriptGroupStoreProvider;
 import io.xpipe.ext.base.script.SimpleScriptStoreProvider;
-import io.xpipe.ext.base.service.FixedServiceStoreProvider;
-import io.xpipe.ext.base.service.ServiceGroupStoreProvider;
-import io.xpipe.ext.base.service.ServiceOpenAction;
-import io.xpipe.ext.base.service.CustomServiceStoreProvider;
+import io.xpipe.ext.base.service.*;
 import io.xpipe.ext.base.store.StorePauseAction;
 import io.xpipe.ext.base.store.StoreStartAction;
 import io.xpipe.ext.base.store.StoreStopAction;
@@ -75,11 +72,6 @@ open module io.xpipe.ext.base {
             EditStoreAction,
             DeleteStoreChildrenAction,
             BrowseStoreAction;
-    provides DataStoreProvider with ServiceGroupStoreProvider, CustomServiceStoreProvider, FixedServiceStoreProvider,
-            SimpleScriptStoreProvider,
-            DesktopEnvironmentStoreProvider,
-            DesktopApplicationStoreProvider,
-            DesktopCommandStoreProvider,
-            ScriptGroupStoreProvider;
+    provides DataStoreProvider with FixedServiceGroupStoreProvider, ServiceGroupStoreProvider, CustomServiceStoreProvider, FixedServiceStoreProvider, SimpleScriptStoreProvider, DesktopEnvironmentStoreProvider, DesktopApplicationStoreProvider, DesktopCommandStoreProvider, ScriptGroupStoreProvider;
     provides DataStorageExtensionProvider with ScriptDataStorageProvider;
 }

@@ -60,7 +60,7 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
 
     @Override
     public List<String> getPossibleNames() {
-        return List.of("service");
+        return List.of("customService");
     }
 
     @Override

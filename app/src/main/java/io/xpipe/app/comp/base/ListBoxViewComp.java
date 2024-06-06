@@ -65,7 +65,9 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             VBox listView, List<? extends T> shown, List<? extends T> all, Map<T, Region> cache, boolean asynchronous) {
         Runnable update = () -> {
             // Clear cache of unused values
-            cache.keySet().removeIf(t -> !all.contains(t));
+            if (cache.keySet().removeIf(t -> !all.contains(t))) {
+                int a = 0;
+            }
 
             var newShown = shown.stream()
                     .map(v -> {
@@ -80,6 +82,10 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
                     .limit(limit)
                     .toList();
 
+            if (listView.getChildren().equals(newShown)) {
+                return;
+            }
+
             for (int i = 0; i < newShown.size(); i++) {
                 var r = newShown.get(i);
                 r.pseudoClassStateChanged(ODD, false);
@@ -87,10 +93,8 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
                 r.pseudoClassStateChanged(i % 2 == 0 ? EVEN : ODD, true);
             }
 
-            if (!listView.getChildren().equals(newShown)) {
-                var d = new DerivedObservableList<>(listView.getChildren(), true);
-                d.setContent(newShown);
-            }
+            var d = new DerivedObservableList<>(listView.getChildren(), true);
+            d.setContent(newShown);
         };
 
         if (asynchronous) {

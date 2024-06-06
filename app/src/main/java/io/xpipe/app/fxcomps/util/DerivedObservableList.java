@@ -129,9 +129,17 @@ public class DerivedObservableList<T> {
     }
 
     public <V> DerivedObservableList<V> mapped(Function<T, V> map) {
+        var cache = new HashMap<T, V>();
         var l1 = this.<V>createNewDerived();
         Runnable runnable = () -> {
-            l1.setContent(list.stream().map(map).toList());
+            cache.keySet().removeIf(t -> !getList().contains(t));
+            l1.setContent(list.stream().map(v -> {
+                if (!cache.containsKey(v)) {
+                    cache.put(v, map.apply(v));
+                }
+
+                return cache.get(v);
+            }).toList());
         };
         runnable.run();
         list.addListener((ListChangeListener<? super T>) c -> {

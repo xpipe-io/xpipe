@@ -68,7 +68,7 @@ public class StoreEntryListStatusComp extends SimpleComp {
                 StoreViewState.get().getActiveCategory());
         var shownList = all.filtered(
                 storeEntryWrapper -> {
-                    return storeEntryWrapper.shouldShow(
+                    return storeEntryWrapper.matchesFilter(
                             StoreViewState.get().getFilterString().getValue());
                 },
                 StoreViewState.get().getFilterString());

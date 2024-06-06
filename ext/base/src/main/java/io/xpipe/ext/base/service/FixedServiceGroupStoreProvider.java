@@ -5,26 +5,26 @@ import io.xpipe.core.store.DataStore;
 
 import java.util.List;
 
-public class ServiceGroupStoreProvider extends AbstractServiceGroupStoreProvider {
+public class FixedServiceGroupStoreProvider extends AbstractServiceGroupStoreProvider {
 
     @Override
     public DataStore defaultStore() {
-        return ServiceGroupStore.builder().build();
+        return FixedServiceGroupStore.builder().build();
     }
 
     @Override
     public DataStoreEntry getDisplayParent(DataStoreEntry store) {
-        ServiceGroupStore s = store.getStore().asNeeded();
+        FixedServiceGroupStore s = store.getStore().asNeeded();
         return s.getParent().get();
     }
 
     @Override
     public List<String> getPossibleNames() {
-        return List.of("serviceGroup");
+        return List.of("fixedServiceGroup");
     }
 
     @Override
     public List<Class<?>> getStoreClasses() {
-        return List.of(ServiceGroupStore.class);
+        return List.of(FixedServiceGroupStore.class);
     }
 }

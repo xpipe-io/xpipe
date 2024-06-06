@@ -58,6 +58,8 @@ public abstract class DataStorage {
     @Setter
     protected DataStoreCategory selectedCategory;
 
+    private final Map<DataStore, DataStoreEntry> storeEntryMapCache = Collections.synchronizedMap(new HashMap<>());
+
     public DataStorage() {
         var prefsDir = AppPrefs.get().storageDirectory().getValue();
         this.dir = !Files.exists(prefsDir) || !Files.isDirectory(prefsDir) ? AppPrefs.DEFAULT_STORAGE_DIR : prefsDir;
@@ -784,12 +786,25 @@ public abstract class DataStorage {
     }
 
     public Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull DataStore store, boolean identityOnly) {
-        return storeEntriesSet.stream()
+        synchronized (storeEntryMapCache) {
+            var found = storeEntryMapCache.get(store);
+            if (found != null) {
+                return Optional.of(found);
+            }
+        }
+
+        var found = storeEntriesSet.stream()
                 .filter(n -> n.getStore() == store || (!identityOnly && (n.getStore() != null
                                         && Objects.equals(
                                                 store.getClass(), n.getStore().getClass())
                                         && store.equals(n.getStore()))))
                 .findFirst();
+        if (found.isPresent()) {
+            synchronized (storeEntryMapCache) {
+                storeEntryMapCache.put(store, found.get());
+            }
+        }
+        return found;
     }
 
     public DataStoreCategory getRootCategory(DataStoreCategory category) {

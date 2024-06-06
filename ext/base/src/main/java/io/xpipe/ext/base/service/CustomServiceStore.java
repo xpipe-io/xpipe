@@ -10,8 +10,8 @@ import lombok.extern.jackson.Jacksonized;
 @SuperBuilder
 @Getter
 @Jacksonized
-@JsonTypeName("service")
-public class CustomServiceStore extends AbstractServiceStore {
+@JsonTypeName("customService")
+public final class CustomServiceStore extends AbstractServiceStore {
 
     private final DataStoreEntryRef<NetworkTunnelStore> host;
 }
