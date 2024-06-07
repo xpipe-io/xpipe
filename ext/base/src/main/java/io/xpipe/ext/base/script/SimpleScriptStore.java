@@ -31,7 +31,7 @@ public class SimpleScriptStore extends ScriptStore implements ShellInitCommand.T
     private final boolean shellScript;
     private final boolean fileScript;
 
-    private String assemble(ShellControl shellControl) {
+    public String assemble(ShellControl shellControl) {
         var targetType = shellControl.getOriginalShellDialect();
         if (minimumDialect.isCompatibleTo(targetType)) {
             var shebang = commands.startsWith("#");

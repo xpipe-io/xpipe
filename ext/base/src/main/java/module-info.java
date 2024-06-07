@@ -7,6 +7,7 @@ import io.xpipe.ext.base.browser.*;
 import io.xpipe.ext.base.desktop.DesktopApplicationStoreProvider;
 import io.xpipe.ext.base.desktop.DesktopCommandStoreProvider;
 import io.xpipe.ext.base.desktop.DesktopEnvironmentStoreProvider;
+import io.xpipe.ext.base.script.RunScriptAction;
 import io.xpipe.ext.base.script.ScriptDataStorageProvider;
 import io.xpipe.ext.base.script.ScriptGroupStoreProvider;
 import io.xpipe.ext.base.script.SimpleScriptStoreProvider;
@@ -35,7 +36,7 @@ open module io.xpipe.ext.base {
     requires org.kordamp.ikonli.javafx;
     requires atlantafx.base;
 
-    provides BrowserAction with
+    provides BrowserAction with RunScriptAction,
             FollowLinkAction,
             BackAction,
             ForwardAction,

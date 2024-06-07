@@ -60,6 +60,18 @@ public enum PredefinedScriptStore {
             .minimumDialect(ShellDialects.POWERSHELL)
             .commands(file("starship_powershell.ps1"))
             .initScript(true)
+            .build()),
+    APT_UPDATE("Apt update", () -> SimpleScriptStore.builder()
+            .group(PredefinedScriptGroup.MANAGEMENT.getEntry())
+            .minimumDialect(ShellDialects.SH)
+            .commands(file(("apt_update.sh")))
+            .shellScript(true)
+            .build()),
+    REMOVE_CR("CRLF to LF", () -> SimpleScriptStore.builder()
+            .group(PredefinedScriptGroup.FILES.getEntry())
+            .minimumDialect(ShellDialects.SH)
+            .commands(file(("crlf_to_lf.sh")))
+            .fileScript(true)
             .build());
 
     private final String name;
