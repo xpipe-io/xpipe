@@ -10,6 +10,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.store.FilePath;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
@@ -24,17 +25,12 @@ public class RunScriptAction implements BrowserAction, BranchAction {
 
     @Override
     public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return new FontIcon("mdi2l-linux");
+        return new FontIcon("mdi2c-code-greater-than");
     }
 
     @Override
     public Category getCategory() {
-        return Category.OPEN;
-    }
-
-    @Override
-    public boolean acceptsEmptySelection() {
-        return true;
+        return Category.MUTATION;
     }
 
     @Override
@@ -74,7 +70,7 @@ public class RunScriptAction implements BrowserAction, BranchAction {
                     return new LeafAction() {
                         @Override
                         public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
-                            var args = entries.stream().map(browserEntry -> browserEntry.getOptionallyQuotedFileName()).collect(Collectors.joining(" "));
+                            var args = entries.stream().map(browserEntry -> new FilePath(browserEntry.getRawFileEntry().getPath()).quoteIfNecessary()).collect(Collectors.joining(" "));
                             execute(model, args);
                         }
 
