@@ -1,6 +1,5 @@
 package io.xpipe.ext.base.script;
 
-import io.xpipe.app.comp.base.DropdownComp;
 import io.xpipe.app.comp.base.StoreToggleComp;
 import io.xpipe.app.comp.base.SystemStateComp;
 import io.xpipe.app.comp.store.*;
@@ -11,12 +10,10 @@ import io.xpipe.app.fxcomps.impl.DataStoreChoiceComp;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.store.DataStore;
-
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
-
 import lombok.SneakyThrows;
 
 import java.util.List;
@@ -29,20 +26,12 @@ public class ScriptGroupStoreProvider implements DataStoreProvider {
             return new DenseStoreEntryComp(sec.getWrapper(), true, null);
         }
 
-        var def = StoreToggleComp.<ScriptGroupStore>simpleToggle(
-                "base.isDefaultGroup", null, sec, s -> s.getState().isDefault(), (s, aBoolean) -> {
-                    var state = s.getState().toBuilder().isDefault(aBoolean).build();
+        var enabled = StoreToggleComp.<ScriptGroupStore>enableToggle(
+                null, sec, s -> s.getState().isEnabled(), (s, aBoolean) -> {
+                    var state = s.getState().toBuilder().enabled(aBoolean).build();
                     s.setState(state);
                 });
-
-        var bring = StoreToggleComp.<ScriptGroupStore>simpleToggle(
-                "base.bringToShells", null, sec, s -> s.getState().isBringToShell(), (s, aBoolean) -> {
-                    var state = s.getState().toBuilder().bringToShell(aBoolean).build();
-                    s.setState(state);
-                });
-
-        var dropdown = new DropdownComp(List.of(def, bring));
-        return new DenseStoreEntryComp(sec.getWrapper(), true, dropdown);
+        return new DenseStoreEntryComp(sec.getWrapper(), true, enabled);
     }
 
     @Override

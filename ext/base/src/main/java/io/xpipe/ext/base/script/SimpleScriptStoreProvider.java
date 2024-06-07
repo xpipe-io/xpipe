@@ -1,11 +1,9 @@
 package io.xpipe.ext.base.script;
 
-import io.xpipe.app.comp.base.DropdownComp;
-import io.xpipe.app.comp.base.IntegratedTextAreaComp;
-import io.xpipe.app.comp.base.StoreToggleComp;
-import io.xpipe.app.comp.base.SystemStateComp;
+import io.xpipe.app.comp.base.*;
 import io.xpipe.app.comp.store.*;
 import io.xpipe.app.core.AppExtensionManager;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.fxcomps.Comp;
@@ -15,6 +13,7 @@ import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.MarkdownBuilder;
 import io.xpipe.app.util.OptionsBuilder;
+import io.xpipe.app.util.Validator;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.Identifiers;
@@ -29,6 +28,7 @@ import lombok.SneakyThrows;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class SimpleScriptStoreProvider implements DataStoreProvider {
@@ -49,35 +49,22 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
             return new DenseStoreEntryComp(sec.getWrapper(), true, null);
         }
 
-        var def = StoreToggleComp.<SimpleScriptStore>simpleToggle(
-                "base.isDefaultGroup", null, sec, s -> s.getState().isDefault(), (s, aBoolean) -> {
-                    var state = s.getState().toBuilder().isDefault(aBoolean).build();
-                    s.setState(state);
-                });
-
-        var bring = StoreToggleComp.<SimpleScriptStore>simpleToggle(
-                "base.bringToShells", null, sec, s -> s.getState().isBringToShell(), (s, aBoolean) -> {
-                    var state = s.getState().toBuilder().bringToShell(aBoolean).build();
+        var enabled = StoreToggleComp.<SimpleScriptStore>enableToggle(
+                null, sec, s -> s.getState().isEnabled(), (s, aBoolean) -> {
+                    var state = s.getState().toBuilder().enabled(aBoolean).build();
                     s.setState(state);
                 });
 
         SimpleScriptStore s = sec.getWrapper().getEntry().getStore().asNeeded();
         var groupWrapper = StoreViewState.get().getEntryWrapper(s.getGroup().getEntry());
 
-        // Disable selection if parent group is already made default
-        def.disable(BindingsHelper.map(groupWrapper.getPersistentState(), o -> {
+        // Disable selection if parent group is already made enabled
+        enabled.setCustomVisibility(BindingsHelper.map(groupWrapper.getPersistentState(), o -> {
             ScriptStore.State state = (ScriptStore.State) o;
-            return state.isDefault();
+            return !state.isEnabled();
         }));
 
-        // Disable selection if parent group is already brings
-        bring.disable(BindingsHelper.map(groupWrapper.getPersistentState(), o -> {
-            ScriptStore.State state = (ScriptStore.State) o;
-            return state.isBringToShell();
-        }));
-
-        var dropdown = new DropdownComp(List.of(def, bring));
-        return new DenseStoreEntryComp(sec.getWrapper(), true, dropdown);
+        return new DenseStoreEntryComp(sec.getWrapper(), true, enabled);
     }
 
     @Override
@@ -143,6 +130,39 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
                         "io.xpipe.ext.proc.ShellDialectChoiceComp")
                 .getDeclaredConstructor(Property.class, boolean.class)
                 .newInstance(dialect, false);
+
+        var vals = List.of(0, 1, 2);
+        var selectedStart = new ArrayList<Integer>();
+        if (st.isInitScript()) {
+            selectedStart.add(0);
+        }
+        if (st.isShellScript()) {
+            selectedStart.add(1);
+        }
+        if (st.isFileScript()) {
+            selectedStart.add(2);
+        }
+        var name = new Function<Integer, String>() {
+
+            @Override
+            public String apply(Integer integer) {
+                if (integer == 0) {
+                    return AppI18n.get("initScript");
+                }
+
+                if (integer == 1) {
+                    return AppI18n.get("shellScript");
+                }
+
+                if (integer == 2) {
+                    return AppI18n.get("fileScript");
+                }
+                return "?";
+            }
+        };
+        var selectedExecTypes = new SimpleListProperty<>(FXCollections.observableList(selectedStart));
+        var selectorComp = new ListSelectorComp<>(vals, name, selectedExecTypes, v -> false, false);
+
         return new OptionsBuilder()
                 .name("snippets")
                 .description("snippetsDescription")
@@ -169,7 +189,10 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
                                     : "sh";
                         })),
                         commandProp)
-                .name("executionType")
+                .nameAndDescription("executionType")
+                .longDescription("base:executionType")
+                .addComp(selectorComp, selectedExecTypes)
+                .check(validator -> Validator.nonEmpty(validator, AppI18n.observable("executionType"), selectedExecTypes))
                 .name("scriptGroup")
                 .description("scriptGroupDescription")
                 .addComp(
@@ -190,6 +213,9 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
                                     .scripts(new ArrayList<>(others.get()))
                                     .description(st.getDescription())
                                     .commands(commandProp.getValue())
+                                    .initScript(selectedExecTypes.contains(0))
+                                    .shellScript(selectedExecTypes.contains(1))
+                                    .fileScript(selectedExecTypes.contains(2))
                                     .build();
                         },
                         store)

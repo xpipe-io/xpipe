@@ -12,7 +12,6 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.Region;
 import lombok.AllArgsConstructor;
@@ -32,7 +31,7 @@ public class StoreToggleComp extends SimpleComp {
     private final Consumer<Boolean> onChange;
 
     @Setter
-    private ObservableBooleanValue customVisibility = new SimpleBooleanProperty(true);
+    private ObservableValue<Boolean> customVisibility = new SimpleBooleanProperty(true);
 
     public static <T extends DataStore> StoreToggleComp simpleToggle(
             String nameKey, ObservableValue<LabelGraphic> graphic, StoreSection section, Function<T, Boolean> initial, BiConsumer<T, Boolean> setter) {
@@ -45,6 +44,26 @@ public class StoreToggleComp extends SimpleComp {
                 v -> {
                     setter.accept(section.getWrapper().getEntry().getStore().asNeeded(), v);
                 });
+    }
+
+    public static <T extends DataStore> StoreToggleComp enableToggle(
+            String nameKey, StoreSection section, Function<T, Boolean> initial, BiConsumer<T, Boolean> setter) {
+        var val = new SimpleBooleanProperty();
+        ObservableValue<LabelGraphic> g =  val.map(aBoolean -> aBoolean ?
+                new LabelGraphic.IconGraphic("mdi2c-circle-slice-8") : new LabelGraphic.IconGraphic("mdi2p-power"));
+        var t = new StoreToggleComp(
+                nameKey,
+                g,
+                section,
+                new SimpleBooleanProperty(
+                        initial.apply(section.getWrapper().getEntry().getStore().asNeeded())),
+                v -> {
+                    setter.accept(section.getWrapper().getEntry().getStore().asNeeded(), v);
+                });
+        t.value.subscribe((newValue) -> {
+            val.set(newValue);
+        });
+        return t;
     }
 
     public static <T extends DataStore> StoreToggleComp childrenToggle(
@@ -86,7 +105,7 @@ public class StoreToggleComp extends SimpleComp {
         var disable = section.getWrapper().getValidity().map(state -> state != DataStoreEntry.Validity.COMPLETE);
         var visible = Bindings.createBooleanBinding(
                 () -> {
-                    if (!this.customVisibility.get()) {
+                    if (!this.customVisibility.getValue()) {
                         return false;
                     }
 

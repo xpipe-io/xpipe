@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class OptionsBuilder {
@@ -143,6 +144,11 @@ public class OptionsBuilder {
                 null,
                 null,
                 Comp.of(() -> new Label(title.getValue())).styleClass("title-header")));
+        return this;
+    }
+
+    public OptionsBuilder check(Function<Validator, Check> c) {
+        lastCompHeadReference.apply(s -> c.apply(ownValidator).decorates(s.get()));
         return this;
     }
 

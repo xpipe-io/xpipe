@@ -1,15 +1,50 @@
-## Execution types
+# Execution types
 
-There are two distinct execution types when XPipe connects to a system.
+You can use a script in multiple different scenarios.
 
-### In the background
+When enabling a script, the execution types dictate what XPipe will do with the script.
 
-The first connection to a system is made in the background in a dumb terminal session.
+## Init scripts
 
-Blocking commands that require user input can freeze the shell process when XPipe starts it up internally first in the background. To avoid this, you should only call these blocking commands in the terminal mode.
+When a script is designated as init script, it can be selected in shell environments.
 
-The file browser for example entirely uses the dumb background mode to handle its operations, so if you want your script environment to apply to the file browser session, it should run in the dumb mode.
+Furthermore, if a script is enabled, it will automatically be run on init in all compatible shells.
 
-### In the terminals
+For example, if you create a simple init script like
+```
+alias ll="ls -l"
+alias la="ls -A"
+alias l="ls -CF"
+```
+you will have access to these aliases in all compatible shell sessions if the script is enabled.
 
-After the initial dumb terminal connection has succeeded, XPipe will open a separate connection in the actual terminal. If you want the script to be run when you open the connection in a terminal, then choose the terminal mode.
+## Shell scripts
+
+A normal shell script is intended to be called in a shell session in your terminal.
+When enabled, the script will be copied to the target system and put into the PATH in all compatible shells.
+This allows you to call the script from anywhere in a terminal session.
+The script name will be lowercased and spaces will be replaced with underscores, allowing you to easily call the script.
+
+For example, if you create a simple shell script named `apti` like
+```
+sudo apt install "$1"
+```
+you can call that on any compatible system with `apti.sh <pkg>` if the script is enabled.
+
+## File scripts
+
+Lastly, you can also run custom script with file inputs from the file browser interface.
+When a file script is enabled, it will show up in the file browser to be run with file inputs.
+
+For example, if you create a simple file script like
+```
+sudo apt install "$@"
+```
+you can run the script on selected files if the script is enabled.
+
+## Multiple types
+
+As the sample file script is the same as the sample shell script above,
+you see that you can also tick multiple boxes for execution types of a script if they should be used in multiple scenarios.
+
+

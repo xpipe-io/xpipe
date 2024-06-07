@@ -1,15 +1,50 @@
-## Tipi di esecuzione
+# Tipi di esecuzione
 
-Esistono due tipi di esecuzione distinti quando XPipe si connette a un sistema.
+Puoi utilizzare uno script in diversi scenari.
 
-### In background
+Quando abiliti uno script, i tipi di esecuzione stabiliscono cosa XPipe farà con lo script.
 
-La prima connessione a un sistema avviene in background in una sessione di terminale muta.
+## Script di avvio
 
-I comandi di blocco che richiedono l'input dell'utente possono bloccare il processo di shell quando XPipe lo avvia internamente in background. Per evitare questo problema, dovresti chiamare questi comandi di blocco solo in modalità terminale.
+Quando uno script è designato come script di avvio, può essere selezionato negli ambienti shell.
 
-Il navigatore di file, ad esempio, utilizza esclusivamente la modalità di sfondo muta per gestire le sue operazioni, quindi se vuoi che il tuo ambiente di script si applichi alla sessione del navigatore di file, deve essere eseguito in modalità muta.
+Inoltre, se uno script è abilitato, verrà eseguito automaticamente all'avvio in tutte le shell compatibili.
 
-### Nei terminali
+Ad esempio, se crei un semplice script di avvio come
+```
+alias ll="ls -l"
+alias la="ls -A"
+alias l="ls -CF"
+```
+avrai accesso a questi alias in tutte le sessioni di shell compatibili se lo script è abilitato.
 
-Dopo che la connessione iniziale del terminale muto è riuscita, XPipe aprirà una connessione separata nel terminale vero e proprio. Se vuoi che lo script venga eseguito quando apri la connessione in un terminale, scegli la modalità terminale.
+## Script di shell
+
+Un normale script di shell è destinato a essere richiamato in una sessione di shell nel tuo terminale.
+Se abilitato, lo script verrà copiato sul sistema di destinazione e inserito nel PATH di tutte le shell compatibili.
+Questo ti permette di richiamare lo script da qualsiasi punto di una sessione di terminale.
+Il nome dello script sarà minuscolo e gli spazi saranno sostituiti da trattini bassi, consentendoti di richiamare facilmente lo script.
+
+Ad esempio, se crei un semplice script di shell chiamato `apti` come
+```
+sudo apt install "$1"
+```
+puoi richiamarlo su qualsiasi sistema compatibile con `apti.sh <pkg>` se lo script è abilitato.
+
+## File script
+
+Infine, puoi anche eseguire script personalizzati con input da file dall'interfaccia del browser dei file.
+Quando uno script di file è abilitato, viene visualizzato nel browser dei file per essere eseguito con input di file.
+
+Ad esempio, se crei un semplice script di file come
+```
+sudo apt install "$@"
+```
+puoi eseguire lo script sui file selezionati se lo script è abilitato.
+
+## Tipi multipli
+
+Poiché lo script di esempio per i file è identico allo script di esempio per la shell di cui sopra,
+puoi anche spuntare più caselle per i tipi di esecuzione di uno script se questi devono essere utilizzati in più scenari.
+
+

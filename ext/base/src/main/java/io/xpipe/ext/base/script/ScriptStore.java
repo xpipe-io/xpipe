@@ -32,21 +32,20 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
     protected final String description;
 
     public static ShellControl controlWithDefaultScripts(ShellControl pc) {
-        return controlWithScripts(pc, getDefaultInitScripts(), getDefaultBringScripts());
+        return controlWithScripts(pc, getDefaultEnabledScripts());
     }
 
     public static ShellControl controlWithScripts(
             ShellControl pc,
-            List<DataStoreEntryRef<ScriptStore>> initScripts,
-            List<DataStoreEntryRef<ScriptStore>> bringScripts) {
+            List<DataStoreEntryRef<ScriptStore>> enabledScripts) {
         try {
             // Don't copy scripts if we don't want to modify the file system
             if (!pc.getEffectiveSecurityPolicy().permitTempScriptCreation()) {
                 return pc;
             }
 
-            var initFlattened = flatten(initScripts);
-            var bringFlattened = flatten(bringScripts);
+            var initFlattened = flatten(enabledScripts).stream().filter(store -> store.isInitScript()).toList();
+            var bringFlattened = flatten(enabledScripts).stream().filter(store -> store.isShellScript()).toList();
 
             // Optimize if we have nothing to do
             if (initFlattened.isEmpty() && bringFlattened.isEmpty()) {
@@ -150,18 +149,10 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
         return targetDir;
     }
 
-    public static List<DataStoreEntryRef<ScriptStore>> getDefaultInitScripts() {
+    public static List<DataStoreEntryRef<ScriptStore>> getDefaultEnabledScripts() {
         return DataStorage.get().getStoreEntries().stream()
                 .filter(dataStoreEntry -> dataStoreEntry.getStore() instanceof ScriptStore scriptStore
-                        && scriptStore.getState().isDefault())
-                .map(DataStoreEntry::<ScriptStore>ref)
-                .toList();
-    }
-
-    public static List<DataStoreEntryRef<ScriptStore>> getDefaultBringScripts() {
-        return DataStorage.get().getStoreEntries().stream()
-                .filter(dataStoreEntry -> dataStoreEntry.getStore() instanceof ScriptStore scriptStore
-                        && scriptStore.getState().isBringToShell())
+                        && scriptStore.getState().isEnabled())
                 .map(DataStoreEntry::<ScriptStore>ref)
                 .toList();
     }
@@ -226,7 +217,6 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
     @SuperBuilder(toBuilder = true)
     @Jacksonized
     public static class State extends DataStoreState {
-        boolean isDefault;
-        boolean bringToShell;
+        boolean enabled;
     }
 }
