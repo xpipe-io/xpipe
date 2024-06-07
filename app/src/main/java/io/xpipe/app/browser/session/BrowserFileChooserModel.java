@@ -2,7 +2,7 @@ package io.xpipe.app.browser.session;
 
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
-import io.xpipe.app.fxcomps.util.DerivedObservableList;
+import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.FileReference;
@@ -10,10 +10,12 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystemStore;
 import io.xpipe.core.util.FailableFunction;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -38,8 +40,7 @@ public class BrowserFileChooserModel extends BrowserAbstractSessionModel<OpenFil
                 return;
             }
 
-            var l = new DerivedObservableList<>(fileSelection, true);
-            l.bindContent(newValue.getFileList().getSelection());
+            ListBindingsHelper.bindContent(fileSelection, newValue.getFileList().getSelection());
         });
     }
 

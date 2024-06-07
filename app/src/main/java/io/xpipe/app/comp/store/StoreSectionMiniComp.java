@@ -8,7 +8,9 @@ import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
+import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.storage.DataStoreColor;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -82,7 +84,7 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
 
             expanded =
                     new SimpleBooleanProperty(section.getWrapper().getExpanded().get()
-                            && section.getShownChildren().getList().size() > 0);
+                            && section.getShownChildren().size() > 0);
             var button = new IconButtonComp(
                             Bindings.createStringBinding(
                                     () -> expanded.get() ? "mdal-keyboard_arrow_down" : "mdal-keyboard_arrow_right",
@@ -99,15 +101,15 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                                         + section.getWrapper().getName().getValue();
                             },
                             section.getWrapper().getName()))
-                    .disable(Bindings.size(section.getShownChildren().getList()).isEqualTo(0))
+                    .disable(Bindings.size(section.getShownChildren()).isEqualTo(0))
                     .grow(false, true)
                     .styleClass("expand-button");
 
             var quickAccessDisabled = Bindings.createBooleanBinding(
                     () -> {
-                        return section.getShownChildren().getList().isEmpty();
+                        return section.getShownChildren().isEmpty();
                     },
-                    section.getShownChildren().getList());
+                    section.getShownChildren());
             Consumer<StoreEntryWrapper> quickAccessAction = action;
             var quickAccessButton = new StoreQuickAccessButtonComp(section, quickAccessAction)
                     .vgrow()
@@ -129,12 +131,13 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
         // Optimization for large sections. If there are more than 20 children, only add the nodes to the scene if the
         // section is actually expanded
         var listSections = section.getWrapper() != null
-                ? section.getShownChildren().filtered(
-                        storeSection -> section.getAllChildren().getList().size() <= 20 || expanded.get(),
+                ? ListBindingsHelper.filteredContentBinding(
+                        section.getShownChildren(),
+                        storeSection -> section.getAllChildren().size() <= 20 || expanded.get(),
                         expanded,
-                        section.getAllChildren().getList())
+                        section.getAllChildren())
                 : section.getShownChildren();
-        var content = new ListBoxViewComp<>(listSections.getList(), section.getAllChildren().getList(), (StoreSection e) -> {
+        var content = new ListBoxViewComp<>(listSections, section.getAllChildren(), (StoreSection e) -> {
                     return new StoreSectionMiniComp(e, this.augment, this.action, this.condensedStyle);
                 })
                 .minHeight(0)
@@ -145,7 +148,7 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                 .apply(struc -> struc.get().setFillHeight(true))
                 .hide(Bindings.or(
                         Bindings.not(expanded),
-                        Bindings.size(section.getAllChildren().getList()).isEqualTo(0))));
+                        Bindings.size(section.getAllChildren()).isEqualTo(0))));
 
         var vert = new VerticalComp(list);
         if (condensedStyle) {

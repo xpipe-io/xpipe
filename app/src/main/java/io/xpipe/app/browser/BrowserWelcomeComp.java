@@ -1,7 +1,5 @@
 package io.xpipe.app.browser;
 
-import atlantafx.base.controls.Spacer;
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
@@ -15,9 +13,10 @@ import io.xpipe.app.fxcomps.impl.LabelComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.PrettySvgComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
-import io.xpipe.app.fxcomps.util.DerivedObservableList;
+import io.xpipe.app.fxcomps.util.ListBindingsHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -30,6 +29,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+
+import atlantafx.base.controls.Spacer;
+import atlantafx.base.theme.Styles;
 
 import java.util.List;
 
@@ -65,7 +67,7 @@ public class BrowserWelcomeComp extends SimpleComp {
             return new VBox(hbox);
         }
 
-        var list = new DerivedObservableList<>(state.getEntries(), true).filtered(e -> {
+        var list = ListBindingsHelper.filteredContentBinding(state.getEntries(), e -> {
             var entry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
             if (entry.isEmpty()) {
                 return false;
@@ -76,7 +78,7 @@ public class BrowserWelcomeComp extends SimpleComp {
             }
 
             return true;
-        }).getList();
+        });
         var empty = Bindings.createBooleanBinding(() -> list.isEmpty(), list);
 
         var headerBinding = BindingsHelper.flatMap(empty, b -> {
