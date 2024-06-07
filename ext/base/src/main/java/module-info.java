@@ -72,6 +72,6 @@ open module io.xpipe.ext.base {
             EditStoreAction,
             DeleteStoreChildrenAction,
             BrowseStoreAction;
-    provides DataStoreProvider with FixedServiceGroupStoreProvider, ServiceGroupStoreProvider, CustomServiceStoreProvider, FixedServiceStoreProvider, SimpleScriptStoreProvider, DesktopEnvironmentStoreProvider, DesktopApplicationStoreProvider, DesktopCommandStoreProvider, ScriptGroupStoreProvider;
+    provides DataStoreProvider with FixedServiceGroupStoreProvider, ServiceGroupStoreProvider, CustomServiceStoreProvider, MappedServiceStoreProvider, FixedServiceStoreProvider, SimpleScriptStoreProvider, DesktopEnvironmentStoreProvider, DesktopApplicationStoreProvider, DesktopCommandStoreProvider, ScriptGroupStoreProvider;
     provides DataStorageExtensionProvider with ScriptDataStorageProvider;
 }

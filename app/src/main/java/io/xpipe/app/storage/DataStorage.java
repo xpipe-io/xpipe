@@ -58,7 +58,7 @@ public abstract class DataStorage {
     @Setter
     protected DataStoreCategory selectedCategory;
 
-    private final Map<DataStore, DataStoreEntry> storeEntryMapCache = Collections.synchronizedMap(new HashMap<>());
+    private final Map<DataStore, DataStoreEntry> storeEntryMapCache = Collections.synchronizedMap(new IdentityHashMap<>());
 
     public DataStorage() {
         var prefsDir = AppPrefs.get().storageDirectory().getValue();
@@ -348,9 +348,8 @@ public abstract class DataStorage {
             return false;
         }
 
-        var oldChildren = getStoreEntries().stream()
-                .filter(other -> e.equals(getDefaultDisplayParent(other).orElse(null)))
-                .toList();
+
+        var oldChildren = getStoreChildren(e);
         var toRemove = oldChildren.stream()
                 .filter(oc -> {
                     var oid = ((FixedChildStore) oc.getStore()).getFixedId();
@@ -549,6 +548,7 @@ public abstract class DataStorage {
         for (DataStoreEntry e : toAdd) {
             var syntheticParent = getSyntheticParent(e);
             if (syntheticParent.isPresent()) {
+                var exists =
                 addStoreEntryIfNotPresent(syntheticParent.get());
             }
 
@@ -786,10 +786,12 @@ public abstract class DataStorage {
     }
 
     public Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull DataStore store, boolean identityOnly) {
-        synchronized (storeEntryMapCache) {
-            var found = storeEntryMapCache.get(store);
-            if (found != null) {
-                return Optional.of(found);
+        if (identityOnly) {
+            synchronized (storeEntryMapCache) {
+                var found = storeEntryMapCache.get(store);
+                if (found != null) {
+                    return Optional.of(found);
+                }
             }
         }
 
@@ -800,8 +802,10 @@ public abstract class DataStorage {
                                         && store.equals(n.getStore()))))
                 .findFirst();
         if (found.isPresent()) {
-            synchronized (storeEntryMapCache) {
-                storeEntryMapCache.put(store, found.get());
+            if (identityOnly) {
+                synchronized (storeEntryMapCache) {
+                    storeEntryMapCache.put(store, found.get());
+                }
             }
         }
         return found;
@@ -866,10 +870,20 @@ public abstract class DataStorage {
     }
 
     public DataStoreEntry getOrCreateNewSyntheticEntry(DataStoreEntry parent, String name, DataStore store) {
+        var forStoreIdentity = getStoreEntryIfPresent(store, true);
+        if (forStoreIdentity.isPresent()) {
+            return forStoreIdentity.get();
+        }
+
         var uuid = UuidHelper.generateFromObject(parent.getUuid(), name);
         var found = getStoreEntryIfPresent(uuid);
         if (found.isPresent()) {
             return found.get();
+        }
+
+        var forStore = getStoreEntryIfPresent(store, false);
+        if (forStore.isPresent()) {
+            return forStore.get();
         }
 
         return DataStoreEntry.createNew(uuid, parent.getCategoryUuid(), name, store);

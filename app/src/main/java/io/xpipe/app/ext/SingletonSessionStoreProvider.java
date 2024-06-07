@@ -38,7 +38,7 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
             enabled.set(s.isSessionEnabled());
         });
 
-        var t = new StoreToggleComp(null, sec, enabled, aBoolean -> {
+        var t = new StoreToggleComp(null, null, sec, enabled, aBoolean -> {
             SingletonSessionStore<?> s = sec.getWrapper().getEntry().getStore().asNeeded();
             if (s.isSessionEnabled() != aBoolean) {
                 ThreadHelper.runFailableAsync(() -> {

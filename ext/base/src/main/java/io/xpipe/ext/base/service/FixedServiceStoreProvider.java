@@ -13,7 +13,8 @@ public class FixedServiceStoreProvider extends AbstractServiceStoreProvider {
     @Override
     public DataStoreEntry getSyntheticParent(DataStoreEntry store) {
         FixedServiceStore s = store.getStore().asNeeded();
-        return DataStorage.get().getOrCreateNewSyntheticEntry(s.getHost().get(), "Services", FixedServiceGroupStore.builder().parent(s.getDisplayParent().get().ref()).build());
+        return DataStorage.get().getOrCreateNewSyntheticEntry(s.getHost().get(), "Services",
+                FixedServiceGroupStore.builder().parent(s.getDisplayParent().get().ref()).build());
     }
 
     @Override

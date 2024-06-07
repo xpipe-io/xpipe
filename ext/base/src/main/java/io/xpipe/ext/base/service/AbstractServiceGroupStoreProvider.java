@@ -26,7 +26,7 @@ public abstract class AbstractServiceGroupStoreProvider implements DataStoreProv
 
     private StoreToggleComp createToggleComp(StoreSection sec) {
         var enabled = new SimpleBooleanProperty();
-        var t = new StoreToggleComp(null, sec, enabled, aBoolean -> {
+        var t = new StoreToggleComp(null, null, sec, enabled, aBoolean -> {
             var children = DataStorage.get().getStoreChildren(sec.getWrapper().getEntry());
             ThreadHelper.runFailableAsync(() -> {
                 for (DataStoreEntry child : children) {

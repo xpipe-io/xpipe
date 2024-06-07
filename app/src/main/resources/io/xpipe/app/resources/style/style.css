@@ -5,6 +5,14 @@
 }
 */
 
+.toggle-switch .label {
+    -fx-font-size: 1.7em;
+}
+
+.toggle-switch {
+    -fx-font-size: 0.8em;
+}
+
 .store-layout .split-pane-divider {
     -fx-background-color: transparent;
 }

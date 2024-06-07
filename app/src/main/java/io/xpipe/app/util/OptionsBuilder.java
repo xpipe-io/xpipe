@@ -221,7 +221,7 @@ public class OptionsBuilder {
     }
 
     public OptionsBuilder addToggle(Property<Boolean> prop) {
-        var comp = new ToggleSwitchComp(prop, null);
+        var comp = new ToggleSwitchComp(prop, null, null);
         pushComp(comp);
         props.add(prop);
         return this;

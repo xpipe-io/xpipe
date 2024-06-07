@@ -50,13 +50,13 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
         }
 
         var def = StoreToggleComp.<SimpleScriptStore>simpleToggle(
-                "base.isDefaultGroup", sec, s -> s.getState().isDefault(), (s, aBoolean) -> {
+                "base.isDefaultGroup", null, sec, s -> s.getState().isDefault(), (s, aBoolean) -> {
                     var state = s.getState().toBuilder().isDefault(aBoolean).build();
                     s.setState(state);
                 });
 
         var bring = StoreToggleComp.<SimpleScriptStore>simpleToggle(
-                "base.bringToShells", sec, s -> s.getState().isBringToShell(), (s, aBoolean) -> {
+                "base.bringToShells", null, sec, s -> s.getState().isBringToShell(), (s, aBoolean) -> {
                     var state = s.getState().toBuilder().bringToShell(aBoolean).build();
                     s.setState(state);
                 });
