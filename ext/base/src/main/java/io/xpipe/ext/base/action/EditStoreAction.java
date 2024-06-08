@@ -14,8 +14,8 @@ import lombok.Value;
 public class EditStoreAction implements ActionProvider {
 
     @Override
-    public DataStoreCallSite<?> getDataStoreCallSite() {
-        return new DataStoreCallSite<>() {
+    public LeafDataStoreCallSite<?> getLeafDataStoreCallSite() {
+        return new LeafDataStoreCallSite<>() {
 
             @Override
             public boolean isSystemAction() {
@@ -49,8 +49,8 @@ public class EditStoreAction implements ActionProvider {
             }
 
             @Override
-            public ActiveType activeType() {
-                return ActiveType.ALWAYS_ENABLE;
+            public boolean requiresValidStore() {
+                return false;
             }
         };
     }
@@ -84,11 +84,6 @@ public class EditStoreAction implements ActionProvider {
     static class Action implements ActionProvider.Action {
 
         DataStoreEntry store;
-
-        @Override
-        public boolean requiresJavaFXPlatform() {
-            return true;
-        }
 
         @Override
         public void execute() {

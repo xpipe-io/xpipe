@@ -32,10 +32,6 @@ public class DesktopCommandStoreProvider implements DataStoreProvider {
     @Override
     public ActionProvider.Action launchAction(DataStoreEntry store) {
         return new ActionProvider.Action() {
-            @Override
-            public boolean requiresJavaFXPlatform() {
-                return false;
-            }
 
             @Override
             public void execute() throws Exception {

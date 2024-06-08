@@ -454,12 +454,8 @@ public class AppPrefs {
     }
 
     public void initDefaultValues() {
-        if (externalEditor.get() == null) {
-            ExternalEditorType.detectDefault();
-        }
-
+        externalEditor.setValue(ExternalEditorType.detectDefault(externalEditor.get()));
         terminalType.set(ExternalTerminalType.determineDefault(terminalType.get()));
-
         if (rdpClientType.get() == null) {
             rdpClientType.setValue(ExternalRdpClientType.determineDefault());
         }

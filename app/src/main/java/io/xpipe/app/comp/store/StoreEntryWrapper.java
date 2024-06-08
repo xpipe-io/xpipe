@@ -14,10 +14,7 @@ import lombok.Getter;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 @Getter
 public class StoreEntryWrapper {
@@ -28,7 +25,7 @@ public class StoreEntryWrapper {
     private final BooleanProperty disabled = new SimpleBooleanProperty();
     private final BooleanProperty busy = new SimpleBooleanProperty();
     private final Property<DataStoreEntry.Validity> validity = new SimpleObjectProperty<>();
-    private final Map<ActionProvider, BooleanProperty> actionProviders;
+    private final List<ActionProvider> actionProviders;
     private final Property<ActionProvider.DefaultDataStoreCallSite<?>> defaultActionProvider;
     private final BooleanProperty deletable = new SimpleBooleanProperty();
     private final BooleanProperty expanded = new SimpleBooleanProperty();
@@ -43,20 +40,20 @@ public class StoreEntryWrapper {
         this.entry = entry;
         this.name = new SimpleStringProperty(entry.getName());
         this.lastAccess = new SimpleObjectProperty<>(entry.getLastAccess().minus(Duration.ofMillis(500)));
-        this.actionProviders = new LinkedHashMap<>();
+        this.actionProviders = new ArrayList<>();
         ActionProvider.ALL.stream()
                 .filter(dataStoreActionProvider -> {
                     return !entry.isDisabled()
-                            && dataStoreActionProvider.getDataStoreCallSite() != null
+                            && dataStoreActionProvider.getLeafDataStoreCallSite() != null
                             && dataStoreActionProvider
-                                    .getDataStoreCallSite()
+                                    .getLeafDataStoreCallSite()
                                     .getApplicableClass()
                                     .isAssignableFrom(entry.getStore().getClass());
                 })
                 .sorted(Comparator.comparing(
-                        actionProvider -> actionProvider.getDataStoreCallSite().isSystemAction()))
+                        actionProvider -> actionProvider.getLeafDataStoreCallSite().isSystemAction()))
                 .forEach(dataStoreActionProvider -> {
-                    actionProviders.put(dataStoreActionProvider, new SimpleBooleanProperty(true));
+                    actionProviders.add(dataStoreActionProvider);
                 });
         this.defaultActionProvider = new SimpleObjectProperty<>();
         this.notes = new SimpleObjectProperty<>(new StoreNotes(entry.getNotes(), entry.getNotes()));
@@ -154,48 +151,57 @@ public class StoreEntryWrapper {
             }
         }
 
-        actionProviders.keySet().forEach(dataStoreActionProvider -> {
-            if (!isInStorage()) {
-                actionProviders.get(dataStoreActionProvider).set(false);
-                defaultActionProvider.setValue(null);
-                return;
-            }
-
-            if (!entry.getValidity().isUsable()
-                    && !dataStoreActionProvider
-                            .getDataStoreCallSite()
-                            .activeType()
-                            .equals(ActionProvider.DataStoreCallSite.ActiveType.ALWAYS_ENABLE)) {
-                actionProviders.get(dataStoreActionProvider).set(false);
-                return;
-            }
-
+        if (!isInStorage()) {
+            actionProviders.clear();
+            defaultActionProvider.setValue(null);
+        } else {
             var defaultProvider = ActionProvider.ALL.stream()
-                    .filter(e -> e.getDefaultDataStoreCallSite() != null
+                    .filter(e -> entry.getStore() != null && e.getDefaultDataStoreCallSite() != null
                             && e.getDefaultDataStoreCallSite()
-                                    .getApplicableClass()
-                                    .isAssignableFrom(entry.getStore().getClass())
+                            .getApplicableClass()
+                            .isAssignableFrom(entry.getStore().getClass())
                             && e.getDefaultDataStoreCallSite().isApplicable(entry.ref()))
                     .findFirst()
                     .map(ActionProvider::getDefaultDataStoreCallSite)
                     .orElse(null);
             this.defaultActionProvider.setValue(defaultProvider);
 
+            this.actionProviders.clear();
             try {
-                actionProviders
-                        .get(dataStoreActionProvider)
-                        .set(dataStoreActionProvider
-                                        .getDataStoreCallSite()
-                                        .getApplicableClass()
-                                        .isAssignableFrom(entry.getStore().getClass())
-                                && dataStoreActionProvider
-                                        .getDataStoreCallSite()
-                                        .isApplicable(entry.ref()));
+                ActionProvider.ALL.stream()
+                        .filter(dataStoreActionProvider -> {
+                           return showActionProvider(dataStoreActionProvider);
+                        })
+                        .sorted(Comparator.comparing(
+                                actionProvider -> actionProvider.getLeafDataStoreCallSite() != null &&
+                                        actionProvider.getLeafDataStoreCallSite().isSystemAction()))
+                        .forEach(dataStoreActionProvider -> {
+                            actionProviders.add(dataStoreActionProvider);
+                        });
             } catch (Exception ex) {
                 ErrorEvent.fromThrowable(ex).handle();
-                actionProviders.get(dataStoreActionProvider).set(false);
             }
-        });
+        }
+    }
+
+    private boolean showActionProvider(ActionProvider p) {
+        var leaf = p.getLeafDataStoreCallSite();
+        if (leaf != null) {
+            return (entry.getValidity().isUsable() || (!leaf.requiresValidStore() && entry.getProvider() != null))
+                    && leaf.getApplicableClass().isAssignableFrom(entry.getStore().getClass())
+                    && leaf
+                    .isApplicable(entry.ref());
+        }
+
+
+        var branch = p.getBranchDataStoreCallSite();
+        if (branch != null) {
+            return branch.getChildren().stream().anyMatch(child -> {
+                return showActionProvider(child);
+            });
+        }
+
+        return false;
     }
 
     public void refreshChildren() {

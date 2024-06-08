@@ -33,10 +33,6 @@ public interface ActionProvider {
         return null;
     }
 
-    default boolean isActive() {
-        return true;
-    }
-
     default String getProFeatureId() {
         return null;
     }
@@ -45,7 +41,12 @@ public interface ActionProvider {
         return null;
     }
 
-    default DataStoreCallSite<?> getDataStoreCallSite() {
+    default LeafDataStoreCallSite<?> getLeafDataStoreCallSite() {
+        return null;
+    }
+
+
+    default BranchDataStoreCallSite<?> getBranchDataStoreCallSite() {
         return null;
     }
 
@@ -54,8 +55,6 @@ public interface ActionProvider {
     }
 
     interface Action {
-
-        boolean requiresJavaFXPlatform();
 
         void execute() throws Exception;
     }
@@ -97,14 +96,6 @@ public interface ActionProvider {
             return false;
         }
 
-        default boolean canLinkTo() {
-            return false;
-        }
-
-        Action createAction(DataStoreEntryRef<T> store);
-
-        Class<T> getApplicableClass();
-
         default boolean isMajor(DataStoreEntryRef<T> o) {
             return false;
         }
@@ -116,15 +107,27 @@ public interface ActionProvider {
         ObservableValue<String> getName(DataStoreEntryRef<T> store);
 
         String getIcon(DataStoreEntryRef<T> store);
+    }
 
-        default ActiveType activeType() {
-            return ActiveType.ONLY_SHOW_IF_ENABLED;
+    interface BranchDataStoreCallSite<T extends DataStore> extends DataStoreCallSite<T> {
+
+        default List<ActionProvider> getChildren() {
+            return List.of();
+        }
+    }
+
+    interface LeafDataStoreCallSite<T extends DataStore> extends DataStoreCallSite<T> {
+
+        default boolean canLinkTo() {
+            return false;
         }
 
-        enum ActiveType {
-            ONLY_SHOW_IF_ENABLED,
-            ALWAYS_SHOW,
-            ALWAYS_ENABLE
+        Action createAction(DataStoreEntryRef<T> store);
+
+        Class<T> getApplicableClass();
+
+        default boolean requiresValidStore() {
+            return true;
         }
     }
 
@@ -134,14 +137,6 @@ public interface ActionProvider {
         public void init(ModuleLayer layer) {
             ALL.addAll(ServiceLoader.load(layer, ActionProvider.class).stream()
                     .map(actionProviderProvider -> actionProviderProvider.get())
-                    .filter(provider -> {
-                        try {
-                            return provider.isActive();
-                        } catch (Throwable e) {
-                            ErrorEvent.fromThrowable(e).handle();
-                            return false;
-                        }
-                    })
                     .toList());
         }
     }

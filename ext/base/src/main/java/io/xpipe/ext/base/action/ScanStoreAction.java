@@ -12,11 +12,11 @@ import javafx.beans.value.ObservableValue;
 
 import lombok.Value;
 
-public class ScanAction implements ActionProvider {
+public class ScanStoreAction implements ActionProvider {
 
     @Override
-    public DataStoreCallSite<?> getDataStoreCallSite() {
-        return new DataStoreCallSite<ShellStore>() {
+    public LeafDataStoreCallSite<?> getLeafDataStoreCallSite() {
+        return new LeafDataStoreCallSite<ShellStore>() {
 
             @Override
             public ActionProvider.Action createAction(DataStoreEntryRef<ShellStore> store) {
@@ -64,11 +64,6 @@ public class ScanAction implements ActionProvider {
     static class Action implements ActionProvider.Action {
 
         DataStoreEntry entry;
-
-        @Override
-        public boolean requiresJavaFXPlatform() {
-            return true;
-        }
 
         @Override
         public void execute() {

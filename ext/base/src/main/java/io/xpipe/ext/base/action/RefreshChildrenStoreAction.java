@@ -6,16 +6,14 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.FixedHierarchyStore;
-
 import javafx.beans.value.ObservableValue;
-
 import lombok.Value;
 
-public class RefreshStoreChildrenAction implements ActionProvider {
+public class RefreshChildrenStoreAction implements ActionProvider {
 
     @Override
-    public ActionProvider.DataStoreCallSite<?> getDataStoreCallSite() {
-        return new ActionProvider.DataStoreCallSite<FixedHierarchyStore>() {
+    public LeafDataStoreCallSite<?> getLeafDataStoreCallSite() {
+        return new LeafDataStoreCallSite<FixedHierarchyStore>() {
 
             @Override
             public ActionProvider.Action createAction(DataStoreEntryRef<FixedHierarchyStore> store) {
@@ -69,11 +67,6 @@ public class RefreshStoreChildrenAction implements ActionProvider {
     static class Action implements ActionProvider.Action {
 
         DataStoreEntry store;
-
-        @Override
-        public boolean requiresJavaFXPlatform() {
-            return false;
-        }
 
         @Override
         public void execute() {

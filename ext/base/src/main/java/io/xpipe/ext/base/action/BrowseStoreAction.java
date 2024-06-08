@@ -17,8 +17,8 @@ import lombok.Value;
 public class BrowseStoreAction implements ActionProvider {
 
     @Override
-    public DataStoreCallSite<?> getDataStoreCallSite() {
-        return new DataStoreCallSite<ShellStore>() {
+    public LeafDataStoreCallSite<?> getLeafDataStoreCallSite() {
+        return new LeafDataStoreCallSite<ShellStore>() {
 
             @Override
             public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
@@ -62,11 +62,6 @@ public class BrowseStoreAction implements ActionProvider {
     static class Action implements ActionProvider.Action {
 
         DataStoreEntry entry;
-
-        @Override
-        public boolean requiresJavaFXPlatform() {
-            return true;
-        }
 
         @Override
         public void execute() {

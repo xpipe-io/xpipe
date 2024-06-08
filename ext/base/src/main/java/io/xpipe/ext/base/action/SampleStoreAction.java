@@ -18,13 +18,13 @@ import lombok.Value;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-public class SampleAction implements ActionProvider {
+public class SampleStoreAction implements ActionProvider {
 
     @Override
-    public DataStoreCallSite<?> getDataStoreCallSite() {
+    public LeafDataStoreCallSite<?> getLeafDataStoreCallSite() {
         // Call sites represent different ways of invoking the action.
         // In this case, this represents a button that is shown for all stored shell connections.
-        return new DataStoreCallSite<ShellStore>() {
+        return new LeafDataStoreCallSite<ShellStore>() {
 
             @Override
             public Action createAction(DataStoreEntryRef<ShellStore> store) {
@@ -62,12 +62,6 @@ public class SampleAction implements ActionProvider {
     static class Action implements ActionProvider.Action {
 
         DataStoreEntry entry;
-
-        @Override
-        public boolean requiresJavaFXPlatform() {
-            // Do we require the JavaFX platform to be running?
-            return false;
-        }
 
         @Override
         public void execute() throws Exception {

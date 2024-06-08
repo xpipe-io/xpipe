@@ -12,11 +12,11 @@ import javafx.beans.value.ObservableValue;
 
 import lombok.Value;
 
-public class DeleteStoreChildrenAction implements ActionProvider {
+public class DeleteChildrenStoreAction implements ActionProvider {
 
     @Override
-    public DataStoreCallSite<?> getDataStoreCallSite() {
-        return new DataStoreCallSite<>() {
+    public LeafDataStoreCallSite<?> getLeafDataStoreCallSite() {
+        return new LeafDataStoreCallSite<>() {
 
             @Override
             public boolean isSystemAction() {
@@ -55,11 +55,6 @@ public class DeleteStoreChildrenAction implements ActionProvider {
     static class Action implements ActionProvider.Action {
 
         DataStoreEntry store;
-
-        @Override
-        public boolean requiresJavaFXPlatform() {
-            return false;
-        }
 
         @Override
         public void execute() {

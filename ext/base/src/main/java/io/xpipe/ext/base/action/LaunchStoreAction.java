@@ -15,7 +15,7 @@ import javafx.beans.value.ObservableValue;
 
 import lombok.Value;
 
-public class LaunchAction implements ActionProvider {
+public class LaunchStoreAction implements ActionProvider {
 
     @Override
     public String getId() {
@@ -23,8 +23,8 @@ public class LaunchAction implements ActionProvider {
     }
 
     @Override
-    public DataStoreCallSite<?> getDataStoreCallSite() {
-        return new DataStoreCallSite<>() {
+    public LeafDataStoreCallSite<?> getLeafDataStoreCallSite() {
+        return new LeafDataStoreCallSite<>() {
 
             @Override
             public boolean canLinkTo() {
@@ -87,11 +87,6 @@ public class LaunchAction implements ActionProvider {
     static class Action implements ActionProvider.Action {
 
         DataStoreEntry entry;
-
-        @Override
-        public boolean requiresJavaFXPlatform() {
-            return false;
-        }
 
         @Override
         public void execute() throws Exception {

@@ -15,8 +15,8 @@ public class ServiceOpenAction implements ActionProvider {
     }
 
     @Override
-    public ActionProvider.DataStoreCallSite<?> getDataStoreCallSite() {
-        return new ActionProvider.DataStoreCallSite<AbstractServiceStore>() {
+    public LeafDataStoreCallSite<?> getLeafDataStoreCallSite() {
+        return new LeafDataStoreCallSite<AbstractServiceStore>() {
 
             @Override
             public boolean isMajor(DataStoreEntryRef<AbstractServiceStore> o) {
@@ -54,11 +54,6 @@ public class ServiceOpenAction implements ActionProvider {
     static class Action implements ActionProvider.Action {
 
         AbstractServiceStore serviceStore;
-
-        @Override
-        public boolean requiresJavaFXPlatform() {
-            return true;
-        }
 
         @Override
         public void execute() throws Exception {

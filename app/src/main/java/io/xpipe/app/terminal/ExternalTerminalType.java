@@ -684,7 +684,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return ExternalTerminalType.POWERSHELL;
         }
 
-        if (existing != null) {
+        // Verify that our selection is still valid
+        if (existing != null && existing.isAvailable()) {
             return existing;
         }
 

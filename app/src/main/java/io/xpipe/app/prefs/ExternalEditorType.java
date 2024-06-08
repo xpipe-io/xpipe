@@ -145,43 +145,34 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             })
             .get();
 
-    static void detectDefault() {
-        var typeProperty = AppPrefs.get().externalEditor;
-        var customProperty = AppPrefs.get().customEditorCommand;
+    static ExternalEditorType detectDefault(ExternalEditorType existing) {
+        // Verify that our selection is still valid
+        if (existing != null && existing.isAvailable()) {
+            return existing;
+        }
+
         if (OsType.getLocal().equals(OsType.WINDOWS)) {
-            typeProperty.set(WINDOWS_EDITORS.stream()
+            return WINDOWS_EDITORS.stream()
                     .filter(PrefsChoiceValue::isAvailable)
                     .findFirst()
-                    .orElse(null));
+                    .orElse(null);
         }
 
         if (OsType.getLocal().equals(OsType.LINUX)) {
-            var env = System.getenv("VISUAL");
-            if (env != null) {
-                var found = LINUX_EDITORS.stream()
-                        .filter(externalEditorType -> externalEditorType.executable.equalsIgnoreCase(env))
-                        .findFirst()
-                        .orElse(null);
-                if (found == null) {
-                    typeProperty.set(CUSTOM);
-                    customProperty.set(env);
-                } else {
-                    typeProperty.set(found);
-                }
-            } else {
-                typeProperty.set(LINUX_EDITORS.stream()
-                        .filter(ExternalApplicationType.PathApplication::isAvailable)
-                        .findFirst()
-                        .orElse(null));
-            }
+            return LINUX_EDITORS.stream()
+                    .filter(ExternalApplicationType.PathApplication::isAvailable)
+                    .findFirst()
+                    .orElse(null);
         }
 
         if (OsType.getLocal().equals(OsType.MACOS)) {
-            typeProperty.set(MACOS_EDITORS.stream()
+            return MACOS_EDITORS.stream()
                     .filter(PrefsChoiceValue::isAvailable)
                     .findFirst()
-                    .orElse(null));
+                    .orElse(null);
         }
+
+        return null;
     }
 
     void launch(Path file) throws Exception;
