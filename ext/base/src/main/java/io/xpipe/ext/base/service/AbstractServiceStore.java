@@ -24,6 +24,10 @@ public abstract class AbstractServiceStore extends JacksonizedValue implements S
         Validators.nonNull(remotePort);
     }
 
+    public boolean requiresTunnel() {
+        return getHost().getStore().requiresTunnel();
+    }
+
     @Override
     public NetworkTunnelSession newSession() throws Exception {
         var l = localPort != null ? localPort : HostHelper.findRandomOpenPortOnAllLocalInterfaces();

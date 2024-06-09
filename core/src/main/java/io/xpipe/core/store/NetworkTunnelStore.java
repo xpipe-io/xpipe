@@ -112,7 +112,7 @@ public interface NetworkTunnelStore extends DataStore {
 
                 @Override
                 public int getLocalPort() {
-                    return local;
+                    return remotePort;
                 }
 
                 @Override

@@ -3,11 +3,11 @@ package io.xpipe.ext.base.service;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.Hyperlinks;
+import io.xpipe.app.util.ClipboardHelper;
 import javafx.beans.value.ObservableValue;
 import lombok.Value;
 
-public class ServiceOpenAction implements ActionProvider {
+public class ServiceCopyUrlAction implements ActionProvider {
 
     @Override
     public LeafDataStoreCallSite<?> getLeafDataStoreCallSite() {
@@ -35,12 +35,12 @@ public class ServiceOpenAction implements ActionProvider {
 
             @Override
             public ObservableValue<String> getName(DataStoreEntryRef<AbstractServiceStore> store) {
-                return AppI18n.observable("openWebsite");
+                return AppI18n.observable("copyUrl");
             }
 
             @Override
             public String getIcon(DataStoreEntryRef<AbstractServiceStore> store) {
-                return "mdi2s-search-web";
+                return "mdi2c-content-copy";
             }
         };
     }
@@ -54,7 +54,7 @@ public class ServiceOpenAction implements ActionProvider {
         public void execute() throws Exception {
             serviceStore.startSessionIfNeeded();
             var l = serviceStore.getSession().getLocalPort();
-            Hyperlinks.open("http://localhost:" + l);
+            ClipboardHelper.copyUrl("localhost:" + l);
         }
     }
 }

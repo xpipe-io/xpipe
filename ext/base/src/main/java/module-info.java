@@ -58,7 +58,7 @@ open module io.xpipe.ext.base {
             UnzipAction,
             JavapAction,
             JarAction;
-    provides ActionProvider with ServiceOpenAction,
+    provides ActionProvider with ServiceOpenAction, ServiceCopyUrlAction,
             CloneStoreAction, RefreshChildrenStoreAction, ScanStoreAction, LaunchStoreAction,
             XPipeUrlAction,
             EditStoreAction, DeleteChildrenStoreAction,

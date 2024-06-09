@@ -1,10 +1,12 @@
 package io.xpipe.ext.base.service;
 
+import io.xpipe.app.comp.base.SystemStateComp;
 import io.xpipe.app.comp.store.StoreEntryComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.SingletonSessionStoreProvider;
+import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DataStoreFormatter;
@@ -21,6 +23,24 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     public DataStoreEntry getSyntheticParent(DataStoreEntry store) {
         AbstractServiceStore s = store.getStore().asNeeded();
         return DataStorage.get().getOrCreateNewSyntheticEntry(s.getHost().get(), "Services", ServiceGroupStore.builder().parent(s.getHost()).build());
+    }
+
+    @Override
+    public Comp<?> stateDisplay(StoreEntryWrapper w) {
+        return new SystemStateComp(Bindings.createObjectBinding(
+                () -> {
+                    AbstractServiceStore s = w.getEntry().getStore().asNeeded();
+                    if (!s.requiresTunnel()) {
+                        return SystemStateComp.State.SUCCESS;
+                    }
+
+                    if (!s.isSessionEnabled()) {
+                        return SystemStateComp.State.OTHER;
+                    }
+
+                    return s.isSessionRunning() ? SystemStateComp.State.SUCCESS : SystemStateComp.State.FAILURE;
+                },
+                w.getCache()));
     }
 
     @Override
