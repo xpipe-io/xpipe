@@ -85,7 +85,7 @@ public class StoreSection {
                 }
                 seen.add(wrapper);
 
-                var found = list.getList().stream().filter(section -> wrapper.getEntry().getOrderBefore().equals(section.getWrapper().getEntry().getUuid())).findFirst();
+                var found = list.getList().stream().filter(section -> section.getWrapper().getEntry().getUuid().equals(wrapper.getEntry().getOrderBefore())).findFirst();
                 if (found.isPresent()) {
                     return count(found.get().getWrapper(), seen);
                 } else {

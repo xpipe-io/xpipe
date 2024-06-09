@@ -78,6 +78,7 @@ public class StoreToggleComp extends SimpleComp {
                 StoreViewState.get().toggleStoreListUpdate();
             });
         });
+        t.tooltipKey("showAllChildren");
         t.value.subscribe((newValue) -> {
             val.set(newValue);
         });

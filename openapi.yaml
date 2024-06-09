@@ -8,12 +8,12 @@ info:
     You can change the port of it in the settings menu.
     Note that this server is HTTP-only for now as it runs only on localhost. HTTPS requests are not accepted.
     
-    The main use case for the API right now is programmatically managing remote systems.
+    This allows you to programmatically manage remote systems.
     To start off, you can query connections based on various filters.
     With the matched connections, you can start remote shell sessions for each one and run arbitrary commands in them.
     You get the command exit code and output as a response, allowing you to adapt your control flow based on command outputs.
-    Any kind of passwords another secret are automatically provided by XPipe when establishing a shell connection.
-    If required password is not stored and is set to be dynamically prompted, the running XPipe application will ask you to enter any required passwords.
+    Any kind of passwords and other secrets are automatically provided by XPipe when establishing a shell connection.
+    If a required password is not stored and is set to be dynamically prompted, the running XPipe application will ask you to enter any required passwords.
     
     You can quickly get started by either using this page as an API reference or alternatively import the [OpenAPI definition file](/openapi.yaml) into your API client of choice.
     See the authentication handshake below on how to authenticate prior to sending requests.

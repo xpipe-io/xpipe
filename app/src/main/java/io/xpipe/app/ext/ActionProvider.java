@@ -107,6 +107,8 @@ public interface ActionProvider {
         ObservableValue<String> getName(DataStoreEntryRef<T> store);
 
         String getIcon(DataStoreEntryRef<T> store);
+
+        Class<T> getApplicableClass();
     }
 
     interface BranchDataStoreCallSite<T extends DataStore> extends DataStoreCallSite<T> {
@@ -123,8 +125,6 @@ public interface ActionProvider {
         }
 
         Action createAction(DataStoreEntryRef<T> store);
-
-        Class<T> getApplicableClass();
 
         default boolean requiresValidStore() {
             return true;
