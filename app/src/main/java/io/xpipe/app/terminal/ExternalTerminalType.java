@@ -238,6 +238,35 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     .addFile(configuration.getScriptFile());
         }
     };
+    ExternalTerminalType FOOT = new SimplePathType("app.foot", "foot", true) {
+        @Override
+        public String getWebsite() {
+            return "https://codeberg.org/dnkl/foot";
+        }
+
+        @Override
+        public boolean supportsTabs() {
+            return false;
+        }
+
+        @Override
+        public boolean isRecommended() {
+            return false;
+        }
+
+        @Override
+        public boolean supportsColoredTitle() {
+            return true;
+        }
+
+        @Override
+        protected CommandBuilder toCommand(LaunchConfiguration configuration) {
+            return CommandBuilder.of()
+                    .add("--title")
+                    .addQuoted(configuration.getColoredTitle())
+                    .addFile(configuration.getScriptFile());
+        }
+    };
     ExternalTerminalType ELEMENTARY = new SimplePathType("app.elementaryTerminal", "io.elementary.terminal", true) {
 
         @Override
@@ -262,7 +291,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected CommandBuilder toCommand(LaunchConfiguration configuration) {
-            return CommandBuilder.of().add("--new-tab").add("-e").addFile(configuration.getColoredTitle());
+            return CommandBuilder.of().add("--new-tab").add("-e").addFile(configuration.getScriptFile());
         }
     };
     ExternalTerminalType TILIX = new SimplePathType("app.tilix", "tilix", true) {
@@ -641,6 +670,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             TILDA,
             XTERM,
             DEEPIN_TERMINAL,
+            FOOT,
             Q_TERMINAL);
     List<ExternalTerminalType> MACOS_TERMINALS = List.of(
             KittyTerminalType.KITTY_MACOS,

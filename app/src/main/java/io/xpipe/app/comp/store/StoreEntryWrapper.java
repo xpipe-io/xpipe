@@ -10,6 +10,7 @@ import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
 import lombok.Getter;
 
 import java.time.Duration;
@@ -25,8 +26,8 @@ public class StoreEntryWrapper {
     private final BooleanProperty disabled = new SimpleBooleanProperty();
     private final BooleanProperty busy = new SimpleBooleanProperty();
     private final Property<DataStoreEntry.Validity> validity = new SimpleObjectProperty<>();
-    private final List<ActionProvider> actionProviders;
-    private final Property<ActionProvider.DefaultDataStoreCallSite<?>> defaultActionProvider;
+    private final ListProperty<ActionProvider> actionProviders = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private final Property<ActionProvider> defaultActionProvider = new SimpleObjectProperty<>();
     private final BooleanProperty deletable = new SimpleBooleanProperty();
     private final BooleanProperty expanded = new SimpleBooleanProperty();
     private final Property<Object> persistentState = new SimpleObjectProperty<>();
@@ -40,7 +41,6 @@ public class StoreEntryWrapper {
         this.entry = entry;
         this.name = new SimpleStringProperty(entry.getName());
         this.lastAccess = new SimpleObjectProperty<>(entry.getLastAccess().minus(Duration.ofMillis(500)));
-        this.actionProviders = new ArrayList<>();
         ActionProvider.ALL.stream()
                 .filter(dataStoreActionProvider -> {
                     return !entry.isDisabled()
@@ -55,7 +55,6 @@ public class StoreEntryWrapper {
                 .forEach(dataStoreActionProvider -> {
                     actionProviders.add(dataStoreActionProvider);
                 });
-        this.defaultActionProvider = new SimpleObjectProperty<>();
         this.notes = new SimpleObjectProperty<>(new StoreNotes(entry.getNotes(), entry.getNotes()));
         setupListeners();
     }
@@ -162,22 +161,21 @@ public class StoreEntryWrapper {
                             .isAssignableFrom(entry.getStore().getClass())
                             && e.getDefaultDataStoreCallSite().isApplicable(entry.ref()))
                     .findFirst()
-                    .map(ActionProvider::getDefaultDataStoreCallSite)
                     .orElse(null);
             this.defaultActionProvider.setValue(defaultProvider);
 
-            this.actionProviders.clear();
             try {
-                ActionProvider.ALL.stream()
+                var newProviders = ActionProvider.ALL.stream()
                         .filter(dataStoreActionProvider -> {
-                           return showActionProvider(dataStoreActionProvider);
+                           return !dataStoreActionProvider.equals(defaultProvider) && showActionProvider(dataStoreActionProvider);
                         })
                         .sorted(Comparator.comparing(
                                 actionProvider -> actionProvider.getLeafDataStoreCallSite() != null &&
                                         actionProvider.getLeafDataStoreCallSite().isSystemAction()))
-                        .forEach(dataStoreActionProvider -> {
-                            actionProviders.add(dataStoreActionProvider);
-                        });
+                        .toList();
+                if (!actionProviders.equals(newProviders)) {
+                    actionProviders.setAll(newProviders);
+                }
             } catch (Exception ex) {
                 ErrorEvent.fromThrowable(ex).handle();
             }
@@ -224,7 +222,7 @@ public class StoreEntryWrapper {
         var found = getDefaultActionProvider().getValue();
         entry.notifyUpdate(true, false);
         if (found != null) {
-            found.createAction(entry.ref()).execute();
+            found.getDefaultDataStoreCallSite().createAction(entry.ref()).execute();
         } else {
             entry.setExpanded(!entry.isExpanded());
         }

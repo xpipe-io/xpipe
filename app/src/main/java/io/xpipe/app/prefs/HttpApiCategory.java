@@ -4,11 +4,11 @@ import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.util.OptionsBuilder;
 
-public class HttpServerCategory extends AppPrefsCategory {
+public class HttpApiCategory extends AppPrefsCategory {
 
     @Override
     protected String getId() {
-        return "httpServer";
+        return "httpApi";
     }
 
     @Override

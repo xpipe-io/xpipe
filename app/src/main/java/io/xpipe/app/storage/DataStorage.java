@@ -440,6 +440,7 @@ public abstract class DataStorage {
                 }
             }
         });
+        refreshEntries();
         saveAsync();
         toAdd.forEach(dataStoreEntryRef -> dataStoreEntryRef.get().getProvider().onChildrenRefresh(dataStoreEntryRef.getEntry()));
         toUpdate.forEach(dataStoreEntryRef -> dataStoreEntryRef.getKey().getProvider().onChildrenRefresh(dataStoreEntryRef.getKey()));

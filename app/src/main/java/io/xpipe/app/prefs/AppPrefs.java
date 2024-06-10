@@ -171,7 +171,7 @@ public class AppPrefs {
                         new SshCategory(),
                         new LocalShellCategory(),
                         new SecurityCategory(),
-                        new HttpServerCategory(),
+                        new HttpApiCategory(),
                         new TroubleshootCategory(),
                         new DeveloperCategory())
                 .filter(appPrefsCategory -> appPrefsCategory.show())

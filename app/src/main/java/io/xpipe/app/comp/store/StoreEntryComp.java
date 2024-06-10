@@ -1,5 +1,6 @@
 package io.xpipe.app.comp.store;
 
+import atlantafx.base.layout.InputGroup;
 import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.*;
@@ -9,8 +10,12 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
-import io.xpipe.app.fxcomps.impl.*;
+import io.xpipe.app.fxcomps.impl.IconButtonComp;
+import io.xpipe.app.fxcomps.impl.LabelComp;
+import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
+import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.fxcomps.util.DerivedObservableList;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
@@ -199,40 +204,27 @@ public abstract class StoreEntryComp extends SimpleComp {
         return stack;
     }
 
-    protected Comp<?> createButtonBar() {
-        var list = new ArrayList<Comp<?>>();
-        for (var p : wrapper.getActionProviders()) {
-            var def = p.getDefaultDataStoreCallSite();
-            if (def != null && def.equals(wrapper.getDefaultActionProvider().getValue())) {
-                continue;
-            }
+    protected Region createButtonBar() {
+        var list = new DerivedObservableList<>(wrapper.getActionProviders(), false);
+        var buttons = list.mapped(actionProvider -> {
+            var button = buildButton(actionProvider);
+            return button != null ? button.createRegion() : null;
+        }).filtered(region -> region != null).getList();
 
-            var button = buildButton(p);
-            if (button != null) {
-                list.add(button);
-            }
-        }
-
-        var settingsButton = createSettingsButton();
-        list.add(settingsButton);
-        if (list.size() > 1) {
-            list.getFirst().styleClass(Styles.LEFT_PILL);
-            for (int i = 1; i < list.size() - 1; i++) {
-                list.get(i).styleClass(Styles.CENTER_PILL);
-            }
-            list.getLast().styleClass(Styles.RIGHT_PILL);
-        }
-        list.forEach(comp -> {
-            comp.apply(struc -> {
-                struc.get().getStyleClass().remove(Styles.FLAT);
-            });
-        });
-        return new HorizontalComp(list)
-                .apply(struc -> {
-                    struc.get().setAlignment(Pos.CENTER_RIGHT);
-                    struc.get().setPadding(new Insets(5));
-                })
-                .styleClass("button-bar");
+        var ig = new InputGroup();
+        Runnable update = () -> {
+            var l = new ArrayList<Node>(buttons);
+            var settingsButton = createSettingsButton().createRegion();
+            l.add(settingsButton);
+            l.forEach(o -> o.getStyleClass().remove(Styles.FLAT));
+            ig.getChildren().setAll(l);
+        };
+        buttons.subscribe(update);
+        update.run();
+        ig.setAlignment(Pos.CENTER_RIGHT);
+        ig.setPadding(new Insets(5));
+        ig.getStyleClass().add("button-bar");
+        return ig;
     }
 
     private Comp<?> buildButton(ActionProvider p) {
