@@ -49,7 +49,7 @@ public class StoreToggleComp extends SimpleComp {
     public static <T extends DataStore> StoreToggleComp enableToggle(
             String nameKey, StoreSection section, Function<T, Boolean> initial, BiConsumer<T, Boolean> setter) {
         var val = new SimpleBooleanProperty();
-        ObservableValue<LabelGraphic> g =  val.map(aBoolean -> aBoolean ?
+        ObservableValue<LabelGraphic> g = val.map(aBoolean -> aBoolean ?
                 new LabelGraphic.IconGraphic("mdi2c-circle-slice-8") : new LabelGraphic.IconGraphic("mdi2p-power"));
         var t = new StoreToggleComp(
                 nameKey,
@@ -60,6 +60,7 @@ public class StoreToggleComp extends SimpleComp {
                 v -> {
                     setter.accept(section.getWrapper().getEntry().getStore().asNeeded(), v);
                 });
+        t.tooltipKey("enabled");
         t.value.subscribe((newValue) -> {
             val.set(newValue);
         });

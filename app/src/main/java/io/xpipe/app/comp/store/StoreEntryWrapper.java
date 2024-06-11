@@ -167,7 +167,7 @@ public class StoreEntryWrapper {
             try {
                 var newProviders = ActionProvider.ALL.stream()
                         .filter(dataStoreActionProvider -> {
-                           return !dataStoreActionProvider.equals(defaultProvider) && showActionProvider(dataStoreActionProvider);
+                           return showActionProvider(dataStoreActionProvider);
                         })
                         .sorted(Comparator.comparing(
                                 actionProvider -> actionProvider.getLeafDataStoreCallSite() != null &&

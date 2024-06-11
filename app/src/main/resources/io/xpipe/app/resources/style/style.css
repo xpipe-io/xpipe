@@ -5,11 +5,11 @@
 }
 */
 
-.toggle-switch .label {
+.toggle-switch:has-graphic .label {
     -fx-font-size: 1.7em;
 }
 
-.toggle-switch {
+.toggle-switch:has-graphic {
     -fx-font-size: 0.8em;
 }
 

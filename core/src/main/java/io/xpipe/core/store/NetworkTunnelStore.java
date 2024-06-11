@@ -1,5 +1,7 @@
 package io.xpipe.core.store;
 
+import io.xpipe.core.process.ShellControl;
+
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -118,6 +120,11 @@ public interface NetworkTunnelStore extends DataStore {
                 @Override
                 public int getRemotePort() {
                     return remotePort;
+                }
+
+                @Override
+                public ShellControl getShellControl() {
+                    return null;
                 }
             };
         }

@@ -29,12 +29,12 @@ The XPipe application will start up an HTTP server that can be used to send requ
 You can change the port of it in the settings menu.
 Note that this server is HTTP-only for now as it runs only on localhost. HTTPS requests are not accepted.
 
-The main use case for the API right now is programmatically managing remote systems.
+This allows you to programmatically manage remote systems.
 To start off, you can query connections based on various filters.
 With the matched connections, you can start remote shell sessions for each one and run arbitrary commands in them.
 You get the command exit code and output as a response, allowing you to adapt your control flow based on command outputs.
-Any kind of passwords another secret are automatically provided by XPipe when establishing a shell connection.
-If required password is not stored and is set to be dynamically prompted, the running XPipe application will ask you to enter any required passwords.
+Any kind of passwords and other secrets are automatically provided by XPipe when establishing a shell connection.
+If a required password is not stored and is set to be dynamically prompted, the running XPipe application will ask you to enter any required passwords.
 
 You can quickly get started by either using this page as an API reference or alternatively import the [OpenAPI definition file](/openapi.yaml) into your API client of choice.
 See the authentication handshake below on how to authenticate prior to sending requests.
@@ -102,9 +102,6 @@ Note that for development you can also turn off the required authentication in t
 |---|---|---|---|
 |200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The handshake was successful. The returned token can be used for authentication in this session. The token is valid as long as XPipe is running.|[HandshakeResponse](#schemahandshakeresponse)|
 |400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|None|
-|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
-|403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
-|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
 |500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|None|
 
 <aside class="success">
@@ -152,26 +149,48 @@ headers = {
   'Accept': 'application/json'
 }
 
-r = requests.post('http://localhost:21721/handshake', headers = headers)
+data = """
+{
+  "auth": {
+    "type": "ApiKey",
+    "key": "<API key>"
+  },
+  "client": {
+    "type": "Api",
+    "name": "My client name"
+  }
+}
+"""
+r = requests.post('http://localhost:21721/handshake', headers = headers, data = data)
 
 print(r.json())
 
 ```
 
 ```java
-URL obj = new URL("http://localhost:21721/handshake");
-HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-con.setRequestMethod("POST");
-int responseCode = con.getResponseCode();
-BufferedReader in = new BufferedReader(
-    new InputStreamReader(con.getInputStream()));
-String inputLine;
-StringBuffer response = new StringBuffer();
-while ((inputLine = in.readLine()) != null) {
-    response.append(inputLine);
+var uri = URI.create("http://localhost:21721/handshake");
+var client = HttpClient.newHttpClient();
+var request = HttpRequest
+        .newBuilder()
+        .uri(uri)
+        .header("Content-Type", "application/json")
+        .header("Accept", "application/json")
+        .POST(HttpRequest.BodyPublishers.ofString("""
+{
+  "auth": {
+    "type": "ApiKey",
+    "key": "<API key>"
+  },
+  "client": {
+    "type": "Api",
+    "name": "My client name"
+  }
 }
-in.close();
-System.out.println(response.toString());
+        """))
+        .build();
+var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+System.out.println(response.statusCode());
+System.out.println(response.body());
 
 ```
 
@@ -204,8 +223,19 @@ func main() {
 ```shell
 # You can also use wget
 curl -X POST http://localhost:21721/handshake \
-  -H 'Content-Type: application/json' \
-  -H 'Accept: application/json'
+  -H 'Content-Type: application/json' \  -H 'Accept: application/json' \
+  --data '
+{
+  "auth": {
+    "type": "ApiKey",
+    "key": "<API key>"
+  },
+  "client": {
+    "type": "Api",
+    "name": "My client name"
+  }
+}
+'
 
 ```
 
@@ -326,26 +356,39 @@ headers = {
   'Authorization': 'Bearer {access-token}'
 }
 
-r = requests.post('http://localhost:21721/connection/query', headers = headers)
+data = """
+{
+  "categoryFilter": "*",
+  "connectionFilter": "*",
+  "typeFilter": "*"
+}
+"""
+r = requests.post('http://localhost:21721/connection/query', headers = headers, data = data)
 
 print(r.json())
 
 ```
 
 ```java
-URL obj = new URL("http://localhost:21721/connection/query");
-HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-con.setRequestMethod("POST");
-int responseCode = con.getResponseCode();
-BufferedReader in = new BufferedReader(
-    new InputStreamReader(con.getInputStream()));
-String inputLine;
-StringBuffer response = new StringBuffer();
-while ((inputLine = in.readLine()) != null) {
-    response.append(inputLine);
+var uri = URI.create("http://localhost:21721/connection/query");
+var client = HttpClient.newHttpClient();
+var request = HttpRequest
+        .newBuilder()
+        .uri(uri)
+        .header("Content-Type", "application/json")
+        .header("Accept", "application/json")
+        .header("Authorization", "Bearer {access-token}")
+        .POST(HttpRequest.BodyPublishers.ofString("""
+{
+  "categoryFilter": "*",
+  "connectionFilter": "*",
+  "typeFilter": "*"
 }
-in.close();
-System.out.println(response.toString());
+        """))
+        .build();
+var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+System.out.println(response.statusCode());
+System.out.println(response.body());
 
 ```
 
@@ -379,9 +422,14 @@ func main() {
 ```shell
 # You can also use wget
 curl -X POST http://localhost:21721/connection/query \
-  -H 'Content-Type: application/json' \
-  -H 'Accept: application/json' \
-  -H 'Authorization: Bearer {access-token}'
+  -H 'Content-Type: application/json' \  -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
+  --data '
+{
+  "categoryFilter": "*",
+  "connectionFilter": "*",
+  "typeFilter": "*"
+}
+'
 
 ```
 
@@ -462,26 +510,34 @@ headers = {
   'Authorization': 'Bearer {access-token}'
 }
 
-r = requests.post('http://localhost:21721/shell/start', headers = headers)
+data = """
+{
+  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+}
+"""
+r = requests.post('http://localhost:21721/shell/start', headers = headers, data = data)
 
 print(r.json())
 
 ```
 
 ```java
-URL obj = new URL("http://localhost:21721/shell/start");
-HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-con.setRequestMethod("POST");
-int responseCode = con.getResponseCode();
-BufferedReader in = new BufferedReader(
-    new InputStreamReader(con.getInputStream()));
-String inputLine;
-StringBuffer response = new StringBuffer();
-while ((inputLine = in.readLine()) != null) {
-    response.append(inputLine);
+var uri = URI.create("http://localhost:21721/shell/start");
+var client = HttpClient.newHttpClient();
+var request = HttpRequest
+        .newBuilder()
+        .uri(uri)
+        .header("Content-Type", "application/json")
+        .header("Authorization", "Bearer {access-token}")
+        .POST(HttpRequest.BodyPublishers.ofString("""
+{
+  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
 }
-in.close();
-System.out.println(response.toString());
+        """))
+        .build();
+var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+System.out.println(response.statusCode());
+System.out.println(response.body());
 
 ```
 
@@ -514,8 +570,12 @@ func main() {
 ```shell
 # You can also use wget
 curl -X POST http://localhost:21721/shell/start \
-  -H 'Content-Type: application/json' \
-  -H 'Authorization: Bearer {access-token}'
+  -H 'Content-Type: application/json' \  -H 'Authorization: Bearer {access-token}' \
+  --data '
+{
+  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+}
+'
 
 ```
 
@@ -596,26 +656,34 @@ headers = {
   'Authorization': 'Bearer {access-token}'
 }
 
-r = requests.post('http://localhost:21721/shell/stop', headers = headers)
+data = """
+{
+  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+}
+"""
+r = requests.post('http://localhost:21721/shell/stop', headers = headers, data = data)
 
 print(r.json())
 
 ```
 
 ```java
-URL obj = new URL("http://localhost:21721/shell/stop");
-HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-con.setRequestMethod("POST");
-int responseCode = con.getResponseCode();
-BufferedReader in = new BufferedReader(
-    new InputStreamReader(con.getInputStream()));
-String inputLine;
-StringBuffer response = new StringBuffer();
-while ((inputLine = in.readLine()) != null) {
-    response.append(inputLine);
+var uri = URI.create("http://localhost:21721/shell/stop");
+var client = HttpClient.newHttpClient();
+var request = HttpRequest
+        .newBuilder()
+        .uri(uri)
+        .header("Content-Type", "application/json")
+        .header("Authorization", "Bearer {access-token}")
+        .POST(HttpRequest.BodyPublishers.ofString("""
+{
+  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
 }
-in.close();
-System.out.println(response.toString());
+        """))
+        .build();
+var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+System.out.println(response.statusCode());
+System.out.println(response.body());
 
 ```
 
@@ -648,8 +716,12 @@ func main() {
 ```shell
 # You can also use wget
 curl -X POST http://localhost:21721/shell/stop \
-  -H 'Content-Type: application/json' \
-  -H 'Authorization: Bearer {access-token}'
+  -H 'Content-Type: application/json' \  -H 'Authorization: Bearer {access-token}' \
+  --data '
+{
+  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+}
+'
 
 ```
 
@@ -755,26 +827,37 @@ headers = {
   'Authorization': 'Bearer {access-token}'
 }
 
-r = requests.post('http://localhost:21721/shell/exec', headers = headers)
+data = """
+{
+  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+  "command": "echo $USER"
+}
+"""
+r = requests.post('http://localhost:21721/shell/exec', headers = headers, data = data)
 
 print(r.json())
 
 ```
 
 ```java
-URL obj = new URL("http://localhost:21721/shell/exec");
-HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-con.setRequestMethod("POST");
-int responseCode = con.getResponseCode();
-BufferedReader in = new BufferedReader(
-    new InputStreamReader(con.getInputStream()));
-String inputLine;
-StringBuffer response = new StringBuffer();
-while ((inputLine = in.readLine()) != null) {
-    response.append(inputLine);
+var uri = URI.create("http://localhost:21721/shell/exec");
+var client = HttpClient.newHttpClient();
+var request = HttpRequest
+        .newBuilder()
+        .uri(uri)
+        .header("Content-Type", "application/json")
+        .header("Accept", "application/json")
+        .header("Authorization", "Bearer {access-token}")
+        .POST(HttpRequest.BodyPublishers.ofString("""
+{
+  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+  "command": "echo $USER"
 }
-in.close();
-System.out.println(response.toString());
+        """))
+        .build();
+var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+System.out.println(response.statusCode());
+System.out.println(response.body());
 
 ```
 
@@ -808,9 +891,13 @@ func main() {
 ```shell
 # You can also use wget
 curl -X POST http://localhost:21721/shell/exec \
-  -H 'Content-Type: application/json' \
-  -H 'Accept: application/json' \
-  -H 'Authorization: Bearer {access-token}'
+  -H 'Content-Type: application/json' \  -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
+  --data '
+{
+  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+  "command": "echo $USER"
+}
+'
 
 ```
 

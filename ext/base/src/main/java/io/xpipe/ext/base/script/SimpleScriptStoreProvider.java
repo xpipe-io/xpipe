@@ -1,15 +1,18 @@
 package io.xpipe.ext.base.script;
 
-import io.xpipe.app.comp.base.*;
-import io.xpipe.app.comp.store.*;
+import io.xpipe.app.comp.base.IntegratedTextAreaComp;
+import io.xpipe.app.comp.base.ListSelectorComp;
+import io.xpipe.app.comp.base.SystemStateComp;
+import io.xpipe.app.comp.store.StoreEntryWrapper;
+import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.ext.EnabledParentStoreProvider;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.DataStoreChoiceComp;
 import io.xpipe.app.fxcomps.impl.DataStoreListChoiceComp;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.MarkdownBuilder;
 import io.xpipe.app.util.OptionsBuilder;
@@ -31,7 +34,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class SimpleScriptStoreProvider implements DataStoreProvider {
+public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, DataStoreProvider {
 
     @Override
     public boolean editByDefault() {
@@ -41,30 +44,6 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
     @Override
     public boolean shouldEdit() {
         return true;
-    }
-
-    @Override
-    public StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
-        if (sec.getWrapper().getValidity().getValue() != DataStoreEntry.Validity.COMPLETE) {
-            return new DenseStoreEntryComp(sec.getWrapper(), true, null);
-        }
-
-        var enabled = StoreToggleComp.<SimpleScriptStore>enableToggle(
-                null, sec, s -> s.getState().isEnabled(), (s, aBoolean) -> {
-                    var state = s.getState().toBuilder().enabled(aBoolean).build();
-                    s.setState(state);
-                });
-
-        SimpleScriptStore s = sec.getWrapper().getEntry().getStore().asNeeded();
-        var groupWrapper = StoreViewState.get().getEntryWrapper(s.getGroup().getEntry());
-
-        // Disable selection if parent group is already made enabled
-        enabled.setCustomVisibility(BindingsHelper.map(groupWrapper.getPersistentState(), o -> {
-            ScriptStore.State state = (ScriptStore.State) o;
-            return !state.isEnabled();
-        }));
-
-        return new DenseStoreEntryComp(sec.getWrapper(), true, enabled);
     }
 
     @Override

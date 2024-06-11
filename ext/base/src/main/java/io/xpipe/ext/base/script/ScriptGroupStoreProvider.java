@@ -1,9 +1,10 @@
 package io.xpipe.ext.base.script;
 
-import io.xpipe.app.comp.base.StoreToggleComp;
 import io.xpipe.app.comp.base.SystemStateComp;
-import io.xpipe.app.comp.store.*;
+import io.xpipe.app.comp.store.StoreEntryWrapper;
+import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.ext.EnabledStoreProvider;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.DataStoreChoiceComp;
@@ -18,21 +19,7 @@ import lombok.SneakyThrows;
 
 import java.util.List;
 
-public class ScriptGroupStoreProvider implements DataStoreProvider {
-
-    @Override
-    public StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
-        if (sec.getWrapper().getValidity().getValue() != DataStoreEntry.Validity.COMPLETE) {
-            return new DenseStoreEntryComp(sec.getWrapper(), true, null);
-        }
-
-        var enabled = StoreToggleComp.<ScriptGroupStore>enableToggle(
-                null, sec, s -> s.getState().isEnabled(), (s, aBoolean) -> {
-                    var state = s.getState().toBuilder().enabled(aBoolean).build();
-                    s.setState(state);
-                });
-        return new DenseStoreEntryComp(sec.getWrapper(), true, enabled);
-    }
+public class ScriptGroupStoreProvider implements EnabledStoreProvider, DataStoreProvider {
 
     @Override
     public Comp<?> stateDisplay(StoreEntryWrapper w) {
@@ -87,6 +74,11 @@ public class ScriptGroupStoreProvider implements DataStoreProvider {
     public ObservableValue<String> informationString(StoreEntryWrapper wrapper) {
         ScriptGroupStore scriptStore = wrapper.getEntry().getStore().asNeeded();
         return new SimpleStringProperty(scriptStore.getDescription());
+    }
+
+    @Override
+    public String summaryString(StoreEntryWrapper wrapper) {
+        return "Script group";
     }
 
     @Override

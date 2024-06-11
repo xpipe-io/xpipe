@@ -9,20 +9,21 @@ import io.xpipe.app.util.Validators;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellInitCommand;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.DataStoreState;
+import io.xpipe.core.store.EnabledStoreState;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.StatefulDataStore;
 import io.xpipe.core.util.JacksonizedValue;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Singular;
 import lombok.experimental.SuperBuilder;
-import lombok.extern.jackson.Jacksonized;
 
 import java.util.*;
 
 @SuperBuilder
 @Getter
 @AllArgsConstructor
-public abstract class ScriptStore extends JacksonizedValue implements DataStore, StatefulDataStore<ScriptStore.State> {
+public abstract class ScriptStore extends JacksonizedValue implements DataStore, StatefulDataStore<EnabledStoreState> {
 
     protected final DataStoreEntryRef<ScriptGroupStore> group;
 
@@ -185,8 +186,8 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
     }
 
     @Override
-    public Class<State> getStateClass() {
-        return State.class;
+    public Class<EnabledStoreState> getStateClass() {
+        return EnabledStoreState.class;
     }
 
     @Override
@@ -211,12 +212,4 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
     protected abstract void queryFlattenedScripts(LinkedHashSet<SimpleScriptStore> all);
 
     public abstract List<DataStoreEntryRef<ScriptStore>> getEffectiveScripts();
-
-    @Value
-    @EqualsAndHashCode(callSuper=true)
-    @SuperBuilder(toBuilder = true)
-    @Jacksonized
-    public static class State extends DataStoreState {
-        boolean enabled;
-    }
 }

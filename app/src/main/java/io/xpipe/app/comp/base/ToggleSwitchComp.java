@@ -6,6 +6,7 @@ import io.xpipe.app.fxcomps.util.LabelGraphic;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
+import javafx.css.PseudoClass;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
@@ -44,6 +45,7 @@ public class ToggleSwitchComp extends SimpleComp {
         }
         if (graphic != null) {
             s.graphicProperty().bind(PlatformThread.sync(graphic.map(labelGraphic -> labelGraphic.createGraphicNode())));
+            s.pseudoClassStateChanged(PseudoClass.getPseudoClass("has-graphic"),true);
         }
         return s;
     }

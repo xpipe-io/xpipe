@@ -1,5 +1,7 @@
 package io.xpipe.core.store;
 
+import io.xpipe.core.process.ShellControl;
+
 import java.util.List;
 
 public class SessionChain extends NetworkTunnelSession {
@@ -13,6 +15,10 @@ public class SessionChain extends NetworkTunnelSession {
         sessions.forEach(session -> session.addListener(running -> {
             runningCounter += running ? 1 : -1;
         }));
+    }
+
+    public ShellControl getShellControl() {
+        return sessions.getLast().getShellControl();
     }
 
     public int getLocalPort() {

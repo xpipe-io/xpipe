@@ -32,6 +32,7 @@ open module io.xpipe.ext.base {
     requires static io.xpipe.app;
     requires org.kordamp.ikonli.javafx;
     requires atlantafx.base;
+    requires jdk.jfr;
 
     provides BrowserAction with RunScriptAction,
             FollowLinkAction,
