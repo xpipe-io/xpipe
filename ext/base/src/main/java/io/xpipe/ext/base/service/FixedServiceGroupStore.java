@@ -4,11 +4,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.FixedHierarchyStore;
-import io.xpipe.app.util.Validators;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FixedChildStore;
-import io.xpipe.core.util.JacksonizedValue;
-import io.xpipe.ext.base.GroupStore;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
@@ -22,18 +19,11 @@ import java.util.List;
 @SuperBuilder
 @Jacksonized
 @JsonTypeName("fixedServiceGroup")
-public class FixedServiceGroupStore extends JacksonizedValue implements DataStore, GroupStore<FixedServiceCreatorStore>, FixedHierarchyStore {
-
-    DataStoreEntryRef<? extends FixedServiceCreatorStore> parent;
-
-    @Override
-    public void checkComplete() throws Throwable {
-        Validators.nonNull(parent);
-    }
+public class FixedServiceGroupStore extends AbstractServiceGroupStore<FixedServiceCreatorStore> implements DataStore, FixedHierarchyStore {
 
     @Override
     @SuppressWarnings("unchecked")
     public List<? extends DataStoreEntryRef<? extends FixedChildStore>> listChildren(DataStoreEntry self) throws Exception {
-        return (List<? extends DataStoreEntryRef<? extends FixedChildStore>>) parent.getStore().createFixedServices();
+        return (List<? extends DataStoreEntryRef<? extends FixedChildStore>>) getParent().getStore().createFixedServices();
     }
 }

@@ -12,6 +12,8 @@ public abstract class CommandView implements AutoCloseable {
 
     protected abstract ShellControl getShellControl();
 
+    public abstract CommandView start() throws Exception;
+
     @Override
     public void close() throws Exception {
         getShellControl().close();

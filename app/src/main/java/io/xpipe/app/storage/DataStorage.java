@@ -351,6 +351,7 @@ public abstract class DataStorage {
 
         var oldChildren = getStoreChildren(e);
         var toRemove = oldChildren.stream()
+                .filter(oc -> oc.getStore() instanceof FixedChildStore)
                 .filter(oc -> {
                     var oid = ((FixedChildStore) oc.getStore()).getFixedId();
                     if (oid.isEmpty()) {
@@ -377,6 +378,7 @@ public abstract class DataStorage {
                     }
 
                     return oldChildren.stream()
+                            .filter(oc -> oc.getStore() instanceof FixedChildStore)
                             .filter(oc -> ((FixedChildStore) oc.getStore())
                                     .getFixedId()
                                     .isPresent())
@@ -389,6 +391,7 @@ public abstract class DataStorage {
                 })
                 .toList();
         var toUpdate = oldChildren.stream()
+                .filter(oc -> oc.getStore() instanceof FixedChildStore)
                 .map(oc -> {
                     var oid = ((FixedChildStore) oc.getStore()).getFixedId();
                     if (oid.isEmpty()) {

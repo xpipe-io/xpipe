@@ -13,7 +13,6 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 public abstract class AbstractServiceGroupStoreProvider implements DataStoreProvider {
@@ -25,8 +24,7 @@ public abstract class AbstractServiceGroupStoreProvider implements DataStoreProv
     }
 
     private StoreToggleComp createToggleComp(StoreSection sec) {
-        var enabled = new SimpleBooleanProperty();
-        var t = new StoreToggleComp(null, null, sec, enabled, aBoolean -> {
+        var t = StoreToggleComp.<AbstractServiceGroupStore<?>>enableToggle(null, sec, g -> false, (g, aBoolean) -> {
             var children = DataStorage.get().getStoreChildren(sec.getWrapper().getEntry());
             ThreadHelper.runFailableAsync(() -> {
                 for (DataStoreEntry child : children) {

@@ -4,6 +4,7 @@ import io.xpipe.app.comp.base.SystemStateComp;
 import io.xpipe.app.comp.store.StoreEntryComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreSection;
+import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.SingletonSessionStoreProvider;
 import io.xpipe.app.fxcomps.Comp;
@@ -18,6 +19,17 @@ import javafx.beans.value.ObservableValue;
 import java.util.List;
 
 public abstract class AbstractServiceStoreProvider implements SingletonSessionStoreProvider, DataStoreProvider {
+
+    @Override
+    public ActionProvider.Action launchAction(DataStoreEntry store) {
+        return new ActionProvider.Action() {
+            @Override
+            public void execute() throws Exception {
+                AbstractServiceStore s = store.getStore().asNeeded();
+                s.startSessionIfNeeded();
+            }
+        };
+    }
 
     @Override
     public DataStoreEntry getSyntheticParent(DataStoreEntry store) {
