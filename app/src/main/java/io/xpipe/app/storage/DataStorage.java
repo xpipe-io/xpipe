@@ -1,12 +1,14 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.comp.store.StoreSortMode;
-import io.xpipe.app.ext.DataStorageExtensionProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.*;
+import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.FixedChildStore;
+import io.xpipe.core.store.LocalStore;
+import io.xpipe.core.store.StorePath;
 import io.xpipe.core.util.UuidHelper;
 import javafx.util.Pair;
 import lombok.Getter;
@@ -338,15 +340,15 @@ public abstract class DataStorage {
             return false;
         }
 
-        e.setInRefresh(true);
+        e.incrementBusyCounter();
         List<? extends DataStoreEntryRef<? extends FixedChildStore>> newChildren;
         try {
             newChildren = ((FixedHierarchyStore) (e.getStore())).listChildren(e);
-            e.setInRefresh(false);
         } catch (Exception ex) {
-            e.setInRefresh(false);
             ErrorEvent.fromThrowable(ex).handle();
             return false;
+        } finally {
+            e.decrementBusyCounter();
         }
 
 

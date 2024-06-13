@@ -239,9 +239,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         var button =
                 new IconButtonComp(cs.getIcon(wrapper.getEntry().ref()), leaf != null ? () -> {
                     ThreadHelper.runFailableAsync(() -> {
-                        var action = leaf.createAction(
-                                wrapper.getEntry().ref());
-                        action.execute();
+                        wrapper.runAction(leaf.createAction(wrapper.getEntry().ref()), leaf.showBusy());
                     });
                 } : null);
         if (branch != null) {
@@ -312,26 +310,6 @@ public abstract class StoreEntryComp extends SimpleComp {
             browse.setOnAction(
                     event -> DesktopHelper.browsePathLocal(wrapper.getEntry().getDirectory()));
             contextMenu.getItems().add(browse);
-        }
-
-        if (wrapper.getEntry().getValidity().isUsable()) {
-            var color = new Menu(AppI18n.get("color"), new FontIcon("mdi2f-format-color-fill"));
-            var none = new MenuItem("None");
-            none.setOnAction(event -> {
-                wrapper.getEntry().setColor(null);
-                event.consume();
-            });
-            color.getItems().add(none);
-
-            Arrays.stream(DataStoreColor.values()).forEach(dataStoreColor -> {
-                MenuItem m = new MenuItem(DataStoreFormatter.capitalize(dataStoreColor.getId()));
-                m.setOnAction(event -> {
-                    wrapper.getEntry().setColor(dataStoreColor);
-                    event.consume();
-                });
-                color.getItems().add(m);
-            });
-            contextMenu.getItems().add(color);
         }
 
         if (DataStorage.get().isRootEntry(wrapper.getEntry())) {
@@ -473,9 +451,7 @@ public abstract class StoreEntryComp extends SimpleComp {
             run.textProperty().bind(AppI18n.observable("base.execute"));
             run.setOnAction(event -> {
                 ThreadHelper.runFailableAsync(() -> {
-                    p.getLeafDataStoreCallSite()
-                            .createAction(wrapper.getEntry().ref())
-                            .execute();
+                    wrapper.runAction(leaf.createAction(wrapper.getEntry().ref()), leaf.showBusy());
                 });
             });
             menu.getItems().add(run);
@@ -521,14 +497,12 @@ public abstract class StoreEntryComp extends SimpleComp {
 
             event.consume();
             ThreadHelper.runFailableAsync(() -> {
-                var action = leaf.createAction(wrapper.getEntry().ref());
-                action.execute();
+                wrapper.runAction(leaf.createAction(wrapper.getEntry().ref()), leaf.showBusy());
             });
         });
 
         return item;
     }
-
 
     private static String DEFAULT_NOTES = null;
 

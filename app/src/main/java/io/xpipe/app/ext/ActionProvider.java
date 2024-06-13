@@ -88,6 +88,10 @@ public interface ActionProvider {
         default boolean isApplicable(DataStoreEntryRef<T> o) {
             return true;
         }
+
+        default boolean showBusy() {
+            return true;
+        }
     }
 
     interface DataStoreCallSite<T extends DataStore> {
@@ -109,6 +113,10 @@ public interface ActionProvider {
         String getIcon(DataStoreEntryRef<T> store);
 
         Class<T> getApplicableClass();
+
+        default boolean showBusy() {
+            return true;
+        }
     }
 
     interface BranchDataStoreCallSite<T extends DataStore> extends DataStoreCallSite<T> {

@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -46,8 +47,7 @@ public class DataStoreEntry extends StorageElement {
     @NonFinal
     boolean expanded;
 
-    @NonFinal
-    boolean inRefresh;
+    AtomicInteger busyCounter = new AtomicInteger();
 
     @Getter
     @NonFinal
@@ -323,12 +323,19 @@ public class DataStoreEntry extends StorageElement {
         return getName();
     }
 
-    public void setInRefresh(boolean newRefresh) {
-        var changed = inRefresh != newRefresh;
-        if (changed) {
-            this.inRefresh = newRefresh;
+    public void incrementBusyCounter() {
+        var r = busyCounter.incrementAndGet() == 1;
+        if (r) {
             notifyUpdate(false, false);
         }
+    }
+
+    public boolean decrementBusyCounter() {
+        var r = busyCounter.decrementAndGet() == 0;
+        if (r) {
+            notifyUpdate(false, false);
+        }
+        return r;
     }
 
     public <T extends DataStore> DataStoreEntryRef<T> ref() {
@@ -503,7 +510,7 @@ public class DataStoreEntry extends StorageElement {
 
         try {
             store.checkComplete();
-            setInRefresh(true);
+            incrementBusyCounter();
             if (store instanceof ValidatableStore l) {
                 l.validate();
             } else if (store instanceof FixedHierarchyStore h) {
@@ -512,7 +519,7 @@ public class DataStoreEntry extends StorageElement {
                         .collect(Collectors.toSet());
             }
         } finally {
-            setInRefresh(false);
+            decrementBusyCounter();
         }
     }
 
@@ -547,14 +554,13 @@ public class DataStoreEntry extends StorageElement {
     public void initializeEntry() {
         if (store instanceof ExpandedLifecycleStore lifecycleStore) {
             try {
-                inRefresh = true;
+                incrementBusyCounter();
                 notifyUpdate(false, false);
                 lifecycleStore.initializeValidate();
-                inRefresh = false;
             } catch (Exception e) {
-                inRefresh = false;
                 ErrorEvent.fromThrowable(e).handle();
             } finally {
+                decrementBusyCounter();
                 notifyUpdate(false, false);
             }
         }
@@ -564,12 +570,13 @@ public class DataStoreEntry extends StorageElement {
     public void finalizeEntry() {
         if (store instanceof ExpandedLifecycleStore lifecycleStore) {
             try {
-                inRefresh = true;
+                incrementBusyCounter();
                 notifyUpdate(false, false);
                 lifecycleStore.finalizeValidate();
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).handle();
             } finally {
+                decrementBusyCounter();
                 notifyUpdate(false, false);
             }
         }

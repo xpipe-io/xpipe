@@ -130,7 +130,7 @@ public class StoreEntryWrapper {
         color.setValue(entry.getColor());
         notes.setValue(new StoreNotes(entry.getNotes(), entry.getNotes()));
 
-        busy.setValue(entry.isInRefresh());
+        busy.setValue(entry.getBusyCounter().get() != 0);
         deletable.setValue(entry.getConfiguration().isDeletable()
                 || AppPrefs.get().developerDisableGuiRestrictions().getValue());
 
@@ -222,9 +222,23 @@ public class StoreEntryWrapper {
         var found = getDefaultActionProvider().getValue();
         entry.notifyUpdate(true, false);
         if (found != null) {
-            found.getDefaultDataStoreCallSite().createAction(entry.ref()).execute();
+            var act = found.getDefaultDataStoreCallSite().createAction(entry.ref());
+            runAction(act,found.getDefaultDataStoreCallSite().showBusy());
         } else {
             entry.setExpanded(!entry.isExpanded());
+        }
+    }
+
+    public void runAction(ActionProvider.Action action, boolean showBusy) throws Exception {
+        try {
+            if (showBusy) {
+                getEntry().incrementBusyCounter();
+            }
+            action.execute();
+        } finally {
+            if (showBusy) {
+                getEntry().decrementBusyCounter();
+            }
         }
     }
 
