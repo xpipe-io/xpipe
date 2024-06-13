@@ -1,6 +1,7 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.comp.store.StoreSortMode;
+import io.xpipe.app.ext.DataStorageExtensionProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.FixedHierarchyStore;
@@ -552,7 +553,6 @@ public abstract class DataStorage {
         for (DataStoreEntry e : toAdd) {
             var syntheticParent = getSyntheticParent(e);
             if (syntheticParent.isPresent()) {
-                var exists =
                 addStoreEntryIfNotPresent(syntheticParent.get());
             }
 
