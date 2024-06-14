@@ -44,7 +44,7 @@ public class StoreIntroComp extends SimpleComp {
         text.setSpacing(5);
         text.setAlignment(Pos.CENTER_LEFT);
         var hbox = new HBox(img, text);
-        hbox.setSpacing(35);
+        hbox.setSpacing(55);
         hbox.setAlignment(Pos.CENTER);
 
         var v = new VBox(hbox, scanPane);
@@ -68,7 +68,7 @@ public class StoreIntroComp extends SimpleComp {
         var importDesc = new Label();
         importDesc.textProperty().bind(AppI18n.observable("storeIntroImportDescription"));
         importDesc.setWrapText(true);
-        importDesc.setMaxWidth(550);
+        importDesc.setMaxWidth(470);
 
         var importButton = new Button(null, new FontIcon("mdi2g-git"));
         importButton.textProperty().bind(AppI18n.observable("importConnections"));
@@ -76,7 +76,10 @@ public class StoreIntroComp extends SimpleComp {
         var importPane = new StackPane(importButton);
         importPane.setAlignment(Pos.CENTER);
 
-        var img = new Region();
+        var fi = new FontIcon("mdi2g-git");
+        fi.setIconSize(80);
+        var img = new StackPane(fi);
+        img.setPrefWidth(100);
         img.setPrefHeight(150);
         var text = new VBox(title, importDesc);
         text.setSpacing(5);

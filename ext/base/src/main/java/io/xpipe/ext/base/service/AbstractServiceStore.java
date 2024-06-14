@@ -30,6 +30,7 @@ public abstract class AbstractServiceStore extends JacksonizedValue implements S
 
     @Override
     public NetworkTunnelSession newSession() throws Exception {
+        ServiceLicenseCheck.check();
         var l = localPort != null ? localPort : HostHelper.findRandomOpenPortOnAllLocalInterfaces();
         return getHost().getStore().sessionChain(l, remotePort);
     }
