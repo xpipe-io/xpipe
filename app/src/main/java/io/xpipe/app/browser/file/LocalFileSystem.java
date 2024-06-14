@@ -4,7 +4,6 @@ import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.store.LocalStore;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -19,13 +18,13 @@ public class LocalFileSystem {
         }
     }
 
-    public static FileSystem.FileEntry getLocalFileEntry(Path file) throws IOException {
+    public static FileSystem.FileEntry getLocalFileEntry(Path file) throws Exception {
         if (localFileSystem == null) {
             throw new IllegalStateException();
         }
 
         return new FileSystem.FileEntry(
-                localFileSystem,
+                localFileSystem.open(),
                 file.toString(),
                 Files.getLastModifiedTime(file).toInstant(),
                 Files.isHidden(file),

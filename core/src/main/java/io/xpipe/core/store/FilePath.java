@@ -42,7 +42,6 @@ public final class FilePath {
             return this;
         }
 
-        var backslash = value.contains("\\");
         var p = Pattern.compile("[^/\\\\]+");
         var m = p.matcher(value);
         var replaced = m.replaceAll(matchResult -> osType.makeFileSystemCompatible(matchResult.group()));

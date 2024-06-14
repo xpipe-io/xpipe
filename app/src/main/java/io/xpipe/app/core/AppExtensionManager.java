@@ -72,7 +72,7 @@ public class AppExtensionManager {
     private void loadBaseExtension() {
         var baseModule = findAndParseExtension("base", ModuleLayer.boot());
         if (baseModule.isEmpty()) {
-            throw new ExtensionException("Missing base module. Is the installation corrupt?");
+            throw new ExtensionException("Missing base module. Is the installation data corrupt?");
         }
 
         baseLayer = baseModule.get().getModule().getLayer();

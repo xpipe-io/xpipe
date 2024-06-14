@@ -13,6 +13,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
+import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,11 +66,11 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             VBox listView, List<? extends T> shown, List<? extends T> all, Map<T, Region> cache, boolean asynchronous) {
         Runnable update = () -> {
             // Clear cache of unused values
-            if (cache.keySet().removeIf(t -> !all.contains(t))) {
-                int a = 0;
-            }
+            cache.keySet().removeIf(t -> !all.contains(t));
 
-            var newShown = shown.stream()
+            // Create copy to reduce chances of concurrent modification
+            var shownCopy = new ArrayList<>(shown);
+            var newShown = shownCopy.stream()
                     .map(v -> {
                         if (!cache.containsKey(v)) {
                             var comp = compFunction.apply(v);

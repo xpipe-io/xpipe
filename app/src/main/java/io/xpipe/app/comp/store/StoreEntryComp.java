@@ -262,7 +262,7 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     protected Comp<?> createSettingsButton() {
-        var settingsButton = new IconButtonComp("mdi2d-dots-horizontal-circle-outline", () -> {});
+        var settingsButton = new IconButtonComp("mdi2d-dots-horizontal-circle-outline", null);
         settingsButton.styleClass("settings");
         settingsButton.accessibleText("More");
         settingsButton.apply(new ContextMenuAugment<>(

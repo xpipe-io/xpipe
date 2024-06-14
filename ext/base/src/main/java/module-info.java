@@ -59,10 +59,10 @@ open module io.xpipe.ext.base {
             JavapAction,
             JarAction;
     provides ActionProvider with ServiceOpenAction, ServiceCopyUrlAction,
-            CloneStoreAction, RefreshChildrenStoreAction, ScanStoreAction, LaunchStoreAction,
+            CloneStoreAction, RefreshChildrenStoreAction, LaunchStoreAction,
             XPipeUrlAction,
             EditStoreAction, DeleteChildrenStoreAction,
-            BrowseStoreAction;
+            BrowseStoreAction, ScanStoreAction;
     provides DataStoreProvider with FixedServiceGroupStoreProvider, ServiceGroupStoreProvider, CustomServiceStoreProvider, MappedServiceStoreProvider, FixedServiceStoreProvider, SimpleScriptStoreProvider, DesktopEnvironmentStoreProvider, DesktopApplicationStoreProvider, DesktopCommandStoreProvider, ScriptGroupStoreProvider;
     provides DataStorageExtensionProvider with ScriptDataStorageProvider;
 }

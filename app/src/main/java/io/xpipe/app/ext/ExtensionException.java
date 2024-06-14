@@ -21,6 +21,6 @@ public class ExtensionException extends RuntimeException {
     }
 
     public static ExtensionException corrupt(String message) {
-        return new ExtensionException(message + ". Is the installation corrupt?");
+        return new ExtensionException(message + ". Is the installation data corrupt?");
     }
 }
