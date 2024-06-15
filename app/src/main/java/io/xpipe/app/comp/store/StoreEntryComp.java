@@ -1,5 +1,6 @@
 package io.xpipe.app.comp.store;
 
+import atlantafx.base.layout.InputGroup;
 import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.*;
@@ -9,8 +10,12 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
-import io.xpipe.app.fxcomps.impl.*;
+import io.xpipe.app.fxcomps.impl.IconButtonComp;
+import io.xpipe.app.fxcomps.impl.LabelComp;
+import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
+import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.fxcomps.util.DerivedObservableList;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
@@ -199,63 +204,65 @@ public abstract class StoreEntryComp extends SimpleComp {
         return stack;
     }
 
-    protected Comp<?> createButtonBar() {
-        var list = new ArrayList<Comp<?>>();
-        for (var p : wrapper.getActionProviders().entrySet()) {
-            var actionProvider = p.getKey().getDataStoreCallSite();
-            if (!actionProvider.isMajor(wrapper.getEntry().ref())) {
-                continue;
-            }
+    protected Region createButtonBar() {
+        var list = new DerivedObservableList<>(wrapper.getActionProviders(), false);
+        var buttons = list.mapped(actionProvider -> {
+            var button = buildButton(actionProvider);
+            return button != null ? button.createRegion() : null;
+        }).filtered(region -> region != null).getList();
 
-            var def = p.getKey().getDefaultDataStoreCallSite();
-            if (def != null && def.equals(wrapper.getDefaultActionProvider().getValue())) {
-                continue;
-            }
+        var ig = new InputGroup();
+        Runnable update = () -> {
+            var l = new ArrayList<Node>(buttons);
+            var settingsButton = createSettingsButton().createRegion();
+            l.add(settingsButton);
+            l.forEach(o -> o.getStyleClass().remove(Styles.FLAT));
+            ig.getChildren().setAll(l);
+        };
+        buttons.subscribe(update);
+        update.run();
+        ig.setAlignment(Pos.CENTER_RIGHT);
+        ig.setPadding(new Insets(5));
+        ig.getStyleClass().add("button-bar");
+        return ig;
+    }
 
-            var button =
-                    new IconButtonComp(actionProvider.getIcon(wrapper.getEntry().ref()), () -> {
-                        ThreadHelper.runFailableAsync(() -> {
-                            var action = actionProvider.createAction(
-                                    wrapper.getEntry().ref());
-                            action.execute();
-                        });
+    private Comp<?> buildButton(ActionProvider p) {
+        var leaf = p.getLeafDataStoreCallSite();
+        var branch = p.getBranchDataStoreCallSite();
+        var cs = leaf != null ? leaf : branch;
+
+        if (cs == null || !cs.isMajor(wrapper.getEntry().ref())) {
+            return null;
+        }
+
+        var button =
+                new IconButtonComp(cs.getIcon(wrapper.getEntry().ref()), leaf != null ? () -> {
+                    ThreadHelper.runFailableAsync(() -> {
+                        wrapper.runAction(leaf.createAction(wrapper.getEntry().ref()), leaf.showBusy());
                     });
-            button.accessibleText(
-                    actionProvider.getName(wrapper.getEntry().ref()).getValue());
-            button.apply(new TooltipAugment<>(
-                    actionProvider.getName(wrapper.getEntry().ref()), null));
-            if (actionProvider.activeType() == ActionProvider.DataStoreCallSite.ActiveType.ONLY_SHOW_IF_ENABLED) {
-                button.hide(Bindings.not(p.getValue()));
-            } else if (actionProvider.activeType() == ActionProvider.DataStoreCallSite.ActiveType.ALWAYS_SHOW) {
-                button.disable(Bindings.not(p.getValue()));
-            }
-            list.add(button);
+                } : null);
+        if (branch != null) {
+            button.apply(new ContextMenuAugment<>(mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY,keyEvent -> false,() -> {
+                var cm = ContextMenuHelper.create();
+                branch.getChildren().forEach(childProvider -> {
+                    var menu = buildMenuItemForAction(childProvider);
+                    if (menu != null) {
+                        cm.getItems().add(menu);
+                    }
+                });
+                return cm;
+            }));
         }
-
-        var settingsButton = createSettingsButton();
-        list.add(settingsButton);
-        if (list.size() > 1) {
-            list.getFirst().styleClass(Styles.LEFT_PILL);
-            for (int i = 1; i < list.size() - 1; i++) {
-                list.get(i).styleClass(Styles.CENTER_PILL);
-            }
-            list.getLast().styleClass(Styles.RIGHT_PILL);
-        }
-        list.forEach(comp -> {
-            comp.apply(struc -> {
-                struc.get().getStyleClass().remove(Styles.FLAT);
-            });
-        });
-        return new HorizontalComp(list)
-                .apply(struc -> {
-                    struc.get().setAlignment(Pos.CENTER_RIGHT);
-                    struc.get().setPadding(new Insets(5));
-                })
-                .styleClass("button-bar");
+        button.accessibleText(
+                cs.getName(wrapper.getEntry().ref()).getValue());
+        button.apply(new TooltipAugment<>(
+                cs.getName(wrapper.getEntry().ref()), null));
+        return button;
     }
 
     protected Comp<?> createSettingsButton() {
-        var settingsButton = new IconButtonComp("mdi2d-dots-horizontal-circle-outline", () -> {});
+        var settingsButton = new IconButtonComp("mdi2d-dots-horizontal-circle-outline", null);
         settingsButton.styleClass("settings");
         settingsButton.accessibleText("More");
         settingsButton.apply(new ContextMenuAugment<>(
@@ -271,103 +278,21 @@ public abstract class StoreEntryComp extends SimpleComp {
         AppFont.normal(contextMenu.getStyleableNode());
 
         var hasSep = false;
-        for (var p : wrapper.getActionProviders().entrySet()) {
-            var actionProvider = p.getKey().getDataStoreCallSite();
-            if (actionProvider.isMajor(wrapper.getEntry().ref())) {
+        for (var p : wrapper.getActionProviders()) {
+            var item = buildMenuItemForAction(p);
+            if (item == null) {
                 continue;
             }
 
-            if (actionProvider.isSystemAction() && !hasSep) {
+            if (p.getLeafDataStoreCallSite() != null && p.getLeafDataStoreCallSite().isSystemAction() && !hasSep) {
                 if (contextMenu.getItems().size() > 0) {
                     contextMenu.getItems().add(new SeparatorMenuItem());
                 }
                 hasSep = true;
             }
 
-            var name = actionProvider.getName(wrapper.getEntry().ref());
-            var icon = actionProvider.getIcon(wrapper.getEntry().ref());
-            var item = actionProvider.canLinkTo()
-                    ? new Menu(null, new FontIcon(icon))
-                    : new MenuItem(null, new FontIcon(icon));
-
-            var proRequired = p.getKey().getProFeatureId() != null
-                    && !LicenseProvider.get()
-                            .getFeature(p.getKey().getProFeatureId())
-                            .isSupported();
-            if (proRequired) {
-                item.setDisable(true);
-                item.textProperty().bind(Bindings.createStringBinding(() -> name.getValue() + " (Pro)", name));
-            } else {
-                item.textProperty().bind(name);
-            }
-
-            Menu menu = actionProvider.canLinkTo() ? (Menu) item : null;
-            item.setOnAction(event -> {
-                if (menu != null && !event.getTarget().equals(menu)) {
-                    return;
-                }
-
-                if (menu != null && menu.isDisable()) {
-                    return;
-                }
-
-                contextMenu.hide();
-                ThreadHelper.runFailableAsync(() -> {
-                    var action = actionProvider.createAction(wrapper.getEntry().ref());
-                    action.execute();
-                });
-            });
-            if (actionProvider.activeType() == ActionProvider.DataStoreCallSite.ActiveType.ONLY_SHOW_IF_ENABLED) {
-                item.visibleProperty().bind(p.getValue());
-            } else if (actionProvider.activeType() == ActionProvider.DataStoreCallSite.ActiveType.ALWAYS_SHOW) {
-                item.disableProperty().bind(Bindings.not(p.getValue()));
-            }
             contextMenu.getItems().add(item);
-
-            if (menu != null) {
-                var run = new MenuItem(null, new FontIcon("mdi2c-code-greater-than"));
-                run.textProperty().bind(AppI18n.observable("base.execute"));
-                run.setOnAction(event -> {
-                    ThreadHelper.runFailableAsync(() -> {
-                        p.getKey()
-                                .getDataStoreCallSite()
-                                .createAction(wrapper.getEntry().ref())
-                                .execute();
-                    });
-                });
-                menu.getItems().add(run);
-
-                var sc = new MenuItem(null, new FontIcon("mdi2c-code-greater-than"));
-                var url = "xpipe://action/" + p.getKey().getId() + "/"
-                        + wrapper.getEntry().getUuid();
-                sc.textProperty().bind(AppI18n.observable("base.createShortcut"));
-                sc.setOnAction(event -> {
-                    ThreadHelper.runFailableAsync(() -> {
-                        DesktopShortcuts.create(
-                                url,
-                                wrapper.nameProperty().getValue() + " ("
-                                        + p.getKey()
-                                                .getDataStoreCallSite()
-                                                .getName(wrapper.getEntry().ref())
-                                                .getValue() + ")");
-                    });
-                });
-                menu.getItems().add(sc);
-
-                if (XPipeDistributionType.get().isSupportsUrls()) {
-                    var l = new MenuItem(null, new FontIcon("mdi2c-clipboard-list-outline"));
-                    l.textProperty().bind(AppI18n.observable("base.copyShareLink"));
-                    l.setOnAction(event -> {
-                        ThreadHelper.runFailableAsync(() -> {
-                            AppActionLinkDetector.setLastDetectedAction(url);
-                            ClipboardHelper.copyUrl(url);
-                        });
-                    });
-                    menu.getItems().add(l);
-                }
-            }
         }
-
         if (contextMenu.getItems().size() > 0 && !hasSep) {
             contextMenu.getItems().add(new SeparatorMenuItem());
         }
@@ -385,6 +310,11 @@ public abstract class StoreEntryComp extends SimpleComp {
             browse.setOnAction(
                     event -> DesktopHelper.browsePathLocal(wrapper.getEntry().getDirectory()));
             contextMenu.getItems().add(browse);
+
+            var copyId = new MenuItem(AppI18n.get("copyId"), new FontIcon("mdi2c-content-copy"));
+            copyId.setOnAction(
+                    event -> ClipboardHelper.copyText(wrapper.getEntry().getUuid().toString()));
+            contextMenu.getItems().add(copyId);
         }
 
         if (DataStorage.get().isRootEntry(wrapper.getEntry())) {
@@ -418,7 +348,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                             wrapper.moveTo(storeCategoryWrapper.getCategory());
                             event.consume();
                         });
-                        if (storeCategoryWrapper.getParent() == null) {
+                        if (storeCategoryWrapper.getParent() == null || storeCategoryWrapper.equals(wrapper.getCategory().getValue())) {
                             m.setDisable(true);
                         }
 
@@ -490,6 +420,94 @@ public abstract class StoreEntryComp extends SimpleComp {
         return contextMenu;
     }
 
+    private MenuItem buildMenuItemForAction(ActionProvider p) {
+        var leaf = p.getLeafDataStoreCallSite();
+        var branch = p.getBranchDataStoreCallSite();
+        var cs = leaf != null ? leaf : branch;
+
+        if (cs == null || cs.isMajor(wrapper.getEntry().ref())) {
+            return null;
+        }
+
+        var name = cs.getName(wrapper.getEntry().ref());
+        var icon = cs.getIcon(wrapper.getEntry().ref());
+        var item = (leaf != null && leaf.canLinkTo()) || branch != null
+                ? new Menu(null, new FontIcon(icon))
+                : new MenuItem(null, new FontIcon(icon));
+
+        var proRequired = p.getProFeatureId() != null
+                && !LicenseProvider.get()
+                .getFeature(p.getProFeatureId())
+                .isSupported();
+        if (proRequired) {
+            item.setDisable(true);
+            item.textProperty().bind(Bindings.createStringBinding(() -> name.getValue() + " (Pro)", name));
+        } else {
+            item.textProperty().bind(name);
+        }
+        Menu menu = item instanceof Menu m ? m : null;
+
+        if (branch != null) {
+            var items = branch.getChildren().stream().map(c -> buildMenuItemForAction(c)).toList();
+            menu.getItems().addAll(items);
+            return menu;
+        } else if (leaf.canLinkTo()) {
+            var run = new MenuItem(null, new FontIcon("mdi2c-code-greater-than"));
+            run.textProperty().bind(AppI18n.observable("base.execute"));
+            run.setOnAction(event -> {
+                ThreadHelper.runFailableAsync(() -> {
+                    wrapper.runAction(leaf.createAction(wrapper.getEntry().ref()), leaf.showBusy());
+                });
+            });
+            menu.getItems().add(run);
+
+            var sc = new MenuItem(null, new FontIcon("mdi2c-code-greater-than"));
+            var url = "xpipe://action/" + p.getId() + "/"
+                    + wrapper.getEntry().getUuid();
+            sc.textProperty().bind(AppI18n.observable("base.createShortcut"));
+            sc.setOnAction(event -> {
+                ThreadHelper.runFailableAsync(() -> {
+                    DesktopShortcuts.create(
+                            url,
+                            wrapper.nameProperty().getValue() + " ("
+                                    + p
+                                    .getLeafDataStoreCallSite()
+                                    .getName(wrapper.getEntry().ref())
+                                    .getValue() + ")");
+                });
+            });
+            menu.getItems().add(sc);
+
+            if (XPipeDistributionType.get().isSupportsUrls()) {
+                var l = new MenuItem(null, new FontIcon("mdi2c-clipboard-list-outline"));
+                l.textProperty().bind(AppI18n.observable("base.copyShareLink"));
+                l.setOnAction(event -> {
+                    ThreadHelper.runFailableAsync(() -> {
+                        AppActionLinkDetector.setLastDetectedAction(url);
+                        ClipboardHelper.copyUrl(url);
+                    });
+                });
+                menu.getItems().add(l);
+            }
+        }
+
+        item.setOnAction(event -> {
+            if (menu != null && !event.getTarget().equals(menu)) {
+                return;
+            }
+
+            if (menu != null && menu.isDisable()) {
+                return;
+            }
+
+            event.consume();
+            ThreadHelper.runFailableAsync(() -> {
+                wrapper.runAction(leaf.createAction(wrapper.getEntry().ref()), leaf.showBusy());
+            });
+        });
+
+        return item;
+    }
 
     private static String DEFAULT_NOTES = null;
 

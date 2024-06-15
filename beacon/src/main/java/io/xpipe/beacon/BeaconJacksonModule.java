@@ -8,8 +8,11 @@ public class BeaconJacksonModule extends SimpleModule {
     @Override
     public void setupModule(SetupContext context) {
         context.registerSubtypes(
-                new NamedType(BeaconClient.ApiClientInformation.class),
-                new NamedType(BeaconClient.CliClientInformation.class),
-                new NamedType(BeaconClient.DaemonInformation.class));
+                new NamedType(BeaconClientInformation.Api.class),
+                new NamedType(BeaconClientInformation.Cli.class),
+                new NamedType(BeaconClientInformation.Daemon.class));
+        context.registerSubtypes(
+                new NamedType(BeaconAuthMethod.Local.class),
+                new NamedType(BeaconAuthMethod.ApiKey.class));
     }
 }

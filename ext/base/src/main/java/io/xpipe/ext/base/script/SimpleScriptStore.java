@@ -1,12 +1,14 @@
 package io.xpipe.ext.base.script;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellInitCommand;
+import io.xpipe.core.util.ValidationException;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -25,8 +27,11 @@ public class SimpleScriptStore extends ScriptStore implements ShellInitCommand.T
 
     private final ShellDialect minimumDialect;
     private final String commands;
+    private final boolean initScript;
+    private final boolean shellScript;
+    private final boolean fileScript;
 
-    private String assemble(ShellControl shellControl) {
+    public String assemble(ShellControl shellControl) {
         var targetType = shellControl.getOriginalShellDialect();
         if (minimumDialect.isCompatibleTo(targetType)) {
             var shebang = commands.startsWith("#");
@@ -47,6 +52,9 @@ public class SimpleScriptStore extends ScriptStore implements ShellInitCommand.T
         Validators.nonNull(group);
         super.checkComplete();
         Validators.nonNull(minimumDialect);
+        if (!initScript && !shellScript && !fileScript) {
+            throw new ValidationException(AppI18n.get("app.valueMustNotBeEmpty"));
+        }
     }
 
     public void queryFlattenedScripts(LinkedHashSet<SimpleScriptStore> all) {

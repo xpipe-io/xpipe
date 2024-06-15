@@ -6,6 +6,14 @@ import java.util.Locale;
 
 public class HostHelper {
 
+    private static int portCounter = 0;
+
+    public static int randomPort() {
+        var p = 40000 + portCounter;
+        portCounter = portCounter + 1 % 1000;
+        return p;
+    }
+
     public static int findRandomOpenPortOnAllLocalInterfaces() throws IOException {
         try (ServerSocket socket = new ServerSocket(0)) {
             return socket.getLocalPort();

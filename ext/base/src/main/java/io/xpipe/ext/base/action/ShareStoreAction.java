@@ -16,8 +16,8 @@ import lombok.Value;
 public class ShareStoreAction implements ActionProvider {
 
     @Override
-    public DataStoreCallSite<?> getDataStoreCallSite() {
-        return new DataStoreCallSite<>() {
+    public LeafDataStoreCallSite<?> getLeafDataStoreCallSite() {
+        return new LeafDataStoreCallSite<>() {
 
             @Override
             public ActionProvider.Action createAction(DataStoreEntryRef<DataStore> store) {
@@ -53,11 +53,6 @@ public class ShareStoreAction implements ActionProvider {
 
         public static String create(DataStore store) {
             return "xpipe://addStore/" + InPlaceSecretValue.of(store.toString()).getEncryptedValue();
-        }
-
-        @Override
-        public boolean requiresJavaFXPlatform() {
-            return false;
         }
 
         @Override

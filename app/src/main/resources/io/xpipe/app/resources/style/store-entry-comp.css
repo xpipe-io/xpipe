@@ -68,11 +68,11 @@
     -fx-background-color: -color-neutral-muted;
 }
 
-.store-entry-comp .button-bar, .store-entry-comp .dropdown-comp {
+.store-entry-comp .button-bar, .store-entry-comp .dropdown-comp, .store-entry-comp .toggle-switch-comp {
     -fx-opacity: 0.65;
 }
 
-.store-entry-comp:hover .button-bar, .store-entry-comp:hover .dropdown-comp {
+.store-entry-comp:hover .button-bar, .store-entry-comp:hover .dropdown-comp, .store-entry-comp:hover .toggle-switch-comp {
     -fx-opacity: 1.0;
 }
 

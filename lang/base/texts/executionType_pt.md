@@ -1,15 +1,50 @@
-## Tipos de execução
+# Tipos de execução
 
-Existem dois tipos de execução distintos quando o XPipe se liga a um sistema.
+Podes utilizar um script em vários cenários diferentes.
 
-### Em segundo plano
+Ao ativar um script, os tipos de execução ditam o que o XPipe fará com o script.
 
-A primeira conexão com um sistema é feita em segundo plano em uma sessão de terminal burro.
+## Scripts de inicialização
 
-Os comandos de bloqueio que requerem a entrada do usuário podem congelar o processo do shell quando o XPipe o inicia internamente primeiro em segundo plano. Para evitar isso, só deves chamar estes comandos de bloqueio no modo terminal.
+Quando um script é designado como script de inicialização, ele pode ser selecionado em ambientes shell.
 
-O navegador de ficheiros, por exemplo, utiliza inteiramente o modo de fundo burro para tratar das suas operações, por isso, se quiseres que o teu ambiente de script se aplique à sessão do navegador de ficheiros, deve ser executado no modo burro.
+Além disso, se um script é habilitado, ele será automaticamente executado no init em todos os shells compatíveis.
 
-### Nos terminais
+Por exemplo, se criares um script de inicialização simples como
+```
+alias ll="ls -l"
+alias la="ls -A"
+alias l="ls -CF"
+```
+terás acesso a estes aliases em todas as sessões de shell compatíveis se o script estiver ativado.
 
-Depois que a conexão inicial do terminal burro for bem-sucedida, o XPipe abrirá uma conexão separada no terminal real. Se quiseres que o script seja executado quando abrires a ligação num terminal, então escolhe o modo terminal.
+## Scripts de shell
+
+Um script de shell normal destina-se a ser chamado numa sessão de shell no teu terminal.
+Quando ativado, o script será copiado para o sistema alvo e colocado no PATH em todas as shells compatíveis.
+Isto permite-te chamar o script a partir de qualquer lugar numa sessão de terminal.
+O nome do script será escrito em minúsculas e os espaços serão substituídos por sublinhados, permitindo-te chamar facilmente o script.
+
+Por exemplo, se criares um script de shell simples chamado `apti` como
+```
+sudo apt install "$1"
+```
+podes chamar isso em qualquer sistema compatível com `apti.sh <pkg>` se o script estiver ativado.
+
+## Scripts de ficheiros
+
+Por último, também podes executar scripts personalizados com entradas de ficheiros a partir da interface do navegador de ficheiros.
+Quando um script de arquivo estiver habilitado, ele aparecerá no navegador de arquivos para ser executado com entradas de arquivo.
+
+Por exemplo, se criares um script de arquivo simples como
+```
+sudo apt install "$@"
+```
+podes executar o script em ficheiros seleccionados se o script estiver ativado.
+
+## Vários tipos
+
+Como o script de arquivo de exemplo é o mesmo que o script de shell de exemplo acima,
+vês que também podes assinalar várias caixas para os tipos de execução de um script, se estes tiverem de ser usados em vários cenários.
+
+

@@ -89,7 +89,17 @@ public interface OsType {
 
         @Override
         public String getTempDirectory(ShellControl pc) throws Exception {
-            return pc.executeSimpleStringCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("TEMP"));
+            var def = pc.executeSimpleStringCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("TEMP"));
+            if (!def.isBlank() && pc.getShellDialect().directoryExists(pc, def).executeAndCheck()) {
+                return def;
+            }
+
+            var fallback = pc.executeSimpleStringCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("LOCALAPPDATA"));
+            if (!fallback.isBlank() && pc.getShellDialect().directoryExists(pc, fallback).executeAndCheck()) {
+                return fallback;
+            }
+
+            return def;
         }
 
         @Override
@@ -116,7 +126,7 @@ public interface OsType {
                                 .trim();
             } catch (Throwable t) {
                 // Just in case this fails somehow
-                return "Windows ?";
+                return "Windows";
             }
         }
     }

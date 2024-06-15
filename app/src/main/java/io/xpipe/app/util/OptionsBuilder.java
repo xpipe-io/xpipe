@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class OptionsBuilder {
@@ -146,6 +147,11 @@ public class OptionsBuilder {
         return this;
     }
 
+    public OptionsBuilder check(Function<Validator, Check> c) {
+        lastCompHeadReference.apply(s -> c.apply(ownValidator).decorates(s.get()));
+        return this;
+    }
+
     public OptionsBuilder check(Check c) {
         lastCompHeadReference.apply(s -> c.decorates(s.get()));
         return this;
@@ -221,7 +227,7 @@ public class OptionsBuilder {
     }
 
     public OptionsBuilder addToggle(Property<Boolean> prop) {
-        var comp = new ToggleSwitchComp(prop, null);
+        var comp = new ToggleSwitchComp(prop, null, null);
         pushComp(comp);
         props.add(prop);
         return this;

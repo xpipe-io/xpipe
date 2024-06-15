@@ -1,15 +1,50 @@
-## Uitvoeringstypes
+# Uitvoeringstypen
 
-Er zijn twee verschillende uitvoeringstypen wanneer XPipe verbinding maakt met een systeem.
+Je kunt een script in meerdere verschillende scenario's gebruiken.
 
-### Op de achtergrond
+Wanneer je een script inschakelt, bepalen de uitvoeringstypen wat XPipe met het script zal doen.
 
-De eerste verbinding met een systeem wordt op de achtergrond gemaakt in een domme terminal sessie.
+## Init scripts
 
-Blokkerende commando's die gebruikersinvoer vereisen kunnen het shell proces bevriezen wanneer XPipe het eerst intern op de achtergrond opstart. Om dit te voorkomen, moet je deze blokkerende commando's alleen in de terminalmodus aanroepen.
+Als een script is aangewezen als init-script, kan het worden geselecteerd in shell-omgevingen.
 
-De bestandsbrowser bijvoorbeeld gebruikt volledig de domme achtergrondmodus om zijn bewerkingen af te handelen, dus als je wilt dat je scriptomgeving van toepassing is op de bestandsbrowsersessie, moet deze in de domme modus draaien.
+Bovendien, als een script is ingeschakeld, zal het automatisch worden uitgevoerd op init in alle compatibele shells.
 
-### In de terminals
+Als je bijvoorbeeld een eenvoudig init-script maakt als
+```
+alias ll="ls -l"
+alias la="ls -A"
+alias l="ls -CF"
+```
+je hebt toegang tot deze aliassen in alle compatibele shell sessies als het script is ingeschakeld.
 
-Nadat de initiële domme terminalverbinding is gelukt, opent XPipe een aparte verbinding in de echte terminal. Als je wilt dat het script wordt uitgevoerd wanneer je de verbinding in een terminal opent, kies dan de terminalmodus.
+## Shell scripts
+
+Een normaal shellscript is bedoeld om aangeroepen te worden in een shellsessie in je terminal.
+Als dit is ingeschakeld, wordt het script gekopieerd naar het doelsysteem en in het PATH van alle compatibele shells gezet.
+Hierdoor kun je het script overal vandaan in een terminalsessie aanroepen.
+De scriptnaam wordt met kleine letters geschreven en spaties worden vervangen door underscores, zodat je het script gemakkelijk kunt aanroepen.
+
+Als je bijvoorbeeld een eenvoudig shellscript maakt met de naam `apti` zoals
+```
+sudo apt install "$1"
+```
+kun je dat op elk compatibel systeem aanroepen met `apti.sh <pkg>` als het script is ingeschakeld.
+
+## Bestandsscripts
+
+Tot slot kun je ook aangepaste scripts uitvoeren met bestandsinvoer vanuit de bestandsbrowserinterface.
+Als een bestandsscript is ingeschakeld, verschijnt het in de bestandsbrowser om te worden uitgevoerd met bestandsinvoer.
+
+Als je bijvoorbeeld een eenvoudig bestandsscript maakt zoals
+```
+sudo apt install "$@"
+```
+kun je het script uitvoeren op geselecteerde bestanden als het script is ingeschakeld.
+
+## Meerdere types
+
+Aangezien het voorbeeldbestandsscript hetzelfde is als het voorbeeldshell-script hierboven,
+zie je dat je ook meerdere vakjes kunt aanvinken voor uitvoeringstypen van een script als ze in meerdere scenario's moeten worden gebruikt.
+
+

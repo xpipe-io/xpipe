@@ -10,7 +10,6 @@ import io.xpipe.app.fxcomps.augment.DragOverPseudoClassAugment;
 import io.xpipe.app.fxcomps.impl.*;
 import io.xpipe.app.fxcomps.util.DerivedObservableList;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.core.process.OsType;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
@@ -183,13 +182,7 @@ public class BrowserTransferComp extends SimpleComp {
                                 event.consume();
                             });
                             struc.get().setOnDragDone(event -> {
-                                // macOS does always report false here, which is unfortunate
-                                if (!event.isAccepted() && !OsType.getLocal().equals(OsType.MACOS)) {
-                                    return;
-                                }
-
-                                // Don't clear, it might be more convenient to keep the contents
-                                // model.clear();
+                                model.clear();
                                 event.consume();
                             });
                         }),

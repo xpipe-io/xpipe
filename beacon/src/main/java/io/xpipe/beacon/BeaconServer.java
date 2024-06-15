@@ -1,6 +1,6 @@
 package io.xpipe.beacon;
 
-import io.xpipe.beacon.exchange.StopExchange;
+import io.xpipe.beacon.api.DaemonStopExchange;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.util.XPipeDaemonMode;
@@ -18,9 +18,9 @@ import java.util.List;
  */
 public class BeaconServer {
 
-    public static boolean isReachable() {
+    public static boolean isReachable(int port) {
         try (var socket = new Socket()) {
-            socket.connect(new InetSocketAddress(InetAddress.getLoopbackAddress(), BeaconConfig.getUsedPort()), 5000);
+            socket.connect(new InetSocketAddress(InetAddress.getLoopbackAddress(), port), 5000);
             return true;
         } catch (Exception e) {
             return false;
@@ -108,8 +108,7 @@ public class BeaconServer {
     }
 
     public static boolean tryStop(BeaconClient client) throws Exception {
-        client.sendRequest(StopExchange.Request.builder().build());
-        StopExchange.Response res = client.receiveResponse();
+        DaemonStopExchange.Response res = client.performRequest(DaemonStopExchange.Request.builder().build());
         return res.isSuccess();
     }
 

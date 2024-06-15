@@ -1,49 +1,32 @@
-import io.xpipe.beacon.BeaconJacksonModule;
-import io.xpipe.beacon.exchange.*;
-import io.xpipe.beacon.exchange.cli.*;
-import io.xpipe.core.util.ProxyFunction;
-
 import com.fasterxml.jackson.databind.Module;
+import io.xpipe.beacon.BeaconInterface;
+import io.xpipe.beacon.BeaconJacksonModule;
+import io.xpipe.beacon.api.*;
+import io.xpipe.core.util.ModuleLayerLoader;
 
 open module io.xpipe.beacon {
     exports io.xpipe.beacon;
-    exports io.xpipe.beacon.exchange;
-    exports io.xpipe.beacon.exchange.data;
-    exports io.xpipe.beacon.exchange.cli;
-    exports io.xpipe.beacon.util;
     exports io.xpipe.beacon.test;
+    exports io.xpipe.beacon.api;
 
-    requires static com.fasterxml.jackson.core;
-    requires static com.fasterxml.jackson.databind;
+    requires com.fasterxml.jackson.core;
+    requires com.fasterxml.jackson.annotation;
+    requires com.fasterxml.jackson.databind;
     requires transitive io.xpipe.core;
     requires static lombok;
     requires static org.junit.jupiter.api;
+    requires jdk.httpserver;
+    requires java.net.http;
+    requires java.desktop;
 
-    uses MessageExchange;
-    uses ProxyFunction;
+    uses io.xpipe.beacon.BeaconInterface;
 
+    provides ModuleLayerLoader with
+            BeaconInterface.Loader;
     provides Module with
             BeaconJacksonModule;
-    provides io.xpipe.beacon.exchange.MessageExchange with
-            SinkExchange,
-            DrainExchange,
-            LaunchExchange,
-            EditStoreExchange,
-            StoreProviderListExchange,
-            ModeExchange,
-            QueryStoreExchange,
-            StatusExchange,
-            FocusExchange,
-            OpenExchange,
-            StopExchange,
-            RenameStoreExchange,
-            RemoveStoreExchange,
-            StoreAddExchange,
-            ReadDrainExchange,
+    provides BeaconInterface with ShellStartExchange, ShellStopExchange, ShellExecExchange, DaemonModeExchange, DaemonStatusExchange, DaemonFocusExchange, DaemonOpenExchange, DaemonStopExchange, HandshakeExchange, ConnectionQueryExchange,
             AskpassExchange,
             TerminalWaitExchange,
-            TerminalLaunchExchange,
-            ListStoresExchange,
-            DialogExchange,
-            VersionExchange;
+            TerminalLaunchExchange, DaemonVersionExchange;
 }

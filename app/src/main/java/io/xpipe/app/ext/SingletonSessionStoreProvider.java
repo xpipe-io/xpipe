@@ -6,12 +6,14 @@ import io.xpipe.app.comp.store.StoreEntryComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.SingletonSessionStore;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
+import javafx.beans.value.ObservableValue;
 
 public interface SingletonSessionStoreProvider extends DataStoreProvider {
 
@@ -38,7 +40,9 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
             enabled.set(s.isSessionEnabled());
         });
 
-        var t = new StoreToggleComp(null, sec, enabled, aBoolean -> {
+        ObservableValue<LabelGraphic> g = enabled.map(aBoolean -> aBoolean ?
+                new LabelGraphic.IconGraphic("mdi2c-circle-slice-8") : new LabelGraphic.IconGraphic("mdi2p-power"));
+        var t = new StoreToggleComp(null, g, sec, enabled, aBoolean -> {
             SingletonSessionStore<?> s = sec.getWrapper().getEntry().getStore().asNeeded();
             if (s.isSessionEnabled() != aBoolean) {
                 ThreadHelper.runFailableAsync(() -> {
@@ -50,6 +54,7 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
                 });
             }
         });
+        t.tooltipKey("enabled");
         return t;
     }
 

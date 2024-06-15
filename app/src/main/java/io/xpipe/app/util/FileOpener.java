@@ -28,10 +28,9 @@ public class FileOpener {
         try {
             editor.launch(Path.of(localFile).toRealPath());
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e)
-                    .description("Unable to launch editor "
+            ErrorEvent.fromThrowable("Unable to launch editor "
                             + editor.toTranslatedString().getValue()
-                            + ".\nMaybe try to use a different editor in the settings.")
+                            + ".\nMaybe try to use a different editor in the settings.", e)
                     .expected()
                     .handle();
         }
@@ -52,8 +51,7 @@ public class FileOpener {
                 }
             }
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e)
-                    .description("Unable to open file " + localFile)
+            ErrorEvent.fromThrowable("Unable to open file " + localFile, e)
                     .handle();
         }
     }
@@ -68,8 +66,7 @@ public class FileOpener {
                 pc.executeSimpleCommand("open \"" + localFile + "\"");
             }
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e)
-                    .description("Unable to open file " + localFile)
+            ErrorEvent.fromThrowable("Unable to open file " + localFile, e)
                     .handle();
         }
     }

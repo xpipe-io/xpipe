@@ -53,12 +53,12 @@ public class IconButtonComp extends Comp<CompStructure<Button>> {
         });
         // fi.iconColorProperty().bind(button.textFillProperty());
         button.setGraphic(fi);
-        button.setOnAction(e -> {
-            if (listener != null) {
+        if (listener != null) {
+            button.setOnAction(e -> {
                 listener.run();
                 e.consume();
-            }
-        });
+            });
+        }
         button.getStyleClass().add("icon-button-comp");
         return new SimpleCompStructure<>(button);
     }

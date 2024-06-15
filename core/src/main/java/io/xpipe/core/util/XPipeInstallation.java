@@ -22,16 +22,16 @@ public class XPipeInstallation {
             .orElse(false);
 
     public static int getDefaultBeaconPort() {
-        var offset = isStaging() ? 1 : 0;
-        if (OsType.getLocal().equals(OsType.WINDOWS)) {
-            return 21721 + offset;
-        } else {
-            return 21721 + 2 + offset;
-        }
+        var offset = isStaging() ? 2 : 0;
+        return 21721 + offset;
     }
 
     private static String getPkgId() {
         return isStaging() ? "io.xpipe.xpipe-ptb" : "io.xpipe.xpipe";
+    }
+
+    public static Path getLocalBeaconAuthFile() {
+        return Path.of(System.getProperty("java.io.tmpdir"), "xpipe_auth");
     }
 
     public static String createExternalAsyncLaunchCommand(

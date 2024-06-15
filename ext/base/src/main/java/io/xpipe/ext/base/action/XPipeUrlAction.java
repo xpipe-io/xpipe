@@ -43,13 +43,13 @@ public class XPipeUrlAction implements ActionProvider {
                         if (!entry.getValidity().isUsable()) {
                             return null;
                         }
-                        return new LaunchAction.Action(entry);
+                        return new LaunchStoreAction.Action(entry);
                     }
                     case "action" -> {
                         var id = args.get(1);
                         ActionProvider provider = ActionProvider.ALL.stream()
                                 .filter(actionProvider -> {
-                                    return actionProvider.getDataStoreCallSite() != null
+                                    return actionProvider.getLeafDataStoreCallSite() != null
                                             && id.equals(actionProvider.getId());
                                 })
                                 .findFirst()
@@ -84,13 +84,8 @@ public class XPipeUrlAction implements ActionProvider {
         DataStoreEntry entry;
 
         @Override
-        public boolean requiresJavaFXPlatform() {
-            return false;
-        }
-
-        @Override
         public void execute() throws Exception {
-            actionProvider.getDataStoreCallSite().createAction(entry.ref()).execute();
+            actionProvider.getLeafDataStoreCallSite().createAction(entry.ref()).execute();
         }
     }
 
@@ -98,11 +93,6 @@ public class XPipeUrlAction implements ActionProvider {
     static class AddStoreAction implements ActionProvider.Action {
 
         DataStore store;
-
-        @Override
-        public boolean requiresJavaFXPlatform() {
-            return true;
-        }
 
         @Override
         public void execute() {

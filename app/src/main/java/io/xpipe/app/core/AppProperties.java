@@ -50,11 +50,10 @@ public class AppProperties {
                 Properties props = new Properties();
                 props.load(Files.newInputStream(propsFile));
                 props.forEach((key, value) -> {
-                    if (System.getProperty(key.toString()) != null) {
-                        return;
+                    // Don't overwrite existing properties
+                    if (System.getProperty(key.toString()) == null) {
+                        System.setProperty(key.toString(), value.toString());
                     }
-
-                    System.setProperty(key.toString(), value.toString());
                 });
             } catch (IOException e) {
                 ErrorEvent.fromThrowable(e).handle();

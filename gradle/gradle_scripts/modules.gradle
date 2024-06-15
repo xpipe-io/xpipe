@@ -25,12 +25,6 @@ extraJavaModuleInfo {
 }
 
 extraJavaModuleInfo {
-    module("org.ocpsoft.prettytime:prettytime", "org.ocpsoft.prettytime") {
-        exportAllPackages()
-    }
-}
-
-extraJavaModuleInfo {
     module("com.vladsch.flexmark:flexmark", "com.vladsch.flexmark") {
         mergeJar('com.vladsch.flexmark:flexmark-util')
         mergeJar('com.vladsch.flexmark:flexmark-util-options')
@@ -50,6 +44,8 @@ extraJavaModuleInfo {
         mergeJar('com.vladsch.flexmark:flexmark-ext-footnotes')
         mergeJar('com.vladsch.flexmark:flexmark-ext-definition')
         mergeJar('com.vladsch.flexmark:flexmark-ext-anchorlink')
+        mergeJar('com.vladsch.flexmark:flexmark-ext-yaml-front-matter')
+        mergeJar('com.vladsch.flexmark:flexmark-ext-toc')
         exportAllPackages()
     }
 }

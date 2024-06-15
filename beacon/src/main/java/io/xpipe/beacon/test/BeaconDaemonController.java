@@ -1,6 +1,8 @@
 package io.xpipe.beacon.test;
 
 import io.xpipe.beacon.BeaconClient;
+import io.xpipe.beacon.BeaconClientInformation;
+import io.xpipe.beacon.BeaconConfig;
 import io.xpipe.beacon.BeaconServer;
 import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeInstallation;
@@ -12,7 +14,7 @@ public class BeaconDaemonController {
     private static boolean alreadyStarted;
 
     public static void start(XPipeDaemonMode mode) throws Exception {
-        if (BeaconServer.isReachable()) {
+        if (BeaconServer.isReachable(BeaconConfig.getUsedPort())) {
             alreadyStarted = true;
             return;
         }
@@ -27,7 +29,7 @@ public class BeaconDaemonController {
         }
 
         waitForStartup(process, custom);
-        if (!BeaconServer.isReachable()) {
+        if (!BeaconServer.isReachable(BeaconConfig.getUsedPort())) {
             throw new AssertionError();
         }
     }
@@ -37,13 +39,12 @@ public class BeaconDaemonController {
             return;
         }
 
-        if (!BeaconServer.isReachable()) {
+        if (!BeaconServer.isReachable(BeaconConfig.getUsedPort())) {
             return;
         }
 
-        var client = BeaconClient.establishConnection(BeaconClient.ApiClientInformation.builder()
-                .version("?")
-                .language("Java API Test")
+        var client = BeaconClient.establishConnection(BeaconConfig.getUsedPort(), BeaconClientInformation.Api.builder()
+                .name("Beacon daemon controller")
                 .build());
         if (!BeaconServer.tryStop(client)) {
             throw new AssertionError();
@@ -67,9 +68,8 @@ public class BeaconDaemonController {
             } catch (InterruptedException ignored) {
             }
 
-            var s = BeaconClient.tryEstablishConnection(BeaconClient.ApiClientInformation.builder()
-                    .version("?")
-                    .language("Java")
+            var s = BeaconClient.tryEstablishConnection(BeaconConfig.getUsedPort(), BeaconClientInformation.Api.builder()
+                    .name("Beacon daemon controller")
                     .build());
             if (s.isPresent()) {
                 return;
@@ -86,7 +86,7 @@ public class BeaconDaemonController {
             } catch (InterruptedException ignored) {
             }
 
-            var r = BeaconServer.isReachable();
+            var r = BeaconServer.isReachable(BeaconConfig.getUsedPort());
             if (!r) {
                 return;
             }

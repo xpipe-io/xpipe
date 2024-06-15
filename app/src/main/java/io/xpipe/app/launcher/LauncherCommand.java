@@ -1,5 +1,6 @@
 package io.xpipe.app.launcher;
 
+import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.AppDataLock;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
@@ -9,13 +10,13 @@ import io.xpipe.app.issue.LogErrorHandler;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.beacon.BeaconServer;
-import io.xpipe.beacon.exchange.FocusExchange;
-import io.xpipe.beacon.exchange.OpenExchange;
+import io.xpipe.beacon.BeaconClient;
+import io.xpipe.beacon.BeaconClientInformation;
+import io.xpipe.beacon.api.DaemonFocusExchange;
+import io.xpipe.beacon.api.DaemonOpenExchange;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeInstallation;
-
 import lombok.SneakyThrows;
 import picocli.CommandLine;
 
@@ -81,26 +82,25 @@ public class LauncherCommand implements Callable<Integer> {
 
     private void checkStart() {
         try {
-            if (BeaconServer.isReachable()) {
-                try (var con = new LauncherConnection()) {
-                    con.constructSocket();
-                    con.performSimpleExchange(FocusExchange.Request.builder()
-                            .mode(getEffectiveMode())
-                            .build());
+            var port = AppBeaconServer.get().getPort();
+            var client = BeaconClient.tryEstablishConnection(port, BeaconClientInformation.Daemon.builder().build());
+            if (client.isPresent()) {
+                    client.get().performRequest(DaemonFocusExchange.Request.builder().mode(getEffectiveMode()).build());
                     if (!inputs.isEmpty()) {
-                        con.performSimpleExchange(
-                                OpenExchange.Request.builder().arguments(inputs).build());
+                        client.get().performRequest(
+                                DaemonOpenExchange.Request.builder().arguments(inputs).build());
                     }
 
                     if (OsType.getLocal().equals(OsType.MACOS)) {
                         Desktop.getDesktop().setOpenURIHandler(e -> {
-                            con.performSimpleExchange(OpenExchange.Request.builder()
-                                    .arguments(List.of(e.getURI().toString()))
-                                    .build());
+                            try {
+                                client.get().performRequest(DaemonOpenExchange.Request.builder().arguments(List.of(e.getURI().toString())).build());
+                            } catch (Exception ex) {
+                                ErrorEvent.fromThrowable(ex).expected().omit().handle();
+                            }
                         });
                         ThreadHelper.sleep(1000);
                     }
-                }
                 TrackEvent.info("Another instance is already running on this port. Quitting ...");
                 OperationMode.halt(1);
             }

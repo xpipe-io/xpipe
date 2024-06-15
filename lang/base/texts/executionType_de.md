@@ -1,15 +1,50 @@
-## Ausführungsarten
+# Ausführungsarten
 
-Es gibt zwei verschiedene Ausführungsarten, wenn XPipe eine Verbindung zu einem System herstellt.
+Du kannst ein Skript in vielen verschiedenen Szenarien verwenden.
 
-### Im Hintergrund
+Wenn du ein Skript aktivierst, legen die Ausführungsarten fest, was XPipe mit dem Skript tun soll.
 
-Die erste Verbindung zu einem System wird im Hintergrund in einer stummen Terminalsitzung hergestellt.
+## Init-Skripte
 
-Blockierende Befehle, die Benutzereingaben erfordern, können den Shell-Prozess einfrieren, wenn XPipe ihn intern zuerst im Hintergrund startet. Um dies zu vermeiden, solltest du diese blockierenden Befehle nur im Terminalmodus aufrufen.
+Wenn ein Skript als Init-Skript gekennzeichnet ist, kann es in Shell-Umgebungen ausgewählt werden.
 
-Der Dateibrowser z. B. verwendet für seine Operationen ausschließlich den dummen Hintergrundmodus. Wenn du also möchtest, dass deine Skriptumgebung für die Dateibrowser-Sitzung gilt, sollte sie im dummen Modus ausgeführt werden.
+Wenn ein Skript aktiviert ist, wird es außerdem automatisch bei init in allen kompatiblen Shells ausgeführt.
 
-### In den Terminals
+Wenn du zum Beispiel ein einfaches Init-Skript erstellst wie
+```
+alias ll="ls -l"
+alias la="ls -A"
+alias l="ls -CF"
+```
+hast du in allen kompatiblen Shell-Sitzungen Zugang zu diesen Aliasen, wenn das Skript aktiviert ist.
 
-Nachdem die anfängliche Dumb-Terminal-Verbindung erfolgreich war, öffnet XPipe eine separate Verbindung im eigentlichen Terminal. Wenn du möchtest, dass das Skript ausgeführt wird, wenn du die Verbindung in einem Terminal öffnest, dann wähle den Terminalmodus.
+## Shell-Skripte
+
+Ein normales Shell-Skript ist dafür gedacht, in einer Shell-Sitzung in deinem Terminal aufgerufen zu werden.
+Wenn es aktiviert ist, wird das Skript auf das Zielsystem kopiert und in den PATH aller kompatiblen Shells aufgenommen.
+So kannst du das Skript von überall in einer Terminal-Sitzung aufrufen.
+Der Skriptname wird kleingeschrieben und Leerzeichen werden durch Unterstriche ersetzt, damit du das Skript leicht aufrufen kannst.
+
+Wenn du zum Beispiel ein einfaches Shell-Skript mit dem Namen `apti` wie folgt erstellst
+```
+sudo apt install "$1"
+```
+kannst du das auf jedem kompatiblen System mit `apti.sh <pkg>` aufrufen, wenn das Skript aktiviert ist.
+
+## Datei-Skripte
+
+Schließlich kannst du auch benutzerdefinierte Skripte mit Dateieingaben über die Dateibrowser-Schnittstelle ausführen.
+Wenn ein Dateiskript aktiviert ist, wird es im Dateibrowser angezeigt und kann mit Dateieingaben ausgeführt werden.
+
+Wenn du zum Beispiel ein einfaches Dateiskript erstellst wie
+```
+sudo apt install "$@"
+```
+kannst du das Skript für ausgewählte Dateien ausführen, wenn das Skript aktiviert ist.
+
+## Mehrere Typen
+
+Da das Beispielskript für die Datei dasselbe ist wie das Beispielsskript für die Shell oben,
+siehst du, dass du auch mehrere Kästchen für die Ausführungsarten eines Skripts ankreuzen kannst, wenn sie in mehreren Szenarien verwendet werden sollen.
+
+

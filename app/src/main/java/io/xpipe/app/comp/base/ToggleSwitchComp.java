@@ -1,25 +1,25 @@
 package io.xpipe.app.comp.base;
 
+import atlantafx.base.controls.ToggleSwitch;
 import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.util.LabelGraphic;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
+import javafx.css.PseudoClass;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
+import lombok.EqualsAndHashCode;
+import lombok.Value;
 
-import atlantafx.base.controls.ToggleSwitch;
-
+@Value
+@EqualsAndHashCode(callSuper = true)
 public class ToggleSwitchComp extends SimpleComp {
 
-    private final Property<Boolean> selected;
-    private final ObservableValue<String> name;
-
-    public ToggleSwitchComp(Property<Boolean> selected, ObservableValue<String> name) {
-        this.selected = selected;
-        this.name = name;
-    }
+    Property<Boolean> selected;
+    ObservableValue<String> name;
+    ObservableValue<LabelGraphic> graphic;
 
     @Override
     protected Region createSimple() {
@@ -42,6 +42,10 @@ public class ToggleSwitchComp extends SimpleComp {
         });
         if (name != null) {
             s.textProperty().bind(PlatformThread.sync(name));
+        }
+        if (graphic != null) {
+            s.graphicProperty().bind(PlatformThread.sync(graphic.map(labelGraphic -> labelGraphic.createGraphicNode())));
+            s.pseudoClassStateChanged(PseudoClass.getPseudoClass("has-graphic"),true);
         }
         return s;
     }

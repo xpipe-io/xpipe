@@ -9,8 +9,8 @@ import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.ThreadHelper;
-import javafx.beans.Observable;
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
 import lombok.Getter;
 
 import java.time.Duration;
@@ -26,8 +26,8 @@ public class StoreEntryWrapper {
     private final BooleanProperty disabled = new SimpleBooleanProperty();
     private final BooleanProperty busy = new SimpleBooleanProperty();
     private final Property<DataStoreEntry.Validity> validity = new SimpleObjectProperty<>();
-    private final Map<ActionProvider, BooleanProperty> actionProviders;
-    private final Property<ActionProvider.DefaultDataStoreCallSite<?>> defaultActionProvider;
+    private final ListProperty<ActionProvider> actionProviders = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private final Property<ActionProvider> defaultActionProvider = new SimpleObjectProperty<>();
     private final BooleanProperty deletable = new SimpleBooleanProperty();
     private final BooleanProperty expanded = new SimpleBooleanProperty();
     private final Property<Object> persistentState = new SimpleObjectProperty<>();
@@ -41,28 +41,22 @@ public class StoreEntryWrapper {
         this.entry = entry;
         this.name = new SimpleStringProperty(entry.getName());
         this.lastAccess = new SimpleObjectProperty<>(entry.getLastAccess().minus(Duration.ofMillis(500)));
-        this.actionProviders = new LinkedHashMap<>();
         ActionProvider.ALL.stream()
                 .filter(dataStoreActionProvider -> {
                     return !entry.isDisabled()
-                            && dataStoreActionProvider.getDataStoreCallSite() != null
+                            && dataStoreActionProvider.getLeafDataStoreCallSite() != null
                             && dataStoreActionProvider
-                                    .getDataStoreCallSite()
+                                    .getLeafDataStoreCallSite()
                                     .getApplicableClass()
                                     .isAssignableFrom(entry.getStore().getClass());
                 })
                 .sorted(Comparator.comparing(
-                        actionProvider -> actionProvider.getDataStoreCallSite().isSystemAction()))
+                        actionProvider -> actionProvider.getLeafDataStoreCallSite().isSystemAction()))
                 .forEach(dataStoreActionProvider -> {
-                    actionProviders.put(dataStoreActionProvider, new SimpleBooleanProperty(true));
+                    actionProviders.add(dataStoreActionProvider);
                 });
-        this.defaultActionProvider = new SimpleObjectProperty<>();
         this.notes = new SimpleObjectProperty<>(new StoreNotes(entry.getNotes(), entry.getNotes()));
         setupListeners();
-    }
-
-    public List<Observable> getUpdateObservables() {
-        return List.of(category);
     }
 
     public void moveTo(DataStoreCategory category) {
@@ -136,7 +130,7 @@ public class StoreEntryWrapper {
         color.setValue(entry.getColor());
         notes.setValue(new StoreNotes(entry.getNotes(), entry.getNotes()));
 
-        busy.setValue(entry.isInRefresh());
+        busy.setValue(entry.getBusyCounter().get() != 0);
         deletable.setValue(entry.getConfiguration().isDeletable()
                 || AppPrefs.get().developerDisableGuiRestrictions().getValue());
 
@@ -156,48 +150,56 @@ public class StoreEntryWrapper {
             }
         }
 
-        actionProviders.keySet().forEach(dataStoreActionProvider -> {
-            if (!isInStorage()) {
-                actionProviders.get(dataStoreActionProvider).set(false);
-                defaultActionProvider.setValue(null);
-                return;
-            }
-
-            if (!entry.getValidity().isUsable()
-                    && !dataStoreActionProvider
-                            .getDataStoreCallSite()
-                            .activeType()
-                            .equals(ActionProvider.DataStoreCallSite.ActiveType.ALWAYS_ENABLE)) {
-                actionProviders.get(dataStoreActionProvider).set(false);
-                return;
-            }
-
+        if (!isInStorage()) {
+            actionProviders.clear();
+            defaultActionProvider.setValue(null);
+        } else {
             var defaultProvider = ActionProvider.ALL.stream()
-                    .filter(e -> e.getDefaultDataStoreCallSite() != null
+                    .filter(e -> entry.getStore() != null && e.getDefaultDataStoreCallSite() != null
                             && e.getDefaultDataStoreCallSite()
-                                    .getApplicableClass()
-                                    .isAssignableFrom(entry.getStore().getClass())
+                            .getApplicableClass()
+                            .isAssignableFrom(entry.getStore().getClass())
                             && e.getDefaultDataStoreCallSite().isApplicable(entry.ref()))
                     .findFirst()
-                    .map(ActionProvider::getDefaultDataStoreCallSite)
                     .orElse(null);
             this.defaultActionProvider.setValue(defaultProvider);
 
             try {
-                actionProviders
-                        .get(dataStoreActionProvider)
-                        .set(dataStoreActionProvider
-                                        .getDataStoreCallSite()
-                                        .getApplicableClass()
-                                        .isAssignableFrom(entry.getStore().getClass())
-                                && dataStoreActionProvider
-                                        .getDataStoreCallSite()
-                                        .isApplicable(entry.ref()));
+                var newProviders = ActionProvider.ALL.stream()
+                        .filter(dataStoreActionProvider -> {
+                           return showActionProvider(dataStoreActionProvider);
+                        })
+                        .sorted(Comparator.comparing(
+                                actionProvider -> actionProvider.getLeafDataStoreCallSite() != null &&
+                                        actionProvider.getLeafDataStoreCallSite().isSystemAction()))
+                        .toList();
+                if (!actionProviders.equals(newProviders)) {
+                    actionProviders.setAll(newProviders);
+                }
             } catch (Exception ex) {
                 ErrorEvent.fromThrowable(ex).handle();
-                actionProviders.get(dataStoreActionProvider).set(false);
             }
-        });
+        }
+    }
+
+    private boolean showActionProvider(ActionProvider p) {
+        var leaf = p.getLeafDataStoreCallSite();
+        if (leaf != null) {
+            return (entry.getValidity().isUsable() || (!leaf.requiresValidStore() && entry.getProvider() != null))
+                    && leaf.getApplicableClass().isAssignableFrom(entry.getStore().getClass())
+                    && leaf
+                    .isApplicable(entry.ref());
+        }
+
+
+        var branch = p.getBranchDataStoreCallSite();
+        if (branch != null && entry.getStore() != null && branch.getApplicableClass().isAssignableFrom(entry.getStore().getClass())) {
+            return branch.getChildren().stream().anyMatch(child -> {
+                return showActionProvider(child);
+            });
+        }
+
+        return false;
     }
 
     public void refreshChildren() {
@@ -220,9 +222,23 @@ public class StoreEntryWrapper {
         var found = getDefaultActionProvider().getValue();
         entry.notifyUpdate(true, false);
         if (found != null) {
-            found.createAction(entry.ref()).execute();
+            var act = found.getDefaultDataStoreCallSite().createAction(entry.ref());
+            runAction(act,found.getDefaultDataStoreCallSite().showBusy());
         } else {
             entry.setExpanded(!entry.isExpanded());
+        }
+    }
+
+    public void runAction(ActionProvider.Action action, boolean showBusy) throws Exception {
+        try {
+            if (showBusy) {
+                getEntry().incrementBusyCounter();
+            }
+            action.execute();
+        } finally {
+            if (showBusy) {
+                getEntry().decrementBusyCounter();
+            }
         }
     }
 
@@ -230,7 +246,7 @@ public class StoreEntryWrapper {
         this.expanded.set(!expanded.getValue());
     }
 
-    public boolean shouldShow(String filter) {
+    public boolean matchesFilter(String filter) {
         if (filter == null || nameProperty().getValue().toLowerCase().contains(filter.toLowerCase())) {
             return true;
         }

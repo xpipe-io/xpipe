@@ -238,6 +238,35 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     .addFile(configuration.getScriptFile());
         }
     };
+    ExternalTerminalType FOOT = new SimplePathType("app.foot", "foot", true) {
+        @Override
+        public String getWebsite() {
+            return "https://codeberg.org/dnkl/foot";
+        }
+
+        @Override
+        public boolean supportsTabs() {
+            return false;
+        }
+
+        @Override
+        public boolean isRecommended() {
+            return false;
+        }
+
+        @Override
+        public boolean supportsColoredTitle() {
+            return true;
+        }
+
+        @Override
+        protected CommandBuilder toCommand(LaunchConfiguration configuration) {
+            return CommandBuilder.of()
+                    .add("--title")
+                    .addQuoted(configuration.getColoredTitle())
+                    .addFile(configuration.getScriptFile());
+        }
+    };
     ExternalTerminalType ELEMENTARY = new SimplePathType("app.elementaryTerminal", "io.elementary.terminal", true) {
 
         @Override
@@ -262,7 +291,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected CommandBuilder toCommand(LaunchConfiguration configuration) {
-            return CommandBuilder.of().add("--new-tab").add("-e").addFile(configuration.getColoredTitle());
+            return CommandBuilder.of().add("--new-tab").add("-e").addFile(configuration.getScriptFile());
         }
     };
     ExternalTerminalType TILIX = new SimplePathType("app.tilix", "tilix", true) {
@@ -514,17 +543,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
-            try (ShellControl pc = LocalShell.getShell()) {
-                var suffix = "\"" + configuration.getScriptFile().toString().replaceAll("\"", "\\\\\"") + "\"";
-                pc.osascriptCommand(String.format(
-                                """
-                                activate application "Terminal"
-                                delay 1
-                                tell app "Terminal" to do script %s
-                                """,
-                                suffix))
-                        .execute();
-            }
+            LocalShell.getShell()
+                    .executeSimpleCommand(CommandBuilder.of()
+                            .add("open", "-a")
+                            .addQuoted("Terminal.app")
+                            .addFile(configuration.getScriptFile()));
         }
     };
     ExternalTerminalType ITERM2 = new MacOsType("app.iterm2", "iTerm") {
@@ -550,26 +573,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
-            try (ShellControl pc = LocalShell.getShell()) {
-                pc.osascriptCommand(String.format(
-                                """
-                                if application "iTerm" is not running then
-                                    launch application "iTerm"
-                                    delay 1
-                                    tell application "iTerm"
-                                        tell current tab of current window
-                                            close
-                                        end tell
-                                    end tell
-                                end if
-                                tell application "iTerm"
-                                    activate
-                                    create window with default profile command "%s"
-                                end tell
-                                """,
-                                configuration.getScriptFile().toString().replaceAll("\"", "\\\\\"")))
-                        .execute();
-            }
+            LocalShell.getShell()
+                    .executeSimpleCommand(CommandBuilder.of()
+                            .add("open", "-a")
+                            .addQuoted("iTerm.app")
+                            .addFile(configuration.getScriptFile()));
         }
     };
     ExternalTerminalType WARP = new MacOsType("app.warp", "Warp") {
@@ -662,6 +670,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             TILDA,
             XTERM,
             DEEPIN_TERMINAL,
+            FOOT,
             Q_TERMINAL);
     List<ExternalTerminalType> MACOS_TERMINALS = List.of(
             KittyTerminalType.KITTY_MACOS,
@@ -705,7 +714,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return ExternalTerminalType.POWERSHELL;
         }
 
-        if (existing != null) {
+        // Verify that our selection is still valid
+        if (existing != null && existing.isAvailable()) {
             return existing;
         }
 

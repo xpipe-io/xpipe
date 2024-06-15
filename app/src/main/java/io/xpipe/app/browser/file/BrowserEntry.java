@@ -27,8 +27,9 @@ public class BrowserEntry {
         if (rawFileEntry == null) {
             return null;
         }
+        rawFileEntry = rawFileEntry.resolved();
 
-        if (rawFileEntry.getKind() == FileKind.DIRECTORY) {
+        if (rawFileEntry.getKind() != FileKind.FILE) {
             return null;
         }
 
@@ -45,6 +46,7 @@ public class BrowserEntry {
         if (rawFileEntry == null) {
             return null;
         }
+        rawFileEntry = rawFileEntry.resolved();
 
         if (rawFileEntry.getKind() != FileKind.DIRECTORY) {
             return null;
@@ -58,13 +60,14 @@ public class BrowserEntry {
 
         return null;
     }
+
     public String getIcon() {
         if (fileType != null) {
             return fileType.getIcon();
         } else if (directoryType != null) {
             return directoryType.getIcon(rawFileEntry, false);
         } else {
-            return rawFileEntry.getKind() == FileKind.DIRECTORY
+            return rawFileEntry != null && rawFileEntry.resolved().getKind() == FileKind.DIRECTORY
                     ? "default_folder.svg"
                     : "default_file.svg";
         }

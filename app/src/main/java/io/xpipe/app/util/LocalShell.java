@@ -41,6 +41,7 @@ public class LocalShell {
             localPowershell = ProcessControlProvider.get()
                     .createLocalProcessControl(false)
                     .subShell(ShellDialects.POWERSHELL)
+                    .withoutLicenseCheck()
                     .start();
         }
         return localPowershell.start();

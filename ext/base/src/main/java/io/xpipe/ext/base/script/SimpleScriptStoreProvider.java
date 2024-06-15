@@ -1,25 +1,25 @@
 package io.xpipe.ext.base.script;
 
-import io.xpipe.app.comp.base.DropdownComp;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
-import io.xpipe.app.comp.base.StoreToggleComp;
+import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.comp.base.SystemStateComp;
-import io.xpipe.app.comp.store.*;
+import io.xpipe.app.comp.store.StoreEntryWrapper;
+import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppExtensionManager;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.ext.EnabledParentStoreProvider;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.DataStoreChoiceComp;
 import io.xpipe.app.fxcomps.impl.DataStoreListChoiceComp;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.MarkdownBuilder;
 import io.xpipe.app.util.OptionsBuilder;
+import io.xpipe.app.util.Validator;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.Identifiers;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleListProperty;
@@ -27,16 +27,14 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-
 import lombok.SneakyThrows;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class SimpleScriptStoreProvider implements DataStoreProvider {
+public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, DataStoreProvider {
 
     @Override
     public boolean editByDefault() {
@@ -46,43 +44,6 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
     @Override
     public boolean shouldEdit() {
         return true;
-    }
-
-    @Override
-    public StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
-        if (sec.getWrapper().getValidity().getValue() != DataStoreEntry.Validity.COMPLETE) {
-            return new DenseStoreEntryComp(sec.getWrapper(), true, null);
-        }
-
-        var def = StoreToggleComp.<SimpleScriptStore>simpleToggle(
-                "base.isDefaultGroup", sec, s -> s.getState().isDefault(), (s, aBoolean) -> {
-                    var state = s.getState().toBuilder().isDefault(aBoolean).build();
-                    s.setState(state);
-                });
-
-        var bring = StoreToggleComp.<SimpleScriptStore>simpleToggle(
-                "base.bringToShells", sec, s -> s.getState().isBringToShell(), (s, aBoolean) -> {
-                    var state = s.getState().toBuilder().bringToShell(aBoolean).build();
-                    s.setState(state);
-                });
-
-        SimpleScriptStore s = sec.getWrapper().getEntry().getStore().asNeeded();
-        var groupWrapper = StoreViewState.get().getEntryWrapper(s.getGroup().getEntry());
-
-        // Disable selection if parent group is already made default
-        def.disable(BindingsHelper.map(groupWrapper.getPersistentState(), o -> {
-            ScriptStore.State state = (ScriptStore.State) o;
-            return state.isDefault();
-        }));
-
-        // Disable selection if parent group is already brings
-        bring.disable(BindingsHelper.map(groupWrapper.getPersistentState(), o -> {
-            ScriptStore.State state = (ScriptStore.State) o;
-            return state.isBringToShell();
-        }));
-
-        var dropdown = new DropdownComp(List.of(def, bring));
-        return new DenseStoreEntryComp(sec.getWrapper(), true, dropdown);
     }
 
     @Override
@@ -148,6 +109,39 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
                         "io.xpipe.ext.proc.ShellDialectChoiceComp")
                 .getDeclaredConstructor(Property.class, boolean.class)
                 .newInstance(dialect, false);
+
+        var vals = List.of(0, 1, 2);
+        var selectedStart = new ArrayList<Integer>();
+        if (st.isInitScript()) {
+            selectedStart.add(0);
+        }
+        if (st.isShellScript()) {
+            selectedStart.add(1);
+        }
+        if (st.isFileScript()) {
+            selectedStart.add(2);
+        }
+        var name = new Function<Integer, String>() {
+
+            @Override
+            public String apply(Integer integer) {
+                if (integer == 0) {
+                    return AppI18n.get("initScript");
+                }
+
+                if (integer == 1) {
+                    return AppI18n.get("shellScript");
+                }
+
+                if (integer == 2) {
+                    return AppI18n.get("fileScript");
+                }
+                return "?";
+            }
+        };
+        var selectedExecTypes = new SimpleListProperty<>(FXCollections.observableList(selectedStart));
+        var selectorComp = new ListSelectorComp<>(vals, name, selectedExecTypes, v -> false, false);
+
         return new OptionsBuilder()
                 .name("snippets")
                 .description("snippetsDescription")
@@ -174,7 +168,10 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
                                     : "sh";
                         })),
                         commandProp)
-                .name("executionType")
+                .nameAndDescription("executionType")
+                .longDescription("base:executionType")
+                .addComp(selectorComp, selectedExecTypes)
+                .check(validator -> Validator.nonEmpty(validator, AppI18n.observable("executionType"), selectedExecTypes))
                 .name("scriptGroup")
                 .description("scriptGroupDescription")
                 .addComp(
@@ -195,49 +192,13 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
                                     .scripts(new ArrayList<>(others.get()))
                                     .description(st.getDescription())
                                     .commands(commandProp.getValue())
+                                    .initScript(selectedExecTypes.contains(0))
+                                    .shellScript(selectedExecTypes.contains(1))
+                                    .fileScript(selectedExecTypes.contains(2))
                                     .build();
                         },
                         store)
                 .buildDialog();
-    }
-
-    @Override
-    public void init() {
-        DataStorage.get()
-                .addStoreEntryIfNotPresent(DataStoreEntry.createNew(
-                        UUID.fromString("a9945ad2-db61-4304-97d7-5dc4330691a7"),
-                        DataStorage.CUSTOM_SCRIPTS_CATEGORY_UUID,
-                        "My scripts",
-                        ScriptGroupStore.builder().build()));
-
-        for (PredefinedScriptGroup value : PredefinedScriptGroup.values()) {
-            ScriptGroupStore store = ScriptGroupStore.builder()
-                    .description(value.getDescription())
-                    .build();
-            var e = DataStorage.get()
-                    .addStoreEntryIfNotPresent(DataStoreEntry.createNew(
-                            UUID.nameUUIDFromBytes(("a " + value.getName()).getBytes(StandardCharsets.UTF_8)),
-                            DataStorage.PREDEFINED_SCRIPTS_CATEGORY_UUID,
-                            value.getName(),
-                            store));
-            e.setStoreInternal(store, false);
-            e.setExpanded(value.isExpanded());
-            value.setEntry(e.ref());
-        }
-
-        for (PredefinedScriptStore value : PredefinedScriptStore.values()) {
-            var previous = DataStorage.get().getStoreEntryIfPresent(value.getUuid());
-            var store = value.getScriptStore().get();
-            if (previous.isPresent()) {
-                previous.get().setStoreInternal(store, false);
-                value.setEntry(previous.get().ref());
-            } else {
-                var e = DataStoreEntry.createNew(
-                        value.getUuid(), DataStorage.PREDEFINED_SCRIPTS_CATEGORY_UUID, value.getName(), store);
-                DataStorage.get().addStoreEntryIfNotPresent(e);
-                value.setEntry(e.ref());
-            }
-        }
     }
 
     @Override

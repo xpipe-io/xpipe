@@ -11,8 +11,8 @@ import lombok.Value;
 public class StorePauseAction implements ActionProvider {
 
     @Override
-    public DataStoreCallSite<?> getDataStoreCallSite() {
-        return new DataStoreCallSite<PauseableStore>() {
+    public LeafDataStoreCallSite<?> getLeafDataStoreCallSite() {
+        return new LeafDataStoreCallSite<PauseableStore>() {
 
             @Override
             public ActionProvider.Action createAction(DataStoreEntryRef<PauseableStore> store) {
@@ -22,11 +22,6 @@ public class StorePauseAction implements ActionProvider {
             @Override
             public Class<PauseableStore> getApplicableClass() {
                 return PauseableStore.class;
-            }
-
-            @Override
-            public boolean isMajor(DataStoreEntryRef<PauseableStore> o) {
-                return true;
             }
 
             @Override
@@ -45,11 +40,6 @@ public class StorePauseAction implements ActionProvider {
     static class Action implements ActionProvider.Action {
 
         DataStoreEntryRef<PauseableStore> entry;
-
-        @Override
-        public boolean requiresJavaFXPlatform() {
-            return false;
-        }
 
         @Override
         public void execute() throws Exception {

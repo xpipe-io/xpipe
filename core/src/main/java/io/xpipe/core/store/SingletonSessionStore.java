@@ -1,6 +1,7 @@
 package io.xpipe.core.store;
 
-public interface SingletonSessionStore<T extends Session> extends ExpandedLifecycleStore, InternalCacheDataStore {
+public interface SingletonSessionStore<T extends Session>
+        extends ExpandedLifecycleStore, InternalCacheDataStore, SessionListener {
 
     @Override
     default void finalizeValidate() throws Exception {
@@ -19,9 +20,10 @@ public interface SingletonSessionStore<T extends Session> extends ExpandedLifecy
         return getCache("sessionEnabled", Boolean.class, false);
     }
 
-    default void onSessionUpdate(boolean active) {
-        setSessionEnabled(active);
-        setCache("sessionRunning", active);
+    @Override
+    default void onStateChange(boolean running) {
+        setSessionEnabled(running);
+        setCache("sessionRunning", running);
     }
 
     T newSession() throws Exception;
@@ -50,9 +52,9 @@ public interface SingletonSessionStore<T extends Session> extends ExpandedLifecy
                 s = newSession();
                 s.start();
                 setCache("session", s);
-                onSessionUpdate(true);
+                onStateChange(true);
             } catch (Exception ex) {
-                onSessionUpdate(false);
+                onStateChange(false);
                 throw ex;
             }
         }
@@ -65,7 +67,7 @@ public interface SingletonSessionStore<T extends Session> extends ExpandedLifecy
             if (ex != null) {
                 ex.stop();
                 setCache("session", null);
-                onSessionUpdate(false);
+                onStateChange(false);
             }
         }
     }

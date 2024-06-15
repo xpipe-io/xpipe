@@ -14,14 +14,13 @@ import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.util.PasswordLockSecretValue;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.ModuleHelper;
-
+import io.xpipe.core.util.XPipeInstallation;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableStringValue;
 import javafx.beans.value.ObservableValue;
-
 import lombok.Getter;
 import lombok.Value;
 
@@ -121,6 +120,25 @@ public class AppPrefs {
     private final StringProperty lockCrypt =
             mapVaultSpecific(new SimpleStringProperty(), "workspaceLock", String.class);
 
+    final Property<Integer> httpServerPort =
+            mapVaultSpecific(new SimpleObjectProperty<>(XPipeInstallation.getDefaultBeaconPort()), "httpServerPort", Integer.class);
+    final StringProperty apiKey =
+            mapVaultSpecific(new SimpleStringProperty(UUID.randomUUID().toString()), "apiKey", String.class);
+    final BooleanProperty disableApiAuthentication =
+            mapVaultSpecific(new SimpleBooleanProperty(false), "disableApiAuthentication", Boolean.class);
+
+    public ObservableValue<Integer> httpServerPort() {
+        return httpServerPort;
+    }
+
+    public ObservableStringValue apiKey() {
+        return apiKey;
+    }
+
+    public ObservableBooleanValue disableApiAuthentication() {
+        return disableApiAuthentication;
+    }
+
     private final IntegerProperty editorReloadTimeout =
             map(new SimpleIntegerProperty(1000), "editorReloadTimeout", Integer.class);
     private final BooleanProperty confirmDeletions =
@@ -153,6 +171,7 @@ public class AppPrefs {
                         new SshCategory(),
                         new LocalShellCategory(),
                         new SecurityCategory(),
+                        new HttpApiCategory(),
                         new TroubleshootCategory(),
                         new DeveloperCategory())
                 .filter(appPrefsCategory -> appPrefsCategory.show())
@@ -435,12 +454,8 @@ public class AppPrefs {
     }
 
     public void initDefaultValues() {
-        if (externalEditor.get() == null) {
-            ExternalEditorType.detectDefault();
-        }
-
+        externalEditor.setValue(ExternalEditorType.detectDefault(externalEditor.get()));
         terminalType.set(ExternalTerminalType.determineDefault(terminalType.get()));
-
         if (rdpClientType.get() == null) {
             rdpClientType.setValue(ExternalRdpClientType.determineDefault());
         }

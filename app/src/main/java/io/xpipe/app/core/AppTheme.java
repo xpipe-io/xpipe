@@ -235,10 +235,7 @@ public class AppTheme {
                                 .collect(Collectors.joining("\n")));
             });
 
-            var out = Files.createTempFile(id, ".css");
-            Files.writeString(out, builder.toString());
-
-            Application.setUserAgentStylesheet(out.toUri().toString());
+            Application.setUserAgentStylesheet(Styles.toDataURI(builder.toString()));
         }
 
         @Override
@@ -257,13 +254,14 @@ public class AppTheme {
         public static final Theme CUPERTINO_LIGHT = new Theme("cupertinoLight", "cupertino", new CupertinoLight());
         public static final Theme CUPERTINO_DARK = new Theme("cupertinoDark", "cupertino", new CupertinoDark());
         public static final Theme DRACULA = new Theme("dracula", "dracula", new Dracula());
+        public static final Theme MOCHA = new DerivedTheme("mocha", "primer", "Mocha", new PrimerDark());
 
         // Adjust this to create your own theme
         public static final Theme CUSTOM = new DerivedTheme("custom", "primer", "Custom", new PrimerDark());
 
         // Also include your custom theme here
         public static final List<Theme> ALL =
-                List.of(PRIMER_LIGHT, PRIMER_DARK, NORD_LIGHT, NORD_DARK, CUPERTINO_LIGHT, CUPERTINO_DARK, DRACULA);
+                List.of(PRIMER_LIGHT, PRIMER_DARK, NORD_LIGHT, NORD_DARK, CUPERTINO_LIGHT, CUPERTINO_DARK, DRACULA, MOCHA);
         protected final String id;
 
         @Getter

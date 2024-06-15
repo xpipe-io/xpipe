@@ -1,6 +1,5 @@
 package io.xpipe.core.store;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -28,7 +27,6 @@ public class DataStoreId {
 
     private final List<String> names;
 
-    @JsonCreator
     public DataStoreId(List<String> names) {
         this.names = names;
     }

@@ -13,6 +13,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
+import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +68,9 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             // Clear cache of unused values
             cache.keySet().removeIf(t -> !all.contains(t));
 
-            var newShown = shown.stream()
+            // Create copy to reduce chances of concurrent modification
+            var shownCopy = new ArrayList<>(shown);
+            var newShown = shownCopy.stream()
                     .map(v -> {
                         if (!cache.containsKey(v)) {
                             var comp = compFunction.apply(v);
@@ -80,6 +83,10 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
                     .limit(limit)
                     .toList();
 
+            if (listView.getChildren().equals(newShown)) {
+                return;
+            }
+
             for (int i = 0; i < newShown.size(); i++) {
                 var r = newShown.get(i);
                 r.pseudoClassStateChanged(ODD, false);
@@ -87,10 +94,8 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
                 r.pseudoClassStateChanged(i % 2 == 0 ? EVEN : ODD, true);
             }
 
-            if (!listView.getChildren().equals(newShown)) {
-                var d = new DerivedObservableList<>(listView.getChildren(), true);
-                d.setContent(newShown);
-            }
+            var d = new DerivedObservableList<>(listView.getChildren(), true);
+            d.setContent(newShown);
         };
 
         if (asynchronous) {

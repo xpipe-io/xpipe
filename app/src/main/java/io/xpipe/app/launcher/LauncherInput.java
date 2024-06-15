@@ -2,7 +2,6 @@ package io.xpipe.app.launcher;
 
 import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
@@ -34,17 +33,13 @@ public abstract class LauncherInput {
             }
         });
 
-        var requiresPlatform = all.stream().anyMatch(launcherInput -> launcherInput.requiresJavaFXPlatform());
-        if (requiresPlatform) {
-            OperationMode.switchToSyncIfPossible(OperationMode.GUI);
-        }
-        var hasGui = OperationMode.get() == OperationMode.GUI;
+//        var requiresPlatform = all.stream().anyMatch(launcherInput -> launcherInput.requiresJavaFXPlatform());
+//        if (requiresPlatform) {
+//            OperationMode.switchToSyncIfPossible(OperationMode.GUI);
+//        }
+//        var hasGui = OperationMode.get() == OperationMode.GUI;
 
         all.forEach(launcherInput -> {
-            if (!hasGui && launcherInput.requiresJavaFXPlatform()) {
-                return;
-            }
-
             try {
                 launcherInput.execute();
             } catch (Exception e) {
@@ -101,11 +96,6 @@ public abstract class LauncherInput {
     public static class BrowseFileAction implements ActionProvider.Action {
 
         Path file;
-
-        @Override
-        public boolean requiresJavaFXPlatform() {
-            return true;
-        }
 
         @Override
         public void execute() {

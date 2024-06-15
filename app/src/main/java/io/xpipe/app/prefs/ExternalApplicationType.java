@@ -45,16 +45,17 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
         @Override
         public boolean isAvailable() {
             try (ShellControl pc = LocalShell.getShell().start()) {
-                return pc.command(String.format(
+                var out = pc.command(String.format(
                                 "mdfind -name '%s' -onlyin /Applications -onlyin ~/Applications -onlyin /System/Applications",
                                 applicationName))
-                        .executeAndCheck();
+                        .readStdoutIfPossible();
+                return out.isPresent() && !out.get().isBlank();
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).handle();
                 return false;
             }
         }
-
+        
         @Override
         public boolean isSelectable() {
             return OsType.getLocal().equals(OsType.MACOS);

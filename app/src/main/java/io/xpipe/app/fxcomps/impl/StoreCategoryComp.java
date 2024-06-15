@@ -79,7 +79,7 @@ public class StoreCategoryComp extends SimpleComp {
                         }));
         var shownList = new DerivedObservableList<>(category.getContainedEntries(), true).filtered(
                 storeEntryWrapper -> {
-                    return storeEntryWrapper.shouldShow(
+                    return storeEntryWrapper.matchesFilter(
                             StoreViewState.get().getFilterString().getValue());
                 },
                 StoreViewState.get().getFilterString()).getList();

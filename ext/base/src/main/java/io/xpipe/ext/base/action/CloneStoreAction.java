@@ -14,8 +14,8 @@ import lombok.Value;
 public class CloneStoreAction implements ActionProvider {
 
     @Override
-    public DataStoreCallSite<?> getDataStoreCallSite() {
-        return new DataStoreCallSite<>() {
+    public LeafDataStoreCallSite<?> getLeafDataStoreCallSite() {
+        return new LeafDataStoreCallSite<>() {
 
             @Override
             public boolean isSystemAction() {
@@ -53,11 +53,6 @@ public class CloneStoreAction implements ActionProvider {
     static class Action implements ActionProvider.Action {
 
         DataStoreEntry store;
-
-        @Override
-        public boolean requiresJavaFXPlatform() {
-            return false;
-        }
 
         @Override
         public void execute() {

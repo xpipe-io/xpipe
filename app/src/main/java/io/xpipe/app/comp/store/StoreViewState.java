@@ -2,6 +2,7 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.fxcomps.util.DerivedObservableList;
+import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
@@ -117,6 +118,18 @@ public class StoreViewState {
                         .orElseThrow()));
     }
 
+    public void toggleStoreOrderUpdate() {
+        PlatformThread.runLaterIfNeeded(() -> {
+            entriesOrderChangeObservable.set(entriesOrderChangeObservable.get() + 1);
+        });
+    }
+
+    public void toggleStoreListUpdate() {
+        PlatformThread.runLaterIfNeeded(() -> {
+            entriesListChangeObservable.set(entriesListChangeObservable.get() + 1);
+        });
+    }
+
     private void addListeners() {
         if (AppPrefs.get() != null) {
             AppPrefs.get().condenseConnectionDisplay().addListener((observable, oldValue, newValue) -> {
@@ -136,14 +149,14 @@ public class StoreViewState {
             @Override
             public void onStoreOrderUpdate() {
                 Platform.runLater(() -> {
-                    entriesOrderChangeObservable.set(entriesOrderChangeObservable.get() + 1);
+                    toggleStoreOrderUpdate();
                 });
             }
 
             @Override
             public void onStoreListUpdate() {
                 Platform.runLater(() -> {
-                    entriesListChangeObservable.set(entriesListChangeObservable.get() + 1);
+                    toggleStoreListUpdate();
                 });
             }
 
@@ -281,11 +294,9 @@ public class StoreViewState {
             public int compare(StoreCategoryWrapper o1, StoreCategoryWrapper o2) {
                 var o1Root = o1.getRoot();
                 var o2Root = o2.getRoot();
-
                 if (o1Root.equals(getAllConnectionsCategory()) && !o1Root.equals(o2Root)) {
                     return -1;
                 }
-
                 if (o2Root.equals(getAllConnectionsCategory()) && !o1Root.equals(o2Root)) {
                     return 1;
                 }
@@ -300,6 +311,22 @@ public class StoreViewState {
 
                 if (o2.getParent() == null) {
                     return 1;
+                }
+
+                if (o1.getDepth() > o2.getDepth()) {
+                    if (o1.getParent() == o2) {
+                        return 1;
+                    }
+
+                    return compare(o1.getParent(), o2);
+                }
+
+                if (o1.getDepth() < o2.getDepth()) {
+                    if (o2.getParent() == o1) {
+                        return -1;
+                    }
+
+                    return compare(o1, o2.getParent());
                 }
 
                 var parent = compare(o1.getParent(), o2.getParent());

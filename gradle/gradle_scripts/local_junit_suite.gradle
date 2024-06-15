@@ -24,7 +24,7 @@ testing {
                         systemProperty 'io.xpipe.app.fullVersion', "true"
                         systemProperty 'io.xpipe.beacon.printDaemonOutput', "false"
                         systemProperty 'io.xpipe.app.useVirtualThreads', "false"
-                        // systemProperty "io.xpipe.beacon.port", "21725"
+                        systemProperty "io.xpipe.beacon.port", "21723"
                         systemProperty "io.xpipe.beacon.launchDebugDaemon", "true"
                         systemProperty "io.xpipe.app.dataDir", "$projectDir/local/"
                         systemProperty "io.xpipe.app.logLevel", "trace"

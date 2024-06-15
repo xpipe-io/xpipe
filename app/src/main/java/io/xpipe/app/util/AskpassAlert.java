@@ -56,6 +56,10 @@ public class AskpassAlert {
 
                         @Override
                         public void handle(long now) {
+                            if (!stage.isShowing()) {
+                                return;
+                            }
+
                             if (regainedFocusCount >= 2) {
                                 return;
                             }

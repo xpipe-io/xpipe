@@ -9,20 +9,21 @@ import io.xpipe.app.util.Validators;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellInitCommand;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.DataStoreState;
+import io.xpipe.core.store.EnabledStoreState;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.StatefulDataStore;
 import io.xpipe.core.util.JacksonizedValue;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Singular;
 import lombok.experimental.SuperBuilder;
-import lombok.extern.jackson.Jacksonized;
 
 import java.util.*;
 
 @SuperBuilder
 @Getter
 @AllArgsConstructor
-public abstract class ScriptStore extends JacksonizedValue implements DataStore, StatefulDataStore<ScriptStore.State> {
+public abstract class ScriptStore extends JacksonizedValue implements DataStore, StatefulDataStore<EnabledStoreState> {
 
     protected final DataStoreEntryRef<ScriptGroupStore> group;
 
@@ -32,21 +33,20 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
     protected final String description;
 
     public static ShellControl controlWithDefaultScripts(ShellControl pc) {
-        return controlWithScripts(pc, getDefaultInitScripts(), getDefaultBringScripts());
+        return controlWithScripts(pc, getDefaultEnabledScripts());
     }
 
     public static ShellControl controlWithScripts(
             ShellControl pc,
-            List<DataStoreEntryRef<ScriptStore>> initScripts,
-            List<DataStoreEntryRef<ScriptStore>> bringScripts) {
+            List<DataStoreEntryRef<ScriptStore>> enabledScripts) {
         try {
             // Don't copy scripts if we don't want to modify the file system
             if (!pc.getEffectiveSecurityPolicy().permitTempScriptCreation()) {
                 return pc;
             }
 
-            var initFlattened = flatten(initScripts);
-            var bringFlattened = flatten(bringScripts);
+            var initFlattened = flatten(enabledScripts).stream().filter(store -> store.isInitScript()).toList();
+            var bringFlattened = flatten(enabledScripts).stream().filter(store -> store.isShellScript()).toList();
 
             // Optimize if we have nothing to do
             if (initFlattened.isEmpty() && bringFlattened.isEmpty()) {
@@ -150,18 +150,10 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
         return targetDir;
     }
 
-    public static List<DataStoreEntryRef<ScriptStore>> getDefaultInitScripts() {
+    public static List<DataStoreEntryRef<ScriptStore>> getDefaultEnabledScripts() {
         return DataStorage.get().getStoreEntries().stream()
                 .filter(dataStoreEntry -> dataStoreEntry.getStore() instanceof ScriptStore scriptStore
-                        && scriptStore.getState().isDefault())
-                .map(DataStoreEntry::<ScriptStore>ref)
-                .toList();
-    }
-
-    public static List<DataStoreEntryRef<ScriptStore>> getDefaultBringScripts() {
-        return DataStorage.get().getStoreEntries().stream()
-                .filter(dataStoreEntry -> dataStoreEntry.getStore() instanceof ScriptStore scriptStore
-                        && scriptStore.getState().isBringToShell())
+                        && scriptStore.getState().isEnabled())
                 .map(DataStoreEntry::<ScriptStore>ref)
                 .toList();
     }
@@ -194,8 +186,8 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
     }
 
     @Override
-    public Class<State> getStateClass() {
-        return State.class;
+    public Class<EnabledStoreState> getStateClass() {
+        return EnabledStoreState.class;
     }
 
     @Override
@@ -220,13 +212,4 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
     protected abstract void queryFlattenedScripts(LinkedHashSet<SimpleScriptStore> all);
 
     public abstract List<DataStoreEntryRef<ScriptStore>> getEffectiveScripts();
-
-    @Value
-    @EqualsAndHashCode(callSuper=true)
-    @SuperBuilder(toBuilder = true)
-    @Jacksonized
-    public static class State extends DataStoreState {
-        boolean isDefault;
-        boolean bringToShell;
-    }
 }

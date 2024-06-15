@@ -88,8 +88,7 @@ project.ext {
     arch = getArchName()
     privateExtensions = file("$rootDir/private_extensions.txt").exists() ? file("$rootDir/private_extensions.txt").readLines() : []
     isFullRelease = System.getenv('RELEASE') != null && Boolean.parseBoolean(System.getenv('RELEASE'))
-    isPreRelease = System.getenv('PRERELEASE') != null && Boolean.parseBoolean(System.getenv('PRERELEASE'))
-    isStage = System.getenv('STAGE') != null && Boolean.parseBoolean(System.getenv('STAGE'))
+    isStage = true
     rawVersion = file('version').text.trim()
     versionString = rawVersion + (isFullRelease || isStage ? '' : '-SNAPSHOT')
     versionReleaseNumber = rawVersion.split('-').length == 2 ? Integer.parseInt(rawVersion.split('-')[1]) : 1
@@ -106,7 +105,7 @@ project.ext {
     website = 'https://xpipe.io'
     sourceWebsite = isStage ? 'https://github.com/xpipe-io/xpipe-ptb' : 'https://github.com/xpipe-io/xpipe'
     authors = 'Christopher Schnick'
-    javafxVersion = '22.0.1'
+    javafxVersion = '23-ea+18'
     platformName = getPlatformName()
     languages = ["en", "nl", "es", "fr", "de", "it", "pt", "ru", "ja", "zh", "tr", "da"]
     jvmRunArgs = [
@@ -157,6 +156,11 @@ if (org.gradle.internal.os.OperatingSystem.current() == org.gradle.internal.os.O
 
 if (isFullRelease && rawVersion.contains("-")) {
     throw new IllegalArgumentException("Releases must have canonical versions")
+}
+
+
+if (isStage && !rawVersion.contains("-")) {
+    throw new IllegalArgumentException("Stage releases must have release numbers")
 }
 
 def replaceVariablesInFileAsString(String f, Map<String, String> replacements) {

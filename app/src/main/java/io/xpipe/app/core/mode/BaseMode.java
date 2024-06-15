@@ -1,5 +1,6 @@
 package io.xpipe.app.core.mode;
 
+import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.*;
@@ -17,7 +18,6 @@ import io.xpipe.app.util.FileBridge;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.UnlockAlert;
-import io.xpipe.core.util.JacksonMapper;
 
 public class BaseMode extends OperationMode {
 
@@ -43,12 +43,8 @@ public class BaseMode extends OperationMode {
         // if (true) throw new IllegalStateException();
 
         TrackEvent.info("Initializing base mode components ...");
-        AppExtensionManager.init(true);
-        JacksonMapper.initModularized(AppExtensionManager.getInstance().getExtendedLayer());
         AppI18n.init();
         LicenseProvider.get().init();
-        AppPrefs.initLocal();
-        AppI18n.init();
         AppCertutilCheck.check();
         AppAvCheck.check();
         AppSid.init();
@@ -56,8 +52,8 @@ public class BaseMode extends OperationMode {
         AppShellCheck.check();
         XPipeDistributionType.init();
         AppPrefs.setDefaults();
-        // Initialize socket server as we should be prepared for git askpass commands
-        AppSocketServer.init();
+        // Initialize beacon server as we should be prepared for git askpass commands
+        AppBeaconServer.init();
         GitStorageHandler.getInstance().init();
         GitStorageHandler.getInstance().setupRepositoryAndPull();
         AppPrefs.initSharedRemote();
@@ -85,8 +81,8 @@ public class BaseMode extends OperationMode {
         AppResources.reset();
         AppExtensionManager.reset();
         AppDataLock.unlock();
-        // Shut down socket server last to keep a non-daemon thread running
-        AppSocketServer.reset();
+        // Shut down server last to keep a non-daemon thread running
+        AppBeaconServer.reset();
         TrackEvent.info("Background mode shutdown finished");
     }
 }

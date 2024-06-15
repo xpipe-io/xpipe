@@ -42,7 +42,7 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
     }
 
     private String getHtml() {
-        return MarkdownHelper.toHtml(markdown.getValue(), htmlTransformation);
+        return MarkdownHelper.toHtml(markdown.getValue(), s -> s, htmlTransformation);
     }
 
     @SneakyThrows
@@ -55,8 +55,8 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
                         AppProperties.get().getDataDir().resolve("webview").toFile());
         wv.setPageFill(Color.TRANSPARENT);
         var theme = AppPrefs.get() != null && AppPrefs.get().theme.getValue().isDark()
-                ? "web/github-markdown-dark.css"
-                : "web/github-markdown-light.css";
+                ? "misc/github-markdown-dark.css"
+                : "misc/github-markdown-light.css";
         var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, theme).orElseThrow();
         wv.getEngine().setUserStyleSheetLocation(url.toString());
 

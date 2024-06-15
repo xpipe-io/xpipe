@@ -58,7 +58,7 @@ jlink {
     ]
 
     if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
-        options += ['--strip-native-debug-symbols']
+        options.addAll('--strip-native-debug-symbols', 'exclude-debuginfo-files')
     }
 
     if (useBundledJavaFx) {
