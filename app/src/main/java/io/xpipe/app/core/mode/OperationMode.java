@@ -114,7 +114,6 @@ public abstract class OperationMode {
             AppExtensionManager.init(true);
             AppI18n.init();
             AppPrefs.initLocal();
-            AppPrefs.setLocalDefaultsIfNeeded();
             AppBeaconServer.setupPort();
             TrackEvent.info("Finished initial setup");
         } catch (Throwable ex) {
