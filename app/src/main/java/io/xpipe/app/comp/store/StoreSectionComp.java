@@ -9,6 +9,7 @@ import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.beans.binding.Bindings;
 import javafx.css.PseudoClass;
 import javafx.scene.control.Button;
@@ -126,14 +127,16 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
 
         // Optimization for large sections. If there are more than 20 children, only add the nodes to the scene if the
         // section is actually expanded
-        var listSections = section.getShownChildren().filtered(
-                storeSection -> section.getAllChildren().getList().size() <= 20
-                        || section.getWrapper().getExpanded().get(),
-                section.getWrapper().getExpanded(),
-                section.getAllChildren().getList());
-        var content = new ListBoxViewComp<>(listSections.getList(), section.getAllChildren().getList(), (StoreSection e) -> {
-                    return StoreSection.customSection(e, false).apply(GrowAugment.create(true, false));
-                })
+        var listSections = section.getShownChildren()
+                .filtered(
+                        storeSection -> section.getAllChildren().getList().size() <= 20
+                                || section.getWrapper().getExpanded().get(),
+                        section.getWrapper().getExpanded(),
+                        section.getAllChildren().getList());
+        var content = new ListBoxViewComp<>(
+                        listSections.getList(), section.getAllChildren().getList(), (StoreSection e) -> {
+                            return StoreSection.customSection(e, false).apply(GrowAugment.create(true, false));
+                        })
                 .minHeight(0)
                 .hgrow();
 
@@ -152,7 +155,8 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                         .apply(struc -> struc.get().setFillHeight(true))
                         .hide(Bindings.or(
                                 Bindings.not(section.getWrapper().getExpanded()),
-                                Bindings.size(section.getShownChildren().getList()).isEqualTo(0)))));
+                                Bindings.size(section.getShownChildren().getList())
+                                        .isEqualTo(0)))));
         return full.styleClass("store-entry-section-comp")
                 .apply(struc -> {
                     struc.get().setFillWidth(true);

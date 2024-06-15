@@ -5,11 +5,13 @@ import io.xpipe.app.launcher.LauncherInput;
 import javafx.scene.control.Alert;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
+import lombok.Setter;
 
 import java.util.List;
 
 public class AppActionLinkDetector {
 
+    @Setter
     private static String lastDetectedAction;
 
     private static String getClipboardAction() {
@@ -32,10 +34,6 @@ public class AppActionLinkDetector {
         }
 
         LauncherInput.handle(List.of(content));
-    }
-
-    public static void setLastDetectedAction(String s) {
-        lastDetectedAction = s;
     }
 
     public static void detectOnFocus() {

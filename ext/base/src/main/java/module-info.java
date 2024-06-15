@@ -33,7 +33,8 @@ open module io.xpipe.ext.base {
     requires org.kordamp.ikonli.javafx;
     requires atlantafx.base;
 
-    provides BrowserAction with RunScriptAction,
+    provides BrowserAction with
+            RunScriptAction,
             FollowLinkAction,
             BackAction,
             ForwardAction,
@@ -58,11 +59,28 @@ open module io.xpipe.ext.base {
             UnzipAction,
             JavapAction,
             JarAction;
-    provides ActionProvider with ServiceOpenAction, ServiceCopyUrlAction,
-            CloneStoreAction, RefreshChildrenStoreAction, LaunchStoreAction,
+    provides ActionProvider with
+            ServiceOpenAction,
+            ServiceCopyUrlAction,
+            CloneStoreAction,
+            RefreshChildrenStoreAction,
+            LaunchStoreAction,
             XPipeUrlAction,
-            EditStoreAction, DeleteChildrenStoreAction,
-            BrowseStoreAction, ScanStoreAction;
-    provides DataStoreProvider with FixedServiceGroupStoreProvider, ServiceGroupStoreProvider, CustomServiceStoreProvider, MappedServiceStoreProvider, FixedServiceStoreProvider, SimpleScriptStoreProvider, DesktopEnvironmentStoreProvider, DesktopApplicationStoreProvider, DesktopCommandStoreProvider, ScriptGroupStoreProvider;
-    provides DataStorageExtensionProvider with ScriptDataStorageProvider;
+            EditStoreAction,
+            DeleteChildrenStoreAction,
+            BrowseStoreAction,
+            ScanStoreAction;
+    provides DataStoreProvider with
+            FixedServiceGroupStoreProvider,
+            ServiceGroupStoreProvider,
+            CustomServiceStoreProvider,
+            MappedServiceStoreProvider,
+            FixedServiceStoreProvider,
+            SimpleScriptStoreProvider,
+            DesktopEnvironmentStoreProvider,
+            DesktopApplicationStoreProvider,
+            DesktopCommandStoreProvider,
+            ScriptGroupStoreProvider;
+    provides DataStorageExtensionProvider with
+            ScriptDataStorageProvider;
 }

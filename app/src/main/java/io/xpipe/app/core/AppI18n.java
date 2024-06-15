@@ -10,10 +10,12 @@ import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.Translatable;
 import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.XPipeInstallation;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
+
 import lombok.SneakyThrows;
 import lombok.Value;
 import org.apache.commons.io.FilenameUtils;

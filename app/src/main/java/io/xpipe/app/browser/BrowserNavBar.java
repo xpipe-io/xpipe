@@ -1,6 +1,5 @@
 package io.xpipe.app.browser;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.file.BrowserContextMenu;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.browser.icon.FileIconManager;
@@ -13,6 +12,7 @@ import io.xpipe.app.fxcomps.impl.TextFieldComp;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -28,6 +28,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+
+import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 public class BrowserNavBar extends Comp<BrowserNavBar.Structure> {
@@ -94,8 +96,8 @@ public class BrowserNavBar extends Comp<BrowserNavBar.Structure> {
         homeButton.getStyleClass().add(Styles.LEFT_PILL);
         homeButton.getStyleClass().add("path-graphic-button");
         new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, null, () -> {
-            return model.getInOverview().get() ? null : new BrowserContextMenu(model, null, false);
-        })
+                    return model.getInOverview().get() ? null : new BrowserContextMenu(model, null, false);
+                })
                 .augment(new SimpleCompStructure<>(homeButton));
 
         var historyButton = new Button(null, new FontIcon("mdi2h-history"));
@@ -103,7 +105,8 @@ public class BrowserNavBar extends Comp<BrowserNavBar.Structure> {
         historyButton.getStyleClass().add(Styles.RIGHT_PILL);
         new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, null, this::createContextMenu)
                 .augment(new SimpleCompStructure<>(historyButton));
-        new TooltipAugment<>("history", new KeyCodeCombination(KeyCode.H, KeyCombination.ALT_DOWN)).augment(historyButton);
+        new TooltipAugment<>("history", new KeyCodeCombination(KeyCode.H, KeyCombination.ALT_DOWN))
+                .augment(historyButton);
 
         var breadcrumbs = new BrowserBreadcrumbBar(model).grow(false, true);
 
@@ -114,7 +117,8 @@ public class BrowserNavBar extends Comp<BrowserNavBar.Structure> {
             event.consume();
         });
         breadcrumbsRegion.setFocusTraversable(false);
-        breadcrumbsRegion.visibleProperty()
+        breadcrumbsRegion
+                .visibleProperty()
                 .bind(Bindings.createBooleanBinding(
                         () -> {
                             return !pathRegion.isFocused()

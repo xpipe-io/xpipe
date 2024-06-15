@@ -73,7 +73,8 @@ public class AppInstaller {
                                 : XPipeInstallation.getCurrentInstallationBasePath())
                         .resolve(XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()))
                         .toString();
-                var logsDir = AppLogs.get().getSessionLogsDirectory().getParent().toString();
+                var logsDir =
+                        AppLogs.get().getSessionLogsDirectory().getParent().toString();
                 var logFile = FileNames.join(logsDir, "installer_" + FileNames.getFileName(file) + ".log");
                 var command = LocalShell.getShell().getShellDialect().equals(ShellDialects.CMD)
                         ? getCmdCommand(file, logFile, exec)

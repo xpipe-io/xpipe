@@ -1,6 +1,7 @@
 package io.xpipe.core.process;
 
 import io.xpipe.core.store.DataStoreState;
+
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -10,7 +11,7 @@ import lombok.extern.jackson.Jacksonized;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Getter
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
 @SuperBuilder(toBuilder = true)
 @Jacksonized
 public class ShellStoreState extends DataStoreState implements OsNameState {
@@ -32,7 +33,7 @@ public class ShellStoreState extends DataStoreState implements OsNameState {
         return b.build();
     }
 
-    protected void mergeBuilder(ShellStoreState shellStoreState, ShellStoreStateBuilder<?,?> b) {
+    protected void mergeBuilder(ShellStoreState shellStoreState, ShellStoreStateBuilder<?, ?> b) {
         b.osType(useNewer(osType, shellStoreState.getOsType()))
                 .osName(useNewer(osName, shellStoreState.getOsName()))
                 .shellDialect(useNewer(shellDialect, shellStoreState.getShellDialect()))

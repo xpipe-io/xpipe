@@ -9,9 +9,11 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.StorageListener;
+
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
+
 import lombok.Getter;
 
 import java.util.*;
@@ -86,22 +88,26 @@ public class StoreViewState {
             currentTopLevelSection =
                     StoreSection.createTopLevel(allEntries, storeEntryWrapper -> true, filter, activeCategory);
         } catch (Exception exception) {
-            currentTopLevelSection =
-                    new StoreSection(null,
-                            new DerivedObservableList<>(FXCollections.observableArrayList(), true),
-                            new DerivedObservableList<>(FXCollections.observableArrayList(), true),
-                            0);
+            currentTopLevelSection = new StoreSection(
+                    null,
+                    new DerivedObservableList<>(FXCollections.observableArrayList(), true),
+                    new DerivedObservableList<>(FXCollections.observableArrayList(), true),
+                    0);
             ErrorEvent.fromThrowable(exception).handle();
         }
     }
 
     private void initContent() {
-        allEntries.getList().setAll(FXCollections.observableArrayList(DataStorage.get().getStoreEntries().stream()
-                .map(StoreEntryWrapper::new)
-                .toList()));
-        categories.getList().setAll(FXCollections.observableArrayList(DataStorage.get().getStoreCategories().stream()
-                .map(StoreCategoryWrapper::new)
-                .toList()));
+        allEntries
+                .getList()
+                .setAll(FXCollections.observableArrayList(DataStorage.get().getStoreEntries().stream()
+                        .map(StoreEntryWrapper::new)
+                        .toList()));
+        categories
+                .getList()
+                .setAll(FXCollections.observableArrayList(DataStorage.get().getStoreCategories().stream()
+                        .map(StoreCategoryWrapper::new)
+                        .toList()));
 
         activeCategory.addListener((observable, oldValue, newValue) -> {
             DataStorage.get().setSelectedCategory(newValue.getCategory());
@@ -274,12 +280,16 @@ public class StoreViewState {
     public Optional<StoreSection> getParentSectionForWrapper(StoreEntryWrapper wrapper) {
         StoreSection current = getCurrentTopLevelSection();
         while (true) {
-            var child = current.getAllChildren().getList().stream().filter(section -> section.getWrapper().equals(wrapper)).findFirst();
+            var child = current.getAllChildren().getList().stream()
+                    .filter(section -> section.getWrapper().equals(wrapper))
+                    .findFirst();
             if (child.isPresent()) {
                 return Optional.of(current);
             }
 
-            var traverse = current.getAllChildren().getList().stream().filter(section -> section.anyMatches(w -> w.equals(wrapper))).findFirst();
+            var traverse = current.getAllChildren().getList().stream()
+                    .filter(section -> section.anyMatches(w -> w.equals(wrapper)))
+                    .findFirst();
             if (traverse.isPresent()) {
                 current = traverse.get();
             } else {
@@ -339,7 +349,9 @@ public class StoreViewState {
                         .compareToIgnoreCase(o2.nameProperty().getValue());
             }
         };
-        return categories.filtered(cat -> root == null || cat.getRoot().equals(root)).sorted(comparator);
+        return categories
+                .filtered(cat -> root == null || cat.getRoot().equals(root))
+                .sorted(comparator);
     }
 
     public StoreCategoryWrapper getAllConnectionsCategory() {

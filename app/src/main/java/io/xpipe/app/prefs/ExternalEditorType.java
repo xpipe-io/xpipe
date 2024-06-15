@@ -64,12 +64,13 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         protected Optional<Path> determineInstallation() {
-            var found = WindowsRegistry.local().readValue(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Notepad++", null);
+            var found =
+                    WindowsRegistry.local().readValue(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Notepad++", null);
 
             // Check 32 bit install
             if (found.isEmpty()) {
-                found = WindowsRegistry.local().readValue(
-                        WindowsRegistry.HKEY_LOCAL_MACHINE, "WOW6432Node\\SOFTWARE\\Notepad++", null);
+                found = WindowsRegistry.local()
+                        .readValue(WindowsRegistry.HKEY_LOCAL_MACHINE, "WOW6432Node\\SOFTWARE\\Notepad++", null);
             }
             return found.map(p -> p + "\\notepad++.exe").map(Path::of);
         }
@@ -187,7 +188,9 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         public void launch(Path file) throws Exception {
             try (var sc = LocalShell.getShell().start()) {
                 sc.executeSimpleCommand(CommandBuilder.of()
-                        .add("open", "-a").addQuoted(applicationName).addFile(file.toString()));
+                        .add("open", "-a")
+                        .addQuoted(applicationName)
+                        .addFile(file.toString()));
             }
         }
     }

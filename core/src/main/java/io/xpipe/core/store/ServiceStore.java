@@ -11,7 +11,7 @@ public interface ServiceStore extends SingletonSessionStore<SessionChain> {
     OptionalInt getTargetPort();
 
     @Override
-    default SessionChain newSession() throws Exception {
+    default SessionChain newSession() {
         var s = getParent().tunnelSession();
         return null;
     }

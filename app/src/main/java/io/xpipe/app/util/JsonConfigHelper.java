@@ -1,11 +1,11 @@
 package io.xpipe.app.util;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.util.JacksonMapper;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,7 +28,10 @@ public class JsonConfigHelper {
                 return read;
             }
         } catch (JsonParseException e) {
-            ErrorEvent.fromThrowable("Unable to parse file " + in, e).expected().build().handle();
+            ErrorEvent.fromThrowable("Unable to parse file " + in, e)
+                    .expected()
+                    .build()
+                    .handle();
         } catch (IOException e) {
             ErrorEvent.fromThrowable("Unable to parse file " + in, e).build().handle();
         }

@@ -1,17 +1,19 @@
 package io.xpipe.app.beacon.impl;
 
-import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.BeaconServerException;
 import io.xpipe.beacon.api.DaemonModeExchange;
 
+import com.sun.net.httpserver.HttpExchange;
+
 import java.io.IOException;
 
 public class DaemonModeExchangeImpl extends DaemonModeExchange {
     @Override
-    public Object handle(HttpExchange exchange, Request msg) throws IOException, BeaconClientException, BeaconServerException {
+    public Object handle(HttpExchange exchange, Request msg)
+            throws BeaconClientException {
         // Wait for startup
         while (OperationMode.get() == null) {
             ThreadHelper.sleep(100);
@@ -21,11 +23,11 @@ public class DaemonModeExchangeImpl extends DaemonModeExchange {
         if (!mode.isSupported()) {
             throw new BeaconClientException("Unsupported mode: " + msg.getMode().getDisplayName() + ". Supported: "
                     + String.join(
-                    ", ",
-                    OperationMode.getAll().stream()
-                            .filter(OperationMode::isSupported)
-                            .map(OperationMode::getId)
-                            .toList()));
+                            ", ",
+                            OperationMode.getAll().stream()
+                                    .filter(OperationMode::isSupported)
+                                    .map(OperationMode::getId)
+                                    .toList()));
         }
 
         OperationMode.switchToSyncIfPossible(mode);

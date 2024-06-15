@@ -1,12 +1,13 @@
 package io.xpipe.app.beacon.impl;
 
-import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.BeaconServerException;
 import io.xpipe.beacon.api.ConnectionQueryExchange;
 import io.xpipe.core.store.StorePath;
+
+import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.regex.Pattern;
 public class ConnectionQueryExchangeImpl extends ConnectionQueryExchange {
 
     @Override
-    public Object handle(HttpExchange exchange, Request msg) throws IOException, BeaconClientException, BeaconServerException {
+    public Object handle(HttpExchange exchange, Request msg) {
         var catMatcher = Pattern.compile(toRegex("all connections/" + msg.getCategoryFilter()));
         var conMatcher = Pattern.compile(toRegex(msg.getConnectionFilter()));
 
@@ -31,7 +32,9 @@ public class ConnectionQueryExchangeImpl extends ConnectionQueryExchange {
                 continue;
             }
 
-            var cat = DataStorage.get().getStoreCategoryIfPresent(storeEntry.getCategoryUuid()).orElse(null);
+            var cat = DataStorage.get()
+                    .getStoreCategoryIfPresent(storeEntry.getCategoryUuid())
+                    .orElse(null);
             if (cat == null) {
                 continue;
             }
@@ -46,11 +49,18 @@ public class ConnectionQueryExchangeImpl extends ConnectionQueryExchange {
 
         var mapped = new ArrayList<QueryResponse>();
         for (DataStoreEntry e : found) {
-            var names = DataStorage.get().getStorePath(DataStorage.get().getStoreCategoryIfPresent(e.getCategoryUuid()).orElseThrow()).getNames();
+            var names = DataStorage.get()
+                    .getStorePath(DataStorage.get()
+                            .getStoreCategoryIfPresent(e.getCategoryUuid())
+                            .orElseThrow())
+                    .getNames();
             var cat = new StorePath(names.subList(1, names.size()));
             var obj = ConnectionQueryExchange.QueryResponse.builder()
-                    .uuid(e.getUuid()).category(cat).connection(DataStorage.get()
-                    .getStorePath(e)).type(e.getProvider().getId()).build();
+                    .uuid(e.getUuid())
+                    .category(cat)
+                    .connection(DataStorage.get().getStorePath(e))
+                    .type(e.getProvider().getId())
+                    .build();
             mapped.add(obj);
         }
         return Response.builder().found(mapped).build();
@@ -86,20 +96,16 @@ public class ConnectionQueryExchangeImpl extends ConnectionQueryExchange {
                     }
                     break;
                 case '*':
-                    if (inClass == 0)
-                        sb.append(".*");
-                    else
-                        sb.append('*');
+                    if (inClass == 0) sb.append(".*");
+                    else sb.append('*');
                     break;
                 case '?':
-                    if (inClass == 0)
-                        sb.append('.');
-                    else
-                        sb.append('?');
+                    if (inClass == 0) sb.append('.');
+                    else sb.append('?');
                     break;
                 case '[':
                     inClass++;
-                    firstIndexInClass = i+1;
+                    firstIndexInClass = i + 1;
                     sb.append('[');
                     break;
                 case ']':
@@ -115,15 +121,12 @@ public class ConnectionQueryExchangeImpl extends ConnectionQueryExchange {
                 case '$':
                 case '@':
                 case '%':
-                    if (inClass == 0 || (firstIndexInClass == i && ch == '^'))
-                        sb.append('\\');
+                    if (inClass == 0 || (firstIndexInClass == i && ch == '^')) sb.append('\\');
                     sb.append(ch);
                     break;
                 case '!':
-                    if (firstIndexInClass == i)
-                        sb.append('^');
-                    else
-                        sb.append('!');
+                    if (firstIndexInClass == i) sb.append('^');
+                    else sb.append('!');
                     break;
                 case '{':
                     inGroup++;
@@ -134,10 +137,8 @@ public class ConnectionQueryExchangeImpl extends ConnectionQueryExchange {
                     sb.append(')');
                     break;
                 case ',':
-                    if (inGroup > 0)
-                        sb.append('|');
-                    else
-                        sb.append(',');
+                    if (inGroup > 0) sb.append('|');
+                    else sb.append(',');
                     break;
                 default:
                     sb.append(ch);

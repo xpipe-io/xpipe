@@ -2,8 +2,10 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.process.OsType;
+
 import javafx.application.Preloader;
 import javafx.stage.Stage;
+
 import lombok.Getter;
 import lombok.SneakyThrows;
 

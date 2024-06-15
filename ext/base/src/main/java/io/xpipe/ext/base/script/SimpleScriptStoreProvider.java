@@ -20,6 +20,7 @@ import io.xpipe.app.util.Validator;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.Identifiers;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleListProperty;
@@ -27,6 +28,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+
 import lombok.SneakyThrows;
 
 import java.util.ArrayList;
@@ -171,7 +173,8 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                 .nameAndDescription("executionType")
                 .longDescription("base:executionType")
                 .addComp(selectorComp, selectedExecTypes)
-                .check(validator -> Validator.nonEmpty(validator, AppI18n.observable("executionType"), selectedExecTypes))
+                .check(validator ->
+                        Validator.nonEmpty(validator, AppI18n.observable("executionType"), selectedExecTypes))
                 .name("scriptGroup")
                 .description("scriptGroupDescription")
                 .addComp(

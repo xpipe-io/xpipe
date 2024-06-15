@@ -35,7 +35,12 @@ public class PasteAction implements LeafAction {
             return;
         }
 
-        model.dropFilesIntoAsync(target, files.stream().map(browserEntry -> browserEntry.getRawFileEntry()).toList(), BrowserFileTransferMode.COPY);
+        model.dropFilesIntoAsync(
+                target,
+                files.stream()
+                        .map(browserEntry -> browserEntry.getRawFileEntry())
+                        .toList(),
+                BrowserFileTransferMode.COPY);
     }
 
     @Override

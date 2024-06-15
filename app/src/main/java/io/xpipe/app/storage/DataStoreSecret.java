@@ -1,11 +1,12 @@
 package io.xpipe.app.storage;
 
-import com.fasterxml.jackson.core.TreeNode;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.PasswordLockSecretValue;
 import io.xpipe.app.util.VaultKeySecretValue;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.SecretValue;
+
+import com.fasterxml.jackson.core.TreeNode;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
@@ -16,8 +17,10 @@ import java.util.Objects;
 public class DataStoreSecret {
 
     InPlaceSecretValue internalSecret;
+
     @NonFinal
     String usedPasswordLockCrypt;
+
     @NonFinal
     TreeNode originalNode;
 
@@ -39,7 +42,8 @@ public class DataStoreSecret {
 
         // Special check for empty passphrases
         var wasEmpty = usedPasswordLockCrypt == null || usedPasswordLockCrypt.isEmpty();
-        var isEmpty = AppPrefs.get().getLockCrypt().get() == null || AppPrefs.get().getLockCrypt().get().isEmpty();
+        var isEmpty = AppPrefs.get().getLockCrypt().get() == null
+                || AppPrefs.get().getLockCrypt().get().isEmpty();
         if (wasEmpty && isEmpty) {
             return false;
         }

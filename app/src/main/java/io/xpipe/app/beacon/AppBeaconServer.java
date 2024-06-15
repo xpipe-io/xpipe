@@ -1,7 +1,5 @@
 package io.xpipe.app.beacon;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpServer;
 import io.xpipe.app.core.AppResources;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
@@ -10,6 +8,9 @@ import io.xpipe.app.util.MarkdownHelper;
 import io.xpipe.beacon.BeaconConfig;
 import io.xpipe.beacon.BeaconInterface;
 import io.xpipe.core.util.XPipeInstallation;
+
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpServer;
 import lombok.Getter;
 
 import java.io.IOException;
@@ -22,16 +23,22 @@ import java.util.concurrent.Executors;
 public class AppBeaconServer {
 
     private static AppBeaconServer INSTANCE;
+
     @Getter
     private final int port;
+
     @Getter
     private final boolean propertyPort;
+
     private boolean running;
     private HttpServer server;
+
     @Getter
     private final Set<BeaconSession> sessions = new HashSet<>();
+
     @Getter
     private final Set<BeaconShellSession> shellSessions = new HashSet<>();
+
     @Getter
     private String localAuthSecret;
 
@@ -122,8 +129,7 @@ public class AppBeaconServer {
                 "openapi.yaml", "misc/openapi.yaml",
                 "markdown.css", "misc/github-markdown-dark.css",
                 "highlight.min.js", "misc/highlight.min.js",
-                "github-dark.min.css", "misc/github-dark.min.css"
-        );
+                "github-dark.min.css", "misc/github-dark.min.css");
         resourceMap.forEach((s, s2) -> {
             server.createContext("/" + s, exchange -> {
                 handleResource(exchange, s2);
@@ -145,7 +151,7 @@ public class AppBeaconServer {
             });
         }
         var body = resources.get(resource).getBytes(StandardCharsets.UTF_8);
-        exchange.sendResponseHeaders(200,body.length);
+        exchange.sendResponseHeaders(200, body.length);
         try (var out = exchange.getResponseBody()) {
             out.write(body);
         }
@@ -154,19 +160,21 @@ public class AppBeaconServer {
     private void handleCatchAll(HttpExchange exchange) throws IOException {
         if (notFoundHtml == null) {
             AppResources.with(AppResources.XPIPE_MODULE, "misc/api.md", file -> {
-                notFoundHtml = MarkdownHelper.toHtml(Files.readString(file), head -> {
-                    return head + "\n" +
-                            "<link rel=\"stylesheet\" href=\"markdown.css\">" + "\n" +
-                            "<link rel=\"stylesheet\" href=\"github-dark.min.css\">" + "\n" +
-                            "<script src=\"highlight.min.js\"></script>" + "\n" +
-                            "<script>hljs.highlightAll();</script>";
-                }, s -> {
-                    return "<div style=\"max-width: 800px;margin: auto;\">" + s + "</div>";
-                });
+                notFoundHtml = MarkdownHelper.toHtml(
+                        Files.readString(file),
+                        head -> {
+                            return head + "\n" + "<link rel=\"stylesheet\" href=\"markdown.css\">"
+                                    + "\n" + "<link rel=\"stylesheet\" href=\"github-dark.min.css\">"
+                                    + "\n" + "<script src=\"highlight.min.js\"></script>"
+                                    + "\n" + "<script>hljs.highlightAll();</script>";
+                        },
+                        s -> {
+                            return "<div style=\"max-width: 800px;margin: auto;\">" + s + "</div>";
+                        });
             });
         }
         var body = notFoundHtml.getBytes(StandardCharsets.UTF_8);
-        exchange.sendResponseHeaders(200,body.length);
+        exchange.sendResponseHeaders(200, body.length);
         try (var out = exchange.getResponseBody()) {
             out.write(body);
         }

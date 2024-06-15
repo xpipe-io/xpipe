@@ -96,7 +96,6 @@ public interface WindowsTerminalType extends ExternalTerminalType {
         }
     }
 
-
     class Canary implements WindowsTerminalType {
 
         @Override

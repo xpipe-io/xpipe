@@ -15,7 +15,7 @@ public abstract class DataStorageExtensionProvider {
         return ALL;
     }
 
-    public void storageInit() throws Exception {}
+    public void storageInit() {}
 
     public static class Loader implements ModuleLayerLoader {
 

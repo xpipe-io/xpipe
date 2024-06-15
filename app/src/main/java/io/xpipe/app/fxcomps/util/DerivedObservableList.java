@@ -8,6 +8,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+
 import lombok.Getter;
 
 import java.util.*;
@@ -133,13 +134,15 @@ public class DerivedObservableList<T> {
         var l1 = this.<V>createNewDerived();
         Runnable runnable = () -> {
             cache.keySet().removeIf(t -> !getList().contains(t));
-            l1.setContent(list.stream().map(v -> {
-                if (!cache.containsKey(v)) {
-                    cache.put(v, map.apply(v));
-                }
+            l1.setContent(list.stream()
+                    .map(v -> {
+                        if (!cache.containsKey(v)) {
+                            cache.put(v, map.apply(v));
+                        }
 
-                return cache.get(v);
-            }).toList());
+                        return cache.get(v);
+                    })
+                    .toList());
         };
         runnable.run();
         list.addListener((ListChangeListener<? super T>) c -> {
@@ -160,17 +163,16 @@ public class DerivedObservableList<T> {
     }
 
     public DerivedObservableList<T> filtered(Predicate<T> predicate, Observable... observables) {
-        return filtered(
-                Bindings.createObjectBinding(
-                        () -> {
-                            return new Predicate<>() {
-                                @Override
-                                public boolean test(T v) {
-                                    return predicate.test(v);
-                                }
-                            };
-                        },
-                        Arrays.stream(observables).filter(Objects::nonNull).toArray(Observable[]::new)));
+        return filtered(Bindings.createObjectBinding(
+                () -> {
+                    return new Predicate<>() {
+                        @Override
+                        public boolean test(T v) {
+                            return predicate.test(v);
+                        }
+                    };
+                },
+                Arrays.stream(observables).filter(Objects::nonNull).toArray(Observable[]::new)));
     }
 
     public DerivedObservableList<T> filtered(ObservableValue<Predicate<T>> predicate) {

@@ -7,16 +7,14 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        property = "type")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface BeaconAuthMethod {
 
     @JsonTypeName("Local")
     @Value
     @Builder
     @Jacksonized
-    public static class Local implements BeaconAuthMethod {
+    class Local implements BeaconAuthMethod {
 
         @NonNull
         String authFileContent;
@@ -26,7 +24,7 @@ public interface BeaconAuthMethod {
     @Value
     @Builder
     @Jacksonized
-    public static class ApiKey implements BeaconAuthMethod {
+    class ApiKey implements BeaconAuthMethod {
 
         @NonNull
         String key;

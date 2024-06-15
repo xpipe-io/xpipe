@@ -89,8 +89,8 @@ public class DataStoreEntry extends StorageElement {
             JsonNode storePersistentState,
             boolean expanded,
             DataStoreColor color,
-            String notes, UUID orderBefore
-    ) {
+            String notes,
+            UUID orderBefore) {
         super(directory, uuid, name, lastUsed, lastModified, dirty);
         this.categoryUuid = categoryUuid;
         this.store = DataStorageParser.storeFromNode(storeNode);
@@ -114,8 +114,8 @@ public class DataStoreEntry extends StorageElement {
             String name,
             Instant lastUsed,
             Instant lastModified,
-            DataStore store, UUID orderBefore
-    ) {
+            DataStore store,
+            UUID orderBefore) {
         super(directory, uuid, name, lastUsed, lastModified, false);
         this.categoryUuid = categoryUuid;
         this.store = store;
@@ -296,8 +296,7 @@ public class DataStoreEntry extends StorageElement {
                 expanded,
                 color,
                 notes,
-                order
-        ));
+                order));
     }
 
     public void setOrderBefore(UUID uuid) {
@@ -395,7 +394,8 @@ public class DataStoreEntry extends StorageElement {
     public Path[] getShareableFiles() {
         var notes = directory.resolve("notes.md");
         var list = List.of(directory.resolve("store.json"), directory.resolve("entry.json"));
-        return Stream.concat(list.stream(), Files.exists(notes) ? Stream.of(notes) : Stream.of()).toArray(Path[]::new);
+        return Stream.concat(list.stream(), Files.exists(notes) ? Stream.of(notes) : Stream.of())
+                .toArray(Path[]::new);
     }
 
     public void writeDataToDisk() throws Exception {

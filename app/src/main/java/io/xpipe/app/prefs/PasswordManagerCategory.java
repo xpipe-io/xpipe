@@ -1,6 +1,5 @@
 package io.xpipe.app.prefs;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.core.AppI18n;
@@ -15,11 +14,14 @@ import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.CommandControl;
 import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.store.LocalStore;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
+
+import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -70,8 +72,13 @@ public class PasswordManagerCategory extends AppPrefsCategory {
             });
         };
 
-        var c = new IntegratedTextAreaComp(prefs.passwordManagerCommand, true, "pw", new SimpleStringProperty(
-                ProcessControlProvider.get().getEffectiveLocalDialect().getScriptFileEnding()))
+        var c = new IntegratedTextAreaComp(
+                        prefs.passwordManagerCommand,
+                        true,
+                        "pw",
+                        new SimpleStringProperty(ProcessControlProvider.get()
+                                .getEffectiveLocalDialect()
+                                .getScriptFileEnding()))
                 .apply(struc -> {
                     struc.getTextArea().setPromptText("mypassmgr get $KEY");
                 })

@@ -4,7 +4,6 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
@@ -57,13 +56,14 @@ public interface WezTerminalType extends ExternalTerminalType {
         @Override
         protected Optional<Path> determineInstallation() {
             try {
-                var foundKey = WindowsRegistry.local().findKeyForEqualValueMatchRecursive(WindowsRegistry.HKEY_LOCAL_MACHINE,
-                        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall", "http://wezfurlong.org/wezterm");
+                var foundKey = WindowsRegistry.local()
+                        .findKeyForEqualValueMatchRecursive(
+                                WindowsRegistry.HKEY_LOCAL_MACHINE,
+                                "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
+                                "http://wezfurlong.org/wezterm");
                 if (foundKey.isPresent()) {
-                    var installKey = WindowsRegistry.local().readValue(
-                            foundKey.get().getHkey(),
-                            foundKey.get().getKey(),
-                            "InstallLocation");
+                    var installKey = WindowsRegistry.local()
+                            .readValue(foundKey.get().getHkey(), foundKey.get().getKey(), "InstallLocation");
                     if (installKey.isPresent()) {
                         return installKey.map(p -> p + "\\wezterm-gui.exe").map(Path::of);
                     }
@@ -92,8 +92,8 @@ public interface WezTerminalType extends ExternalTerminalType {
 
         public boolean isAvailable() {
             try (ShellControl pc = LocalShell.getShell()) {
-                return pc.executeSimpleBooleanCommand(pc.getShellDialect().getWhichCommand("wezterm")) &&
-                        pc.executeSimpleBooleanCommand(pc.getShellDialect().getWhichCommand("wezterm-gui"));
+                return pc.executeSimpleBooleanCommand(pc.getShellDialect().getWhichCommand("wezterm"))
+                        && pc.executeSimpleBooleanCommand(pc.getShellDialect().getWhichCommand("wezterm-gui"));
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).omit().handle();
                 return false;
@@ -102,15 +102,15 @@ public interface WezTerminalType extends ExternalTerminalType {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
-            var spawn = LocalShell.getShell().command(CommandBuilder.of().addFile("wezterm")
-                    .add("cli", "spawn")
-                    .addFile(configuration.getScriptFile()))
+            var spawn = LocalShell.getShell()
+                    .command(CommandBuilder.of()
+                            .addFile("wezterm")
+                            .add("cli", "spawn")
+                            .addFile(configuration.getScriptFile()))
                     .executeAndCheck();
             if (!spawn) {
-                ExternalApplicationHelper.startAsync(CommandBuilder.of()
-                        .addFile("wezterm-gui")
-                        .add("start")
-                        .addFile(configuration.getScriptFile()));
+                ExternalApplicationHelper.startAsync(
+                        CommandBuilder.of().addFile("wezterm-gui").add("start").addFile(configuration.getScriptFile()));
             }
         }
     }
@@ -124,13 +124,16 @@ public interface WezTerminalType extends ExternalTerminalType {
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
             try (var sc = LocalShell.getShell()) {
-                var path = sc.command(
-                        String.format("mdfind -name '%s' -onlyin /Applications -onlyin ~/Applications -onlyin /System/Applications 2>/dev/null",
-                                applicationName)).readStdoutOrThrow();
-                var spawn = sc.command(CommandBuilder.of().addFile(Path.of(path)
+                var path = sc.command(String.format(
+                                "mdfind -name '%s' -onlyin /Applications -onlyin ~/Applications -onlyin /System/Applications 2>/dev/null",
+                                applicationName))
+                        .readStdoutOrThrow();
+                var spawn = sc.command(CommandBuilder.of()
+                                .addFile(Path.of(path)
                                         .resolve("Contents")
                                         .resolve("MacOS")
-                                        .resolve("wezterm").toString())
+                                        .resolve("wezterm")
+                                        .toString())
                                 .add("cli", "spawn", "--pane-id", "0")
                                 .addFile(configuration.getScriptFile()))
                         .executeAndCheck();
@@ -139,7 +142,8 @@ public interface WezTerminalType extends ExternalTerminalType {
                             .addFile(Path.of(path)
                                     .resolve("Contents")
                                     .resolve("MacOS")
-                                    .resolve("wezterm-gui").toString())
+                                    .resolve("wezterm-gui")
+                                    .toString())
                             .add("start")
                             .addFile(configuration.getScriptFile()));
                 }

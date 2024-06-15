@@ -7,6 +7,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.FailableFunction;
 import io.xpipe.core.util.FailableSupplier;
+
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 
@@ -52,7 +53,7 @@ public class FileBridge {
         }
 
         @Override
-        public int available() throws IOException {
+        public int available() {
             return (int) (size - count);
         }
     }

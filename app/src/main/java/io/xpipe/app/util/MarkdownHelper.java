@@ -18,18 +18,21 @@ import java.util.function.UnaryOperator;
 
 public class MarkdownHelper {
 
-    public static String toHtml(String value, UnaryOperator<String> headTransformation, UnaryOperator<String> bodyTransformation) {
-        MutableDataSet options = new MutableDataSet().set(Parser.EXTENSIONS, Arrays.asList(
-                        StrikethroughExtension.create(),
-                        TaskListExtension.create(),
-                        TablesExtension.create(),
-                        FootnoteExtension.create(),
-                        DefinitionExtension.create(),
-                        AnchorLinkExtension.create(),
-                        YamlFrontMatterExtension.create(),
-                        TocExtension.create()
-                ))
-                .set(FootnoteExtension.FOOTNOTE_BACK_LINK_REF_CLASS,"footnotes")
+    public static String toHtml(
+            String value, UnaryOperator<String> headTransformation, UnaryOperator<String> bodyTransformation) {
+        MutableDataSet options = new MutableDataSet()
+                .set(
+                        Parser.EXTENSIONS,
+                        Arrays.asList(
+                                StrikethroughExtension.create(),
+                                TaskListExtension.create(),
+                                TablesExtension.create(),
+                                FootnoteExtension.create(),
+                                DefinitionExtension.create(),
+                                AnchorLinkExtension.create(),
+                                YamlFrontMatterExtension.create(),
+                                TocExtension.create()))
+                .set(FootnoteExtension.FOOTNOTE_BACK_LINK_REF_CLASS, "footnotes")
                 .set(TablesExtension.WITH_CAPTION, false)
                 .set(TablesExtension.COLUMN_SPANS, false)
                 .set(TablesExtension.MIN_HEADER_ROWS, 1)
@@ -37,13 +40,14 @@ public class MarkdownHelper {
                 .set(TablesExtension.APPEND_MISSING_COLUMNS, true)
                 .set(TablesExtension.DISCARD_EXTRA_COLUMNS, true)
                 .set(TablesExtension.HEADER_SEPARATOR_COLUMN_MATCH, true)
-                .set(HtmlRenderer.GENERATE_HEADER_ID,true);
+                .set(HtmlRenderer.GENERATE_HEADER_ID, true);
         Parser parser = Parser.builder(options).build();
         HtmlRenderer renderer = HtmlRenderer.builder(options).build();
         Document document = parser.parse(value);
         var html = renderer.render(document);
         var result = bodyTransformation.apply(html);
         var headContent = headTransformation.apply("<meta charset=\"utf-8\"/>");
-        return "<html><head>" + headContent + "</head><body><article class=\"markdown-body\">" + result + "</article></body></html>";
+        return "<html><head>" + headContent + "</head><body><article class=\"markdown-body\">" + result
+                + "</article></body></html>";
     }
 }

@@ -40,8 +40,9 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
             enabled.set(s.isSessionEnabled());
         });
 
-        ObservableValue<LabelGraphic> g = enabled.map(aBoolean -> aBoolean ?
-                new LabelGraphic.IconGraphic("mdi2c-circle-slice-8") : new LabelGraphic.IconGraphic("mdi2p-power"));
+        ObservableValue<LabelGraphic> g = enabled.map(aBoolean -> aBoolean
+                ? new LabelGraphic.IconGraphic("mdi2c-circle-slice-8")
+                : new LabelGraphic.IconGraphic("mdi2p-power"));
         var t = new StoreToggleComp(null, g, sec, enabled, aBoolean -> {
             SingletonSessionStore<?> s = sec.getWrapper().getEntry().getStore().asNeeded();
             if (s.isSessionEnabled() != aBoolean) {

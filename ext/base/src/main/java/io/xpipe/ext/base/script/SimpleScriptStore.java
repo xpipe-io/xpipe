@@ -1,6 +1,5 @@
 package io.xpipe.ext.base.script;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ScriptHelper;
@@ -9,6 +8,8 @@ import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellInitCommand;
 import io.xpipe.core.util.ValidationException;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -75,7 +76,7 @@ public class SimpleScriptStore extends ScriptStore implements ShellInitCommand.T
     }
 
     @Override
-    public Optional<String> terminalContent(ShellControl shellControl) throws Exception {
+    public Optional<String> terminalContent(ShellControl shellControl) {
         return Optional.ofNullable(assemble(shellControl));
     }
 }

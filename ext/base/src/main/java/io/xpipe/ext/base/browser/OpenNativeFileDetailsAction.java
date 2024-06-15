@@ -70,7 +70,7 @@ public class OpenNativeFileDetailsAction implements LeafAction {
 
     @Override
     public KeyCombination getShortcut() {
-        return new KeyCodeCombination(KeyCode.ENTER,KeyCombination.ALT_DOWN);
+        return new KeyCodeCombination(KeyCode.ENTER, KeyCombination.ALT_DOWN);
     }
 
     @Override

@@ -17,7 +17,8 @@ public class BeaconClientException extends Exception {
         super(cause);
     }
 
-    public BeaconClientException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public BeaconClientException(
+            String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

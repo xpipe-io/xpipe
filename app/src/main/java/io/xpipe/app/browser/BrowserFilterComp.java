@@ -1,12 +1,12 @@
 package io.xpipe.app.browser;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.impl.TextFieldComp;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.util.InputHelper;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Pos;
@@ -16,6 +16,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.HBox;
+
+import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 public class BrowserFilterComp extends Comp<BrowserFilterComp.Structure> {
@@ -40,7 +42,8 @@ public class BrowserFilterComp extends Comp<BrowserFilterComp.Structure> {
             button.fire();
             keyEvent.consume();
         });
-        new TooltipAugment<>("app.search", new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN)).augment(button);
+        new TooltipAugment<>("app.search", new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN))
+                .augment(button);
         text.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue && filterString.getValue() == null) {
                 if (button.isFocused()) {
@@ -110,7 +113,7 @@ public class BrowserFilterComp extends Comp<BrowserFilterComp.Structure> {
         button.minWidthProperty().bind(text.heightProperty());
         button.maxHeightProperty().bind(text.heightProperty());
         button.maxWidthProperty().bind(text.heightProperty());
-        return new Structure(box, (TextField) text, button);
+        return new Structure(box, text, button);
     }
 
     public record Structure(HBox box, TextField textField, Button toggleButton) implements CompStructure<HBox> {

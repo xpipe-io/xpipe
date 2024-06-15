@@ -11,6 +11,7 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.util.LicenseRequiredException;
 import io.xpipe.app.util.PlatformState;
+
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -24,6 +25,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -252,7 +254,8 @@ public class ErrorHandlerComp extends SimpleComp {
         }
 
         if (!event.isDisableDefaultActions() || event.getCustomActions().isEmpty()) {
-            for (var action : List.of(ErrorAction.automaticallyReport(), ErrorAction.reportOnGithub(), ErrorAction.ignore())) {
+            for (var action :
+                    List.of(ErrorAction.automaticallyReport(), ErrorAction.reportOnGithub(), ErrorAction.ignore())) {
                 var ac = createActionComp(action);
                 actionBox.getChildren().add(ac);
             }

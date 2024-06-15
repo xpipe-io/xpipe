@@ -24,8 +24,10 @@ import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.ShellOpenFunction;
 import io.xpipe.core.store.*;
 import io.xpipe.core.util.FailableConsumer;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -345,7 +347,8 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
                 }
 
                 startIfNeeded();
-                var op = BrowserFileTransferOperation.ofLocal(entry, files,BrowserFileTransferMode.COPY,true, progress::setValue);
+                var op = BrowserFileTransferOperation.ofLocal(
+                        entry, files, BrowserFileTransferMode.COPY, true, progress::setValue);
                 op.execute();
                 refreshSync();
             });
@@ -353,8 +356,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
     }
 
     public void dropFilesIntoAsync(
-            FileSystem.FileEntry target, List<FileSystem.FileEntry> files, BrowserFileTransferMode mode
-            ) {
+            FileSystem.FileEntry target, List<FileSystem.FileEntry> files, BrowserFileTransferMode mode) {
         // We don't have to do anything in this case
         if (files.isEmpty()) {
             return;
@@ -367,7 +369,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
                 }
 
                 startIfNeeded();
-                var op = new BrowserFileTransferOperation(target, files, mode,true, progress::setValue);
+                var op = new BrowserFileTransferOperation(target, files, mode, true, progress::setValue);
                 op.execute();
                 refreshSync();
             });

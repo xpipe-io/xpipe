@@ -2,6 +2,7 @@ package io.xpipe.app.storage;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.io.FileUtils;
@@ -23,6 +24,7 @@ public abstract class StorageElement {
     @Getter
     protected boolean dirty;
 
+    @Setter
     @Getter
     protected Path directory;
 
@@ -75,10 +77,6 @@ public abstract class StorageElement {
         }
 
         return getLastUsed().isAfter(getLastModified()) ? getLastUsed() : getLastModified();
-    }
-
-    public void setDirectory(Path directory) {
-        this.directory = directory;
     }
 
     public void setName(String name) {

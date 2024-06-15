@@ -8,12 +8,14 @@ import io.xpipe.app.fxcomps.util.LabelGraphic;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.Region;
+
 import lombok.AllArgsConstructor;
 import lombok.Setter;
 
@@ -34,7 +36,11 @@ public class StoreToggleComp extends SimpleComp {
     private ObservableValue<Boolean> customVisibility = new SimpleBooleanProperty(true);
 
     public static <T extends DataStore> StoreToggleComp simpleToggle(
-            String nameKey, ObservableValue<LabelGraphic> graphic, StoreSection section, Function<T, Boolean> initial, BiConsumer<T, Boolean> setter) {
+            String nameKey,
+            ObservableValue<LabelGraphic> graphic,
+            StoreSection section,
+            Function<T, Boolean> initial,
+            BiConsumer<T, Boolean> setter) {
         return new StoreToggleComp(
                 nameKey,
                 graphic,
@@ -49,8 +55,9 @@ public class StoreToggleComp extends SimpleComp {
     public static <T extends DataStore> StoreToggleComp enableToggle(
             String nameKey, StoreSection section, Function<T, Boolean> initial, BiConsumer<T, Boolean> setter) {
         var val = new SimpleBooleanProperty();
-        ObservableValue<LabelGraphic> g = val.map(aBoolean -> aBoolean ?
-                new LabelGraphic.IconGraphic("mdi2c-circle-slice-8") : new LabelGraphic.IconGraphic("mdi2p-power"));
+        ObservableValue<LabelGraphic> g = val.map(aBoolean -> aBoolean
+                ? new LabelGraphic.IconGraphic("mdi2c-circle-slice-8")
+                : new LabelGraphic.IconGraphic("mdi2p-power"));
         var t = new StoreToggleComp(
                 nameKey,
                 g,
@@ -68,17 +75,29 @@ public class StoreToggleComp extends SimpleComp {
     }
 
     public static <T extends DataStore> StoreToggleComp childrenToggle(
-            String nameKey, boolean graphic, StoreSection section, Function<T, Boolean> initial, BiConsumer<T, Boolean> setter) {
+            String nameKey,
+            boolean graphic,
+            StoreSection section,
+            Function<T, Boolean> initial,
+            BiConsumer<T, Boolean> setter) {
         var val = new SimpleBooleanProperty();
-        ObservableValue<LabelGraphic> g = graphic ? val.map(aBoolean -> aBoolean ?
-                new LabelGraphic.IconGraphic("mdi2c-circle-slice-8") : new LabelGraphic.IconGraphic("mdi2c-circle-half-full")) : null;
-        var t = new StoreToggleComp(nameKey, g, section,
-                new SimpleBooleanProperty(initial.apply(section.getWrapper().getEntry().getStore().asNeeded())), v -> {
-            Platform.runLater(() -> {
-                setter.accept(section.getWrapper().getEntry().getStore().asNeeded(), v);
-                StoreViewState.get().toggleStoreListUpdate();
-            });
-        });
+        ObservableValue<LabelGraphic> g = graphic
+                ? val.map(aBoolean -> aBoolean
+                        ? new LabelGraphic.IconGraphic("mdi2c-circle-slice-8")
+                        : new LabelGraphic.IconGraphic("mdi2c-circle-half-full"))
+                : null;
+        var t = new StoreToggleComp(
+                nameKey,
+                g,
+                section,
+                new SimpleBooleanProperty(
+                        initial.apply(section.getWrapper().getEntry().getStore().asNeeded())),
+                v -> {
+                    Platform.runLater(() -> {
+                        setter.accept(section.getWrapper().getEntry().getStore().asNeeded(), v);
+                        StoreViewState.get().toggleStoreListUpdate();
+                    });
+                });
         t.tooltipKey("showAllChildren");
         t.value.subscribe((newValue) -> {
             val.set(newValue);
@@ -86,7 +105,12 @@ public class StoreToggleComp extends SimpleComp {
         return t;
     }
 
-    public StoreToggleComp(String nameKey, ObservableValue<LabelGraphic> graphic, StoreSection section, boolean initial, Consumer<Boolean> onChange) {
+    public StoreToggleComp(
+            String nameKey,
+            ObservableValue<LabelGraphic> graphic,
+            StoreSection section,
+            boolean initial,
+            Consumer<Boolean> onChange) {
         this.nameKey = nameKey;
         this.graphic = graphic;
         this.section = section;
@@ -94,7 +118,12 @@ public class StoreToggleComp extends SimpleComp {
         this.onChange = onChange;
     }
 
-    public StoreToggleComp(String nameKey, ObservableValue<LabelGraphic> graphic, StoreSection section, BooleanProperty initial, Consumer<Boolean> onChange) {
+    public StoreToggleComp(
+            String nameKey,
+            ObservableValue<LabelGraphic> graphic,
+            StoreSection section,
+            BooleanProperty initial,
+            Consumer<Boolean> onChange) {
         this.nameKey = nameKey;
         this.graphic = graphic;
         this.section = section;

@@ -8,7 +8,8 @@ import io.xpipe.core.util.JacksonizedValue;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("local")
-public class LocalStore extends JacksonizedValue implements NetworkTunnelStore, ShellStore, StatefulDataStore<ShellStoreState> {
+public class LocalStore extends JacksonizedValue
+        implements NetworkTunnelStore, ShellStore, StatefulDataStore<ShellStoreState> {
 
     @Override
     public Class<ShellStoreState> getStateClass() {

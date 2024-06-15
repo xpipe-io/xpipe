@@ -2,6 +2,7 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.util.StreamCharset;
+
 import lombok.Value;
 
 import java.io.BufferedInputStream;

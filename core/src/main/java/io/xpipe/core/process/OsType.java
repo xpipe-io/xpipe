@@ -94,8 +94,10 @@ public interface OsType {
                 return def;
             }
 
-            var fallback = pc.executeSimpleStringCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("LOCALAPPDATA"));
-            if (!fallback.isBlank() && pc.getShellDialect().directoryExists(pc, fallback).executeAndCheck()) {
+            var fallback = pc.executeSimpleStringCommand(
+                    pc.getShellDialect().getPrintEnvironmentVariableCommand("LOCALAPPDATA"));
+            if (!fallback.isBlank()
+                    && pc.getShellDialect().directoryExists(pc, fallback).executeAndCheck()) {
                 return fallback;
             }
 

@@ -1,6 +1,5 @@
 package io.xpipe.app.browser;
 
-import atlantafx.base.controls.Spacer;
 import io.xpipe.app.browser.file.BrowserContextMenu;
 import io.xpipe.app.browser.file.BrowserFileListCompEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
@@ -12,10 +11,13 @@ import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.impl.LabelComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.util.HumanReadableFormat;
+
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
+
+import atlantafx.base.controls.Spacer;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
@@ -57,8 +59,10 @@ public class BrowserStatusBarComp extends SimpleComp {
                 var transferred = HumanReadableFormat.progressByteCount(p.getTransferred());
                 var all = HumanReadableFormat.byteCount(p.getTotal());
                 var name = (p.getName() != null ? " @ " + p.getName() + " " : "");
-                var time = p.getTotal() > 50_000_000 && p.elapsedTime().compareTo(Duration.of(200, ChronoUnit.MILLIS)) > 0 ? " | "
-                        + HumanReadableFormat.duration(p.expectedTimeRemaining()) : " | ...";
+                var time =
+                        p.getTotal() > 50_000_000 && p.elapsedTime().compareTo(Duration.of(200, ChronoUnit.MILLIS)) > 0
+                                ? " | " + HumanReadableFormat.duration(p.expectedTimeRemaining())
+                                : " | ...";
                 return transferred + " / " + all + name + time;
             }
         });

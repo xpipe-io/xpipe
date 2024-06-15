@@ -66,7 +66,8 @@ public class FileSystemHelper {
         }
     }
 
-    public static String resolveDirectoryPath(OpenFileSystemModel model, String path, boolean allowRewrite) throws Exception {
+    public static String resolveDirectoryPath(OpenFileSystemModel model, String path, boolean allowRewrite)
+            throws Exception {
         if (path == null) {
             return null;
         }
@@ -97,7 +98,8 @@ public class FileSystemHelper {
         return FileNames.toDirectory(resolved);
     }
 
-    public static void validateDirectoryPath(OpenFileSystemModel model, String path, boolean verifyExists) throws Exception {
+    public static void validateDirectoryPath(OpenFileSystemModel model, String path, boolean verifyExists)
+            throws Exception {
         if (path == null) {
             return;
         }

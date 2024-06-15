@@ -10,6 +10,7 @@ import io.xpipe.app.fxcomps.augment.DragOverPseudoClassAugment;
 import io.xpipe.app.fxcomps.impl.*;
 import io.xpipe.app.fxcomps.util.DerivedObservableList;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
@@ -18,6 +19,7 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.File;
@@ -46,7 +48,9 @@ public class BrowserTransferComp extends SimpleComp {
         var backgroundStack =
                 new StackComp(List.of(background)).grow(true, true).styleClass("download-background");
 
-        var binding = new DerivedObservableList<>(syncItems, true).mapped(item -> item.getBrowserEntry()).getList();
+        var binding = new DerivedObservableList<>(syncItems, true)
+                .mapped(item -> item.getBrowserEntry())
+                .getList();
         var list = new BrowserSelectionListComp(
                         binding,
                         entry -> Bindings.createStringBinding(
@@ -57,9 +61,15 @@ public class BrowserTransferComp extends SimpleComp {
                                     if (sourceItem.isEmpty()) {
                                         return "?";
                                     }
-                                    var name = entry.getModel() == null || sourceItem.get().downloadFinished().get()
-                                                    ? "Local"
-                                                    : entry.getModel().getFileSystemModel().getName();
+                                    var name = entry.getModel() == null
+                                                    || sourceItem
+                                                            .get()
+                                                            .downloadFinished()
+                                                            .get()
+                                            ? "Local"
+                                            : entry.getModel()
+                                                    .getFileSystemModel()
+                                                    .getName();
                                     return entry.getFileName() + " (" + name + ")";
                                 },
                                 syncAllDownloaded))

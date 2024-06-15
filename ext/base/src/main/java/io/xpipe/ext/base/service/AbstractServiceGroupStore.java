@@ -5,6 +5,7 @@ import io.xpipe.app.util.Validators;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.JacksonizedValue;
 import io.xpipe.ext.base.GroupStore;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
@@ -13,7 +14,8 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @SuperBuilder
-public abstract class AbstractServiceGroupStore<T extends DataStore> extends JacksonizedValue implements DataStore, GroupStore<T> {
+public abstract class AbstractServiceGroupStore<T extends DataStore> extends JacksonizedValue
+        implements DataStore, GroupStore<T> {
 
     DataStoreEntryRef<T> parent;
 

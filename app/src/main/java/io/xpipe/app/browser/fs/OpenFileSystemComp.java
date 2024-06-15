@@ -1,6 +1,5 @@
 package io.xpipe.app.browser.fs;
 
-import atlantafx.base.controls.Spacer;
 import io.xpipe.app.browser.BrowserFilterComp;
 import io.xpipe.app.browser.BrowserNavBar;
 import io.xpipe.app.browser.BrowserOverviewComp;
@@ -17,6 +16,7 @@ import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.util.InputHelper;
+
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuButton;
@@ -28,6 +28,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+
+import atlantafx.base.controls.Spacer;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.ArrayList;
@@ -54,13 +56,15 @@ public class OpenFileSystemComp extends SimpleComp {
         var root = new VBox();
         var overview = new Button(null, new FontIcon("mdi2m-monitor"));
         overview.setOnAction(e -> model.cdAsync(null));
-        new TooltipAugment<>("overview", new KeyCodeCombination(KeyCode.HOME, KeyCombination.ALT_DOWN)).augment(overview);
+        new TooltipAugment<>("overview", new KeyCodeCombination(KeyCode.HOME, KeyCombination.ALT_DOWN))
+                .augment(overview);
         overview.disableProperty().bind(model.getInOverview());
         overview.setAccessibleText("System overview");
-        InputHelper.onKeyCombination(root, new KeyCodeCombination(KeyCode.HOME, KeyCombination.ALT_DOWN), true, keyEvent -> {
-            overview.fire();
-            keyEvent.consume();
-        });
+        InputHelper.onKeyCombination(
+                root, new KeyCodeCombination(KeyCode.HOME, KeyCombination.ALT_DOWN), true, keyEvent -> {
+                    overview.fire();
+                    keyEvent.consume();
+                });
 
         var backBtn = BrowserAction.byId("back", model, List.of()).toButton(root, model, List.of());
         var forthBtn = BrowserAction.byId("forward", model, List.of()).toButton(root, model, List.of());
@@ -95,12 +99,12 @@ public class OpenFileSystemComp extends SimpleComp {
                         refreshBtn,
                         terminalBtn,
                         menuButton);
-        squaredSize(navBar.get(),overview,true);
-        squaredSize(navBar.get(),backBtn,true);
-        squaredSize(navBar.get(),forthBtn,true);
-        squaredSize(navBar.get(),refreshBtn,true);
-        squaredSize(navBar.get(),terminalBtn,true);
-        squaredSize(navBar.get(),menuButton,false);
+        squaredSize(navBar.get(), overview, true);
+        squaredSize(navBar.get(), backBtn, true);
+        squaredSize(navBar.get(), forthBtn, true);
+        squaredSize(navBar.get(), refreshBtn, true);
+        squaredSize(navBar.get(), terminalBtn, true);
+        squaredSize(navBar.get(), menuButton, false);
 
         var content = createFileListContent();
         root.getChildren().addAll(topBar, content);
@@ -111,26 +115,30 @@ public class OpenFileSystemComp extends SimpleComp {
             }
         });
 
-        InputHelper.onKeyCombination(root, new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN), true, keyEvent -> {
-            filter.toggleButton().fire();
-            filter.textField().requestFocus();
-            keyEvent.consume();
-        });
-        InputHelper.onKeyCombination(root, new KeyCodeCombination(KeyCode.L, KeyCombination.CONTROL_DOWN), true, keyEvent -> {
-            navBar.textField().requestFocus();
-            keyEvent.consume();
-        });
-        InputHelper.onKeyCombination(root, new KeyCodeCombination(KeyCode.H, KeyCombination.ALT_DOWN), true, keyEvent -> {
-            navBar.historyButton().fire();
-            keyEvent.consume();
-        });
-        InputHelper.onKeyCombination(root, new KeyCodeCombination(KeyCode.UP, KeyCombination.ALT_DOWN), true, keyEvent -> {
-            var p = model.getCurrentParentDirectory();
-            if (p != null) {
-                model.cdAsync(p.getPath());
-            }
-            keyEvent.consume();
-        });
+        InputHelper.onKeyCombination(
+                root, new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN), true, keyEvent -> {
+                    filter.toggleButton().fire();
+                    filter.textField().requestFocus();
+                    keyEvent.consume();
+                });
+        InputHelper.onKeyCombination(
+                root, new KeyCodeCombination(KeyCode.L, KeyCombination.CONTROL_DOWN), true, keyEvent -> {
+                    navBar.textField().requestFocus();
+                    keyEvent.consume();
+                });
+        InputHelper.onKeyCombination(
+                root, new KeyCodeCombination(KeyCode.H, KeyCombination.ALT_DOWN), true, keyEvent -> {
+                    navBar.historyButton().fire();
+                    keyEvent.consume();
+                });
+        InputHelper.onKeyCombination(
+                root, new KeyCodeCombination(KeyCode.UP, KeyCombination.ALT_DOWN), true, keyEvent -> {
+                    var p = model.getCurrentParentDirectory();
+                    if (p != null) {
+                        model.cdAsync(p.getPath());
+                    }
+                    keyEvent.consume();
+                });
         return root;
     }
 

@@ -12,6 +12,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 
@@ -38,17 +39,20 @@ public abstract class AbstractServiceGroupStoreProvider implements DataStoreProv
                 }
             });
         });
-        t.setCustomVisibility(Bindings.createBooleanBinding(() -> {
-            var children = DataStorage.get().getStoreChildren(sec.getWrapper().getEntry());
-            for (DataStoreEntry child : children) {
-                if (child.getStore() instanceof AbstractServiceStore serviceStore) {
-                    if (serviceStore.getHost().getStore().requiresTunnel()) {
-                        return true;
+        t.setCustomVisibility(Bindings.createBooleanBinding(
+                () -> {
+                    var children =
+                            DataStorage.get().getStoreChildren(sec.getWrapper().getEntry());
+                    for (DataStoreEntry child : children) {
+                        if (child.getStore() instanceof AbstractServiceStore serviceStore) {
+                            if (serviceStore.getHost().getStore().requiresTunnel()) {
+                                return true;
+                            }
+                        }
                     }
-                }
-            }
-            return false;
-        }, StoreViewState.get().getAllEntries().getList()));
+                    return false;
+                },
+                StoreViewState.get().getAllEntries().getList()));
         return t;
     }
 

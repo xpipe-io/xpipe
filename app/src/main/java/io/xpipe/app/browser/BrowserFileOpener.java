@@ -21,14 +21,14 @@ public class BrowserFileOpener {
                         key,
                         new BooleanScope(model.getBusy()).exclusive(),
                         () -> {
-                                return entry.getFileSystem().openInput(file);
+                            return entry.getFileSystem().openInput(file);
                         },
                         (size) -> {
                             if (model.isClosed()) {
                                 return OutputStream.nullOutputStream();
                             }
 
-                                return entry.getFileSystem().openOutput(file, size);
+                            return entry.getFileSystem().openOutput(file, size);
                         },
                         s -> FileOpener.openWithAnyApplication(s));
     }
@@ -42,14 +42,14 @@ public class BrowserFileOpener {
                         key,
                         new BooleanScope(model.getBusy()).exclusive(),
                         () -> {
-                                return entry.getFileSystem().openInput(file);
+                            return entry.getFileSystem().openInput(file);
                         },
                         (size) -> {
                             if (model.isClosed()) {
                                 return OutputStream.nullOutputStream();
                             }
 
-                                return entry.getFileSystem().openOutput(file, size);
+                            return entry.getFileSystem().openOutput(file, size);
                         },
                         s -> FileOpener.openInDefaultApplication(s));
     }
@@ -68,15 +68,14 @@ public class BrowserFileOpener {
                         key,
                         new BooleanScope(model.getBusy()).exclusive(),
                         () -> {
-                                return entry.getFileSystem().openInput(file);
-
+                            return entry.getFileSystem().openInput(file);
                         },
                         (size) -> {
                             if (model.isClosed()) {
                                 return OutputStream.nullOutputStream();
                             }
 
-                                return entry.getFileSystem().openOutput(file, size);
+                            return entry.getFileSystem().openOutput(file, size);
                         },
                         FileOpener::openInTextEditor);
     }

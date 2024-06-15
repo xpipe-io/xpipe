@@ -5,12 +5,14 @@ import io.xpipe.app.util.HostHelper;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.store.*;
 import io.xpipe.core.util.JacksonizedValue;
+
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
 @Getter
-public abstract class AbstractServiceStore extends JacksonizedValue implements SingletonSessionStore<NetworkTunnelSession>, DataStore {
+public abstract class AbstractServiceStore extends JacksonizedValue
+        implements SingletonSessionStore<NetworkTunnelSession>, DataStore {
 
     public abstract DataStoreEntryRef<NetworkTunnelStore> getHost();
 

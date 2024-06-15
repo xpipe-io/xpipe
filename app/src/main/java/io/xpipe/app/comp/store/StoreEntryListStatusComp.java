@@ -10,6 +10,7 @@ import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -23,6 +24,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 public class StoreEntryListStatusComp extends SimpleComp {
@@ -55,17 +57,28 @@ public class StoreEntryListStatusComp extends SimpleComp {
         label.textProperty().bind(name);
         label.getStyleClass().add("name");
 
-        var all = StoreViewState.get().getAllEntries().filtered(
-                storeEntryWrapper -> {
-                    var rootCategory = storeEntryWrapper.getCategory().getValue().getRoot();
-                    var inRootCategory = StoreViewState.get().getActiveCategory().getValue().getRoot().equals(rootCategory);
-                    // Sadly the all binding does not update when the individual visibility of entries changes
-                    // But it is good enough.
-                    var showProvider = !storeEntryWrapper.getEntry().getValidity().isUsable() ||
-                            storeEntryWrapper.getEntry().getProvider().shouldShow(storeEntryWrapper);
-                    return inRootCategory && showProvider;
-                },
-                StoreViewState.get().getActiveCategory());
+        var all = StoreViewState.get()
+                .getAllEntries()
+                .filtered(
+                        storeEntryWrapper -> {
+                            var rootCategory =
+                                    storeEntryWrapper.getCategory().getValue().getRoot();
+                            var inRootCategory = StoreViewState.get()
+                                    .getActiveCategory()
+                                    .getValue()
+                                    .getRoot()
+                                    .equals(rootCategory);
+                            // Sadly the all binding does not update when the individual visibility of entries changes
+                            // But it is good enough.
+                            var showProvider =
+                                    !storeEntryWrapper.getEntry().getValidity().isUsable()
+                                            || storeEntryWrapper
+                                                    .getEntry()
+                                                    .getProvider()
+                                                    .shouldShow(storeEntryWrapper);
+                            return inRootCategory && showProvider;
+                        },
+                        StoreViewState.get().getActiveCategory());
         var shownList = all.filtered(
                 storeEntryWrapper -> {
                     return storeEntryWrapper.matchesFilter(

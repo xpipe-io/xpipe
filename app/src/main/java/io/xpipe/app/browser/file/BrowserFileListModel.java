@@ -5,12 +5,14 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystem;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -54,7 +56,8 @@ public final class BrowserFileListModel {
 
     public void setAll(Stream<FileSystem.FileEntry> newFiles) {
         try (var s = newFiles) {
-            var l = s.filter(entry -> entry != null).map(entry -> new BrowserEntry(entry, this))
+            var l = s.filter(entry -> entry != null)
+                    .map(entry -> new BrowserEntry(entry, this))
                     .toList();
             all.setValue(l);
             refreshShown();
@@ -90,9 +93,7 @@ public final class BrowserFileListModel {
                 path -> path.getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY);
         var comp = comparatorProperty.getValue();
 
-        Comparator<BrowserEntry> us = comp != null
-                ? dirsFirst.thenComparing(comp)
-                : dirsFirst;
+        Comparator<BrowserEntry> us = comp != null ? dirsFirst.thenComparing(comp) : dirsFirst;
         return us;
     }
 
@@ -120,7 +121,11 @@ public final class BrowserFileListModel {
         try {
             fileSystemModel.getFileSystem().move(fullPath, newFullPath);
             fileSystemModel.refresh();
-            var b = all.getValue().stream().filter(browserEntry -> browserEntry.getRawFileEntry().getPath().equals(newFullPath)).findFirst().orElse(old);
+            var b = all.getValue().stream()
+                    .filter(browserEntry ->
+                            browserEntry.getRawFileEntry().getPath().equals(newFullPath))
+                    .findFirst()
+                    .orElse(old);
             return b;
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).handle();

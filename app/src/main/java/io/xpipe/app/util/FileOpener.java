@@ -28,9 +28,11 @@ public class FileOpener {
         try {
             editor.launch(Path.of(localFile).toRealPath());
         } catch (Exception e) {
-            ErrorEvent.fromThrowable("Unable to launch editor "
-                            + editor.toTranslatedString().getValue()
-                            + ".\nMaybe try to use a different editor in the settings.", e)
+            ErrorEvent.fromThrowable(
+                            "Unable to launch editor "
+                                    + editor.toTranslatedString().getValue()
+                                    + ".\nMaybe try to use a different editor in the settings.",
+                            e)
                     .expected()
                     .handle();
         }
@@ -51,8 +53,7 @@ public class FileOpener {
                 }
             }
         } catch (Exception e) {
-            ErrorEvent.fromThrowable("Unable to open file " + localFile, e)
-                    .handle();
+            ErrorEvent.fromThrowable("Unable to open file " + localFile, e).handle();
         }
     }
 
@@ -66,8 +67,7 @@ public class FileOpener {
                 pc.executeSimpleCommand("open \"" + localFile + "\"");
             }
         } catch (Exception e) {
-            ErrorEvent.fromThrowable("Unable to open file " + localFile, e)
-                    .handle();
+            ErrorEvent.fromThrowable("Unable to open file " + localFile, e).handle();
         }
     }
 
@@ -78,13 +78,14 @@ public class FileOpener {
 
         var id = UUID.randomUUID();
         String s = input;
-        FileBridge.get().openIO(
-                id.toString(),
-                id,
-                null,
-                () -> new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)),
-                null,
-                v -> openInTextEditor(v));
+        FileBridge.get()
+                .openIO(
+                        id.toString(),
+                        id,
+                        null,
+                        () -> new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)),
+                        null,
+                        v -> openInTextEditor(v));
     }
 
     public static void openString(String keyName, Object key, String input, Consumer<String> output) {
@@ -93,19 +94,20 @@ public class FileOpener {
         }
 
         String s = input;
-        FileBridge.get().openIO(
-                keyName,
-                key,
-                null,
-                () -> new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)),
-                (size) -> new ByteArrayOutputStream(s.length()) {
-                    @Override
-                    public void close() throws IOException {
-                        super.close();
-                        output.accept(new String(toByteArray(), StandardCharsets.UTF_8));
-                    }
-                },
-                file -> openInTextEditor(file));
+        FileBridge.get()
+                .openIO(
+                        keyName,
+                        key,
+                        null,
+                        () -> new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)),
+                        (size) -> new ByteArrayOutputStream(s.length()) {
+                            @Override
+                            public void close() throws IOException {
+                                super.close();
+                                output.accept(new String(toByteArray(), StandardCharsets.UTF_8));
+                            }
+                        },
+                        file -> openInTextEditor(file));
     }
 
     public static void openCommandOutput(String keyName, Object key, CommandControl cc) {

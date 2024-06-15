@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.core.util.FailableRunnable;
+
 import javafx.beans.property.BooleanProperty;
 
 public class BooleanScope implements AutoCloseable {

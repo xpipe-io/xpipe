@@ -18,8 +18,14 @@ public class StoreEntryListComp extends SimpleComp {
 
     private Comp<?> createList() {
         var content = new ListBoxViewComp<>(
-                        StoreViewState.get().getCurrentTopLevelSection().getShownChildren().getList(),
-                        StoreViewState.get().getCurrentTopLevelSection().getAllChildren().getList(),
+                        StoreViewState.get()
+                                .getCurrentTopLevelSection()
+                                .getShownChildren()
+                                .getList(),
+                        StoreViewState.get()
+                                .getCurrentTopLevelSection()
+                                .getAllChildren()
+                                .getList(),
                         (StoreSection e) -> {
                             var custom = StoreSection.customSection(e, true).hgrow();
                             return new HorizontalComp(List.of(Comp.hspacer(8), custom, Comp.hspacer(10)))
@@ -50,16 +56,21 @@ public class StoreEntryListComp extends SimpleComp {
         var map = new LinkedHashMap<Comp<?>, ObservableValue<Boolean>>();
         map.put(
                 createList(),
-                Bindings.not(Bindings.isEmpty(
-                        StoreViewState.get().getCurrentTopLevelSection().getShownChildren().getList())));
+                Bindings.not(Bindings.isEmpty(StoreViewState.get()
+                        .getCurrentTopLevelSection()
+                        .getShownChildren()
+                        .getList())));
 
         map.put(new StoreIntroComp(), showIntro);
         map.put(
                 new StoreNotFoundComp(),
                 Bindings.and(
-                        Bindings.not(Bindings.isEmpty(StoreViewState.get().getAllEntries().getList())),
-                        Bindings.isEmpty(
-                                StoreViewState.get().getCurrentTopLevelSection().getShownChildren().getList())));
+                        Bindings.not(Bindings.isEmpty(
+                                StoreViewState.get().getAllEntries().getList())),
+                        Bindings.isEmpty(StoreViewState.get()
+                                .getCurrentTopLevelSection()
+                                .getShownChildren()
+                                .getList())));
         return new MultiContentComp(map).createRegion();
     }
 }

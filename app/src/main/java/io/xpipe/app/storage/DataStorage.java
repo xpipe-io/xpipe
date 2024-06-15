@@ -10,7 +10,9 @@ import io.xpipe.core.store.FixedChildStore;
 import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.store.StorePath;
 import io.xpipe.core.util.UuidHelper;
+
 import javafx.util.Pair;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -61,7 +63,8 @@ public abstract class DataStorage {
     @Setter
     protected DataStoreCategory selectedCategory;
 
-    private final Map<DataStore, DataStoreEntry> storeEntryMapCache = Collections.synchronizedMap(new IdentityHashMap<>());
+    private final Map<DataStore, DataStoreEntry> storeEntryMapCache =
+            Collections.synchronizedMap(new IdentityHashMap<>());
 
     public DataStorage() {
         var prefsDir = AppPrefs.get().storageDirectory().getValue();
@@ -351,7 +354,6 @@ public abstract class DataStorage {
             e.decrementBusyCounter();
         }
 
-
         var oldChildren = getStoreChildren(e);
         var toRemove = oldChildren.stream()
                 .filter(oc -> oc.getStore() instanceof FixedChildStore)
@@ -448,8 +450,10 @@ public abstract class DataStorage {
         });
         refreshEntries();
         saveAsync();
-        toAdd.forEach(dataStoreEntryRef -> dataStoreEntryRef.get().getProvider().onChildrenRefresh(dataStoreEntryRef.getEntry()));
-        toUpdate.forEach(dataStoreEntryRef -> dataStoreEntryRef.getKey().getProvider().onChildrenRefresh(dataStoreEntryRef.getKey()));
+        toAdd.forEach(dataStoreEntryRef ->
+                dataStoreEntryRef.get().getProvider().onChildrenRefresh(dataStoreEntryRef.getEntry()));
+        toUpdate.forEach(dataStoreEntryRef ->
+                dataStoreEntryRef.getKey().getProvider().onChildrenRefresh(dataStoreEntryRef.getKey()));
         return !newChildren.isEmpty();
     }
 
@@ -545,13 +549,15 @@ public abstract class DataStorage {
             return;
         }
 
-        var toAdd = Arrays.stream(es).filter(e -> {
-            if (storeEntriesSet.contains(e)
-                    || getStoreEntryIfPresent(e.getStore(), false).isPresent()) {
-                return false;
-            }
-            return true;
-        }).toList();
+        var toAdd = Arrays.stream(es)
+                .filter(e -> {
+                    if (storeEntriesSet.contains(e)
+                            || getStoreEntryIfPresent(e.getStore(), false).isPresent()) {
+                        return false;
+                    }
+                    return true;
+                })
+                .toList();
         for (DataStoreEntry e : toAdd) {
             var syntheticParent = getSyntheticParent(e);
             if (syntheticParent.isPresent()) {
@@ -802,7 +808,9 @@ public abstract class DataStorage {
         }
 
         var found = storeEntriesSet.stream()
-                .filter(n -> n.getStore() == store || (!identityOnly && (n.getStore() != null
+                .filter(n -> n.getStore() == store
+                        || (!identityOnly
+                                && (n.getStore() != null
                                         && Objects.equals(
                                                 store.getClass(), n.getStore().getClass())
                                         && store.equals(n.getStore()))))

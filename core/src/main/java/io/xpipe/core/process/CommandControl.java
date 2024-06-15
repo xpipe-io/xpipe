@@ -1,7 +1,8 @@
 package io.xpipe.core.process;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.core.util.FailableConsumer;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;

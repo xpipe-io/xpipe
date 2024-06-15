@@ -36,6 +36,6 @@ public class LocalFileSystem {
 
     public static BrowserEntry getLocalBrowserEntry(Path file) throws Exception {
         var e = getLocalFileEntry(file);
-        return new BrowserEntry(e,null);
+        return new BrowserEntry(e, null);
     }
 }

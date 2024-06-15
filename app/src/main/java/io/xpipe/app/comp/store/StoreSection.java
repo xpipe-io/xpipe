@@ -6,12 +6,14 @@ import io.xpipe.app.fxcomps.util.DerivedObservableList;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableStringValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+
 import lombok.Value;
 
 import java.util.*;
@@ -39,7 +41,8 @@ public class StoreSection {
         if (wrapper != null) {
             this.showDetails = Bindings.createBooleanBinding(
                     () -> {
-                        return wrapper.getExpanded().get() || allChildren.getList().isEmpty();
+                        return wrapper.getExpanded().get()
+                                || allChildren.getList().isEmpty();
                     },
                     wrapper.getExpanded(),
                     allChildren.getList());
@@ -85,7 +88,12 @@ public class StoreSection {
                 }
                 seen.add(wrapper);
 
-                var found = list.getList().stream().filter(section -> section.getWrapper().getEntry().getUuid().equals(wrapper.getEntry().getOrderBefore())).findFirst();
+                var found = list.getList().stream()
+                        .filter(section -> section.getWrapper()
+                                .getEntry()
+                                .getUuid()
+                                .equals(wrapper.getEntry().getOrderBefore()))
+                        .findFirst();
                 if (found.isPresent()) {
                     return count(found.get().getWrapper(), seen);
                 } else {
@@ -99,7 +107,8 @@ public class StoreSection {
         var mappedSortMode = BindingsHelper.flatMap(
                 category,
                 storeCategoryWrapper -> storeCategoryWrapper != null ? storeCategoryWrapper.getSortMode() : null);
-        return list.sorted((o1, o2) -> {
+        return list.sorted(
+                (o1, o2) -> {
                     var current = mappedSortMode.getValue();
                     if (current != null) {
                         return comp.thenComparing(current.comparator())
@@ -117,7 +126,8 @@ public class StoreSection {
             Predicate<StoreEntryWrapper> entryFilter,
             ObservableStringValue filterString,
             ObservableValue<StoreCategoryWrapper> category) {
-        var topLevel = all.filtered(section -> {
+        var topLevel = all.filtered(
+                section -> {
                     return DataStorage.get().isRootEntry(section.getEntry());
                 },
                 category,
@@ -128,11 +138,15 @@ public class StoreSection {
         var shown = ordered.filtered(
                 section -> {
                     // matches filter
-                    return (filterString == null || section.matchesFilter(filterString.get())) &&
+                    return (filterString == null || section.matchesFilter(filterString.get()))
+                            &&
                             // matches selector
-                            (section.anyMatches(entryFilter)) &&
+                            (section.anyMatches(entryFilter))
+                            &&
                             // same category
-                            (category == null || category.getValue() == null || showInCategory(category.getValue(), section.getWrapper()));
+                            (category == null
+                                    || category.getValue() == null
+                                    || showInCategory(category.getValue(), section.getWrapper()));
                 },
                 category,
                 filterString);
@@ -148,23 +162,31 @@ public class StoreSection {
             ObservableStringValue filterString,
             ObservableValue<StoreCategoryWrapper> category) {
         if (e.getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
-            return new StoreSection(e, new DerivedObservableList<>(
-                    FXCollections.observableArrayList(), true), new DerivedObservableList<>(
-                            FXCollections.observableArrayList(), true), depth);
+            return new StoreSection(
+                    e,
+                    new DerivedObservableList<>(FXCollections.observableArrayList(), true),
+                    new DerivedObservableList<>(FXCollections.observableArrayList(), true),
+                    depth);
         }
 
-        var allChildren = all.filtered(other -> {
-            // Legacy implementation that does not use children caches. Use for testing
-            //            if (true) return DataStorage.get()
-            //                    .getDisplayParent(other.getEntry())
-            //                    .map(found -> found.equals(e.getEntry()))
-            //                    .orElse(false);
+        var allChildren = all.filtered(
+                other -> {
+                    // Legacy implementation that does not use children caches. Use for testing
+                    //            if (true) return DataStorage.get()
+                    //                    .getDisplayParent(other.getEntry())
+                    //                    .map(found -> found.equals(e.getEntry()))
+                    //                    .orElse(false);
 
-            // is children. This check is fast as the children are cached in the storage
-            return DataStorage.get().getStoreChildren(e.getEntry()).contains(other.getEntry()) &&
-                    // show provider
-                    (!other.getEntry().getValidity().isUsable() || other.getEntry().getProvider().shouldShow(other));
-        }, e.getPersistentState(), e.getCache(), StoreViewState.get().getEntriesListChangeObservable());
+                    // is children. This check is fast as the children are cached in the storage
+                    return DataStorage.get().getStoreChildren(e.getEntry()).contains(other.getEntry())
+                            &&
+                            // show provider
+                            (!other.getEntry().getValidity().isUsable()
+                                    || other.getEntry().getProvider().shouldShow(other));
+                },
+                e.getPersistentState(),
+                e.getCache(),
+                StoreViewState.get().getEntriesListChangeObservable());
         var l = new ArrayList<>(parents);
         l.add(e);
         var cached = allChildren.mapped(c -> create(l, c, depth + 1, all, entryFilter, filterString, category));
@@ -172,14 +194,23 @@ public class StoreSection {
         var filtered = ordered.filtered(
                 section -> {
                     // matches filter
-                    return (filterString == null || section.matchesFilter(filterString.get()) || l.stream().anyMatch(p -> p.matchesFilter(filterString.get()))) &&
+                    return (filterString == null
+                                    || section.matchesFilter(filterString.get())
+                                    || l.stream().anyMatch(p -> p.matchesFilter(filterString.get())))
+                            &&
                             // matches selector
-                            section.anyMatches(entryFilter) &&
+                            section.anyMatches(entryFilter)
+                            &&
                             // matches category
                             // Prevent updates for children on category switching by checking depth
-                            (category == null || category.getValue() == null || showInCategory(category.getValue(), section.getWrapper()) || depth > 0) &&
+                            (category == null
+                                    || category.getValue() == null
+                                    || showInCategory(category.getValue(), section.getWrapper())
+                                    || depth > 0)
+                            &&
                             // not root
-                            // If this entry is already shown as root due to a different category than parent, don't show it
+                            // If this entry is already shown as root due to a different category than parent, don't
+                            // show it
                             // again here
                             !DataStorage.get().isRootEntry(section.getWrapper().getEntry());
                 },

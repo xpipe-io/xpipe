@@ -1,7 +1,8 @@
 package io.xpipe.beacon;
 
-import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.core.util.ModuleLayerLoader;
+
+import com.sun.net.httpserver.HttpExchange;
 import lombok.SneakyThrows;
 
 import java.io.IOException;
@@ -19,11 +20,8 @@ public abstract class BeaconInterface<T> {
     }
 
     public static Optional<BeaconInterface<?>> byPath(String path) {
-        return ALL.stream()
-                .filter(d -> d.getPath().equals(path))
-                .findAny();
+        return ALL.stream().filter(d -> d.getPath().equals(path)).findAny();
     }
-
 
     public static <RQ> Optional<BeaconInterface<?>> byRequest(RQ req) {
         return ALL.stream()
@@ -35,14 +33,17 @@ public abstract class BeaconInterface<T> {
 
         @Override
         public void init(ModuleLayer layer) {
-            var services = layer != null ? ServiceLoader.load(layer, BeaconInterface.class) : ServiceLoader.load(BeaconInterface.class);
+            var services = layer != null
+                    ? ServiceLoader.load(layer, BeaconInterface.class)
+                    : ServiceLoader.load(BeaconInterface.class);
             ALL = services.stream()
                     .map(ServiceLoader.Provider::get)
                     .map(beaconInterface -> (BeaconInterface<?>) beaconInterface)
                     .collect(Collectors.toList());
             // Remove parent classes
-            ALL.removeIf(beaconInterface -> ALL.stream().anyMatch(other ->
-                    !other.equals(beaconInterface) && beaconInterface.getClass().isAssignableFrom(other.getClass())));
+            ALL.removeIf(beaconInterface -> ALL.stream()
+                    .anyMatch(other -> !other.equals(beaconInterface)
+                            && beaconInterface.getClass().isAssignableFrom(other.getClass())));
         }
     }
 
@@ -68,7 +69,8 @@ public abstract class BeaconInterface<T> {
 
     public abstract String getPath();
 
-    public Object handle(HttpExchange exchange, T body) throws IOException, BeaconClientException, BeaconServerException {
+    public Object handle(HttpExchange exchange, T body)
+            throws BeaconClientException, BeaconServerException {
         throw new UnsupportedOperationException();
     }
 }

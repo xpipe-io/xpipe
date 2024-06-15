@@ -39,8 +39,7 @@ public class StoreCreationMenu {
                         "addScript", "mdi2s-script-text-outline", DataStoreProvider.CreationCategory.SCRIPT, "script"));
 
         menu.getItems()
-                .add(category(
-                        "addService", "mdi2c-cloud-braces", DataStoreProvider.CreationCategory.SERVICE, null));
+                .add(category("addService", "mdi2c-cloud-braces", DataStoreProvider.CreationCategory.SERVICE, null));
 
         menu.getItems()
                 .add(category(

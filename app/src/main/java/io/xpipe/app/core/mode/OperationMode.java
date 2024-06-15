@@ -194,8 +194,9 @@ public abstract class OperationMode {
 
     public static void restart() {
         OperationMode.executeAfterShutdown(() -> {
-            var loc = AppProperties.get().isDevelopmentEnvironment() ?
-                    XPipeInstallation.getLocalDefaultInstallationBasePath() : XPipeInstallation.getCurrentInstallationBasePath().toString();
+            var loc = AppProperties.get().isDevelopmentEnvironment()
+                    ? XPipeInstallation.getLocalDefaultInstallationBasePath()
+                    : XPipeInstallation.getCurrentInstallationBasePath().toString();
             var exec = XPipeInstallation.createExternalAsyncLaunchCommand(loc, XPipeDaemonMode.GUI, "", true);
             LocalShell.getShell().executeSimpleCommand(exec);
         });

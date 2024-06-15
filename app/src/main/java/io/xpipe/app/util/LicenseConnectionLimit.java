@@ -20,9 +20,7 @@ public abstract class LicenseConnectionLimit {
             return;
         }
 
-        var found = DataStorage.get()
-                .getStoreEntries()
-                .stream()
+        var found = DataStorage.get().getStoreEntries().stream()
                 .filter(entry -> entry.getValidity().isUsable() && matches(entry.getStore()))
                 .toList();
         if (found.size() > limit) {

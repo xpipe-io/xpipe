@@ -11,9 +11,11 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FilePath;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.LinkedHashMap;
@@ -74,7 +76,12 @@ public class RunScriptAction implements BrowserAction, BranchAction {
                     return new LeafAction() {
                         @Override
                         public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
-                            var args = entries.stream().map(browserEntry -> new FilePath(browserEntry.getRawFileEntry().getPath()).quoteIfNecessary()).collect(Collectors.joining(" "));
+                            var args = entries.stream()
+                                    .map(browserEntry -> new FilePath(browserEntry
+                                                    .getRawFileEntry()
+                                                    .getPath())
+                                            .quoteIfNecessary())
+                                    .collect(Collectors.joining(" "));
                             execute(model, args);
                         }
 
@@ -82,7 +89,8 @@ public class RunScriptAction implements BrowserAction, BranchAction {
                             if (model.getBrowserModel() instanceof BrowserSessionModel bm) {
                                 var content = e.getValue().assemble(sc);
                                 var script = ScriptHelper.createExecScript(sc, content);
-                                sc.executeSimpleCommand(sc.getShellDialect().runScriptCommand(sc, script.toString()) + " " + args);
+                                sc.executeSimpleCommand(
+                                        sc.getShellDialect().runScriptCommand(sc, script.toString()) + " " + args);
                             }
                         }
 

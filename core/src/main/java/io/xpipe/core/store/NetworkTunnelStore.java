@@ -8,9 +8,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public interface NetworkTunnelStore extends DataStore {
 
-    static AtomicInteger portCounter = new AtomicInteger();
+    AtomicInteger portCounter = new AtomicInteger();
 
-    public static int randomPort() {
+    static int randomPort() {
         var p = 40000 + portCounter.get();
         portCounter.set(portCounter.get() + 1 % 1000);
         return p;
@@ -75,7 +75,8 @@ public interface NetworkTunnelStore extends DataStore {
             }
 
             var currentLocalPort = isLast(current) ? local : randomPort();
-            var currentRemotePort = sessions.isEmpty() ? remotePort : sessions.getLast().getLocalPort();
+            var currentRemotePort =
+                    sessions.isEmpty() ? remotePort : sessions.getLast().getLocalPort();
             var t = func.create(currentLocalPort, currentRemotePort);
             t.addListener(r -> {
                 if (r) {
@@ -103,14 +104,10 @@ public interface NetworkTunnelStore extends DataStore {
                 }
 
                 @Override
-                public void start() throws Exception {
-
-                }
+                public void start() {}
 
                 @Override
-                public void stop() throws Exception {
-
-                }
+                public void stop() {}
 
                 @Override
                 public int getLocalPort() {

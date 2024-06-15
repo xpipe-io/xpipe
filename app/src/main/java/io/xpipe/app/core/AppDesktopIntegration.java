@@ -9,10 +9,10 @@ import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.desktop.*;
 import java.util.List;
+import javax.imageio.ImageIO;
 
 public class AppDesktopIntegration {
 
@@ -26,10 +26,10 @@ public class AppDesktopIntegration {
                 Desktop.getDesktop().addAppEventListener(new SystemSleepListener() {
                     @Override
                     public void systemAboutToSleep(SystemSleepEvent e) {
-                        if (AppPrefs.get() != null &&
-                                AppPrefs.get().lockVaultOnHibernation().get() &&
-                                AppPrefs.get().getLockCrypt().get() != null &&
-                                !AppPrefs.get().getLockCrypt().get().isBlank()) {
+                        if (AppPrefs.get() != null
+                                && AppPrefs.get().lockVaultOnHibernation().get()
+                                && AppPrefs.get().getLockCrypt().get() != null
+                                && !AppPrefs.get().getLockCrypt().get().isBlank()) {
                             // If we run this at the same time as the system is sleeping, there might be exceptions
                             // because the platform does not like being shut down while sleeping
                             // This hopefully assures that it will be run later, probably on system wake
@@ -70,7 +70,9 @@ public class AppDesktopIntegration {
 
                 // Set dock icon explicitly on mac
                 // This is necessary in case XPipe was started through a script as it will have no icon otherwise
-                if (AppProperties.get().isDeveloperMode() && AppLogs.get().isWriteToSysout() && Taskbar.isTaskbarSupported()) {
+                if (AppProperties.get().isDeveloperMode()
+                        && AppLogs.get().isWriteToSysout()
+                        && Taskbar.isTaskbarSupported()) {
                     try {
                         var iconUrl = Main.class.getResourceAsStream("resources/img/logo/padded/logo_128x128.png");
                         if (iconUrl != null) {

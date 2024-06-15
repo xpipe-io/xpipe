@@ -41,8 +41,8 @@ public abstract class WindowsRegistry {
 
     public abstract Optional<String> findValuesRecursive(int hkey, String key, String valueName) throws Exception;
 
-    public abstract Optional<Key> findKeyForEqualValueMatchRecursive(int hkey, String key, String match) throws Exception;
-
+    public abstract Optional<Key> findKeyForEqualValueMatchRecursive(int hkey, String key, String match)
+            throws Exception;
 
     public static class Local extends WindowsRegistry {
 
@@ -51,7 +51,7 @@ public abstract class WindowsRegistry {
         }
 
         @Override
-        public boolean keyExists(int hkey, String key) throws Exception {
+        public boolean keyExists(int hkey, String key) {
             // This can fail even with errors in case the jna native library extraction or loading fails
             try {
                 return Advapi32Util.registryKeyExists(hkey(hkey), key);
@@ -76,10 +76,7 @@ public abstract class WindowsRegistry {
         public Optional<String> readValue(int hkey, String key, String valueName) {
             // This can fail even with errors in case the jna native library extraction or loading fails
             try {
-                if (!Advapi32Util.registryValueExists(
-                        hkey(hkey),
-                        key,
-                        valueName)) {
+                if (!Advapi32Util.registryValueExists(hkey(hkey), key, valueName)) {
                     return Optional.empty();
                 }
 
@@ -105,12 +102,13 @@ public abstract class WindowsRegistry {
         }
     }
 
-
     public static class Remote extends WindowsRegistry {
 
         private final ShellControl shellControl;
 
-        public Remote(ShellControl shellControl) {this.shellControl = shellControl;}
+        public Remote(ShellControl shellControl) {
+            this.shellControl = shellControl;
+        }
 
         private String hkey(int hkey) {
             return hkey == HKEY_LOCAL_MACHINE ? "HKEY_LOCAL_MACHINE" : "HKEY_CURRENT_USER";

@@ -6,6 +6,7 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.storage.DataStorage;
+
 import lombok.Value;
 
 import java.net.URI;
@@ -33,11 +34,11 @@ public abstract class LauncherInput {
             }
         });
 
-//        var requiresPlatform = all.stream().anyMatch(launcherInput -> launcherInput.requiresJavaFXPlatform());
-//        if (requiresPlatform) {
-//            OperationMode.switchToSyncIfPossible(OperationMode.GUI);
-//        }
-//        var hasGui = OperationMode.get() == OperationMode.GUI;
+        //        var requiresPlatform = all.stream().anyMatch(launcherInput -> launcherInput.requiresJavaFXPlatform());
+        //        if (requiresPlatform) {
+        //            OperationMode.switchToSyncIfPossible(OperationMode.GUI);
+        //        }
+        //        var hasGui = OperationMode.get() == OperationMode.GUI;
 
         all.forEach(launcherInput -> {
             try {

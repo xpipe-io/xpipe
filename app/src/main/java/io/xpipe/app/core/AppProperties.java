@@ -4,6 +4,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.util.ModuleHelper;
+
 import lombok.Getter;
 import lombok.Value;
 
@@ -100,7 +101,8 @@ public class AppProperties {
         locatePtb = Optional.ofNullable(System.getProperty("io.xpipe.app.locator.usePtbInstallation"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
-        locatorVersionCheck = Optional.ofNullable(System.getProperty("io.xpipe.app.locator.disableInstallationVersionCheck"))
+        locatorVersionCheck = Optional.ofNullable(
+                        System.getProperty("io.xpipe.app.locator.disableInstallationVersionCheck"))
                 .map(s -> !Boolean.parseBoolean(s))
                 .orElse(true);
         isTest = isJUnitTest();

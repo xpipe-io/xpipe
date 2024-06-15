@@ -9,8 +9,10 @@ import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
+
 import lombok.Getter;
 
 import java.time.Duration;
@@ -26,7 +28,8 @@ public class StoreEntryWrapper {
     private final BooleanProperty disabled = new SimpleBooleanProperty();
     private final BooleanProperty busy = new SimpleBooleanProperty();
     private final Property<DataStoreEntry.Validity> validity = new SimpleObjectProperty<>();
-    private final ListProperty<ActionProvider> actionProviders = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private final ListProperty<ActionProvider> actionProviders =
+            new SimpleListProperty<>(FXCollections.observableArrayList());
     private final Property<ActionProvider> defaultActionProvider = new SimpleObjectProperty<>();
     private final BooleanProperty deletable = new SimpleBooleanProperty();
     private final BooleanProperty expanded = new SimpleBooleanProperty();
@@ -50,8 +53,8 @@ public class StoreEntryWrapper {
                                     .getApplicableClass()
                                     .isAssignableFrom(entry.getStore().getClass());
                 })
-                .sorted(Comparator.comparing(
-                        actionProvider -> actionProvider.getLeafDataStoreCallSite().isSystemAction()))
+                .sorted(Comparator.comparing(actionProvider ->
+                        actionProvider.getLeafDataStoreCallSite().isSystemAction()))
                 .forEach(dataStoreActionProvider -> {
                     actionProviders.add(dataStoreActionProvider);
                 });
@@ -67,7 +70,7 @@ public class StoreEntryWrapper {
 
     public void orderBefore(StoreEntryWrapper other) {
         ThreadHelper.runAsync(() -> {
-            DataStorage.get().orderBefore(getEntry(),other.getEntry());
+            DataStorage.get().orderBefore(getEntry(), other.getEntry());
         });
     }
 
@@ -155,10 +158,11 @@ public class StoreEntryWrapper {
             defaultActionProvider.setValue(null);
         } else {
             var defaultProvider = ActionProvider.ALL.stream()
-                    .filter(e -> entry.getStore() != null && e.getDefaultDataStoreCallSite() != null
+                    .filter(e -> entry.getStore() != null
+                            && e.getDefaultDataStoreCallSite() != null
                             && e.getDefaultDataStoreCallSite()
-                            .getApplicableClass()
-                            .isAssignableFrom(entry.getStore().getClass())
+                                    .getApplicableClass()
+                                    .isAssignableFrom(entry.getStore().getClass())
                             && e.getDefaultDataStoreCallSite().isApplicable(entry.ref()))
                     .findFirst()
                     .orElse(null);
@@ -167,11 +171,10 @@ public class StoreEntryWrapper {
             try {
                 var newProviders = ActionProvider.ALL.stream()
                         .filter(dataStoreActionProvider -> {
-                           return showActionProvider(dataStoreActionProvider);
+                            return showActionProvider(dataStoreActionProvider);
                         })
-                        .sorted(Comparator.comparing(
-                                actionProvider -> actionProvider.getLeafDataStoreCallSite() != null &&
-                                        actionProvider.getLeafDataStoreCallSite().isSystemAction()))
+                        .sorted(Comparator.comparing(actionProvider -> actionProvider.getLeafDataStoreCallSite() != null
+                                && actionProvider.getLeafDataStoreCallSite().isSystemAction()))
                         .toList();
                 if (!actionProviders.equals(newProviders)) {
                     actionProviders.setAll(newProviders);
@@ -186,14 +189,15 @@ public class StoreEntryWrapper {
         var leaf = p.getLeafDataStoreCallSite();
         if (leaf != null) {
             return (entry.getValidity().isUsable() || (!leaf.requiresValidStore() && entry.getProvider() != null))
-                    && leaf.getApplicableClass().isAssignableFrom(entry.getStore().getClass())
-                    && leaf
-                    .isApplicable(entry.ref());
+                    && leaf.getApplicableClass()
+                            .isAssignableFrom(entry.getStore().getClass())
+                    && leaf.isApplicable(entry.ref());
         }
 
-
         var branch = p.getBranchDataStoreCallSite();
-        if (branch != null && entry.getStore() != null && branch.getApplicableClass().isAssignableFrom(entry.getStore().getClass())) {
+        if (branch != null
+                && entry.getStore() != null
+                && branch.getApplicableClass().isAssignableFrom(entry.getStore().getClass())) {
             return branch.getChildren().stream().anyMatch(child -> {
                 return showActionProvider(child);
             });
@@ -223,7 +227,7 @@ public class StoreEntryWrapper {
         entry.notifyUpdate(true, false);
         if (found != null) {
             var act = found.getDefaultDataStoreCallSite().createAction(entry.ref());
-            runAction(act,found.getDefaultDataStoreCallSite().showBusy());
+            runAction(act, found.getDefaultDataStoreCallSite().showBusy());
         } else {
             entry.setExpanded(!entry.isExpanded());
         }

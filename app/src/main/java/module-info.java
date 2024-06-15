@@ -1,4 +1,3 @@
-import com.fasterxml.jackson.databind.Module;
 import io.xpipe.app.beacon.impl.*;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.core.AppLogs;
@@ -15,6 +14,8 @@ import io.xpipe.core.util.DataStateProvider;
 import io.xpipe.core.util.ModuleLayerLoader;
 import io.xpipe.core.util.ProxyFunction;
 import io.xpipe.core.util.ProxyManagerProvider;
+
+import com.fasterxml.jackson.databind.Module;
 import org.slf4j.spi.SLF4JServiceProvider;
 
 open module io.xpipe.app {
@@ -127,9 +128,19 @@ open module io.xpipe.app {
             AppLogs.Slf4jProvider;
     provides EventHandler with
             EventHandlerImpl;
-    provides BeaconInterface with ShellStartExchangeImpl, ShellStopExchangeImpl, ShellExecExchangeImpl, ConnectionQueryExchangeImpl, DaemonOpenExchangeImpl, DaemonFocusExchangeImpl, DaemonStatusExchangeImpl, DaemonStopExchangeImpl,
-            HandshakeExchangeImpl, DaemonModeExchangeImpl,
+    provides BeaconInterface with
+            ShellStartExchangeImpl,
+            ShellStopExchangeImpl,
+            ShellExecExchangeImpl,
+            ConnectionQueryExchangeImpl,
+            DaemonOpenExchangeImpl,
+            DaemonFocusExchangeImpl,
+            DaemonStatusExchangeImpl,
+            DaemonStopExchangeImpl,
+            HandshakeExchangeImpl,
+            DaemonModeExchangeImpl,
             AskpassExchangeImpl,
             TerminalWaitExchangeImpl,
-            TerminalLaunchExchangeImpl, DaemonVersionExchangeImpl;
+            TerminalLaunchExchangeImpl,
+            DaemonVersionExchangeImpl;
 }

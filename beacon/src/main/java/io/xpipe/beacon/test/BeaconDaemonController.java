@@ -43,9 +43,11 @@ public class BeaconDaemonController {
             return;
         }
 
-        var client = BeaconClient.establishConnection(BeaconConfig.getUsedPort(), BeaconClientInformation.Api.builder()
-                .name("Beacon daemon controller")
-                .build());
+        var client = BeaconClient.establishConnection(
+                BeaconConfig.getUsedPort(),
+                BeaconClientInformation.Api.builder()
+                        .name("Beacon daemon controller")
+                        .build());
         if (!BeaconServer.tryStop(client)) {
             throw new AssertionError();
         }
@@ -68,9 +70,11 @@ public class BeaconDaemonController {
             } catch (InterruptedException ignored) {
             }
 
-            var s = BeaconClient.tryEstablishConnection(BeaconConfig.getUsedPort(), BeaconClientInformation.Api.builder()
-                    .name("Beacon daemon controller")
-                    .build());
+            var s = BeaconClient.tryEstablishConnection(
+                    BeaconConfig.getUsedPort(),
+                    BeaconClientInformation.Api.builder()
+                            .name("Beacon daemon controller")
+                            .build());
             if (s.isPresent()) {
                 return;
             }

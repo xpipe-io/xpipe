@@ -12,7 +12,6 @@ public class BeaconJacksonModule extends SimpleModule {
                 new NamedType(BeaconClientInformation.Cli.class),
                 new NamedType(BeaconClientInformation.Daemon.class));
         context.registerSubtypes(
-                new NamedType(BeaconAuthMethod.Local.class),
-                new NamedType(BeaconAuthMethod.ApiKey.class));
+                new NamedType(BeaconAuthMethod.Local.class), new NamedType(BeaconAuthMethod.ApiKey.class));
     }
 }

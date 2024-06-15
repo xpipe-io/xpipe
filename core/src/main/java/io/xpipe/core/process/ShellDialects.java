@@ -58,7 +58,9 @@ public class ShellDialects {
 
         @Override
         public void init(ModuleLayer layer) {
-            var services = layer != null ? ServiceLoader.load(layer, ShellDialect.class) : ServiceLoader.load(ShellDialect.class);
+            var services = layer != null
+                    ? ServiceLoader.load(layer, ShellDialect.class)
+                    : ServiceLoader.load(ShellDialect.class);
             services.stream().forEach(moduleLayerLoaderProvider -> {
                 ALL.add(moduleLayerLoaderProvider.get());
             });

@@ -13,6 +13,7 @@ import io.xpipe.core.store.EnabledStoreState;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.StatefulDataStore;
 import io.xpipe.core.util.JacksonizedValue;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Singular;
@@ -37,16 +38,19 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
     }
 
     public static ShellControl controlWithScripts(
-            ShellControl pc,
-            List<DataStoreEntryRef<ScriptStore>> enabledScripts) {
+            ShellControl pc, List<DataStoreEntryRef<ScriptStore>> enabledScripts) {
         try {
             // Don't copy scripts if we don't want to modify the file system
             if (!pc.getEffectiveSecurityPolicy().permitTempScriptCreation()) {
                 return pc;
             }
 
-            var initFlattened = flatten(enabledScripts).stream().filter(store -> store.isInitScript()).toList();
-            var bringFlattened = flatten(enabledScripts).stream().filter(store -> store.isShellScript()).toList();
+            var initFlattened = flatten(enabledScripts).stream()
+                    .filter(store -> store.isInitScript())
+                    .toList();
+            var bringFlattened = flatten(enabledScripts).stream()
+                    .filter(store -> store.isShellScript())
+                    .toList();
 
             // Optimize if we have nothing to do
             if (initFlattened.isEmpty() && bringFlattened.isEmpty()) {
@@ -71,7 +75,8 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
                             return Optional.empty();
                         }
 
-                        return Optional.ofNullable(shellControl.getShellDialect().addToPathVariableCommand(List.of(dir), true));
+                        return Optional.ofNullable(
+                                shellControl.getShellDialect().addToPathVariableCommand(List.of(dir), true));
                     }
 
                     @Override

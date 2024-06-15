@@ -43,9 +43,11 @@ public class DropdownComp extends Comp<CompStructure<Button>> {
                 .map(menuItem -> menuItem.getGraphic().visibleProperty())
                 .toList();
         button.visibleProperty()
-                .bind(Bindings.createBooleanBinding(() -> {
-                    return l.stream().anyMatch(booleanObservableValue -> booleanObservableValue.getValue());
-                }, l.toArray(ObservableValue[]::new)));
+                .bind(Bindings.createBooleanBinding(
+                        () -> {
+                            return l.stream().anyMatch(booleanObservableValue -> booleanObservableValue.getValue());
+                        },
+                        l.toArray(ObservableValue[]::new)));
 
         var graphic = new FontIcon("mdi2c-chevron-double-down");
         button.fontProperty().subscribe(c -> {

@@ -88,7 +88,8 @@ public class AppExtensionManager {
         }
 
         if (!AppProperties.get().isFullVersion()) {
-            var localInstallation = XPipeInstallation.getLocalDefaultInstallationBasePath(AppProperties.get().isStaging() || AppProperties.get().isLocatePtb());
+            var localInstallation = XPipeInstallation.getLocalDefaultInstallationBasePath(
+                    AppProperties.get().isStaging() || AppProperties.get().isLocatePtb());
             Path p = Path.of(localInstallation);
             if (!Files.exists(p)) {
                 throw new IllegalStateException(

@@ -81,8 +81,8 @@ public class AppAvCheck {
 
             @Override
             public boolean isActive() {
-                return WindowsRegistry.local().valueExists(
-                        WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Bitdefender", "InstallDir");
+                return WindowsRegistry.local()
+                        .valueExists(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Bitdefender", "InstallDir");
             }
         },
         MALWAREBYTES("Malwarebytes") {
@@ -93,7 +93,8 @@ public class AppAvCheck {
 
             @Override
             public boolean isActive() {
-                return WindowsRegistry.local().valueExists(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Malwarebytes", "id");
+                return WindowsRegistry.local()
+                        .valueExists(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Malwarebytes", "id");
             }
         },
         MCAFEE("McAfee") {
@@ -104,7 +105,8 @@ public class AppAvCheck {
 
             @Override
             public boolean isActive() {
-                return WindowsRegistry.local().valueExists(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\McAfee", "mi");
+                return WindowsRegistry.local()
+                        .valueExists(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\McAfee", "mi");
             }
         };
 

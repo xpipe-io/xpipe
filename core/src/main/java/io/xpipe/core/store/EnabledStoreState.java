@@ -9,7 +9,7 @@ import lombok.extern.jackson.Jacksonized;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Getter
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
 @SuperBuilder(toBuilder = true)
 @Jacksonized
 public class EnabledStoreState extends DataStoreState {

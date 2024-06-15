@@ -33,9 +33,8 @@ public final class BrowserContextMenu extends ContextMenu {
     private static List<BrowserEntry> resolveIfNeeded(BrowserAction action, List<BrowserEntry> selected) {
         return action.automaticallyResolveLinks()
                 ? selected.stream()
-                        .map(browserEntry -> new BrowserEntry(
-                                browserEntry.getRawFileEntry().resolved(),
-                                browserEntry.getModel()))
+                        .map(browserEntry ->
+                                new BrowserEntry(browserEntry.getRawFileEntry().resolved(), browserEntry.getModel()))
                         .toList()
                 : selected;
     }

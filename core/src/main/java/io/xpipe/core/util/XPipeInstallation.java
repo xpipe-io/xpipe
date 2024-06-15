@@ -2,6 +2,7 @@ package io.xpipe.core.util;
 
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileNames;
+
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -42,7 +43,8 @@ public class XPipeInstallation {
             return "nohup \"" + installationBase + "/app/bin/xpiped\"" + modeOption + suffix + " & disown";
         } else if (OsType.getLocal().equals(OsType.MACOS)) {
             if (restart) {
-                return "(sleep 1;open \"" + installationBase + "\" --args" + modeOption + suffix + "</dev/null &>/dev/null) & disown";
+                return "(sleep 1;open \"" + installationBase + "\" --args" + modeOption + suffix
+                        + "</dev/null &>/dev/null) & disown";
             } else {
                 return "open \"" + installationBase + "\" --args" + modeOption + suffix;
             }

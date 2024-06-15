@@ -28,9 +28,12 @@ public class BrowserFileTransferOperation {
 
     BrowserAlerts.FileConflictChoice lastConflictChoice;
 
-    public BrowserFileTransferOperation(FileSystem.FileEntry target, List<FileSystem.FileEntry> files, BrowserFileTransferMode transferMode, boolean checkConflicts,
-                                        Consumer<BrowserTransferProgress> progress
-    ) {
+    public BrowserFileTransferOperation(
+            FileSystem.FileEntry target,
+            List<FileSystem.FileEntry> files,
+            BrowserFileTransferMode transferMode,
+            boolean checkConflicts,
+            Consumer<BrowserTransferProgress> progress) {
         this.target = target;
         this.files = files;
         this.transferMode = transferMode;
@@ -38,7 +41,12 @@ public class BrowserFileTransferOperation {
         this.progress = progress;
     }
 
-    public static BrowserFileTransferOperation ofLocal(FileSystem.FileEntry target, List<Path> files,  BrowserFileTransferMode transferMode, boolean checkConflicts, Consumer<BrowserTransferProgress> progress) {
+    public static BrowserFileTransferOperation ofLocal(
+            FileSystem.FileEntry target,
+            List<Path> files,
+            BrowserFileTransferMode transferMode,
+            boolean checkConflicts,
+            Consumer<BrowserTransferProgress> progress) {
         var entries = files.stream()
                 .map(path -> {
                     if (!Files.exists(path)) {
@@ -60,11 +68,7 @@ public class BrowserFileTransferOperation {
         this.progress.accept(progress);
     }
 
-    private boolean handleChoice(
-            FileSystem fileSystem,
-            String target,
-            boolean multiple)
-            throws Exception {
+    private boolean handleChoice(FileSystem fileSystem, String target, boolean multiple) throws Exception {
         if (lastConflictChoice == BrowserAlerts.FileConflictChoice.CANCEL) {
             return false;
         }
@@ -101,15 +105,15 @@ public class BrowserFileTransferOperation {
         return true;
     }
 
-    public void execute()
-            throws Exception {
+    public void execute() throws Exception {
         if (files.isEmpty()) {
             updateProgress(BrowserTransferProgress.empty());
             return;
         }
 
         var same = files.getFirst().getFileSystem().equals(target.getFileSystem());
-        var doesMove = transferMode == BrowserFileTransferMode.MOVE || (same && transferMode == BrowserFileTransferMode.NORMAL);
+        var doesMove = transferMode == BrowserFileTransferMode.MOVE
+                || (same && transferMode == BrowserFileTransferMode.NORMAL);
         if (doesMove) {
             if (!BrowserAlerts.showMoveAlert(files, target)) {
                 return;
@@ -132,8 +136,7 @@ public class BrowserFileTransferOperation {
         }
     }
 
-    private void handleSingleOnSameFileSystem(FileSystem.FileEntry source)
-            throws Exception {
+    private void handleSingleOnSameFileSystem(FileSystem.FileEntry source) throws Exception {
         // Prevent dropping directory into itself
         if (source.getPath().equals(target.getPath())) {
             return;
@@ -163,8 +166,7 @@ public class BrowserFileTransferOperation {
         }
     }
 
-    private void handleSingleAcrossFileSystems(FileSystem.FileEntry source)
-            throws Exception {
+    private void handleSingleAcrossFileSystems(FileSystem.FileEntry source) throws Exception {
         if (target.getKind() != FileKind.DIRECTORY) {
             throw new IllegalStateException("Target " + target.getPath() + " is not a directory");
         }
@@ -214,9 +216,7 @@ public class BrowserFileTransferOperation {
             } else if (sourceFile.getKind() == FileKind.FILE) {
                 if (checkConflicts
                         && !handleChoice(
-                        target.getFileSystem(),
-                        targetFile,
-                        files.size() > 1 || flatFiles.size() > 1)) {
+                                target.getFileSystem(), targetFile, files.size() > 1 || flatFiles.size() > 1)) {
                     continue;
                 }
 

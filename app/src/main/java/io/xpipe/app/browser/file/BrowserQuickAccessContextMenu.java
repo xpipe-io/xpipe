@@ -8,6 +8,7 @@ import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileSystem;
+
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Side;
@@ -19,6 +20,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
+
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -139,8 +141,10 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
             this.browserEntry = browserEntry;
             this.menu = new Menu(
                     // Use original name, not the link target
-                    browserEntry.getRawFileEntry().getName(), PrettyImageHelper.ofFixedRasterized(
-                            FileIconManager.getFileIcon(browserEntry.getRawFileEntry(), false), 24, 24).createRegion());
+                    browserEntry.getRawFileEntry().getName(),
+                    PrettyImageHelper.ofFixedRasterized(
+                                    FileIconManager.getFileIcon(browserEntry.getRawFileEntry(), false), 24, 24)
+                            .createRegion());
             createMenu();
             addInputListeners();
         }
@@ -243,7 +247,8 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
                 if (contextMenu != null) {
                     contextMenu.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
                         keyBasedNavigation = true;
-                        if (event.getCode().equals(KeyCode.SPACE) || event.getCode().equals(KeyCode.ENTER)) {
+                        if (event.getCode().equals(KeyCode.SPACE)
+                                || event.getCode().equals(KeyCode.ENTER)) {
                             expandBrowserActionMenuKey = true;
                         } else {
                             expandBrowserActionMenuKey = false;

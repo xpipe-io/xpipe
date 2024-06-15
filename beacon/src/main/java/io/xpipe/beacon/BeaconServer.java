@@ -108,7 +108,8 @@ public class BeaconServer {
     }
 
     public static boolean tryStop(BeaconClient client) throws Exception {
-        DaemonStopExchange.Response res = client.performRequest(DaemonStopExchange.Request.builder().build());
+        DaemonStopExchange.Response res =
+                client.performRequest(DaemonStopExchange.Request.builder().build());
         return res.isSuccess();
     }
 

@@ -24,7 +24,7 @@ public interface ShellInitCommand {
 
     interface Terminal extends ShellInitCommand {
 
-        Optional<String> terminalContent(ShellControl shellControl) throws Exception;
+        Optional<String> terminalContent(ShellControl shellControl);
 
         default boolean runInTerminal() {
             return true;
@@ -52,7 +52,7 @@ public interface ShellInitCommand {
         }
 
         @Override
-        public Optional<String> terminalContent(ShellControl shellControl) throws Exception {
+        public Optional<String> terminalContent(ShellControl shellControl) {
             return Optional.of(content);
         }
 

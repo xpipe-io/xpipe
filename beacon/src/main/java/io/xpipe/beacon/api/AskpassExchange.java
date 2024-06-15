@@ -2,6 +2,7 @@ package io.xpipe.beacon.api;
 
 import io.xpipe.beacon.BeaconInterface;
 import io.xpipe.core.util.SecretValue;
+
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;

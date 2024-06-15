@@ -12,6 +12,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.core.store.DataStore;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -34,7 +35,11 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     @Override
     public DataStoreEntry getSyntheticParent(DataStoreEntry store) {
         AbstractServiceStore s = store.getStore().asNeeded();
-        return DataStorage.get().getOrCreateNewSyntheticEntry(s.getHost().get(), "Services", ServiceGroupStore.builder().parent(s.getHost()).build());
+        return DataStorage.get()
+                .getOrCreateNewSyntheticEntry(
+                        s.getHost().get(),
+                        "Services",
+                        ServiceGroupStore.builder().parent(s.getHost()).build());
     }
 
     @Override
@@ -60,7 +65,8 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
         var toggle = createToggleComp(sec);
         toggle.setCustomVisibility(Bindings.createBooleanBinding(
                 () -> {
-                    AbstractServiceStore s = sec.getWrapper().getEntry().getStore().asNeeded();
+                    AbstractServiceStore s =
+                            sec.getWrapper().getEntry().getStore().asNeeded();
                     if (!s.getHost().getStore().requiresTunnel()) {
                         return false;
                     }
@@ -74,7 +80,9 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     @Override
     public List<String> getSearchableTerms(DataStore store) {
         AbstractServiceStore s = store.asNeeded();
-        return s.getLocalPort() != null ? List.of("" + s.getRemotePort(), "" + s.getLocalPort()) : List.of("" + s.getRemotePort());
+        return s.getLocalPort() != null
+                ? List.of("" + s.getRemotePort(), "" + s.getLocalPort())
+                : List.of("" + s.getRemotePort());
     }
 
     @Override

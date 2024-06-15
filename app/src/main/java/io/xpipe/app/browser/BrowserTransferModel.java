@@ -9,6 +9,7 @@ import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ShellTemp;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -17,6 +18,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
 import lombok.Value;
 import org.apache.commons.io.FileUtils;
 
@@ -95,7 +97,8 @@ public class BrowserTransferModel {
                 }
 
                 var item = new Item(null, name, entry, path);
-                item.progress.setValue(BrowserTransferProgress.finished(entry.getFileName(), entry.getRawFileEntry().getSize()));
+                item.progress.setValue(BrowserTransferProgress.finished(
+                        entry.getFileName(), entry.getRawFileEntry().getSize()));
                 items.add(item);
             }
         } catch (Exception ex) {
@@ -155,8 +158,7 @@ public class BrowserTransferModel {
         Path localFile;
         Property<BrowserTransferProgress> progress;
 
-        public Item(
-                OpenFileSystemModel openFileSystemModel, String name, BrowserEntry browserEntry, Path localFile) {
+        public Item(OpenFileSystemModel openFileSystemModel, String name, BrowserEntry browserEntry, Path localFile) {
             this.openFileSystemModel = openFileSystemModel;
             this.name = name;
             this.browserEntry = browserEntry;

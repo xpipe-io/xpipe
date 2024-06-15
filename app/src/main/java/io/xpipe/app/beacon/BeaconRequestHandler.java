@@ -1,12 +1,13 @@
 package io.xpipe.app.beacon;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.beacon.*;
 import io.xpipe.core.util.JacksonMapper;
+
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 import lombok.SneakyThrows;
 
 import java.io.IOException;
@@ -18,10 +19,12 @@ public class BeaconRequestHandler<T> implements HttpHandler {
 
     private final BeaconInterface<T> beaconInterface;
 
-    public BeaconRequestHandler(BeaconInterface<T> beaconInterface) {this.beaconInterface = beaconInterface;}
+    public BeaconRequestHandler(BeaconInterface<T> beaconInterface) {
+        this.beaconInterface = beaconInterface;
+    }
 
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
+    public void handle(HttpExchange exchange) {
         if (!AppPrefs.get().disableApiAuthentication().get() && beaconInterface.requiresAuthentication()) {
             var auth = exchange.getRequestHeaders().getFirst("Authorization");
             if (auth == null) {
@@ -30,7 +33,10 @@ public class BeaconRequestHandler<T> implements HttpHandler {
             }
 
             var token = auth.replace("Bearer ", "");
-            var session = AppBeaconServer.get().getSessions().stream().filter(s -> s.getToken().equals(token)).findFirst().orElse(null);
+            var session = AppBeaconServer.get().getSessions().stream()
+                    .filter(s -> s.getToken().equals(token))
+                    .findFirst()
+                    .orElse(null);
             if (session == null) {
                 writeError(exchange, new BeaconClientErrorResponse("Unknown token"), 403);
                 return;
@@ -47,8 +53,11 @@ public class BeaconRequestHandler<T> implements HttpHandler {
             try (InputStream is = exchange.getRequestBody()) {
                 var tree = JacksonMapper.getDefault().readTree(is);
                 TrackEvent.trace("Parsed raw request:\n" + tree.toPrettyString());
-                var emptyRequestClass = tree.isEmpty() && beaconInterface.getRequestClass().getDeclaredFields().length == 0;
-                object = emptyRequestClass ? createDefaultRequest(beaconInterface) : JacksonMapper.getDefault().treeToValue(tree, beaconInterface.getRequestClass());
+                var emptyRequestClass =
+                        tree.isEmpty() && beaconInterface.getRequestClass().getDeclaredFields().length == 0;
+                object = emptyRequestClass
+                        ? createDefaultRequest(beaconInterface)
+                        : JacksonMapper.getDefault().treeToValue(tree, beaconInterface.getRequestClass());
                 TrackEvent.trace("Parsed request object:\n" + object);
             }
             response = beaconInterface.handle(exchange, object);
@@ -62,7 +71,8 @@ public class BeaconRequestHandler<T> implements HttpHandler {
             writeError(exchange, new BeaconServerErrorResponse(cause), 500);
             return;
         } catch (IOException ex) {
-            // Handle serialization errors as normal exceptions and other IO exceptions as assuming that the connection is broken
+            // Handle serialization errors as normal exceptions and other IO exceptions as assuming that the connection
+            // is broken
             if (!ex.getClass().getName().contains("jackson")) {
                 ErrorEvent.fromThrowable(ex).omit().expected().handle();
             } else {
@@ -76,32 +86,32 @@ public class BeaconRequestHandler<T> implements HttpHandler {
             return;
         }
 
-            try {
-                var emptyResponseClass = beaconInterface.getResponseClass().getDeclaredFields().length == 0;
-                if (!emptyResponseClass && response != null) {
-                    TrackEvent.trace("Sending response:\n" + object);
-                    var tree = JacksonMapper.getDefault().valueToTree(response);
-                    TrackEvent.trace("Sending raw response:\n" + tree.toPrettyString());
-                    var bytes = tree.toPrettyString().getBytes(StandardCharsets.UTF_8);
-                    exchange.sendResponseHeaders(200, bytes.length);
-                    try (OutputStream os = exchange.getResponseBody()) {
-                        os.write(bytes);
-                    }
-                } else {
-                    exchange.sendResponseHeaders(200, -1);
+        try {
+            var emptyResponseClass = beaconInterface.getResponseClass().getDeclaredFields().length == 0;
+            if (!emptyResponseClass && response != null) {
+                TrackEvent.trace("Sending response:\n" + object);
+                var tree = JacksonMapper.getDefault().valueToTree(response);
+                TrackEvent.trace("Sending raw response:\n" + tree.toPrettyString());
+                var bytes = tree.toPrettyString().getBytes(StandardCharsets.UTF_8);
+                exchange.sendResponseHeaders(200, bytes.length);
+                try (OutputStream os = exchange.getResponseBody()) {
+                    os.write(bytes);
                 }
-            } catch (IOException ioException) {
-                ErrorEvent.fromThrowable(ioException).omit().expected().handle();
-            } catch (Throwable other) {
-                ErrorEvent.fromThrowable(other).handle();
-                writeError(exchange, new BeaconServerErrorResponse(other), 500);
-                return;
+            } else {
+                exchange.sendResponseHeaders(200, -1);
             }
+        } catch (IOException ioException) {
+            ErrorEvent.fromThrowable(ioException).omit().expected().handle();
+        } catch (Throwable other) {
+            ErrorEvent.fromThrowable(other).handle();
+            writeError(exchange, new BeaconServerErrorResponse(other), 500);
+        }
     }
 
     private void writeError(HttpExchange exchange, Object errorMessage, int code) {
         try {
-            var bytes = JacksonMapper.getDefault().writeValueAsString(errorMessage).getBytes(StandardCharsets.UTF_8);
+            var bytes =
+                    JacksonMapper.getDefault().writeValueAsString(errorMessage).getBytes(StandardCharsets.UTF_8);
             exchange.sendResponseHeaders(code, bytes.length);
             try (OutputStream os = exchange.getResponseBody()) {
                 os.write(bytes);

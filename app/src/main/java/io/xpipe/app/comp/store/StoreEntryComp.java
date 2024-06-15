@@ -1,7 +1,5 @@
 package io.xpipe.app.comp.store;
 
-import atlantafx.base.layout.InputGroup;
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.*;
 import io.xpipe.app.ext.ActionProvider;
@@ -22,6 +20,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.*;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableDoubleValue;
@@ -34,6 +33,9 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+
+import atlantafx.base.layout.InputGroup;
+import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.nio.file.Files;
@@ -207,9 +209,11 @@ public abstract class StoreEntryComp extends SimpleComp {
     protected Region createButtonBar() {
         var list = new DerivedObservableList<>(wrapper.getActionProviders(), false);
         var buttons = list.mapped(actionProvider -> {
-            var button = buildButton(actionProvider);
-            return button != null ? button.createRegion() : null;
-        }).filtered(region -> region != null).getList();
+                    var button = buildButton(actionProvider);
+                    return button != null ? button.createRegion() : null;
+                })
+                .filtered(region -> region != null)
+                .getList();
 
         var ig = new InputGroup();
         Runnable update = () -> {
@@ -236,28 +240,31 @@ public abstract class StoreEntryComp extends SimpleComp {
             return null;
         }
 
-        var button =
-                new IconButtonComp(cs.getIcon(wrapper.getEntry().ref()), leaf != null ? () -> {
-                    ThreadHelper.runFailableAsync(() -> {
-                        wrapper.runAction(leaf.createAction(wrapper.getEntry().ref()), leaf.showBusy());
-                    });
-                } : null);
+        var button = new IconButtonComp(
+                cs.getIcon(wrapper.getEntry().ref()),
+                leaf != null
+                        ? () -> {
+                            ThreadHelper.runFailableAsync(() -> {
+                                wrapper.runAction(
+                                        leaf.createAction(wrapper.getEntry().ref()), leaf.showBusy());
+                            });
+                        }
+                        : null);
         if (branch != null) {
-            button.apply(new ContextMenuAugment<>(mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY,keyEvent -> false,() -> {
-                var cm = ContextMenuHelper.create();
-                branch.getChildren().forEach(childProvider -> {
-                    var menu = buildMenuItemForAction(childProvider);
-                    if (menu != null) {
-                        cm.getItems().add(menu);
-                    }
-                });
-                return cm;
-            }));
+            button.apply(new ContextMenuAugment<>(
+                    mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, keyEvent -> false, () -> {
+                        var cm = ContextMenuHelper.create();
+                        branch.getChildren().forEach(childProvider -> {
+                            var menu = buildMenuItemForAction(childProvider);
+                            if (menu != null) {
+                                cm.getItems().add(menu);
+                            }
+                        });
+                        return cm;
+                    }));
         }
-        button.accessibleText(
-                cs.getName(wrapper.getEntry().ref()).getValue());
-        button.apply(new TooltipAugment<>(
-                cs.getName(wrapper.getEntry().ref()), null));
+        button.accessibleText(cs.getName(wrapper.getEntry().ref()).getValue());
+        button.apply(new TooltipAugment<>(cs.getName(wrapper.getEntry().ref()), null));
         return button;
     }
 
@@ -284,7 +291,9 @@ public abstract class StoreEntryComp extends SimpleComp {
                 continue;
             }
 
-            if (p.getLeafDataStoreCallSite() != null && p.getLeafDataStoreCallSite().isSystemAction() && !hasSep) {
+            if (p.getLeafDataStoreCallSite() != null
+                    && p.getLeafDataStoreCallSite().isSystemAction()
+                    && !hasSep) {
                 if (contextMenu.getItems().size() > 0) {
                     contextMenu.getItems().add(new SeparatorMenuItem());
                 }
@@ -312,8 +321,8 @@ public abstract class StoreEntryComp extends SimpleComp {
             contextMenu.getItems().add(browse);
 
             var copyId = new MenuItem(AppI18n.get("copyId"), new FontIcon("mdi2c-content-copy"));
-            copyId.setOnAction(
-                    event -> ClipboardHelper.copyText(wrapper.getEntry().getUuid().toString()));
+            copyId.setOnAction(event ->
+                    ClipboardHelper.copyText(wrapper.getEntry().getUuid().toString()));
             contextMenu.getItems().add(copyId);
         }
 
@@ -343,12 +352,16 @@ public abstract class StoreEntryComp extends SimpleComp {
                     .getList()
                     .forEach(storeCategoryWrapper -> {
                         MenuItem m = new MenuItem();
-                        m.textProperty().setValue("  ".repeat(storeCategoryWrapper.getDepth()) + storeCategoryWrapper.getName().getValue());
+                        m.textProperty()
+                                .setValue("  ".repeat(storeCategoryWrapper.getDepth())
+                                        + storeCategoryWrapper.getName().getValue());
                         m.setOnAction(event -> {
                             wrapper.moveTo(storeCategoryWrapper.getCategory());
                             event.consume();
                         });
-                        if (storeCategoryWrapper.getParent() == null || storeCategoryWrapper.equals(wrapper.getCategory().getValue())) {
+                        if (storeCategoryWrapper.getParent() == null
+                                || storeCategoryWrapper.equals(
+                                        wrapper.getCategory().getValue())) {
                             m.setDisable(true);
                         }
 
@@ -386,10 +399,17 @@ public abstract class StoreEntryComp extends SimpleComp {
             section.get().getAllChildren().getList().forEach(other -> {
                 var ow = other.getWrapper();
                 var op = ow.getEntry().getProvider();
-                MenuItem m = new MenuItem(ow.getName().getValue(),
-                        op != null ? PrettyImageHelper.ofFixedSizeSquare(op.getDisplayIconFileName(ow.getEntry().getStore()),
-                                16).createRegion() : null);
-                if (other.getWrapper().equals(wrapper) || ow.getEntry().getUuid().equals(wrapper.getEntry().getOrderBefore())) {
+                MenuItem m = new MenuItem(
+                        ow.getName().getValue(),
+                        op != null
+                                ? PrettyImageHelper.ofFixedSizeSquare(
+                                                op.getDisplayIconFileName(
+                                                        ow.getEntry().getStore()),
+                                                16)
+                                        .createRegion()
+                                : null);
+                if (other.getWrapper().equals(wrapper)
+                        || ow.getEntry().getUuid().equals(wrapper.getEntry().getOrderBefore())) {
                     m.setDisable(true);
                 }
                 m.setOnAction(event -> {
@@ -436,9 +456,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                 : new MenuItem(null, new FontIcon(icon));
 
         var proRequired = p.getProFeatureId() != null
-                && !LicenseProvider.get()
-                .getFeature(p.getProFeatureId())
-                .isSupported();
+                && !LicenseProvider.get().getFeature(p.getProFeatureId()).isSupported();
         if (proRequired) {
             item.setDisable(true);
             item.textProperty().bind(Bindings.createStringBinding(() -> name.getValue() + " (Pro)", name));
@@ -448,7 +466,9 @@ public abstract class StoreEntryComp extends SimpleComp {
         Menu menu = item instanceof Menu m ? m : null;
 
         if (branch != null) {
-            var items = branch.getChildren().stream().map(c -> buildMenuItemForAction(c)).toList();
+            var items = branch.getChildren().stream()
+                    .map(c -> buildMenuItemForAction(c))
+                    .toList();
             menu.getItems().addAll(items);
             return menu;
         } else if (leaf.canLinkTo()) {
@@ -462,18 +482,16 @@ public abstract class StoreEntryComp extends SimpleComp {
             menu.getItems().add(run);
 
             var sc = new MenuItem(null, new FontIcon("mdi2c-code-greater-than"));
-            var url = "xpipe://action/" + p.getId() + "/"
-                    + wrapper.getEntry().getUuid();
+            var url = "xpipe://action/" + p.getId() + "/" + wrapper.getEntry().getUuid();
             sc.textProperty().bind(AppI18n.observable("base.createShortcut"));
             sc.setOnAction(event -> {
                 ThreadHelper.runFailableAsync(() -> {
                     DesktopShortcuts.create(
                             url,
                             wrapper.nameProperty().getValue() + " ("
-                                    + p
-                                    .getLeafDataStoreCallSite()
-                                    .getName(wrapper.getEntry().ref())
-                                    .getValue() + ")");
+                                    + p.getLeafDataStoreCallSite()
+                                            .getName(wrapper.getEntry().ref())
+                                            .getValue() + ")");
                 });
             });
             menu.getItems().add(sc);

@@ -77,7 +77,8 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
             Predicate<StoreEntryWrapper> applicable = storeEntryWrapper -> {
                 var e = storeEntryWrapper.getEntry();
 
-                if (e.equals(self) || DataStorage.get().getStoreParentHierarchy(e).contains(self)) {
+                if (e.equals(self)
+                        || DataStorage.get().getStoreParentHierarchy(e).contains(self)) {
                     return false;
                 }
 

@@ -9,6 +9,7 @@ import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.storage.DataStoreColor;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -129,14 +130,17 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
         // Optimization for large sections. If there are more than 20 children, only add the nodes to the scene if the
         // section is actually expanded
         var listSections = section.getWrapper() != null
-                ? section.getShownChildren().filtered(
-                        storeSection -> section.getAllChildren().getList().size() <= 20 || expanded.get(),
-                        expanded,
-                        section.getAllChildren().getList())
+                ? section.getShownChildren()
+                        .filtered(
+                                storeSection ->
+                                        section.getAllChildren().getList().size() <= 20 || expanded.get(),
+                                expanded,
+                                section.getAllChildren().getList())
                 : section.getShownChildren();
-        var content = new ListBoxViewComp<>(listSections.getList(), section.getAllChildren().getList(), (StoreSection e) -> {
-                    return new StoreSectionMiniComp(e, this.augment, this.action, this.condensedStyle);
-                })
+        var content = new ListBoxViewComp<>(
+                        listSections.getList(), section.getAllChildren().getList(), (StoreSection e) -> {
+                            return new StoreSectionMiniComp(e, this.augment, this.action, this.condensedStyle);
+                        })
                 .minHeight(0)
                 .hgrow();
 

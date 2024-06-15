@@ -1,6 +1,7 @@
 package io.xpipe.ext.base.service;
 
 import io.xpipe.app.comp.store.StoreEntryWrapper;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 

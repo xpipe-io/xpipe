@@ -20,14 +20,15 @@ public class ServiceLicenseCheck {
         limit.checkLimit();
     }
 
-
     public static LicenseConnectionLimit getConnectionLimit() {
         // We check before starting a new service
         return new LicenseConnectionLimit(0, getFeature()) {
 
             @Override
             protected boolean matches(DataStore store) {
-                return store instanceof AbstractServiceStore abstractServiceStore && abstractServiceStore.requiresTunnel() && abstractServiceStore.isSessionRunning();
+                return store instanceof AbstractServiceStore abstractServiceStore
+                        && abstractServiceStore.requiresTunnel()
+                        && abstractServiceStore.isSessionRunning();
             }
         };
     }

@@ -13,7 +13,7 @@ import io.xpipe.core.store.StatefulDataStore;
 public interface EnabledParentStoreProvider extends DataStoreProvider {
 
     @Override
-    public default StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
+    default StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
         if (sec.getWrapper().getValidity().getValue() != DataStoreEntry.Validity.COMPLETE) {
             return StoreEntryComp.create(sec.getWrapper(), null, preferLarge);
         }

@@ -19,14 +19,13 @@ import lombok.extern.jackson.Jacksonized;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class AppLayoutModel {
 
     private static AppLayoutModel INSTANCE;
 
-    @Getter
     private final SavedState savedState;
 
-    @Getter
     private final List<Entry> entries;
 
     private final Property<Entry> selected;
@@ -49,10 +48,6 @@ public class AppLayoutModel {
     public static void reset() {
         AppCache.update("layoutState", INSTANCE.savedState);
         INSTANCE = null;
-    }
-
-    public Property<Entry> getSelected() {
-        return selected;
     }
 
     public void selectBrowser() {

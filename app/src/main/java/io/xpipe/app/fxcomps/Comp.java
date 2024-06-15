@@ -1,12 +1,12 @@
 package io.xpipe.app.fxcomps;
 
-import atlantafx.base.controls.Spacer;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.augment.Augment;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -17,6 +17,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+
+import atlantafx.base.controls.Spacer;
 
 import java.util.ArrayList;
 import java.util.List;

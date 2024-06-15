@@ -82,7 +82,6 @@ public final class HumanReadableFormat {
         return date.get(WeekFields.of(Locale.getDefault()).weekOfYear());
     }
 
-
     public static String duration(Duration duration) {
         return duration.toString()
                 .substring(2)

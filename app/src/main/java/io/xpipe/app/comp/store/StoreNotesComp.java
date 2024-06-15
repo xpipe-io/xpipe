@@ -1,6 +1,5 @@
 package io.xpipe.app.comp.store;
 
-import atlantafx.base.controls.Popover;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.DialogComp;
 import io.xpipe.app.comp.base.MarkdownEditorComp;
@@ -11,11 +10,14 @@ import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.storage.DataStorage;
+
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
+
+import atlantafx.base.controls.Popover;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -24,7 +26,9 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
 
     private final StoreEntryWrapper wrapper;
 
-    public StoreNotesComp(StoreEntryWrapper wrapper) {this.wrapper = wrapper;}
+    public StoreNotesComp(StoreEntryWrapper wrapper) {
+        this.wrapper = wrapper;
+    }
 
     @Override
     public Structure createBase() {
@@ -36,7 +40,8 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
                 .styleClass("notes-button")
                 .grow(false, true)
                 .hide(BindingsHelper.map(n, s -> s.getCommited() == null && s.getCurrent() == null))
-                .createStructure().get();
+                .createStructure()
+                .get();
         button.prefWidthProperty().bind(button.heightProperty());
 
         var prop = new SimpleStringProperty(n.getValue().getCurrent());
@@ -73,12 +78,16 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
 
     private Popover createPopover(AtomicReference<Popover> ref, Property<String> prop) {
         var n = wrapper.getNotes();
-        var md = new MarkdownEditorComp(prop, "notes-" + wrapper.getName().getValue()).prefWidth(600).prefHeight(600).createStructure();
+        var md = new MarkdownEditorComp(prop, "notes-" + wrapper.getName().getValue())
+                .prefWidth(600)
+                .prefHeight(600)
+                .createStructure();
         var dialog = new DialogComp() {
 
             @Override
             protected void finish() {
-                n.setValue(new StoreNotes(n.getValue().getCurrent(), n.getValue().getCurrent()));
+                n.setValue(
+                        new StoreNotes(n.getValue().getCurrent(), n.getValue().getCurrent()));
                 ref.get().hide();
             }
 
@@ -90,8 +99,9 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
             @Override
             public Comp<?> bottom() {
                 return new ButtonComp(AppI18n.observable("delete"), () -> {
-                    n.setValue(new StoreNotes(null, null));
-                }).hide(BindingsHelper.map(n, v -> v.getCommited() == null));
+                            n.setValue(new StoreNotes(null, null));
+                        })
+                        .hide(BindingsHelper.map(n, v -> v.getCommited() == null));
             }
 
             @Override
@@ -114,7 +124,8 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
         popover.setTitle(wrapper.getName().getValue());
         popover.showingProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
-                n.setValue(new StoreNotes(n.getValue().getCommited(), n.getValue().getCommited()));
+                n.setValue(
+                        new StoreNotes(n.getValue().getCommited(), n.getValue().getCommited()));
                 DataStorage.get().saveAsync();
                 ref.set(null);
             }
@@ -135,7 +146,6 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
 
         return popover;
     }
-
 
     public record Structure(Popover popover, Button button) implements CompStructure<Button> {
 

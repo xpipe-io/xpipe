@@ -4,6 +4,7 @@ import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.app.util.Hyperlinks;
+
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
@@ -30,8 +31,7 @@ public class UpdateAvailableAlert {
         var update = AppWindowHelper.showBlockingAlert(alert -> {
                     alert.setTitle(AppI18n.get("updateReadyAlertTitle"));
                     alert.setAlertType(Alert.AlertType.NONE);
-                    var markdown =
-                            new MarkdownComp(u.getBody() != null ? u.getBody() : "", s -> s).createRegion();
+                    var markdown = new MarkdownComp(u.getBody() != null ? u.getBody() : "", s -> s).createRegion();
                     alert.getButtonTypes().clear();
                     var updaterContent = uh.createInterface();
                     if (updaterContent != null) {

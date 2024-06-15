@@ -32,7 +32,7 @@ public class BrowserTransferProgress {
 
     public Duration elapsedTime() {
         var now = Instant.now();
-        var elapsed = Duration.between(start,now);
+        var elapsed = Duration.between(start, now);
         return elapsed;
     }
 

@@ -77,12 +77,13 @@ public enum PlatformState {
             // fails
         } catch (HeadlessException h) {
             var msg = (OsType.getLocal().equals(OsType.LINUX)
-                    ? "No X11 DISPLAY variable was set or no headful library support was found." :
-                    "The application does not have desktop access, but this program performed an operation which requires it.")+ "\n\n"
-                            + "Please note that XPipe is a desktop application that should be run on your local workstation."
-                            + " It is able to provide the full functionality for all integrations via remote server connections, e.g. via SSH."
-                            + " You don't have to install XPipe on any system like a server, a WSL distribution, a hypervisor, etc.,"
-                            + " to have full access to that system, a shell connection to it is enough for XPipe to work from your local machine.";
+                            ? "No X11 DISPLAY variable was set or no headful library support was found."
+                            : "The application does not have desktop access, but this program performed an operation which requires it.")
+                    + "\n\n"
+                    + "Please note that XPipe is a desktop application that should be run on your local workstation."
+                    + " It is able to provide the full functionality for all integrations via remote server connections, e.g. via SSH."
+                    + " You don't have to install XPipe on any system like a server, a WSL distribution, a hypervisor, etc.,"
+                    + " to have full access to that system, a shell connection to it is enough for XPipe to work from your local machine.";
             PlatformState.setCurrent(PlatformState.EXITED);
             return Optional.of(ErrorEvent.expected(new UnsupportedOperationException(msg)));
         } catch (Throwable t) {

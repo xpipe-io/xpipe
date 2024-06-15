@@ -45,7 +45,6 @@ public interface ActionProvider {
         return null;
     }
 
-
     default BranchDataStoreCallSite<?> getBranchDataStoreCallSite() {
         return null;
     }

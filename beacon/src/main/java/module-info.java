@@ -1,8 +1,9 @@
-import com.fasterxml.jackson.databind.Module;
 import io.xpipe.beacon.BeaconInterface;
 import io.xpipe.beacon.BeaconJacksonModule;
 import io.xpipe.beacon.api.*;
 import io.xpipe.core.util.ModuleLayerLoader;
+
+import com.fasterxml.jackson.databind.Module;
 
 open module io.xpipe.beacon {
     exports io.xpipe.beacon;
@@ -25,8 +26,19 @@ open module io.xpipe.beacon {
             BeaconInterface.Loader;
     provides Module with
             BeaconJacksonModule;
-    provides BeaconInterface with ShellStartExchange, ShellStopExchange, ShellExecExchange, DaemonModeExchange, DaemonStatusExchange, DaemonFocusExchange, DaemonOpenExchange, DaemonStopExchange, HandshakeExchange, ConnectionQueryExchange,
+    provides BeaconInterface with
+            ShellStartExchange,
+            ShellStopExchange,
+            ShellExecExchange,
+            DaemonModeExchange,
+            DaemonStatusExchange,
+            DaemonFocusExchange,
+            DaemonOpenExchange,
+            DaemonStopExchange,
+            HandshakeExchange,
+            ConnectionQueryExchange,
             AskpassExchange,
             TerminalWaitExchange,
-            TerminalLaunchExchange, DaemonVersionExchange;
+            TerminalLaunchExchange,
+            DaemonVersionExchange;
 }

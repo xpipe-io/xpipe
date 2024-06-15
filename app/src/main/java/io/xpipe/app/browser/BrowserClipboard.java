@@ -8,11 +8,13 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.util.FailableRunnable;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.Dragboard;
+
 import lombok.SneakyThrows;
 import lombok.Value;
 
@@ -46,8 +48,7 @@ public class BrowserClipboard {
                             }
 
                             List<File> data = (List<File>) clipboard.getData(DataFlavor.javaFileListFlavor);
-                            var files =
-                                    data.stream().map(f -> f.toPath()).toList();
+                            var files = data.stream().map(f -> f.toPath()).toList();
                             if (files.size() == 0) {
                                 return;
                             }
@@ -57,7 +58,8 @@ public class BrowserClipboard {
                                 entries.add(LocalFileSystem.getLocalBrowserEntry(file));
                             }
 
-                            currentCopyClipboard.setValue(new Instance(UUID.randomUUID(), null, entries, BrowserFileTransferMode.COPY));
+                            currentCopyClipboard.setValue(
+                                    new Instance(UUID.randomUUID(), null, entries, BrowserFileTransferMode.COPY));
                         } catch (Exception e) {
                             ErrorEvent.fromThrowable(e).expected().omit().handle();
                         }
@@ -66,7 +68,8 @@ public class BrowserClipboard {
     }
 
     @SneakyThrows
-    public static ClipboardContent startDrag(FileSystem.FileEntry base, List<BrowserEntry> selected, BrowserFileTransferMode mode) {
+    public static ClipboardContent startDrag(
+            FileSystem.FileEntry base, List<BrowserEntry> selected, BrowserFileTransferMode mode) {
         if (selected.isEmpty()) {
             return null;
         }

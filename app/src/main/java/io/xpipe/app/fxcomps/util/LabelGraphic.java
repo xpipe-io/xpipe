@@ -1,9 +1,11 @@
 package io.xpipe.app.fxcomps.util;
 
 import io.xpipe.app.fxcomps.Comp;
+
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
+
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;

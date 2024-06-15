@@ -14,6 +14,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.JacksonizedValue;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -29,9 +30,9 @@ public interface DataStoreProvider {
     default boolean shouldShow(StoreEntryWrapper w) {
         return true;
     }
-	
+
     default void onChildrenRefresh(DataStoreEntry entry) {}
-	
+
     default ObservableBooleanValue busy(StoreEntryWrapper wrapper) {
         return new SimpleBooleanProperty(false);
     }

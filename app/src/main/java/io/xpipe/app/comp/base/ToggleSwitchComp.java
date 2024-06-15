@@ -1,15 +1,17 @@
 package io.xpipe.app.comp.base;
 
-import atlantafx.base.controls.ToggleSwitch;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.LabelGraphic;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
+
+import atlantafx.base.controls.ToggleSwitch;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
@@ -44,8 +46,9 @@ public class ToggleSwitchComp extends SimpleComp {
             s.textProperty().bind(PlatformThread.sync(name));
         }
         if (graphic != null) {
-            s.graphicProperty().bind(PlatformThread.sync(graphic.map(labelGraphic -> labelGraphic.createGraphicNode())));
-            s.pseudoClassStateChanged(PseudoClass.getPseudoClass("has-graphic"),true);
+            s.graphicProperty()
+                    .bind(PlatformThread.sync(graphic.map(labelGraphic -> labelGraphic.createGraphicNode())));
+            s.pseudoClassStateChanged(PseudoClass.getPseudoClass("has-graphic"), true);
         }
         return s;
     }

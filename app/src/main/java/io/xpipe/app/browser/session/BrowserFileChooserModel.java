@@ -10,10 +10,12 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystemStore;
 import io.xpipe.core.util.FailableFunction;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
 import lombok.Getter;
 import lombok.Setter;
 

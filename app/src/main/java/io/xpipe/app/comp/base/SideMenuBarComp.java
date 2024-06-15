@@ -159,7 +159,10 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         }
 
         {
-            var b = new IconButtonComp("mdi2c-code-json", () -> Hyperlinks.open("http://localhost:" + AppPrefs.get().httpServerPort().getValue()))
+            var b = new IconButtonComp(
+                            "mdi2c-code-json",
+                            () -> Hyperlinks.open("http://localhost:"
+                                    + AppPrefs.get().httpServerPort().getValue()))
                     .tooltipKey("api")
                     .apply(simpleBorders)
                     .accessibleTextKey("api");

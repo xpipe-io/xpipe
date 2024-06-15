@@ -1,6 +1,7 @@
 package io.xpipe.beacon.api;
 
 import io.xpipe.beacon.BeaconInterface;
+
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -21,6 +22,7 @@ public class ShellExecExchange extends BeaconInterface<ShellExecExchange.Request
     public static class Request {
         @NonNull
         UUID connection;
+
         @NonNull
         String command;
     }
@@ -30,8 +32,10 @@ public class ShellExecExchange extends BeaconInterface<ShellExecExchange.Request
     @Value
     public static class Response {
         long exitCode;
+
         @NonNull
         String stdout;
+
         @NonNull
         String stderr;
     }

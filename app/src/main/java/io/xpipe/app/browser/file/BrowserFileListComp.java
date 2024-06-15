@@ -1,7 +1,5 @@
 package io.xpipe.app.browser.file;
 
-import atlantafx.base.controls.Spacer;
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.core.AppI18n;
@@ -15,6 +13,7 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystem;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -37,6 +36,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+
+import atlantafx.base.controls.Spacer;
+import atlantafx.base.theme.Styles;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -159,16 +161,18 @@ public final class BrowserFileListComp extends SimpleComp {
     private void prepareTableShortcuts(TableView<BrowserEntry> table) {
         table.setOnKeyPressed(event -> {
             var selected = fileList.getSelection();
-            var action = BrowserAction.getFlattened(fileList.getFileSystemModel(), selected).stream().filter(
-                    browserAction -> browserAction.isApplicable(fileList.getFileSystemModel(), selected) &&
-                            browserAction.isActive(fileList.getFileSystemModel(), selected)).filter(
-                    browserAction -> browserAction.getShortcut() != null).filter(browserAction -> browserAction.getShortcut().match(event)).findAny();
+            var action = BrowserAction.getFlattened(fileList.getFileSystemModel(), selected).stream()
+                    .filter(browserAction -> browserAction.isApplicable(fileList.getFileSystemModel(), selected)
+                            && browserAction.isActive(fileList.getFileSystemModel(), selected))
+                    .filter(browserAction -> browserAction.getShortcut() != null)
+                    .filter(browserAction -> browserAction.getShortcut().match(event))
+                    .findAny();
             action.ifPresent(browserAction -> {
-                        ThreadHelper.runFailableAsync(() -> {
-                            browserAction.execute(fileList.getFileSystemModel(), selected);
-                        });
-                        event.consume();
-                    });
+                ThreadHelper.runFailableAsync(() -> {
+                    browserAction.execute(fileList.getFileSystemModel(), selected);
+                });
+                event.consume();
+            });
             if (action.isPresent()) {
                 return;
             }
@@ -326,7 +330,9 @@ public final class BrowserFileListComp extends SimpleComp {
             Platform.runLater(() -> {
                 var newItems = new ArrayList<>(fileList.getShown().getValue());
 
-                var hasModifiedDate = newItems.size() == 0 || newItems.stream().anyMatch(entry -> entry.getRawFileEntry().getDate() != null);
+                var hasModifiedDate = newItems.size() == 0
+                        || newItems.stream()
+                                .anyMatch(entry -> entry.getRawFileEntry().getDate() != null);
                 if (!hasModifiedDate) {
                     table.getColumns().remove(mtimeCol);
                 } else {
@@ -336,7 +342,10 @@ public final class BrowserFileListComp extends SimpleComp {
                 }
 
                 if (fileList.getFileSystemModel().getFileSystem() != null) {
-                    var shell = fileList.getFileSystemModel().getFileSystem().getShell().orElseThrow();
+                    var shell = fileList.getFileSystemModel()
+                            .getFileSystem()
+                            .getShell()
+                            .orElseThrow();
                     var hasAttributes = !OsType.WINDOWS.equals(shell.getOsType());
                     if (!hasAttributes) {
                         table.getColumns().remove(modeCol);
@@ -357,8 +366,10 @@ public final class BrowserFileListComp extends SimpleComp {
                 if (!Objects.equals(lastDir.get(), currentDirectory)) {
                     TableViewSkin<?> skin = (TableViewSkin<?>) table.getSkin();
                     if (skin != null) {
-                        VirtualFlow<?> flow = (VirtualFlow<?>) skin.getChildren().get(1);
-                        ScrollBar vbar = (ScrollBar) flow.getChildrenUnmodifiable().get(2);
+                        VirtualFlow<?> flow =
+                                (VirtualFlow<?>) skin.getChildren().get(1);
+                        ScrollBar vbar =
+                                (ScrollBar) flow.getChildrenUnmodifiable().get(2);
                         if (vbar.getValue() != 0.0) {
                             table.scrollTo(0);
                         }
@@ -541,7 +552,8 @@ public final class BrowserFileListComp extends SimpleComp {
                 var selected = fileList.getSelection();
                 // Only show one menu across all selected entries
                 if (selected.size() > 0 && selected.getLast() == getTableRow().getItem()) {
-                    var cm = new BrowserContextMenu(fileList.getFileSystemModel(), getTableRow().getItem(), false);
+                    var cm = new BrowserContextMenu(
+                            fileList.getFileSystemModel(), getTableRow().getItem(), false);
                     ContextMenuHelper.toggleShow(cm, this, Side.RIGHT);
                     event.consume();
                 }
