@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.xpipe.beacon.api.HandshakeExchange;
 import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.core.util.XPipeInstallation;
+import lombok.SneakyThrows;
 
 import java.io.IOException;
 import java.net.URI;
@@ -80,11 +81,28 @@ public class BeaconClient {
 
         try {
             var reader = JacksonMapper.getDefault().readerFor(prov.getResponseClass());
-            var v = (RES) reader.readValue(response.body());
+            var emptyResponseClass = prov.getResponseClass().getDeclaredFields().length == 0;
+            var body = response.body();
+            if (emptyResponseClass && body.isBlank()) {
+                return createDefaultResponse(prov);
+            }
+            var v = (RES) reader.readValue(body);
             return v;
         } catch (IOException ex) {
             throw new BeaconConnectorException("Couldn't parse response", ex);
         }
+    }
+
+
+    @SneakyThrows
+    @SuppressWarnings("unchecked")
+    private <REQ> REQ createDefaultResponse(BeaconInterface<?> beaconInterface) {
+        var c = beaconInterface.getResponseClass().getDeclaredMethod("builder");
+        c.setAccessible(true);
+        var b = c.invoke(null);
+        var m = b.getClass().getDeclaredMethod("build");
+        m.setAccessible(true);
+        return (REQ) beaconInterface.getResponseClass().cast(m.invoke(b));
     }
 
     public <REQ, RES> RES performRequest(REQ req) throws BeaconConnectorException, BeaconClientException, BeaconServerException {

@@ -49,6 +49,10 @@ public class RunScriptAction implements BrowserAction, BranchAction {
         var scripts = ScriptStore.flatten(ScriptStore.getDefaultEnabledScripts());
         var map = new LinkedHashMap<String, SimpleScriptStore>();
         for (SimpleScriptStore script : scripts) {
+            if (!script.isFileScript()) {
+                continue;
+            }
+
             if (script.assemble(sc) == null) {
                 continue;
             }

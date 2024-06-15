@@ -3,7 +3,10 @@ info:
   title: XPipe API Documentation
   description: |
     The XPipe API provides programmatic access to XPipe’s features.
+    You can get started by either using this page as an API reference or alternatively import the OpenAPI definition file into your API client of choice:
     
+    <a download href="/openapi.yaml" style="font-size: 20px">OpenAPI .yaml specification</a>
+  
     The XPipe application will start up an HTTP server that can be used to send requests.
     You can change the port of it in the settings menu.
     Note that this server is HTTP-only for now as it runs only on localhost. HTTPS requests are not accepted.
@@ -15,8 +18,8 @@ info:
     Any kind of passwords and other secrets are automatically provided by XPipe when establishing a shell connection.
     If a required password is not stored and is set to be dynamically prompted, the running XPipe application will ask you to enter any required passwords.
     
-    You can quickly get started by either using this page as an API reference or alternatively import the [OpenAPI definition file](/openapi.yaml) into your API client of choice.
     See the authentication handshake below on how to authenticate prior to sending requests.
+    For development you can also skip the authentication step by disabling it in the settings menu.
   termsOfService: https://docs.xpipe.io/terms-of-service
   contact:
     name: XPipe - Contact us
