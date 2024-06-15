@@ -3,6 +3,15 @@ html {
     font-family: Roboto;
 }
 
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body.standalone {
+    background-color: #ffffff;
+}
+
 .markdown-body {
     -ms-text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;

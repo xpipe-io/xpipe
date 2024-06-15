@@ -122,12 +122,12 @@ public class AppPrefs {
     private final StringProperty lockCrypt =
             mapVaultSpecific(new SimpleStringProperty(), "workspaceLock", String.class);
 
-    final Property<Integer> httpServerPort = mapVaultSpecific(
+    final Property<Integer> httpServerPort = map(
             new SimpleObjectProperty<>(XPipeInstallation.getDefaultBeaconPort()), "httpServerPort", Integer.class);
     final StringProperty apiKey =
             mapVaultSpecific(new SimpleStringProperty(UUID.randomUUID().toString()), "apiKey", String.class);
     final BooleanProperty disableApiAuthentication =
-            mapVaultSpecific(new SimpleBooleanProperty(false), "disableApiAuthentication", Boolean.class);
+            map(new SimpleBooleanProperty(false), "disableApiAuthentication", Boolean.class);
 
     public ObservableValue<Integer> httpServerPort() {
         return httpServerPort;
@@ -204,7 +204,7 @@ public class AppPrefs {
         });
     }
 
-    public static void setDefaults() {
+    public static void setLocalDefaultsIfNeeded() {
         INSTANCE.initDefaultValues();
         PrefsProvider.getAll().forEach(prov -> prov.initDefaultValues());
     }

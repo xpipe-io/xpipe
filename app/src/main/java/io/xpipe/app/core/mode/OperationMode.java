@@ -1,5 +1,6 @@
 package io.xpipe.app.core.mode;
 
+import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppDebugModeCheck;
 import io.xpipe.app.core.check.AppTempCheck;
@@ -113,6 +114,8 @@ public abstract class OperationMode {
             AppExtensionManager.init(true);
             AppI18n.init();
             AppPrefs.initLocal();
+            AppPrefs.setLocalDefaultsIfNeeded();
+            AppBeaconServer.setupPort();
             TrackEvent.info("Finished initial setup");
         } catch (Throwable ex) {
             ErrorEvent.fromThrowable(ex).term().handle();

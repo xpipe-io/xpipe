@@ -2,6 +2,15 @@ html {
     font-family: Roboto;
 }
 
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body.standalone {
+    background-color: #0d1117;
+}
+
 .markdown-body {
     color-scheme: dark;
     -ms-text-size-adjust: 100%;

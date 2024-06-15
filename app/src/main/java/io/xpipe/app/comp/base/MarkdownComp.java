@@ -42,7 +42,7 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
     }
 
     private String getHtml() {
-        return MarkdownHelper.toHtml(markdown.getValue(), s -> s, htmlTransformation);
+        return MarkdownHelper.toHtml(markdown.getValue(), s -> s, htmlTransformation, null);
     }
 
     @SneakyThrows

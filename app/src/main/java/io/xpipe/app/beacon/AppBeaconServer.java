@@ -45,7 +45,7 @@ public class AppBeaconServer {
     private String notFoundHtml;
     private final Map<String, String> resources = new HashMap<>();
 
-    static {
+    public static void setupPort() {
         int port;
         boolean propertyPort;
         if (System.getProperty(BeaconConfig.BEACON_PORT_PROP) != null) {
@@ -170,7 +170,8 @@ public class AppBeaconServer {
                         },
                         s -> {
                             return "<div style=\"max-width: 800px;margin: auto;\">" + s + "</div>";
-                        });
+                        },
+                        "standalone");
             });
         }
         var body = notFoundHtml.getBytes(StandardCharsets.UTF_8);

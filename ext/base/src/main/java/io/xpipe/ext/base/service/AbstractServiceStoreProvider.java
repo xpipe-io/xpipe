@@ -39,7 +39,7 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
                 .getOrCreateNewSyntheticEntry(
                         s.getHost().get(),
                         "Services",
-                        ServiceGroupStore.builder().parent(s.getHost()).build());
+                        CustomServiceGroupStore.builder().parent(s.getHost()).build());
     }
 
     @Override

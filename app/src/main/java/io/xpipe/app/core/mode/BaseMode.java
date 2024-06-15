@@ -51,7 +51,6 @@ public class BaseMode extends OperationMode {
         LocalShell.init();
         AppShellCheck.check();
         XPipeDistributionType.init();
-        AppPrefs.setDefaults();
         // Initialize beacon server as we should be prepared for git askpass commands
         AppBeaconServer.init();
         GitStorageHandler.getInstance().init();
