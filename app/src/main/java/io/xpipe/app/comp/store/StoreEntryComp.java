@@ -310,6 +310,11 @@ public abstract class StoreEntryComp extends SimpleComp {
             browse.setOnAction(
                     event -> DesktopHelper.browsePathLocal(wrapper.getEntry().getDirectory()));
             contextMenu.getItems().add(browse);
+
+            var copyId = new MenuItem(AppI18n.get("copyId"), new FontIcon("mdi2c-content-copy"));
+            copyId.setOnAction(
+                    event -> ClipboardHelper.copyText(wrapper.getEntry().getUuid().toString()));
+            contextMenu.getItems().add(copyId);
         }
 
         if (DataStorage.get().isRootEntry(wrapper.getEntry())) {

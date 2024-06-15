@@ -88,7 +88,7 @@ project.ext {
     arch = getArchName()
     privateExtensions = file("$rootDir/private_extensions.txt").exists() ? file("$rootDir/private_extensions.txt").readLines() : []
     isFullRelease = System.getenv('RELEASE') != null && Boolean.parseBoolean(System.getenv('RELEASE'))
-    isStage = System.getenv('STAGE') != null && Boolean.parseBoolean(System.getenv('STAGE'))
+    isStage = true
     rawVersion = file('version').text.trim()
     versionString = rawVersion + (isFullRelease || isStage ? '' : '-SNAPSHOT')
     versionReleaseNumber = rawVersion.split('-').length == 2 ? Integer.parseInt(rawVersion.split('-')[1]) : 1

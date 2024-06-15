@@ -4,36 +4,27 @@
 ## XPipe Beacon
 
 The XPipe beacon component is responsible for handling all communications between the XPipe daemon
-and the various programming language APIs and the CLI. It provides an API that supports all kinds
+and the APIs and the CLI. It provides an API that supports all kinds
 of different operations.
 
 ### Inner Workings
 
-- The underlying inter-process communication is realized through
-  TCP sockets on port `21721` on Windows and `21723` on Linux/macOS.
+- The underlying communication is realized through an HTTP server on port `21721`
 
 - The data structures and exchange protocols are specified in the
-  [io.xpipe.beacon.exchange package](src/main/java/io/xpipe/beacon/exchange).
+  [io.xpipe.beacon.api package](src/main/java/io/xpipe/beacon/api).
 
 - Every exchange is initiated from the outside by sending a request message to the XPipe daemon.
   The daemon then always sends a response message.
 
-- The header information of a message is formatted in the json format.
+- The body of a message is formatted in the json format.
   As a result, all data structures exchanged must be serializable/deserializable with jackson.
-
-- Both the requests and responses can optionally include content in a body.
-  A body is initiated with two new lines (`\n`).
-
-- The body is split into segments of max length `65536`.
-  Each segment is preceded by four bytes that specify the length of the next segment.
-  In case the next segment has a length of less than `65536` bytes, we know that the end of the body has been reached.
-  This way the socket communication can handle payloads of unknown length.
 
 ## Configuration
 
 #### Custom port
 
-The default port can be changed by passing the property `io.xpipe.beacon.port=<port>` to both the daemon and APIs.
+The default port can be changed by passing the property `io.xpipe.beacon.port=<port>` to the daemon or changing it in the settings menu.
 Note that if both sides do not have the same port setting, they won't be able to reach each other.
 
 #### Custom launch command

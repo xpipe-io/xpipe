@@ -36,7 +36,7 @@ public class AppBeaconServer {
     private String localAuthSecret;
 
     private String notFoundHtml;
-    private Map<String, String> resources = new HashMap<>();
+    private final Map<String, String> resources = new HashMap<>();
 
     static {
         int port;

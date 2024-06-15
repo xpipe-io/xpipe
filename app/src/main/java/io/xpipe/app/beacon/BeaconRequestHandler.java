@@ -77,15 +77,16 @@ public class BeaconRequestHandler<T> implements HttpHandler {
         }
 
             try {
-                if (response != null) {
-                TrackEvent.trace("Sending response:\n" + object);
-                var tree = JacksonMapper.getDefault().valueToTree(response);
-                TrackEvent.trace("Sending raw response:\n" + tree.toPrettyString());
-                var bytes = tree.toPrettyString().getBytes(StandardCharsets.UTF_8);
-                exchange.sendResponseHeaders(200, bytes.length);
-                try (OutputStream os = exchange.getResponseBody()) {
-                    os.write(bytes);
-                }
+                var emptyResponseClass = beaconInterface.getResponseClass().getDeclaredFields().length == 0;
+                if (!emptyResponseClass && response != null) {
+                    TrackEvent.trace("Sending response:\n" + object);
+                    var tree = JacksonMapper.getDefault().valueToTree(response);
+                    TrackEvent.trace("Sending raw response:\n" + tree.toPrettyString());
+                    var bytes = tree.toPrettyString().getBytes(StandardCharsets.UTF_8);
+                    exchange.sendResponseHeaders(200, bytes.length);
+                    try (OutputStream os = exchange.getResponseBody()) {
+                        os.write(bytes);
+                    }
                 } else {
                     exchange.sendResponseHeaders(200, -1);
                 }
