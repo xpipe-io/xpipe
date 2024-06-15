@@ -206,24 +206,26 @@ while getopts 'sv:' OPTION; do
   esac
 done
 
-if ! [ -x "$(command -v apt)" ] && ! [ -x "$(command -v rpm)" ] && [ -x "$(command -v pacman)" ]; then
-  info "Installing from AUR at $aur"
-  rm -rf "/tmp/xpipe_aur" || true
-  if [[ -z "$version" ]] ; then
-    git clone "$aur" /tmp/xpipe_aur
-  else
-    git clone --branch "$version" "$aur" /tmp/xpipe_aur
+if [ "$(uname -s)" = "Linux" ]; then
+  if ! [ -x "$(command -v apt)" ] && ! [ -x "$(command -v rpm)" ] && [ -x "$(command -v pacman)" ]; then
+    info "Installing from AUR at $aur"
+    rm -rf "/tmp/xpipe_aur" || true
+    if [[ -z "$version" ]] ; then
+      git clone "$aur" /tmp/xpipe_aur
+    else
+      git clone --branch "$version" "$aur" /tmp/xpipe_aur
+    fi
+    cd "/tmp/xpipe_aur"
+    makepkg -si
+    launch
+    exit 0
   fi
-  cd "/tmp/xpipe_aur"
-  makepkg -si
-  launch
-  exit 0
-fi
 
-if ! [ -x "$(command -v apt)" ] && ! [ -x "$(command -v rpm)" ] && ! [ -x "$(command -v pacman)" ]; then
-  info "Installation is not supported on this system (no apt, rpm, pacman). Can you try a portable version of $product_name?"
-  info "https://github.com/xpipe-io/xpipe#portable"
-  exit 1
+  if ! [ -x "$(command -v apt)" ] && ! [ -x "$(command -v rpm)" ] && ! [ -x "$(command -v pacman)" ]; then
+    info "Installation is not supported on this system (no apt, rpm, pacman). Can you try a portable version of $product_name?"
+    info "https://github.com/xpipe-io/xpipe#portable"
+    exit 1
+  fi
 fi
 
 download_archive="$(
