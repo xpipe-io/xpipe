@@ -372,7 +372,7 @@ public abstract class DataStorage {
                 .toList();
         var toAdd = newChildren.stream()
                 .filter(nc -> {
-                    if (nc.getStore() == null) {
+                    if (nc == null || nc.getStore() == null) {
                         return false;
                     }
 
