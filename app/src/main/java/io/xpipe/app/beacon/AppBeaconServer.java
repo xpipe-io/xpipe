@@ -116,8 +116,9 @@ public class AppBeaconServer {
         BeaconInterface.getAll().forEach(beaconInterface -> {
             server.createContext(beaconInterface.getPath(), new BeaconRequestHandler<>(beaconInterface));
         });
-        server.setExecutor(Executors.newSingleThreadExecutor(r -> {
+        server.setExecutor(Executors.newFixedThreadPool(5, r -> {
             Thread t = Executors.defaultThreadFactory().newThread(r);
+            t.setDaemon(true);
             t.setName("http handler");
             t.setUncaughtExceptionHandler((t1, e) -> {
                 ErrorEvent.fromThrowable(e).handle();
