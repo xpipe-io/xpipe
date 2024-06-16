@@ -58,15 +58,15 @@ paths:
                 summary: Local application handshake
                 value: { "auth": { "type": "Local", "authFileContent": "<Contents of the local file $TEMP/xpipe_auth>" }, "client": { "type": "Api", "name": "My client name" } }
       responses:
-        200:
+        '200':
           description: The handshake was successful. The returned token can be used for authentication in this session. The token is valid as long as XPipe is running.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/HandshakeResponse'
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
   /connection/query:
     post:
@@ -94,7 +94,7 @@ paths:
                 summary: Globs
                 value: { "categoryFilter": "*", "connectionFilter": "*/podman/*", "typeFilter": "*" }
       responses:
-        200:
+        '200':
           description: The query was successful. The body contains all matched connections.
           content:
             application/json:
@@ -107,15 +107,15 @@ paths:
                                         "connection": ["local machine"], "type": "local" },
                     { "uuid": "e1462ddc-9beb-484c-bd91-bb666027e300", "category": ["default", "category 1"],
                       "connection": ["ssh system", "shell environments", "bash"], "type": "shellEnvironment" } ] }
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/Forbidden'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
   /shell/start:
     post:
@@ -137,17 +137,17 @@ paths:
                 summary: Start local shell
                 value: { "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b" }
       responses:
-        200:
+        '200':
           description: The operation was successful. The shell session was started.
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/Forbidden'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
   /shell/stop:
     post:
@@ -169,17 +169,17 @@ paths:
                 summary: Stop local shell
                 value: { "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b" }
       responses:
-        200:
+        '200':
           description: The operation was successful. The shell session was stopped.
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/Forbidden'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
   /shell/exec:
     post:
@@ -205,7 +205,7 @@ paths:
                 summary: invalid
                 value: { "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b", "command": "invalid" }
       responses:
-        200:
+        '200':
           description: The operation was successful. The shell command finished.
           content:
             application/json:
@@ -218,15 +218,15 @@ paths:
                 fail:
                   summary: invalid
                   value: { "exitCode": 127, "stdout": "", "stderr": "invalid: command not found" }
-        400:
+        '400':
           $ref: '#/components/responses/BadRequest'
-        401:
+        '401':
           $ref: '#/components/responses/Unauthorized'
-        403:
+        '403':
           $ref: '#/components/responses/Forbidden'
-        404:
+        '404':
           $ref: '#/components/responses/NotFound'
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
 components:
   schemas:
