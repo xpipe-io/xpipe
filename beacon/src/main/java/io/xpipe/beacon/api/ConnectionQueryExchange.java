@@ -45,13 +45,13 @@ public class ConnectionQueryExchange extends BeaconInterface<ConnectionQueryExch
     @Value
     public static class QueryResponse {
         @NonNull
-        UUID uuid;
+        UUID connection;
 
         @NonNull
         StorePath category;
 
         @NonNull
-        StorePath connection;
+        StorePath name;
 
         @NonNull
         String type;

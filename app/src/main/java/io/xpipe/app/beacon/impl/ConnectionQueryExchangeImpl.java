@@ -57,9 +57,9 @@ public class ConnectionQueryExchangeImpl extends ConnectionQueryExchange {
                     .getNames();
             var cat = new StorePath(names.subList(1, names.size()));
             var obj = ConnectionQueryExchange.QueryResponse.builder()
-                    .uuid(e.getUuid())
+                    .connection(e.getUuid())
                     .category(cat)
-                    .connection(DataStorage.get().getStorePath(e))
+                    .name(DataStorage.get().getStorePath(e))
                     .type(e.getProvider().getId())
                     .build();
             mapped.add(obj);
