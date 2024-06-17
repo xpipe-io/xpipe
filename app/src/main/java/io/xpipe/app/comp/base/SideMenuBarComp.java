@@ -1,5 +1,6 @@
 package io.xpipe.app.comp.base;
 
+import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.fxcomps.Comp;
@@ -9,11 +10,9 @@ import io.xpipe.app.fxcomps.augment.Augment;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.UpdateAvailableAlert;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.Hyperlinks;
-
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -162,7 +161,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
             var b = new IconButtonComp(
                             "mdi2c-code-json",
                             () -> Hyperlinks.open("http://localhost:"
-                                    + AppPrefs.get().httpServerPort().getValue()))
+                                    + AppBeaconServer.get().getPort()))
                     .tooltipKey("api")
                     .apply(simpleBorders)
                     .accessibleTextKey("api");

@@ -1,14 +1,5 @@
 package io.xpipe.core.util;
 
-import io.xpipe.core.dialog.BaseQueryElement;
-import io.xpipe.core.dialog.BusyElement;
-import io.xpipe.core.dialog.ChoiceElement;
-import io.xpipe.core.dialog.HeaderElement;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellDialect;
-import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.store.LocalStore;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -18,11 +9,21 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.ArrayType;
+import io.xpipe.core.dialog.BaseQueryElement;
+import io.xpipe.core.dialog.BusyElement;
+import io.xpipe.core.dialog.ChoiceElement;
+import io.xpipe.core.dialog.HeaderElement;
+import io.xpipe.core.process.OsType;
+import io.xpipe.core.process.ShellDialect;
+import io.xpipe.core.process.ShellDialects;
+import io.xpipe.core.store.LocalStore;
+import io.xpipe.core.store.StorePath;
 
 import java.io.IOException;
 import java.lang.reflect.WildcardType;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class CoreJacksonModule extends SimpleModule {
@@ -66,6 +67,25 @@ public class CoreJacksonModule extends SimpleModule {
 
         context.addSerializers(_serializers);
         context.addDeserializers(_deserializers);
+    }
+
+    public static class StorePathSerializer extends JsonSerializer<StorePath> {
+
+        @Override
+        public void serialize(StorePath value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+            var ar = value.getNames().toArray(String[]::new);
+            jgen.writeArray(ar, 0, ar.length);
+        }
+    }
+
+    public static class StorePathDeserializer extends JsonDeserializer<StorePath> {
+
+        @Override
+        public StorePath deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            JavaType javaType = JacksonMapper.getDefault().getTypeFactory().constructCollectionLikeType(List.class, String.class);
+            List<String> list = JacksonMapper.getDefault().readValue(p, javaType);
+            return new StorePath(list);
+        }
     }
 
     public static class CharsetSerializer extends JsonSerializer<Charset> {

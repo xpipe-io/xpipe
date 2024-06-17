@@ -1,8 +1,10 @@
 package io.xpipe.app.beacon;
 
+import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.beacon.*;
 import io.xpipe.core.util.JacksonMapper;
 
@@ -25,6 +27,16 @@ public class BeaconRequestHandler<T> implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) {
+        if (OperationMode.isInShutdown()) {
+            return;
+        }
+
+        if (beaconInterface.requiresCompletedStartup()) {
+            while (OperationMode.isInStartup()) {
+                ThreadHelper.sleep(100);
+            }
+        }
+
         if (!AppPrefs.get().disableApiAuthentication().get() && beaconInterface.requiresAuthentication()) {
             var auth = exchange.getRequestHeaders().getFirst("Authorization");
             if (auth == null) {

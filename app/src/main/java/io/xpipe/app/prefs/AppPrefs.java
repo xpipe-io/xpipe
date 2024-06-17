@@ -14,15 +14,12 @@ import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.util.PasswordLockSecretValue;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.ModuleHelper;
-import io.xpipe.core.util.XPipeInstallation;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableStringValue;
 import javafx.beans.value.ObservableValue;
-
 import lombok.Getter;
 import lombok.Value;
 
@@ -122,16 +119,10 @@ public class AppPrefs {
     private final StringProperty lockCrypt =
             mapVaultSpecific(new SimpleStringProperty(), "workspaceLock", String.class);
 
-    final Property<Integer> httpServerPort = map(
-            new SimpleObjectProperty<>(XPipeInstallation.getDefaultBeaconPort()), "httpServerPort", Integer.class);
     final StringProperty apiKey =
             mapVaultSpecific(new SimpleStringProperty(UUID.randomUUID().toString()), "apiKey", String.class);
     final BooleanProperty disableApiAuthentication =
             map(new SimpleBooleanProperty(false), "disableApiAuthentication", Boolean.class);
-
-    public ObservableValue<Integer> httpServerPort() {
-        return httpServerPort;
-    }
 
     public ObservableStringValue apiKey() {
         return apiKey;

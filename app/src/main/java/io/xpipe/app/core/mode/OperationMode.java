@@ -126,8 +126,8 @@ public abstract class OperationMode {
         var usedArgs = parseProperties(args);
         setup(args);
         LauncherCommand.runLauncher(usedArgs);
-        inStartup = false;
         AppDesktopIntegration.setupDesktopIntegrations();
+        inStartup = false;
     }
 
     public static void switchToAsync(OperationMode newMode) {

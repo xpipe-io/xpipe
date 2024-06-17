@@ -1,11 +1,9 @@
 package io.xpipe.beacon;
 
-import io.xpipe.core.util.ModuleLayerLoader;
-
 import com.sun.net.httpserver.HttpExchange;
+import io.xpipe.core.util.ModuleLayerLoader;
 import lombok.SneakyThrows;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.ServiceLoader;
@@ -61,6 +59,10 @@ public abstract class BeaconInterface<T> {
         var c = getClass().getSuperclass();
         var name = (c.getSuperclass().equals(BeaconInterface.class) ? c : getClass()).getName() + "$Response";
         return (Class<T>) Class.forName(name);
+    }
+
+    public boolean requiresCompletedStartup() {
+        return true;
     }
 
     public boolean requiresAuthentication() {

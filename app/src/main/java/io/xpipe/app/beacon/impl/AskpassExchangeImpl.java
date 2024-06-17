@@ -1,16 +1,16 @@
 package io.xpipe.app.beacon.impl;
 
+import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.util.AskpassAlert;
 import io.xpipe.app.util.SecretManager;
-import io.xpipe.beacon.BeaconClientException;
-import io.xpipe.beacon.BeaconServerException;
 import io.xpipe.beacon.api.AskpassExchange;
 
-import com.sun.net.httpserver.HttpExchange;
-
-import java.io.IOException;
-
 public class AskpassExchangeImpl extends AskpassExchange {
+
+    @Override
+    public boolean requiresCompletedStartup() {
+        return false;
+    }
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) {

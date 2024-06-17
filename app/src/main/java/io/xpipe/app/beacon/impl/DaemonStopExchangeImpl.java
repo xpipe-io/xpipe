@@ -1,16 +1,16 @@
 package io.xpipe.app.beacon.impl;
 
+import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.beacon.BeaconClientException;
-import io.xpipe.beacon.BeaconServerException;
 import io.xpipe.beacon.api.DaemonStopExchange;
 
-import com.sun.net.httpserver.HttpExchange;
-
-import java.io.IOException;
-
 public class DaemonStopExchangeImpl extends DaemonStopExchange {
+
+    @Override
+    public boolean requiresCompletedStartup() {
+        return false;
+    }
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) {
