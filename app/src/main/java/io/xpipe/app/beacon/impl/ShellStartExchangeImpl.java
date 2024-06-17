@@ -1,17 +1,13 @@
 package io.xpipe.app.beacon.impl;
 
+import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.beacon.BeaconShellSession;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.beacon.BeaconClientException;
-import io.xpipe.beacon.BeaconServerException;
 import io.xpipe.beacon.api.ShellStartExchange;
 import io.xpipe.core.store.ShellStore;
-
-import com.sun.net.httpserver.HttpExchange;
 import lombok.SneakyThrows;
-
-import java.io.IOException;
 
 public class ShellStartExchangeImpl extends ShellStartExchange {
 
@@ -25,7 +21,7 @@ public class ShellStartExchangeImpl extends ShellStartExchange {
             throw new BeaconClientException("Not a shell connection");
         }
 
-        var existing = AppBeaconServer.get().getShellSessions().stream()
+        var existing = AppBeaconServer.get().getCache().getShellSessions().stream()
                 .filter(beaconShellSession -> beaconShellSession.getEntry().equals(e))
                 .findFirst();
         if (existing.isPresent()) {
@@ -33,7 +29,7 @@ public class ShellStartExchangeImpl extends ShellStartExchange {
         }
 
         var control = s.control().start();
-        AppBeaconServer.get().getShellSessions().add(new BeaconShellSession(e, control));
+        AppBeaconServer.get().getCache().getShellSessions().add(new BeaconShellSession(e, control));
         return Response.builder().build();
     }
 }

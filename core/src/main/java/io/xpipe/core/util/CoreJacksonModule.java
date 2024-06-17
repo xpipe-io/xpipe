@@ -16,6 +16,7 @@ import io.xpipe.core.dialog.HeaderElement;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.store.StorePath;
 
@@ -43,6 +44,12 @@ public class CoreJacksonModule extends SimpleModule {
         for (ShellDialect t : ShellDialects.ALL) {
             context.registerSubtypes(new NamedType(t.getClass()));
         }
+
+        addSerializer(FilePath.class, new FilePathSerializer());
+        addDeserializer(FilePath.class, new FilePathDeserializer());
+
+        addSerializer(StorePath.class, new StorePathSerializer());
+        addDeserializer(StorePath.class, new StorePathDeserializer());
 
         addSerializer(Charset.class, new CharsetSerializer());
         addDeserializer(Charset.class, new CharsetDeserializer());
@@ -85,6 +92,22 @@ public class CoreJacksonModule extends SimpleModule {
             JavaType javaType = JacksonMapper.getDefault().getTypeFactory().constructCollectionLikeType(List.class, String.class);
             List<String> list = JacksonMapper.getDefault().readValue(p, javaType);
             return new StorePath(list);
+        }
+    }
+
+    public static class FilePathSerializer extends JsonSerializer<FilePath> {
+
+        @Override
+        public void serialize(FilePath value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+            jgen.writeString(value.toString());
+        }
+    }
+
+    public static class FilePathDeserializer extends JsonDeserializer<FilePath> {
+
+        @Override
+        public FilePath deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            return new FilePath(p.getValueAsString());
         }
     }
 

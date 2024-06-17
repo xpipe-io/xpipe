@@ -41,7 +41,7 @@ public class ConnectionQueryExchangeImpl extends ConnectionQueryExchange {
                 continue;
             }
 
-            if (!typeMatcher.matcher(storeEntry.getProvider().getId()).matches()) {
+            if (!typeMatcher.matcher(storeEntry.getProvider().getId().toLowerCase()).matches()) {
                 continue;
             }
 

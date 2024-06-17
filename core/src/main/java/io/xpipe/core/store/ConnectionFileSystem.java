@@ -18,23 +18,14 @@ public class ConnectionFileSystem implements FileSystem {
     @JsonIgnore
     protected final ShellControl shellControl;
 
-    @JsonIgnore
-    protected final ShellStore store;
-
-    public ConnectionFileSystem(ShellControl shellControl, ShellStore store) {
+    public ConnectionFileSystem(ShellControl shellControl) {
         this.shellControl = shellControl;
-        this.store = store;
     }
 
     @Override
     public long getFileSize(String file) throws Exception {
         return Long.parseLong(
                 shellControl.getShellDialect().queryFileSize(shellControl, file).readStdoutOrThrow());
-    }
-
-    @Override
-    public FileSystemStore getStore() {
-        return store;
     }
 
     @Override

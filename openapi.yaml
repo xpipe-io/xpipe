@@ -228,6 +228,111 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /fs/blob:
+    post:
+      summary: Store a raw blob to be used later
+      description: |
+        Stores arbitrary binary data in a blob such that it can be used later on to for example write to a remote file.
+        
+        This will return a uuid which can be used as a reference to the blob.
+        You can also store normal text data in blobs if you intend to create text or shell script files with it.
+      operationId: fsData
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: The operation was successful. The data was stored.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FsBlobResponse'
+              examples:
+                success:
+                  summary: Success
+                  value: { "blob": "854afc45-eadc-49a0-a45d-9fb76a484304" }
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /fs/write:
+    post:
+      summary: Write a blob to a remote file
+      description: |
+        Writes blob data to a file through an active shell session.
+      operationId: fsWrite
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FsWriteRequest'
+            examples:
+              simple:
+                summary: Write simple file
+                value: { "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b", "blob": "854afc45-eadc-49a0-a45d-9fb76a484304", "path": "/home/user/myfile.txt" }
+      responses:
+        '200':
+          description: The operation was successful. The file was written.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /fs/script:
+    post:
+      summary: Create a shell script file from a blob
+      description: |
+        Creates a shell script in the temporary directory of the file system that is access through the shell connection.
+        
+        This can be used to run more complex commands on remote systems.
+      operationId: fsScript
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FsScriptRequest'
+            examples:
+              standard:
+                summary: Standard write
+                value: { "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b", "blob": "854afc45-eadc-49a0-a45d-9fb76a484304" }
+      responses:
+        '200':
+          description: The operation was successful. The script file was created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FsScriptResponse'
+              examples:
+                success:
+                  summary: Success
+                  value: { "path": "/tmp/exec-123.sh" }
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 components:
   schemas:
     ShellStartRequest:
@@ -274,6 +379,50 @@ components:
         - exitCode
         - stdout
         - stderr
+    FsBlobResponse:
+      type: object
+      properties:
+        blob:
+          type: string
+          description: The data uuid
+      required:
+        - blob
+    FsWriteRequest:
+      type: object
+      properties:
+        connection:
+          type: string
+          description: The connection uuid
+        blob:
+          type: string
+          description: The blob uuid
+        path:
+          type: string
+          description: The target filepath
+      required:
+        - connection
+        - blob
+        - path
+    FsScriptRequest:
+      type: object
+      properties:
+        connection:
+          type: string
+          description: The connection uuid
+        blob:
+          type: string
+          description: The blob uuid
+      required:
+        - connection
+        - blob
+    FsScriptResponse:
+      type: object
+      properties:
+        path:
+          type: string
+          description: The generated script file path
+      required:
+        - path
     ConnectionQueryRequest:
       type: object
       properties:

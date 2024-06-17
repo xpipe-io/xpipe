@@ -35,7 +35,7 @@ public class AppBeaconServer {
     private final Set<BeaconSession> sessions = new HashSet<>();
 
     @Getter
-    private final Set<BeaconShellSession> shellSessions = new HashSet<>();
+    private final AppBeaconCache cache = new AppBeaconCache();
 
     @Getter
     private String localAuthSecret;

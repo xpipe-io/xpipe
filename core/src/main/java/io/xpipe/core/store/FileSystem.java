@@ -20,8 +20,6 @@ public interface FileSystem extends Closeable, AutoCloseable {
 
     long getFileSize(String file) throws Exception;
 
-    FileSystemStore getStore();
-
     Optional<ShellControl> getShell();
 
     FileSystem open() throws Exception;

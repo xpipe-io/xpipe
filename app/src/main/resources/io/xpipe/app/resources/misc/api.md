@@ -26,7 +26,7 @@ headingLevel: 2
 The XPipe API provides programmatic access to XPipe’s features.
 You can get started by either using this page as an API reference or alternatively import the OpenAPI definition file into your API client of choice:
 
-<a href="/openapi.yaml" style="font-size: 20px">OpenAPI .yaml specification</a>
+<a download href="/openapi.yaml" style="font-size: 20px">OpenAPI .yaml specification</a>
 
 The XPipe application will start up an HTTP server that can be used to send requests.
 You can change the port of it in the settings menu.
@@ -279,22 +279,22 @@ All matching is case insensitive.
 {
   "found": [
     {
-      "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+      "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
       "category": [
         "default"
       ],
-      "connection": [
+      "name": [
         "local machine"
       ],
       "type": "local"
     },
     {
-      "uuid": "e1462ddc-9beb-484c-bd91-bb666027e300",
+      "connection": "e1462ddc-9beb-484c-bd91-bb666027e300",
       "category": [
         "default",
         "category 1"
       ],
-      "connection": [
+      "name": [
         "ssh system",
         "shell environments",
         "bash"
@@ -453,7 +453,7 @@ These errors will be returned with the HTTP return code 500.
 
 ```json
 {
-  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
 }
 ```
 
@@ -485,7 +485,7 @@ bearerAuth
 
 ```javascript
 const inputBody = '{
-  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
 }';
 const headers = {
   'Content-Type':'application/json',
@@ -515,7 +515,7 @@ headers = {
 
 data = """
 {
-  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
 }
 """
 r = requests.post('http://localhost:21723/shell/start', headers = headers, data = data)
@@ -534,7 +534,7 @@ var request = HttpRequest
         .header("Authorization", "Bearer {access-token}")
         .POST(HttpRequest.BodyPublishers.ofString("""
 {
-  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
 }
         """))
         .build();
@@ -576,7 +576,7 @@ curl -X POST http://localhost:21723/shell/start \
   -H 'Content-Type: application/json' \  -H 'Authorization: Bearer {access-token}' \
   --data '
 {
-  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
 }
 '
 
@@ -599,7 +599,7 @@ If the shell is busy or stuck, you might have to work with timeouts to account f
 
 ```json
 {
-  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
 }
 ```
 
@@ -631,7 +631,7 @@ bearerAuth
 
 ```javascript
 const inputBody = '{
-  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
 }';
 const headers = {
   'Content-Type':'application/json',
@@ -661,7 +661,7 @@ headers = {
 
 data = """
 {
-  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
 }
 """
 r = requests.post('http://localhost:21723/shell/stop', headers = headers, data = data)
@@ -680,7 +680,7 @@ var request = HttpRequest
         .header("Authorization", "Bearer {access-token}")
         .POST(HttpRequest.BodyPublishers.ofString("""
 {
-  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
 }
         """))
         .build();
@@ -722,7 +722,7 @@ curl -X POST http://localhost:21723/shell/stop \
   -H 'Content-Type: application/json' \  -H 'Authorization: Bearer {access-token}' \
   --data '
 {
-  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
 }
 '
 
@@ -746,7 +746,7 @@ However, if any other error occurs like the shell not responding or exiting unex
 
 ```json
 {
-  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
   "command": "echo $USER"
 }
 ```
@@ -799,7 +799,7 @@ bearerAuth
 
 ```javascript
 const inputBody = '{
-  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
   "command": "echo $USER"
 }';
 const headers = {
@@ -832,7 +832,7 @@ headers = {
 
 data = """
 {
-  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
   "command": "echo $USER"
 }
 """
@@ -853,7 +853,7 @@ var request = HttpRequest
         .header("Authorization", "Bearer {access-token}")
         .POST(HttpRequest.BodyPublishers.ofString("""
 {
-  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
   "command": "echo $USER"
 }
         """))
@@ -897,8 +897,476 @@ curl -X POST http://localhost:21723/shell/exec \
   -H 'Content-Type: application/json' \  -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
   --data '
 {
-  "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
   "command": "echo $USER"
+}
+'
+
+```
+
+</details>
+
+## Store a raw blob to be used later
+
+<a id="opIdfsData"></a>
+
+`POST /fs/blob`
+
+Stores arbitrary binary data in a blob such that it can be used later on to for example write to a remote file.
+
+This will return a uuid which can be used as a reference to the blob.
+You can also store normal text data in blobs if you intend to create text or shell script files with it.
+
+> Body parameter
+
+```yaml
+string
+
+```
+
+<h3 id="store-a-raw-blob-to-be-used-later-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|body|body|string(binary)|true|none|
+
+> Example responses
+
+> The operation was successful. The data was stored.
+
+```json
+{
+  "blob": "854afc45-eadc-49a0-a45d-9fb76a484304"
+}
+```
+
+<h3 id="store-a-raw-blob-to-be-used-later-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The operation was successful. The data was stored.|[FsBlobResponse](#schemafsblobresponse)|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|None|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
+|403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
+|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|None|
+
+<aside class="warning">
+To perform this operation, you must be authenticated by means of one of the following methods:
+bearerAuth
+</aside>
+
+<details>
+
+<summary>Code samples</summary>
+
+```javascript
+const inputBody = 'string';
+const headers = {
+  'Content-Type':'application/octet-stream',
+  'Accept':'application/json',
+  'Authorization':'Bearer {access-token}'
+};
+
+fetch('http://localhost:21723/fs/blob',
+{
+  method: 'POST',
+  body: inputBody,
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```python
+import requests
+headers = {
+  'Content-Type': 'application/octet-stream',
+  'Accept': 'application/json',
+  'Authorization': 'Bearer {access-token}'
+}
+
+data = """
+string
+"""
+r = requests.post('http://localhost:21723/fs/blob', headers = headers, data = data)
+
+print(r.json())
+
+```
+
+```java
+var uri = URI.create("http://localhost:21723/fs/blob");
+var client = HttpClient.newHttpClient();
+var request = HttpRequest
+        .newBuilder()
+        .uri(uri)
+        .header("Content-Type", "application/octet-stream")
+        .header("Accept", "application/json")
+        .header("Authorization", "Bearer {access-token}")
+        .POST(HttpRequest.BodyPublishers.ofString("""
+string
+        """))
+        .build();
+var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+System.out.println(response.statusCode());
+System.out.println(response.body());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Content-Type": []string{"application/octet-stream"},
+        "Accept": []string{"application/json"},
+        "Authorization": []string{"Bearer {access-token}"},
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("POST", "http://localhost:21723/fs/blob", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+```shell
+# You can also use wget
+curl -X POST http://localhost:21723/fs/blob \
+  -H 'Content-Type: application/octet-stream' \  -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
+  --data '
+string
+'
+
+```
+
+</details>
+
+## Write a blob to a remote file
+
+<a id="opIdfsWrite"></a>
+
+`POST /fs/write`
+
+Writes blob data to a file through an active shell session.
+
+> Body parameter
+
+```json
+{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+  "blob": "854afc45-eadc-49a0-a45d-9fb76a484304",
+  "path": "/home/user/myfile.txt"
+}
+```
+
+<h3 id="write-a-blob-to-a-remote-file-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|body|body|[FsWriteRequest](#schemafswriterequest)|true|none|
+
+<h3 id="write-a-blob-to-a-remote-file-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The operation was successful. The file was written.|None|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|None|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
+|403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
+|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|None|
+
+<aside class="warning">
+To perform this operation, you must be authenticated by means of one of the following methods:
+bearerAuth
+</aside>
+
+<details>
+
+<summary>Code samples</summary>
+
+```javascript
+const inputBody = '{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+  "blob": "854afc45-eadc-49a0-a45d-9fb76a484304",
+  "path": "/home/user/myfile.txt"
+}';
+const headers = {
+  'Content-Type':'application/json',
+  'Authorization':'Bearer {access-token}'
+};
+
+fetch('http://localhost:21723/fs/write',
+{
+  method: 'POST',
+  body: inputBody,
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```python
+import requests
+headers = {
+  'Content-Type': 'application/json',
+  'Authorization': 'Bearer {access-token}'
+}
+
+data = """
+{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+  "blob": "854afc45-eadc-49a0-a45d-9fb76a484304",
+  "path": "/home/user/myfile.txt"
+}
+"""
+r = requests.post('http://localhost:21723/fs/write', headers = headers, data = data)
+
+print(r.json())
+
+```
+
+```java
+var uri = URI.create("http://localhost:21723/fs/write");
+var client = HttpClient.newHttpClient();
+var request = HttpRequest
+        .newBuilder()
+        .uri(uri)
+        .header("Content-Type", "application/json")
+        .header("Authorization", "Bearer {access-token}")
+        .POST(HttpRequest.BodyPublishers.ofString("""
+{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+  "blob": "854afc45-eadc-49a0-a45d-9fb76a484304",
+  "path": "/home/user/myfile.txt"
+}
+        """))
+        .build();
+var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+System.out.println(response.statusCode());
+System.out.println(response.body());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Content-Type": []string{"application/json"},
+        "Authorization": []string{"Bearer {access-token}"},
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("POST", "http://localhost:21723/fs/write", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+```shell
+# You can also use wget
+curl -X POST http://localhost:21723/fs/write \
+  -H 'Content-Type: application/json' \  -H 'Authorization: Bearer {access-token}' \
+  --data '
+{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+  "blob": "854afc45-eadc-49a0-a45d-9fb76a484304",
+  "path": "/home/user/myfile.txt"
+}
+'
+
+```
+
+</details>
+
+## Create a shell script file from a blob
+
+<a id="opIdfsScript"></a>
+
+`POST /fs/script`
+
+Creates a shell script in the temporary directory of the file system that is access through the shell connection.
+
+This can be used to run more complex commands on remote systems.
+
+> Body parameter
+
+```json
+{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+  "blob": "854afc45-eadc-49a0-a45d-9fb76a484304"
+}
+```
+
+<h3 id="create-a-shell-script-file-from-a-blob-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|body|body|[FsScriptRequest](#schemafsscriptrequest)|true|none|
+
+> Example responses
+
+> The operation was successful. The script file was created.
+
+```json
+{
+  "path": "/tmp/exec-123.sh"
+}
+```
+
+<h3 id="create-a-shell-script-file-from-a-blob-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The operation was successful. The script file was created.|[FsScriptResponse](#schemafsscriptresponse)|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|None|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
+|403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
+|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|None|
+
+<aside class="warning">
+To perform this operation, you must be authenticated by means of one of the following methods:
+bearerAuth
+</aside>
+
+<details>
+
+<summary>Code samples</summary>
+
+```javascript
+const inputBody = '{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+  "blob": "854afc45-eadc-49a0-a45d-9fb76a484304"
+}';
+const headers = {
+  'Content-Type':'application/json',
+  'Accept':'application/json',
+  'Authorization':'Bearer {access-token}'
+};
+
+fetch('http://localhost:21723/fs/script',
+{
+  method: 'POST',
+  body: inputBody,
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```python
+import requests
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json',
+  'Authorization': 'Bearer {access-token}'
+}
+
+data = """
+{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+  "blob": "854afc45-eadc-49a0-a45d-9fb76a484304"
+}
+"""
+r = requests.post('http://localhost:21723/fs/script', headers = headers, data = data)
+
+print(r.json())
+
+```
+
+```java
+var uri = URI.create("http://localhost:21723/fs/script");
+var client = HttpClient.newHttpClient();
+var request = HttpRequest
+        .newBuilder()
+        .uri(uri)
+        .header("Content-Type", "application/json")
+        .header("Accept", "application/json")
+        .header("Authorization", "Bearer {access-token}")
+        .POST(HttpRequest.BodyPublishers.ofString("""
+{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+  "blob": "854afc45-eadc-49a0-a45d-9fb76a484304"
+}
+        """))
+        .build();
+var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+System.out.println(response.statusCode());
+System.out.println(response.body());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Content-Type": []string{"application/json"},
+        "Accept": []string{"application/json"},
+        "Authorization": []string{"Bearer {access-token}"},
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("POST", "http://localhost:21723/fs/script", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+```shell
+# You can also use wget
+curl -X POST http://localhost:21723/fs/script \
+  -H 'Content-Type: application/json' \  -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
+  --data '
+{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+  "blob": "854afc45-eadc-49a0-a45d-9fb76a484304"
 }
 '
 
@@ -994,6 +1462,92 @@ curl -X POST http://localhost:21723/shell/exec \
 |stdout|string|true|none|The stdout output of the command|
 |stderr|string|true|none|The stderr output of the command|
 
+<h2 id="tocS_FsBlobResponse">FsBlobResponse</h2>
+
+<a id="schemafsblobresponse"></a>
+<a id="schema_FsBlobResponse"></a>
+<a id="tocSfsblobresponse"></a>
+<a id="tocsfsblobresponse"></a>
+
+```json
+{
+  "blob": "string"
+}
+
+```
+
+<h3>Properties</h3>
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|blob|string|true|none|The data uuid|
+
+<h2 id="tocS_FsWriteRequest">FsWriteRequest</h2>
+
+<a id="schemafswriterequest"></a>
+<a id="schema_FsWriteRequest"></a>
+<a id="tocSfswriterequest"></a>
+<a id="tocsfswriterequest"></a>
+
+```json
+{
+  "connection": "string",
+  "blob": "string",
+  "path": "string"
+}
+
+```
+
+<h3>Properties</h3>
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|connection|string|true|none|The connection uuid|
+|blob|string|true|none|The blob uuid|
+|path|string|true|none|The target filepath|
+
+<h2 id="tocS_FsScriptRequest">FsScriptRequest</h2>
+
+<a id="schemafsscriptrequest"></a>
+<a id="schema_FsScriptRequest"></a>
+<a id="tocSfsscriptrequest"></a>
+<a id="tocsfsscriptrequest"></a>
+
+```json
+{
+  "connection": "string",
+  "blob": "string"
+}
+
+```
+
+<h3>Properties</h3>
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|connection|string|true|none|The connection uuid|
+|blob|string|true|none|The blob uuid|
+
+<h2 id="tocS_FsScriptResponse">FsScriptResponse</h2>
+
+<a id="schemafsscriptresponse"></a>
+<a id="schema_FsScriptResponse"></a>
+<a id="tocSfsscriptresponse"></a>
+<a id="tocsfsscriptresponse"></a>
+
+```json
+{
+  "path": "string"
+}
+
+```
+
+<h3>Properties</h3>
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|path|string|true|none|The generated script file path|
+
 <h2 id="tocS_ConnectionQueryRequest">ConnectionQueryRequest</h2>
 
 <a id="schemaconnectionqueryrequest"></a>
@@ -1029,11 +1583,11 @@ curl -X POST http://localhost:21723/shell/exec \
 {
   "found": [
     {
-      "uuid": "string",
+      "connection": "string",
       "category": [
         "string"
       ],
-      "connection": [
+      "name": [
         "string"
       ],
       "type": "string"
@@ -1048,9 +1602,9 @@ curl -X POST http://localhost:21723/shell/exec \
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
 |found|[object]|true|none|The found connections|
-|» uuid|string|true|none|The unique id of the connection|
+|» connection|string|true|none|The unique id of the connection|
 |» category|[string]|true|none|The full category path as an array|
-|» connection|[string]|true|none|The full connection name path as an array|
+|» name|[string]|true|none|The full connection name path as an array|
 |» type|string|true|none|The type identifier of the connection|
 
 <h2 id="tocS_HandshakeRequest">HandshakeRequest</h2>
@@ -1117,10 +1671,6 @@ curl -X POST http://localhost:21723/shell/exec \
 
 <h3>Properties</h3>
 
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|type|string|true|none|none|
-
 oneOf
 
 |Name|Type|Required|Restrictions|Description|
@@ -1152,18 +1702,10 @@ API key authentication
 
 <h3>Properties</h3>
 
-allOf - discriminator: AuthMethod.type
-
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|*anonymous*|[AuthMethod](#schemaauthmethod)|false|none|none|
-
-and
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|*anonymous*|object|false|none|none|
-|» key|string|true|none|The API key|
+|type|string|true|none|none|
+|key|string|true|none|The API key|
 
 <h2 id="tocS_Local">Local</h2>
 
@@ -1175,7 +1717,6 @@ and
 ```json
 {
   "type": "string",
-  "key": "string",
   "authFileContent": "string"
 }
 
@@ -1185,18 +1726,10 @@ Authentication method for local applications. Uses file system access as proof o
 
 <h3>Properties</h3>
 
-allOf - discriminator: AuthMethod.type
-
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|*anonymous*|[AuthMethod](#schemaauthmethod)|false|none|none|
-
-and
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|*anonymous*|object|false|none|none|
-|» authFileContent|string|true|none|The contents of the local file $TEMP/xpipe_auth. This file is automatically generated when XPipe starts.|
+|type|string|true|none|none|
+|authFileContent|string|true|none|The contents of the local file $TEMP/xpipe_auth. This file is automatically generated when XPipe starts.|
 
 <h2 id="tocS_ClientInformation">ClientInformation</h2>
 
