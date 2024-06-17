@@ -103,10 +103,10 @@ paths:
               examples:
                 standard:
                   summary: Matched connections
-                  value: { "found": [ { "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b", "category": ["default"] ,
-                                        "connection": ["local machine"], "type": "local" },
-                    { "uuid": "e1462ddc-9beb-484c-bd91-bb666027e300", "category": ["default", "category 1"],
-                      "connection": ["ssh system", "shell environments", "bash"], "type": "shellEnvironment" } ] }
+                  value: { "found": [ { "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b", "category": ["default"] ,
+                                        "name": ["local machine"], "type": "local" },
+                    { "connection": "e1462ddc-9beb-484c-bd91-bb666027e300", "category": ["default", "category 1"],
+                      "name": ["ssh system", "shell environments", "bash"], "type": "shellEnvironment" } ] }
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -135,7 +135,7 @@ paths:
             examples:
               local:
                 summary: Start local shell
-                value: { "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b" }
+                value: { "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b" }
       responses:
         '200':
           description: The operation was successful. The shell session was started.
@@ -167,7 +167,7 @@ paths:
             examples:
               local:
                 summary: Stop local shell
-                value: { "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b" }
+                value: { "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b" }
       responses:
         '200':
           description: The operation was successful. The shell session was stopped.
@@ -200,10 +200,10 @@ paths:
             examples:
               user:
                 summary: echo $USER
-                value: { "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b", "command": "echo $USER" }
+                value: { "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b", "command": "echo $USER" }
               invalid:
                 summary: invalid
-                value: { "uuid": "f0ec68aa-63f5-405c-b178-9a4454556d6b", "command": "invalid" }
+                value: { "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b", "command": "invalid" }
       responses:
         '200':
           description: The operation was successful. The shell command finished.
@@ -299,7 +299,7 @@ components:
           items:
             type: object
             properties:
-              uuid:
+              connection:
                 type: string
                 description: The unique id of the connection
               category:
@@ -308,7 +308,7 @@ components:
                 items:
                   type: string
                   description: Individual category name
-              connection:
+              name:
                 type: array
                 description: The full connection name path as an array
                 items:
@@ -318,9 +318,9 @@ components:
                 type: string
                 description: The type identifier of the connection
             required:
-              - uuid
-              - category
               - connection
+              - category
+              - name
               - type
       required:
         - found

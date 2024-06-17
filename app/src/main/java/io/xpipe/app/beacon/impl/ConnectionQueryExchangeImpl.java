@@ -1,15 +1,11 @@
 package io.xpipe.app.beacon.impl;
 
+import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.beacon.BeaconClientException;
-import io.xpipe.beacon.BeaconServerException;
 import io.xpipe.beacon.api.ConnectionQueryExchange;
 import io.xpipe.core.store.StorePath;
 
-import com.sun.net.httpserver.HttpExchange;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -20,6 +16,7 @@ public class ConnectionQueryExchangeImpl extends ConnectionQueryExchange {
     public Object handle(HttpExchange exchange, Request msg) {
         var catMatcher = Pattern.compile(toRegex("all connections/" + msg.getCategoryFilter()));
         var conMatcher = Pattern.compile(toRegex(msg.getConnectionFilter()));
+        var typeMatcher = Pattern.compile(toRegex(msg.getTypeFilter()));
 
         List<DataStoreEntry> found = new ArrayList<>();
         for (DataStoreEntry storeEntry : DataStorage.get().getStoreEntries()) {
@@ -41,6 +38,10 @@ public class ConnectionQueryExchangeImpl extends ConnectionQueryExchange {
 
             var c = DataStorage.get().getStorePath(cat).toString();
             if (!catMatcher.matcher(c).matches()) {
+                continue;
+            }
+
+            if (!typeMatcher.matcher(storeEntry.getProvider().getId()).matches()) {
                 continue;
             }
 
