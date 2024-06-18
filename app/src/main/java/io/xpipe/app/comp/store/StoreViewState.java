@@ -34,10 +34,7 @@ public class StoreViewState {
             new DerivedObservableList<>(FXCollections.observableList(new CopyOnWriteArrayList<>()), true);
 
     @Getter
-    private final IntegerProperty entriesOrderChangeObservable = new SimpleIntegerProperty();
-
-    @Getter
-    private final IntegerProperty entriesListChangeObservable = new SimpleIntegerProperty();
+    private final IntegerProperty entriesListUpdateObservable = new SimpleIntegerProperty();
 
     @Getter
     private final Property<StoreCategoryWrapper> activeCategory = new SimpleObjectProperty<>();
@@ -86,7 +83,7 @@ public class StoreViewState {
     private void initSections() {
         try {
             currentTopLevelSection =
-                    StoreSection.createTopLevel(allEntries, storeEntryWrapper -> true, filter, activeCategory);
+                    StoreSection.createTopLevel(allEntries, storeEntryWrapper -> true, filter, activeCategory, entriesListUpdateObservable);
         } catch (Exception exception) {
             currentTopLevelSection = new StoreSection(
                     null,
@@ -124,15 +121,9 @@ public class StoreViewState {
                         .orElseThrow()));
     }
 
-    public void toggleStoreOrderUpdate() {
-        PlatformThread.runLaterIfNeeded(() -> {
-            entriesOrderChangeObservable.set(entriesOrderChangeObservable.get() + 1);
-        });
-    }
-
     public void toggleStoreListUpdate() {
         PlatformThread.runLaterIfNeeded(() -> {
-            entriesListChangeObservable.set(entriesListChangeObservable.get() + 1);
+            entriesListUpdateObservable.set(entriesListUpdateObservable.get() + 1);
         });
     }
 
@@ -151,13 +142,6 @@ public class StoreViewState {
 
         // Watch out for synchronizing all calls to the entries and categories list!
         DataStorage.get().addListener(new StorageListener() {
-
-            @Override
-            public void onStoreOrderUpdate() {
-                Platform.runLater(() -> {
-                    toggleStoreOrderUpdate();
-                });
-            }
 
             @Override
             public void onStoreListUpdate() {

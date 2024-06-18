@@ -10,6 +10,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
+import javafx.beans.value.ObservableIntegerValue;
 import javafx.beans.value.ObservableStringValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -61,7 +62,8 @@ public class StoreSection {
     }
 
     private static DerivedObservableList<StoreSection> sorted(
-            DerivedObservableList<StoreSection> list, ObservableValue<StoreCategoryWrapper> category) {
+            DerivedObservableList<StoreSection> list, ObservableValue<StoreCategoryWrapper> category,
+            ObservableIntegerValue updateObservable) {
         if (category == null) {
             return list;
         }
@@ -69,36 +71,15 @@ public class StoreSection {
         var explicitOrderComp = Comparator.<StoreSection>comparingInt(new ToIntFunction<>() {
             @Override
             public int applyAsInt(StoreSection value) {
-                var explicit = value.getWrapper().getEntry().getOrderBefore();
+                var explicit = value.getWrapper().getEntry().getExplicitOrder();
                 if (explicit == null) {
-                    return 1;
-                }
-
-                if (explicit.equals(value.getWrapper().getEntry().getUuid())) {
-                    return Integer.MIN_VALUE;
-                }
-
-                return -count(value.getWrapper(), new HashSet<>());
-            }
-
-            private int count(StoreEntryWrapper wrapper, Set<StoreEntryWrapper> seen) {
-                if (seen.contains(wrapper)) {
-                    // Loop!
                     return 0;
                 }
-                seen.add(wrapper);
 
-                var found = list.getList().stream()
-                        .filter(section -> section.getWrapper()
-                                .getEntry()
-                                .getUuid()
-                                .equals(wrapper.getEntry().getOrderBefore()))
-                        .findFirst();
-                if (found.isPresent()) {
-                    return count(found.get().getWrapper(), seen);
-                } else {
-                    return seen.size();
-                }
+                return switch (explicit) {
+                    case TOP -> -1;
+                    case BOTTOM -> 1;
+                };
             }
         });
         var usableComp = Comparator.<StoreSection>comparingInt(
@@ -118,23 +99,25 @@ public class StoreSection {
                     }
                 },
                 mappedSortMode,
-                StoreViewState.get().getEntriesOrderChangeObservable());
+                updateObservable);
     }
 
     public static StoreSection createTopLevel(
             DerivedObservableList<StoreEntryWrapper> all,
             Predicate<StoreEntryWrapper> entryFilter,
             ObservableStringValue filterString,
-            ObservableValue<StoreCategoryWrapper> category) {
+            ObservableValue<StoreCategoryWrapper> category,
+            ObservableIntegerValue updateObservable
+            ) {
         var topLevel = all.filtered(
                 section -> {
                     return DataStorage.get().isRootEntry(section.getEntry());
                 },
                 category,
-                StoreViewState.get().getEntriesListChangeObservable());
+                updateObservable);
         var cached = topLevel.mapped(
-                storeEntryWrapper -> create(List.of(), storeEntryWrapper, 1, all, entryFilter, filterString, category));
-        var ordered = sorted(cached, category);
+                storeEntryWrapper -> create(List.of(), storeEntryWrapper, 1, all, entryFilter, filterString, category, updateObservable));
+        var ordered = sorted(cached, category, updateObservable);
         var shown = ordered.filtered(
                 section -> {
                     // matches filter
@@ -160,7 +143,8 @@ public class StoreSection {
             DerivedObservableList<StoreEntryWrapper> all,
             Predicate<StoreEntryWrapper> entryFilter,
             ObservableStringValue filterString,
-            ObservableValue<StoreCategoryWrapper> category) {
+            ObservableValue<StoreCategoryWrapper> category,
+            ObservableIntegerValue updateObservable) {
         if (e.getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
             return new StoreSection(
                     e,
@@ -186,11 +170,11 @@ public class StoreSection {
                 },
                 e.getPersistentState(),
                 e.getCache(),
-                StoreViewState.get().getEntriesListChangeObservable());
+                updateObservable);
         var l = new ArrayList<>(parents);
         l.add(e);
-        var cached = allChildren.mapped(c -> create(l, c, depth + 1, all, entryFilter, filterString, category));
-        var ordered = sorted(cached, category);
+        var cached = allChildren.mapped(c -> create(l, c, depth + 1, all, entryFilter, filterString, category, updateObservable));
+        var ordered = sorted(cached, category, updateObservable);
         var filtered = ordered.filtered(
                 section -> {
                     // matches filter

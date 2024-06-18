@@ -25,7 +25,7 @@ public class AskpassExchangeImpl extends AskpassExchange {
                 ? SecretManager.getProgress(msg.getRequest(), msg.getSecretId())
                 : SecretManager.getProgress(msg.getRequest());
         if (found.isEmpty()) {
-            throw new BeaconClientException("No password was provided");
+            throw new BeaconClientException("Unknown askpass request");
         }
 
         var p = found.get();

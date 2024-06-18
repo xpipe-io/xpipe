@@ -73,7 +73,7 @@ public class DataStoreEntry extends StorageElement {
     String notes;
 
     @NonFinal
-    UUID orderBefore;
+    Order explicitOrder;
 
     private DataStoreEntry(
             Path directory,
@@ -90,7 +90,8 @@ public class DataStoreEntry extends StorageElement {
             boolean expanded,
             DataStoreColor color,
             String notes,
-            UUID orderBefore) {
+            Order explicitOrder
+    ) {
         super(directory, uuid, name, lastUsed, lastModified, dirty);
         this.categoryUuid = categoryUuid;
         this.store = DataStorageParser.storeFromNode(storeNode);
@@ -99,7 +100,7 @@ public class DataStoreEntry extends StorageElement {
         this.configuration = configuration;
         this.expanded = expanded;
         this.color = color;
-        this.orderBefore = orderBefore;
+        this.explicitOrder = explicitOrder;
         this.provider = store != null
                 ? DataStoreProviders.byStoreClass(store.getClass()).orElse(null)
                 : null;
@@ -115,11 +116,12 @@ public class DataStoreEntry extends StorageElement {
             Instant lastUsed,
             Instant lastModified,
             DataStore store,
-            UUID orderBefore) {
+            Order explicitOrder
+    ) {
         super(directory, uuid, name, lastUsed, lastModified, false);
         this.categoryUuid = categoryUuid;
         this.store = store;
-        this.orderBefore = orderBefore;
+        this.explicitOrder = explicitOrder;
         this.storeNode = null;
         this.validity = Validity.INCOMPLETE;
         this.configuration = Configuration.defaultConfiguration();
@@ -186,7 +188,7 @@ public class DataStoreEntry extends StorageElement {
             boolean expanded,
             DataStoreColor color,
             String notes,
-            UUID orderBeforeEntry) {
+            Order order) {
         return new DataStoreEntry(
                 directory,
                 uuid,
@@ -202,7 +204,7 @@ public class DataStoreEntry extends StorageElement {
                 expanded,
                 color,
                 notes,
-                orderBeforeEntry);
+                order);
     }
 
     public static Optional<DataStoreEntry> fromDirectory(Path dir) throws Exception {
@@ -237,10 +239,10 @@ public class DataStoreEntry extends StorageElement {
                 .map(jsonNode -> jsonNode.textValue())
                 .map(Instant::parse)
                 .orElse(Instant.EPOCH);
-        var order = Optional.ofNullable(stateJson.get("orderBefore"))
+        var order = Optional.ofNullable(stateJson.get("order"))
                 .map(node -> {
                     try {
-                        return mapper.treeToValue(node, UUID.class);
+                        return mapper.treeToValue(node, Order.class);
                     } catch (JsonProcessingException e) {
                         return null;
                     }
@@ -299,9 +301,9 @@ public class DataStoreEntry extends StorageElement {
                 order));
     }
 
-    public void setOrderBefore(UUID uuid) {
-        var changed = !Objects.equals(orderBefore, uuid);
-        this.orderBefore = uuid;
+    public void setExplicitOrder(Order uuid) {
+        var changed = !Objects.equals(explicitOrder, uuid);
+        this.explicitOrder = uuid;
         if (changed) {
             notifyUpdate(false, true);
         }
@@ -415,7 +417,7 @@ public class DataStoreEntry extends StorageElement {
         stateObj.set("persistentState", storePersistentStateNode);
         obj.set("configuration", mapper.valueToTree(configuration));
         stateObj.put("expanded", expanded);
-        stateObj.put("orderBefore", orderBefore != null ? orderBefore.toString() : null);
+        stateObj.put("orderBefore", explicitOrder != null ? explicitOrder.toString() : null);
 
         var entryString = mapper.writeValueAsString(obj);
         var stateString = mapper.writeValueAsString(stateObj);
@@ -600,5 +602,14 @@ public class DataStoreEntry extends StorageElement {
         Validity(boolean isUsable) {
             this.isUsable = isUsable;
         }
+    }
+
+
+    @Getter
+    public enum Order {
+        @JsonProperty("top")
+        TOP,
+        @JsonProperty("bottom")
+        BOTTOM;
     }
 }

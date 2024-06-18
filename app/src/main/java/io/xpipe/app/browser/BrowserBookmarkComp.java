@@ -76,7 +76,7 @@ public final class BrowserBookmarkComp extends SimpleComp {
 
         var section = new StoreSectionMiniComp(
                 StoreSection.createTopLevel(
-                        StoreViewState.get().getAllEntries(), this::filter, filterText, selectedCategory),
+                        StoreViewState.get().getAllEntries(), this::filter, filterText, selectedCategory, StoreViewState.get().getEntriesListUpdateObservable()),
                 augment,
                 entryWrapper -> action.accept(entryWrapper, busy),
                 true);

@@ -138,7 +138,7 @@ open module io.xpipe.app {
             DaemonStatusExchangeImpl,
             DaemonStopExchangeImpl,
             HandshakeExchangeImpl,
-            DaemonModeExchangeImpl, FsBlobExchangeImpl,
+            DaemonModeExchangeImpl, FsBlobExchangeImpl, FsReadExchangeImpl,
             FsScriptExchangeImpl,
             FsWriteExchangeImpl,
             AskpassExchangeImpl,

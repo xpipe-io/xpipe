@@ -264,6 +264,40 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /fs/read:
+    post:
+      summary: Read the content of a remote file
+      description: |
+        Reads the entire content of a remote file through an active shell session.
+      operationId: fsRead
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FsReadRequest'
+            examples:
+              simple:
+                summary: Read file
+                value: { "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b", "path": "/home/user/myfile.txt" }
+      responses:
+        '200':
+          description: The operation was successful. The file was read.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /fs/write:
     post:
       summary: Write a blob to a remote file
@@ -401,6 +435,18 @@ components:
       required:
         - connection
         - blob
+        - path
+    FsReadRequest:
+      type: object
+      properties:
+        connection:
+          type: string
+          description: The connection uuid
+        path:
+          type: string
+          description: The target file path
+      required:
+        - connection
         - path
     FsScriptRequest:
       type: object

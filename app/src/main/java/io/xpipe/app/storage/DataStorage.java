@@ -333,9 +333,9 @@ public abstract class DataStorage {
         saveAsync();
     }
 
-    public void orderBefore(DataStoreEntry entry, DataStoreEntry reference) {
-        entry.setOrderBefore(reference != null ? reference.getUuid() : null);
-        listeners.forEach(storageListener -> storageListener.onStoreOrderUpdate());
+    public void setOrder(DataStoreEntry entry, DataStoreEntry.Order order) {
+        entry.setExplicitOrder(order);
+        listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
     }
 
     public boolean refreshChildren(DataStoreEntry e) {

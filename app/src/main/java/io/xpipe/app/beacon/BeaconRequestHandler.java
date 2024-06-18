@@ -118,7 +118,10 @@ public class BeaconRequestHandler<T> implements HttpHandler {
                 exchange.sendResponseHeaders(200, -1);
             }
         } catch (IOException ioException) {
-            ErrorEvent.fromThrowable(ioException).omit().expected().handle();
+            // The exchange implementation might have already sent a response manually
+            if (!"headers already sent".equals(ioException.getMessage())) {
+                ErrorEvent.fromThrowable(ioException).omit().expected().handle();
+            }
         } catch (Throwable other) {
             ErrorEvent.fromThrowable(other).handle();
             writeError(exchange, new BeaconServerErrorResponse(other), 500);

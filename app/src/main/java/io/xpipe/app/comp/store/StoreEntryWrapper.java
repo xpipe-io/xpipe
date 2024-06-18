@@ -68,9 +68,9 @@ public class StoreEntryWrapper {
         });
     }
 
-    public void orderBefore(StoreEntryWrapper other) {
+    public void setOrder(DataStoreEntry.Order order) {
         ThreadHelper.runAsync(() -> {
-            DataStorage.get().orderBefore(getEntry(), other.getEntry());
+            DataStorage.get().setOrder(getEntry(), order);
         });
     }
 
