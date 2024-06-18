@@ -28,7 +28,8 @@ public class BeaconServer {
     }
 
     private static List<String> toProcessCommand(String toExec) {
-        return OsType.getLocal().equals(OsType.WINDOWS) ? List.of("cmd", "/c", toExec) : List.of("sh", "-c", toExec);
+        // Having the trailing space is very important to force cmd to not interpret surrounding spaces and removing them
+        return OsType.getLocal().equals(OsType.WINDOWS) ? List.of("cmd", "/c", toExec + " ") : List.of("sh", "-c", toExec);
     }
 
     public static Process tryStartCustom() throws Exception {

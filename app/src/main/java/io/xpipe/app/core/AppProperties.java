@@ -60,6 +60,7 @@ public class AppProperties {
                 ErrorEvent.fromThrowable(e).handle();
             }
         }
+        var referenceDir = Files.exists(appDir) ? appDir : Path.of(System.getProperty("user.dir"));
 
         image = ModuleHelper.isImage();
         fullVersion = Optional.ofNullable(System.getProperty("io.xpipe.app.fullVersion"))
@@ -89,7 +90,7 @@ public class AppProperties {
                 .map(s -> {
                     var p = Path.of(s);
                     if (!p.isAbsolute()) {
-                        p = appDir.resolve(p);
+                        p = referenceDir.resolve(p);
                     }
                     return p;
                 })

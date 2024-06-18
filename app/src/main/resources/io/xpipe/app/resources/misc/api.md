@@ -1108,6 +1108,170 @@ string
 
 </details>
 
+## Read the content of a remote file
+
+<a id="opIdfsRead"></a>
+
+`POST /fs/read`
+
+Reads the entire content of a remote file through an active shell session.
+
+> Body parameter
+
+```json
+{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+  "path": "/home/user/myfile.txt"
+}
+```
+
+<h3 id="read-the-content-of-a-remote-file-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|body|body|[FsReadRequest](#schemafsreadrequest)|true|none|
+
+> Example responses
+
+> 200 Response
+
+> 400 Response
+
+```json
+{
+  "message": "string"
+}
+```
+
+<h3 id="read-the-content-of-a-remote-file-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The operation was successful. The file was read.|string|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
+|403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
+|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
+
+<aside class="warning">
+To perform this operation, you must be authenticated by means of one of the following methods:
+bearerAuth
+</aside>
+
+<details>
+
+<summary>Code samples</summary>
+
+```javascript
+const inputBody = '{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+  "path": "/home/user/myfile.txt"
+}';
+const headers = {
+  'Content-Type':'application/json',
+  'Accept':'application/octet-stream',
+  'Authorization':'Bearer {access-token}'
+};
+
+fetch('http://localhost:21723/fs/read',
+{
+  method: 'POST',
+  body: inputBody,
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```python
+import requests
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/octet-stream',
+  'Authorization': 'Bearer {access-token}'
+}
+
+data = """
+{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+  "path": "/home/user/myfile.txt"
+}
+"""
+r = requests.post('http://localhost:21723/fs/read', headers = headers, data = data)
+
+print(r.json())
+
+```
+
+```java
+var uri = URI.create("http://localhost:21723/fs/read");
+var client = HttpClient.newHttpClient();
+var request = HttpRequest
+        .newBuilder()
+        .uri(uri)
+        .header("Content-Type", "application/json")
+        .header("Accept", "application/octet-stream")
+        .header("Authorization", "Bearer {access-token}")
+        .POST(HttpRequest.BodyPublishers.ofString("""
+{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+  "path": "/home/user/myfile.txt"
+}
+        """))
+        .build();
+var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+System.out.println(response.statusCode());
+System.out.println(response.body());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Content-Type": []string{"application/json"},
+        "Accept": []string{"application/octet-stream"},
+        "Authorization": []string{"Bearer {access-token}"},
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("POST", "http://localhost:21723/fs/read", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+```shell
+# You can also use wget
+curl -X POST http://localhost:21723/fs/read \
+  -H 'Content-Type: application/json' \  -H 'Accept: application/octet-stream' \  -H 'Authorization: Bearer {access-token}' \
+  --data '
+{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+  "path": "/home/user/myfile.txt"
+}
+'
+
+```
+
+</details>
+
 ## Write a blob to a remote file
 
 <a id="opIdfsWrite"></a>
@@ -1578,6 +1742,28 @@ curl -X POST http://localhost:21723/fs/script \
 |connection|string|true|none|The connection uuid|
 |blob|string|true|none|The blob uuid|
 |path|string|true|none|The target filepath|
+
+<h2 id="tocS_FsReadRequest">FsReadRequest</h2>
+
+<a id="schemafsreadrequest"></a>
+<a id="schema_FsReadRequest"></a>
+<a id="tocSfsreadrequest"></a>
+<a id="tocsfsreadrequest"></a>
+
+```json
+{
+  "connection": "string",
+  "path": "string"
+}
+
+```
+
+<h3>Properties</h3>
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|connection|string|true|none|The connection uuid|
+|path|string|true|none|The target file path|
 
 <h2 id="tocS_FsScriptRequest">FsScriptRequest</h2>
 
