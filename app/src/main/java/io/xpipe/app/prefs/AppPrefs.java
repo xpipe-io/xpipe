@@ -112,6 +112,13 @@ public class AppPrefs {
     final ObjectProperty<SupportedLocale> language =
             map(new SimpleObjectProperty<>(SupportedLocale.getEnglish()), "language", SupportedLocale.class);
 
+    final BooleanProperty requireDoubleClickForConnections =
+            map(new SimpleBooleanProperty(false), "requireDoubleClickForConnections", Boolean.class);
+
+    public ObservableBooleanValue requireDoubleClickForConnections() {
+        return requireDoubleClickForConnections;
+    }
+
     @Getter
     private final Property<InPlaceSecretValue> lockPassword = new SimpleObjectProperty<>();
 
@@ -165,6 +172,7 @@ public class AppPrefs {
                         new LocalShellCategory(),
                         new SecurityCategory(),
                         new HttpApiCategory(),
+                        new WorkflowCategory(),
                         new TroubleshootCategory(),
                         new DeveloperCategory())
                 .filter(appPrefsCategory -> appPrefsCategory.show())

@@ -103,13 +103,25 @@ public abstract class StoreEntryComp extends SimpleComp {
             });
         });
         button.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
-            if (event.getClickCount() > 1) {
-                event.consume();
+            if (AppPrefs.get().requireDoubleClickForConnections().get()) {
+                if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() != 2) {
+                    event.consume();
+                }
+            } else {
+                if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() > 1) {
+                    event.consume();
+                }
             }
         });
         button.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-            if (event.getClickCount() > 1) {
-                event.consume();
+            if (AppPrefs.get().requireDoubleClickForConnections().get()) {
+                if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() != 2) {
+                    event.consume();
+                }
+            } else {
+                if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() > 1) {
+                    event.consume();
+                }
             }
         });
         new ContextMenuAugment<>(

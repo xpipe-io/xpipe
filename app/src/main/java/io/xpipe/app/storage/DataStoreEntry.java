@@ -417,7 +417,7 @@ public class DataStoreEntry extends StorageElement {
         stateObj.set("persistentState", storePersistentStateNode);
         obj.set("configuration", mapper.valueToTree(configuration));
         stateObj.put("expanded", expanded);
-        stateObj.put("orderBefore", explicitOrder != null ? explicitOrder.toString() : null);
+        stateObj.set("order", mapper.valueToTree(explicitOrder));
 
         var entryString = mapper.writeValueAsString(obj);
         var stateString = mapper.writeValueAsString(stateObj);

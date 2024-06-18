@@ -7,6 +7,8 @@ The XPipe beacon component is responsible for handling all communications betwee
 and the APIs and the CLI. It provides an API that supports all kinds
 of different operations.
 
+For a full documentation, see the [OpenAPI spec](/../openapi.yaml)
+
 ### Inner Workings
 
 - The underlying communication is realized through an HTTP server on port `21721`
@@ -17,14 +19,14 @@ of different operations.
 - Every exchange is initiated from the outside by sending a request message to the XPipe daemon.
   The daemon then always sends a response message.
 
-- The body of a message is formatted in the json format.
+- The body of a message is usually formatted in the json format.
   As a result, all data structures exchanged must be serializable/deserializable with jackson.
 
 ## Configuration
 
 #### Custom port
 
-The default port can be changed by passing the property `io.xpipe.beacon.port=<port>` to the daemon or changing it in the settings menu.
+The default port can be changed by passing the property `io.xpipe.beacon.port=<port>` to the daemon.
 Note that if both sides do not have the same port setting, they won't be able to reach each other.
 
 #### Custom launch command
