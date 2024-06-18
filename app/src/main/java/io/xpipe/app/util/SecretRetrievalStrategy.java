@@ -60,7 +60,7 @@ public interface SecretRetrievalStrategy {
                 @Override
                 public SecretQueryResult query(String prompt) {
                     return new SecretQueryResult(
-                            value != null ? value.getInternalSecret() : InPlaceSecretValue.of(""), false);
+                            value != null ? value.getInternalSecret() : InPlaceSecretValue.of(""), SecretQueryState.NORMAL);
                 }
 
                 @Override
@@ -125,7 +125,7 @@ public interface SecretRetrievalStrategy {
                 public SecretQueryResult query(String prompt) {
                     var cmd = AppPrefs.get().passwordManagerString(key);
                     if (cmd == null) {
-                        return new SecretQueryResult(null, true);
+                        return new SecretQueryResult(null, SecretQueryState.RETRIEVAL_FAILURE);
                     }
 
                     String r;
@@ -134,7 +134,7 @@ public interface SecretRetrievalStrategy {
                     } catch (Exception ex) {
                         ErrorEvent.fromThrowable("Unable to retrieve password with command " + cmd, ex)
                                 .handle();
-                        return new SecretQueryResult(null, true);
+                        return new SecretQueryResult(null, SecretQueryState.RETRIEVAL_FAILURE);
                     }
 
                     if (r.lines().count() > 1 || r.isBlank()) {
@@ -145,7 +145,7 @@ public interface SecretRetrievalStrategy {
                                         + " you will have to change the command and/or password key."));
                     }
 
-                    return new SecretQueryResult(InPlaceSecretValue.of(r), false);
+                    return new SecretQueryResult(InPlaceSecretValue.of(r), SecretQueryState.NORMAL);
                 }
 
                 @Override
@@ -180,11 +180,11 @@ public interface SecretRetrievalStrategy {
                 @Override
                 public SecretQueryResult query(String prompt) {
                     try (var cc = new LocalStore().control().command(command).start()) {
-                        return new SecretQueryResult(InPlaceSecretValue.of(cc.readStdoutOrThrow()), false);
+                        return new SecretQueryResult(InPlaceSecretValue.of(cc.readStdoutOrThrow()), SecretQueryState.NORMAL);
                     } catch (Exception ex) {
                         ErrorEvent.fromThrowable("Unable to retrieve password with command " + command, ex)
                                 .handle();
-                        return new SecretQueryResult(null, true);
+                        return new SecretQueryResult(null, SecretQueryState.RETRIEVAL_FAILURE);
                     }
                 }
 

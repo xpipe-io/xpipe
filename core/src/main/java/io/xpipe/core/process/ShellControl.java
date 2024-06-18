@@ -18,6 +18,10 @@ import java.util.function.Function;
 
 public interface ShellControl extends ProcessControl {
 
+    void setNonInteractive();
+
+    boolean isInteractive();
+
     ElevationHandler getElevationHandler();
 
     void setElevationHandler(ElevationHandler ref);

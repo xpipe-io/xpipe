@@ -32,13 +32,13 @@ public interface SecretQuery {
 
                 var inPlace = found.get().getSecret().inPlace();
                 var r = AskpassAlert.queryRaw(prompt, inPlace);
-                return r.isCancelled() ? Optional.of(r) : found;
+                return r.getState() != SecretQueryState.NORMAL ? Optional.of(r) : found;
             }
 
             @Override
             public SecretQueryResult query(String prompt) {
                 var r = original.query(prompt);
-                if (r.isCancelled()) {
+                if (r.getState() != SecretQueryState.NORMAL) {
                     return r;
                 }
 
@@ -96,7 +96,7 @@ public interface SecretQuery {
 
     default Optional<SecretQueryResult> retrieveCache(String prompt, SecretReference reference) {
         var r = SecretManager.get(reference);
-        return r.map(secretValue -> new SecretQueryResult(secretValue, false));
+        return r.map(secretValue -> new SecretQueryResult(secretValue, SecretQueryState.NORMAL));
     }
 
     SecretQueryResult query(String prompt);

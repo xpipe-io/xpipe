@@ -24,12 +24,12 @@ public class ShellStartExchangeImpl extends ShellStartExchange {
         var existing = AppBeaconServer.get().getCache().getShellSessions().stream()
                 .filter(beaconShellSession -> beaconShellSession.getEntry().equals(e))
                 .findFirst();
-        if (existing.isPresent()) {
-            return Response.builder().build();
+        var control = (existing.isPresent() ? existing.get().getControl() : s.control());
+        control.setNonInteractive();
+        control.start();
+        if (existing.isEmpty()) {
+            AppBeaconServer.get().getCache().getShellSessions().add(new BeaconShellSession(e, control));
         }
-
-        var control = s.control().start();
-        AppBeaconServer.get().getCache().getShellSessions().add(new BeaconShellSession(e, control));
-        return Response.builder().build();
+        return Response.builder().shellDialect(control.getShellDialect()).osType(control.getOsType()).osName(control.getOsName()).temp(control.getSystemTemporaryDirectory()).build();
     }
 }

@@ -21,7 +21,7 @@ public class AskpassAlert {
 
     public static SecretQueryResult queryRaw(String prompt, InPlaceSecretValue secretValue) {
         if (!PlatformState.initPlatformIfNeeded()) {
-            return new SecretQueryResult(null, true);
+            return new SecretQueryResult(null, SecretQueryState.CANCELLED);
         }
 
         AppStyle.init();
@@ -103,6 +103,6 @@ public class AskpassAlert {
                     return prop.getValue() != null ? prop.getValue() : InPlaceSecretValue.of("");
                 })
                 .orElse(null);
-        return new SecretQueryResult(r, r == null);
+        return new SecretQueryResult(r, r == null ? SecretQueryState.CANCELLED : SecretQueryState.NORMAL);
     }
 }

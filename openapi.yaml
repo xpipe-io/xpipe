@@ -8,7 +8,6 @@ info:
     <a download href="/openapi.yaml" style="font-size: 20px">OpenAPI .yaml specification</a>
   
     The XPipe application will start up an HTTP server that can be used to send requests.
-    You can change the port of it in the settings menu.
     Note that this server is HTTP-only for now as it runs only on localhost. HTTPS requests are not accepted.
     
     This allows you to programmatically manage remote systems.
@@ -544,11 +543,51 @@ components:
               description: The name of the client.
           required:
             - name
+    ClientErrorResponse:
+      description: Error returned in case of a client exception
+      type: object
+      properties:
+        message:
+          type: string
+          description: The error message
+      required:
+        - message
+    ServerErrorResponse:
+      description: Error returned in case of a server exception with HTTP code 500
+      type: object
+      properties:
+        error:
+          type: object
+          description: The exception information
+          properties:
+            cause:
+              type: object
+              description: The exception cause
+            stackTrace:
+              type: array
+              description: The java stack trace information
+            suppressed:
+              type: array
+              description: Any suppressed exceptions
+            localizedMessage:
+              type: string
+              description: Not used
+            message:
+              type: string
+              description: The error message
+          required:
+            - message
+      required:
+        - error
   responses:
     Success:
       description: The action was successfully performed.
     BadRequest:
       description: Bad request. Please check error message and your parameters.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ClientErrorResponse'
     Unauthorized:
       description: Authorization failed. Please supply a `Bearer` token via
         the `Authorization` header.
@@ -559,6 +598,10 @@ components:
       description: The requested resource could not be found.
     InternalServerError:
       description: Internal error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ServerErrorResponse'
   securitySchemes:
     bearerAuth:
       type: http

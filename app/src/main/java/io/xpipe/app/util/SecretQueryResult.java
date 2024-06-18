@@ -8,5 +8,5 @@ import lombok.Value;
 public class SecretQueryResult {
 
     SecretValue secret;
-    boolean cancelled;
+    SecretQueryState state;
 }

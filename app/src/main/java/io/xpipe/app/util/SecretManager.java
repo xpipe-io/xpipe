@@ -34,8 +34,9 @@ public class SecretManager {
             List<SecretQuery> suppliers,
             SecretQuery fallback,
             List<SecretQueryFilter> filters,
-            CountDown countDown) {
-        var p = new SecretQueryProgress(request, storeId, suppliers, fallback, filters, countDown);
+            CountDown countDown,
+            boolean interactive) {
+        var p = new SecretQueryProgress(request, storeId, suppliers, fallback, filters, countDown, interactive);
         progress.add(p);
         return p;
     }
@@ -55,14 +56,14 @@ public class SecretManager {
         return false;
     }
 
-    public static SecretValue retrieve(SecretRetrievalStrategy strategy, String prompt, UUID secretId, int sub) {
+    public static SecretValue retrieve(SecretRetrievalStrategy strategy, String prompt, UUID secretId, int sub, boolean interactive) {
         if (!strategy.expectsQuery()) {
             return null;
         }
 
         var uuid = UUID.randomUUID();
         var p = expectAskpass(
-                uuid, secretId, List.of(strategy.query()), SecretQuery.prompt(false), List.of(), CountDown.of());
+                uuid, secretId, List.of(strategy.query()), SecretQuery.prompt(false), List.of(), CountDown.of(), interactive);
         p.preAdvance(sub);
         var r = p.process(prompt);
         completeRequest(uuid);

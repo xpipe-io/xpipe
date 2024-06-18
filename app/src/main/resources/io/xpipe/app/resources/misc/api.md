@@ -29,7 +29,6 @@ You can get started by either using this page as an API reference or alternative
 <a download href="/openapi.yaml" style="font-size: 20px">OpenAPI .yaml specification</a>
 
 The XPipe application will start up an HTTP server that can be used to send requests.
-You can change the port of it in the settings menu.
 Note that this server is HTTP-only for now as it runs only on localhost. HTTPS requests are not accepted.
 
 This allows you to programmatically manage remote systems.
@@ -104,8 +103,8 @@ Note that for development you can also turn off the required authentication in t
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
 |200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The handshake was successful. The returned token can be used for authentication in this session. The token is valid as long as XPipe is running.|[HandshakeResponse](#schemahandshakeresponse)|
-|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|None|
-|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|None|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
 
 <aside class="success">
 This operation does not require authentication
@@ -305,16 +304,24 @@ All matching is case insensitive.
 }
 ```
 
+> 400 Response
+
+```json
+{
+  "message": "string"
+}
+```
+
 <h3 id="query-connections-responses">Responses</h3>
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
 |200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The query was successful. The body contains all matched connections.|[ConnectionQueryResponse](#schemaconnectionqueryresponse)|
-|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|None|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
 |401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
 |403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
 |404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
-|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
 
 <aside class="warning">
 To perform this operation, you must be authenticated by means of one of the following methods:
@@ -463,16 +470,26 @@ These errors will be returned with the HTTP return code 500.
 |---|---|---|---|---|
 |body|body|[ShellStartRequest](#schemashellstartrequest)|true|none|
 
+> Example responses
+
+> 400 Response
+
+```json
+{
+  "message": "string"
+}
+```
+
 <h3 id="start-shell-connection-responses">Responses</h3>
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
 |200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The operation was successful. The shell session was started.|None|
-|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|None|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
 |401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
 |403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
 |404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
-|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
 
 <aside class="warning">
 To perform this operation, you must be authenticated by means of one of the following methods:
@@ -489,6 +506,7 @@ const inputBody = '{
 }';
 const headers = {
   'Content-Type':'application/json',
+  'Accept':'application/json',
   'Authorization':'Bearer {access-token}'
 };
 
@@ -510,6 +528,7 @@ fetch('http://localhost:21723/shell/start',
 import requests
 headers = {
   'Content-Type': 'application/json',
+  'Accept': 'application/json',
   'Authorization': 'Bearer {access-token}'
 }
 
@@ -531,6 +550,7 @@ var request = HttpRequest
         .newBuilder()
         .uri(uri)
         .header("Content-Type", "application/json")
+        .header("Accept", "application/json")
         .header("Authorization", "Bearer {access-token}")
         .POST(HttpRequest.BodyPublishers.ofString("""
 {
@@ -556,6 +576,7 @@ func main() {
 
     headers := map[string][]string{
         "Content-Type": []string{"application/json"},
+        "Accept": []string{"application/json"},
         "Authorization": []string{"Bearer {access-token}"},
     }
 
@@ -573,7 +594,7 @@ func main() {
 ```shell
 # You can also use wget
 curl -X POST http://localhost:21723/shell/start \
-  -H 'Content-Type: application/json' \  -H 'Authorization: Bearer {access-token}' \
+  -H 'Content-Type: application/json' \  -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
   --data '
 {
   "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
@@ -609,16 +630,26 @@ If the shell is busy or stuck, you might have to work with timeouts to account f
 |---|---|---|---|---|
 |body|body|[ShellStopRequest](#schemashellstoprequest)|true|none|
 
+> Example responses
+
+> 400 Response
+
+```json
+{
+  "message": "string"
+}
+```
+
 <h3 id="stop-shell-connection-responses">Responses</h3>
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
 |200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The operation was successful. The shell session was stopped.|None|
-|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|None|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
 |401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
 |403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
 |404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
-|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
 
 <aside class="warning">
 To perform this operation, you must be authenticated by means of one of the following methods:
@@ -635,6 +666,7 @@ const inputBody = '{
 }';
 const headers = {
   'Content-Type':'application/json',
+  'Accept':'application/json',
   'Authorization':'Bearer {access-token}'
 };
 
@@ -656,6 +688,7 @@ fetch('http://localhost:21723/shell/stop',
 import requests
 headers = {
   'Content-Type': 'application/json',
+  'Accept': 'application/json',
   'Authorization': 'Bearer {access-token}'
 }
 
@@ -677,6 +710,7 @@ var request = HttpRequest
         .newBuilder()
         .uri(uri)
         .header("Content-Type", "application/json")
+        .header("Accept", "application/json")
         .header("Authorization", "Bearer {access-token}")
         .POST(HttpRequest.BodyPublishers.ofString("""
 {
@@ -702,6 +736,7 @@ func main() {
 
     headers := map[string][]string{
         "Content-Type": []string{"application/json"},
+        "Accept": []string{"application/json"},
         "Authorization": []string{"Bearer {access-token}"},
     }
 
@@ -719,7 +754,7 @@ func main() {
 ```shell
 # You can also use wget
 curl -X POST http://localhost:21723/shell/stop \
-  -H 'Content-Type: application/json' \  -H 'Authorization: Bearer {access-token}' \
+  -H 'Content-Type: application/json' \  -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
   --data '
 {
   "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
@@ -777,16 +812,24 @@ However, if any other error occurs like the shell not responding or exiting unex
 }
 ```
 
+> 400 Response
+
+```json
+{
+  "message": "string"
+}
+```
+
 <h3 id="execute-command-in-a-shell-session-responses">Responses</h3>
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
 |200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The operation was successful. The shell command finished.|[ShellExecResponse](#schemashellexecresponse)|
-|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|None|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
 |401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
 |403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
 |404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
-|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
 
 <aside class="warning">
 To perform this operation, you must be authenticated by means of one of the following methods:
@@ -940,16 +983,24 @@ string
 }
 ```
 
+> 400 Response
+
+```json
+{
+  "message": "string"
+}
+```
+
 <h3 id="store-a-raw-blob-to-be-used-later-responses">Responses</h3>
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
 |200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The operation was successful. The data was stored.|[FsBlobResponse](#schemafsblobresponse)|
-|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|None|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
 |401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
 |403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
 |404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
-|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
 
 <aside class="warning">
 To perform this operation, you must be authenticated by means of one of the following methods:
@@ -1081,16 +1132,26 @@ Writes blob data to a file through an active shell session.
 |---|---|---|---|---|
 |body|body|[FsWriteRequest](#schemafswriterequest)|true|none|
 
+> Example responses
+
+> 400 Response
+
+```json
+{
+  "message": "string"
+}
+```
+
 <h3 id="write-a-blob-to-a-remote-file-responses">Responses</h3>
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
 |200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The operation was successful. The file was written.|None|
-|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|None|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
 |401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
 |403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
 |404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
-|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
 
 <aside class="warning">
 To perform this operation, you must be authenticated by means of one of the following methods:
@@ -1109,6 +1170,7 @@ const inputBody = '{
 }';
 const headers = {
   'Content-Type':'application/json',
+  'Accept':'application/json',
   'Authorization':'Bearer {access-token}'
 };
 
@@ -1130,6 +1192,7 @@ fetch('http://localhost:21723/fs/write',
 import requests
 headers = {
   'Content-Type': 'application/json',
+  'Accept': 'application/json',
   'Authorization': 'Bearer {access-token}'
 }
 
@@ -1153,6 +1216,7 @@ var request = HttpRequest
         .newBuilder()
         .uri(uri)
         .header("Content-Type", "application/json")
+        .header("Accept", "application/json")
         .header("Authorization", "Bearer {access-token}")
         .POST(HttpRequest.BodyPublishers.ofString("""
 {
@@ -1180,6 +1244,7 @@ func main() {
 
     headers := map[string][]string{
         "Content-Type": []string{"application/json"},
+        "Accept": []string{"application/json"},
         "Authorization": []string{"Bearer {access-token}"},
     }
 
@@ -1197,7 +1262,7 @@ func main() {
 ```shell
 # You can also use wget
 curl -X POST http://localhost:21723/fs/write \
-  -H 'Content-Type: application/json' \  -H 'Authorization: Bearer {access-token}' \
+  -H 'Content-Type: application/json' \  -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
   --data '
 {
   "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
@@ -1245,16 +1310,24 @@ This can be used to run more complex commands on remote systems.
 }
 ```
 
+> 400 Response
+
+```json
+{
+  "message": "string"
+}
+```
+
 <h3 id="create-a-shell-script-file-from-a-blob-responses">Responses</h3>
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
 |200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The operation was successful. The script file was created.|[FsScriptResponse](#schemafsscriptresponse)|
-|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|None|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
 |401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
 |403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
 |404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
-|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
 
 <aside class="warning">
 To perform this operation, you must be authenticated by means of one of the following methods:
@@ -1782,4 +1855,59 @@ and
 |---|---|---|---|---|
 |*anonymous*|object|false|none|none|
 |» name|string|true|none|The name of the client.|
+
+<h2 id="tocS_ClientErrorResponse">ClientErrorResponse</h2>
+
+<a id="schemaclienterrorresponse"></a>
+<a id="schema_ClientErrorResponse"></a>
+<a id="tocSclienterrorresponse"></a>
+<a id="tocsclienterrorresponse"></a>
+
+```json
+{
+  "message": "string"
+}
+
+```
+
+Error returned in case of a client exception
+
+<h3>Properties</h3>
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|message|string|true|none|The error message|
+
+<h2 id="tocS_ServerErrorResponse">ServerErrorResponse</h2>
+
+<a id="schemaservererrorresponse"></a>
+<a id="schema_ServerErrorResponse"></a>
+<a id="tocSservererrorresponse"></a>
+<a id="tocsservererrorresponse"></a>
+
+```json
+{
+  "error": {
+    "cause": {},
+    "stackTrace": [],
+    "suppressed": [],
+    "localizedMessage": "string",
+    "message": "string"
+  }
+}
+
+```
+
+Error returned in case of a server exception with HTTP code 500
+
+<h3>Properties</h3>
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|error|object|true|none|The exception information|
+|» cause|object|false|none|The exception cause|
+|» stackTrace|array|false|none|The java stack trace information|
+|» suppressed|array|false|none|Any suppressed exceptions|
+|» localizedMessage|string|false|none|Not used|
+|» message|string|true|none|The error message|
 

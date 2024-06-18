@@ -16,7 +16,7 @@ public class FsScriptExchangeImpl extends FsScriptExchange {
         var shell = AppBeaconServer.get().getCache().getShellSession(msg.getConnection());
         var data = new String(AppBeaconServer.get().getCache().getBlob(msg.getBlob()), StandardCharsets.UTF_8);
         var file = ScriptHelper.getExecScriptFile(shell.getControl());
-        shell.getControl().getShellDialect().createScriptTextFileWriteCommand(shell.getControl(), data, file.toString());
+        shell.getControl().getShellDialect().createScriptTextFileWriteCommand(shell.getControl(), data, file.toString()).execute();
         return Response.builder().path(file).build();
     }
 }

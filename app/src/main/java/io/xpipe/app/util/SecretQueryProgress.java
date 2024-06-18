@@ -22,7 +22,8 @@ public class SecretQueryProgress {
     private final List<SecretQueryFilter> filters;
     private final List<String> seenPrompts;
     private final CountDown countDown;
-    private boolean requestCancelled;
+    private final boolean interactive;
+    private SecretQueryState state = SecretQueryState.NORMAL;
 
     public SecretQueryProgress(
             @NonNull UUID requestId,
@@ -30,13 +31,16 @@ public class SecretQueryProgress {
             @NonNull List<SecretQuery> suppliers,
             @NonNull SecretQuery fallback,
             @NonNull List<SecretQueryFilter> filters,
-            @NonNull CountDown countDown) {
+            @NonNull CountDown countDown,
+            boolean interactive
+    ) {
         this.requestId = requestId;
         this.storeId = storeId;
         this.suppliers = new ArrayList<>(suppliers);
         this.fallback = fallback;
         this.filters = filters;
         this.countDown = countDown;
+        this.interactive = interactive;
         this.seenPrompts = new ArrayList<>();
     }
 
@@ -49,7 +53,7 @@ public class SecretQueryProgress {
 
     public SecretValue process(String prompt) {
         // Cancel early
-        if (requestCancelled) {
+        if (state != SecretQueryState.NORMAL) {
             return null;
         }
 
@@ -67,11 +71,18 @@ public class SecretQueryProgress {
 
         var firstSeenIndex = seenPrompts.indexOf(prompt);
         if (firstSeenIndex >= suppliers.size()) {
+            // Check whether we can have user inputs
+            if (!interactive && fallback.requiresUserInteraction()) {
+                state = SecretQueryState.NON_INTERACTIVE;
+                return null;
+            }
+
             countDown.pause();
             var r = fallback.query(prompt);
             countDown.resume();
-            if (r.isCancelled()) {
-                requestCancelled = true;
+
+            if (r.getState() != SecretQueryState.NORMAL) {
+                state = r.getState();
                 return null;
             }
             return r.getSecret();
@@ -82,6 +93,12 @@ public class SecretQueryProgress {
         var shouldCache = shouldCache(sup, prompt);
         var wasLastPrompt = firstSeenIndex == seenPrompts.size() - 1;
 
+        // Check whether we can have user inputs
+        if (!interactive && sup.requiresUserInteraction()) {
+            state = SecretQueryState.NON_INTERACTIVE;
+            return null;
+        }
+
         // Clear cache if secret was wrong/queried again
         // Check whether this is actually the last prompt seen as it might happen that
         // previous prompts get rolled back again when one further down is wrong
@@ -91,7 +108,7 @@ public class SecretQueryProgress {
 
         // If we supplied a wrong secret and cannot retry, cancel the entire request
         if (seenBefore && wasLastPrompt && !sup.retryOnFail()) {
-            requestCancelled = true;
+            state = SecretQueryState.FIXED_SECRET_WRONG;
             return null;
         }
 
@@ -100,8 +117,8 @@ public class SecretQueryProgress {
             var cached = sup.retrieveCache(prompt, ref);
             countDown.resume();
             if (cached.isPresent()) {
-                if (cached.get().isCancelled()) {
-                    requestCancelled = true;
+                if (cached.get().getState() != SecretQueryState.NORMAL) {
+                    state = cached.get().getState();
                     return null;
                 }
 
@@ -113,8 +130,8 @@ public class SecretQueryProgress {
         var r = sup.query(prompt);
         countDown.resume();
 
-        if (r.isCancelled()) {
-            requestCancelled = true;
+        if (r.getState() != SecretQueryState.NORMAL) {
+            state = r.getState();
             return null;
         }
 
