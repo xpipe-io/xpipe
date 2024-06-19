@@ -35,7 +35,7 @@ public abstract class PlatformMode extends OperationMode {
         AppStyle.init();
         AppImages.init();
         AppLayoutModel.init();
-        ModifiedStage.hook();
+        ModifiedStage.init();
         TrackEvent.info("Finished essential component initialization before platform");
 
         TrackEvent.info("Launching application ...");

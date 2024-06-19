@@ -13,7 +13,7 @@ public class ModifiedStage extends Stage {
 
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public static void hook() {
+    public static void init() {
         var windowsField = Window.class.getDeclaredField("windows");
         windowsField.setAccessible(true);
         ObservableList<Window> list = (ObservableList<Window>) windowsField.get(null);
@@ -32,9 +32,18 @@ public class ModifiedStage extends Stage {
             return;
         }
 
+        if (AppPrefs.get() == null) {
+            return;
+        }
+
         var ctrl = new NativeWinWindowControl(stage);
         ctrl.setWindowAttribute(DmwaWindowAttribute.DWMWA_USE_IMMERSIVE_DARK_MODE.getValue(), AppPrefs.get().theme.getValue().isDark());
-        var backdrop = ctrl.setWindowBackdrop(DwmSystemBackDropType.MICA_ALT);
+        boolean backdrop;
+        if (AppPrefs.get().performanceMode().get()) {
+            backdrop = false;
+        } else {
+            backdrop = ctrl.setWindowBackdrop(DwmSystemBackDropType.MICA_ALT);
+        }
         stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), backdrop);
         stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), !backdrop);
     }
