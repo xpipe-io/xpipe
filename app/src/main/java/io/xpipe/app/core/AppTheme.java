@@ -1,29 +1,28 @@
 package io.xpipe.app.core;
 
+import atlantafx.base.theme.*;
+import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
-
-import javafx.animation.*;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.ColorScheme;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
-import javafx.event.EventHandler;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.stage.Window;
-import javafx.stage.WindowEvent;
 import javafx.util.Duration;
-
-import atlantafx.base.theme.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -44,8 +43,6 @@ public class AppTheme {
         if (AppPrefs.get() == null) {
             return;
         }
-
-        initWindowsThemeHandler(stage);
 
         Runnable r = () -> {
             AppPrefs.get().theme.subscribe(t -> {
@@ -72,46 +69,6 @@ public class AppTheme {
         } else {
             r.run();
         }
-    }
-
-    private static void initWindowsThemeHandler(Window stage) {
-        if (OsType.getLocal() != OsType.WINDOWS) {
-            return;
-        }
-
-        EventHandler<WindowEvent> windowTheme = new EventHandler<>() {
-            @Override
-            public void handle(WindowEvent event) {
-                if (!stage.isShowing()) {
-                    return;
-                }
-
-                try {
-                    //                    var c = new WindowControl(stage);
-                    //                    c.setWindowAttribute(20, AppPrefs.get().theme.getValue().isDark());
-                    //                    c.setWindowAttribute(34, 0xFFFFFFFEL);
-                    //                    c.redraw();
-                } catch (Throwable e) {
-                    ErrorEvent.fromThrowable(e).handle();
-                }
-                stage.removeEventFilter(WindowEvent.WINDOW_SHOWN, this);
-            }
-        };
-        if (stage.isShowing()) {
-            windowTheme.handle(null);
-        } else {
-            stage.addEventFilter(WindowEvent.WINDOW_SHOWN, windowTheme);
-        }
-
-        AppPrefs.get().theme.addListener((observable, oldValue, newValue) -> {
-            Platform.runLater(() -> {
-                var transition = new PauseTransition(Duration.millis(300));
-                transition.setOnFinished(e -> {
-                    windowTheme.handle(null);
-                });
-                transition.play();
-            });
-        });
     }
 
     public static void init() {

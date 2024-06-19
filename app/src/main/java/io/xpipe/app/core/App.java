@@ -1,16 +1,16 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.comp.AppLayoutComp;
+import io.xpipe.app.core.window.AppMainWindow;
+import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.LicenseProvider;
-
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.stage.Stage;
-
 import lombok.Getter;
 import lombok.SneakyThrows;
 

@@ -3,6 +3,7 @@ package io.xpipe.app.core.mode;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppFontLoadingCheck;
+import io.xpipe.app.core.window.ModifiedStage;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.UpdateAvailableAlert;
@@ -34,6 +35,7 @@ public abstract class PlatformMode extends OperationMode {
         AppStyle.init();
         AppImages.init();
         AppLayoutModel.init();
+        ModifiedStage.hook();
         TrackEvent.info("Finished essential component initialization before platform");
 
         TrackEvent.info("Launching application ...");

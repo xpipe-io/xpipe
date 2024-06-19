@@ -1,7 +1,7 @@
 package io.xpipe.app.core.check;
 
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.AppWindowHelper;
+import io.xpipe.app.core.window.AppWindowHelper;
 
 import javafx.scene.control.Alert;
 

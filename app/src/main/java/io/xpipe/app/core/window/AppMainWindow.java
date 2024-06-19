@@ -1,5 +1,9 @@
-package io.xpipe.app.core;
+package io.xpipe.app.core.window;
 
+import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppImages;
+import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.AppTheme;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
@@ -7,7 +11,6 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviourAlert;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Rectangle2D;
@@ -15,20 +18,21 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-
+import javafx.stage.StageStyle;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import javax.imageio.ImageIO;
 
 public class AppMainWindow {
 
@@ -48,6 +52,8 @@ public class AppMainWindow {
     public static AppMainWindow init(Stage stage) {
         INSTANCE = new AppMainWindow(stage);
         var scene = new Scene(new Region(), -1, -1, false);
+        scene.setFill(Color.TRANSPARENT);
+        stage.initStyle(StageStyle.UNIFIED);
         stage.setScene(scene);
         AppWindowHelper.setupStylesheets(stage.getScene());
         return INSTANCE;

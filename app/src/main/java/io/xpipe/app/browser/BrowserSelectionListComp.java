@@ -3,7 +3,7 @@ package io.xpipe.app.browser;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.core.AppStyle;
-import io.xpipe.app.core.AppWindowHelper;
+import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;

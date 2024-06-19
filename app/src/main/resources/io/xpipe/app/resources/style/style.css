@@ -4,6 +4,9 @@
     -fx-border-color: red;
 }
 */
+.root {
+    -fx-background-color: transparent;
+}
 
 .toggle-switch:has-graphic .label {
     -fx-font-size: 1.7em;
@@ -15,14 +18,6 @@
 
 .store-layout .split-pane-divider {
     -fx-background-color: transparent;
-}
-
-.root:dark.background {
-    -fx-background-color: derive(-color-bg-default, 1%);
-}
-
-.root:light.background {
-    -fx-background-color: derive(-color-bg-default, -9%);
 }
 
 .edit-button.icon-button-comp {

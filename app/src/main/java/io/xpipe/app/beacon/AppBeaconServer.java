@@ -12,6 +12,7 @@ import io.xpipe.core.util.XPipeInstallation;
 import lombok.Getter;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -110,7 +111,7 @@ public class AppBeaconServer {
     }
 
     private void start() throws IOException {
-        server = HttpServer.create(new InetSocketAddress("localhost", port), 10);
+        server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), port), 10);
         BeaconInterface.getAll().forEach(beaconInterface -> {
             server.createContext(beaconInterface.getPath(), new BeaconRequestHandler<>(beaconInterface));
         });

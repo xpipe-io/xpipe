@@ -3,7 +3,7 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.AppWindowHelper;
+import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.LabelComp;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
