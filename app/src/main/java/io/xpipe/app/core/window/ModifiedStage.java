@@ -33,12 +33,14 @@ public class ModifiedStage extends Stage {
 
     private static void hookUpStage(Stage stage) {
         applyModes(stage);
-        AppPrefs.get().theme.addListener((observable, oldValue, newValue) -> {
-            updateStage(stage);
-        });
-        AppPrefs.get().performanceMode().addListener((observable, oldValue, newValue) -> {
-            updateStage(stage);
-        });
+        if (AppPrefs.get() != null) {
+            AppPrefs.get().theme.addListener((observable, oldValue, newValue) -> {
+                updateStage(stage);
+            });
+            AppPrefs.get().performanceMode().addListener((observable, oldValue, newValue) -> {
+                updateStage(stage);
+            });
+        }
     }
 
     private static void applyModes(Stage stage) {
