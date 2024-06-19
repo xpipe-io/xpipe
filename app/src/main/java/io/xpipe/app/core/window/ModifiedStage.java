@@ -33,6 +33,6 @@ public class ModifiedStage extends Stage {
 
         var ctrl = new NativeWinWindowControl(stage);
         ctrl.setWindowAttribute(DmwaWindowAttribute.DWMWA_USE_IMMERSIVE_DARK_MODE.getValue(), AppPrefs.get().theme.getValue().isDark());
-        ctrl.setWindowBackdrop(DwmSystemBackDropType.ACRYLIC);
+        ctrl.setWindowBackdrop(DwmSystemBackDropType.MICA);
     }
 }

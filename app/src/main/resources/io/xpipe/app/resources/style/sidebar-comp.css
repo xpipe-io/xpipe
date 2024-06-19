@@ -1,6 +1,4 @@
 .sidebar-comp {
-    -fx-border-width: 0 0 0 1px;
-    -fx-border-color: -color-border-default;
     -fx-padding: 0;
     -fx-background-insets: 0;
 }
@@ -28,7 +26,7 @@
 }
 
 .sidebar-comp .icon-button-comp {
-    -fx-padding: 1.1em;
+    -fx-padding: 1em;
 }
 
 .sidebar-comp .icon-button-comp .vbox {

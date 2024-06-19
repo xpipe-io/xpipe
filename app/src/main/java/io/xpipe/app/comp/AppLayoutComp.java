@@ -48,6 +48,7 @@ public class AppLayoutComp extends Comp<CompStructure<Pane>> {
             }
         });
         AppFont.normal(pane);
+        pane.getStyleClass().add("layout");
         return new SimpleCompStructure<>(pane);
     }
 }

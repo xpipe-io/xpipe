@@ -17,6 +17,13 @@
     -fx-background-color: derive(-color-bg-default, -9%);
 }
 
+.background {
+    -fx-background-radius: 0 10 0 0;
+    -fx-border-radius: 0 10 0 0;
+    -fx-border-width: 1 1 0 0;
+    -fx-border-color: -color-border-default;
+}
+
 .toggle-switch:has-graphic .label {
     -fx-font-size: 1.7em;
 }

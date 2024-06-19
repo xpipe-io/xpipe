@@ -262,7 +262,6 @@ public class AppMainWindow {
 
     private void setupContent(Comp<?> content) {
         var contentR = content.createRegion();
-        contentR.requestFocus();
         stage.getScene().setRoot(contentR);
         AppTheme.initThemeHandlers(stage);
         TrackEvent.debug("Set content scene");
