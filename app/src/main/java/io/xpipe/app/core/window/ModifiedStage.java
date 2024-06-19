@@ -2,11 +2,14 @@ package io.xpipe.app.core.window;
 
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import javafx.util.Duration;
 import lombok.SneakyThrows;
 
 public class ModifiedStage extends Stage {
@@ -28,11 +31,9 @@ public class ModifiedStage extends Stage {
     }
 
     private static void applyStage(Stage stage) {
-        if (OsType.getLocal() != OsType.WINDOWS) {
-            return;
-        }
-
-        if (AppPrefs.get() == null) {
+        if (OsType.getLocal() != OsType.WINDOWS || AppPrefs.get() == null) {
+            stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), false);
+            stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), true);
             return;
         }
 
@@ -46,5 +47,23 @@ public class ModifiedStage extends Stage {
         }
         stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), backdrop);
         stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), !backdrop);
+
+        AppPrefs.get().theme.addListener((observable, oldValue, newValue) -> {
+            if (!stage.isShowing()) {
+                return;
+            }
+
+            Platform.runLater(() -> {
+                var transition = new PauseTransition(Duration.millis(300));
+                transition.setOnFinished(e -> {
+                    applyStage(stage);
+                    stage.setWidth(stage.getWidth() - 1);
+                    Platform.runLater(() -> {
+                        stage.setWidth(stage.getWidth() + 1);
+                    });
+                });
+                transition.play();
+            });
+        });
     }
 }

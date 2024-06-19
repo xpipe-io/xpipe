@@ -6,7 +6,7 @@
 }
 
 .root:dark .sidebar-comp {
-    -fx-background-color: derive(-color-bg-default, 1%);
+    -fx-background-color: derive(-color-bg-default, 10%);
 }
 
 .root:light .sidebar-comp {
@@ -22,9 +22,6 @@
 .sidebar-comp .icon-button-comp, .sidebar-comp .button {
     -fx-background-radius: 0;
     -fx-background-insets: 0;
-}
-
-.root:seamless-frame .sidebar-comp .icon-button-comp, .root:seamless-frame .sidebar-comp .button {
     -fx-background-color: transparent;
 }
 

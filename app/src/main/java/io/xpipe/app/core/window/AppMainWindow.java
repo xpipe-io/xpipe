@@ -21,7 +21,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
@@ -53,7 +52,6 @@ public class AppMainWindow {
         INSTANCE = new AppMainWindow(stage);
         var scene = new Scene(new Region(), -1, -1, false);
         scene.setFill(Color.TRANSPARENT);
-        stage.initStyle(StageStyle.UNIFIED);
         stage.setScene(scene);
         AppWindowHelper.setupStylesheets(stage.getScene());
         return INSTANCE;
