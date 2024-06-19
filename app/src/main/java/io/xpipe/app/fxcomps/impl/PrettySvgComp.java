@@ -88,17 +88,20 @@ public class PrettySvgComp extends SimpleComp {
         }
 
         Consumer<String> update = val -> {
+            var useDark = AppPrefs.get() != null && AppPrefs.get().theme.get() != null && AppPrefs.get().theme.get().isDark();
             var fixed = val != null
-                    ? FileNames.getBaseName(val) + (AppPrefs.get().theme.get().isDark() ? "-dark" : "") + "."
+                    ? FileNames.getBaseName(val) + (useDark ? "-dark" : "") + "."
                             + FileNames.getExtension(val)
                     : null;
             image.set(fixed);
         };
 
         syncValue.subscribe(update);
-        AppPrefs.get().theme.addListener((observable, oldValue, newValue) -> {
-            update.accept(syncValue.getValue());
-        });
+        if (AppPrefs.get() != null) {
+            AppPrefs.get().theme.addListener((observable, oldValue, newValue) -> {
+                update.accept(syncValue.getValue());
+            });
+        }
 
         stack.setFocusTraversable(false);
         stack.setPrefWidth(width);

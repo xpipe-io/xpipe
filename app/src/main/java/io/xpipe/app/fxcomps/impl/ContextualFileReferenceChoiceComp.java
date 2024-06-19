@@ -4,7 +4,7 @@ import io.xpipe.app.browser.session.BrowserChooserComp;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.core.AppWindowHelper;
+import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;

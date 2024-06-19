@@ -1,5 +1,6 @@
 package io.xpipe.app.core;
 
+import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.launcher.LauncherInput;
 
 import javafx.scene.control.Alert;

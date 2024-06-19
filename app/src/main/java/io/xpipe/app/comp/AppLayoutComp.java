@@ -34,13 +34,13 @@ public class AppLayoutComp extends Comp<CompStructure<Pane>> {
                                 },
                                 model.getSelected())));
         var multi = new MultiContentComp(map);
+        multi.styleClass("background");
 
         var pane = new BorderPane();
         var sidebar = new SideMenuBarComp(model.getSelected(), model.getEntries());
         StackPane multiR = (StackPane) multi.createRegion();
         pane.setCenter(multiR);
         pane.setRight(sidebar.createRegion());
-        pane.getStyleClass().add("background");
         model.getSelected().addListener((c, o, n) -> {
             if (o != null && o.equals(model.getEntries().get(2))) {
                 AppPrefs.get().save();
@@ -48,6 +48,7 @@ public class AppLayoutComp extends Comp<CompStructure<Pane>> {
             }
         });
         AppFont.normal(pane);
+        pane.getStyleClass().add("layout");
         return new SimpleCompStructure<>(pane);
     }
 }

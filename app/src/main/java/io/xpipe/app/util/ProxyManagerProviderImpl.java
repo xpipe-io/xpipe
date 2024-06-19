@@ -1,7 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppWindowHelper;
+import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.util.ProxyManagerProvider;
 

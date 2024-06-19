@@ -5,7 +5,7 @@ import io.xpipe.app.comp.base.TitledPaneComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.core.AppWindowHelper;
+import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.augment.GrowAugment;

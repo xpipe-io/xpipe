@@ -2,7 +2,7 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppWindowHelper;
+import io.xpipe.app.core.window.AppWindowHelper;
 
 import javafx.scene.control.Alert;
 

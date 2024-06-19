@@ -3,6 +3,7 @@ package io.xpipe.app.core.check;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.process.OsType;

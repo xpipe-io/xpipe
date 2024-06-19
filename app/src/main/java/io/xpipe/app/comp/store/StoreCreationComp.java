@@ -5,7 +5,7 @@ import io.xpipe.app.comp.base.DialogComp;
 import io.xpipe.app.comp.base.ErrorOverlayComp;
 import io.xpipe.app.comp.base.PopupMenuButtonComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppWindowHelper;
+import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.fxcomps.Comp;

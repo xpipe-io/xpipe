@@ -2,6 +2,7 @@ package io.xpipe.app.issue;
 
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.ThreadHelper;

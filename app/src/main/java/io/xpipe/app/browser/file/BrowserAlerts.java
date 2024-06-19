@@ -1,7 +1,7 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppWindowHelper;
+import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileSystem;
 

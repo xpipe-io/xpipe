@@ -1,25 +1,25 @@
-package io.xpipe.app.util;
-
-import javafx.stage.Window;
+package io.xpipe.app.core.window;
 
 import com.sun.jna.Library;
-import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.PointerType;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinNT;
+import javafx.stage.Window;
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 import java.lang.reflect.Method;
 
 @Getter
-public class WindowControl {
+public class NativeWinWindowControl {
 
     private final WinDef.HWND windowHandle;
 
-    public WindowControl(Window stage) throws Exception {
-        Method tkStageGetter = stage.getClass().getSuperclass().getDeclaredMethod("getPeer");
+    @SneakyThrows
+    public NativeWinWindowControl(Window stage) {
+        Method tkStageGetter = Window.class.getDeclaredMethod("getPeer");
         tkStageGetter.setAccessible(true);
         Object tkStage = tkStageGetter.invoke(stage);
         Method getPlatformWindow = tkStage.getClass().getDeclaredMethod("getPlatformWindow");
@@ -32,7 +32,7 @@ public class WindowControl {
         this.windowHandle = hwnd;
     }
 
-    public WindowControl(WinDef.HWND windowHandle) {
+    public NativeWinWindowControl(WinDef.HWND windowHandle) {
         this.windowHandle = windowHandle;
     }
 
@@ -40,27 +40,25 @@ public class WindowControl {
         User32.INSTANCE.SetWindowPos(windowHandle, new WinDef.HWND(), x, y, w, h, 0);
     }
 
-    public void setWindowAttribute(int attribute, boolean attributeValue) {
-        DwmSupport.INSTANCE.DwmSetWindowAttribute(
+    public boolean setWindowAttribute(int attribute, boolean attributeValue) {
+        var r = Dwm.INSTANCE.DwmSetWindowAttribute(
                 windowHandle, attribute, new WinDef.BOOLByReference(new WinDef.BOOL(attributeValue)), WinDef.BOOL.SIZE);
+        return r.longValue() == 0;
     }
 
-    public void setWindowAttribute(int attribute, long attributeValue) {
-        DwmSupport.INSTANCE.DwmSetWindowAttribute(
+    public boolean setWindowBackdrop(DwmSystemBackDropType backdrop) {
+        var r = Dwm.INSTANCE.DwmSetWindowAttribute(
                 windowHandle,
-                attribute,
-                new WinDef.DWORDByReference(new WinDef.DWORD(attributeValue)),
-                WinDef.DWORD.SIZE);
+                DmwaWindowAttribute.DWMWA_SYSTEMBACKDROP_TYPE.get(),
+                new WinDef.DWORDByReference(new WinDef.DWORD(backdrop.get())),
+                WinDef.DWORD.SIZE
+        );
+        return r.longValue() == 0;
     }
 
-    public void redraw() {
-        User32.INSTANCE.RedrawWindow(
-                windowHandle, null, null, new WinDef.DWORD(User32.RDW_FRAME | User32.RDW_VALIDATE));
-    }
+    public interface Dwm extends Library {
 
-    public interface DwmSupport extends Library {
-
-        DwmSupport INSTANCE = Native.load("dwmapi", DwmSupport.class);
+        Dwm INSTANCE = com.sun.jna.Native.load("dwmapi", Dwm.class);
 
         WinNT.HRESULT DwmSetWindowAttribute(
                 WinDef.HWND hwnd, int dwAttribute, PointerType pvAttribute, int cbAttribute);

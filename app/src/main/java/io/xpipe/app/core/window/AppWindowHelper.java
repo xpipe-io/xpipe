@@ -1,6 +1,7 @@
-package io.xpipe.app.core;
+package io.xpipe.app.core.window;
 
 import io.xpipe.app.comp.base.LoadingOverlayComp;
+import io.xpipe.app.core.*;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;

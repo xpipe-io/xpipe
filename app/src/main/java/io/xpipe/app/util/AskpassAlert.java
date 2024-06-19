@@ -3,7 +3,7 @@ package io.xpipe.app.util;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppStyle;
 import io.xpipe.app.core.AppTheme;
-import io.xpipe.app.core.AppWindowHelper;
+import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.fxcomps.impl.SecretFieldComp;
 import io.xpipe.core.util.InPlaceSecretValue;
 

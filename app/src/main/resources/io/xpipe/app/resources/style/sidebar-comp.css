@@ -1,30 +1,44 @@
 .sidebar-comp {
-    -fx-border-width: 0 0 0 1px;
-    -fx-border-color: -color-border-default;
     -fx-padding: 0;
     -fx-background-insets: 0;
+    -fx-border-width: 0 0 0 1px;
+    -fx-border-color: -color-border-default;
+}
+
+.root:dark .sidebar-comp {
+    -fx-background-color: derive(-color-bg-default, 10%);
+}
+
+.root:light .sidebar-comp {
+    -fx-background-color: derive(-color-bg-default, -1%);
+}
+
+.root:seamless-frame .sidebar-comp {
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
 }
 
 .sidebar-comp .icon-button-comp, .sidebar-comp .button {
     -fx-background-radius: 0;
     -fx-background-insets: 0;
-    -fx-background-color: -color-neutral-subtle;
+    -fx-background-color: transparent;
 }
 
 .sidebar-comp .button:disabled {
     -fx-opacity: 1.0;
 }
 
-.sidebar-comp .icon-button-comp:hover, .root:key-navigation .sidebar-comp .icon-button-comp:focused {
+.root .sidebar-comp .icon-button-comp:hover, .root:key-navigation .sidebar-comp .icon-button-comp:focused {
     -fx-background-color: -color-neutral-muted;
 }
 
-.sidebar-comp .icon-button-comp:selected {
+.root .sidebar-comp .icon-button-comp:selected {
     -fx-background-color: -color-neutral-muted;
 }
 
 .sidebar-comp .icon-button-comp {
-    -fx-padding: 1.1em;
+    -fx-padding: 1em;
 }
 
 .sidebar-comp .icon-button-comp .vbox {
