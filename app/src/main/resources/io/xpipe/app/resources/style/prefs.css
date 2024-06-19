@@ -27,7 +27,7 @@
 }
 
 .prefs {
-    -fx-background-color: -color-bg-default;
+    -fx-background-color: transparent;
 }
 
 .prefs .sidebar {

@@ -4,6 +4,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import lombok.SneakyThrows;
@@ -33,6 +34,8 @@ public class ModifiedStage extends Stage {
 
         var ctrl = new NativeWinWindowControl(stage);
         ctrl.setWindowAttribute(DmwaWindowAttribute.DWMWA_USE_IMMERSIVE_DARK_MODE.getValue(), AppPrefs.get().theme.getValue().isDark());
-        ctrl.setWindowBackdrop(DwmSystemBackDropType.MICA);
+        var backdrop = ctrl.setWindowBackdrop(DwmSystemBackDropType.MICA_ALT);
+        stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), backdrop);
+        stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), !backdrop);
     }
 }

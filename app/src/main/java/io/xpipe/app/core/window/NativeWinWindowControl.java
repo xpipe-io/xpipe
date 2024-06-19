@@ -40,26 +40,20 @@ public class NativeWinWindowControl {
         User32.INSTANCE.SetWindowPos(windowHandle, new WinDef.HWND(), x, y, w, h, 0);
     }
 
-    public void setWindowAttribute(int attribute, boolean attributeValue) {
-        DwmSupport.INSTANCE.DwmSetWindowAttribute(
+    public boolean setWindowAttribute(int attribute, boolean attributeValue) {
+        var r = DwmSupport.INSTANCE.DwmSetWindowAttribute(
                 windowHandle, attribute, new WinDef.BOOLByReference(new WinDef.BOOL(attributeValue)), WinDef.BOOL.SIZE);
+        return r.longValue() == 0;
     }
 
-    public void setWindowAttribute(int attribute, long attributeValue) {
-        DwmSupport.INSTANCE.DwmSetWindowAttribute(
-                windowHandle,
-                attribute,
-                new WinDef.DWORDByReference(new WinDef.DWORD(attributeValue)),
-                WinDef.DWORD.SIZE);
-    }
-
-    public void setWindowBackdrop(DwmSystemBackDropType backdrop) {
-        DwmSupport.INSTANCE.DwmSetWindowAttribute(
+    public boolean setWindowBackdrop(DwmSystemBackDropType backdrop) {
+        var r = DwmSupport.INSTANCE.DwmSetWindowAttribute(
                 windowHandle,
                 DmwaWindowAttribute.DWMWA_SYSTEMBACKDROP_TYPE.getValue(),
                 new WinDef.DWORDByReference(new WinDef.DWORD(backdrop.getValue())),
                 WinDef.DWORD.SIZE
         );
+        return r.longValue() == 0;
     }
 
     public interface DwmSupport extends Library {

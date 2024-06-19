@@ -17,11 +17,17 @@
     -fx-background-color: derive(-color-bg-default, -9%);
 }
 
-.background {
+.root:seamless-frame .background {
     -fx-background-radius: 0 10 0 0;
     -fx-border-radius: 0 10 0 0;
     -fx-border-width: 1 1 0 0;
     -fx-border-color: -color-border-default;
+    -fx-padding: 0 2 0 0;
+}
+
+.root:seamless-frame .background > * {
+    -fx-background-radius: 0 10 0 0;
+    -fx-border-radius: 0 10 0 0;
 }
 
 .toggle-switch:has-graphic .label {
