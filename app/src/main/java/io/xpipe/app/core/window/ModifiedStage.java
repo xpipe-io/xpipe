@@ -1,5 +1,6 @@
 package io.xpipe.app.core.window;
 
+import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
 import javafx.animation.PauseTransition;
@@ -24,13 +25,23 @@ public class ModifiedStage extends Stage {
             if (c.next() && c.wasAdded()) {
                 var added = c.getAddedSubList().getFirst();
                 if (added instanceof Stage stage) {
-                    applyStage(stage);
+                    hookUpStage(stage);
                 }
             }
         });
     }
 
-    private static void applyStage(Stage stage) {
+    private static void hookUpStage(Stage stage) {
+        applyModes(stage);
+        AppPrefs.get().theme.addListener((observable, oldValue, newValue) -> {
+            updateStage(stage);
+        });
+        AppPrefs.get().performanceMode().addListener((observable, oldValue, newValue) -> {
+            updateStage(stage);
+        });
+    }
+
+    private static void applyModes(Stage stage) {
         if (OsType.getLocal() != OsType.WINDOWS || AppPrefs.get() == null) {
             stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), false);
             stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), true);
@@ -47,23 +58,23 @@ public class ModifiedStage extends Stage {
         }
         stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), backdrop);
         stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), !backdrop);
+    }
 
-        AppPrefs.get().theme.addListener((observable, oldValue, newValue) -> {
-            if (!stage.isShowing()) {
-                return;
-            }
+    private static void updateStage(Stage stage) {
+        if (!stage.isShowing()) {
+            return;
+        }
 
-            Platform.runLater(() -> {
-                var transition = new PauseTransition(Duration.millis(300));
-                transition.setOnFinished(e -> {
-                    applyStage(stage);
-                    stage.setWidth(stage.getWidth() - 1);
-                    Platform.runLater(() -> {
-                        stage.setWidth(stage.getWidth() + 1);
-                    });
+        PlatformThread.runLaterIfNeeded(() -> {
+            var transition = new PauseTransition(Duration.millis(300));
+            transition.setOnFinished(e -> {
+                applyModes(stage);
+                stage.setWidth(stage.getWidth() - 1);
+                Platform.runLater(() -> {
+                    stage.setWidth(stage.getWidth() + 1);
                 });
-                transition.play();
             });
+            transition.play();
         });
     }
 }
