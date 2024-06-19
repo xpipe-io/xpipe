@@ -17,6 +17,10 @@
     -fx-border-width: 1 0 0 0;
 }
 
+.root:seamless-frame.dialog-pane > *.button-bar > *.container {
+    -fx-background-color: transparent;
+}
+
 .dialog-pane:header .header-panel {
     -fx-background-color: -color-bg-default;
     -fx-padding: 1.5em;
@@ -50,4 +54,8 @@
 
 .dialog-pane:header > *.label.content {
     -fx-font-size: 0.8em;
+}
+
+.dialog-pane:no-header .content {
+    -fx-background-color: -color-bg-default;
 }

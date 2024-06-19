@@ -104,7 +104,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         });
         button.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             if (AppPrefs.get().requireDoubleClickForConnections().get()) {
-                if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() != 2) {
+                if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() > 2) {
                     event.consume();
                 }
             } else {
@@ -115,7 +115,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         });
         button.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
             if (AppPrefs.get().requireDoubleClickForConnections().get()) {
-                if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() != 2) {
+                if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() > 2) {
                     event.consume();
                 }
             } else {

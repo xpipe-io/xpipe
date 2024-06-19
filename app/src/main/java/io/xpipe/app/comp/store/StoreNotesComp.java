@@ -18,6 +18,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 
 import atlantafx.base.controls.Popover;
+import javafx.scene.paint.Color;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -118,6 +119,7 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
         }.createRegion();
 
         var popover = new Popover(dialog);
+        popover.getScene().setFill(Color.TRANSPARENT);
         popover.setCloseButtonEnabled(true);
         popover.setHeaderAlwaysVisible(true);
         popover.setDetachable(true);

@@ -29,3 +29,7 @@
 .popover > .content > .title > .text {
     -fx-padding: 10 0 0 0;
 }
+
+.popover .dialog-comp .buttons {
+    -fx-background-color: -color-bg-subtle;
+}

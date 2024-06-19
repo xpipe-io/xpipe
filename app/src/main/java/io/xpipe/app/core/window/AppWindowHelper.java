@@ -23,11 +23,9 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import javafx.stage.Modality;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
-import javafx.stage.Window;
+import javafx.stage.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -107,13 +105,11 @@ public class AppWindowHelper {
     public static Stage sideWindow(
             String title, Function<Stage, Comp<?>> contentFunc, boolean bindSize, ObservableValue<Boolean> loading) {
         var stage = new Stage();
+        stage.initStyle(StageStyle.UNIFIED);
         if (AppMainWindow.getInstance() != null) {
             stage.initOwner(AppMainWindow.getInstance().getStage());
         }
         stage.setTitle(title);
-        if (AppMainWindow.getInstance() != null) {
-            stage.initOwner(AppMainWindow.getInstance().getStage());
-        }
 
         addIcons(stage);
         setupContent(stage, contentFunc, bindSize, loading);
@@ -250,6 +246,7 @@ public class AppWindowHelper {
 
     public static Alert createEmptyAlert() {
         Alert alert = new Alert(Alert.AlertType.NONE);
+        alert.getDialogPane().getScene().setFill(Color.TRANSPARENT);
         addIcons(((Stage) alert.getDialogPane().getScene().getWindow()));
         setupStylesheets(alert.getDialogPane().getScene());
         return alert;
@@ -294,6 +291,7 @@ public class AppWindowHelper {
         var contentR = content.createRegion();
         AppFont.small(contentR);
         var scene = new Scene(bindSize ? new Pane(contentR) : contentR, -1, -1, false);
+        scene.setFill(Color.TRANSPARENT);
         stage.setScene(scene);
         contentR.requestFocus();
         if (bindSize) {

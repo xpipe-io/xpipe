@@ -17,7 +17,7 @@
     -fx-background-color: derive(-color-bg-default, -9%);
 }
 
-.root:seamless-frame .background {
+.root:seamless-frame .layout > .background {
     -fx-background-insets: 5 0 0 0;
     -fx-border-insets: 5 0 0 0;
     -fx-background-radius: 0 10 0 0;
@@ -27,7 +27,7 @@
     -fx-padding: 0 2 0 0;
 }
 
-.root:seamless-frame .background > * {
+.root:seamless-frame .layout > .background > * {
     -fx-background-radius: 0 10 0 0;
     -fx-border-radius: 0 10 0 0;
 }
