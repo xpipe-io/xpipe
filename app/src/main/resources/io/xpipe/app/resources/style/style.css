@@ -4,8 +4,17 @@
     -fx-border-color: red;
 }
 */
+
 .root {
     -fx-background-color: transparent;
+}
+
+.root:dark .background {
+    -fx-background-color: derive(-color-bg-default, 1%);
+}
+
+.root:light .background {
+    -fx-background-color: derive(-color-bg-default, -9%);
 }
 
 .toggle-switch:has-graphic .label {

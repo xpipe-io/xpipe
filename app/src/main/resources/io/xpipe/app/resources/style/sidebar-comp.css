@@ -8,7 +8,7 @@
 .sidebar-comp .icon-button-comp, .sidebar-comp .button {
     -fx-background-radius: 0;
     -fx-background-insets: 0;
-    -fx-background-color: -color-neutral-subtle;
+    -fx-background-color: transparent;
 }
 
 .sidebar-comp .button:disabled {
@@ -21,6 +21,10 @@
 
 .sidebar-comp .icon-button-comp:selected {
     -fx-background-color: -color-neutral-muted;
+}
+
+.sidebar-comp {
+    -fx-background-color: transparent;
 }
 
 .sidebar-comp .icon-button-comp {
