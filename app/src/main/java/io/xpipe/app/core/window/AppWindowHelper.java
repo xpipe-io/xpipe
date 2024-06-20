@@ -8,12 +8,10 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
-
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -25,57 +23,18 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import javafx.stage.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class AppWindowHelper {
-
-    public static void fixInvalidStagePosition(Stage stage) {
-        if (OsType.getLocal() != OsType.LINUX) {
-            return;
-        }
-
-        var xSet = new AtomicBoolean();
-        stage.xProperty().addListener((observable, oldValue, newValue) -> {
-            var n = newValue.doubleValue();
-            var o = oldValue.doubleValue();
-            if (stage.isShowing() && areNumbersValid(o, n)) {
-                // Ignore rounding events
-                if (Math.abs(n - o) < 0.5) {
-                    return;
-                }
-
-                if (!xSet.getAndSet(true) && !stage.isMaximized() && n <= 0.0 && o > 0.0 && Math.abs(n - o) > 100) {
-                    stage.setX(o);
-                }
-            }
-        });
-
-        var ySet = new AtomicBoolean();
-        stage.yProperty().addListener((observable, oldValue, newValue) -> {
-            var n = newValue.doubleValue();
-            var o = oldValue.doubleValue();
-            if (stage.isShowing() && areNumbersValid(o, n)) {
-                // Ignore rounding events
-                if (Math.abs(n - o) < 0.5) {
-                    return;
-                }
-
-                if (!ySet.getAndSet(true) && !stage.isMaximized() && n <= 0.0 && o > 0.0 && Math.abs(n - o) > 20) {
-                    stage.setY(o);
-                }
-            }
-        });
-    }
 
     public static Node alertContentText(String s) {
         var text = new Text(s);
@@ -104,7 +63,7 @@ public class AppWindowHelper {
 
     public static Stage sideWindow(
             String title, Function<Stage, Comp<?>> contentFunc, boolean bindSize, ObservableValue<Boolean> loading) {
-        var stage = new Stage();
+        var stage = AppWindowBounds.centerStage();
         stage.initStyle(StageStyle.UNIFIED);
         if (AppMainWindow.getInstance() != null) {
             stage.initOwner(AppMainWindow.getInstance().getStage());
@@ -114,7 +73,7 @@ public class AppWindowHelper {
         addIcons(stage);
         setupContent(stage, contentFunc, bindSize, loading);
         setupStylesheets(stage.getScene());
-        fixInvalidStagePosition(stage);
+        AppWindowBounds.fixInvalidStagePosition(stage);
 
         if (AppPrefs.get() != null && AppPrefs.get().enforceWindowModality().get()) {
             stage.initModality(Modality.WINDOW_MODAL);
@@ -122,28 +81,8 @@ public class AppWindowHelper {
 
         stage.setOnShown(e -> {
             AppTheme.initThemeHandlers(stage);
-            Platform.runLater(() -> {
-                centerToMainWindow(stage);
-                clampWindow(stage).ifPresent(rectangle2D -> {
-                    stage.setX(rectangle2D.getMinX());
-                    stage.setY(rectangle2D.getMinY());
-                    stage.setWidth(rectangle2D.getWidth());
-                    stage.setHeight(rectangle2D.getHeight());
-                });
-            });
         });
         return stage;
-    }
-
-    private static void centerToMainWindow(Window childStage) {
-        if (App.getApp() == null) {
-            childStage.centerOnScreen();
-            return;
-        }
-
-        var stage = App.getApp().getStage();
-        childStage.setX(stage.getX() + stage.getWidth() / 2 - childStage.getWidth() / 2);
-        childStage.setY(stage.getY() + stage.getHeight() / 2 - childStage.getHeight() / 2);
     }
 
     public static void showAlert(Consumer<Alert> c, Consumer<Optional<ButtonType>> bt) {
@@ -190,10 +129,9 @@ public class AppWindowHelper {
             Alert a = AppWindowHelper.createEmptyAlert();
             AppFont.normal(a.getDialogPane());
             var s = (Stage) a.getDialogPane().getScene().getWindow();
-            fixInvalidStagePosition(s);
             s.setOnShown(event -> {
                 Platform.runLater(() -> {
-                    clampWindow(s).ifPresent(rectangle2D -> {
+                    AppWindowBounds.clampWindow(s).ifPresent(rectangle2D -> {
                         s.setX(rectangle2D.getMinX());
                         s.setY(rectangle2D.getMinY());
                         // Somehow we have to set max size as setting the normal size does not work?
@@ -203,6 +141,7 @@ public class AppWindowHelper {
                 });
                 event.consume();
             });
+            AppWindowBounds.fixInvalidStagePosition(s);
             a.getDialogPane().getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
                 if (event.getCode().equals(KeyCode.W) && event.isShortcutDown()) {
                     s.close();
@@ -246,6 +185,9 @@ public class AppWindowHelper {
 
     public static Alert createEmptyAlert() {
         Alert alert = new Alert(Alert.AlertType.NONE);
+        if (AppMainWindow.getInstance() != null) {
+            alert.initOwner(AppMainWindow.getInstance().getStage());
+        }
         alert.getDialogPane().getScene().setFill(Color.TRANSPARENT);
         addIcons(((Stage) alert.getDialogPane().getScene().getWindow()));
         setupStylesheets(alert.getDialogPane().getScene());
@@ -322,110 +264,6 @@ public class AppWindowHelper {
                 event.consume();
             }
         });
-    }
-
-    private static Optional<Rectangle2D> clampWindow(Stage stage) {
-        if (!areNumbersValid(stage.getWidth(), stage.getHeight())) {
-            return Optional.empty();
-        }
-
-        var allScreenBounds = computeWindowScreenBounds(stage);
-        if (!areNumbersValid(
-                allScreenBounds.getMinX(),
-                allScreenBounds.getMinY(),
-                allScreenBounds.getMaxX(),
-                allScreenBounds.getMaxY())) {
-            return Optional.empty();
-        }
-
-        // Alerts do not have a custom x/y set, but we are able to handle that
-
-        boolean changed = false;
-
-        double x = 0;
-        if (areNumbersValid(stage.getX())) {
-            x = stage.getX();
-            if (x < allScreenBounds.getMinX()) {
-                x = allScreenBounds.getMinX();
-                changed = true;
-            }
-        }
-
-        double y = 0;
-        if (areNumbersValid(stage.getY())) {
-            y = stage.getY();
-            if (y < allScreenBounds.getMinY()) {
-                y = allScreenBounds.getMinY();
-                changed = true;
-            }
-        }
-
-        double w = stage.getWidth();
-        double h = stage.getHeight();
-        if (x + w > allScreenBounds.getMaxX()) {
-            w = allScreenBounds.getMaxX() - x;
-            changed = true;
-        }
-        if (y + h > allScreenBounds.getMaxY()) {
-            h = allScreenBounds.getMaxY() - y;
-            changed = true;
-        }
-
-        // This should not happen but on weird Linux systems nothing is impossible
-        if (w < 0 || h < 0) {
-            return Optional.empty();
-        }
-
-        return changed ? Optional.of(new Rectangle2D(x, y, w, h)) : Optional.empty();
-    }
-
-    private static boolean areNumbersValid(double... args) {
-        return Arrays.stream(args).allMatch(Double::isFinite);
-    }
-
-    private static List<Screen> getWindowScreens(Stage stage) {
-        if (!areNumbersValid(stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight())) {
-            return stage.getOwner() != null && stage.getOwner() instanceof Stage ownerStage
-                    ? getWindowScreens(ownerStage)
-                    : List.of(Screen.getPrimary());
-        }
-
-        return Screen.getScreensForRectangle(
-                new Rectangle2D(stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight()));
-    }
-
-    private static Rectangle2D computeWindowScreenBounds(Stage stage) {
-        double minX = Double.POSITIVE_INFINITY;
-        double minY = Double.POSITIVE_INFINITY;
-        double maxX = Double.NEGATIVE_INFINITY;
-        double maxY = Double.NEGATIVE_INFINITY;
-        for (Screen screen : getWindowScreens(stage)) {
-            Rectangle2D screenBounds = screen.getBounds();
-            if (screenBounds.getMinX() < minX) {
-                minX = screenBounds.getMinX();
-            }
-            if (screenBounds.getMinY() < minY) {
-                minY = screenBounds.getMinY();
-            }
-            if (screenBounds.getMaxX() > maxX) {
-                maxX = screenBounds.getMaxX();
-            }
-            if (screenBounds.getMaxY() > maxY) {
-                maxY = screenBounds.getMaxY();
-            }
-        }
-        // Taskbar adjustment
-        maxY -= 50;
-
-        var w = maxX - minX;
-        var h = maxY - minY;
-
-        // This should not happen but on weird Linux systems nothing is impossible
-        if (w < 0 || h < 0) {
-            return new Rectangle2D(0, 0, 800, 600);
-        }
-
-        return new Rectangle2D(minX, minY, w, h);
     }
 
     private static void bindSize(Stage stage, Region r) {
