@@ -169,6 +169,14 @@
     visibility: hidden;
 }
 
+.browser .tab-header-area {
+    -fx-background-color: -color-bg-inset;
+}
+
+.root:seamless-frame .browser .tab-header-area {
+    -fx-background-radius: 0 10 0 0;
+}
+
 .browser .table-view {
     -fx-border-width: 0;
 }
