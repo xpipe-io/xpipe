@@ -81,6 +81,8 @@ open module io.xpipe.app {
     requires jdk.management.agent;
     requires net.steppschuh.markdowngenerator;
     requires com.shinyhut.vernacular;
+    requires org.kordamp.ikonli.core;
+    requires jdk.httpserver;
 
     // Required runtime modules
     requires jdk.charsets;
@@ -94,9 +96,6 @@ open module io.xpipe.app {
 
     // For debugging
     requires jdk.jdwp.agent;
-    requires org.kordamp.ikonli.core;
-    requires jdk.httpserver;
-    requires java.sql;
 
     uses TerminalLauncher;
     uses io.xpipe.app.ext.ActionProvider;
