@@ -271,6 +271,7 @@ public class ErrorHandlerComp extends SimpleComp {
         var layout = new BorderPane();
         layout.setCenter(content);
         layout.getStyleClass().add("error-handler-comp");
+        layout.getStyleClass().add("background");
 
         if (event.getThrowable() != null) {
             content.getChildren().add(new Separator(Orientation.HORIZONTAL));

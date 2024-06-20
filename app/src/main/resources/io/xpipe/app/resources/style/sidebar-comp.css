@@ -29,14 +29,6 @@
     -fx-opacity: 1.0;
 }
 
-.root .sidebar-comp .icon-button-comp:hover, .root:key-navigation .sidebar-comp .icon-button-comp:focused {
-    -fx-background-color: -color-neutral-muted;
-}
-
-.root .sidebar-comp .icon-button-comp:selected {
-    -fx-background-color: -color-neutral-muted;
-}
-
 .sidebar-comp .icon-button-comp {
     -fx-padding: 1em;
 }

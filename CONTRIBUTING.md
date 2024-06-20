@@ -25,7 +25,7 @@ components from it when it is run in a development environment.
 Note that in case the current master branch is ahead of the latest release, it might happen that there are some incompatibilities when loading data from your local XPipe installation.
 You should therefore always check out the matching version tag for your local repository and local XPipe installation.
 You can find the available version tags at https://github.com/xpipe-io/xpipe/tags.
-So for example if you currently have XPipe `9.0` installed, you should run `git reset --hard 9.0` first to properly compile against it.
+So for example if you currently have XPipe `10.0` installed, you should run `git reset --hard 10.0` first to properly compile against it.
 
 You need to have JDK for Java 21 installed to compile the project.
 If you are on Linux or macOS, you can easily accomplish that by running
@@ -72,6 +72,11 @@ is selected both for the project and for gradle itself.
 
 Especially when starting out, it might be a good idea to start with easy tasks first. Here's a selection of suitable common tasks that are very easy to implement:
 
+### Interacting via the HTTP API
+
+You can create clients they communicate with the XPipe daemon via its HTTP API.
+To get started, see the [OpenAPI spec](/openapi.yaml).
+
 ### Implementing support for a new editor
 
 All code for handling external editors can be found [here](https://github.com/xpipe-io/xpipe/blob/master/app/src/main/java/io/xpipe/app/prefs/ExternalEditorType.java). There you will find plenty of working examples that you can use as a base for your own implementation.
@@ -79,12 +84,6 @@ All code for handling external editors can be found [here](https://github.com/xp
 ### Implementing support for a new terminal
 
 All code for handling external terminals can be found [here](https://github.com/xpipe-io/xpipe/blob/master/app/src/main/java/io/xpipe/app/terminal/). There you will find plenty of working examples that you can use as a base for your own implementation.
-
-### Adding more file icons for specific types
-
-You can register file types [here](https://github.com/xpipe-io/xpipe/blob/master/app/src/main/resources/io/xpipe/app/resources/file_list.txt) and add the respective icons [here](https://github.com/xpipe-io/xpipe/tree/master/app/src/main/resources/io/xpipe/app/resources/browser_icons).
-
-The existing file list and icons are taken from the [vscode-icons](https://github.com/vscode-icons/vscode-icons) project. Due to limitations in the file definition list compatibility, some file types might not be listed by their proper extension and are therefore not being applied correctly even though the images and definitions exist already.
 
 ### Adding more context menu actions in the file browser
 
@@ -99,9 +98,11 @@ All actions that you can perform for certain connections in the connection overv
 
 You can add custom script definitions [here](https://github.com/xpipe-io/xpipe/tree/master/ext/base/src/main/java/io/xpipe/ext/base/script/PredefinedScriptStore.java) and [here](https://github.com/xpipe-io/xpipe/tree/master/ext/base/src/main/resources/io/xpipe/ext/base/resources/scripts).
 
-### Familiarising yourself with the shell and command API
+### Adding more file icons for specific types
 
-The [sample action](https://github.com/xpipe-io/xpipe/blob/master/ext/base/src/main/java/io/xpipe/ext/base/action/SampleAction.java) shows the basics of working with shells and executing commands in them. For more references, just look for the usages of the [API classes](https://github.com/xpipe-io/xpipe/tree/master/core/src/main/java/io/xpipe/core/process).
+You can register file types [here](https://github.com/xpipe-io/xpipe/blob/master/app/src/main/resources/io/xpipe/app/resources/file_list.txt) and add the respective icons [here](https://github.com/xpipe-io/xpipe/tree/master/app/src/main/resources/io/xpipe/app/resources/browser_icons).
+
+The existing file list and icons are taken from the [vscode-icons](https://github.com/vscode-icons/vscode-icons) project. Due to limitations in the file definition list compatibility, some file types might not be listed by their proper extension and are therefore not being applied correctly even though the images and definitions exist already.
 
 ### Implementing something else
 

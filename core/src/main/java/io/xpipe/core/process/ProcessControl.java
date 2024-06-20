@@ -12,7 +12,7 @@ public interface ProcessControl extends AutoCloseable {
 
     ProcessControl withExceptionConverter(ExceptionConverter converter);
 
-    void resetData(boolean cache);
+    void resetData();
 
     String prepareTerminalOpen(TerminalInitScriptConfig config, WorkingDirectoryFunction workingDirectory)
             throws Exception;
