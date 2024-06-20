@@ -75,4 +75,8 @@ public abstract class BeaconInterface<T> {
             throws BeaconClientException, BeaconServerException {
         throw new UnsupportedOperationException();
     }
+
+    public boolean readRawRequestBody() {
+        return false;
+    }
 }

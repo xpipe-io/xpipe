@@ -62,19 +62,23 @@ public class BeaconRequestHandler<T> implements HttpHandler {
         T object;
         Object response;
         try {
-            try (InputStream is = exchange.getRequestBody()) {
-                var read = is.readAllBytes();
-                var rawDataRequestClass = beaconInterface.getRequestClass().getDeclaredFields().length == 1 &&
-                        beaconInterface.getRequestClass().getDeclaredFields()[0].getType().equals(byte[].class);
-                if (!new String(read, StandardCharsets.US_ASCII).trim().startsWith("{") && rawDataRequestClass) {
-                    object = createRawDataRequest(beaconInterface,read);
-                } else {
-                    var tree = JacksonMapper.getDefault().readTree(read);
-                    TrackEvent.trace("Parsed raw request:\n" + tree.toPrettyString());
-                    var emptyRequestClass = tree.isEmpty() && beaconInterface.getRequestClass().getDeclaredFields().length == 0;
-                    object = emptyRequestClass ? createDefaultRequest(beaconInterface) : JacksonMapper.getDefault().treeToValue(tree,
-                            beaconInterface.getRequestClass());
-                    TrackEvent.trace("Parsed request object:\n" + object);
+            if (beaconInterface.readRawRequestBody()) {
+                object = createDefaultRequest(beaconInterface);
+            } else {
+                try (InputStream is = exchange.getRequestBody()) {
+                    var read = is.readAllBytes();
+                    var rawDataRequestClass = beaconInterface.getRequestClass().getDeclaredFields().length == 1 &&
+                            beaconInterface.getRequestClass().getDeclaredFields()[0].getType().equals(byte[].class);
+                    if (!new String(read, StandardCharsets.US_ASCII).trim().startsWith("{") && rawDataRequestClass) {
+                        object = createRawDataRequest(beaconInterface, read);
+                    } else {
+                        var tree = JacksonMapper.getDefault().readTree(read);
+                        TrackEvent.trace("Parsed raw request:\n" + tree.toPrettyString());
+                        var emptyRequestClass = tree.isEmpty() && beaconInterface.getRequestClass().getDeclaredFields().length == 0;
+                        object = emptyRequestClass ? createDefaultRequest(beaconInterface) : JacksonMapper.getDefault().treeToValue(tree,
+                                beaconInterface.getRequestClass());
+                        TrackEvent.trace("Parsed request object:\n" + object);
+                    }
                 }
             }
             response = beaconInterface.handle(exchange, object);

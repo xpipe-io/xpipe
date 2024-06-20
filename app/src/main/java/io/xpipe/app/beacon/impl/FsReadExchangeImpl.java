@@ -2,9 +2,15 @@ package io.xpipe.app.beacon.impl;
 
 import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.beacon.AppBeaconServer;
+import io.xpipe.app.beacon.BlobManager;
+import io.xpipe.app.util.FixedSizeInputStream;
 import io.xpipe.beacon.api.FsReadExchange;
 import io.xpipe.core.store.ConnectionFileSystem;
 import lombok.SneakyThrows;
+
+import java.io.BufferedInputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 
 public class FsReadExchangeImpl extends FsReadExchange {
 
@@ -13,14 +19,36 @@ public class FsReadExchangeImpl extends FsReadExchange {
     public Object handle(HttpExchange exchange, Request msg) {
         var shell = AppBeaconServer.get().getCache().getShellSession(msg.getConnection());
         var fs = new ConnectionFileSystem(shell.getControl());
-        byte[] bytes;
-        try (var in = fs.openInput(msg.getPath().toString())) {
-            bytes = in.readAllBytes();
+
+        var size = fs.getFileSize(msg.getPath().toString());
+        if (size > 100_000_000) {
+            var file = BlobManager.get().newBlobFile();
+            try (var in = fs.openInput(msg.getPath().toString())) {
+                try (var fileOut = Files.newOutputStream(file.resolve(msg.getPath().getFileName()));
+                     var fixedIn = new FixedSizeInputStream(new BufferedInputStream(in), size)) {
+                    fixedIn.transferTo(fileOut);
+                }
+                in.transferTo(OutputStream.nullOutputStream());
+            }
+
+            exchange.sendResponseHeaders(200, size);
+            try (var fileIn = Files.newInputStream(file); var out = exchange.getResponseBody()) {
+                fileIn.transferTo(out);
+            }
+            return Response.builder().build();
+        } else {
+            byte[] bytes;
+            try (var in = fs.openInput(msg.getPath().toString())) {
+                try (var fixedIn = new FixedSizeInputStream(new BufferedInputStream(in), size)) {
+                    bytes = fixedIn.readAllBytes();
+                }
+                in.transferTo(OutputStream.nullOutputStream());
+            }
+            exchange.sendResponseHeaders(200, bytes.length);
+            try (var out = exchange.getResponseBody()) {
+                out.write(bytes);
+            }
+            return Response.builder().build();
         }
-        exchange.sendResponseHeaders(200, bytes.length);
-        try (var out = exchange.getResponseBody()) {
-            out.write(bytes);
-        }
-        return Response.builder().build();
     }
 }

@@ -27,37 +27,6 @@ import java.util.function.Consumer;
 
 public class FileBridge {
 
-    private static class FixedSizeInputStream extends SimpleFilterInputStream {
-
-        private long count;
-        private final long size;
-
-        protected FixedSizeInputStream(InputStream in, long size) {
-            super(in);
-            this.size = size;
-        }
-
-        @Override
-        public int read() throws IOException {
-            if (count >= size) {
-                return -1;
-            }
-
-            var read = in.read();
-            count++;
-            if (read == -1) {
-                return 0;
-            } else {
-                return read;
-            }
-        }
-
-        @Override
-        public int available() {
-            return (int) (size - count);
-        }
-    }
-
     private static final Path TEMP = ShellTemp.getLocalTempDataDirectory("bridge");
     private static FileBridge INSTANCE;
     private final Set<Entry> openEntries = new HashSet<>();
@@ -95,6 +64,14 @@ public class FileBridge {
         } catch (IOException e) {
             ErrorEvent.fromThrowable(e).handle();
         }
+    }
+
+    public static void reset() {
+        try {
+            FileUtils.cleanDirectory(TEMP.toFile());
+        } catch (IOException ignored) {
+        }
+        INSTANCE = null;
     }
 
     private synchronized void handleWatchEvent(Path changed, WatchEvent.Kind<Path> kind) {
@@ -135,6 +112,7 @@ public class FileBridge {
                     try (var fixedIn = new FixedSizeInputStream(new BufferedInputStream(in), actualSize)) {
                         e.writer.accept(fixedIn, actualSize);
                     }
+                    in.transferTo(OutputStream.nullOutputStream());
                     var taken = Duration.between(started, Instant.now());
                     event("Wrote " + HumanReadableFormat.byteCount(actualSize) + " in " + taken.toMillis() + "ms");
                 }

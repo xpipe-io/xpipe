@@ -1,6 +1,7 @@
 package io.xpipe.app.core.mode;
 
 import io.xpipe.app.beacon.AppBeaconServer;
+import io.xpipe.app.beacon.BlobManager;
 import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.*;
@@ -62,6 +63,7 @@ public class BaseMode extends OperationMode {
         DataStoreProviders.init();
         AppFileWatcher.init();
         FileBridge.init();
+        BlobManager.init();
         ActionProvider.initProviders();
         TrackEvent.info("Finished base components initialization");
         initialized = true;
@@ -81,6 +83,8 @@ public class BaseMode extends OperationMode {
         AppResources.reset();
         AppExtensionManager.reset();
         AppDataLock.unlock();
+        BlobManager.reset();
+        FileBridge.reset();
         // Shut down server last to keep a non-daemon thread running
         AppBeaconServer.reset();
         TrackEvent.info("Background mode shutdown finished");

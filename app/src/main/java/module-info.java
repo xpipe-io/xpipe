@@ -96,6 +96,7 @@ open module io.xpipe.app {
     requires jdk.jdwp.agent;
     requires org.kordamp.ikonli.core;
     requires jdk.httpserver;
+    requires java.sql;
 
     uses TerminalLauncher;
     uses io.xpipe.app.ext.ActionProvider;

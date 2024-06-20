@@ -1,7 +1,7 @@
 package io.xpipe.app.beacon.impl;
 
 import com.sun.net.httpserver.HttpExchange;
-import io.xpipe.app.beacon.AppBeaconServer;
+import io.xpipe.app.beacon.BlobManager;
 import io.xpipe.beacon.api.FsBlobExchange;
 import lombok.SneakyThrows;
 
@@ -13,7 +13,13 @@ public class FsBlobExchangeImpl extends FsBlobExchange {
     @SneakyThrows
     public Object handle(HttpExchange exchange, Request msg) {
         var id = UUID.randomUUID();
-        AppBeaconServer.get().getCache().getSavedBlobs().put(id, msg.getPayload());
+
+        var size = exchange.getRequestBody().available();
+        if (size > 100_000_000) {
+            BlobManager.get().store(id,exchange.getRequestBody());
+        } else {
+            BlobManager.get().store(id,exchange.getRequestBody().readAllBytes());
+        }
         return Response.builder().blob(id).build();
     }
 }

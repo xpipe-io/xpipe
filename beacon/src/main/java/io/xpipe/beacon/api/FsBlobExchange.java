@@ -15,12 +15,15 @@ public class FsBlobExchange extends BeaconInterface<FsBlobExchange.Request> {
         return "/fs/blob";
     }
 
+    @Override
+    public boolean readRawRequestBody() {
+        return true;
+    }
+
     @Jacksonized
     @Builder
     @Value
-    public static class Request {
-        byte @NonNull [] payload;
-    }
+    public static class Request {}
 
     @Jacksonized
     @Builder
