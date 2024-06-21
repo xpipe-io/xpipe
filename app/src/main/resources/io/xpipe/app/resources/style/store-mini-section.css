@@ -66,7 +66,7 @@
 }
 
 .store-section-mini-comp > .children-content {
-    -fx-padding: 5px 0 5px 15px;
+    -fx-padding: 0 0 5px 15px;
 }
 
 .store-section-mini-comp:root > .children-content {

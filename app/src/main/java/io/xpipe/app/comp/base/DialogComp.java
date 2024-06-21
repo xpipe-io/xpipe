@@ -78,7 +78,7 @@ public abstract class DialogComp extends Comp<CompStructure<Region>> {
 
     @Override
     public CompStructure<Region> createBase() {
-        var sp = pane(content()).createRegion();
+        var sp = pane(content()).styleClass("dialog-content").createRegion();
         VBox vbox = new VBox();
         vbox.getChildren().addAll(sp, createNavigation());
         vbox.getStyleClass().add("dialog-comp");
@@ -96,7 +96,7 @@ public abstract class DialogComp extends Comp<CompStructure<Region>> {
     public abstract Comp<?> content();
 
     protected Comp<?> pane(Comp<?> content) {
-        var entry = content.styleClass("dialog-content");
+        var entry = content;
         return Comp.of(() -> {
             var entryR = entry.createRegion();
             var sp = new ScrollPane(entryR);
