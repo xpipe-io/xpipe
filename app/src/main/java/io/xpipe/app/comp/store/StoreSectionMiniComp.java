@@ -145,7 +145,7 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                 .hgrow();
 
         list.add(new HorizontalComp(List.of(content))
-                .styleClass("content")
+                .styleClass("children-content")
                 .apply(struc -> struc.get().setFillHeight(true))
                 .hide(Bindings.or(
                         Bindings.not(expanded),

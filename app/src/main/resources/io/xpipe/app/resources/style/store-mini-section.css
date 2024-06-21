@@ -1,4 +1,4 @@
-.store-mini-list-comp > * > * > .content {
+.store-mini-list-comp > * > * > .children-content {
     -fx-spacing: 0.5em;
 }
 
@@ -65,15 +65,15 @@
     -fx-border-insets: 0px;
 }
 
-.store-section-mini-comp > .content {
+.store-section-mini-comp > .children-content {
     -fx-padding: 5px 0 5px 15px;
 }
 
-.store-section-mini-comp:root > .content {
+.store-section-mini-comp:root > .children-content {
     -fx-padding: 0.5em 1em 0.5em 1em;
 }
 
-.store-section-mini-comp.condensed:root > .content {
+.store-section-mini-comp.condensed:root > .children-content {
     -fx-padding: 0;
 }
 
@@ -118,7 +118,7 @@
     -fx-border-color: -color-border-default;
 }
 
-.store-section-mini-comp .list-box-view-comp .content {
+.store-section-mini-comp .list-box-view-comp .children-content {
     -fx-spacing: 0.4em;
 }
 

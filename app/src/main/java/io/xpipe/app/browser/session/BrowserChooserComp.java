@@ -115,6 +115,7 @@ public class BrowserChooserComp extends SimpleComp {
         var splitPane = new SideSplitPaneComp(bookmarksList, stack)
                 .withInitialWidth(AppLayoutModel.get().getSavedState().getBrowserConnectionsWidth())
                 .withOnDividerChange(AppLayoutModel.get().getSavedState()::setBrowserConnectionsWidth)
+                .styleClass("background")
                 .apply(struc -> {
                     struc.getLeft().setMinWidth(200);
                     struc.getLeft().setMaxWidth(500);

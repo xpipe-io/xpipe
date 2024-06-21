@@ -1,3 +1,3 @@
 .toggle-switch-comp:hover > .thumb-area, .root:key-navigation .toggle-switch-comp:focused > .thumb-area {
-    -fx-background-color: -color-neutral-muted;
+    -fx-background-color: -color-neutral-emphasis;
 }

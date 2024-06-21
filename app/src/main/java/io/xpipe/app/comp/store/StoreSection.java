@@ -71,6 +71,10 @@ public class StoreSection {
         var explicitOrderComp = Comparator.<StoreSection>comparingInt(new ToIntFunction<>() {
             @Override
             public int applyAsInt(StoreSection value) {
+                if (!value.getWrapper().getEntry().getValidity().isUsable()) {
+                    return 1;
+                }
+
                 var explicit = value.getWrapper().getEntry().getExplicitOrder();
                 if (explicit == null) {
                     return 0;
@@ -82,20 +86,22 @@ public class StoreSection {
                 };
             }
         });
-        var usableComp = Comparator.<StoreSection>comparingInt(
-                value -> value.getWrapper().getEntry().getValidity().isUsable() ? -1 : 1);
-        var comp = explicitOrderComp.thenComparing(usableComp);
+        var comp = explicitOrderComp;
         var mappedSortMode = BindingsHelper.flatMap(
                 category,
                 storeCategoryWrapper -> storeCategoryWrapper != null ? storeCategoryWrapper.getSortMode() : null);
         return list.sorted(
                 (o1, o2) -> {
+                    var r = comp.compare(o1, o2);
+                    if (r != 0) {
+                        return r;
+                    }
+
                     var current = mappedSortMode.getValue();
                     if (current != null) {
-                        return comp.thenComparing(current.comparator())
-                                .compare(current.representative(o1), current.representative(o2));
+                        return current.comparator().compare(current.representative(o1), current.representative(o2));
                     } else {
-                        return comp.compare(o1, o2);
+                        return 0;
                     }
                 },
                 mappedSortMode,
