@@ -2,6 +2,7 @@ package io.xpipe.ext.base.service;
 
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.HostHelper;
+import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.store.*;
 import io.xpipe.core.util.JacksonizedValue;
@@ -32,7 +33,7 @@ public abstract class AbstractServiceStore extends JacksonizedValue
 
     @Override
     public NetworkTunnelSession newSession() throws Exception {
-        ServiceLicenseCheck.check();
+        LicenseProvider.get().getFeature("services").throwIfUnsupported();
         var l = localPort != null ? localPort : HostHelper.findRandomOpenPortOnAllLocalInterfaces();
         return getHost().getStore().sessionChain(l, remotePort);
     }

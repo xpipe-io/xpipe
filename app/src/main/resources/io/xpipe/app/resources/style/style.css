@@ -17,6 +17,14 @@
     -fx-background-color: derive(-color-bg-default, -9%);
 }
 
+.root:dark.background {
+    -fx-background-color: derive(-color-bg-default, 1%);
+}
+
+.root:light.background {
+    -fx-background-color: derive(-color-bg-default, -9%);
+}
+
 .root:seamless-frame.layout > .background {
     -fx-background-insets: 5 0 0 0;
     -fx-border-insets: 5 0 0 0;

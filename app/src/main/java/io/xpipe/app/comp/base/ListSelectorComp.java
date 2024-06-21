@@ -34,7 +34,7 @@ public class ListSelectorComp<T> extends SimpleComp {
     protected Region createSimple() {
         var vbox = new VBox();
         vbox.setSpacing(8);
-        vbox.getStyleClass().add("content");
+        vbox.getStyleClass().add("list-content");
         var cbs = new ArrayList<CheckBox>();
         for (var v : values) {
             var cb = new CheckBox(null);

@@ -99,7 +99,7 @@
     -fx-border-insets: 0px;
 }
 
-.store-entry-section-comp > .content {
+.store-entry-section-comp > .children-content {
     -fx-padding: 5px 0 5px 25px;
 }
 
@@ -130,7 +130,7 @@
     -fx-background-radius: 0;
 }
 
-.store-entry-section-comp .list-box-view-comp .content {
+.store-entry-section-comp .list-box-view-comp .list-box-content {
     -fx-spacing: 0.2em;
 }
 

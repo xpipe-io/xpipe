@@ -20,7 +20,7 @@
     -fx-spacing: 0.3em;
 }
 
-.error-report .attachments .attachment-list .content {
+.error-report .attachments .attachment-list .list-box-content {
     -fx-padding: 0.5em 1em;
 }
 

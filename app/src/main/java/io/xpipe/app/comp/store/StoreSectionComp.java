@@ -151,7 +151,7 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                 topEntryList,
                 Comp.separator().hide(expanded.not()),
                 new HorizontalComp(List.of(content))
-                        .styleClass("content")
+                        .styleClass("children-content")
                         .apply(struc -> struc.get().setFillHeight(true))
                         .hide(Bindings.or(
                                 Bindings.not(section.getWrapper().getExpanded()),

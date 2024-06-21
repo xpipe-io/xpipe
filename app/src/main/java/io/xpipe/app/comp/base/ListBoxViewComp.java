@@ -41,7 +41,7 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         Map<T, Region> cache = new IdentityHashMap<>();
 
         VBox vbox = new VBox();
-        vbox.getStyleClass().add("content");
+        vbox.getStyleClass().add("list-box-content");
         vbox.setFocusTraversable(false);
 
         refresh(vbox, shown, all, cache, false);

@@ -64,6 +64,8 @@ Prior to sending requests to the API, you first have to establish a new API sess
 In the response you will receive a session token that you can use to authenticate during this session.
 
 This is done so that the daemon knows what kind of clients are connected and can manage individual capabilities for clients.
+If your client is running on the same system as the daemon, you can choose the local authentication method to avoid having to deal with API keys.
+If your client does not have file system access, e.g. if it is running remotely, then you have to use an API key.
 
 Note that for development you can also turn off the required authentication in the XPipe settings menu, allowing you to send unauthenticated requests.
 

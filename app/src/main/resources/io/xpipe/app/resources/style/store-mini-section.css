@@ -1,7 +1,3 @@
-.store-mini-list-comp > * > * > .children-content {
-    -fx-spacing: 0.5em;
-}
-
 .store-mini-list-comp:root {
     -fx-border-color: transparent;
     -fx-background-color: transparent;
@@ -118,7 +114,7 @@
     -fx-border-color: -color-border-default;
 }
 
-.store-section-mini-comp .list-box-view-comp .children-content {
+.store-section-mini-comp:root .list-box-view-comp .list-box-content {
     -fx-spacing: 0.4em;
 }
 
