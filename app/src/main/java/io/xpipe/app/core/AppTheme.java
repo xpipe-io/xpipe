@@ -183,7 +183,8 @@ public class AppTheme {
                 builder.append(content);
             });
 
-            AppResources.with("atlantafx.base", theme.getUserAgentStylesheet(), path -> {
+            // Watch out for the leading slash
+            AppResources.with("atlantafx.base", theme.getUserAgentStylesheet().substring(1), path -> {
                 var baseStyleContent = Files.readString(path);
                 builder.append("\n")
                         .append(baseStyleContent

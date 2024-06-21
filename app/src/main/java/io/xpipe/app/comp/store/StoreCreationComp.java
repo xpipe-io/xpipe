@@ -136,6 +136,11 @@ public class StoreCreationComp extends DialogComp {
                                 .getUuid();
                     }
 
+                    // Don't use the all connections category
+                    if (targetCategory.equals(DataStorage.get().getAllConnectionsCategory().getUuid())) {
+                        targetCategory = DataStorage.get().getDefaultConnectionsCategory().getUuid();
+                    }
+
                     return DataStoreEntry.createNew(
                             UUID.randomUUID(), targetCategory, name.getValue(), store.getValue());
                 },

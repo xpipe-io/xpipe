@@ -59,7 +59,9 @@ public class FileBridge {
             }
 
             AppFileWatcher.getInstance().startWatchersInDirectories(List.of(TEMP), (changed, kind) -> {
-                INSTANCE.handleWatchEvent(changed, kind);
+                if (INSTANCE != null) {
+                    INSTANCE.handleWatchEvent(changed, kind);
+                }
             });
         } catch (IOException e) {
             ErrorEvent.fromThrowable(e).handle();
