@@ -33,7 +33,9 @@ public class ShellStoreState extends DataStoreState implements OsNameState {
         return b.build();
     }
 
-    protected void mergeBuilder(ShellStoreState shellStoreState, ShellStoreStateBuilder<?, ?> b) {
+    // Do this with an object to fix javadoc compile issues
+    protected void mergeBuilder(ShellStoreState shellStoreState, Object builder) {
+        ShellStoreStateBuilder<?, ?> b = (ShellStoreStateBuilder<?, ?>) builder;
         b.osType(useNewer(osType, shellStoreState.getOsType()))
                 .osName(useNewer(osName, shellStoreState.getOsName()))
                 .shellDialect(useNewer(shellDialect, shellStoreState.getShellDialect()))

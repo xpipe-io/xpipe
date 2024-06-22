@@ -46,7 +46,6 @@ public class AppExtensionManager {
             INSTANCE.determineExtensionDirectories();
             INSTANCE.loadBaseExtension();
             INSTANCE.loadAllExtensions();
-            INSTANCE.loadUaccExtension();
         }
 
         if (load) {
@@ -140,27 +139,12 @@ public class AppExtensionManager {
     }
 
     private void loadAllExtensions() {
-        for (var ext : List.of("jdbc", "proc")) {
+        for (var ext : List.of("jdbc", "proc", "uacc")) {
             var extension = findAndParseExtension(ext, baseLayer)
                     .orElseThrow(() -> ExtensionException.corrupt("Missing module " + ext));
             loadedExtensions.add(extension);
             leafModuleLayers.add(extension.getModule().getLayer());
         }
-
-        var scl = ClassLoader.getSystemClassLoader();
-        var cfs = leafModuleLayers.stream().map(ModuleLayer::configuration).toList();
-        var finder = ModuleFinder.ofSystem();
-        var cf = Configuration.resolve(finder, cfs, finder, List.of());
-        extendedLayer = ModuleLayer.defineModulesWithOneLoader(cf, leafModuleLayers, scl)
-                .layer();
-    }
-
-
-    private void loadUaccExtension() {
-        var extension = findAndParseExtension("uacc", extendedLayer)
-                .orElseThrow(() -> ExtensionException.corrupt("Missing module uacc"));
-        loadedExtensions.add(extension);
-        leafModuleLayers.add(extension.getModule().getLayer());
 
         var scl = ClassLoader.getSystemClassLoader();
         var cfs = leafModuleLayers.stream().map(ModuleLayer::configuration).toList();
