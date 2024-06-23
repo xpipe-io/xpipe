@@ -1,6 +1,7 @@
 package io.xpipe.app.browser.session;
 
 import io.xpipe.app.browser.BrowserBookmarkComp;
+import io.xpipe.app.browser.BrowserBookmarkHeaderComp;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemComp;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
@@ -13,6 +14,7 @@ import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -30,6 +32,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -93,12 +96,15 @@ public class BrowserChooserComp extends SimpleComp {
             });
         };
 
+        var bookmarkTopBar = new BrowserBookmarkHeaderComp();
         var bookmarksList = new BrowserBookmarkComp(
-                        BindingsHelper.map(
-                                model.getSelectedEntry(), v -> v.getEntry().get()),
-                        applicable,
-                        action)
-                .vgrow();
+                BindingsHelper.map(
+                        model.getSelectedEntry(), v -> v.getEntry().get()),
+                applicable,
+                action,
+                bookmarkTopBar.getCategory(),
+                bookmarkTopBar.getFilter());
+
         var stack = Comp.of(() -> {
             var s = new StackPane();
             model.getSelectedEntry().subscribe(selected -> {
@@ -112,7 +118,9 @@ public class BrowserChooserComp extends SimpleComp {
             });
             return s;
         });
-        var splitPane = new SideSplitPaneComp(bookmarksList, stack)
+
+        var vertical = new VerticalComp(List.of(bookmarkTopBar, bookmarksList)).styleClass("left");
+        var splitPane = new SideSplitPaneComp(vertical, stack)
                 .withInitialWidth(AppLayoutModel.get().getSavedState().getBrowserConnectionsWidth())
                 .withOnDividerChange(AppLayoutModel.get().getSavedState()::setBrowserConnectionsWidth)
                 .styleClass("background")
@@ -172,6 +180,7 @@ public class BrowserChooserComp extends SimpleComp {
 
         var r = dialogPane.createRegion();
         r.getStyleClass().add("browser");
+        r.getStyleClass().add("chooser");
         return r;
     }
 }

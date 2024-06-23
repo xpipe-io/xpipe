@@ -162,7 +162,7 @@ public class OpenFileSystemComp extends SimpleComp {
             var statusBar = new BrowserStatusBarComp(model);
             fileListElements.add(statusBar);
         }
-        var fileList = new VerticalComp(fileListElements).apply(struc -> {
+        var fileList = new VerticalComp(fileListElements).styleClass("browser-content").apply(struc -> {
             struc.get().focusedProperty().addListener((observable, oldValue, newValue) -> {
                 if (newValue) {
                     struc.get().getChildren().getFirst().requestFocus();
@@ -170,7 +170,7 @@ public class OpenFileSystemComp extends SimpleComp {
             });
         });
 
-        var home = new BrowserOverviewComp(model);
+        var home = new BrowserOverviewComp(model).styleClass("browser-content");
         var stack = new MultiContentComp(Map.of(
                 home,
                 model.getCurrentPath().isNull(),

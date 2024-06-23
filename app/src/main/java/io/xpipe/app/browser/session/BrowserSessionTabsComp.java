@@ -15,8 +15,10 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
@@ -40,9 +42,11 @@ import static javafx.scene.control.TabPane.TabClosingPolicy.ALL_TABS;
 public class BrowserSessionTabsComp extends SimpleComp {
 
     private final BrowserSessionModel model;
+    private final ObservableDoubleValue leftPadding;
 
-    public BrowserSessionTabsComp(BrowserSessionModel model) {
+    public BrowserSessionTabsComp(BrowserSessionModel model, ObservableDoubleValue leftPadding) {
         this.model = model;
+        this.leftPadding = leftPadding;
     }
 
     public Region createSimple() {
@@ -67,7 +71,28 @@ public class BrowserSessionTabsComp extends SimpleComp {
         Styles.toggleStyleClass(tabs, TabPane.STYLE_CLASS_FLOATING);
         toggleStyleClass(tabs, DENSE);
 
-        var map = new HashMap<BrowserSessionTab<?>, Tab>();
+
+        tabs.skinProperty().subscribe(newValue -> {
+                    if (newValue != null) {
+                        Platform.runLater(() -> {
+                            tabs.setClip(null);
+                            tabs.setPickOnBounds(false);
+                            tabs.lookupAll(".tab-header-area").forEach(node -> {
+                                node.setClip(null);
+                                node.setPickOnBounds(false);
+                            });
+                            tabs.lookupAll(".headers-region").forEach(node -> {
+                                node.setClip(null);
+                                node.setPickOnBounds(false);
+                            });
+
+                            Region headerArea = (Region) tabs.lookup(".tab-header-area");
+                            headerArea.paddingProperty().bind(Bindings.createObjectBinding(() -> new Insets(0, 0, 0, -leftPadding.get() + 2), leftPadding));
+                        });
+                    }
+                });
+
+                    var map = new HashMap<BrowserSessionTab<?>, Tab>();
 
         // Restore state
         model.getSessionEntries().forEach(v -> {
@@ -215,7 +240,8 @@ public class BrowserSessionTabsComp extends SimpleComp {
                         PlatformThread.sync(model.getBusy())));
         tab.setText(model.getName());
 
-        tab.setContent(model.comp().createRegion());
+        Comp<?> comp = model.comp();
+        tab.setContent(comp.createRegion());
 
         var id = UUID.randomUUID().toString();
         tab.setId(id);

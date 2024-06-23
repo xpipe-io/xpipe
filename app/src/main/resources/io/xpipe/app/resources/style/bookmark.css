@@ -1,18 +1,11 @@
 
-.bookmark-list > .categories {
-    -fx-padding: 1em;
-    -fx-background-color: -color-bg-default;
-    -fx-border-color: -color-border-default;
-    -fx-border-width: 0 0 1 0;
-}
 
-
-.root.nord .bookmark-list .filter-comp {
+.root.nord .bookmarks-header .filter-comp {
     -fx-border-radius: 0;
     -fx-background-radius: 0;
 }
 
-.bookmark-list .filter-comp {
+.bookmarks-header .filter-comp {
     -fx-border-width: 1;
     -fx-border-radius: 0 4px 4px 0;
     -fx-background-radius: 0 4px 4px 0;
@@ -24,3 +17,20 @@
     -fx-font-weight: BOLD;
 }
 
+.bookmark-list .store-section-mini-comp:top {
+    -fx-padding: 0 0 0 2px;
+}
+
+.bookmarks-container {
+    -fx-background-color: -color-border-default, -color-bg-default;
+    -fx-background-radius: 4 0 0 4;
+    -fx-background-insets: 0 8 0 6, 1 9 1 7;
+    -fx-padding: 1 1 1 7;
+}
+
+.bookmarks-header {
+    -fx-min-height: 3.5em;
+    -fx-pref-height: 3.5em;
+    -fx-max-height: 3.5em;
+    -fx-padding: 9 6;
+}

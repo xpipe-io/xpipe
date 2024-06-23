@@ -71,7 +71,6 @@ public class BrowserTransferComp extends SimpleComp {
                                     return entry.getFileName() + " (" + name + ")";
                                 },
                                 syncAllDownloaded))
-                .apply(struc -> struc.get().setMinHeight(150))
                 .grow(false, true);
         var dragNotice = new LabelComp(syncAllDownloaded.flatMap(
                         aBoolean -> aBoolean ? AppI18n.observable("dragLocalFiles") : AppI18n.observable("dragFiles")))
@@ -101,7 +100,9 @@ public class BrowserTransferComp extends SimpleComp {
                     return p;
                 });
 
-        var listBox = new VerticalComp(List.of(list, dragNotice)).padding(new Insets(10, 10, 5, 10));
+        var listBox = new VerticalComp(List.of(list, dragNotice)).padding(new Insets(10, 10, 5, 10))
+                .apply(struc -> struc.get().setMinHeight(200))
+                .apply(struc -> struc.get().setMaxHeight(200));
         var stack = LoadingOverlayComp.noProgress(
                 new StackComp(List.of(backgroundStack, listBox, clearPane))
                         .apply(DragOverPseudoClassAugment.create())

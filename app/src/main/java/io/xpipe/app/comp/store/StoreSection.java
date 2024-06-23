@@ -6,18 +6,17 @@ import io.xpipe.app.fxcomps.util.DerivedObservableList;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableIntegerValue;
-import javafx.beans.value.ObservableStringValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-
 import lombok.Value;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
@@ -111,7 +110,7 @@ public class StoreSection {
     public static StoreSection createTopLevel(
             DerivedObservableList<StoreEntryWrapper> all,
             Predicate<StoreEntryWrapper> entryFilter,
-            ObservableStringValue filterString,
+            ObservableValue<String> filterString,
             ObservableValue<StoreCategoryWrapper> category,
             ObservableIntegerValue updateObservable
             ) {
@@ -127,7 +126,7 @@ public class StoreSection {
         var shown = ordered.filtered(
                 section -> {
                     // matches filter
-                    return (filterString == null || section.matchesFilter(filterString.get()))
+                    return (filterString == null || section.matchesFilter(filterString.getValue()))
                             &&
                             // matches selector
                             (section.anyMatches(entryFilter))
@@ -148,7 +147,7 @@ public class StoreSection {
             int depth,
             DerivedObservableList<StoreEntryWrapper> all,
             Predicate<StoreEntryWrapper> entryFilter,
-            ObservableStringValue filterString,
+            ObservableValue<String> filterString,
             ObservableValue<StoreCategoryWrapper> category,
             ObservableIntegerValue updateObservable) {
         if (e.getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
@@ -185,8 +184,8 @@ public class StoreSection {
                 section -> {
                     // matches filter
                     return (filterString == null
-                                    || section.matchesFilter(filterString.get())
-                                    || l.stream().anyMatch(p -> p.matchesFilter(filterString.get())))
+                                    || section.matchesFilter(filterString.getValue())
+                                    || l.stream().anyMatch(p -> p.matchesFilter(filterString.getValue())))
                             &&
                             // matches selector
                             section.anyMatches(entryFilter)
