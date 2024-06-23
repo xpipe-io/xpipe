@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.beacon.BlobManager;
 import io.xpipe.app.util.FixedSizeInputStream;
+import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.FsReadExchange;
 import io.xpipe.core.store.ConnectionFileSystem;
 import lombok.SneakyThrows;
@@ -19,6 +20,10 @@ public class FsReadExchangeImpl extends FsReadExchange {
     public Object handle(HttpExchange exchange, Request msg) {
         var shell = AppBeaconServer.get().getCache().getShellSession(msg.getConnection());
         var fs = new ConnectionFileSystem(shell.getControl());
+
+        if (!fs.fileExists(msg.getPath().toString())) {
+            throw new BeaconClientException("File does not exist");
+        }
 
         var size = fs.getFileSize(msg.getPath().toString());
         if (size > 100_000_000) {

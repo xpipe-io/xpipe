@@ -30,6 +30,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
 import atlantafx.base.theme.Styles;
+import javafx.scene.shape.Rectangle;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 public class BrowserNavBar extends Comp<BrowserNavBar.Structure> {
@@ -127,10 +128,19 @@ public class BrowserNavBar extends Comp<BrowserNavBar.Structure> {
                         pathRegion.focusedProperty(),
                         model.getInOverview()));
         var stack = new StackPane(pathRegion, breadcrumbsRegion);
+        pathRegion.prefHeightProperty().bind(stack.heightProperty());
+
+        // Prevent overflow
+        var clip = new Rectangle();
+        clip.widthProperty().bind(stack.widthProperty());
+        clip.heightProperty().bind(stack.heightProperty());
+        breadcrumbsRegion.setClip(clip);
+
         stack.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(stack, Priority.ALWAYS);
 
         var topBox = new HBox(homeButton, stack, historyButton);
+        topBox.setFillHeight(true);
         topBox.setAlignment(Pos.CENTER);
         homeButton.minWidthProperty().bind(pathRegion.heightProperty());
         homeButton.maxWidthProperty().bind(pathRegion.heightProperty().multiply(1.3));
@@ -161,10 +171,6 @@ public class BrowserNavBar extends Comp<BrowserNavBar.Structure> {
     }
 
     private ContextMenu createContextMenu() {
-        if (model.getCurrentDirectory() == null) {
-            return null;
-        }
-
         var cm = new ContextMenu();
 
         var f = model.getHistory().getForwardHistory(8).stream().toList();

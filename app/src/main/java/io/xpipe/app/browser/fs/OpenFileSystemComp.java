@@ -84,6 +84,7 @@ public class OpenFileSystemComp extends SimpleComp {
         var filter = new BrowserFilterComp(model, model.getFilter()).createStructure();
 
         var topBar = new HBox();
+        filter.textField().prefHeightProperty().bind(topBar.heightProperty());
         topBar.setAlignment(Pos.CENTER);
         topBar.getStyleClass().add("top-bar");
         var navBar = new BrowserNavBar(model).createStructure();

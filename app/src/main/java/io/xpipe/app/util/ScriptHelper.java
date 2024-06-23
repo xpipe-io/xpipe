@@ -70,7 +70,8 @@ public class ScriptHelper {
         content += nl + postInit.stream().flatMap(s -> s.lines()).collect(Collectors.joining(nl)) + nl;
 
         if (exit) {
-            content += nl + t.getPassthroughExitCommand();
+            // Assign exit code 0 to prevent terminals from doing their own pause error handling for failed commands
+            content += nl + t.getNormalExitCommand();
         }
 
         return createExecScript(t, processControl, new FilePath(t.initFileName(processControl)), content);

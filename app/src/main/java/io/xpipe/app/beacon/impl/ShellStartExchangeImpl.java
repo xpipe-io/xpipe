@@ -16,7 +16,7 @@ public class ShellStartExchangeImpl extends ShellStartExchange {
     public Object handle(HttpExchange exchange, Request msg) {
         var e = DataStorage.get()
                 .getStoreEntryIfPresent(msg.getConnection())
-                .orElseThrow(() -> new IllegalArgumentException("Unknown connection"));
+                .orElseThrow(() -> new BeaconClientException("Unknown connection"));
         if (!(e.getStore() instanceof ShellStore s)) {
             throw new BeaconClientException("Not a shell connection");
         }
