@@ -21,16 +21,20 @@
     -fx-padding: 0 0 0 2px;
 }
 
+.bookmark-list.store-section-mini-comp > .children-content > .scroll-pane {
+    -fx-vbar-policy: always;
+}
+
 .bookmarks-container {
     -fx-background-color: -color-border-default, -color-bg-default;
     -fx-background-radius: 4 0 0 4;
-    -fx-background-insets: 0 8 0 6, 1 9 1 7;
-    -fx-padding: 1 1 1 7;
+    -fx-background-insets: 0 8 0 8, 1 9 1 9;
+    -fx-padding: 1 1 1 9;
 }
 
 .bookmarks-header {
     -fx-min-height: 3.5em;
     -fx-pref-height: 3.5em;
     -fx-max-height: 3.5em;
-    -fx-padding: 9 6;
+    -fx-padding: 9 8;
 }

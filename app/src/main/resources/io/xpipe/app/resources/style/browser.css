@@ -12,7 +12,7 @@
 }
 
 .transfer {
-    -fx-padding: 9px 6px;
+    -fx-padding: 8px;
 }
 
 .transfer > * {
@@ -43,7 +43,7 @@
 
 .browser .welcome {
     -fx-border-color: -color-border-default, -color-bg-inset;
-    -fx-border-width: 43 0 0 0, 42 0 0 0;
+    -fx-border-width: 2.70em 0 0 0, 2.65em 0 0 0;
 }
 
 .browser .welcome .button:hover {
@@ -176,9 +176,9 @@
 }
 
 .browser .tab-content-area {
-    -fx-border-width: 2 0 0 0;
+    -fx-border-width: 0.1em 0 0 0;
     -fx-border-color: -color-border-default;
-    -fx-padding: -1 0 0 0;
+    -fx-padding: -0.05em 0 0 0;
 }
 
 .browser .singular {
@@ -190,15 +190,15 @@
 }
 
 .browser .tab-header-area {
-    -fx-min-height: 42;
-    -fx-pref-height: 42;
-    -fx-max-height: 42;
+    -fx-min-height: 2.65em;
+    -fx-pref-height: 2.65em;
+    -fx-max-height: 2.65em;
 }
 
 
 .browser .left {
     -fx-border-color: -color-border-default, -color-bg-inset;
-    -fx-border-width: 43 0 0 0, 42 0 0 0;
+    -fx-border-width: 2.75em 0 0 0, 2.7em 0 0 0;
     -fx-background-color: transparent;
 }
 
@@ -231,7 +231,7 @@
 .browser .split-pane-divider {
     -fx-border-color: -color-border-default, -color-bg-inset;
     -fx-padding: 0 3;
-    -fx-border-width: 43 0 0 0, 42 0 0 0;
+    -fx-border-width: 2.75em 0 0 0, 2.7em 0 0 0;
     -fx-opacity: 1.0;
     -fx-background-color: transparent;
 }
