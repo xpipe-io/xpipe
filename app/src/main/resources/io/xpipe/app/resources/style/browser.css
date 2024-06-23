@@ -12,7 +12,7 @@
 }
 
 .transfer {
-    -fx-padding: 8px;
+    -fx-padding: 0 8 8 8;
 }
 
 .transfer > * {
@@ -42,13 +42,12 @@
 }
 
 .browser .welcome {
-    -fx-border-color: -color-border-default, -color-bg-inset;
-    -fx-border-width: 2.70em 0 0 0, 2.65em 0 0 0;
+    -fx-background-color: -color-bg-inset, -color-border-default, -color-bg-default;
+    -fx-background-insets: 0, 2.65em 0 0 0, 2.70em 0 0 0;
 }
 
 .root:seamless-frame .browser .welcome {
-    -fx-background-radius: 0 10 0 0;
-    -fx-border-radius: 0 10 0 0;
+    -fx-background-radius: 0 10 0 0, 0, 0;
 }
 
 .browser .welcome .button:hover {
