@@ -1,7 +1,5 @@
 package io.xpipe.app.beacon;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
@@ -9,6 +7,9 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.beacon.*;
 import io.xpipe.core.util.JacksonMapper;
+
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 import lombok.SneakyThrows;
 
 import java.io.IOException;
@@ -67,16 +68,22 @@ public class BeaconRequestHandler<T> implements HttpHandler {
             } else {
                 try (InputStream is = exchange.getRequestBody()) {
                     var read = is.readAllBytes();
-                    var rawDataRequestClass = beaconInterface.getRequestClass().getDeclaredFields().length == 1 &&
-                            beaconInterface.getRequestClass().getDeclaredFields()[0].getType().equals(byte[].class);
+                    var rawDataRequestClass = beaconInterface.getRequestClass().getDeclaredFields().length == 1
+                            && beaconInterface
+                                    .getRequestClass()
+                                    .getDeclaredFields()[0]
+                                    .getType()
+                                    .equals(byte[].class);
                     if (!new String(read, StandardCharsets.US_ASCII).trim().startsWith("{") && rawDataRequestClass) {
                         object = createRawDataRequest(beaconInterface, read);
                     } else {
                         var tree = JacksonMapper.getDefault().readTree(read);
                         TrackEvent.trace("Parsed raw request:\n" + tree.toPrettyString());
-                        var emptyRequestClass = tree.isEmpty() && beaconInterface.getRequestClass().getDeclaredFields().length == 0;
-                        object = emptyRequestClass ? createDefaultRequest(beaconInterface) : JacksonMapper.getDefault().treeToValue(tree,
-                                beaconInterface.getRequestClass());
+                        var emptyRequestClass = tree.isEmpty()
+                                && beaconInterface.getRequestClass().getDeclaredFields().length == 0;
+                        object = emptyRequestClass
+                                ? createDefaultRequest(beaconInterface)
+                                : JacksonMapper.getDefault().treeToValue(tree, beaconInterface.getRequestClass());
                         TrackEvent.trace("Parsed request object:\n" + object);
                     }
                 }
@@ -163,8 +170,11 @@ public class BeaconRequestHandler<T> implements HttpHandler {
         c.setAccessible(true);
 
         var b = c.invoke(null);
-        var setMethod = Arrays.stream(b.getClass().getDeclaredMethods()).filter(method -> method.getParameterCount() == 1 &&
-                method.getParameters()[0].getType().equals(byte[].class)).findFirst().orElseThrow();
+        var setMethod = Arrays.stream(b.getClass().getDeclaredMethods())
+                .filter(method -> method.getParameterCount() == 1
+                        && method.getParameters()[0].getType().equals(byte[].class))
+                .findFirst()
+                .orElseThrow();
         setMethod.invoke(b, (Object) s);
 
         var m = b.getClass().getDeclaredMethod("build");

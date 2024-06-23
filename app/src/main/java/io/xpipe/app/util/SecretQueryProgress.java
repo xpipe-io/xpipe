@@ -32,8 +32,7 @@ public class SecretQueryProgress {
             @NonNull SecretQuery fallback,
             @NonNull List<SecretQueryFilter> filters,
             @NonNull CountDown countDown,
-            boolean interactive
-    ) {
+            boolean interactive) {
         this.requestId = requestId;
         this.storeId = storeId;
         this.suppliers = new ArrayList<>(suppliers);

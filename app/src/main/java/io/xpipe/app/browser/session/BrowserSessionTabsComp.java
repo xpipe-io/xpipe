@@ -71,28 +71,30 @@ public class BrowserSessionTabsComp extends SimpleComp {
         Styles.toggleStyleClass(tabs, TabPane.STYLE_CLASS_FLOATING);
         toggleStyleClass(tabs, DENSE);
 
-
         tabs.skinProperty().subscribe(newValue -> {
-                    if (newValue != null) {
-                        Platform.runLater(() -> {
-                            tabs.setClip(null);
-                            tabs.setPickOnBounds(false);
-                            tabs.lookupAll(".tab-header-area").forEach(node -> {
-                                node.setClip(null);
-                                node.setPickOnBounds(false);
-                            });
-                            tabs.lookupAll(".headers-region").forEach(node -> {
-                                node.setClip(null);
-                                node.setPickOnBounds(false);
-                            });
+            if (newValue != null) {
+                Platform.runLater(() -> {
+                    tabs.setClip(null);
+                    tabs.setPickOnBounds(false);
+                    tabs.lookupAll(".tab-header-area").forEach(node -> {
+                        node.setClip(null);
+                        node.setPickOnBounds(false);
+                    });
+                    tabs.lookupAll(".headers-region").forEach(node -> {
+                        node.setClip(null);
+                        node.setPickOnBounds(false);
+                    });
 
-                            Region headerArea = (Region) tabs.lookup(".tab-header-area");
-                            headerArea.paddingProperty().bind(Bindings.createObjectBinding(() -> new Insets(0, 0, 0, -leftPadding.get() + 2), leftPadding));
-                        });
-                    }
+                    Region headerArea = (Region) tabs.lookup(".tab-header-area");
+                    headerArea
+                            .paddingProperty()
+                            .bind(Bindings.createObjectBinding(
+                                    () -> new Insets(0, 0, 0, -leftPadding.get() + 2), leftPadding));
                 });
+            }
+        });
 
-                    var map = new HashMap<BrowserSessionTab<?>, Tab>();
+        var map = new HashMap<BrowserSessionTab<?>, Tab>();
 
         // Restore state
         model.getSessionEntries().forEach(v -> {

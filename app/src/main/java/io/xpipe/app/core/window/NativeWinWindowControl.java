@@ -1,12 +1,13 @@
 package io.xpipe.app.core.window;
 
+import javafx.stage.Window;
+
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 import com.sun.jna.PointerType;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinNT;
-import javafx.stage.Window;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -51,8 +52,7 @@ public class NativeWinWindowControl {
                 windowHandle,
                 DmwaWindowAttribute.DWMWA_SYSTEMBACKDROP_TYPE.get(),
                 new WinDef.DWORDByReference(new WinDef.DWORD(backdrop.get())),
-                WinDef.DWORD.SIZE
-        );
+                WinDef.DWORD.SIZE);
         return r.longValue() == 0;
     }
 

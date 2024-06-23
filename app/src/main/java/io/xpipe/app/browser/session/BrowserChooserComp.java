@@ -98,8 +98,7 @@ public class BrowserChooserComp extends SimpleComp {
 
         var bookmarkTopBar = new BrowserBookmarkHeaderComp();
         var bookmarksList = new BrowserBookmarkComp(
-                BindingsHelper.map(
-                        model.getSelectedEntry(), v -> v.getEntry().get()),
+                BindingsHelper.map(model.getSelectedEntry(), v -> v.getEntry().get()),
                 applicable,
                 action,
                 bookmarkTopBar.getCategory(),

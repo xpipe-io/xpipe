@@ -1,8 +1,9 @@
 package io.xpipe.app.beacon.impl;
 
-import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.beacon.api.ShellStopExchange;
+
+import com.sun.net.httpserver.HttpExchange;
 import lombok.SneakyThrows;
 
 public class ShellStopExchangeImpl extends ShellStopExchange {

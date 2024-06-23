@@ -19,7 +19,10 @@ import java.util.function.UnaryOperator;
 public class MarkdownHelper {
 
     public static String toHtml(
-            String value, UnaryOperator<String> headTransformation, UnaryOperator<String> bodyTransformation, String bodyStyleClass) {
+            String value,
+            UnaryOperator<String> headTransformation,
+            UnaryOperator<String> bodyTransformation,
+            String bodyStyleClass) {
         MutableDataSet options = new MutableDataSet()
                 .set(
                         Parser.EXTENSIONS,
@@ -47,7 +50,8 @@ public class MarkdownHelper {
         var html = renderer.render(document);
         var result = bodyTransformation.apply(html);
         var headContent = headTransformation.apply("<meta charset=\"utf-8\"/>");
-        return "<html><head>" + headContent + "</head><body" + (bodyStyleClass != null ? " class=\"" + bodyStyleClass + "\"" : "") + "><article class=\"markdown-body\">" + result
-                + "</article></body></html>";
+        return "<html><head>" + headContent + "</head><body"
+                + (bodyStyleClass != null ? " class=\"" + bodyStyleClass + "\"" : "")
+                + "><article class=\"markdown-body\">" + result + "</article></body></html>";
     }
 }

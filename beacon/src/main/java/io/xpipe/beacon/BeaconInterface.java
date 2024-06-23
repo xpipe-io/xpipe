@@ -1,7 +1,8 @@
 package io.xpipe.beacon;
 
-import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.core.util.ModuleLayerLoader;
+
+import com.sun.net.httpserver.HttpExchange;
 import lombok.SneakyThrows;
 
 import java.util.List;
@@ -71,8 +72,7 @@ public abstract class BeaconInterface<T> {
 
     public abstract String getPath();
 
-    public Object handle(HttpExchange exchange, T body)
-            throws BeaconClientException, BeaconServerException {
+    public Object handle(HttpExchange exchange, T body) throws BeaconClientException, BeaconServerException {
         throw new UnsupportedOperationException();
     }
 

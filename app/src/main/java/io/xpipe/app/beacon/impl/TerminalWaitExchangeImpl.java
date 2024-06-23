@@ -7,12 +7,9 @@ import io.xpipe.beacon.api.TerminalWaitExchange;
 
 import com.sun.net.httpserver.HttpExchange;
 
-import java.io.IOException;
-
 public class TerminalWaitExchangeImpl extends TerminalWaitExchange {
     @Override
-    public Object handle(HttpExchange exchange, Request msg)
-            throws BeaconClientException, BeaconServerException {
+    public Object handle(HttpExchange exchange, Request msg) throws BeaconClientException, BeaconServerException {
         TerminalLauncherManager.waitForCompletion(msg.getRequest());
         return Response.builder().build();
     }

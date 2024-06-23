@@ -13,6 +13,7 @@ import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.ShellStore;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -66,21 +67,22 @@ public class BrowserSessionComp extends SimpleComp {
 
         var bookmarkTopBar = new BrowserBookmarkHeaderComp();
         var bookmarksList = new BrowserBookmarkComp(
-                        BindingsHelper.map(
-                                model.getSelectedEntry(), v -> v.getEntry().get()),
-                        applicable,
-                        action,
-                        bookmarkTopBar.getCategory(),
-                        bookmarkTopBar.getFilter());
+                BindingsHelper.map(model.getSelectedEntry(), v -> v.getEntry().get()),
+                applicable,
+                action,
+                bookmarkTopBar.getCategory(),
+                bookmarkTopBar.getFilter());
         var bookmarksContainer = new StackComp(List.of(bookmarksList)).styleClass("bookmarks-container");
-        bookmarksContainer.apply(struc -> {
-            var rec = new Rectangle();
-            rec.widthProperty().bind(struc.get().widthProperty());
-            rec.heightProperty().bind(struc.get().heightProperty());
-            rec.setArcHeight(7);
-            rec.setArcWidth(7);
-            struc.get().getChildren().getFirst().setClip(rec);
-        }).vgrow();
+        bookmarksContainer
+                .apply(struc -> {
+                    var rec = new Rectangle();
+                    rec.widthProperty().bind(struc.get().widthProperty());
+                    rec.heightProperty().bind(struc.get().heightProperty());
+                    rec.setArcHeight(7);
+                    rec.setArcWidth(7);
+                    struc.get().getChildren().getFirst().setClip(rec);
+                })
+                .vgrow();
         var localDownloadStage = new BrowserTransferComp(model.getLocalTransfersStage())
                 .hide(PlatformThread.sync(Bindings.createBooleanBinding(
                         () -> {
@@ -94,10 +96,12 @@ public class BrowserSessionComp extends SimpleComp {
                         model.getSelectedEntry())));
         localDownloadStage.prefHeight(200);
         localDownloadStage.maxHeight(200);
-        var vertical = new VerticalComp(List.of(bookmarkTopBar, bookmarksContainer, localDownloadStage)).styleClass("left");
+        var vertical =
+                new VerticalComp(List.of(bookmarkTopBar, bookmarksContainer, localDownloadStage)).styleClass("left");
 
         var split = new SimpleDoubleProperty();
-        var tabs = new BrowserSessionTabsComp(model, split).apply(struc -> struc.get().setViewOrder(1))
+        var tabs = new BrowserSessionTabsComp(model, split)
+                .apply(struc -> struc.get().setViewOrder(1))
                 .apply(struc -> struc.get().setPickOnBounds(false));
         var splitPane = new SideSplitPaneComp(vertical, tabs)
                 .withInitialWidth(AppLayoutModel.get().getSavedState().getBrowserConnectionsWidth())

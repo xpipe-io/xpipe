@@ -1,10 +1,11 @@
 package io.xpipe.app.beacon.impl;
 
-import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.beacon.BlobManager;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.beacon.api.FsScriptExchange;
+
+import com.sun.net.httpserver.HttpExchange;
 import lombok.SneakyThrows;
 
 import java.nio.charset.StandardCharsets;
@@ -20,7 +21,10 @@ public class FsScriptExchangeImpl extends FsScriptExchange {
             data = new String(in.readAllBytes(), StandardCharsets.UTF_8);
         }
         var file = ScriptHelper.getExecScriptFile(shell.getControl());
-        shell.getControl().getShellDialect().createScriptTextFileWriteCommand(shell.getControl(), data, file.toString()).execute();
+        shell.getControl()
+                .getShellDialect()
+                .createScriptTextFileWriteCommand(shell.getControl(), data, file.toString())
+                .execute();
         return Response.builder().path(file).build();
     }
 }

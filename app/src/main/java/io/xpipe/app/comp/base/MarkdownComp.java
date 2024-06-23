@@ -54,7 +54,9 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
                 .setUserDataDirectory(
                         AppProperties.get().getDataDir().resolve("webview").toFile());
         wv.setPageFill(Color.TRANSPARENT);
-        var theme = AppPrefs.get() != null && AppPrefs.get().theme.getValue() != null && AppPrefs.get().theme.getValue().isDark()
+        var theme = AppPrefs.get() != null
+                        && AppPrefs.get().theme.getValue() != null
+                        && AppPrefs.get().theme.getValue().isDark()
                 ? "misc/github-markdown-dark.css"
                 : "misc/github-markdown-light.css";
         var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, theme).orElseThrow();

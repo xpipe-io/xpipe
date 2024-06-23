@@ -405,7 +405,6 @@ public abstract class StoreEntryComp extends SimpleComp {
             }
             order.getItems().add(top);
 
-
             var bottom = new MenuItem(AppI18n.get("stickToBottom"), new FontIcon("mdi2o-order-bool-ascending"));
             bottom.setOnAction(event -> {
                 wrapper.setOrder(DataStoreEntry.Order.BOTTOM);

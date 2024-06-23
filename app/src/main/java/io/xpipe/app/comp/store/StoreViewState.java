@@ -82,8 +82,8 @@ public class StoreViewState {
 
     private void initSections() {
         try {
-            currentTopLevelSection =
-                    StoreSection.createTopLevel(allEntries, storeEntryWrapper -> true, filter, activeCategory, entriesListUpdateObservable);
+            currentTopLevelSection = StoreSection.createTopLevel(
+                    allEntries, storeEntryWrapper -> true, filter, activeCategory, entriesListUpdateObservable);
         } catch (Exception exception) {
             currentTopLevelSection = new StoreSection(
                     null,

@@ -13,6 +13,7 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.update.UpdateAvailableAlert;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.Hyperlinks;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -159,8 +160,8 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         {
             var b = new IconButtonComp(
                             "mdi2c-code-json",
-                            () -> Hyperlinks.open("http://localhost:"
-                                    + AppBeaconServer.get().getPort()))
+                            () -> Hyperlinks.open(
+                                    "http://localhost:" + AppBeaconServer.get().getPort()))
                     .tooltipKey("api")
                     .apply(simpleBorders)
                     .accessibleTextKey("api");

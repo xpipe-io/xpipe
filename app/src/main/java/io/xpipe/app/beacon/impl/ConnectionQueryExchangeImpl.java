@@ -1,10 +1,11 @@
 package io.xpipe.app.beacon.impl;
 
-import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.beacon.api.ConnectionQueryExchange;
 import io.xpipe.core.store.StorePath;
+
+import com.sun.net.httpserver.HttpExchange;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +42,9 @@ public class ConnectionQueryExchangeImpl extends ConnectionQueryExchange {
                 continue;
             }
 
-            if (!typeMatcher.matcher(storeEntry.getProvider().getId().toLowerCase()).matches()) {
+            if (!typeMatcher
+                    .matcher(storeEntry.getProvider().getId().toLowerCase())
+                    .matches()) {
                 continue;
             }
 

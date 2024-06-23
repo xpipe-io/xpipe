@@ -1,14 +1,5 @@
 package io.xpipe.core.util;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.jsontype.NamedType;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.type.ArrayType;
 import io.xpipe.core.dialog.BaseQueryElement;
 import io.xpipe.core.dialog.BusyElement;
 import io.xpipe.core.dialog.ChoiceElement;
@@ -19,6 +10,16 @@ import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.store.StorePath;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.jsontype.NamedType;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.type.ArrayType;
 
 import java.io.IOException;
 import java.lang.reflect.WildcardType;
@@ -89,7 +90,8 @@ public class CoreJacksonModule extends SimpleModule {
 
         @Override
         public StorePath deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            JavaType javaType = JacksonMapper.getDefault().getTypeFactory().constructCollectionLikeType(List.class, String.class);
+            JavaType javaType =
+                    JacksonMapper.getDefault().getTypeFactory().constructCollectionLikeType(List.class, String.class);
             List<String> list = JacksonMapper.getDefault().readValue(p, javaType);
             return new StorePath(list);
         }

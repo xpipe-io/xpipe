@@ -3,6 +3,7 @@ package io.xpipe.app.beacon;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ShellTemp;
 import io.xpipe.beacon.BeaconClientException;
+
 import org.apache.commons.io.FileUtils;
 
 import java.io.ByteArrayInputStream;
@@ -60,7 +61,7 @@ public class BlobManager {
         try (var fileOut = Files.newOutputStream(file)) {
             blob.transferTo(fileOut);
         }
-        fileBlobs.put(uuid,file);
+        fileBlobs.put(uuid, file);
     }
 
     public InputStream getBlob(UUID uuid) throws Exception {

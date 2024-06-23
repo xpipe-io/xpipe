@@ -16,9 +16,9 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
+import javafx.scene.paint.Color;
 
 import atlantafx.base.controls.Popover;
-import javafx.scene.paint.Color;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;

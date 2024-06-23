@@ -1,8 +1,9 @@
-import com.fasterxml.jackson.databind.Module;
 import io.xpipe.beacon.BeaconInterface;
 import io.xpipe.beacon.BeaconJacksonModule;
 import io.xpipe.beacon.api.*;
 import io.xpipe.core.util.ModuleLayerLoader;
+
+import com.fasterxml.jackson.databind.Module;
 
 open module io.xpipe.beacon {
     exports io.xpipe.beacon;

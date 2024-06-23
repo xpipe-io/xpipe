@@ -6,6 +6,7 @@ import io.xpipe.app.launcher.LauncherInput;
 import javafx.scene.control.Alert;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
+
 import lombok.Setter;
 
 import java.util.List;

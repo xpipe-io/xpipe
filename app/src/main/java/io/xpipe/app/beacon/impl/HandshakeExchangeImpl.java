@@ -1,12 +1,13 @@
 package io.xpipe.app.beacon.impl;
 
-import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.beacon.BeaconSession;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.beacon.BeaconAuthMethod;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.HandshakeExchange;
+
+import com.sun.net.httpserver.HttpExchange;
 
 import java.util.UUID;
 
@@ -18,8 +19,7 @@ public class HandshakeExchangeImpl extends HandshakeExchange {
     }
 
     @Override
-    public Object handle(HttpExchange exchange, Request body)
-            throws BeaconClientException {
+    public Object handle(HttpExchange exchange, Request body) throws BeaconClientException {
         if (!checkAuth(body.getAuth())) {
             throw new BeaconClientException("Authentication failed");
         }

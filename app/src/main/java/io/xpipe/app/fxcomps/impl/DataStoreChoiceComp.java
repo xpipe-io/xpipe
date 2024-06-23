@@ -93,8 +93,11 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
             };
             var section = new StoreSectionMiniComp(
                     StoreSection.createTopLevel(
-                            StoreViewState.get().getAllEntries(), applicable, filterText, selectedCategory, StoreViewState.get()
-                                    .getEntriesListUpdateObservable()),
+                            StoreViewState.get().getAllEntries(),
+                            applicable,
+                            filterText,
+                            selectedCategory,
+                            StoreViewState.get().getEntriesListUpdateObservable()),
                     (s, comp) -> {
                         if (!applicable.test(s.getWrapper())) {
                             comp.disable(new SimpleBooleanProperty(true));

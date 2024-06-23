@@ -1,8 +1,9 @@
 package io.xpipe.app.beacon.impl;
 
-import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.beacon.api.DaemonVersionExchange;
+
+import com.sun.net.httpserver.HttpExchange;
 
 public class DaemonVersionExchangeImpl extends DaemonVersionExchange {
 

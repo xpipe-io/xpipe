@@ -60,7 +60,8 @@ public interface SecretRetrievalStrategy {
                 @Override
                 public SecretQueryResult query(String prompt) {
                     return new SecretQueryResult(
-                            value != null ? value.getInternalSecret() : InPlaceSecretValue.of(""), SecretQueryState.NORMAL);
+                            value != null ? value.getInternalSecret() : InPlaceSecretValue.of(""),
+                            SecretQueryState.NORMAL);
                 }
 
                 @Override
@@ -180,7 +181,8 @@ public interface SecretRetrievalStrategy {
                 @Override
                 public SecretQueryResult query(String prompt) {
                     try (var cc = new LocalStore().control().command(command).start()) {
-                        return new SecretQueryResult(InPlaceSecretValue.of(cc.readStdoutOrThrow()), SecretQueryState.NORMAL);
+                        return new SecretQueryResult(
+                                InPlaceSecretValue.of(cc.readStdoutOrThrow()), SecretQueryState.NORMAL);
                     } catch (Exception ex) {
                         ErrorEvent.fromThrowable("Unable to retrieve password with command " + command, ex)
                                 .handle();

@@ -4,6 +4,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Dialog;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+
 import lombok.SneakyThrows;
 
 public class ModifiedAlertStage {
@@ -22,9 +23,10 @@ public class ModifiedAlertStage {
         var stageField = c.getDeclaredField("stage");
         stageField.setAccessible(true);
 
-        var m = new Stage()  {
+        var m = new Stage() {
             @SneakyThrows
-            @Override public void centerOnScreen() {
+            @Override
+            public void centerOnScreen() {
                 Window owner = getOwner();
                 if (owner != null) {
                     positionStageMethod.invoke(dialog);
@@ -36,6 +38,6 @@ public class ModifiedAlertStage {
             }
         };
 
-        stageField.set(alert,m);
+        stageField.set(alert, m);
     }
 }

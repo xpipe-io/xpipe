@@ -90,8 +90,7 @@ public class DataStoreEntry extends StorageElement {
             boolean expanded,
             DataStoreColor color,
             String notes,
-            Order explicitOrder
-    ) {
+            Order explicitOrder) {
         super(directory, uuid, name, lastUsed, lastModified, dirty);
         this.categoryUuid = categoryUuid;
         this.store = DataStorageParser.storeFromNode(storeNode);
@@ -116,8 +115,7 @@ public class DataStoreEntry extends StorageElement {
             Instant lastUsed,
             Instant lastModified,
             DataStore store,
-            Order explicitOrder
-    ) {
+            Order explicitOrder) {
         super(directory, uuid, name, lastUsed, lastModified, false);
         this.categoryUuid = categoryUuid;
         this.store = store;
@@ -603,7 +601,6 @@ public class DataStoreEntry extends StorageElement {
             this.isUsable = isUsable;
         }
     }
-
 
     @Getter
     public enum Order {

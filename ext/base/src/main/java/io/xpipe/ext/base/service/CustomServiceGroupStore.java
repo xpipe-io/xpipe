@@ -1,7 +1,8 @@
 package io.xpipe.ext.base.service;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.store.NetworkTunnelStore;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;

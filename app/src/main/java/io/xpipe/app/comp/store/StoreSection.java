@@ -6,12 +6,14 @@ import io.xpipe.app.fxcomps.util.DerivedObservableList;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableIntegerValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+
 import lombok.Value;
 
 import java.util.ArrayList;
@@ -61,7 +63,8 @@ public class StoreSection {
     }
 
     private static DerivedObservableList<StoreSection> sorted(
-            DerivedObservableList<StoreSection> list, ObservableValue<StoreCategoryWrapper> category,
+            DerivedObservableList<StoreSection> list,
+            ObservableValue<StoreCategoryWrapper> category,
             ObservableIntegerValue updateObservable) {
         if (category == null) {
             return list;
@@ -112,16 +115,15 @@ public class StoreSection {
             Predicate<StoreEntryWrapper> entryFilter,
             ObservableValue<String> filterString,
             ObservableValue<StoreCategoryWrapper> category,
-            ObservableIntegerValue updateObservable
-            ) {
+            ObservableIntegerValue updateObservable) {
         var topLevel = all.filtered(
                 section -> {
                     return DataStorage.get().isRootEntry(section.getEntry());
                 },
                 category,
                 updateObservable);
-        var cached = topLevel.mapped(
-                storeEntryWrapper -> create(List.of(), storeEntryWrapper, 1, all, entryFilter, filterString, category, updateObservable));
+        var cached = topLevel.mapped(storeEntryWrapper ->
+                create(List.of(), storeEntryWrapper, 1, all, entryFilter, filterString, category, updateObservable));
         var ordered = sorted(cached, category, updateObservable);
         var shown = ordered.filtered(
                 section -> {
@@ -178,7 +180,8 @@ public class StoreSection {
                 updateObservable);
         var l = new ArrayList<>(parents);
         l.add(e);
-        var cached = allChildren.mapped(c -> create(l, c, depth + 1, all, entryFilter, filterString, category, updateObservable));
+        var cached = allChildren.mapped(
+                c -> create(l, c, depth + 1, all, entryFilter, filterString, category, updateObservable));
         var ordered = sorted(cached, category, updateObservable);
         var filtered = ordered.filtered(
                 section -> {

@@ -2,6 +2,7 @@ package io.xpipe.beacon.api;
 
 import io.xpipe.beacon.BeaconInterface;
 import io.xpipe.core.store.FilePath;
+
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -22,6 +23,7 @@ public class FsReadExchange extends BeaconInterface<FsReadExchange.Request> {
     public static class Request {
         @NonNull
         UUID connection;
+
         @NonNull
         FilePath path;
     }

@@ -6,6 +6,7 @@ import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.storage.DataStoreEntry;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
@@ -23,13 +24,14 @@ public final class BrowserBookmarkComp extends SimpleComp {
     private final Predicate<StoreEntryWrapper> applicable;
     private final BiConsumer<StoreEntryWrapper, BooleanProperty> action;
     private final Property<StoreCategoryWrapper> category;
-    private final Property<String> filter ;
+    private final Property<String> filter;
 
     public BrowserBookmarkComp(
             ObservableValue<DataStoreEntry> selected,
             Predicate<StoreEntryWrapper> applicable,
-            BiConsumer<StoreEntryWrapper, BooleanProperty> action, Property<StoreCategoryWrapper> category, Property<String> filter
-    ) {
+            BiConsumer<StoreEntryWrapper, BooleanProperty> action,
+            Property<StoreCategoryWrapper> category,
+            Property<String> filter) {
         this.selected = selected;
         this.applicable = applicable;
         this.action = action;
@@ -62,7 +64,11 @@ public final class BrowserBookmarkComp extends SimpleComp {
 
         var section = new StoreSectionMiniComp(
                 StoreSection.createTopLevel(
-                        StoreViewState.get().getAllEntries(), this::filter, filter, category, StoreViewState.get().getEntriesListUpdateObservable()),
+                        StoreViewState.get().getAllEntries(),
+                        this::filter,
+                        filter,
+                        category,
+                        StoreViewState.get().getEntriesListUpdateObservable()),
                 augment,
                 entryWrapper -> action.accept(entryWrapper, busy),
                 true);

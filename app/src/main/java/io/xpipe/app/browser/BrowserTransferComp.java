@@ -10,6 +10,7 @@ import io.xpipe.app.fxcomps.augment.DragOverPseudoClassAugment;
 import io.xpipe.app.fxcomps.impl.*;
 import io.xpipe.app.fxcomps.util.DerivedObservableList;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
@@ -18,6 +19,7 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.File;
@@ -100,7 +102,8 @@ public class BrowserTransferComp extends SimpleComp {
                     return p;
                 });
 
-        var listBox = new VerticalComp(List.of(list, dragNotice)).padding(new Insets(10, 10, 5, 10))
+        var listBox = new VerticalComp(List.of(list, dragNotice))
+                .padding(new Insets(10, 10, 5, 10))
                 .apply(struc -> struc.get().setMinHeight(200))
                 .apply(struc -> struc.get().setMaxHeight(200));
         var stack = LoadingOverlayComp.noProgress(

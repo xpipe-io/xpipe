@@ -158,8 +158,8 @@ public class StandardStorage extends DataStorage {
                         dataStoreCategory.setCategoryUuid(DEFAULT_CATEGORY_UUID);
                     }
 
-                    if (dataStoreCategory.getCategoryUuid() != null &&
-                            dataStoreCategory.getCategoryUuid().equals(ALL_CONNECTIONS_CATEGORY_UUID)) {
+                    if (dataStoreCategory.getCategoryUuid() != null
+                            && dataStoreCategory.getCategoryUuid().equals(ALL_CONNECTIONS_CATEGORY_UUID)) {
                         dataStoreCategory.setCategoryUuid(DEFAULT_CATEGORY_UUID);
                     }
                 });

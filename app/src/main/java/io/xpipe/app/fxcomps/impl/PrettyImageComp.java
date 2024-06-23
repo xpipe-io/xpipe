@@ -93,10 +93,11 @@ public class PrettyImageComp extends SimpleComp {
         stack.getChildren().add(storeIcon);
 
         Consumer<String> update = val -> {
-            var useDark = AppPrefs.get() != null && AppPrefs.get().theme.get() != null && AppPrefs.get().theme.get().isDark();
+            var useDark = AppPrefs.get() != null
+                    && AppPrefs.get().theme.get() != null
+                    && AppPrefs.get().theme.get().isDark();
             var fixed = val != null
-                    ? FileNames.getBaseName(val) + (useDark ? "-dark" : "") + "."
-                            + FileNames.getExtension(val)
+                    ? FileNames.getBaseName(val) + (useDark ? "-dark" : "") + "." + FileNames.getExtension(val)
                     : null;
             image.set(fixed);
 
