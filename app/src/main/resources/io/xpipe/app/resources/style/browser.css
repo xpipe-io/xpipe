@@ -189,7 +189,7 @@
     visibility: hidden;
 }
 
-.browser .tab-header-area {
+.browser .tab-header-area, .browser .headers-region {
     -fx-min-height: 2.65em;
     -fx-pref-height: 2.65em;
     -fx-max-height: 2.65em;
