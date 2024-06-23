@@ -18,8 +18,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.css.PseudoClass;
 import javafx.scene.control.Button;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
@@ -70,7 +68,10 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         for (int i = 0; i < entries.size(); i++) {
             var e = entries.get(i);
             var b = new IconButtonComp(e.icon(), () -> value.setValue(e));
-            var shortcut = new KeyCodeCombination(KeyCode.values()[KeyCode.DIGIT1.ordinal() + i]);
+            var shortcut = e.combination();
+            if (shortcut != null) {
+                b.apply(struc -> struc.get().getProperties().put("shortcut", shortcut));
+            }
             b.apply(new TooltipAugment<>(e.name(), shortcut));
             b.apply(struc -> {
                 AppFont.setSize(struc.get(), 2);
@@ -123,9 +124,8 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         };
 
         {
-            var shortcut = new KeyCodeCombination(KeyCode.values()[KeyCode.DIGIT1.ordinal() + entries.size()]);
             var b = new IconButtonComp("mdi2g-github", () -> Hyperlinks.open(Hyperlinks.GITHUB))
-                    .tooltipKey("visitGithubRepository", shortcut)
+                    .tooltipKey("visitGithubRepository")
                     .apply(simpleBorders)
                     .accessibleTextKey("visitGithubRepository");
             b.apply(struc -> {
@@ -135,9 +135,8 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         }
 
         {
-            var shortcut = new KeyCodeCombination(KeyCode.values()[KeyCode.DIGIT1.ordinal() + entries.size() + 1]);
             var b = new IconButtonComp("mdi2d-discord", () -> Hyperlinks.open(Hyperlinks.DISCORD))
-                    .tooltipKey("discord", shortcut)
+                    .tooltipKey("discord")
                     .apply(simpleBorders)
                     .accessibleTextKey("discord");
             b.apply(struc -> {

@@ -9,9 +9,11 @@ import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.control.ButtonBase;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -40,12 +42,22 @@ public class AppLayoutComp extends Comp<CompStructure<Pane>> {
         var sidebar = new SideMenuBarComp(model.getSelected(), model.getEntries());
         StackPane multiR = (StackPane) multi.createRegion();
         pane.setCenter(multiR);
-        pane.setRight(sidebar.createRegion());
+        var sidebarR = sidebar.createRegion();
+        pane.setRight(sidebarR);
         model.getSelected().addListener((c, o, n) -> {
             if (o != null && o.equals(model.getEntries().get(2))) {
                 AppPrefs.get().save();
                 DataStorage.get().saveAsync();
             }
+        });
+        pane.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            sidebarR.getChildrenUnmodifiable().forEach(node -> {
+                var shortcut = (KeyCodeCombination) node.getProperties().get("shortcut");
+                if (shortcut != null && shortcut.match(event)) {
+                    ((ButtonBase) node).fire();
+                    event.consume();
+                }
+            });
         });
         AppFont.normal(pane);
         pane.getStyleClass().add("layout");

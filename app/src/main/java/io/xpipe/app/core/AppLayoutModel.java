@@ -11,6 +11,9 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
@@ -71,13 +74,13 @@ public class AppLayoutModel {
                 new Entry(
                         AppI18n.observable("browser"),
                         "mdi2f-file-cabinet",
-                        new BrowserSessionComp(BrowserSessionModel.DEFAULT)),
-                new Entry(AppI18n.observable("connections"), "mdi2c-connection", new StoreLayoutComp()),
-                new Entry(AppI18n.observable("settings"), "mdsmz-miscellaneous_services", new AppPrefsComp()),
+                        new BrowserSessionComp(BrowserSessionModel.DEFAULT), new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.CONTROL_DOWN)),
+                new Entry(AppI18n.observable("connections"), "mdi2c-connection", new StoreLayoutComp(), new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.CONTROL_DOWN)),
+                new Entry(AppI18n.observable("settings"), "mdsmz-miscellaneous_services", new AppPrefsComp(), new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.CONTROL_DOWN)),
                 new Entry(
                         AppI18n.observable("explorePlans"),
                         "mdi2p-professional-hexagon",
-                        LicenseProvider.get().overviewPage())));
+                        LicenseProvider.get().overviewPage(), null)));
         return l;
     }
 
@@ -90,5 +93,5 @@ public class AppLayoutModel {
         double browserConnectionsWidth;
     }
 
-    public record Entry(ObservableValue<String> name, String icon, Comp<?> comp) {}
+    public record Entry(ObservableValue<String> name, String icon, Comp<?> comp, KeyCombination combination) {}
 }
