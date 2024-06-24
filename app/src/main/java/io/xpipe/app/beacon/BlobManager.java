@@ -48,8 +48,10 @@ public class BlobManager {
         INSTANCE = null;
     }
 
-    public Path newBlobFile() {
-        return TEMP.resolve(UUID.randomUUID().toString());
+    public Path newBlobFile() throws IOException {
+        var file = TEMP.resolve(UUID.randomUUID().toString());
+        Files.createDirectories(file.getParent());
+        return file;
     }
 
     public void store(UUID uuid, byte[] blob) {

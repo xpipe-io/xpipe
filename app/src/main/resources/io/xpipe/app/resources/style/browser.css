@@ -61,6 +61,7 @@
 .browser .browser-content.overview {
     -fx-spacing: 1.5em;
     -fx-padding: 1.5em;
+    -fx-background-color: -color-bg-default;
 }
 
 .selected-file-list {

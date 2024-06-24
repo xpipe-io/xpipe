@@ -111,9 +111,8 @@ public class FileBridge {
                 try (var in = Files.newInputStream(e.file)) {
                     var actualSize = (long) in.available();
                     var started = Instant.now();
-                    try (var fixedIn = new FixedSizeInputStream(new BufferedInputStream(in), actualSize)) {
-                        e.writer.accept(fixedIn, actualSize);
-                    }
+                    var fixedIn = new FixedSizeInputStream(new BufferedInputStream(in), actualSize);
+                    e.writer.accept(fixedIn, actualSize);
                     in.transferTo(OutputStream.nullOutputStream());
                     var taken = Duration.between(started, Instant.now());
                     event("Wrote " + HumanReadableFormat.byteCount(actualSize) + " in " + taken.toMillis() + "ms");

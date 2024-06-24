@@ -1,19 +1,16 @@
 package io.xpipe.app.browser;
 
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.store.StoreCategoryWrapper;
 import io.xpipe.app.comp.store.StoreViewState;
-import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.FilterComp;
 import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.util.DataStoreCategoryChoiceComp;
-
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.layout.Region;
-
-import atlantafx.base.theme.Styles;
 import lombok.Getter;
 
 import java.util.List;
@@ -31,11 +28,9 @@ public final class BrowserBookmarkHeaderComp extends SimpleComp {
                         StoreViewState.get().getAllConnectionsCategory(),
                         StoreViewState.get().getActiveCategory(),
                         this.category)
-                .styleClass(Styles.LEFT_PILL)
-                .apply(struc -> AppFont.medium(struc.get()));
+                .styleClass(Styles.LEFT_PILL);
         var filter = new FilterComp(this.filter)
                 .styleClass(Styles.RIGHT_PILL)
-                .apply(struc -> AppFont.medium(struc.get()))
                 .hgrow();
 
         var top = new HorizontalComp(List.of(category, filter))

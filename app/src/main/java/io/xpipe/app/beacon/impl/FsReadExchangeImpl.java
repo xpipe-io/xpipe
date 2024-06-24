@@ -30,9 +30,8 @@ public class FsReadExchangeImpl extends FsReadExchange {
         if (size > 100_000_000) {
             var file = BlobManager.get().newBlobFile();
             try (var in = fs.openInput(msg.getPath().toString())) {
-                try (var fileOut =
-                                Files.newOutputStream(file.resolve(msg.getPath().getFileName()));
-                        var fixedIn = new FixedSizeInputStream(new BufferedInputStream(in), size)) {
+                var fixedIn = new FixedSizeInputStream(new BufferedInputStream(in), size);
+                try (var fileOut = Files.newOutputStream(file.resolve(msg.getPath().getFileName()))) {
                     fixedIn.transferTo(fileOut);
                 }
                 in.transferTo(OutputStream.nullOutputStream());
@@ -47,9 +46,8 @@ public class FsReadExchangeImpl extends FsReadExchange {
         } else {
             byte[] bytes;
             try (var in = fs.openInput(msg.getPath().toString())) {
-                try (var fixedIn = new FixedSizeInputStream(new BufferedInputStream(in), size)) {
-                    bytes = fixedIn.readAllBytes();
-                }
+                var fixedIn = new FixedSizeInputStream(new BufferedInputStream(in), size);
+                bytes = fixedIn.readAllBytes();
                 in.transferTo(OutputStream.nullOutputStream());
             }
             exchange.sendResponseHeaders(200, bytes.length);
