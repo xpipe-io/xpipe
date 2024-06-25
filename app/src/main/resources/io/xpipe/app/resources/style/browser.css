@@ -15,6 +15,10 @@
     -fx-padding: 0 8 8 8;
 }
 
+.root:pretty .browser .transfer {
+    -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 2px, 0.25, 0, 1);
+}
+
 .transfer > * {
     -fx-border-radius: 4;
     -fx-border-color: -color-border-default;
@@ -122,6 +126,7 @@
 .browser .status-bar {
     -fx-border-width: 1 0 0 0;
     -fx-border-color: -color-border-default;
+    -fx-background-insets: 0;
 }
 
 .browser .status-bar .progress {
@@ -218,13 +223,22 @@
 }
 
 .browser .browser-content {
-    -fx-padding: 6 0 0 0;
-    -fx-border-radius: 10 0 0 0;
-    -fx-background-radius: 10 0 0 0;
+    -fx-padding: 6 0 6 0;
+    -fx-border-radius: 10 10 4 4;
+    -fx-background-radius: 10 10 4 4;
     -fx-background-color: -color-bg-subtle, -color-bg-default;
-    -fx-background-insets: 0, 7 0 0 0;
-    -fx-border-width: 1 0 0 1;
+    -fx-background-insets: 0, 7 7 7 0;
+    -fx-border-width: 1;
     -fx-border-color: -color-border-default;
+}
+
+
+.root:pretty .browser .browser-content {
+    -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 2px, 0.25, 0, 1);
+}
+
+.browser .browser-content-container {
+    -fx-padding: 0 10 7 0;
 }
 
 .root.cupertino .browser .browser-content {

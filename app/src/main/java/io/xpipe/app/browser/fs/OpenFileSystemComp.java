@@ -179,7 +179,7 @@ public class OpenFileSystemComp extends SimpleComp {
                 model.getCurrentPath().isNull(),
                 fileList,
                 model.getCurrentPath().isNull().not()));
-        var r = stack.createRegion();
+        var r = stack.styleClass("browser-content-container").createRegion();
         r.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 if (r.getChildrenUnmodifiable().get(0).isVisible()) {
