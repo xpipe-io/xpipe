@@ -2,6 +2,7 @@ package io.xpipe.beacon.api;
 
 import io.xpipe.beacon.BeaconInterface;
 import io.xpipe.core.store.StorePath;
+
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -33,7 +34,6 @@ public class ConnectionInfoExchange extends BeaconInterface<ConnectionInfoExchan
         @NonNull
         List<@NonNull InfoResponse> infos;
     }
-
 
     @Jacksonized
     @Builder

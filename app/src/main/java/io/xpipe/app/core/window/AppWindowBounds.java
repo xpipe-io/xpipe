@@ -2,6 +2,7 @@ package io.xpipe.app.core.window;
 
 import io.xpipe.app.core.App;
 import io.xpipe.core.process.OsType;
+
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
 import javafx.stage.Stage;

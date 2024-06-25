@@ -97,19 +97,23 @@ public class BrowserWelcomeComp extends SimpleComp {
         var storeList = new VBox();
         storeList.setSpacing(8);
 
-        var listBox = new ListBoxViewComp<>(list, list, e -> {
-                    var disable = new SimpleBooleanProperty();
-                    var entryButton = entryButton(e, disable);
-                    var dirButton = dirButton(e, disable);
-                    return new HorizontalComp(List.of(entryButton, dirButton)).apply(struc -> {
-                        ((Region) struc.get().getChildren().get(0))
-                                .prefHeightProperty()
-                                .bind(struc.get().heightProperty());
-                        ((Region) struc.get().getChildren().get(1))
-                                .prefHeightProperty()
-                                .bind(struc.get().heightProperty());
-                    });
-                }, true)
+        var listBox = new ListBoxViewComp<>(
+                        list,
+                        list,
+                        e -> {
+                            var disable = new SimpleBooleanProperty();
+                            var entryButton = entryButton(e, disable);
+                            var dirButton = dirButton(e, disable);
+                            return new HorizontalComp(List.of(entryButton, dirButton)).apply(struc -> {
+                                ((Region) struc.get().getChildren().get(0))
+                                        .prefHeightProperty()
+                                        .bind(struc.get().heightProperty());
+                                ((Region) struc.get().getChildren().get(1))
+                                        .prefHeightProperty()
+                                        .bind(struc.get().heightProperty());
+                            });
+                        },
+                        true)
                 .apply(struc -> {
                     VBox vBox = (VBox) struc.get().getContent();
                     vBox.setSpacing(10);

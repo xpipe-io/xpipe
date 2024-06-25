@@ -1,9 +1,10 @@
 package io.xpipe.app.beacon.impl;
 
-import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.beacon.api.ConnectionQueryExchange;
+
+import com.sun.net.httpserver.HttpExchange;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,8 @@ public class ConnectionQueryExchangeImpl extends ConnectionQueryExchange {
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) {
-        var catMatcher = Pattern.compile(toRegex("all connections/" + msg.getCategoryFilter().toLowerCase()));
+        var catMatcher = Pattern.compile(
+                toRegex("all connections/" + msg.getCategoryFilter().toLowerCase()));
         var conMatcher = Pattern.compile(toRegex(msg.getConnectionFilter().toLowerCase()));
         var typeMatcher = Pattern.compile(toRegex(msg.getTypeFilter().toLowerCase()));
 
@@ -49,7 +51,9 @@ public class ConnectionQueryExchangeImpl extends ConnectionQueryExchange {
             found.add(storeEntry);
         }
 
-        return Response.builder().found(found.stream().map(entry -> entry.getUuid()).toList()).build();
+        return Response.builder()
+                .found(found.stream().map(entry -> entry.getUuid()).toList())
+                .build();
     }
 
     private String toRegex(String pattern) {

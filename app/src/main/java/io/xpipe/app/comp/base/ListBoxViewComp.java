@@ -5,6 +5,7 @@ import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.DerivedObservableList;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
@@ -32,7 +33,8 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
     private final int limit = Integer.MAX_VALUE;
     private final boolean scrollBar;
 
-    public ListBoxViewComp(ObservableList<T> shown, ObservableList<T> all, Function<T, Comp<?>> compFunction, boolean scrollBar) {
+    public ListBoxViewComp(
+            ObservableList<T> shown, ObservableList<T> all, Function<T, Comp<?>> compFunction, boolean scrollBar) {
         this.shown = PlatformThread.sync(shown);
         this.all = PlatformThread.sync(all);
         this.compFunction = compFunction;
@@ -64,10 +66,13 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             scroll.skinProperty().subscribe(newValue -> {
                 if (newValue != null) {
                     ScrollBar bar = (ScrollBar) scroll.lookup(".scroll-bar:vertical");
-                    bar.opacityProperty().bind(Bindings.createDoubleBinding(() -> {
-                        var v = bar.getVisibleAmount();
-                        return v < 1.0 ? 1.0 : 0.0;
-                    }, bar.visibleAmountProperty()));
+                    bar.opacityProperty()
+                            .bind(Bindings.createDoubleBinding(
+                                    () -> {
+                                        var v = bar.getVisibleAmount();
+                                        return v < 1.0 ? 1.0 : 0.0;
+                                    },
+                                    bar.visibleAmountProperty()));
                 }
             });
         } else {

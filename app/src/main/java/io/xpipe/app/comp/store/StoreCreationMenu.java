@@ -28,29 +28,22 @@ public class StoreCreationMenu {
 
         menu.getItems().add(category("addHost", "mdi2h-home-plus", DataStoreCreationCategory.HOST, "ssh"));
 
-        menu.getItems()
-                .add(category("addDesktop", "mdi2c-camera-plus", DataStoreCreationCategory.DESKTOP, null));
+        menu.getItems().add(category("addDesktop", "mdi2c-camera-plus", DataStoreCreationCategory.DESKTOP, null));
+
+        menu.getItems().add(category("addShell", "mdi2t-text-box-multiple", DataStoreCreationCategory.SHELL, null));
 
         menu.getItems()
-                .add(category("addShell", "mdi2t-text-box-multiple", DataStoreCreationCategory.SHELL, null));
+                .add(category("addScript", "mdi2s-script-text-outline", DataStoreCreationCategory.SCRIPT, "script"));
+
+        menu.getItems().add(category("addService", "mdi2c-cloud-braces", DataStoreCreationCategory.SERVICE, null));
 
         menu.getItems()
-                .add(category(
-                        "addScript", "mdi2s-script-text-outline", DataStoreCreationCategory.SCRIPT, "script"));
+                .add(category("addTunnel", "mdi2v-vector-polyline-plus", DataStoreCreationCategory.TUNNEL, null));
 
         menu.getItems()
-                .add(category("addService", "mdi2c-cloud-braces", DataStoreCreationCategory.SERVICE, null));
+                .add(category("addCommand", "mdi2c-code-greater-than", DataStoreCreationCategory.COMMAND, "cmd"));
 
-        menu.getItems()
-                .add(category(
-                        "addTunnel", "mdi2v-vector-polyline-plus", DataStoreCreationCategory.TUNNEL, null));
-
-        menu.getItems()
-                .add(category(
-                        "addCommand", "mdi2c-code-greater-than", DataStoreCreationCategory.COMMAND, "cmd"));
-
-        menu.getItems()
-                .add(category("addDatabase", "mdi2d-database-plus", DataStoreCreationCategory.DATABASE, null));
+        menu.getItems().add(category("addDatabase", "mdi2d-database-plus", DataStoreCreationCategory.DATABASE, null));
     }
 
     private static MenuItem category(

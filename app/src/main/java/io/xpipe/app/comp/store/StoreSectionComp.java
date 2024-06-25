@@ -134,10 +134,12 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                         section.getWrapper().getExpanded(),
                         section.getAllChildren().getList());
         var content = new ListBoxViewComp<>(
-                        listSections.getList(), section.getAllChildren().getList(), (StoreSection e) -> {
+                        listSections.getList(),
+                        section.getAllChildren().getList(),
+                        (StoreSection e) -> {
                             return StoreSection.customSection(e, false).apply(GrowAugment.create(true, false));
                         },
-                false)
+                        false)
                 .minHeight(0)
                 .hgrow();
 
@@ -151,8 +153,7 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
         var full = new VerticalComp(List.of(
                 topEntryList,
                 Comp.separator().hide(expanded.not()),
-                content
-                        .styleClass("children-content")
+                content.styleClass("children-content")
                         .hide(Bindings.or(
                                 Bindings.not(section.getWrapper().getExpanded()),
                                 Bindings.size(section.getShownChildren().getList())

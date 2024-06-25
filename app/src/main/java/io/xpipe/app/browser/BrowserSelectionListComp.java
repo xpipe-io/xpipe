@@ -50,17 +50,20 @@ public class BrowserSelectionListComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var c = new ListBoxViewComp<>(list, list, entry -> {
-                    return Comp.of(() -> {
-                        var image = PrettyImageHelper.ofFixedSizeSquare(entry.getIcon(), 24)
-                                .createRegion();
-                        var l = new Label(null, image);
-                        l.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
-                        l.textProperty().bind(PlatformThread.sync(nameTransformation.apply(entry)));
-                        return l;
-                    });
-                },
-                false)
+        var c = new ListBoxViewComp<>(
+                        list,
+                        list,
+                        entry -> {
+                            return Comp.of(() -> {
+                                var image = PrettyImageHelper.ofFixedSizeSquare(entry.getIcon(), 24)
+                                        .createRegion();
+                                var l = new Label(null, image);
+                                l.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
+                                l.textProperty().bind(PlatformThread.sync(nameTransformation.apply(entry)));
+                                return l;
+                            });
+                        },
+                        false)
                 .styleClass("selected-file-list");
         return c.createRegion();
     }

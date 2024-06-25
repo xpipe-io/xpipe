@@ -36,21 +36,24 @@ public class DataStoreListChoiceComp<T extends DataStore> extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var list = new ListBoxViewComp<>(selectedList, selectedList, t -> {
-                    if (t == null) {
-                        return null;
-                    }
+        var list = new ListBoxViewComp<>(
+                        selectedList,
+                        selectedList,
+                        t -> {
+                            if (t == null) {
+                                return null;
+                            }
 
-                    var label = new LabelComp(t.get().getName()).apply(struc -> struc.get()
-                            .setGraphic(PrettyImageHelper.ofFixedSizeSquare(
-                                            t.get().getProvider().getDisplayIconFileName(t.getStore()), 16)
-                                    .createRegion()));
-                    var delete = new IconButtonComp("mdal-delete_outline", () -> {
-                        selectedList.remove(t);
-                    });
-                    return new HorizontalComp(List.of(label, Comp.hspacer(), delete)).styleClass("entry");
-                },
-                true)
+                            var label = new LabelComp(t.get().getName()).apply(struc -> struc.get()
+                                    .setGraphic(PrettyImageHelper.ofFixedSizeSquare(
+                                                    t.get().getProvider().getDisplayIconFileName(t.getStore()), 16)
+                                            .createRegion()));
+                            var delete = new IconButtonComp("mdal-delete_outline", () -> {
+                                selectedList.remove(t);
+                            });
+                            return new HorizontalComp(List.of(label, Comp.hspacer(), delete)).styleClass("entry");
+                        },
+                        true)
                 .padding(new Insets(0))
                 .apply(struc -> struc.get().setMinHeight(0))
                 .apply(struc -> ((VBox) struc.get().getContent()).setSpacing(5));

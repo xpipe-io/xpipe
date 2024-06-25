@@ -136,7 +136,7 @@ public interface DataStoreProvider {
 
     default DataStoreUsageCategory getUsageCategory() {
         var cc = getCreationCategory();
-        if (cc == DataStoreCreationCategory.SHELL || cc  == DataStoreCreationCategory.HOST) {
+        if (cc == DataStoreCreationCategory.SHELL || cc == DataStoreCreationCategory.HOST) {
             return DataStoreUsageCategory.SHELL;
         }
 
@@ -233,5 +233,4 @@ public interface DataStoreProvider {
     }
 
     List<Class<?>> getStoreClasses();
-
 }

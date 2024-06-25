@@ -31,7 +31,8 @@ public class FsReadExchangeImpl extends FsReadExchange {
             var file = BlobManager.get().newBlobFile();
             try (var in = fs.openInput(msg.getPath().toString())) {
                 var fixedIn = new FixedSizeInputStream(new BufferedInputStream(in), size);
-                try (var fileOut = Files.newOutputStream(file.resolve(msg.getPath().getFileName()))) {
+                try (var fileOut =
+                        Files.newOutputStream(file.resolve(msg.getPath().getFileName()))) {
                     fixedIn.transferTo(fileOut);
                 }
                 in.transferTo(OutputStream.nullOutputStream());

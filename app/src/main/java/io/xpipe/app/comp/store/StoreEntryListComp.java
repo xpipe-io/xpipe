@@ -4,6 +4,7 @@ import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.MultiContentComp;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.Region;
@@ -14,18 +15,18 @@ public class StoreEntryListComp extends SimpleComp {
 
     private Comp<?> createList() {
         var content = new ListBoxViewComp<>(
-                        StoreViewState.get()
-                                .getCurrentTopLevelSection()
-                                .getShownChildren()
-                                .getList(),
-                        StoreViewState.get()
-                                .getCurrentTopLevelSection()
-                                .getAllChildren()
-                                .getList(),
-                        (StoreSection e) -> {
-                            var custom = StoreSection.customSection(e, true).hgrow();
-                            return custom;
-                        },
+                StoreViewState.get()
+                        .getCurrentTopLevelSection()
+                        .getShownChildren()
+                        .getList(),
+                StoreViewState.get()
+                        .getCurrentTopLevelSection()
+                        .getAllChildren()
+                        .getList(),
+                (StoreSection e) -> {
+                    var custom = StoreSection.customSection(e, true).hgrow();
+                    return custom;
+                },
                 true);
         return content.styleClass("store-list-comp");
     }

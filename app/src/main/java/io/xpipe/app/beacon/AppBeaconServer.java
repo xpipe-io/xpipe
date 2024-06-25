@@ -163,16 +163,20 @@ public class AppBeaconServer {
         if (notFoundHtml == null) {
             AppResources.with(AppResources.XPIPE_MODULE, "misc/api.md", file -> {
                 var md = Files.readString(file);
-                md = md.replaceAll(Pattern.quote( """
+                md = md.replaceAll(
+                        Pattern.quote(
+                                """
                         > 400 Response
-                        
+
                         ```json
                         {
                           "message": "string"
                         }
                         ```
-                        """), "");
-                notFoundHtml = MarkdownHelper.toHtml(md,
+                        """),
+                        "");
+                notFoundHtml = MarkdownHelper.toHtml(
+                        md,
                         head -> {
                             return head + "\n" + "<link rel=\"stylesheet\" href=\"markdown.css\">"
                                     + "\n" + "<link rel=\"stylesheet\" href=\"github-dark.min.css\">"

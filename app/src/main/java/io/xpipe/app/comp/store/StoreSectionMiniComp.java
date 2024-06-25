@@ -9,6 +9,7 @@ import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.storage.DataStoreColor;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -133,15 +134,16 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                                 section.getAllChildren().getList())
                 : section.getShownChildren();
         var content = new ListBoxViewComp<>(
-                        listSections.getList(), section.getAllChildren().getList(), (StoreSection e) -> {
+                        listSections.getList(),
+                        section.getAllChildren().getList(),
+                        (StoreSection e) -> {
                             return new StoreSectionMiniComp(e, this.augment, this.action);
                         },
-                section.getWrapper() == null)
+                        section.getWrapper() == null)
                 .minHeight(0)
                 .hgrow();
 
-        list.add(content
-                .styleClass("children-content")
+        list.add(content.styleClass("children-content")
                 .hide(Bindings.or(
                         Bindings.not(expanded),
                         Bindings.size(section.getAllChildren().getList()).isEqualTo(0))));
