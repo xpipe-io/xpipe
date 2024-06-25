@@ -3,9 +3,7 @@ package io.xpipe.ext.base.desktop;
 import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreViewState;
-import io.xpipe.app.ext.ActionProvider;
-import io.xpipe.app.ext.DataStoreProvider;
-import io.xpipe.app.ext.GuiDialog;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.fxcomps.impl.DataStoreChoiceComp;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -21,6 +19,11 @@ import javafx.beans.property.SimpleStringProperty;
 import java.util.List;
 
 public class DesktopApplicationStoreProvider implements DataStoreProvider {
+
+    @Override
+    public DataStoreUsageCategory getUsageCategory() {
+        return DataStoreUsageCategory.DESKTOP;
+    }
 
     @Override
     public ActionProvider.Action browserAction(
@@ -46,8 +49,8 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public CreationCategory getCreationCategory() {
-        return CreationCategory.DESKTOP;
+    public DataStoreCreationCategory getCreationCategory() {
+        return DataStoreCreationCategory.DESKTOP;
     }
 
     @Override

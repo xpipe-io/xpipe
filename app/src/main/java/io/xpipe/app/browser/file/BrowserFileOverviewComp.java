@@ -50,7 +50,7 @@ public class BrowserFileOverviewComp extends SimpleComp {
         };
 
         if (grow) {
-            var c = new ListBoxViewComp<>(list, list, factory).styleClass("overview-file-list");
+            var c = new ListBoxViewComp<>(list, list, factory, true).styleClass("overview-file-list");
             return c.createRegion();
         } else {
             var c = new VBoxViewComp<>(list, list, factory).styleClass("overview-file-list");

@@ -7,6 +7,7 @@ import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.EnabledParentStoreProvider;
 import io.xpipe.app.ext.GuiDialog;
@@ -82,8 +83,8 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
     }
 
     @Override
-    public CreationCategory getCreationCategory() {
-        return CreationCategory.SCRIPT;
+    public DataStoreCreationCategory getCreationCategory() {
+        return DataStoreCreationCategory.SCRIPT;
     }
 
     @Override

@@ -3,9 +3,7 @@ package io.xpipe.ext.base.script;
 import io.xpipe.app.comp.base.SystemStateComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreViewState;
-import io.xpipe.app.ext.DataStoreProvider;
-import io.xpipe.app.ext.EnabledStoreProvider;
-import io.xpipe.app.ext.GuiDialog;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.DataStoreChoiceComp;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -24,13 +22,18 @@ import java.util.List;
 public class ScriptGroupStoreProvider implements EnabledStoreProvider, DataStoreProvider {
 
     @Override
+    public DataStoreUsageCategory getUsageCategory() {
+        return DataStoreUsageCategory.GROUP;
+    }
+
+    @Override
     public Comp<?> stateDisplay(StoreEntryWrapper w) {
         return new SystemStateComp(new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
     }
 
     @Override
-    public CreationCategory getCreationCategory() {
-        return CreationCategory.SCRIPT;
+    public DataStoreCreationCategory getCreationCategory() {
+        return DataStoreCreationCategory.SCRIPT;
     }
 
     @Override

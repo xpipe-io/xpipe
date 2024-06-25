@@ -37,6 +37,7 @@ open module io.xpipe.beacon {
             DaemonStopExchange,
             HandshakeExchange,
             ConnectionQueryExchange,
+            ConnectionInfoExchange,
             AskpassExchange,
             TerminalWaitExchange,
             TerminalLaunchExchange,

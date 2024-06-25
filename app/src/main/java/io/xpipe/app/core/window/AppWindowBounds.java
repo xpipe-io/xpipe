@@ -2,11 +2,9 @@ package io.xpipe.app.core.window;
 
 import io.xpipe.app.core.App;
 import io.xpipe.core.process.OsType;
-
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 
 import java.util.Arrays;
 import java.util.List;
@@ -57,7 +55,14 @@ public class AppWindowBounds {
         var stage = new Stage() {
             @Override
             public void centerOnScreen() {
-                centerToMainWindow(this);
+                if (App.getApp() == null) {
+                    super.centerOnScreen();
+                    return;
+                }
+
+                var stage = App.getApp().getStage();
+                this.setX(stage.getX() + stage.getWidth() / 2 - this.getWidth() / 2);
+                this.setY(stage.getY() + stage.getHeight() / 2 - this.getHeight() / 2);
                 clampWindow(this).ifPresent(rectangle2D -> {
                     this.setX(rectangle2D.getMinX());
                     this.setY(rectangle2D.getMinY());
@@ -67,17 +72,6 @@ public class AppWindowBounds {
             }
         };
         return stage;
-    }
-
-    public static void centerToMainWindow(Window childStage) {
-        if (App.getApp() == null) {
-            childStage.centerOnScreen();
-            return;
-        }
-
-        var stage = App.getApp().getStage();
-        childStage.setX(stage.getX() + stage.getWidth() / 2 - childStage.getWidth() / 2);
-        childStage.setY(stage.getY() + stage.getHeight() / 2 - childStage.getHeight() / 2);
     }
 
     public static Optional<Rectangle2D> clampWindow(Stage stage) {

@@ -5,9 +5,7 @@ import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppExtensionManager;
-import io.xpipe.app.ext.ActionProvider;
-import io.xpipe.app.ext.DataStoreProvider;
-import io.xpipe.app.ext.GuiDialog;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.ChoiceComp;
 import io.xpipe.app.fxcomps.impl.DataStoreChoiceComp;
@@ -29,6 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DesktopEnvironmentStoreProvider implements DataStoreProvider {
+
+    @Override
+    public DataStoreUsageCategory getUsageCategory() {
+        return DataStoreUsageCategory.DESKTOP;
+    }
 
     @Override
     public ActionProvider.Action browserAction(
@@ -75,8 +78,8 @@ public class DesktopEnvironmentStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public CreationCategory getCreationCategory() {
-        return CreationCategory.DESKTOP;
+    public DataStoreCreationCategory getCreationCategory() {
+        return DataStoreCreationCategory.DESKTOP;
     }
 
     @Override

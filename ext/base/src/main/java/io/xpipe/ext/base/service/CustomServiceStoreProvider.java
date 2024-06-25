@@ -1,6 +1,7 @@
 package io.xpipe.ext.base.service;
 
 import io.xpipe.app.comp.store.StoreViewState;
+import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.fxcomps.impl.DataStoreChoiceComp;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -16,8 +17,8 @@ import java.util.List;
 public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
 
     @Override
-    public CreationCategory getCreationCategory() {
-        return CreationCategory.SERVICE;
+    public DataStoreCreationCategory getCreationCategory() {
+        return DataStoreCreationCategory.SERVICE;
     }
 
     @Override

@@ -6,6 +6,7 @@ import io.xpipe.app.comp.base.ErrorOverlayComp;
 import io.xpipe.app.comp.base.PopupMenuButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppWindowHelper;
+import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.fxcomps.Comp;
@@ -129,7 +130,7 @@ public class StoreCreationComp extends DialogComp {
                     if ((provider.getValue().getCreationCategory() == null
                                     || !provider.getValue()
                                             .getCreationCategory()
-                                            .equals(DataStoreProvider.CreationCategory.SCRIPT))
+                                            .equals(DataStoreCreationCategory.SCRIPT))
                             && rootCategory.equals(DataStorage.get().getAllScriptsCategory())) {
                         targetCategory = DataStorage.get()
                                 .getDefaultConnectionsCategory()
@@ -170,11 +171,11 @@ public class StoreCreationComp extends DialogComp {
                 e);
     }
 
-    public static void showCreation(DataStoreProvider selected, DataStoreProvider.CreationCategory category) {
+    public static void showCreation(DataStoreProvider selected, DataStoreCreationCategory category) {
         showCreation(selected != null ? selected.defaultStore() : null, category);
     }
 
-    public static void showCreation(DataStore base, DataStoreProvider.CreationCategory category) {
+    public static void showCreation(DataStore base, DataStoreCreationCategory category) {
         show(
                 null,
                 base != null ? DataStoreProviders.byStore(base) : null,

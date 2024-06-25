@@ -447,6 +447,174 @@ curl -X POST http://localhost:21723/connection/query \
 
 </details>
 
+## Connection information
+
+<a id="opIdconnectionInfo"></a>
+
+`POST /connection/info`
+
+Queries detailed information about a connection.
+
+> Body parameter
+
+```json
+{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+}
+```
+
+<h3 id="connection-information-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|body|body|[ConnectionInfoRequest](#schemaconnectioninforequest)|true|none|
+
+> Example responses
+
+> 200 Response
+
+```json
+{
+  "connection": "string",
+  "category": [
+    "string"
+  ],
+  "name": [
+    "string"
+  ],
+  "type": "string",
+  "rawData": {},
+  "usageCategory": "shell",
+  "lastModified": "string",
+  "lastUsed": "string"
+}
+```
+
+<h3 id="connection-information-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The query was successful. The body contains the detailed connection information.|[ConnectionInfoResponse](#schemaconnectioninforesponse)|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
+|403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
+|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
+
+<aside class="warning">
+To perform this operation, you must be authenticated by means of one of the following methods:
+bearerAuth
+</aside>
+
+<details>
+
+<summary>Code samples</summary>
+
+```javascript
+const inputBody = '{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+}';
+const headers = {
+  'Content-Type':'application/json',
+  'Accept':'application/json',
+  'Authorization':'Bearer {access-token}'
+};
+
+fetch('http://localhost:21723/connection/info',
+{
+  method: 'POST',
+  body: inputBody,
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```python
+import requests
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json',
+  'Authorization': 'Bearer {access-token}'
+}
+
+data = """
+{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+}
+"""
+r = requests.post('http://localhost:21723/connection/info', headers = headers, data = data)
+
+print(r.json())
+
+```
+
+```java
+var uri = URI.create("http://localhost:21723/connection/info");
+var client = HttpClient.newHttpClient();
+var request = HttpRequest
+        .newBuilder()
+        .uri(uri)
+        .header("Content-Type", "application/json")
+        .header("Accept", "application/json")
+        .header("Authorization", "Bearer {access-token}")
+        .POST(HttpRequest.BodyPublishers.ofString("""
+{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+}
+        """))
+        .build();
+var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+System.out.println(response.statusCode());
+System.out.println(response.body());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Content-Type": []string{"application/json"},
+        "Accept": []string{"application/json"},
+        "Authorization": []string{"Bearer {access-token}"},
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("POST", "http://localhost:21723/connection/info", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+```shell
+# You can also use wget
+curl -X POST http://localhost:21723/connection/info \
+  -H 'Content-Type: application/json' \  -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
+  --data '
+{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+}
+'
+
+```
+
+</details>
+
 ## Start shell connection
 
 <a id="opIdshellStart"></a>
@@ -1867,6 +2035,76 @@ curl -X POST http://localhost:21723/fs/script \
 |» category|[string]|true|none|The full category path as an array|
 |» name|[string]|true|none|The full connection name path as an array|
 |» type|string|true|none|The type identifier of the connection|
+
+<h2 id="tocS_ConnectionInfoRequest">ConnectionInfoRequest</h2>
+
+<a id="schemaconnectioninforequest"></a>
+<a id="schema_ConnectionInfoRequest"></a>
+<a id="tocSconnectioninforequest"></a>
+<a id="tocsconnectioninforequest"></a>
+
+```json
+{
+  "connection": "string"
+}
+
+```
+
+<h3>Properties</h3>
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|connection|string|true|none|The unique id of the connection|
+
+<h2 id="tocS_ConnectionInfoResponse">ConnectionInfoResponse</h2>
+
+<a id="schemaconnectioninforesponse"></a>
+<a id="schema_ConnectionInfoResponse"></a>
+<a id="tocSconnectioninforesponse"></a>
+<a id="tocsconnectioninforesponse"></a>
+
+```json
+{
+  "connection": "string",
+  "category": [
+    "string"
+  ],
+  "name": [
+    "string"
+  ],
+  "type": "string",
+  "rawData": {},
+  "usageCategory": "shell",
+  "lastModified": "string",
+  "lastUsed": "string"
+}
+
+```
+
+<h3>Properties</h3>
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|connection|string|true|none|The unique id of the connection|
+|category|[string]|true|none|The full category path as an array|
+|name|[string]|true|none|The full connection name path as an array|
+|type|string|true|none|The type identifier of the connection|
+|rawData|object|true|none|The raw internal configuration data for the connection. The schema for these is internal and should not be relied upon.|
+|usageCategory|string|true|none|The category of how this connection can be used.|
+|lastModified|string|true|none|The timestamp of when the connection configuration was last modified in ISO 8601.|
+|lastUsed|string|true|none|The timestamp of when the connection was last launched in ISO 8601.|
+
+#### Enumerated Values
+
+|Property|Value|
+|---|---|
+|usageCategory|shell|
+|usageCategory|tunnel|
+|usageCategory|script|
+|usageCategory|database|
+|usageCategory|command|
+|usageCategory|desktop|
+|usageCategory|group|
 
 <h2 id="tocS_HandshakeRequest">HandshakeRequest</h2>
 

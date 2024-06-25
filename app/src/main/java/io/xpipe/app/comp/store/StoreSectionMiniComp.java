@@ -9,7 +9,6 @@ import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.storage.DataStoreColor;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -20,7 +19,6 @@ import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -36,17 +34,14 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
     private final StoreSection section;
     private final BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment;
     private final Consumer<StoreEntryWrapper> action;
-    private final boolean condensedStyle;
 
     public StoreSectionMiniComp(
             StoreSection section,
             BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment,
-            Consumer<StoreEntryWrapper> action,
-            boolean condensedStyle) {
+            Consumer<StoreEntryWrapper> action) {
         this.section = section;
         this.augment = augment;
         this.action = action;
-        this.condensedStyle = condensedStyle;
     }
 
     @Override
@@ -139,22 +134,19 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                 : section.getShownChildren();
         var content = new ListBoxViewComp<>(
                         listSections.getList(), section.getAllChildren().getList(), (StoreSection e) -> {
-                            return new StoreSectionMiniComp(e, this.augment, this.action, this.condensedStyle);
-                        })
+                            return new StoreSectionMiniComp(e, this.augment, this.action);
+                        },
+                section.getWrapper() == null)
                 .minHeight(0)
                 .hgrow();
 
-        list.add(new HorizontalComp(List.of(content))
+        list.add(content
                 .styleClass("children-content")
-                .apply(struc -> struc.get().setFillHeight(true))
                 .hide(Bindings.or(
                         Bindings.not(expanded),
                         Bindings.size(section.getAllChildren().getList()).isEqualTo(0))));
 
         var vert = new VerticalComp(list);
-        if (condensedStyle) {
-            vert.styleClass("condensed");
-        }
         return vert.styleClass("store-section-mini-comp")
                 .apply(struc -> {
                     struc.get().setFillWidth(true);

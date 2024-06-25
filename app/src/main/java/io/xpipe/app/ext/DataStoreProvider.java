@@ -51,6 +51,10 @@ public interface DataStoreProvider {
                 throw new ExtensionException(
                         String.format("Store class %s is not a Jacksonized value", storeClass.getSimpleName()));
             }
+
+            if (getUsageCategory() == null) {
+                throw new ExtensionException("Provider %s does not have the usage category".formatted(getId()));
+            }
         }
     }
 
@@ -126,7 +130,28 @@ public interface DataStoreProvider {
         return null;
     }
 
-    default CreationCategory getCreationCategory() {
+    default DataStoreCreationCategory getCreationCategory() {
+        return null;
+    }
+
+    default DataStoreUsageCategory getUsageCategory() {
+        var cc = getCreationCategory();
+        if (cc == DataStoreCreationCategory.SHELL || cc  == DataStoreCreationCategory.HOST) {
+            return DataStoreUsageCategory.SHELL;
+        }
+
+        if (cc == DataStoreCreationCategory.COMMAND) {
+            return DataStoreUsageCategory.COMMAND;
+        }
+
+        if (cc == DataStoreCreationCategory.SCRIPT) {
+            return DataStoreUsageCategory.SCRIPT;
+        }
+
+        if (cc == DataStoreCreationCategory.DATABASE) {
+            return DataStoreUsageCategory.DATABASE;
+        }
+
         return null;
     }
 
@@ -209,15 +234,4 @@ public interface DataStoreProvider {
 
     List<Class<?>> getStoreClasses();
 
-    enum CreationCategory {
-        HOST,
-        DATABASE,
-        SHELL,
-        SERVICE,
-        COMMAND,
-        TUNNEL,
-        SCRIPT,
-        CLUSTER,
-        DESKTOP
-    }
 }

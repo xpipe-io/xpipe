@@ -134,6 +134,7 @@ open module io.xpipe.app {
             ShellStopExchangeImpl,
             ShellExecExchangeImpl,
             ConnectionQueryExchangeImpl,
+            ConnectionInfoExchangeImpl,
             DaemonOpenExchangeImpl,
             DaemonFocusExchangeImpl,
             DaemonStatusExchangeImpl,

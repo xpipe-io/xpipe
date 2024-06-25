@@ -118,6 +118,39 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /connection/info:
+    post:
+      summary: Connection information
+      description: |
+        Queries detailed information about a connection.
+      operationId: connectionInfo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectionInfoRequest'
+            examples:
+              simple:
+                summary: Standard
+                value: { "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b" }
+      responses:
+        '200':
+          description: The query was successful. The body contains the detailed connection information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectionInfoResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /shell/start:
     post:
       summary: Start shell connection
@@ -520,6 +553,64 @@ components:
               - type
       required:
         - found
+    ConnectionInfoRequest:
+      type: object
+      properties:
+        connection:
+          type: string
+          description: The unique id of the connection
+      required:
+        - connection
+    ConnectionInfoResponse:
+      type: object
+      properties:
+        connection:
+          type: string
+          description: The unique id of the connection
+        category:
+          type: array
+          description: The full category path as an array
+          items:
+            type: string
+            description: Individual category name
+        name:
+          type: array
+          description: The full connection name path as an array
+          items:
+            type: string
+            description: Individual connection name
+        type:
+          type: string
+          description: The type identifier of the connection
+        rawData:
+          type: object
+          description: The raw internal configuration data for the connection. The schema for these is internal and should not be relied upon.
+        usageCategory:
+          type: string
+          description: The category of how this connection can be used.
+          enum:
+            - shell
+            - tunnel
+            - script
+            - database
+            - command
+            - desktop
+            - group
+        lastModified:
+          type: string
+          description: The timestamp of when the connection configuration was last modified in ISO 8601.
+        lastUsed:
+          type: string
+          description: The timestamp of when the connection was last launched in ISO 8601.
+      required:
+        - connection
+        - category
+        - name
+        - type
+        - rawData
+        - usageCategory
+        - lastUsed
+        - lastModified
     HandshakeRequest:
       type: object
       properties:

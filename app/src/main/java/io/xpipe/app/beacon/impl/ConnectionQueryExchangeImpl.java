@@ -15,9 +15,9 @@ public class ConnectionQueryExchangeImpl extends ConnectionQueryExchange {
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) {
-        var catMatcher = Pattern.compile(toRegex("all connections/" + msg.getCategoryFilter()));
-        var conMatcher = Pattern.compile(toRegex(msg.getConnectionFilter()));
-        var typeMatcher = Pattern.compile(toRegex(msg.getTypeFilter()));
+        var catMatcher = Pattern.compile(toRegex("all connections/" + msg.getCategoryFilter().toLowerCase()));
+        var conMatcher = Pattern.compile(toRegex(msg.getConnectionFilter().toLowerCase()));
+        var typeMatcher = Pattern.compile(toRegex(msg.getTypeFilter().toLowerCase()));
 
         List<DataStoreEntry> found = new ArrayList<>();
         for (DataStoreEntry storeEntry : DataStorage.get().getStoreEntries()) {

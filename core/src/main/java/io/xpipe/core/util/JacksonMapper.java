@@ -27,6 +27,7 @@ public class JacksonMapper {
         objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         objectMapper.disable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE);
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         objectMapper.setVisibility(objectMapper
                 .getSerializationConfig()
                 .getDefaultVisibilityChecker()

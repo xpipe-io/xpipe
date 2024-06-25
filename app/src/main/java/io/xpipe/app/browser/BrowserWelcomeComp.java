@@ -101,7 +101,7 @@ public class BrowserWelcomeComp extends SimpleComp {
                     var disable = new SimpleBooleanProperty();
                     var entryButton = entryButton(e, disable);
                     var dirButton = dirButton(e, disable);
-                    return new HorizontalComp(List.of(entryButton, dirButton, Comp.hspacer(10))).apply(struc -> {
+                    return new HorizontalComp(List.of(entryButton, dirButton)).apply(struc -> {
                         ((Region) struc.get().getChildren().get(0))
                                 .prefHeightProperty()
                                 .bind(struc.get().heightProperty());
@@ -109,7 +109,7 @@ public class BrowserWelcomeComp extends SimpleComp {
                                 .prefHeightProperty()
                                 .bind(struc.get().heightProperty());
                     });
-                })
+                }, true)
                 .apply(struc -> {
                     VBox vBox = (VBox) struc.get().getContent();
                     vBox.setSpacing(10);
@@ -119,7 +119,7 @@ public class BrowserWelcomeComp extends SimpleComp {
 
         var layout = new VBox();
         layout.getStyleClass().add("welcome");
-        layout.setPadding(new Insets(40, 40, 40, 50));
+        layout.setPadding(new Insets(60, 40, 40, 50));
         layout.setSpacing(18);
         layout.getChildren().add(hbox);
         layout.getChildren().add(Comp.separator().hide(empty).createRegion());

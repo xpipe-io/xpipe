@@ -70,8 +70,7 @@ public final class BrowserBookmarkComp extends SimpleComp {
                         category,
                         StoreViewState.get().getEntriesListUpdateObservable()),
                 augment,
-                entryWrapper -> action.accept(entryWrapper, busy),
-                true);
+                entryWrapper -> action.accept(entryWrapper, busy));
 
         var r = section.vgrow().createRegion();
         r.getStyleClass().add("bookmark-list");

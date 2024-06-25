@@ -1,6 +1,7 @@
 .scroll-bar:vertical {
+    -fx-min-width: 0.4em;
     -fx-pref-width: 0.4em;
-    -fx-padding: 0.4em 1 0.3em 1;
+    -fx-padding: 0.1em 1 0.1em 1;
     -fx-background-color: transparent;
 }
 

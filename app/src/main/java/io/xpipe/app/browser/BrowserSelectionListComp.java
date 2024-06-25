@@ -59,7 +59,8 @@ public class BrowserSelectionListComp extends SimpleComp {
                         l.textProperty().bind(PlatformThread.sync(nameTransformation.apply(entry)));
                         return l;
                     });
-                })
+                },
+                false)
                 .styleClass("selected-file-list");
         return c.createRegion();
     }

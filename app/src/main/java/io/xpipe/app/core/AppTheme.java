@@ -42,11 +42,15 @@ public class AppTheme {
     private static boolean init;
 
     public static void initThemeHandlers(Stage stage) {
-        if (AppPrefs.get() == null) {
-            return;
-        }
-
         Runnable r = () -> {
+            if (AppPrefs.get() == null) {
+                var def = Theme.getDefaultLightTheme();
+                stage.getScene().getRoot().getStyleClass().add(def.getCssId());
+                stage.getScene().getRoot().pseudoClassStateChanged(LIGHT, true);
+                stage.getScene().getRoot().pseudoClassStateChanged(DARK, false);
+                return;
+            }
+
             AppPrefs.get().theme.subscribe(t -> {
                 Theme.ALL.forEach(
                         theme -> stage.getScene().getRoot().getStyleClass().remove(theme.getCssId()));

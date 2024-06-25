@@ -1,7 +1,7 @@
 package io.xpipe.app.comp.store;
 
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.util.ScanAlert;
@@ -26,35 +26,35 @@ public class StoreCreationMenu {
         menu.getItems().add(automatically);
         menu.getItems().add(new SeparatorMenuItem());
 
-        menu.getItems().add(category("addHost", "mdi2h-home-plus", DataStoreProvider.CreationCategory.HOST, "ssh"));
+        menu.getItems().add(category("addHost", "mdi2h-home-plus", DataStoreCreationCategory.HOST, "ssh"));
 
         menu.getItems()
-                .add(category("addDesktop", "mdi2c-camera-plus", DataStoreProvider.CreationCategory.DESKTOP, null));
+                .add(category("addDesktop", "mdi2c-camera-plus", DataStoreCreationCategory.DESKTOP, null));
 
         menu.getItems()
-                .add(category("addShell", "mdi2t-text-box-multiple", DataStoreProvider.CreationCategory.SHELL, null));
-
-        menu.getItems()
-                .add(category(
-                        "addScript", "mdi2s-script-text-outline", DataStoreProvider.CreationCategory.SCRIPT, "script"));
-
-        menu.getItems()
-                .add(category("addService", "mdi2c-cloud-braces", DataStoreProvider.CreationCategory.SERVICE, null));
+                .add(category("addShell", "mdi2t-text-box-multiple", DataStoreCreationCategory.SHELL, null));
 
         menu.getItems()
                 .add(category(
-                        "addTunnel", "mdi2v-vector-polyline-plus", DataStoreProvider.CreationCategory.TUNNEL, null));
+                        "addScript", "mdi2s-script-text-outline", DataStoreCreationCategory.SCRIPT, "script"));
+
+        menu.getItems()
+                .add(category("addService", "mdi2c-cloud-braces", DataStoreCreationCategory.SERVICE, null));
 
         menu.getItems()
                 .add(category(
-                        "addCommand", "mdi2c-code-greater-than", DataStoreProvider.CreationCategory.COMMAND, "cmd"));
+                        "addTunnel", "mdi2v-vector-polyline-plus", DataStoreCreationCategory.TUNNEL, null));
 
         menu.getItems()
-                .add(category("addDatabase", "mdi2d-database-plus", DataStoreProvider.CreationCategory.DATABASE, null));
+                .add(category(
+                        "addCommand", "mdi2c-code-greater-than", DataStoreCreationCategory.COMMAND, "cmd"));
+
+        menu.getItems()
+                .add(category("addDatabase", "mdi2d-database-plus", DataStoreCreationCategory.DATABASE, null));
     }
 
     private static MenuItem category(
-            String name, String graphic, DataStoreProvider.CreationCategory category, String defaultProvider) {
+            String name, String graphic, DataStoreCreationCategory category, String defaultProvider) {
         var sub = DataStoreProviders.getAll().stream()
                 .filter(dataStoreProvider -> category.equals(dataStoreProvider.getCreationCategory()))
                 .toList();
