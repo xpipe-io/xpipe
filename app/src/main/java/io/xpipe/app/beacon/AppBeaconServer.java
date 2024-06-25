@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.Executors;
+import java.util.regex.Pattern;
 
 public class AppBeaconServer {
 
@@ -161,8 +162,17 @@ public class AppBeaconServer {
     private void handleCatchAll(HttpExchange exchange) throws IOException {
         if (notFoundHtml == null) {
             AppResources.with(AppResources.XPIPE_MODULE, "misc/api.md", file -> {
-                notFoundHtml = MarkdownHelper.toHtml(
-                        Files.readString(file),
+                var md = Files.readString(file);
+                md = md.replaceAll(Pattern.quote( """
+                        > 400 Response
+                        
+                        ```json
+                        {
+                          "message": "string"
+                        }
+                        ```
+                        """), "");
+                notFoundHtml = MarkdownHelper.toHtml(md,
                         head -> {
                             return head + "\n" + "<link rel=\"stylesheet\" href=\"markdown.css\">"
                                     + "\n" + "<link rel=\"stylesheet\" href=\"github-dark.min.css\">"

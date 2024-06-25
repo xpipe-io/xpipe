@@ -279,29 +279,7 @@ All matching is case insensitive.
 ```json
 {
   "found": [
-    {
-      "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
-      "category": [
-        "default"
-      ],
-      "name": [
-        "local machine"
-      ],
-      "type": "local"
-    },
-    {
-      "connection": "e1462ddc-9beb-484c-bd91-bb666027e300",
-      "category": [
-        "default",
-        "category 1"
-      ],
-      "name": [
-        "ssh system",
-        "shell environments",
-        "bash"
-      ],
-      "type": "shellEnvironment"
-    }
+    "f0ec68aa-63f5-405c-b178-9a4454556d6b"
   ]
 }
 ```
@@ -459,7 +437,9 @@ Queries detailed information about a connection.
 
 ```json
 {
-  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+  "connections": [
+    "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+  ]
 }
 ```
 
@@ -471,22 +451,35 @@ Queries detailed information about a connection.
 
 > Example responses
 
-> 200 Response
+> The query was successful. The body contains the detailed connection information.
 
 ```json
 {
-  "connection": "string",
-  "category": [
-    "string"
-  ],
-  "name": [
-    "string"
-  ],
-  "type": "string",
-  "rawData": {},
-  "usageCategory": "shell",
-  "lastModified": "string",
-  "lastUsed": "string"
+  "infos": [
+    {
+      "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b",
+      "category": [
+        "default"
+      ],
+      "name": [
+        "local machine"
+      ],
+      "type": "local",
+      "rawData": {},
+      "usageCategory": "shell",
+      "lastUsed": "2024-05-31T11:53:02.408504600Z",
+      "lastModified": "2024-06-23T21:15:25.608097Z",
+      "state": {}
+    }
+  ]
+}
+```
+
+> 400 Response
+
+```json
+{
+  "message": "string"
 }
 ```
 
@@ -512,7 +505,9 @@ bearerAuth
 
 ```javascript
 const inputBody = '{
-  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+  "connections": [
+    "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+  ]
 }';
 const headers = {
   'Content-Type':'application/json',
@@ -544,7 +539,9 @@ headers = {
 
 data = """
 {
-  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+  "connections": [
+    "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+  ]
 }
 """
 r = requests.post('http://localhost:21723/connection/info', headers = headers, data = data)
@@ -564,7 +561,9 @@ var request = HttpRequest
         .header("Authorization", "Bearer {access-token}")
         .POST(HttpRequest.BodyPublishers.ofString("""
 {
-  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+  "connections": [
+    "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+  ]
 }
         """))
         .build();
@@ -607,7 +606,9 @@ curl -X POST http://localhost:21723/connection/info \
   -H 'Content-Type: application/json' \  -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
   --data '
 {
-  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+  "connections": [
+    "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+  ]
 }
 '
 
@@ -2011,16 +2012,7 @@ curl -X POST http://localhost:21723/fs/script \
 ```json
 {
   "found": [
-    {
-      "connection": "string",
-      "category": [
-        "string"
-      ],
-      "name": [
-        "string"
-      ],
-      "type": "string"
-    }
+    "string"
   ]
 }
 
@@ -2030,11 +2022,7 @@ curl -X POST http://localhost:21723/fs/script \
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|found|[object]|true|none|The found connections|
-|» connection|string|true|none|The unique id of the connection|
-|» category|[string]|true|none|The full category path as an array|
-|» name|[string]|true|none|The full connection name path as an array|
-|» type|string|true|none|The type identifier of the connection|
+|found|[string]|true|none|The found connections|
 
 <h2 id="tocS_ConnectionInfoRequest">ConnectionInfoRequest</h2>
 
@@ -2045,7 +2033,9 @@ curl -X POST http://localhost:21723/fs/script \
 
 ```json
 {
-  "connection": "string"
+  "connections": [
+    "string"
+  ]
 }
 
 ```
@@ -2054,7 +2044,7 @@ curl -X POST http://localhost:21723/fs/script \
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|connection|string|true|none|The unique id of the connection|
+|connections|[string]|true|none|The connections|
 
 <h2 id="tocS_ConnectionInfoResponse">ConnectionInfoResponse</h2>
 
@@ -2064,20 +2054,23 @@ curl -X POST http://localhost:21723/fs/script \
 <a id="tocsconnectioninforesponse"></a>
 
 ```json
-{
-  "connection": "string",
-  "category": [
-    "string"
-  ],
-  "name": [
-    "string"
-  ],
-  "type": "string",
-  "rawData": {},
-  "usageCategory": "shell",
-  "lastModified": "string",
-  "lastUsed": "string"
-}
+[
+  {
+    "connection": "string",
+    "category": [
+      "string"
+    ],
+    "name": [
+      "string"
+    ],
+    "type": "string",
+    "rawData": {},
+    "usageCategory": "shell",
+    "lastModified": "string",
+    "lastUsed": "string",
+    "state": {}
+  }
+]
 
 ```
 
@@ -2091,8 +2084,9 @@ curl -X POST http://localhost:21723/fs/script \
 |type|string|true|none|The type identifier of the connection|
 |rawData|object|true|none|The raw internal configuration data for the connection. The schema for these is internal and should not be relied upon.|
 |usageCategory|string|true|none|The category of how this connection can be used.|
-|lastModified|string|true|none|The timestamp of when the connection configuration was last modified in ISO 8601.|
-|lastUsed|string|true|none|The timestamp of when the connection was last launched in ISO 8601.|
+|lastModified|string|true|none|The timestamp of when the connection configuration was last modified in ISO 8601|
+|lastUsed|string|true|none|The timestamp of when the connection was last launched in ISO 8601|
+|state|object|true|none|The internal persistent state information about the connection|
 
 #### Enumerated Values
 

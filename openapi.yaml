@@ -104,10 +104,7 @@ paths:
               examples:
                 standard:
                   summary: Matched connections
-                  value: { "found": [ { "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b", "category": ["default"] ,
-                                        "name": ["local machine"], "type": "local" },
-                    { "connection": "e1462ddc-9beb-484c-bd91-bb666027e300", "category": ["default", "category 1"],
-                      "name": ["ssh system", "shell environments", "bash"], "type": "shellEnvironment" } ] }
+                  value: { "found": [ "f0ec68aa-63f5-405c-b178-9a4454556d6b"] }
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -133,7 +130,7 @@ paths:
             examples:
               simple:
                 summary: Standard
-                value: { "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b" }
+                value: { "connections": ["f0ec68aa-63f5-405c-b178-9a4454556d6b"] }
       responses:
         '200':
           description: The query was successful. The body contains the detailed connection information.
@@ -141,6 +138,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConnectionInfoResponse'
+              examples:
+                standard:
+                  summary: Connection information
+                  value: { "infos": [ { "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b", "category": ["default"] ,
+                                        "name": ["local machine"], "type": "local", "rawData" : {}, "usageCategory" : "shell",
+                                        "lastUsed" : "2024-05-31T11:53:02.408504600Z", "lastModified" : "2024-06-23T21:15:25.608097Z",
+                                        "state": {} } ] }
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -526,91 +530,78 @@ components:
           type: array
           description: The found connections
           items:
-            type: object
-            properties:
-              connection:
-                type: string
-                description: The unique id of the connection
-              category:
-                type: array
-                description: The full category path as an array
-                items:
-                  type: string
-                  description: Individual category name
-              name:
-                type: array
-                description: The full connection name path as an array
-                items:
-                  type: string
-                  description: Individual connection name
-              type:
-                type: string
-                description: The type identifier of the connection
-            required:
-              - connection
-              - category
-              - name
-              - type
+            type: string
+            description: The connection uuid
       required:
         - found
     ConnectionInfoRequest:
       type: object
       properties:
-        connection:
-          type: string
-          description: The unique id of the connection
+        connections:
+          type: array
+          description: The connections
+          items:
+            type: string
+            description: The unique id of the connection
       required:
-        - connection
+        - connections
     ConnectionInfoResponse:
-      type: object
-      properties:
-        connection:
-          type: string
-          description: The unique id of the connection
-        category:
-          type: array
-          description: The full category path as an array
-          items:
+      type: array
+      items:
+        type: object
+        description: The array of information for each connection
+        properties:
+          connection:
             type: string
-            description: Individual category name
-        name:
-          type: array
-          description: The full connection name path as an array
-          items:
+            description: The unique id of the connection
+          category:
+            type: array
+            description: The full category path as an array
+            items:
+              type: string
+              description: Individual category name
+          name:
+            type: array
+            description: The full connection name path as an array
+            items:
+              type: string
+              description: Individual connection name
+          type:
             type: string
-            description: Individual connection name
-        type:
-          type: string
-          description: The type identifier of the connection
-        rawData:
-          type: object
-          description: The raw internal configuration data for the connection. The schema for these is internal and should not be relied upon.
-        usageCategory:
-          type: string
-          description: The category of how this connection can be used.
-          enum:
-            - shell
-            - tunnel
-            - script
-            - database
-            - command
-            - desktop
-            - group
-        lastModified:
-          type: string
-          description: The timestamp of when the connection configuration was last modified in ISO 8601.
-        lastUsed:
-          type: string
-          description: The timestamp of when the connection was last launched in ISO 8601.
-      required:
-        - connection
-        - category
-        - name
-        - type
-        - rawData
-        - usageCategory
-        - lastUsed
-        - lastModified
+            description: The type identifier of the connection
+          rawData:
+            type: object
+            description: The raw internal configuration data for the connection. The schema for these is internal and should not be relied upon.
+          usageCategory:
+            type: string
+            description: The category of how this connection can be used.
+            enum:
+              - shell
+              - tunnel
+              - script
+              - database
+              - command
+              - desktop
+              - group
+          lastModified:
+            type: string
+            description: The timestamp of when the connection configuration was last modified in ISO 8601
+          lastUsed:
+            type: string
+            description: The timestamp of when the connection was last launched in ISO 8601
+          state:
+            type: object
+            description: The internal persistent state information about the connection
+        required:
+          - connection
+          - category
+          - name
+          - type
+          - rawData
+          - usageCategory
+          - lastUsed
+          - lastModified
+          - state
     HandshakeRequest:
       type: object
       properties:

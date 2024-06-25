@@ -8,6 +8,7 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 public class ConnectionInfoExchange extends BeaconInterface<ConnectionInfoExchange.Request> {
@@ -22,13 +23,22 @@ public class ConnectionInfoExchange extends BeaconInterface<ConnectionInfoExchan
     @Value
     public static class Request {
         @NonNull
-        UUID connection;
+        List<UUID> connections;
     }
 
     @Jacksonized
     @Builder
     @Value
     public static class Response {
+        @NonNull
+        List<@NonNull InfoResponse> infos;
+    }
+
+
+    @Jacksonized
+    @Builder
+    @Value
+    public static class InfoResponse {
         @NonNull
         UUID connection;
 
@@ -52,5 +62,8 @@ public class ConnectionInfoExchange extends BeaconInterface<ConnectionInfoExchan
 
         @NonNull
         Instant lastModified;
+
+        @NonNull
+        Object state;
     }
 }

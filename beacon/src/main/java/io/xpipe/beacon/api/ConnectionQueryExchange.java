@@ -1,8 +1,6 @@
 package io.xpipe.beacon.api;
 
 import io.xpipe.beacon.BeaconInterface;
-import io.xpipe.core.store.StorePath;
-
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -37,23 +35,6 @@ public class ConnectionQueryExchange extends BeaconInterface<ConnectionQueryExch
     @Value
     public static class Response {
         @NonNull
-        List<QueryResponse> found;
-    }
-
-    @Jacksonized
-    @Builder
-    @Value
-    public static class QueryResponse {
-        @NonNull
-        UUID connection;
-
-        @NonNull
-        StorePath category;
-
-        @NonNull
-        StorePath name;
-
-        @NonNull
-        String type;
+        List<@NonNull UUID> found;
     }
 }

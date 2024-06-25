@@ -1,11 +1,9 @@
 package io.xpipe.app.beacon.impl;
 
+import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.beacon.api.ConnectionQueryExchange;
-import io.xpipe.core.store.StorePath;
-
-import com.sun.net.httpserver.HttpExchange;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,23 +49,7 @@ public class ConnectionQueryExchangeImpl extends ConnectionQueryExchange {
             found.add(storeEntry);
         }
 
-        var mapped = new ArrayList<QueryResponse>();
-        for (DataStoreEntry e : found) {
-            var names = DataStorage.get()
-                    .getStorePath(DataStorage.get()
-                            .getStoreCategoryIfPresent(e.getCategoryUuid())
-                            .orElseThrow())
-                    .getNames();
-            var cat = new StorePath(names.subList(1, names.size()));
-            var obj = ConnectionQueryExchange.QueryResponse.builder()
-                    .connection(e.getUuid())
-                    .category(cat)
-                    .name(DataStorage.get().getStorePath(e))
-                    .type(e.getProvider().getId())
-                    .build();
-            mapped.add(obj);
-        }
-        return Response.builder().found(mapped).build();
+        return Response.builder().found(found.stream().map(entry -> entry.getUuid()).toList()).build();
     }
 
     private String toRegex(String pattern) {
