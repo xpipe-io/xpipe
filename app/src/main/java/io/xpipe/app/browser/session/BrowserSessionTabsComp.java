@@ -107,11 +107,11 @@ public class BrowserSessionTabsComp extends SimpleComp {
                         .indexOf(model.getSelectedEntry().getValue()));
 
         // Used for ignoring changes by the tabpane when new tabs are added. We want to perform the selections manually!
-        var modifying = new SimpleBooleanProperty();
+        var addingTab = new SimpleBooleanProperty();
 
         // Handle selection from platform
         tabs.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (modifying.get()) {
+            if (addingTab.get()) {
                 return;
             }
 
@@ -159,16 +159,14 @@ public class BrowserSessionTabsComp extends SimpleComp {
             while (c.next()) {
                 for (var r : c.getRemoved()) {
                     PlatformThread.runLaterIfNeeded(() -> {
-                        try (var b = new BooleanScope(modifying).start()) {
-                            var t = map.remove(r);
-                            tabs.getTabs().remove(t);
-                        }
+                        var t = map.remove(r);
+                        tabs.getTabs().remove(t);
                     });
                 }
 
                 for (var a : c.getAddedSubList()) {
                     PlatformThread.runLaterIfNeeded(() -> {
-                        try (var b = new BooleanScope(modifying).start()) {
+                        try (var b = new BooleanScope(addingTab).start()) {
                             var t = createTab(tabs, a);
                             map.put(a, t);
                             tabs.getTabs().add(t);

@@ -10,7 +10,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.MarkdownHelper;
-
+import io.xpipe.app.util.ShellTemp;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -19,11 +19,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-
 import lombok.SneakyThrows;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.function.UnaryOperator;
 
 public class MarkdownComp extends Comp<CompStructure<StackPane>> {
@@ -41,8 +41,30 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
         this.htmlTransformation = htmlTransformation;
     }
 
-    private String getHtml() {
-        return MarkdownHelper.toHtml(markdown.getValue(), s -> s, htmlTransformation, null);
+    private static Path TEMP;
+
+    private Path getHtmlFile(String markdown) {
+        if (TEMP == null) {
+            TEMP = ShellTemp.getLocalTempDataDirectory("wv");
+        }
+
+        var hash = markdown.hashCode();
+        var file = TEMP.resolve("md-" + hash + ".html");
+        if (Files.exists(file)) {
+            return file;
+        }
+
+        var html = MarkdownHelper.toHtml(markdown, s -> s, htmlTransformation, null);
+        try {
+            // Workaround for https://bugs.openjdk.org/browse/JDK-8199014
+            Files.createDirectories(file.getParent());
+            Files.writeString(file, html);
+            return file;
+        } catch (IOException e) {
+            // Any possible IO errors can occur here
+            ErrorEvent.fromThrowable(e).expected().handle();
+            return null;
+        }
     }
 
     @SneakyThrows
@@ -63,15 +85,10 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
         wv.getEngine().setUserStyleSheetLocation(url.toString());
 
         PlatformThread.sync(markdown).subscribe(val -> {
-            // Workaround for https://bugs.openjdk.org/browse/JDK-8199014
-            try {
-                var file = Files.createTempFile(null, ".html");
-                Files.writeString(file, getHtml());
+            var file = getHtmlFile(val);
+            if (file != null) {
                 var contentUrl = file.toUri();
                 wv.getEngine().load(contentUrl.toString());
-            } catch (IOException e) {
-                // Any possible IO errors can occur here
-                ErrorEvent.fromThrowable(e).expected().handle();
             }
         });
 

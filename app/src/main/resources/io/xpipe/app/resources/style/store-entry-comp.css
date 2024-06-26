@@ -1,6 +1,6 @@
 .store-list-comp.scroll-pane > .viewport .list-box-content {
     -fx-spacing: 8;
-    -fx-padding: 8 0 0 0;
+    -fx-padding: 8 0 8 0;
 }
 
 .store-list-comp.scroll-pane  {

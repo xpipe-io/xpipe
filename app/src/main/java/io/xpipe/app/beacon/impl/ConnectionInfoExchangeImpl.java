@@ -30,7 +30,7 @@ public class ConnectionInfoExchangeImpl extends ConnectionInfoExchange {
             var apply = InfoResponse.builder()
                     .lastModified(e.getLastModified())
                     .lastUsed(e.getLastUsed())
-                    .connection(e.getCategoryUuid())
+                    .connection(e.getUuid())
                     .category(cat)
                     .name(DataStorage.get().getStorePath(e))
                     .rawData(e.getStore())
