@@ -24,6 +24,7 @@ public class DaemonVersionExchange extends BeaconInterface<DaemonVersionExchange
     public static class Response {
 
         String version;
+        String canonicalVersion;
         String buildVersion;
         String jvmVersion;
     }

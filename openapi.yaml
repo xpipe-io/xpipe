@@ -405,6 +405,28 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /daemon/version:
+    post:
+      summary: Query daemon version
+      description: Retrieves version information from the daemon
+      operationId: daemonVersion
+      responses:
+        '200':
+          description: The operation was successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DaemonVersionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 components:
   schemas:
     ShellStartRequest:
@@ -620,6 +642,26 @@ components:
           description: The generated bearer token that can be used for authentication in this session
       required:
         - sessionToken
+    DaemonVersionResponse:
+      type: object
+      properties:
+        version:
+          type: string
+          description: The version of the running daemon
+        canonicalVersion:
+          type: string
+          description: The canonical version of the running daemon
+        buildVersion:
+          type: string
+          description: The build timestamp
+        jvmVersion:
+          type: string
+          description: The version of the Java Virtual Machine in which the daemon is running
+      required:
+        - version
+        - canonicalVersion
+        - buildVersion
+        - jvmVersion
     AuthMethod:
       discriminator:
         propertyName: type

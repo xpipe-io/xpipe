@@ -1,6 +1,7 @@
 package io.xpipe.app.beacon.impl;
 
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.AppVersion;
 import io.xpipe.beacon.api.DaemonVersionExchange;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -20,6 +21,7 @@ public class DaemonVersionExchangeImpl extends DaemonVersionExchange {
         var version = AppProperties.get().getVersion();
         return Response.builder()
                 .version(version)
+                .canonicalVersion(AppVersion.parse(version).map(appVersion -> appVersion.toString()).orElse("?"))
                 .buildVersion(AppProperties.get().getBuild())
                 .jvmVersion(jvmVersion)
                 .build();

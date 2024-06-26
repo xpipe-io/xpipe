@@ -84,8 +84,8 @@
     -fx-border-radius: 0;
 }
 
-.store-category-bar {
-    -fx-padding: 0.8em 0.5em 0.8em 0.5em;
+.store-category-bar > .viewport > .view > .scroll-comp-content {
+    -fx-padding: 0.5em 0.1em 0.5em 0.5em;
 }
 
 .store-sort-bar {

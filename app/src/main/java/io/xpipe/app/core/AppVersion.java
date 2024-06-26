@@ -27,6 +27,10 @@ public class AppVersion implements Comparable<AppVersion> {
         }
     }
 
+    public String toString() {
+        return major + "." + minor + "." + patch;
+    }
+
     public boolean greaterThan(AppVersion other) {
         return compareTo(other) > 0;
     }

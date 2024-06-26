@@ -1782,6 +1782,140 @@ curl -X POST http://localhost:21723/fs/script \
 
 </details>
 
+## Query daemon version
+
+<a id="opIddaemonVersion"></a>
+
+`POST /daemon/version`
+
+Retrieves version information from the daemon
+
+> Example responses
+
+> 200 Response
+
+```json
+{
+  "version": "string",
+  "canonicalVersion": "string",
+  "buildVersion": "string",
+  "jvmVersion": "string"
+}
+```
+
+<h3 id="query-daemon-version-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The operation was successful|[DaemonVersionResponse](#schemadaemonversionresponse)|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
+|403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
+|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
+
+<aside class="warning">
+To perform this operation, you must be authenticated by means of one of the following methods:
+bearerAuth
+</aside>
+
+<details>
+
+<summary>Code samples</summary>
+
+```javascript
+
+const headers = {
+  'Accept':'application/json',
+  'Authorization':'Bearer {access-token}'
+};
+
+fetch('http://localhost:21723/daemon/version',
+{
+  method: 'POST',
+
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```python
+import requests
+headers = {
+  'Accept': 'application/json',
+  'Authorization': 'Bearer {access-token}'
+}
+
+data = """
+undefined
+"""
+r = requests.post('http://localhost:21723/daemon/version', headers = headers, data = data)
+
+print(r.json())
+
+```
+
+```java
+var uri = URI.create("http://localhost:21723/daemon/version");
+var client = HttpClient.newHttpClient();
+var request = HttpRequest
+        .newBuilder()
+        .uri(uri)
+        .header("Accept", "application/json")
+        .header("Authorization", "Bearer {access-token}")
+        .POST(HttpRequest.BodyPublishers.ofString("""
+undefined
+        """))
+        .build();
+var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+System.out.println(response.statusCode());
+System.out.println(response.body());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Accept": []string{"application/json"},
+        "Authorization": []string{"Bearer {access-token}"},
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("POST", "http://localhost:21723/daemon/version", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+```shell
+# You can also use wget
+curl -X POST http://localhost:21723/daemon/version \
+  -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
+  --data '
+undefined
+'
+
+```
+
+</details>
+
 # Schemas
 
 <h2 id="tocS_ShellStartRequest">ShellStartRequest</h2>
@@ -2146,6 +2280,32 @@ curl -X POST http://localhost:21723/fs/script \
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
 |sessionToken|string|true|none|The generated bearer token that can be used for authentication in this session|
+
+<h2 id="tocS_DaemonVersionResponse">DaemonVersionResponse</h2>
+
+<a id="schemadaemonversionresponse"></a>
+<a id="schema_DaemonVersionResponse"></a>
+<a id="tocSdaemonversionresponse"></a>
+<a id="tocsdaemonversionresponse"></a>
+
+```json
+{
+  "version": "string",
+  "canonicalVersion": "string",
+  "buildVersion": "string",
+  "jvmVersion": "string"
+}
+
+```
+
+<h3>Properties</h3>
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|version|string|true|none|The version of the running daemon|
+|canonicalVersion|string|true|none|The canonical version of the running daemon|
+|buildVersion|string|true|none|The build timestamp|
+|jvmVersion|string|true|none|The version of the Java Virtual Machine in which the daemon is running|
 
 <h2 id="tocS_AuthMethod">AuthMethod</h2>
 
