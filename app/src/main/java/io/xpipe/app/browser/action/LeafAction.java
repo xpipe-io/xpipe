@@ -24,16 +24,16 @@ public interface LeafAction extends BrowserAction {
     default Button toButton(Region root, OpenFileSystemModel model, List<BrowserEntry> selected) {
         var b = new Button();
         b.setOnAction(event -> {
-            if (model == null) {
-                return;
-            }
-
             // Only accept shortcut actions in the current tab
             if (!model.equals(model.getBrowserModel().getSelectedEntry().getValue())) {
                 return;
             }
 
             ThreadHelper.runFailableAsync(() -> {
+                if (model.getFileSystem() == null) {
+                    return;
+                }
+
                 BooleanScope.executeExclusive(model.getBusy(), () -> {
                     // Start shell in case we exited
                     model.getFileSystem().getShell().orElseThrow().start();
@@ -83,6 +83,10 @@ public interface LeafAction extends BrowserAction {
         }));
         mi.setOnAction(event -> {
             ThreadHelper.runFailableAsync(() -> {
+                if (model.getFileSystem() == null) {
+                    return;
+                }
+
                 BooleanScope.executeExclusive(model.getBusy(), () -> {
                     // Start shell in case we exited
                     model.getFileSystem().getShell().orElseThrow().start();

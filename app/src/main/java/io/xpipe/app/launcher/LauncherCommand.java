@@ -17,12 +17,10 @@ import io.xpipe.beacon.api.DaemonOpenExchange;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeInstallation;
-
 import lombok.SneakyThrows;
 import picocli.CommandLine;
 
 import java.awt.*;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
@@ -119,9 +117,9 @@ public class LauncherCommand implements Callable<Integer> {
             // there might be another instance running, for example
             // starting up or listening on another port
             if (!AppDataLock.lock()) {
-                throw new IOException(
-                        "Data directory " + AppProperties.get().getDataDir().toString()
-                                + " is already locked. Is another instance running?");
+                TrackEvent.info("Data directory " + AppProperties.get().getDataDir().toString()
+                        + " is already locked. Is another instance running?");
+                OperationMode.halt(1);
             }
         } catch (Exception ex) {
             var cli = XPipeInstallation.getLocalDefaultCliExecutable();

@@ -121,6 +121,11 @@ public class StoreViewState {
                         .orElseThrow()));
     }
 
+    public void updateDisplay() {
+        allEntries.getList().forEach(e -> e.applyLastAccess());
+        toggleStoreListUpdate();
+    }
+
     public void toggleStoreListUpdate() {
         PlatformThread.runLaterIfNeeded(() -> {
             entriesListUpdateObservable.set(entriesListUpdateObservable.get() + 1);

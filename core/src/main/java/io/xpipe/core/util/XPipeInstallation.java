@@ -23,7 +23,7 @@ public class XPipeInstallation {
             .orElse(false);
 
     public static int getDefaultBeaconPort() {
-        var offset = isStaging() ? 2 : 0;
+        var offset = isStaging() ? 1 : 0;
         return 21721 + offset;
     }
 

@@ -12,7 +12,7 @@
 }
 
 .transfer {
-    -fx-padding: 0 8 8 8;
+    -fx-padding: 0 6 8 8;
 }
 
 .root:pretty .browser .transfer {
@@ -178,11 +178,8 @@
     -fx-border-color: -color-border-default;
 }
 
-.chooser-bar {
-    -fx-border-color: -color-border-default;
-    -fx-border-width: 1 0 0 0;
-    -fx-padding: 0.4em 0.7em;
-    -fx-background-color: -color-neutral-muted;
+.browser .chooser-selection {
+    -fx-background-color: -color-bg-default;
 }
 
 .browser .singular {
@@ -257,7 +254,7 @@
 
 .browser .split-pane-divider {
     -fx-border-color: -color-border-default, -color-bg-inset;
-    -fx-padding: 0 3;
+    -fx-padding: 0 2 0 3;
     -fx-border-width: 2.7em 0 0 0, 2.65em 0 0 0;
     -fx-opacity: 1.0;
     -fx-background-color: transparent;

@@ -25,6 +25,7 @@ public class StoreEntryWrapper {
     private final Property<String> name;
     private final DataStoreEntry entry;
     private final Property<Instant> lastAccess;
+    private final Property<Instant> lastAccessApplied = new SimpleObjectProperty<>();
     private final BooleanProperty disabled = new SimpleBooleanProperty();
     private final BooleanProperty busy = new SimpleBooleanProperty();
     private final Property<DataStoreEntry.Validity> validity = new SimpleObjectProperty<>();
@@ -44,6 +45,7 @@ public class StoreEntryWrapper {
         this.entry = entry;
         this.name = new SimpleStringProperty(entry.getName());
         this.lastAccess = new SimpleObjectProperty<>(entry.getLastAccess().minus(Duration.ofMillis(500)));
+        this.lastAccessApplied.setValue(lastAccess.getValue());
         ActionProvider.ALL.stream()
                 .filter(dataStoreActionProvider -> {
                     return !entry.isDisabled()
@@ -60,6 +62,10 @@ public class StoreEntryWrapper {
                 });
         this.notes = new SimpleObjectProperty<>(new StoreNotes(entry.getNotes(), entry.getNotes()));
         setupListeners();
+    }
+
+    public void applyLastAccess() {
+        this.lastAccessApplied.setValue(lastAccess.getValue());
     }
 
     public void moveTo(DataStoreCategory category) {

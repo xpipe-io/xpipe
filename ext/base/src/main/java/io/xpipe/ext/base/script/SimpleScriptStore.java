@@ -32,15 +32,20 @@ public class SimpleScriptStore extends ScriptStore implements ShellInitCommand.T
     private final boolean shellScript;
     private final boolean fileScript;
 
-    public String assemble(ShellControl shellControl) {
+    public boolean isCompatible(ShellControl shellControl) {
         var targetType = shellControl.getOriginalShellDialect();
-        if (minimumDialect.isCompatibleTo(targetType)) {
+        return minimumDialect.isCompatibleTo(targetType);
+    }
+
+    public String assemble(ShellControl shellControl) {
+        if (isCompatible(shellControl)) {
             var shebang = commands.startsWith("#");
             // Fix new lines and shebang
             var fixedCommands = commands.lines()
                     .skip(shebang ? 1 : 0)
                     .collect(Collectors.joining(
                             shellControl.getShellDialect().getNewLine().getNewLineString()));
+            var targetType = shellControl.getOriginalShellDialect();
             var script = ScriptHelper.createExecScript(targetType, shellControl, fixedCommands);
             return targetType.sourceScriptCommand(shellControl, script.toString());
         }

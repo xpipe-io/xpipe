@@ -14,6 +14,7 @@ import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
@@ -31,6 +32,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Rectangle;
 
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -103,6 +105,17 @@ public class BrowserChooserComp extends SimpleComp {
                 action,
                 bookmarkTopBar.getCategory(),
                 bookmarkTopBar.getFilter());
+        var bookmarksContainer = new StackComp(List.of(bookmarksList)).styleClass("bookmarks-container");
+        bookmarksContainer
+                .apply(struc -> {
+                    var rec = new Rectangle();
+                    rec.widthProperty().bind(struc.get().widthProperty());
+                    rec.heightProperty().bind(struc.get().heightProperty());
+                    rec.setArcHeight(7);
+                    rec.setArcWidth(7);
+                    struc.get().getChildren().getFirst().setClip(rec);
+                })
+                .vgrow();
 
         var stack = Comp.of(() -> {
             var s = new StackPane();
@@ -118,7 +131,7 @@ public class BrowserChooserComp extends SimpleComp {
             return s;
         });
 
-        var vertical = new VerticalComp(List.of(bookmarkTopBar, bookmarksList)).styleClass("left");
+        var vertical = new VerticalComp(List.of(bookmarkTopBar, bookmarksContainer)).styleClass("left");
         var splitPane = new SideSplitPaneComp(vertical, stack)
                 .withInitialWidth(AppLayoutModel.get().getSavedState().getBrowserConnectionsWidth())
                 .withOnDividerChange(AppLayoutModel.get().getSavedState()::setBrowserConnectionsWidth)
@@ -163,6 +176,7 @@ public class BrowserChooserComp extends SimpleComp {
                                                 var field = new TextField(
                                                         s.getRawFileEntry().getPath());
                                                 field.setEditable(false);
+                                                field.getStyleClass().add("chooser-selection");
                                                 HBox.setHgrow(field, Priority.ALWAYS);
                                                 return field;
                                             })

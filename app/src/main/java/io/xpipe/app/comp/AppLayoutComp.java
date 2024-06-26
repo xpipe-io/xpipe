@@ -2,6 +2,7 @@ package io.xpipe.app.comp;
 
 import io.xpipe.app.comp.base.MultiContentComp;
 import io.xpipe.app.comp.base.SideMenuBarComp;
+import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.fxcomps.Comp;
@@ -51,6 +52,10 @@ public class AppLayoutComp extends Comp<CompStructure<Pane>> {
             if (o != null && o.equals(model.getEntries().get(2))) {
                 AppPrefs.get().save();
                 DataStorage.get().saveAsync();
+            }
+
+            if (o != null && o.equals(model.getEntries().get(1))) {
+                StoreViewState.get().updateDisplay();
             }
         });
         pane.addEventHandler(KeyEvent.KEY_PRESSED, event -> {

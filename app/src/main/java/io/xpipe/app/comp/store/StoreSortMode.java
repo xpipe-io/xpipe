@@ -56,7 +56,7 @@ public interface StoreSortMode {
                                     .map(this::representative),
                             Stream.of(s))
                     .max(Comparator.comparing(
-                            section -> section.getWrapper().getEntry().getLastAccess()))
+                            section -> section.getWrapper().getLastAccessApplied().getValue()))
                     .orElseThrow();
         }
 
@@ -68,7 +68,7 @@ public interface StoreSortMode {
         @Override
         public Comparator<StoreSection> comparator() {
             return Comparator.comparing(e -> {
-                return e.getWrapper().getEntry().getLastAccess();
+                return e.getWrapper().getLastAccessApplied().getValue();
             });
         }
     };
@@ -84,7 +84,7 @@ public interface StoreSortMode {
                                     .map(this::representative),
                             Stream.of(s))
                     .max(Comparator.comparing(
-                            section -> section.getWrapper().getEntry().getLastAccess()))
+                            section -> section.getWrapper().getLastAccessApplied().getValue()))
                     .orElseThrow();
         }
 
@@ -96,7 +96,7 @@ public interface StoreSortMode {
         @Override
         public Comparator<StoreSection> comparator() {
             return Comparator.<StoreSection, Instant>comparing(e -> {
-                        return e.getWrapper().getEntry().getLastAccess();
+                        return e.getWrapper().getLastAccessApplied().getValue();
                     })
                     .reversed();
         }

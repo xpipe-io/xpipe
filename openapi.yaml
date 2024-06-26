@@ -28,7 +28,7 @@ externalDocs:
   description: XPipe - Plans and pricing
   url: https://xpipe.io/pricing
 servers:
-  - url: http://localhost:21723
+  - url: http://localhost:21721
     description: XPipe Daemon API
 paths:
   /handshake:

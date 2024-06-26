@@ -55,7 +55,7 @@ public class RunScriptAction implements BrowserAction, BranchAction {
                 continue;
             }
 
-            if (script.assemble(sc) == null) {
+            if (!script.isCompatible(sc)) {
                 continue;
             }
 

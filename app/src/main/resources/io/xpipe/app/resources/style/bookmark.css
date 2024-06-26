@@ -28,8 +28,8 @@
 .bookmarks-container {
     -fx-background-color: -color-border-default, -color-bg-subtle;
     -fx-background-radius: 4 0 0 4;
-    -fx-background-insets: 0 8 8 8, 1 9 9 9;
-    -fx-padding: 1 1 9 9;
+    -fx-background-insets: 0 7 8 8, 1 8 9 9;
+    -fx-padding: 1 0 9 9;
 }
 
 .root:pretty .bookmarks-container {
@@ -40,5 +40,5 @@
     -fx-min-height: 3.5em;
     -fx-pref-height: 3.5em;
     -fx-max-height: 3.5em;
-    -fx-padding: 9 8;
+    -fx-padding: 9 6 9 8;
 }
