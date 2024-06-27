@@ -146,16 +146,16 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
             vbox.getChildren().add(b.createRegion());
         }
 
-        {
-            var b = new IconButtonComp("mdi2t-translate", () -> Hyperlinks.open(Hyperlinks.TRANSLATE))
-                    .tooltipKey("translate")
-                    .apply(simpleBorders)
-                    .accessibleTextKey("translate");
-            b.apply(struc -> {
-                AppFont.setSize(struc.get(), 2);
-            });
-            vbox.getChildren().add(b.createRegion());
-        }
+//        {
+//            var b = new IconButtonComp("mdi2t-translate", () -> Hyperlinks.open(Hyperlinks.TRANSLATE))
+//                    .tooltipKey("translate")
+//                    .apply(simpleBorders)
+//                    .accessibleTextKey("translate");
+//            b.apply(struc -> {
+//                AppFont.setSize(struc.get(), 2);
+//            });
+//            vbox.getChildren().add(b.createRegion());
+//        }
 
         {
             var b = new IconButtonComp(

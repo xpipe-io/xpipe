@@ -1,6 +1,7 @@
 package io.xpipe.ext.base.service;
 
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.Validators;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FixedChildStore;
 import io.xpipe.core.store.NetworkTunnelStore;
@@ -20,6 +21,12 @@ public class FixedServiceStore extends AbstractServiceStore implements FixedChil
 
     private final DataStoreEntryRef<NetworkTunnelStore> host;
     private final DataStoreEntryRef<? extends DataStore> displayParent;
+
+    @Override
+    public void checkComplete() throws Throwable {
+        Validators.nonNull(displayParent);
+        Validators.nonNull(displayParent.getStore());
+    }
 
     @Override
     public DataStoreEntryRef<NetworkTunnelStore> getHost() {
