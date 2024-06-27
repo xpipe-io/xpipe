@@ -22,9 +22,9 @@ public class SyncCategory extends AppPrefsCategory {
                 .sub(new OptionsBuilder()
                         .name("enableGitStorage")
                         .description(
-                                AppProperties.get().isStaging() ? "enableGitStoragePtbDisabled" : "enableGitStorage")
+                                AppProperties.get().isStaging() && !prefs.developerMode().getValue() ? "enableGitStoragePtbDisabled" : "enableGitStorage")
                         .addToggle(prefs.enableGitStorage)
-                        .disable(AppProperties.get().isStaging())
+                        .disable(AppProperties.get().isStaging() && !prefs.developerMode().getValue())
                         .nameAndDescription("storageGitRemote")
                         .addString(prefs.storageGitRemote, true)
                         .disable(prefs.enableGitStorage.not())

@@ -92,7 +92,7 @@ public class BrowserTransferComp extends SimpleComp {
                 .hide(Bindings.isEmpty(syncItems));
 
         var bottom =
-                new HorizontalComp(List.of(dragNotice, Comp.hspacer(), downloadButton, Comp.hspacer(4), clearButton));
+                new HorizontalComp(List.of(Comp.hspacer(), dragNotice, Comp.hspacer(), downloadButton, Comp.hspacer(4), clearButton));
         var listBox = new VerticalComp(List.of(list, bottom))
                 .spacing(5)
                 .padding(new Insets(10, 10, 5, 10))
