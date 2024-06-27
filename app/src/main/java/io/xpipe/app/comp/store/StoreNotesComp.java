@@ -67,8 +67,12 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
         });
         n.addListener((observable, oldValue, s) -> {
             prop.set(s.getCurrent());
-            // Check for scene existence. If we exited the platform immediately after adding notes, this might throw an exception
-            if (s.getCurrent() != null && oldValue.getCommited() == null && oldValue.isCommited() && button.getScene() != null) {
+            // Check for scene existence. If we exited the platform immediately after adding notes, this might throw an
+            // exception
+            if (s.getCurrent() != null
+                    && oldValue.getCommited() == null
+                    && oldValue.isCommited()
+                    && button.getScene() != null) {
                 Platform.runLater(() -> {
                     popover.set(createPopover(popover, prop));
                     popover.get().show(button);

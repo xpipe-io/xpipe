@@ -21,7 +21,9 @@ public class DaemonVersionExchangeImpl extends DaemonVersionExchange {
         var version = AppProperties.get().getVersion();
         return Response.builder()
                 .version(version)
-                .canonicalVersion(AppVersion.parse(version).map(appVersion -> appVersion.toString()).orElse("?"))
+                .canonicalVersion(AppVersion.parse(version)
+                        .map(appVersion -> appVersion.toString())
+                        .orElse("?"))
                 .buildVersion(AppProperties.get().getBuild())
                 .jvmVersion(jvmVersion)
                 .build();

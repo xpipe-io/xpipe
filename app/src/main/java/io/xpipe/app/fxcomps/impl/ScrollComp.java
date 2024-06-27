@@ -3,6 +3,7 @@ package io.xpipe.app.fxcomps.impl;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
+
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
@@ -13,7 +14,9 @@ public class ScrollComp extends Comp<CompStructure<ScrollPane>> {
 
     private final Comp<?> content;
 
-    public ScrollComp(Comp<?> content) {this.content = content;}
+    public ScrollComp(Comp<?> content) {
+        this.content = content;
+    }
 
     @Override
     public CompStructure<ScrollPane> createBase() {

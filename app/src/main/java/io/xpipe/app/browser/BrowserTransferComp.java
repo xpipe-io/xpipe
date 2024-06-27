@@ -11,6 +11,7 @@ import io.xpipe.app.fxcomps.augment.DragOverPseudoClassAugment;
 import io.xpipe.app.fxcomps.impl.*;
 import io.xpipe.app.fxcomps.util.DerivedObservableList;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
@@ -18,6 +19,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Region;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.File;
@@ -89,7 +91,8 @@ public class BrowserTransferComp extends SimpleComp {
                 })
                 .hide(Bindings.isEmpty(syncItems));
 
-        var bottom = new HorizontalComp(List.of(dragNotice, Comp.hspacer(), downloadButton, Comp.hspacer(4), clearButton));
+        var bottom =
+                new HorizontalComp(List.of(dragNotice, Comp.hspacer(), downloadButton, Comp.hspacer(4), clearButton));
         var listBox = new VerticalComp(List.of(list, bottom))
                 .spacing(5)
                 .padding(new Insets(10, 10, 5, 10))

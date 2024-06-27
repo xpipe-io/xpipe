@@ -3,6 +3,7 @@ package io.xpipe.app.core.window;
 import javafx.stage.Window;
 
 import com.sun.jna.Library;
+import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.PointerType;
 import com.sun.jna.platform.win32.User32;
@@ -58,9 +59,41 @@ public class NativeWinWindowControl {
 
     public interface Dwm extends Library {
 
-        Dwm INSTANCE = com.sun.jna.Native.load("dwmapi", Dwm.class);
+        Dwm INSTANCE = Native.load("dwmapi", Dwm.class);
 
         WinNT.HRESULT DwmSetWindowAttribute(
                 WinDef.HWND hwnd, int dwAttribute, PointerType pvAttribute, int cbAttribute);
+    }
+
+    public enum DmwaWindowAttribute {
+        DWMWA_USE_IMMERSIVE_DARK_MODE(20),
+        DWMWA_SYSTEMBACKDROP_TYPE(38);
+
+        private final int value;
+
+        DmwaWindowAttribute(int value) {
+            this.value = value;
+        }
+
+        public int get() {
+            return value;
+        }
+    }
+
+    public enum DwmSystemBackDropType {
+        NONE(1),
+        MICA(2),
+        MICA_ALT(4),
+        ACRYLIC(3);
+
+        private final int value;
+
+        DwmSystemBackDropType(int value) {
+            this.value = value;
+        }
+
+        public int get() {
+            return value;
+        }
     }
 }

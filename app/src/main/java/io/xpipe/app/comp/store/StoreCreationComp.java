@@ -371,7 +371,8 @@ public class StoreCreationComp extends DialogComp {
                     if (staticDisplay) {
                         struc.get().requestFocus();
                     }
-                }).createRegion();
+                })
+                .createRegion();
     }
 
     private void commit(boolean validated) {

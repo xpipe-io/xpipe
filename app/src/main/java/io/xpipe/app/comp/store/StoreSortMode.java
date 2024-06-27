@@ -55,8 +55,8 @@ public interface StoreSortMode {
                                             .isUsable())
                                     .map(this::representative),
                             Stream.of(s))
-                    .max(Comparator.comparing(
-                            section -> section.getWrapper().getLastAccessApplied().getValue()))
+                    .max(Comparator.comparing(section ->
+                            section.getWrapper().getLastAccessApplied().getValue()))
                     .orElseThrow();
         }
 
@@ -83,8 +83,8 @@ public interface StoreSortMode {
                                             .isUsable())
                                     .map(this::representative),
                             Stream.of(s))
-                    .max(Comparator.comparing(
-                            section -> section.getWrapper().getLastAccessApplied().getValue()))
+                    .max(Comparator.comparing(section ->
+                            section.getWrapper().getLastAccessApplied().getValue()))
                     .orElseThrow();
         }
 

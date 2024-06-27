@@ -58,13 +58,13 @@ public class ModifiedStage extends Stage {
 
         var ctrl = new NativeWinWindowControl(stage);
         ctrl.setWindowAttribute(
-                DmwaWindowAttribute.DWMWA_USE_IMMERSIVE_DARK_MODE.get(),
+                NativeWinWindowControl.DmwaWindowAttribute.DWMWA_USE_IMMERSIVE_DARK_MODE.get(),
                 AppPrefs.get().theme.getValue().isDark());
         boolean backdrop;
         if (AppPrefs.get().performanceMode().get()) {
             backdrop = false;
         } else {
-            backdrop = ctrl.setWindowBackdrop(DwmSystemBackDropType.MICA_ALT);
+            backdrop = ctrl.setWindowBackdrop(NativeWinWindowControl.DwmSystemBackDropType.MICA_ALT);
         }
         stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), backdrop);
         stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), !backdrop);
