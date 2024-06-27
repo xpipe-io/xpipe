@@ -50,7 +50,6 @@ public class StoreEntryListComp extends SimpleComp {
                 StoreViewState.get().getAllEntries().getList(),
                 StoreViewState.get().getActiveCategory());
         var map = new LinkedHashMap<Comp<?>, ObservableValue<Boolean>>();
-        map.put(new StoreIntroComp(), showIntro);
         map.put(
                 new StoreNotFoundComp(),
                 Bindings.and(
@@ -66,6 +65,7 @@ public class StoreEntryListComp extends SimpleComp {
                         .getCurrentTopLevelSection()
                         .getShownChildren()
                         .getList())));
+        map.put(new StoreIntroComp(), showIntro);
 
         return new MultiContentComp(map).createRegion();
     }

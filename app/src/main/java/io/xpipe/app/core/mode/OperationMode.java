@@ -5,6 +5,7 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppDebugModeCheck;
 import io.xpipe.app.core.check.AppTempCheck;
 import io.xpipe.app.core.check.AppUserDirectoryCheck;
+import io.xpipe.app.core.window.ModifiedStage;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.launcher.LauncherCommand;
 import io.xpipe.app.prefs.AppPrefs;
@@ -114,6 +115,8 @@ public abstract class OperationMode {
             AppExtensionManager.init(true);
             AppI18n.init();
             AppPrefs.initLocal();
+            // Register stage theming early to make it apply for any potential early popups
+            ModifiedStage.init();
             AppBeaconServer.setupPort();
             TrackEvent.info("Finished initial setup");
         } catch (Throwable ex) {

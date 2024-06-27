@@ -85,11 +85,14 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
             var fs = entry.getStore().createFileSystem();
             if (fs.getShell().isPresent()) {
                 ProcessControlProvider.get().withDefaultScripts(fs.getShell().get());
+            }
+            fs.open();
+            // Listen to kill after init as the shell might get killed during init for certain reasons
+            if (fs.getShell().isPresent()) {
                 fs.getShell().get().onKill(() -> {
                     browserModel.closeAsync(this);
                 });
             }
-            fs.open();
             this.fileSystem = fs;
 
             this.cache = new OpenFileSystemCache(this);

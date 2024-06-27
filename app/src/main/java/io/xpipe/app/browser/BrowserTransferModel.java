@@ -63,8 +63,10 @@ public class BrowserTransferModel {
     }
 
     public void clear() {
-        cleanDirectory();
-        items.clear();
+        executor.submit(() -> {
+            cleanDirectory();
+            items.clear();
+        });
     }
 
     public void drop(OpenFileSystemModel model, List<BrowserEntry> entries) {

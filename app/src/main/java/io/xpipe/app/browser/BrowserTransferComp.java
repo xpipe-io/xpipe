@@ -12,6 +12,8 @@ import io.xpipe.app.fxcomps.impl.*;
 import io.xpipe.app.fxcomps.util.DerivedObservableList;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 
+import io.xpipe.app.util.ThreadHelper;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
@@ -89,7 +91,8 @@ public class BrowserTransferComp extends SimpleComp {
         var clearButton = new IconButtonComp("mdi2c-close", () -> {
                     model.clear();
                 })
-                .hide(Bindings.isEmpty(syncItems));
+                .hide(Bindings.isEmpty(syncItems))
+                .tooltipKey("clearTransferDescription");
 
         var bottom =
                 new HorizontalComp(List.of(Comp.hspacer(), dragNotice, Comp.hspacer(), downloadButton, Comp.hspacer(4), clearButton));
@@ -190,7 +193,11 @@ public class BrowserTransferComp extends SimpleComp {
                                     return;
                                 }
 
-                                model.clear();
+                                Platform.runLater(() -> {
+                                    ThreadHelper.runAsync(() -> {
+                                        model.clear();
+                                    });
+                                });
                                 event.consume();
                             });
                         }),

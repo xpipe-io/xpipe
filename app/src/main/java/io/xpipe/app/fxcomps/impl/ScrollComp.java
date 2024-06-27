@@ -27,6 +27,7 @@ public class ScrollComp extends Comp<CompStructure<ScrollPane>> {
         sp.setFitToWidth(true);
         sp.getStyleClass().add("scroll-comp");
         sp.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         sp.setSkin(new ScrollPaneSkin(sp));
 
         ScrollBar bar = (ScrollBar) sp.lookup(".scroll-bar:vertical");
