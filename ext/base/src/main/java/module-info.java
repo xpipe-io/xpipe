@@ -67,7 +67,6 @@ open module io.xpipe.ext.base {
             LaunchStoreAction,
             XPipeUrlAction,
             EditStoreAction,
-            DeleteChildrenStoreAction,
             BrowseStoreAction,
             ScanStoreAction;
     provides DataStoreProvider with

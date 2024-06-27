@@ -4,7 +4,6 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -22,6 +21,10 @@ public class VerticalComp extends Comp<CompStructure<VBox>> {
 
     public VerticalComp(ObservableList<Comp<?>> entries) {
         this.entries = PlatformThread.sync(entries);
+    }
+
+    public Comp<CompStructure<VBox>> spacing(double spacing) {
+        return apply(struc -> struc.get().setSpacing(spacing));
     }
 
     @Override

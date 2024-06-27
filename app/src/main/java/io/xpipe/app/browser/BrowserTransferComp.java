@@ -3,6 +3,7 @@ package io.xpipe.app.browser;
 import io.xpipe.app.browser.file.BrowserFileTransferMode;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
+import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
@@ -10,16 +11,13 @@ import io.xpipe.app.fxcomps.augment.DragOverPseudoClassAugment;
 import io.xpipe.app.fxcomps.impl.*;
 import io.xpipe.app.fxcomps.util.DerivedObservableList;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.image.Image;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
-
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.File;
@@ -77,9 +75,8 @@ public class BrowserTransferComp extends SimpleComp {
         var dragNotice = new LabelComp(syncAllDownloaded.flatMap(
                         aBoolean -> aBoolean ? AppI18n.observable("dragLocalFiles") : AppI18n.observable("dragFiles")))
                 .apply(struc -> struc.get().setGraphic(new FontIcon("mdi2h-hand-left")))
-                .hide(Bindings.isEmpty(syncItems))
-                .grow(true, false)
-                .apply(struc -> struc.get().setPadding(new Insets(8)));
+                .apply(struc -> AppFont.medium(struc.get()))
+                .hide(Bindings.isEmpty(syncItems));
 
         var downloadButton = new IconButtonComp("mdi2d-download", () -> {
                     model.download();
@@ -91,23 +88,15 @@ public class BrowserTransferComp extends SimpleComp {
                     model.clear();
                 })
                 .hide(Bindings.isEmpty(syncItems));
-        var clearPane = Comp.derive(
-                new HorizontalComp(List.of(downloadButton, clearButton))
-                        .apply(struc -> struc.get().setSpacing(10)),
-                button -> {
-                    var p = new AnchorPane(button);
-                    AnchorPane.setRightAnchor(button, 10.0);
-                    AnchorPane.setTopAnchor(button, 10.0);
-                    p.setPickOnBounds(false);
-                    return p;
-                });
 
-        var listBox = new VerticalComp(List.of(list, dragNotice))
+        var bottom = new HorizontalComp(List.of(dragNotice, Comp.hspacer(), downloadButton, Comp.hspacer(4), clearButton));
+        var listBox = new VerticalComp(List.of(list, bottom))
+                .spacing(5)
                 .padding(new Insets(10, 10, 5, 10))
                 .apply(struc -> struc.get().setMinHeight(200))
                 .apply(struc -> struc.get().setMaxHeight(200));
         var stack = LoadingOverlayComp.noProgress(
-                new StackComp(List.of(backgroundStack, listBox, clearPane))
+                new StackComp(List.of(backgroundStack, listBox))
                         .apply(DragOverPseudoClassAugment.create())
                         .apply(struc -> {
                             struc.get().setOnDragOver(event -> {

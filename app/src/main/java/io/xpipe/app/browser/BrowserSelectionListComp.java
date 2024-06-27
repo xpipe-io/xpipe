@@ -9,6 +9,7 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -63,8 +64,9 @@ public class BrowserSelectionListComp extends SimpleComp {
                                 return l;
                             });
                         },
-                        false)
-                .styleClass("selected-file-list");
+                        true)
+                .styleClass("selected-file-list")
+                .hide(Bindings.isEmpty(list));
         return c.createRegion();
     }
 }

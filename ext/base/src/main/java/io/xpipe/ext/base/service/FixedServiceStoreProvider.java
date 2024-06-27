@@ -16,7 +16,7 @@ public class FixedServiceStoreProvider extends AbstractServiceStoreProvider {
         FixedServiceStore s = store.getStore().asNeeded();
         return DataStorage.get()
                 .getOrCreateNewSyntheticEntry(
-                        s.getHost().get(),
+                        s.getDisplayParent().get(),
                         "Services",
                         FixedServiceGroupStore.builder()
                                 .parent(s.getDisplayParent().get().ref())

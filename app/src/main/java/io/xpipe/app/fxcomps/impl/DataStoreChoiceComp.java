@@ -228,6 +228,11 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
         icon.setPickOnBounds(false);
         AppFont.header(icon);
         var pane = new StackPane(r, icon);
+        pane.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                r.requestFocus();
+            }
+        });
         StackPane.setMargin(icon, new Insets(10));
         pane.setPickOnBounds(false);
         StackPane.setAlignment(icon, Pos.CENTER_RIGHT);

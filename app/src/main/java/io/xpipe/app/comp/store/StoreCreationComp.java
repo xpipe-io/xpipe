@@ -366,7 +366,12 @@ public class StoreCreationComp extends DialogComp {
                 .description("connectionNameDescription")
                 .addString(name, false)
                 .nonNull(propVal)
-                .build();
+                .buildComp()
+                .onSceneAssign(struc -> {
+                    if (staticDisplay) {
+                        struc.get().requestFocus();
+                    }
+                }).createRegion();
     }
 
     private void commit(boolean validated) {
@@ -391,9 +396,10 @@ public class StoreCreationComp extends DialogComp {
         var providerChoice = new StoreProviderChoiceComp(filter, provider, staticDisplay);
         if (staticDisplay) {
             providerChoice.apply(struc -> struc.get().setDisable(true));
+        } else {
+            providerChoice.onSceneAssign(struc -> struc.get().requestFocus());
         }
         providerChoice.apply(GrowAugment.create(true, false));
-        providerChoice.onSceneAssign(struc -> struc.get().requestFocus());
 
         provider.subscribe(n -> {
             if (n != null) {
