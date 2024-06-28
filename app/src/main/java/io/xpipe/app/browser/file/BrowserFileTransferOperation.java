@@ -200,6 +200,7 @@ public class BrowserFileTransferOperation {
             totalSize.addAndGet(source.getFileSystem().getFileSize(source.getPath()));
         }
 
+        var start = Instant.now();
         AtomicLong transferred = new AtomicLong();
         for (var e : flatFiles.entrySet()) {
             var sourceFile = e.getKey();
@@ -226,7 +227,7 @@ public class BrowserFileTransferOperation {
                     var fileSize = sourceFile.getFileSystem().getFileSize(sourceFile.getPath());
                     inputStream = sourceFile.getFileSystem().openInput(sourceFile.getPath());
                     outputStream = target.getFileSystem().openOutput(targetFile, fileSize);
-                    transferFile(sourceFile, inputStream, outputStream, transferred, totalSize);
+                    transferFile(sourceFile, inputStream, outputStream, transferred, totalSize, start);
                     inputStream.transferTo(OutputStream.nullOutputStream());
                 } catch (Exception ex) {
                     // Mark progress as finished to reset any progress display
@@ -288,11 +289,11 @@ public class BrowserFileTransferOperation {
             InputStream inputStream,
             OutputStream outputStream,
             AtomicLong transferred,
-            AtomicLong total)
+            AtomicLong total,
+            Instant start)
             throws IOException {
         // Initialize progress immediately prior to reading anything
-        var now = Instant.now();
-        updateProgress(new BrowserTransferProgress(sourceFile.getName(), transferred.get(), total.get(), now));
+        updateProgress(new BrowserTransferProgress(sourceFile.getName(), transferred.get(), total.get(), start));
 
         var bs = (int) Math.min(DEFAULT_BUFFER_SIZE, sourceFile.getSize());
         byte[] buffer = new byte[bs];
@@ -300,7 +301,7 @@ public class BrowserFileTransferOperation {
         while ((read = inputStream.read(buffer, 0, bs)) > 0) {
             outputStream.write(buffer, 0, read);
             transferred.addAndGet(read);
-            updateProgress(new BrowserTransferProgress(sourceFile.getName(), transferred.get(), total.get(), now));
+            updateProgress(new BrowserTransferProgress(sourceFile.getName(), transferred.get(), total.get(), start));
         }
     }
 }

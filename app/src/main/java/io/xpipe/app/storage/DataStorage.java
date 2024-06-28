@@ -170,7 +170,7 @@ public abstract class DataStorage {
                     Instant.now(),
                     true,
                     ALL_CONNECTIONS_CATEGORY_UUID,
-                    StoreSortMode.ALPHABETICAL_ASC,
+                    StoreSortMode.getDefault(),
                     false));
         }
 

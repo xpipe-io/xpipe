@@ -109,6 +109,10 @@ public interface StoreSortMode {
                 .findFirst();
     }
 
+    static StoreSortMode getDefault() {
+        return DATE_ASC;
+    }
+
     StoreSection representative(StoreSection s);
 
     String getId();

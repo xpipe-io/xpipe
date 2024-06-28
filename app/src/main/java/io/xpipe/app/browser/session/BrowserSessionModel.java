@@ -66,7 +66,7 @@ public class BrowserSessionModel extends BrowserAbstractSessionModel<BrowserSess
         }
 
         // Delete all files
-        localTransfersStage.clear();
+        localTransfersStage.clear(true);
     }
 
     public void openFileSystemAsync(

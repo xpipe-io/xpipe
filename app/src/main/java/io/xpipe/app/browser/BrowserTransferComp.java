@@ -11,9 +11,6 @@ import io.xpipe.app.fxcomps.augment.DragOverPseudoClassAugment;
 import io.xpipe.app.fxcomps.impl.*;
 import io.xpipe.app.fxcomps.util.DerivedObservableList;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-
-import io.xpipe.app.util.ThreadHelper;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
@@ -21,7 +18,6 @@ import javafx.scene.image.Image;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Region;
-
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.File;
@@ -89,7 +85,7 @@ public class BrowserTransferComp extends SimpleComp {
                 .disable(syncAllDownloaded)
                 .tooltipKey("downloadStageDescription");
         var clearButton = new IconButtonComp("mdi2c-close", () -> {
-                    model.clear();
+                    model.clear(true);
                 })
                 .hide(Bindings.isEmpty(syncItems))
                 .tooltipKey("clearTransferDescription");
@@ -193,11 +189,9 @@ public class BrowserTransferComp extends SimpleComp {
                                     return;
                                 }
 
-                                Platform.runLater(() -> {
-                                    ThreadHelper.runAsync(() -> {
-                                        model.clear();
-                                    });
-                                });
+                                // The files might not have been transferred yet
+                                // We can't listen to this, so just don't delete them
+                                model.clear(false);
                                 event.consume();
                             });
                         }),

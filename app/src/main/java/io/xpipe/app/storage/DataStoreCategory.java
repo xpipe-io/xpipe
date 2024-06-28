@@ -57,7 +57,7 @@ public class DataStoreCategory extends StorageElement {
                 Instant.now(),
                 true,
                 parentCategory,
-                StoreSortMode.ALPHABETICAL_ASC,
+                StoreSortMode.getDefault(),
                 false);
     }
 
@@ -70,7 +70,7 @@ public class DataStoreCategory extends StorageElement {
                 Instant.now(),
                 true,
                 parentCategory,
-                StoreSortMode.ALPHABETICAL_ASC,
+                StoreSortMode.getDefault(),
                 false);
     }
 
@@ -97,7 +97,7 @@ public class DataStoreCategory extends StorageElement {
         var sortMode = Optional.ofNullable(stateJson.get("sortMode"))
                 .map(JsonNode::asText)
                 .flatMap(string -> StoreSortMode.fromId(string))
-                .orElse(StoreSortMode.ALPHABETICAL_ASC);
+                .orElse(StoreSortMode.getDefault());
         var share =
                 Optional.ofNullable(json.get("share")).map(JsonNode::asBoolean).orElse(false);
         var lastUsed = Optional.ofNullable(stateJson.get("lastUsed"))

@@ -3,15 +3,15 @@ package io.xpipe.app.fxcomps.util;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.PlatformState;
-
+import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-
 import lombok.NonNull;
 
 import java.util.*;
@@ -20,6 +20,19 @@ import java.util.concurrent.CountDownLatch;
 
 @SuppressWarnings("unchecked")
 public class PlatformThread {
+
+    public static <T> ObservableValue<T> syncHighFrequency(ObservableValue<T> observable) {
+        var prop = new SimpleObjectProperty<T>(observable.getValue());
+        var timer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                prop.set(observable.getValue());
+            }
+        };
+        timer.start();
+        BindingsHelper.preserve(prop, observable);
+        return prop;
+    }
 
     public static Observable sync(Observable o) {
         Objects.requireNonNull(o);
