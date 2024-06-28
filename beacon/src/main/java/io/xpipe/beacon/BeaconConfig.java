@@ -44,6 +44,11 @@ public class BeaconConfig {
     }
 
     public static int getUsedPort() {
+        var beaconPort = System.getenv("BEACON_PORT");
+        if (beaconPort != null && !beaconPort.isBlank()) {
+            return Integer.parseInt(beaconPort);
+        }
+
         if (System.getProperty(BEACON_PORT_PROP) != null) {
             return Integer.parseInt(System.getProperty(BEACON_PORT_PROP));
         }
