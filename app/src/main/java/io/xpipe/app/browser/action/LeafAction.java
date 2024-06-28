@@ -30,11 +30,11 @@ public interface LeafAction extends BrowserAction {
             }
 
             ThreadHelper.runFailableAsync(() -> {
-                if (model.getFileSystem() == null) {
-                    return;
-                }
-
                 BooleanScope.executeExclusive(model.getBusy(), () -> {
+                    if (model.getFileSystem() == null) {
+                        return;
+                    }
+
                     // Start shell in case we exited
                     model.getFileSystem().getShell().orElseThrow().start();
                     execute(model, selected);
@@ -83,11 +83,11 @@ public interface LeafAction extends BrowserAction {
         }));
         mi.setOnAction(event -> {
             ThreadHelper.runFailableAsync(() -> {
-                if (model.getFileSystem() == null) {
-                    return;
-                }
-
                 BooleanScope.executeExclusive(model.getBusy(), () -> {
+                    if (model.getFileSystem() == null) {
+                        return;
+                    }
+
                     // Start shell in case we exited
                     model.getFileSystem().getShell().orElseThrow().start();
                     execute(model, selected);

@@ -123,7 +123,6 @@ public class BrowserFileTransferOperation {
         for (var file : files) {
             if (same) {
                 handleSingleOnSameFileSystem(file);
-                updateProgress(BrowserTransferProgress.finished(file.getName(), file.getSize()));
             } else {
                 handleSingleAcrossFileSystems(file);
             }
@@ -254,7 +253,6 @@ public class BrowserFileTransferOperation {
                     throw ex;
                 }
 
-                updateProgress(BrowserTransferProgress.finished(sourceFile.getName(), transferred.get()));
                 Exception exception = null;
                 try {
                     inputStream.close();

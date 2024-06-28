@@ -207,6 +207,10 @@ public final class BrowserFileListComp extends SimpleComp {
         table.setOnDragDropped(event -> {
             emptyEntry.onDragDrop(event);
         });
+        table.setOnDragDone(event -> {
+            emptyEntry.onDragDone(event);
+        });
+
 
         // Don't let the list view see this event
         // otherwise it unselects everything as it doesn't understand shift clicks
@@ -316,6 +320,10 @@ public final class BrowserFileListComp extends SimpleComp {
             row.setOnDragDropped(event -> {
                 listEntry.get().onDragDrop(event);
             });
+            row.setOnDragDone(event -> {
+                listEntry.get().onDragDone(event);
+            });
+
 
             return row;
         });

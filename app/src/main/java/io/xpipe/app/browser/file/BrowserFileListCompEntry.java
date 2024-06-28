@@ -2,6 +2,7 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.BrowserClipboard;
 import io.xpipe.app.browser.BrowserSelectionListComp;
+import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.core.store.FileKind;
 
 import javafx.geometry.Point2D;
@@ -186,6 +187,9 @@ public class BrowserFileListCompEntry {
             return;
         }
 
+        if (model.getFileSystemModel().getBrowserModel() instanceof BrowserSessionModel sessionModel) {
+            sessionModel.getDraggingFiles().setValue(true);
+        }
         var selected = model.getSelection();
         Dragboard db = row.startDragAndDrop(TransferMode.COPY);
         db.setContent(BrowserClipboard.startDrag(
@@ -198,6 +202,13 @@ public class BrowserFileListCompEntry {
 
         event.setDragDetect(true);
         event.consume();
+    }
+
+    public void onDragDone(DragEvent event) {
+        if (model.getFileSystemModel().getBrowserModel() instanceof BrowserSessionModel sessionModel) {
+            sessionModel.getDraggingFiles().setValue(false);
+            event.consume();
+        }
     }
 
     private void acceptDrag(DragEvent event) {

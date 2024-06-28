@@ -13,6 +13,7 @@ import io.xpipe.core.store.FileSystemStore;
 import io.xpipe.core.util.FailableFunction;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 
 import lombok.Getter;
@@ -26,6 +27,7 @@ public class BrowserSessionModel extends BrowserAbstractSessionModel<BrowserSess
 
     private final BrowserTransferModel localTransfersStage = new BrowserTransferModel(this);
     private final BrowserSavedState savedState;
+    private final Property<Boolean> draggingFiles = new SimpleBooleanProperty();
 
     public BrowserSessionModel(BrowserSavedState savedState) {
         this.savedState = savedState;

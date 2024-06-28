@@ -3,6 +3,7 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.core.store.FileKind;
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.FileSystem;
 
 import javafx.scene.control.Alert;
@@ -79,7 +80,7 @@ public class BrowserAlerts {
     private static String getSelectedElementsString(List<FileSystem.FileEntry> source) {
         var namesHeader = AppI18n.get("selectedElements");
         var names = namesHeader + "\n"
-                + source.stream().limit(10).map(entry -> "- " + entry.getPath()).collect(Collectors.joining("\n"));
+                + source.stream().limit(10).map(entry -> "- " + new FilePath(entry.getPath()).getFileName()).collect(Collectors.joining("\n"));
         if (source.size() > 10) {
             names += "\n+ " + (source.size() - 10) + " ...";
         }

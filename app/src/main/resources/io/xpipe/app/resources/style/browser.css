@@ -21,9 +21,14 @@
 
 .transfer > * {
     -fx-border-radius: 4;
+    -fx-background-radius: 4;
     -fx-border-color: -color-border-default;
     -fx-border-width: 1;
     -fx-background-color: -color-bg-subtle;
+}
+
+.transfer:highlighted > * {
+    -fx-border-color: -color-accent-emphasis;
 }
 
 .transfer .button {
@@ -124,9 +129,11 @@
 }
 
 .browser .status-bar {
+    -fx-background-radius: 0 0 4 4;
     -fx-border-width: 1 0 0 0;
     -fx-border-color: -color-border-default;
-    -fx-background-insets: 0;
+    -fx-background-color: -color-bg-subtle;
+    -fx-padding: 5 8;
 }
 
 .browser .status-bar .progress {
@@ -220,11 +227,11 @@
 }
 
 .browser .browser-content {
-    -fx-padding: 6 0 6 0;
+    -fx-padding: 6 0 0 0;
     -fx-border-radius: 10 10 4 4;
     -fx-background-radius: 10 10 4 4;
     -fx-background-color: -color-bg-subtle, -color-bg-default;
-    -fx-background-insets: 0, 7 7 7 0;
+    -fx-background-insets: 0, 7 0 0 0;
     -fx-border-width: 1;
     -fx-border-color: -color-border-default;
 }
@@ -276,8 +283,7 @@
 }
 
 .browser .table-row-cell {
-    -fx-border-width: 0 0 0 5;
-    -fx-border-color: -color-bg-subtle;
+    -fx-padding: 0 0 0 5;
 }
 
 .browser .table-row-cell:empty {

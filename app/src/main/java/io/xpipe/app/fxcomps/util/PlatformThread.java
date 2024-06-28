@@ -3,7 +3,6 @@ package io.xpipe.app.fxcomps.util;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.PlatformState;
-import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -17,19 +16,27 @@ import lombok.NonNull;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("unchecked")
 public class PlatformThread {
 
     public static <T> ObservableValue<T> syncHighFrequency(ObservableValue<T> observable) {
         var prop = new SimpleObjectProperty<T>(observable.getValue());
-        var timer = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                prop.set(observable.getValue());
+        var applied = new AtomicBoolean(true);
+        observable.addListener((observable1, oldValue, newValue) -> {
+            if (Platform.isFxApplicationThread()) {
+                prop.set(newValue);
+            } else {
+                if (applied.get()) {
+                    applied.set(false);
+                    Platform.runLater(() -> {
+                        applied.set(true);
+                        prop.set(observable.getValue());
+                    });
+                }
             }
-        };
-        timer.start();
+        });
         BindingsHelper.preserve(prop, observable);
         return prop;
     }

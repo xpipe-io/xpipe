@@ -8,22 +8,20 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
+import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.LabelComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
-import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.HumanReadableFormat;
-
 import javafx.beans.binding.Bindings;
-import javafx.scene.control.ToolBar;
+import javafx.geometry.Pos;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
-
-import atlantafx.base.controls.Spacer;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Value
 @EqualsAndHashCode(callSuper = true)
@@ -33,23 +31,41 @@ public class BrowserStatusBarComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var bar = new ToolBar();
-        bar.getItems()
-                .setAll(
-                        createClipboardStatus().createRegion(),
-                        createProgressStatus().createRegion(),
-                        new Spacer(),
-                        createSelectionStatus().createRegion());
-        bar.getStyleClass().add("status-bar");
-        bar.setOnDragDetected(event -> {
+        var bar = new HorizontalComp(List.of(
+                createProgressNameStatus(),
+                createProgressStatus(),
+                createProgressEstimateStatus(),
+                Comp.hspacer(),
+                createClipboardStatus(),
+                createSelectionStatus()
+        ));
+        bar.spacing(15);
+        bar.styleClass("status-bar");
+
+        var r = bar.createRegion();
+        r.setOnDragDetected(event -> {
             event.consume();
-            bar.startFullDrag();
+            r.startFullDrag();
         });
-        AppFont.small(bar);
+        AppFont.small(r);
+        simulateEmptyCell(r);
+        return r;
+    }
 
-        simulateEmptyCell(bar);
-
-        return bar;
+    private Comp<?> createProgressEstimateStatus() {
+        var text = BindingsHelper.map(model.getProgress(), p -> {
+            if (p == null || p.done()) {
+                return null;
+            } else {
+                var time =
+                        p.getTotal() > 50_000_000 && p.elapsedTime().compareTo(Duration.of(200, ChronoUnit.MILLIS)) > 0
+                                ? HumanReadableFormat.duration(p.expectedTimeRemaining())
+                                : "...";
+                return time;
+            }
+        });
+        var progressComp = new LabelComp(text).styleClass("progress").apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT)).prefWidth(90);
+        return progressComp;
     }
 
     private Comp<?> createProgressStatus() {
@@ -59,16 +75,22 @@ public class BrowserStatusBarComp extends SimpleComp {
             } else {
                 var transferred = HumanReadableFormat.progressByteCount(p.getTransferred());
                 var all = HumanReadableFormat.byteCount(p.getTotal());
-                var name = (p.getName() != null ? " @ " + p.getName() + " " : "");
-                var time =
-                        p.getTotal() > 50_000_000 && p.elapsedTime().compareTo(Duration.of(200, ChronoUnit.MILLIS)) > 0
-                                ? " | " + HumanReadableFormat.duration(p.expectedTimeRemaining())
-                                : " | ...";
-                return transferred + " / " + all + name + time;
+                return transferred + " / " + all;
             }
         });
-        var synced = PlatformThread.syncHighFrequency(text);
-        var progressComp = new LabelComp(synced).styleClass("progress");
+        var progressComp = new LabelComp(text).styleClass("progress").apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT)).prefWidth(150);
+        return progressComp;
+    }
+
+    private Comp<?> createProgressNameStatus() {
+        var text = BindingsHelper.map(model.getProgress(), p -> {
+            if (p == null || p.done()) {
+                return null;
+            } else {
+                return p.getName();
+            }
+        });
+        var progressComp = new LabelComp(text).styleClass("progress").apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT)).prefWidth(250);
         return progressComp;
     }
 
@@ -135,6 +157,10 @@ public class BrowserStatusBarComp extends SimpleComp {
         r.setOnDragDropped(event -> {
             emptyEntry.onDragDrop(event);
         });
+        r.setOnDragDone(event -> {
+            emptyEntry.onDragDone(event);
+        });
+
 
         // Use status bar as an extension of file list
         new ContextMenuAugment<>(

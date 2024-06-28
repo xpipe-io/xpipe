@@ -13,6 +13,7 @@ import io.xpipe.app.fxcomps.util.DerivedObservableList;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
+import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.scene.image.Image;
 import javafx.scene.input.Dragboard;
@@ -196,6 +197,13 @@ public class BrowserTransferComp extends SimpleComp {
                             });
                         }),
                 syncDownloaded);
+
+        stack.apply(struc -> {
+            model.getBrowserSessionModel().getDraggingFiles().addListener((observable, oldValue, newValue) -> {
+                struc.get().pseudoClassStateChanged(PseudoClass.getPseudoClass("highlighted"),newValue);
+            });
+        });
+
         return stack.styleClass("transfer").createRegion();
     }
 }
