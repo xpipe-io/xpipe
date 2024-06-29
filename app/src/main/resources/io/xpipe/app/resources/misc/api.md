@@ -43,7 +43,7 @@ For development you can also skip the authentication step by disabling it in the
 
 Base URLs:
 
-* <a href="http://localhost:21723">http://localhost:21723</a>
+* <a href="http://localhost:21721">http://localhost:21721</a>
 
 Table of contents:
 [TOC]
@@ -132,7 +132,7 @@ const headers = {
   'Accept':'application/json'
 };
 
-fetch('http://localhost:21723/handshake',
+fetch('http://localhost:21721/handshake',
 {
   method: 'POST',
   body: inputBody,
@@ -165,14 +165,14 @@ data = """
   }
 }
 """
-r = requests.post('http://localhost:21723/handshake', headers = headers, data = data)
+r = requests.post('http://localhost:21721/handshake', headers = headers, data = data)
 
 print(r.json())
 
 ```
 
 ```java
-var uri = URI.create("http://localhost:21723/handshake");
+var uri = URI.create("http://localhost:21721/handshake");
 var client = HttpClient.newHttpClient();
 var request = HttpRequest
         .newBuilder()
@@ -214,7 +214,7 @@ func main() {
     }
 
     data := bytes.NewBuffer([]byte{jsonReq})
-    req, err := http.NewRequest("POST", "http://localhost:21723/handshake", data)
+    req, err := http.NewRequest("POST", "http://localhost:21721/handshake", data)
     req.Header = headers
 
     client := &http.Client{}
@@ -226,7 +226,7 @@ func main() {
 
 ```shell
 # You can also use wget
-curl -X POST http://localhost:21723/handshake \
+curl -X POST http://localhost:21721/handshake \
   -H 'Content-Type: application/json' \  -H 'Accept: application/json' \
   --data '
 {
@@ -324,7 +324,7 @@ const headers = {
   'Authorization':'Bearer {access-token}'
 };
 
-fetch('http://localhost:21723/connection/query',
+fetch('http://localhost:21721/connection/query',
 {
   method: 'POST',
   body: inputBody,
@@ -353,14 +353,14 @@ data = """
   "typeFilter": "*"
 }
 """
-r = requests.post('http://localhost:21723/connection/query', headers = headers, data = data)
+r = requests.post('http://localhost:21721/connection/query', headers = headers, data = data)
 
 print(r.json())
 
 ```
 
 ```java
-var uri = URI.create("http://localhost:21723/connection/query");
+var uri = URI.create("http://localhost:21721/connection/query");
 var client = HttpClient.newHttpClient();
 var request = HttpRequest
         .newBuilder()
@@ -399,7 +399,7 @@ func main() {
     }
 
     data := bytes.NewBuffer([]byte{jsonReq})
-    req, err := http.NewRequest("POST", "http://localhost:21723/connection/query", data)
+    req, err := http.NewRequest("POST", "http://localhost:21721/connection/query", data)
     req.Header = headers
 
     client := &http.Client{}
@@ -411,7 +411,7 @@ func main() {
 
 ```shell
 # You can also use wget
-curl -X POST http://localhost:21723/connection/query \
+curl -X POST http://localhost:21721/connection/query \
   -H 'Content-Type: application/json' \  -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
   --data '
 {
@@ -515,7 +515,7 @@ const headers = {
   'Authorization':'Bearer {access-token}'
 };
 
-fetch('http://localhost:21723/connection/info',
+fetch('http://localhost:21721/connection/info',
 {
   method: 'POST',
   body: inputBody,
@@ -544,14 +544,14 @@ data = """
   ]
 }
 """
-r = requests.post('http://localhost:21723/connection/info', headers = headers, data = data)
+r = requests.post('http://localhost:21721/connection/info', headers = headers, data = data)
 
 print(r.json())
 
 ```
 
 ```java
-var uri = URI.create("http://localhost:21723/connection/info");
+var uri = URI.create("http://localhost:21721/connection/info");
 var client = HttpClient.newHttpClient();
 var request = HttpRequest
         .newBuilder()
@@ -590,7 +590,7 @@ func main() {
     }
 
     data := bytes.NewBuffer([]byte{jsonReq})
-    req, err := http.NewRequest("POST", "http://localhost:21723/connection/info", data)
+    req, err := http.NewRequest("POST", "http://localhost:21721/connection/info", data)
     req.Header = headers
 
     client := &http.Client{}
@@ -602,7 +602,7 @@ func main() {
 
 ```shell
 # You can also use wget
-curl -X POST http://localhost:21723/connection/info \
+curl -X POST http://localhost:21721/connection/info \
   -H 'Content-Type: application/json' \  -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
   --data '
 {
@@ -681,7 +681,7 @@ const headers = {
   'Authorization':'Bearer {access-token}'
 };
 
-fetch('http://localhost:21723/shell/start',
+fetch('http://localhost:21721/shell/start',
 {
   method: 'POST',
   body: inputBody,
@@ -708,14 +708,14 @@ data = """
   "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
 }
 """
-r = requests.post('http://localhost:21723/shell/start', headers = headers, data = data)
+r = requests.post('http://localhost:21721/shell/start', headers = headers, data = data)
 
 print(r.json())
 
 ```
 
 ```java
-var uri = URI.create("http://localhost:21723/shell/start");
+var uri = URI.create("http://localhost:21721/shell/start");
 var client = HttpClient.newHttpClient();
 var request = HttpRequest
         .newBuilder()
@@ -752,7 +752,7 @@ func main() {
     }
 
     data := bytes.NewBuffer([]byte{jsonReq})
-    req, err := http.NewRequest("POST", "http://localhost:21723/shell/start", data)
+    req, err := http.NewRequest("POST", "http://localhost:21721/shell/start", data)
     req.Header = headers
 
     client := &http.Client{}
@@ -764,7 +764,7 @@ func main() {
 
 ```shell
 # You can also use wget
-curl -X POST http://localhost:21723/shell/start \
+curl -X POST http://localhost:21721/shell/start \
   -H 'Content-Type: application/json' \  -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
   --data '
 {
@@ -841,7 +841,7 @@ const headers = {
   'Authorization':'Bearer {access-token}'
 };
 
-fetch('http://localhost:21723/shell/stop',
+fetch('http://localhost:21721/shell/stop',
 {
   method: 'POST',
   body: inputBody,
@@ -868,14 +868,14 @@ data = """
   "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
 }
 """
-r = requests.post('http://localhost:21723/shell/stop', headers = headers, data = data)
+r = requests.post('http://localhost:21721/shell/stop', headers = headers, data = data)
 
 print(r.json())
 
 ```
 
 ```java
-var uri = URI.create("http://localhost:21723/shell/stop");
+var uri = URI.create("http://localhost:21721/shell/stop");
 var client = HttpClient.newHttpClient();
 var request = HttpRequest
         .newBuilder()
@@ -912,7 +912,7 @@ func main() {
     }
 
     data := bytes.NewBuffer([]byte{jsonReq})
-    req, err := http.NewRequest("POST", "http://localhost:21723/shell/stop", data)
+    req, err := http.NewRequest("POST", "http://localhost:21721/shell/stop", data)
     req.Header = headers
 
     client := &http.Client{}
@@ -924,7 +924,7 @@ func main() {
 
 ```shell
 # You can also use wget
-curl -X POST http://localhost:21723/shell/stop \
+curl -X POST http://localhost:21721/shell/stop \
   -H 'Content-Type: application/json' \  -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
   --data '
 {
@@ -1022,7 +1022,7 @@ const headers = {
   'Authorization':'Bearer {access-token}'
 };
 
-fetch('http://localhost:21723/shell/exec',
+fetch('http://localhost:21721/shell/exec',
 {
   method: 'POST',
   body: inputBody,
@@ -1050,14 +1050,14 @@ data = """
   "command": "echo $USER"
 }
 """
-r = requests.post('http://localhost:21723/shell/exec', headers = headers, data = data)
+r = requests.post('http://localhost:21721/shell/exec', headers = headers, data = data)
 
 print(r.json())
 
 ```
 
 ```java
-var uri = URI.create("http://localhost:21723/shell/exec");
+var uri = URI.create("http://localhost:21721/shell/exec");
 var client = HttpClient.newHttpClient();
 var request = HttpRequest
         .newBuilder()
@@ -1095,7 +1095,7 @@ func main() {
     }
 
     data := bytes.NewBuffer([]byte{jsonReq})
-    req, err := http.NewRequest("POST", "http://localhost:21723/shell/exec", data)
+    req, err := http.NewRequest("POST", "http://localhost:21721/shell/exec", data)
     req.Header = headers
 
     client := &http.Client{}
@@ -1107,7 +1107,7 @@ func main() {
 
 ```shell
 # You can also use wget
-curl -X POST http://localhost:21723/shell/exec \
+curl -X POST http://localhost:21721/shell/exec \
   -H 'Content-Type: application/json' \  -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
   --data '
 {
@@ -1190,7 +1190,7 @@ const headers = {
   'Authorization':'Bearer {access-token}'
 };
 
-fetch('http://localhost:21723/fs/blob',
+fetch('http://localhost:21721/fs/blob',
 {
   method: 'POST',
   body: inputBody,
@@ -1215,14 +1215,14 @@ headers = {
 data = """
 string
 """
-r = requests.post('http://localhost:21723/fs/blob', headers = headers, data = data)
+r = requests.post('http://localhost:21721/fs/blob', headers = headers, data = data)
 
 print(r.json())
 
 ```
 
 ```java
-var uri = URI.create("http://localhost:21723/fs/blob");
+var uri = URI.create("http://localhost:21721/fs/blob");
 var client = HttpClient.newHttpClient();
 var request = HttpRequest
         .newBuilder()
@@ -1257,7 +1257,7 @@ func main() {
     }
 
     data := bytes.NewBuffer([]byte{jsonReq})
-    req, err := http.NewRequest("POST", "http://localhost:21723/fs/blob", data)
+    req, err := http.NewRequest("POST", "http://localhost:21721/fs/blob", data)
     req.Header = headers
 
     client := &http.Client{}
@@ -1269,7 +1269,7 @@ func main() {
 
 ```shell
 # You can also use wget
-curl -X POST http://localhost:21723/fs/blob \
+curl -X POST http://localhost:21721/fs/blob \
   -H 'Content-Type: application/octet-stream' \  -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
   --data '
 string
@@ -1345,7 +1345,7 @@ const headers = {
   'Authorization':'Bearer {access-token}'
 };
 
-fetch('http://localhost:21723/fs/read',
+fetch('http://localhost:21721/fs/read',
 {
   method: 'POST',
   body: inputBody,
@@ -1373,14 +1373,14 @@ data = """
   "path": "/home/user/myfile.txt"
 }
 """
-r = requests.post('http://localhost:21723/fs/read', headers = headers, data = data)
+r = requests.post('http://localhost:21721/fs/read', headers = headers, data = data)
 
 print(r.json())
 
 ```
 
 ```java
-var uri = URI.create("http://localhost:21723/fs/read");
+var uri = URI.create("http://localhost:21721/fs/read");
 var client = HttpClient.newHttpClient();
 var request = HttpRequest
         .newBuilder()
@@ -1418,7 +1418,7 @@ func main() {
     }
 
     data := bytes.NewBuffer([]byte{jsonReq})
-    req, err := http.NewRequest("POST", "http://localhost:21723/fs/read", data)
+    req, err := http.NewRequest("POST", "http://localhost:21721/fs/read", data)
     req.Header = headers
 
     client := &http.Client{}
@@ -1430,7 +1430,7 @@ func main() {
 
 ```shell
 # You can also use wget
-curl -X POST http://localhost:21723/fs/read \
+curl -X POST http://localhost:21721/fs/read \
   -H 'Content-Type: application/json' \  -H 'Accept: application/octet-stream' \  -H 'Authorization: Bearer {access-token}' \
   --data '
 {
@@ -1509,7 +1509,7 @@ const headers = {
   'Authorization':'Bearer {access-token}'
 };
 
-fetch('http://localhost:21723/fs/write',
+fetch('http://localhost:21721/fs/write',
 {
   method: 'POST',
   body: inputBody,
@@ -1538,14 +1538,14 @@ data = """
   "path": "/home/user/myfile.txt"
 }
 """
-r = requests.post('http://localhost:21723/fs/write', headers = headers, data = data)
+r = requests.post('http://localhost:21721/fs/write', headers = headers, data = data)
 
 print(r.json())
 
 ```
 
 ```java
-var uri = URI.create("http://localhost:21723/fs/write");
+var uri = URI.create("http://localhost:21721/fs/write");
 var client = HttpClient.newHttpClient();
 var request = HttpRequest
         .newBuilder()
@@ -1584,7 +1584,7 @@ func main() {
     }
 
     data := bytes.NewBuffer([]byte{jsonReq})
-    req, err := http.NewRequest("POST", "http://localhost:21723/fs/write", data)
+    req, err := http.NewRequest("POST", "http://localhost:21721/fs/write", data)
     req.Header = headers
 
     client := &http.Client{}
@@ -1596,7 +1596,7 @@ func main() {
 
 ```shell
 # You can also use wget
-curl -X POST http://localhost:21723/fs/write \
+curl -X POST http://localhost:21721/fs/write \
   -H 'Content-Type: application/json' \  -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
   --data '
 {
@@ -1684,7 +1684,7 @@ const headers = {
   'Authorization':'Bearer {access-token}'
 };
 
-fetch('http://localhost:21723/fs/script',
+fetch('http://localhost:21721/fs/script',
 {
   method: 'POST',
   body: inputBody,
@@ -1712,14 +1712,14 @@ data = """
   "blob": "854afc45-eadc-49a0-a45d-9fb76a484304"
 }
 """
-r = requests.post('http://localhost:21723/fs/script', headers = headers, data = data)
+r = requests.post('http://localhost:21721/fs/script', headers = headers, data = data)
 
 print(r.json())
 
 ```
 
 ```java
-var uri = URI.create("http://localhost:21723/fs/script");
+var uri = URI.create("http://localhost:21721/fs/script");
 var client = HttpClient.newHttpClient();
 var request = HttpRequest
         .newBuilder()
@@ -1757,7 +1757,7 @@ func main() {
     }
 
     data := bytes.NewBuffer([]byte{jsonReq})
-    req, err := http.NewRequest("POST", "http://localhost:21723/fs/script", data)
+    req, err := http.NewRequest("POST", "http://localhost:21721/fs/script", data)
     req.Header = headers
 
     client := &http.Client{}
@@ -1769,7 +1769,7 @@ func main() {
 
 ```shell
 # You can also use wget
-curl -X POST http://localhost:21723/fs/script \
+curl -X POST http://localhost:21721/fs/script \
   -H 'Content-Type: application/json' \  -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
   --data '
 {
@@ -1830,7 +1830,7 @@ const headers = {
   'Authorization':'Bearer {access-token}'
 };
 
-fetch('http://localhost:21723/daemon/version',
+fetch('http://localhost:21721/daemon/version',
 {
   method: 'POST',
 
@@ -1854,14 +1854,14 @@ headers = {
 data = """
 undefined
 """
-r = requests.post('http://localhost:21723/daemon/version', headers = headers, data = data)
+r = requests.post('http://localhost:21721/daemon/version', headers = headers, data = data)
 
 print(r.json())
 
 ```
 
 ```java
-var uri = URI.create("http://localhost:21723/daemon/version");
+var uri = URI.create("http://localhost:21721/daemon/version");
 var client = HttpClient.newHttpClient();
 var request = HttpRequest
         .newBuilder()
@@ -1894,7 +1894,7 @@ func main() {
     }
 
     data := bytes.NewBuffer([]byte{jsonReq})
-    req, err := http.NewRequest("POST", "http://localhost:21723/daemon/version", data)
+    req, err := http.NewRequest("POST", "http://localhost:21721/daemon/version", data)
     req.Header = headers
 
     client := &http.Client{}
@@ -1906,7 +1906,7 @@ func main() {
 
 ```shell
 # You can also use wget
-curl -X POST http://localhost:21723/daemon/version \
+curl -X POST http://localhost:21721/daemon/version \
   -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
   --data '
 undefined

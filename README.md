@@ -144,7 +144,12 @@ In case you prefer to use an archive version that you can extract anywhere, you 
 - [Linux .tar.gz Portable (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-linux-x86_64.tar.gz)
 - [Linux .tar.gz Portable (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-linux-arm64.tar.gz)
 
-Note that this assumes that you have some basic packages for graphical systems already installed
+Alternatively, they are also AppImages available:
+
+- [Linux .AppImage Portable (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-linux-x86_64.AppImage)
+- [Linux .AppImage Portable (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-linux-arm64.AppImage)
+
+Note that the portable version assumes that you have some basic packages for graphical systems already installed
 as it is not a perfect standalone version. It should however run on most systems.
 
 ## macOS
