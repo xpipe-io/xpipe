@@ -549,14 +549,14 @@ public final class BrowserFileListComp extends SimpleComp {
             graphic.setAlignment(Pos.CENTER_LEFT);
             setGraphic(graphic);
 
-            InputHelper.onExactKeyCode(tableView, KeyCode.RIGHT, true, event -> {
+            InputHelper.onExactKeyCode(tableView, KeyCode.RIGHT, false, event -> {
                 var selected = fileList.getSelection();
                 if (selected.size() == 1 && selected.getFirst() == getTableRow().getItem()) {
                     ((ButtonBase) quickAccess).fire();
                     event.consume();
                 }
             });
-            InputHelper.onExactKeyCode(tableView, KeyCode.SPACE, true, event -> {
+            InputHelper.onExactKeyCode(tableView, KeyCode.SPACE, false, event -> {
                 var selected = fileList.getSelection();
                 // Only show one menu across all selected entries
                 if (selected.size() > 0 && selected.getLast() == getTableRow().getItem()) {
