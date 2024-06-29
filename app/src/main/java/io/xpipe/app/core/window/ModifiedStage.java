@@ -50,7 +50,7 @@ public class ModifiedStage extends Stage {
             return;
         }
 
-        if (OsType.getLocal() != OsType.WINDOWS || AppPrefs.get() == null) {
+        if (OsType.getLocal() != OsType.WINDOWS || AppPrefs.get() == null || AppPrefs.get().theme == null) {
             stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), false);
             stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), true);
             return;

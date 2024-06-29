@@ -50,6 +50,10 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
             TEMP = ShellTemp.getLocalTempDataDirectory("wv");
         }
 
+        if (markdown == null) {
+            return null;
+        }
+
         var hash = markdown.hashCode();
         var file = TEMP.resolve("md-" + hash + ".html");
         if (Files.exists(file)) {
