@@ -69,9 +69,9 @@ public interface CommandControl extends ProcessControl {
 
     void withStdoutOrThrow(FailableConsumer<InputStreamReader, Exception> c);
 
-    String readStdoutDiscardErr() throws Exception;
+    String[] readStdoutAndStderr() throws Exception;
 
-    String readJoinedOutputOrThrow() throws Exception;
+    String readStdoutDiscardErr() throws Exception;
 
     String readStderrDiscardStdout() throws Exception;
 

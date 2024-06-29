@@ -18,8 +18,10 @@ public class ShellExecExchangeImpl extends ShellExecExchange {
         AtomicReference<String> err = new AtomicReference<>();
         long exitCode;
         try (var command = existing.getControl().command(msg.getCommand()).start()) {
-            command.accumulateStdout(s -> out.set(s));
-            command.accumulateStderr(s -> err.set(s));
+            var r = command.readStdoutAndStderr();
+            out.set(r[0]);
+            err.set(r[1]);
+            command.close();
             exitCode = command.getExitCode();
         }
         return Response.builder()
