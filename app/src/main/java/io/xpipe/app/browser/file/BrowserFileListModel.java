@@ -2,6 +2,7 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystem;
@@ -101,21 +102,24 @@ public final class BrowserFileListModel {
         var fullPath = FileNames.join(fileSystemModel.getCurrentPath().get(), old.getFileName());
         var newFullPath = FileNames.join(fileSystemModel.getCurrentPath().get(), newName);
 
-        boolean exists;
-        try {
-            exists = fileSystemModel.getFileSystem().fileExists(newFullPath)
-                    || fileSystemModel.getFileSystem().directoryExists(newFullPath);
-        } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).handle();
-            return old;
-        }
+        // This check will fail on case-insensitive file systems when changing the case of the file
+        // So skip it in this case
+        var skipExistCheck = fileSystemModel.getFileSystem().getShell().orElseThrow().getOsType() == OsType.WINDOWS && old.getFileName()
+                .equalsIgnoreCase(newName);
+        if (!skipExistCheck) {
+            boolean exists;
+            try {
+                exists = fileSystemModel.getFileSystem().fileExists(newFullPath) || fileSystemModel.getFileSystem().directoryExists(newFullPath);
+            } catch (Exception e) {
+                ErrorEvent.fromThrowable(e).handle();
+                return old;
+            }
 
-        if (exists) {
-            ErrorEvent.fromMessage("Target " + newFullPath + " does already exist")
-                    .expected()
-                    .handle();
-            fileSystemModel.refresh();
-            return old;
+            if (exists) {
+                ErrorEvent.fromMessage("Target " + newFullPath + " does already exist").expected().handle();
+                fileSystemModel.refresh();
+                return old;
+            }
         }
 
         try {
