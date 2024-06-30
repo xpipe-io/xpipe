@@ -7,6 +7,7 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.process.ShellControl;
@@ -89,8 +90,11 @@ public class RunScriptAction implements BrowserAction, BranchAction {
                             if (model.getBrowserModel() instanceof BrowserSessionModel bm) {
                                 var content = e.getValue().assemble(sc);
                                 var script = ScriptHelper.createExecScript(sc, content);
-                                sc.executeSimpleCommand(
-                                        sc.getShellDialect().runScriptCommand(sc, script.toString()) + " " + args);
+                                try {
+                                    sc.executeSimpleCommand(sc.getShellDialect().runScriptCommand(sc, script.toString()) + " " + args);
+                                } catch (Exception ex) {
+                                    throw ErrorEvent.expected(ex);
+                                }
                             }
                         }
 
