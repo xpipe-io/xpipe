@@ -6,6 +6,7 @@ import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -32,7 +33,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
                 : Comp.empty();
         information.setGraphic(state.createRegion());
 
-        var info = wrapper.getEntry().getProvider().informationString(wrapper);
+        var info = wrapper.getEntry().getProvider() != null ? wrapper.getEntry().getProvider().informationString(wrapper) : new SimpleStringProperty();
         var summary = wrapper.getSummary();
         if (wrapper.getEntry().getProvider() != null) {
             information
