@@ -100,6 +100,7 @@ public class StoreViewState {
                 .setAll(FXCollections.observableArrayList(DataStorage.get().getStoreEntries().stream()
                         .map(StoreEntryWrapper::new)
                         .toList()));
+        allEntries.getList().forEach(e -> e.applyLastAccess());
         categories
                 .getList()
                 .setAll(FXCollections.observableArrayList(DataStorage.get().getStoreCategories().stream()

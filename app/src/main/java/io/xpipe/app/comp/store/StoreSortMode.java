@@ -1,5 +1,7 @@
 package io.xpipe.app.comp.store;
 
+import io.xpipe.core.store.FixedChildStore;
+
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
@@ -45,6 +47,17 @@ public interface StoreSortMode {
         }
     };
     StoreSortMode DATE_DESC = new StoreSortMode() {
+
+        private Instant date(StoreSection s) {
+            var la = s.getWrapper().getLastAccessApplied().getValue();
+            if (la == null) {
+                return s.getWrapper().getEntry().getStore() instanceof FixedChildStore ?
+                        Instant.MIN : s.getWrapper().getEntry().getLastAccess();
+            }
+
+            return la;
+        }
+
         @Override
         public StoreSection representative(StoreSection s) {
             return Stream.concat(
@@ -55,8 +68,8 @@ public interface StoreSortMode {
                                             .isUsable())
                                     .map(this::representative),
                             Stream.of(s))
-                    .max(Comparator.comparing(section ->
-                            section.getWrapper().getLastAccessApplied().getValue()))
+                    .max(Comparator.comparing(
+                            section -> date(section)))
                     .orElseThrow();
         }
 
@@ -68,11 +81,22 @@ public interface StoreSortMode {
         @Override
         public Comparator<StoreSection> comparator() {
             return Comparator.comparing(e -> {
-                return e.getWrapper().getLastAccessApplied().getValue();
+                return date(e);
             });
         }
     };
     StoreSortMode DATE_ASC = new StoreSortMode() {
+
+        private Instant date(StoreSection s) {
+            var la = s.getWrapper().getLastAccessApplied().getValue();
+            if (la == null) {
+                return s.getWrapper().getEntry().getStore() instanceof FixedChildStore ?
+                        Instant.MAX : s.getWrapper().getEntry().getLastAccess();
+            }
+
+            return la;
+        }
+
         @Override
         public StoreSection representative(StoreSection s) {
             return Stream.concat(
@@ -96,7 +120,7 @@ public interface StoreSortMode {
         @Override
         public Comparator<StoreSection> comparator() {
             return Comparator.<StoreSection, Instant>comparing(e -> {
-                        return e.getWrapper().getLastAccessApplied().getValue();
+                        return date(e);
                     })
                     .reversed();
         }

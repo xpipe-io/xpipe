@@ -45,7 +45,6 @@ public class StoreEntryWrapper {
         this.entry = entry;
         this.name = new SimpleStringProperty(entry.getName());
         this.lastAccess = new SimpleObjectProperty<>(entry.getLastAccess().minus(Duration.ofMillis(500)));
-        this.lastAccessApplied.setValue(lastAccess.getValue());
         ActionProvider.ALL.stream()
                 .filter(dataStoreActionProvider -> {
                     return !entry.isDisabled()
