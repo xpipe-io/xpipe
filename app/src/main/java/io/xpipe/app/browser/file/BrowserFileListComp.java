@@ -82,25 +82,35 @@ public final class BrowserFileListComp extends SimpleComp {
         filenameCol.setComparator(Comparator.comparing(String::toLowerCase));
         filenameCol.setSortType(ASCENDING);
         filenameCol.setCellFactory(col -> new FilenameCell(fileList.getEditing(), col.getTableView()));
+        filenameCol.setReorderable(false);
 
         var sizeCol = new TableColumn<BrowserEntry, Number>();
         sizeCol.textProperty().bind(AppI18n.observable("size"));
         sizeCol.setCellValueFactory(param -> new SimpleLongProperty(
                 param.getValue().getRawFileEntry().resolved().getSize()));
         sizeCol.setCellFactory(col -> new FileSizeCell());
+        sizeCol.setResizable(false);
+        sizeCol.setPrefWidth(120);
+        sizeCol.setReorderable(false);
 
         var mtimeCol = new TableColumn<BrowserEntry, Instant>();
         mtimeCol.textProperty().bind(AppI18n.observable("modified"));
         mtimeCol.setCellValueFactory(param -> new SimpleObjectProperty<>(
                 param.getValue().getRawFileEntry().resolved().getDate()));
         mtimeCol.setCellFactory(col -> new FileTimeCell());
+        mtimeCol.setResizable(false);
+        mtimeCol.setPrefWidth(150);
+        mtimeCol.setReorderable(false);
 
         var modeCol = new TableColumn<BrowserEntry, String>();
         modeCol.textProperty().bind(AppI18n.observable("attributes"));
         modeCol.setCellValueFactory(param -> new SimpleObjectProperty<>(
                 param.getValue().getRawFileEntry().resolved().getMode()));
         modeCol.setCellFactory(col -> new FileModeCell());
+        modeCol.setResizable(false);
+        modeCol.setPrefWidth(120);
         modeCol.setSortable(false);
+        modeCol.setReorderable(false);
 
         var table = new TableView<BrowserEntry>();
         table.setAccessibleText("Directory contents");
@@ -114,8 +124,6 @@ public final class BrowserFileListComp extends SimpleComp {
             return true;
         });
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
-        filenameCol.minWidthProperty().bind(table.widthProperty().multiply(0.5));
-
         table.setFixedCellSize(34.0);
 
         prepareTableSelectionModel(table);
