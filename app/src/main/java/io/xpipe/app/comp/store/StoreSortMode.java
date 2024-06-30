@@ -1,7 +1,5 @@
 package io.xpipe.app.comp.store;
 
-import io.xpipe.core.store.FixedChildStore;
-
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
@@ -51,8 +49,7 @@ public interface StoreSortMode {
         private Instant date(StoreSection s) {
             var la = s.getWrapper().getLastAccessApplied().getValue();
             if (la == null) {
-                return s.getWrapper().getEntry().getStore() instanceof FixedChildStore ?
-                        Instant.MIN : s.getWrapper().getEntry().getLastAccess();
+                return Instant.MAX;
             }
 
             return la;
@@ -90,8 +87,7 @@ public interface StoreSortMode {
         private Instant date(StoreSection s) {
             var la = s.getWrapper().getLastAccessApplied().getValue();
             if (la == null) {
-                return s.getWrapper().getEntry().getStore() instanceof FixedChildStore ?
-                        Instant.MAX : s.getWrapper().getEntry().getLastAccess();
+                return Instant.MIN;
             }
 
             return la;
@@ -107,8 +103,8 @@ public interface StoreSortMode {
                                             .isUsable())
                                     .map(this::representative),
                             Stream.of(s))
-                    .max(Comparator.comparing(section ->
-                            section.getWrapper().getLastAccessApplied().getValue()))
+                    .max(Comparator.comparing(
+                            section -> date(section)))
                     .orElseThrow();
         }
 
