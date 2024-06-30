@@ -130,6 +130,7 @@ public interface KittyTerminalType extends ExternalTerminalType {
                     return false;
                 }
 
+                var time = System.currentTimeMillis();
                 sc.executeSimpleCommand(CommandBuilder.of()
                         .add("kitty")
                         .add(
@@ -138,7 +139,9 @@ public interface KittyTerminalType extends ExternalTerminalType {
                                 "--listen-on",
                                 "unix:" + getSocket(),
                                 "--detach"));
-                ThreadHelper.sleep(1500);
+                var elapsed = System.currentTimeMillis() - time;
+                // Good heuristic on how long to wait
+                ThreadHelper.sleep(5 * elapsed);
                 return true;
             }
         }
