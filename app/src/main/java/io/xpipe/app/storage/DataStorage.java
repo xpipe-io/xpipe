@@ -346,7 +346,7 @@ public abstract class DataStorage {
         e.incrementBusyCounter();
         List<? extends DataStoreEntryRef<? extends FixedChildStore>> newChildren;
         try {
-            newChildren = ((FixedHierarchyStore) (e.getStore())).listChildren(e);
+            newChildren = ((FixedHierarchyStore) (e.getStore())).listChildren(e).stream().filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null).toList();
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
             return false;
