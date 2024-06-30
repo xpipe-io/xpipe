@@ -2,7 +2,7 @@
 plugins {
     id 'org.beryx.jlink' version '3.0.1'
     id "org.asciidoctor.jvm.convert" version "4.0.2"
-    id 'org.jreleaser' version '1.12.0'
+    id 'org.jreleaser' version '1.13.0'
     id("com.netflix.nebula.ospackage") version "11.9.1"
     id 'org.gradle.crypto.checksum' version '1.4.0'
     id 'signing'
