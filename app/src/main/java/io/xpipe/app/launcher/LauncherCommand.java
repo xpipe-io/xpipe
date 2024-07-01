@@ -81,11 +81,11 @@ public class LauncherCommand implements Callable<Integer> {
     }
 
     private void checkStart() {
-        try {
-            var port = AppBeaconServer.get().getPort();
-            var client = BeaconClient.tryEstablishConnection(
-                    port, BeaconClientInformation.Daemon.builder().build());
-            if (client.isPresent()) {
+        var port = AppBeaconServer.get().getPort();
+        var client = BeaconClient.tryEstablishConnection(
+                port, BeaconClientInformation.Daemon.builder().build());
+        if (client.isPresent()) {
+            try {
                 client.get()
                         .performRequest(DaemonFocusExchange.Request.builder()
                                 .mode(getEffectiveMode())
@@ -96,41 +96,41 @@ public class LauncherCommand implements Callable<Integer> {
                                     .arguments(inputs)
                                     .build());
                 }
-
-                if (OsType.getLocal().equals(OsType.MACOS)) {
-                    Desktop.getDesktop().setOpenURIHandler(e -> {
-                        try {
-                            client.get()
-                                    .performRequest(DaemonOpenExchange.Request.builder()
-                                            .arguments(List.of(e.getURI().toString()))
-                                            .build());
-                        } catch (Exception ex) {
-                            ErrorEvent.fromThrowable(ex).expected().omit().handle();
-                        }
-                    });
-                    ThreadHelper.sleep(1000);
-                }
-                TrackEvent.info("Another instance is already running on this port. Quitting ...");
-                OperationMode.halt(1);
+            } catch (Exception ex) {
+                var cli = XPipeInstallation.getLocalDefaultCliExecutable();
+                ErrorEvent.fromThrowable("Unable to connect to existing running daemon instance as it did not respond."
+                                + " Either try to kill the process xpiped manually or use the command \"" + cli
+                                + "\" daemon stop --force.", ex)
+                        .term()
+                        .expected()
+                        .handle();
             }
 
-            // Even in case we are unable to reach another beacon server
-            // there might be another instance running, for example
-            // starting up or listening on another port
-            if (!AppDataLock.lock()) {
-                TrackEvent.info(
-                        "Data directory " + AppProperties.get().getDataDir().toString()
-                                + " is already locked. Is another instance running?");
-                OperationMode.halt(1);
+            if (OsType.getLocal().equals(OsType.MACOS)) {
+                Desktop.getDesktop().setOpenURIHandler(e -> {
+                    try {
+                        client.get()
+                                .performRequest(DaemonOpenExchange.Request.builder()
+                                        .arguments(List.of(e.getURI().toString()))
+                                        .build());
+                    } catch (Exception ex) {
+                        ErrorEvent.fromThrowable(ex).expected().omit().handle();
+                    }
+                });
+                ThreadHelper.sleep(1000);
             }
-        } catch (Exception ex) {
-            var cli = XPipeInstallation.getLocalDefaultCliExecutable();
-            ErrorEvent.fromThrowable(ex)
-                    .term()
-                    .description("Unable to connect to existing running daemon instance as it did not respond."
-                            + " Either try to kill the process xpiped manually or use the command \"" + cli
-                            + "\" daemon stop --force.")
-                    .handle();
+            TrackEvent.info("Another instance is already running on this port. Quitting ...");
+            OperationMode.halt(1);
+        }
+
+        // Even in case we are unable to reach another beacon server
+        // there might be another instance running, for example
+        // starting up or listening on another port
+        if (!AppDataLock.lock()) {
+            TrackEvent.info(
+                    "Data directory " + AppProperties.get().getDataDir().toString()
+                            + " is already locked. Is another instance running?");
+            OperationMode.halt(1);
         }
     }
 
