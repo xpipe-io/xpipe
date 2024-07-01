@@ -64,7 +64,7 @@ public class AppWindowHelper {
     public static Stage sideWindow(
             String title, Function<Stage, Comp<?>> contentFunc, boolean bindSize, ObservableValue<Boolean> loading) {
         var stage = AppWindowBounds.centerStage();
-        stage.initStyle(StageStyle.UNIFIED);
+        ModifiedStage.prepareStage(stage);
         if (AppMainWindow.getInstance() != null) {
             stage.initOwner(AppMainWindow.getInstance().getStage());
         }
@@ -190,7 +190,7 @@ public class AppWindowHelper {
         }
         alert.getDialogPane().getScene().setFill(Color.TRANSPARENT);
         var stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.initStyle(StageStyle.UNIFIED);
+        ModifiedStage.prepareStage(stage);
         addIcons(stage);
         setupStylesheets(alert.getDialogPane().getScene());
         return alert;

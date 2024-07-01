@@ -10,10 +10,12 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import javafx.util.Duration;
 
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.SystemUtils;
 
 public class ModifiedStage extends Stage {
 
@@ -31,6 +33,12 @@ public class ModifiedStage extends Stage {
                 }
             }
         });
+    }
+
+    public static void prepareStage(Stage stage) {
+        if (SystemUtils.IS_OS_WINDOWS_11) {
+            stage.initStyle(StageStyle.UNIFIED);
+        }
     }
 
     private static void hookUpStage(Stage stage) {
