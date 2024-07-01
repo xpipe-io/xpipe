@@ -151,7 +151,7 @@ public class StoreEntryWrapper {
             summary.setValue(null);
         } else {
             try {
-                summary.setValue(entry.getProvider().summaryString(this));
+                summary.setValue(entry.getProvider() != null ? entry.getProvider().summaryString(this) : null);
             } catch (Exception ex) {
                 // Summary creation might fail or have a bug
                 ErrorEvent.fromThrowable(ex).handle();
@@ -162,18 +162,18 @@ public class StoreEntryWrapper {
             actionProviders.clear();
             defaultActionProvider.setValue(null);
         } else {
-            var defaultProvider = ActionProvider.ALL.stream()
-                    .filter(e -> entry.getStore() != null
-                            && e.getDefaultDataStoreCallSite() != null
-                            && e.getDefaultDataStoreCallSite()
-                                    .getApplicableClass()
-                                    .isAssignableFrom(entry.getStore().getClass())
-                            && e.getDefaultDataStoreCallSite().isApplicable(entry.ref()))
-                    .findFirst()
-                    .orElse(null);
-            this.defaultActionProvider.setValue(defaultProvider);
-
             try {
+                var defaultProvider = ActionProvider.ALL.stream()
+                        .filter(e -> entry.getStore() != null
+                                && e.getDefaultDataStoreCallSite() != null
+                                && e.getDefaultDataStoreCallSite()
+                                .getApplicableClass()
+                                .isAssignableFrom(entry.getStore().getClass())
+                                && e.getDefaultDataStoreCallSite().isApplicable(entry.ref()))
+                        .findFirst()
+                        .orElse(null);
+                this.defaultActionProvider.setValue(defaultProvider);
+
                 var newProviders = ActionProvider.ALL.stream()
                         .filter(dataStoreActionProvider -> {
                             return showActionProvider(dataStoreActionProvider);
