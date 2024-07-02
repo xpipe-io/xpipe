@@ -51,19 +51,19 @@ public class StandardStorage extends DataStorage {
         try {
             FileUtils.forceMkdir(dir.toFile());
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).terminal(true).build().handle();
+            ErrorEvent.fromThrowable("Unable to create vault directory", e).terminal(true).build().handle();
         }
 
         try {
             initSystemInfo();
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).build().handle();
+            ErrorEvent.fromThrowable("Unable to load vault system info", e).build().handle();
         }
 
         try {
             initVaultKey();
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).terminal(true).build().handle();
+            ErrorEvent.fromThrowable("Unable to load vault key file", e).terminal(true).build().handle();
         }
 
         var storesDir = getStoresDir();
@@ -74,7 +74,7 @@ public class StandardStorage extends DataStorage {
             FileUtils.forceMkdir(categoriesDir.toFile());
             FileUtils.forceMkdir(dataDir.toFile());
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).terminal(true).build().handle();
+            ErrorEvent.fromThrowable("Unable to create vault directory", e).terminal(true).build().handle();
         }
 
         try {
