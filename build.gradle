@@ -125,9 +125,7 @@ project.ext {
             // Disable this for now as it requires Windows 10+
             // '-XX:+UseZGC',
             "-Dvisualvm.display.name=XPipe",
-            "-Djavafx.preloader=io.xpipe.app.core.AppPreloader",
-            // This is primarily intended to fix Windows unified stage transparency issues (https://bugs.openjdk.org/browse/JDK-8329382)
-            "-Dprism.forceUploadingPainter=true"
+            "-Djavafx.preloader=io.xpipe.app.core.AppPreloader"
     ]
     if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
         jvmRunArgs += ["-Dapple.awt.application.appearance=system"]

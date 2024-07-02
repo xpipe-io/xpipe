@@ -10,6 +10,7 @@ import javafx.application.Platform;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.SystemUtils;
 
 import java.awt.*;
 import java.util.Optional;
@@ -110,6 +111,11 @@ public enum PlatformState {
                     default -> {}
                 }
             }
+        }
+
+        if (SystemUtils.IS_OS_WINDOWS_11) {
+            // This is primarily intended to fix Windows unified stage transparency issues (https://bugs.openjdk.org/browse/JDK-8329382)
+            System.setProperty("prism.forceUploadingPainter", "true");
         }
 
         try {
