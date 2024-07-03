@@ -1,0 +1,25 @@
+package io.xpipe.app.beacon.impl;
+
+import com.sun.net.httpserver.HttpExchange;
+import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.util.TerminalLauncher;
+import io.xpipe.beacon.BeaconClientException;
+import io.xpipe.beacon.api.ConnectionTerminalExchange;
+import io.xpipe.core.store.ShellStore;
+
+public class ConnectionTerminalExchangeImpl extends ConnectionTerminalExchange {
+
+    @Override
+    public Object handle(HttpExchange exchange, Request msg) throws Exception {
+        var e = DataStorage.get()
+                .getStoreEntryIfPresent(msg.getConnection())
+                .orElseThrow(() -> new BeaconClientException("Unknown connection: " + msg.getConnection()));
+        if (!(e.getStore() instanceof ShellStore shellStore)) {
+            throw new BeaconClientException("Not a shell connection");
+        }
+        try (var sc = shellStore.control().start()) {
+            TerminalLauncher.open(e,e.getName(),msg.getDirectory(),sc);
+        }
+        return Response.builder().build();
+    }
+}

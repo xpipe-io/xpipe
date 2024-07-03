@@ -31,8 +31,10 @@ You can get started by either using this page as an API reference or alternative
 The XPipe application will start up an HTTP server that can be used to send requests.
 Note that this server is HTTP-only for now as it runs only on localhost. HTTPS requests are not accepted.
 
-This allows you to programmatically manage remote systems.
-To start off, you can query connections based on various filters.
+You can either call the API directly or use one of the following community-made libraries:
+- [https://github.com/coandco/python_xpipe_client](https://github.com/coandco/python_xpipe_client)
+
+To start off with the API, you can query connections based on various filters.
 With the matched connections, you can start remote shell sessions for each one and run arbitrary commands in them.
 You get the command exit code and output as a response, allowing you to adapt your control flow based on command outputs.
 Any kind of passwords and other secrets are automatically provided by XPipe when establishing a shell connection.
@@ -300,7 +302,6 @@ All matching is case insensitive.
 |400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
 |401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
 |403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
-|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
 |500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
 
 <aside class="warning">
@@ -491,7 +492,6 @@ Queries detailed information about a connection.
 |400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
 |401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
 |403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
-|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
 |500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
 
 <aside class="warning">
@@ -616,6 +616,697 @@ curl -X POST http://localhost:21721/connection/info \
 
 </details>
 
+## Add new connection
+
+<a id="opIdconnectionAdd"></a>
+
+`POST /connection/add`
+
+Creates the new connection in the xpipe vault from raw json data.
+
+If an equivalent connection already exists, no new one will be added.
+
+> Body parameter
+
+```json
+{
+  "name": "my connection",
+  "category": "97458c07-75c0-4f9d-a06e-92d8cdf67c40",
+  "data": {
+    "type": "shellEnvironment",
+    "commands": null,
+    "host": {
+      "storeId": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+    },
+    "shell": "pwsh",
+    "elevated": false
+  }
+}
+```
+
+<h3 id="add-new-connection-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|body|body|[ConnectionAddRequest](#schemaconnectionaddrequest)|true|none|
+
+> Example responses
+
+> The request was successful. The connection was added.
+
+```json
+{
+  "connection": "36ad9716-a209-4f7f-9814-078d3349280c"
+}
+```
+
+> 400 Response
+
+```json
+{
+  "message": "string"
+}
+```
+
+<h3 id="add-new-connection-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The request was successful. The connection was added.|[ConnectionAddResponse](#schemaconnectionaddresponse)|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
+|403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
+
+<aside class="warning">
+To perform this operation, you must be authenticated by means of one of the following methods:
+bearerAuth
+</aside>
+
+<details>
+
+<summary>Code samples</summary>
+
+```javascript
+const inputBody = '{
+  "name": "my connection",
+  "category": "97458c07-75c0-4f9d-a06e-92d8cdf67c40",
+  "data": {
+    "type": "shellEnvironment",
+    "commands": null,
+    "host": {
+      "storeId": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+    },
+    "shell": "pwsh",
+    "elevated": false
+  }
+}';
+const headers = {
+  'Content-Type':'application/json',
+  'Accept':'application/json',
+  'Authorization':'Bearer {access-token}'
+};
+
+fetch('http://localhost:21721/connection/add',
+{
+  method: 'POST',
+  body: inputBody,
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```python
+import requests
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json',
+  'Authorization': 'Bearer {access-token}'
+}
+
+data = """
+{
+  "name": "my connection",
+  "category": "97458c07-75c0-4f9d-a06e-92d8cdf67c40",
+  "data": {
+    "type": "shellEnvironment",
+    "commands": null,
+    "host": {
+      "storeId": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+    },
+    "shell": "pwsh",
+    "elevated": false
+  }
+}
+"""
+r = requests.post('http://localhost:21721/connection/add', headers = headers, data = data)
+
+print(r.json())
+
+```
+
+```java
+var uri = URI.create("http://localhost:21721/connection/add");
+var client = HttpClient.newHttpClient();
+var request = HttpRequest
+        .newBuilder()
+        .uri(uri)
+        .header("Content-Type", "application/json")
+        .header("Accept", "application/json")
+        .header("Authorization", "Bearer {access-token}")
+        .POST(HttpRequest.BodyPublishers.ofString("""
+{
+  "name": "my connection",
+  "category": "97458c07-75c0-4f9d-a06e-92d8cdf67c40",
+  "data": {
+    "type": "shellEnvironment",
+    "commands": null,
+    "host": {
+      "storeId": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+    },
+    "shell": "pwsh",
+    "elevated": false
+  }
+}
+        """))
+        .build();
+var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+System.out.println(response.statusCode());
+System.out.println(response.body());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Content-Type": []string{"application/json"},
+        "Accept": []string{"application/json"},
+        "Authorization": []string{"Bearer {access-token}"},
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("POST", "http://localhost:21721/connection/add", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+```shell
+# You can also use wget
+curl -X POST http://localhost:21721/connection/add \
+  -H 'Content-Type: application/json' \  -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
+  --data '
+{
+  "name": "my connection",
+  "category": "97458c07-75c0-4f9d-a06e-92d8cdf67c40",
+  "data": {
+    "type": "shellEnvironment",
+    "commands": null,
+    "host": {
+      "storeId": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+    },
+    "shell": "pwsh",
+    "elevated": false
+  }
+}
+'
+
+```
+
+</details>
+
+## Open connection in file browser
+
+<a id="opIdconnectionBrowse"></a>
+
+`POST /connection/browse`
+
+Creates a new tab in the file browser and opens the specified connections with an optional starting directory.
+
+> Body parameter
+
+```json
+{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+}
+```
+
+<h3 id="open-connection-in-file-browser-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|body|body|[ConnectionBrowseRequest](#schemaconnectionbrowserequest)|true|none|
+
+> Example responses
+
+> 400 Response
+
+```json
+{
+  "message": "string"
+}
+```
+
+<h3 id="open-connection-in-file-browser-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The request was successful. The connection was opened.|None|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
+|403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
+
+<aside class="warning">
+To perform this operation, you must be authenticated by means of one of the following methods:
+bearerAuth
+</aside>
+
+<details>
+
+<summary>Code samples</summary>
+
+```javascript
+const inputBody = '{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+}';
+const headers = {
+  'Content-Type':'application/json',
+  'Accept':'application/json',
+  'Authorization':'Bearer {access-token}'
+};
+
+fetch('http://localhost:21721/connection/browse',
+{
+  method: 'POST',
+  body: inputBody,
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```python
+import requests
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json',
+  'Authorization': 'Bearer {access-token}'
+}
+
+data = """
+{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+}
+"""
+r = requests.post('http://localhost:21721/connection/browse', headers = headers, data = data)
+
+print(r.json())
+
+```
+
+```java
+var uri = URI.create("http://localhost:21721/connection/browse");
+var client = HttpClient.newHttpClient();
+var request = HttpRequest
+        .newBuilder()
+        .uri(uri)
+        .header("Content-Type", "application/json")
+        .header("Accept", "application/json")
+        .header("Authorization", "Bearer {access-token}")
+        .POST(HttpRequest.BodyPublishers.ofString("""
+{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+}
+        """))
+        .build();
+var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+System.out.println(response.statusCode());
+System.out.println(response.body());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Content-Type": []string{"application/json"},
+        "Accept": []string{"application/json"},
+        "Authorization": []string{"Bearer {access-token}"},
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("POST", "http://localhost:21721/connection/browse", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+```shell
+# You can also use wget
+curl -X POST http://localhost:21721/connection/browse \
+  -H 'Content-Type: application/json' \  -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
+  --data '
+{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+}
+'
+
+```
+
+</details>
+
+## Open terminal for shell connection
+
+<a id="opIdconnectionTerminal"></a>
+
+`POST /connection/terminal`
+
+Launches a new terminal session for a connection with an optional specified working directory.
+
+> Body parameter
+
+```json
+{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+}
+```
+
+<h3 id="open-terminal-for-shell-connection-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|body|body|[ConnectionTerminalRequest](#schemaconnectionterminalrequest)|true|none|
+
+> Example responses
+
+> 400 Response
+
+```json
+{
+  "message": "string"
+}
+```
+
+<h3 id="open-terminal-for-shell-connection-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The request was successful. The connection was opened.|None|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
+|403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
+
+<aside class="warning">
+To perform this operation, you must be authenticated by means of one of the following methods:
+bearerAuth
+</aside>
+
+<details>
+
+<summary>Code samples</summary>
+
+```javascript
+const inputBody = '{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+}';
+const headers = {
+  'Content-Type':'application/json',
+  'Accept':'application/json',
+  'Authorization':'Bearer {access-token}'
+};
+
+fetch('http://localhost:21721/connection/terminal',
+{
+  method: 'POST',
+  body: inputBody,
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```python
+import requests
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json',
+  'Authorization': 'Bearer {access-token}'
+}
+
+data = """
+{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+}
+"""
+r = requests.post('http://localhost:21721/connection/terminal', headers = headers, data = data)
+
+print(r.json())
+
+```
+
+```java
+var uri = URI.create("http://localhost:21721/connection/terminal");
+var client = HttpClient.newHttpClient();
+var request = HttpRequest
+        .newBuilder()
+        .uri(uri)
+        .header("Content-Type", "application/json")
+        .header("Accept", "application/json")
+        .header("Authorization", "Bearer {access-token}")
+        .POST(HttpRequest.BodyPublishers.ofString("""
+{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+}
+        """))
+        .build();
+var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+System.out.println(response.statusCode());
+System.out.println(response.body());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Content-Type": []string{"application/json"},
+        "Accept": []string{"application/json"},
+        "Authorization": []string{"Bearer {access-token}"},
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("POST", "http://localhost:21721/connection/terminal", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+```shell
+# You can also use wget
+curl -X POST http://localhost:21721/connection/terminal \
+  -H 'Content-Type: application/json' \  -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
+  --data '
+{
+  "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+}
+'
+
+```
+
+</details>
+
+## Toggle state of a connection
+
+<a id="opIdconnectionToggle"></a>
+
+`POST /connection/toggle`
+
+Updates the state of a connection to either start or stop a session.
+
+This can be used for all kinds of services and tunnels.
+
+> Body parameter
+
+```json
+{
+  "connection": "36ad9716-a209-4f7f-9814-078d3349280c",
+  "state": true
+}
+```
+
+<h3 id="toggle-state-of-a-connection-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|body|body|[ConnectionToggleRequest](#schemaconnectiontogglerequest)|true|none|
+
+> Example responses
+
+> 400 Response
+
+```json
+{
+  "message": "string"
+}
+```
+
+<h3 id="toggle-state-of-a-connection-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The request was successful. The connection state was updated.|None|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
+|403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
+
+<aside class="warning">
+To perform this operation, you must be authenticated by means of one of the following methods:
+bearerAuth
+</aside>
+
+<details>
+
+<summary>Code samples</summary>
+
+```javascript
+const inputBody = '{
+  "connection": "36ad9716-a209-4f7f-9814-078d3349280c",
+  "state": true
+}';
+const headers = {
+  'Content-Type':'application/json',
+  'Accept':'application/json',
+  'Authorization':'Bearer {access-token}'
+};
+
+fetch('http://localhost:21721/connection/toggle',
+{
+  method: 'POST',
+  body: inputBody,
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```python
+import requests
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json',
+  'Authorization': 'Bearer {access-token}'
+}
+
+data = """
+{
+  "connection": "36ad9716-a209-4f7f-9814-078d3349280c",
+  "state": true
+}
+"""
+r = requests.post('http://localhost:21721/connection/toggle', headers = headers, data = data)
+
+print(r.json())
+
+```
+
+```java
+var uri = URI.create("http://localhost:21721/connection/toggle");
+var client = HttpClient.newHttpClient();
+var request = HttpRequest
+        .newBuilder()
+        .uri(uri)
+        .header("Content-Type", "application/json")
+        .header("Accept", "application/json")
+        .header("Authorization", "Bearer {access-token}")
+        .POST(HttpRequest.BodyPublishers.ofString("""
+{
+  "connection": "36ad9716-a209-4f7f-9814-078d3349280c",
+  "state": true
+}
+        """))
+        .build();
+var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+System.out.println(response.statusCode());
+System.out.println(response.body());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Content-Type": []string{"application/json"},
+        "Accept": []string{"application/json"},
+        "Authorization": []string{"Bearer {access-token}"},
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("POST", "http://localhost:21721/connection/toggle", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+```shell
+# You can also use wget
+curl -X POST http://localhost:21721/connection/toggle \
+  -H 'Content-Type: application/json' \  -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
+  --data '
+{
+  "connection": "36ad9716-a209-4f7f-9814-078d3349280c",
+  "state": true
+}
+'
+
+```
+
+</details>
+
 ## Start shell connection
 
 <a id="opIdshellStart"></a>
@@ -659,7 +1350,6 @@ These errors will be returned with the HTTP return code 500.
 |400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
 |401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
 |403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
-|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
 |500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
 
 <aside class="warning">
@@ -819,7 +1509,6 @@ If the shell is busy or stuck, you might have to work with timeouts to account f
 |400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
 |401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
 |403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
-|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
 |500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
 
 <aside class="warning">
@@ -999,7 +1688,6 @@ However, if any other error occurs like the shell not responding or exiting unex
 |400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
 |401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
 |403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
-|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
 |500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
 
 <aside class="warning">
@@ -1170,7 +1858,6 @@ string
 |400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
 |401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
 |403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
-|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
 |500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
 
 <aside class="warning">
@@ -1322,7 +2009,6 @@ Reads the entire content of a remote file through an active shell session.
 |400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
 |401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
 |403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
-|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
 |500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
 
 <aside class="warning">
@@ -1485,7 +2171,6 @@ Writes blob data to a file through an active shell session.
 |400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
 |401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
 |403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
-|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
 |500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
 
 <aside class="warning">
@@ -1661,7 +2346,6 @@ This can be used to run more complex commands on remote systems.
 |400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
 |401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
 |403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
-|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
 |500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
 
 <aside class="warning">
@@ -1811,7 +2495,6 @@ Retrieves version information from the daemon
 |400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
 |401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
 |403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
-|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The requested resource could not be found.|None|
 |500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
 
 <aside class="warning">
@@ -2233,6 +2916,116 @@ undefined
 |usageCategory|command|
 |usageCategory|desktop|
 |usageCategory|group|
+
+<h2 id="tocS_ConnectionAddRequest">ConnectionAddRequest</h2>
+
+<a id="schemaconnectionaddrequest"></a>
+<a id="schema_ConnectionAddRequest"></a>
+<a id="tocSconnectionaddrequest"></a>
+<a id="tocsconnectionaddrequest"></a>
+
+```json
+{
+  "name": "string",
+  "category": "string",
+  "data": {}
+}
+
+```
+
+<h3>Properties</h3>
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|name|string|true|none|The connection name|
+|category|string|false|none|The optional category uuid if you want to add the connection to a certain one. Otherwise the currently selected category will be used.|
+|data|object|true|none|The raw connection store data. Schemas for connection types are not documented but you can find the connection data of your existing connections in the xpipe vault.|
+
+<h2 id="tocS_ConnectionAddResponse">ConnectionAddResponse</h2>
+
+<a id="schemaconnectionaddresponse"></a>
+<a id="schema_ConnectionAddResponse"></a>
+<a id="tocSconnectionaddresponse"></a>
+<a id="tocsconnectionaddresponse"></a>
+
+```json
+{
+  "connection": "string"
+}
+
+```
+
+<h3>Properties</h3>
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|connection|string|true|none|The connection uuid|
+
+<h2 id="tocS_ConnectionBrowseRequest">ConnectionBrowseRequest</h2>
+
+<a id="schemaconnectionbrowserequest"></a>
+<a id="schema_ConnectionBrowseRequest"></a>
+<a id="tocSconnectionbrowserequest"></a>
+<a id="tocsconnectionbrowserequest"></a>
+
+```json
+{
+  "directory": "string",
+  "connection": "string"
+}
+
+```
+
+<h3>Properties</h3>
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|directory|string|true|none|The optional directory to browse to|
+|connection|string|true|none|The connection uuid|
+
+<h2 id="tocS_ConnectionToggleRequest">ConnectionToggleRequest</h2>
+
+<a id="schemaconnectiontogglerequest"></a>
+<a id="schema_ConnectionToggleRequest"></a>
+<a id="tocSconnectiontogglerequest"></a>
+<a id="tocsconnectiontogglerequest"></a>
+
+```json
+{
+  "state": true,
+  "connection": "string"
+}
+
+```
+
+<h3>Properties</h3>
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|state|boolean|true|none|The state to switch to|
+|connection|string|true|none|The connection uuid|
+
+<h2 id="tocS_ConnectionTerminalRequest">ConnectionTerminalRequest</h2>
+
+<a id="schemaconnectionterminalrequest"></a>
+<a id="schema_ConnectionTerminalRequest"></a>
+<a id="tocSconnectionterminalrequest"></a>
+<a id="tocsconnectionterminalrequest"></a>
+
+```json
+{
+  "directory": "string",
+  "connection": "string"
+}
+
+```
+
+<h3>Properties</h3>
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|directory|string|true|none|The optional directory to use as the working directory|
+|connection|string|true|none|The connection uuid|
 
 <h2 id="tocS_HandshakeRequest">HandshakeRequest</h2>
 

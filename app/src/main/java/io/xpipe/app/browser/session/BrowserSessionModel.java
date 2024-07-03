@@ -80,23 +80,33 @@ public class BrowserSessionModel extends BrowserAbstractSessionModel<BrowserSess
         }
 
         ThreadHelper.runFailableAsync(() -> {
-            OpenFileSystemModel model;
-
-            try (var b = new BooleanScope(externalBusy != null ? externalBusy : new SimpleBooleanProperty()).start()) {
-                model = new OpenFileSystemModel(this, store, OpenFileSystemModel.SelectionMode.ALL);
-                model.init();
-                // Prevent multiple calls from interfering with each other
-                synchronized (BrowserSessionModel.this) {
-                    sessionEntries.add(model);
-                    // The tab pane doesn't automatically select new tabs
-                    selectedEntry.setValue(model);
-                }
-            }
-            if (path != null) {
-                model.initWithGivenDirectory(FileNames.toDirectory(path.apply(model)));
-            } else {
-                model.initWithDefaultDirectory();
-            }
+            openFileSystemSync(store, path, externalBusy);
         });
+    }
+
+    public void openFileSystemSync(
+            DataStoreEntryRef<? extends FileSystemStore> store,
+            FailableFunction<OpenFileSystemModel, String, Exception> path,
+            BooleanProperty externalBusy) throws Exception {
+        if (store == null) {
+            return;
+        }
+
+        OpenFileSystemModel model;
+        try (var b = new BooleanScope(externalBusy != null ? externalBusy : new SimpleBooleanProperty()).start()) {
+            model = new OpenFileSystemModel(this, store, OpenFileSystemModel.SelectionMode.ALL);
+            model.init();
+            // Prevent multiple calls from interfering with each other
+            synchronized (BrowserSessionModel.this) {
+                sessionEntries.add(model);
+                // The tab pane doesn't automatically select new tabs
+                selectedEntry.setValue(model);
+            }
+        }
+        if (path != null) {
+            model.initWithGivenDirectory(FileNames.toDirectory(path.apply(model)));
+        } else {
+            model.initWithDefaultDirectory();
+        }
     }
 }

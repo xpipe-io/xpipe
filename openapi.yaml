@@ -10,8 +10,10 @@ info:
     The XPipe application will start up an HTTP server that can be used to send requests.
     Note that this server is HTTP-only for now as it runs only on localhost. HTTPS requests are not accepted.
     
-    This allows you to programmatically manage remote systems.
-    To start off, you can query connections based on various filters.
+    You can either call the API directly or use one of the following community-made libraries:
+    - [https://github.com/coandco/python_xpipe_client](https://github.com/coandco/python_xpipe_client)
+    
+    To start off with the API, you can query connections based on various filters.
     With the matched connections, you can start remote shell sessions for each one and run arbitrary commands in them.
     You get the command exit code and output as a response, allowing you to adapt your control flow based on command outputs.
     Any kind of passwords and other secrets are automatically provided by XPipe when establishing a shell connection.
@@ -111,8 +113,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /connection/info:
@@ -151,8 +151,136 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /connection/add:
+    post:
+      summary: Add new connection
+      description: |
+        Creates the new connection in the xpipe vault from raw json data.
+        
+        If an equivalent connection already exists, no new one will be added.
+      operationId: connectionAdd
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectionAddRequest'
+            examples:
+              simple:
+                summary: Add new pwsh shell environment
+                value: { "name": "my connection", "category": "97458c07-75c0-4f9d-a06e-92d8cdf67c40", "data":
+                  {
+                    "type": "shellEnvironment",
+                    "commands": null,
+                    "host": {
+                      "storeId": "f0ec68aa-63f5-405c-b178-9a4454556d6b"
+                    },
+                    "shell": "pwsh",
+                    "elevated": false,
+                  }
+                }
+      responses:
+        '200':
+          description: The request was successful. The connection was added.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectionAddResponse'
+              examples:
+                standard:
+                  summary: Connection information
+                  value: { "connection": "36ad9716-a209-4f7f-9814-078d3349280c" }
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /connection/browse:
+    post:
+      summary: Open connection in file browser
+      description: |
+        Creates a new tab in the file browser and opens the specified connections with an optional starting directory.
+      operationId: connectionBrowse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectionBrowseRequest'
+            examples:
+              simple:
+                summary: Open local file browser
+                value: { "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b" }
+      responses:
+        '200':
+          description: The request was successful. The connection was opened.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /connection/terminal:
+    post:
+      summary: Open terminal for shell connection
+      description: |
+        Launches a new terminal session for a connection with an optional specified working directory.
+      operationId: connectionTerminal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectionTerminalRequest'
+            examples:
+              simple:
+                summary: Open terminal for local shell
+                value: { "connection": "f0ec68aa-63f5-405c-b178-9a4454556d6b" }
+      responses:
+        '200':
+          description: The request was successful. The connection was opened.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /connection/toggle:
+    post:
+      summary: Toggle state of a connection
+      description: |
+        Updates the state of a connection to either start or stop a session.
+        
+        This can be used for all kinds of services and tunnels.
+      operationId: connectionToggle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectionToggleRequest'
+            examples:
+              simple:
+                summary: Activate connection
+                value: { "connection": "36ad9716-a209-4f7f-9814-078d3349280c", "state": true }
+      responses:
+        '200':
+          description: The request was successful. The connection state was updated.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /shell/start:
@@ -183,8 +311,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /shell/stop:
@@ -215,8 +341,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /shell/exec:
@@ -262,8 +386,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /fs/blob:
@@ -299,8 +421,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /fs/read:
@@ -333,8 +453,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /fs/write:
@@ -362,8 +480,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /fs/script:
@@ -401,8 +517,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /daemon/version:
@@ -423,8 +537,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
 components:
@@ -624,6 +736,65 @@ components:
           - lastUsed
           - lastModified
           - state
+    ConnectionAddRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The connection name
+        category:
+          type: string
+          description: The optional category uuid if you want to add the connection to a certain one. Otherwise the currently selected category will be used.
+        data:
+          type: object
+          description: The raw connection store data. Schemas for connection types are not documented but you can find the connection data of your existing connections in the xpipe vault.
+      required:
+        - name
+        - data
+    ConnectionAddResponse:
+      type: object
+      properties:
+        connection:
+          type: string
+          description: The connection uuid
+      required:
+        - connection
+    ConnectionBrowseRequest:
+      type: object
+      properties:
+        directory:
+          type: string
+          description: The optional directory to browse to
+        connection:
+          type: string
+          description: The connection uuid
+      required:
+      - directory
+      - connection
+    ConnectionToggleRequest:
+      type: object
+      properties:
+        state:
+          type: boolean
+          description: The state to switch to
+        connection:
+          type: string
+          description: The connection uuid
+      required:
+        - state
+        - connection
+    ConnectionTerminalRequest:
+      type: object
+      properties:
+        directory:
+          type: string
+          description: The optional directory to use as the working directory
+        connection:
+          type: string
+          description: The connection uuid
+      required:
+        - directory
+        - connection
     HandshakeRequest:
       type: object
       properties:
