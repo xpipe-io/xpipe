@@ -72,6 +72,14 @@ It currently supports:
 - There are no servers involved, all your information stays on your systems. The XPipe application does not send any personal or sensitive information to outside services.
 - Vault changes can be pushed and pulled from your own remote git repository by multiple team members across many systems
 
+## API
+
+- The XPipe API provides programmatic access to XPipe’s features via an HTTP interface
+- Manage all your remote systems and access their file systems in your own favorite programming language
+- Either call the API directly or with the help of a community-made library, such as:
+  * https://github.com/coandco/python_xpipe_client
+- Full documentation can be either found in the application itself under the API tab or in the [OpenAPI](/openapi.yaml) spec file
+
 # Downloads
 
 Note that this is a desktop application that should be run on your local desktop workstation, not on any server or containers. It will be able to connect to your server infrastructure from there.
@@ -82,7 +90,7 @@ Installers are the easiest way to get started and come with an optional automati
 
 - [Windows .msi Installer (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-windows-x86_64.msi)
 
-You can also install XPipe by pasting the installation command into your terminal. This will perform the setup automatically:
+You can also install XPipe by pasting the installation command into your terminal. This will perform the .msi setup automatically:
 
 ```
 powershell -ExecutionPolicy Bypass -Command iwr "https://github.com/xpipe-io/xpipe/raw/master/get-xpipe.ps1" -OutFile "$env:TEMP\get-xpipe.ps1" ";"  "&" "$env:TEMP\get-xpipe.ps1"
@@ -144,7 +152,7 @@ In case you prefer to use an archive version that you can extract anywhere, you 
 - [Linux .tar.gz Portable (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-linux-x86_64.tar.gz)
 - [Linux .tar.gz Portable (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-linux-arm64.tar.gz)
 
-Alternatively, they are also AppImages available:
+Alternatively, there are also AppImages available:
 
 - [Linux .AppImage Portable (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-linux-x86_64.AppImage)
 - [Linux .AppImage Portable (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-linux-arm64.AppImage)
@@ -159,7 +167,7 @@ Installers are the easiest way to get started and come with an optional automati
 - [MacOS .pkg Installer (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-macos-x86_64.pkg)
 - [MacOS .pkg Installer (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-macos-arm64.pkg)
 
-You also can install XPipe by pasting the installation command into your terminal. This will perform the `.pkg` install automatically:
+You also can install XPipe by pasting the installation command into your terminal. This will perform the `.pkg` installation automatically:
 
 ```
 bash <(curl -sL https://github.com/xpipe-io/xpipe/raw/master/get-xpipe.sh)
@@ -174,7 +182,7 @@ Alternatively, you can also use [Homebrew](https://github.com/xpipe-io/homebrew-
 
 ## Early access releases
 
-Prior to full releases, there will be several Public Test Build (PTB) releases published at https://github.com/xpipe-io/xpipe-ptb to see whether everything is production ready and contain the latest new features.
+Prior to major releases, there will be several Public Test Build (PTB) releases published at https://github.com/xpipe-io/xpipe-ptb to see whether everything is production ready and contain the latest new features.
 
 In case you're interested in trying out the PTB versions, you can easily do so without any limitations. The regular releases and PTB releases are designed to not interfere with each other and can therefore be installed and used side by side.
 
@@ -187,6 +195,8 @@ XPipe follows an open core model, which essentially means that the main applicat
 The distributed XPipe application consists out of two parts:
 - The open-source core that you can find this repository. It is licensed under the [Apache License 2.0](/LICENSE.md).
 - The closed-source extensions, mostly for professional edition features, which are not included in this repository
+
+Additional features are available in the professional edition. For more details see https://xpipe.io/pricing.
 
 ## More links
 
