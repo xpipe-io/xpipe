@@ -82,6 +82,7 @@ public class DataStoreEntry extends StorageElement {
             String name,
             Instant lastUsed,
             Instant lastModified,
+            DataStore store,
             JsonNode storeNode,
             boolean dirty,
             Validity validity,
@@ -93,7 +94,7 @@ public class DataStoreEntry extends StorageElement {
             Order explicitOrder) {
         super(directory, uuid, name, lastUsed, lastModified, dirty);
         this.categoryUuid = categoryUuid;
-        this.store = DataStorageParser.storeFromNode(storeNode);
+        this.store = store;
         this.storeNode = storeNode;
         this.validity = validity;
         this.configuration = configuration;
@@ -101,7 +102,7 @@ public class DataStoreEntry extends StorageElement {
         this.color = color;
         this.explicitOrder = explicitOrder;
         this.provider = store != null
-                ? DataStoreProviders.byStoreClass(store.getClass()).orElse(null)
+                ? DataStoreProviders.byStore(store)
                 : null;
         this.storePersistentStateNode = storePersistentState;
         this.notes = notes;
@@ -149,8 +150,9 @@ public class DataStoreEntry extends StorageElement {
     @SneakyThrows
     public static DataStoreEntry createNew(
             @NonNull UUID uuid, @NonNull UUID categoryUuid, @NonNull String name, @NonNull DataStore store) {
-        var node = DataStorageWriter.storeToNode(store);
-        var validity = DataStorageParser.storeFromNode(node) == null
+        var node = JacksonMapper.getDefault().valueToTree(store);
+        var storeFromNode = JacksonMapper.getDefault().treeToValue(node, DataStore.class);
+        var validity = storeFromNode == null
                 ? Validity.LOAD_FAILED
                 : store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE;
         var entry = new DataStoreEntry(
@@ -160,6 +162,7 @@ public class DataStoreEntry extends StorageElement {
                 name,
                 Instant.now(),
                 Instant.now(),
+                storeFromNode,
                 node,
                 true,
                 validity,
@@ -170,39 +173,6 @@ public class DataStoreEntry extends StorageElement {
                 null,
                 null);
         return entry;
-    }
-
-    @SneakyThrows
-    private static DataStoreEntry createExisting(
-            @NonNull Path directory,
-            @NonNull UUID uuid,
-            @NonNull UUID categoryUuid,
-            @NonNull String name,
-            @NonNull Instant lastUsed,
-            @NonNull Instant lastModified,
-            JsonNode storeNode,
-            Configuration configuration,
-            JsonNode storePersistentState,
-            boolean expanded,
-            DataStoreColor color,
-            String notes,
-            Order order) {
-        return new DataStoreEntry(
-                directory,
-                uuid,
-                categoryUuid,
-                name,
-                lastUsed,
-                lastModified,
-                storeNode,
-                false,
-                Validity.INCOMPLETE,
-                configuration,
-                storePersistentState,
-                expanded,
-                color,
-                notes,
-                order);
     }
 
     public static Optional<DataStoreEntry> fromDirectory(Path dir) throws Exception {
@@ -277,20 +247,19 @@ public class DataStoreEntry extends StorageElement {
         }
 
         // Store loading is prone to errors.
-        JsonNode storeNode = null;
-        try {
-            storeNode = DataStorageEncryption.readPossiblyEncryptedNode(mapper.readTree(storeFile.toFile()));
-        } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).handle();
-        }
-        return Optional.of(createExisting(
+        JsonNode storeNode = DataStorageEncryption.readPossiblyEncryptedNode(mapper.readTree(storeFile.toFile()));
+        var store = JacksonMapper.getDefault().treeToValue(storeNode, DataStore.class);
+        return Optional.of(new DataStoreEntry(
                 dir,
                 uuid,
                 categoryUuid,
                 name,
                 lastUsed,
                 lastModified,
+                store,
                 storeNode,
+                false,
+                Validity.INCOMPLETE,
                 configuration,
                 persistentState,
                 expanded,
@@ -482,7 +451,7 @@ public class DataStoreEntry extends StorageElement {
         }
 
         this.store = store;
-        this.storeNode = DataStorageWriter.storeToNode(store);
+        this.storeNode = JacksonMapper.getDefault().valueToTree(store);
         if (updateTime) {
             lastModified = Instant.now();
         }
@@ -491,7 +460,7 @@ public class DataStoreEntry extends StorageElement {
     }
 
     public void reassignStore() {
-        this.storeNode = DataStorageWriter.storeToNode(store);
+        this.storeNode = JacksonMapper.getDefault().valueToTree(store);
         dirty = true;
     }
 
@@ -528,7 +497,14 @@ public class DataStoreEntry extends StorageElement {
             return;
         }
 
-        var newStore = DataStorageParser.storeFromNode(storeNode);
+        DataStore newStore;
+        try {
+            newStore = JacksonMapper.getDefault().treeToValue(storeNode, DataStore.class);
+        } catch (Throwable e) {
+            ErrorEvent.fromThrowable(e).handle();
+            newStore = null;
+        }
+
         if (newStore == null) {
             store = null;
             validity = Validity.LOAD_FAILED;
