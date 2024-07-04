@@ -19,6 +19,10 @@ import org.apache.commons.lang3.SystemUtils;
 
 public class ModifiedStage extends Stage {
 
+    public static boolean mergeFrame() {
+        return SystemUtils.IS_OS_WINDOWS_11;
+    }
+
     @SneakyThrows
     @SuppressWarnings("unchecked")
     public static void init() {
@@ -36,7 +40,7 @@ public class ModifiedStage extends Stage {
     }
 
     public static void prepareStage(Stage stage) {
-        if (SystemUtils.IS_OS_WINDOWS_11) {
+        if (mergeFrame()) {
             stage.initStyle(StageStyle.UNIFIED);
         }
     }
@@ -68,14 +72,14 @@ public class ModifiedStage extends Stage {
         ctrl.setWindowAttribute(
                 NativeWinWindowControl.DmwaWindowAttribute.DWMWA_USE_IMMERSIVE_DARK_MODE.get(),
                 AppPrefs.get().theme.getValue().isDark());
-        boolean backdrop;
-        if (AppPrefs.get().performanceMode().get()) {
-            backdrop = false;
+        boolean seamlessFrame;
+        if (AppPrefs.get().performanceMode().get() || !mergeFrame()) {
+            seamlessFrame = false;
         } else {
-            backdrop = ctrl.setWindowBackdrop(NativeWinWindowControl.DwmSystemBackDropType.MICA_ALT);
+            seamlessFrame = ctrl.setWindowBackdrop(NativeWinWindowControl.DwmSystemBackDropType.MICA_ALT);
         }
-        stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), backdrop);
-        stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), !backdrop);
+        stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), seamlessFrame);
+        stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), !seamlessFrame);
     }
 
     private static void updateStage(Stage stage) {

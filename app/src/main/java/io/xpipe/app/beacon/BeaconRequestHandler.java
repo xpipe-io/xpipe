@@ -105,7 +105,13 @@ public class BeaconRequestHandler<T> implements HttpHandler {
                 ErrorEvent.fromThrowable(ex).omit().expected().handle();
             } else {
                 ErrorEvent.fromThrowable(ex).omit().expected().handle();
-                writeError(exchange, new BeaconClientErrorResponse(ex.getMessage()), 400);
+                // Make deserialization error message more readable
+                var message = ex.getMessage()
+                        .replace("$RequestBuilder", "")
+                        .replace("Exchange$Request","Request")
+                        .replace("at [Source: UNKNOWN; byte offset: #UNKNOWN]", "")
+                        .trim();
+                writeError(exchange, new BeaconClientErrorResponse(message), 400);
             }
             return;
         } catch (Throwable other) {

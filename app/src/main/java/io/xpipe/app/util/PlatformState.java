@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.check.AppSystemFontCheck;
+import io.xpipe.app.core.window.ModifiedStage;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -113,7 +114,7 @@ public enum PlatformState {
             }
         }
 
-        if (SystemUtils.IS_OS_WINDOWS_11) {
+        if (SystemUtils.IS_OS_WINDOWS && ModifiedStage.mergeFrame()) {
             // This is primarily intended to fix Windows unified stage transparency issues (https://bugs.openjdk.org/browse/JDK-8329382)
             System.setProperty("prism.forceUploadingPainter", "true");
         }
