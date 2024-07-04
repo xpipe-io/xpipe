@@ -27,11 +27,11 @@ import javafx.scene.text.TextAlignment;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
-public class StoreEntryListStatusComp extends SimpleComp {
+public class StoreEntryListOverviewComp extends SimpleComp {
 
     private final Property<StoreSortMode> sortMode;
 
-    public StoreEntryListStatusComp() {
+    public StoreEntryListOverviewComp() {
         this.sortMode = new SimpleObjectProperty<>();
         StoreViewState.get().getActiveCategory().subscribe(val -> {
             sortMode.setValue(val.getSortMode().getValue());
@@ -111,7 +111,7 @@ public class StoreEntryListStatusComp extends SimpleComp {
         });
         var filter = new FilterComp(StoreViewState.get().getFilterString());
         var f = filter.createRegion();
-        var buttons = createButtons();
+        var buttons = createAddButton();
         var hbox = new HBox(buttons, f);
         f.prefHeightProperty().bind(buttons.heightProperty());
         hbox.setSpacing(8);
@@ -123,7 +123,7 @@ public class StoreEntryListStatusComp extends SimpleComp {
         return hbox;
     }
 
-    private Region createButtons() {
+    private Region createAddButton() {
         var menu = new MenuButton(null, new FontIcon("mdi2p-plus-thick"));
         menu.textProperty().bind(AppI18n.observable("addConnections"));
         menu.setAlignment(Pos.CENTER);

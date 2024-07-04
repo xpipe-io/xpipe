@@ -14,7 +14,7 @@ public class StoreSidebarComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var sideBar = new VerticalComp(List.of(
-                new StoreEntryListStatusComp()
+                new StoreEntryListOverviewComp()
                         .styleClass("color-box")
                         .styleClass("gray")
                         .styleClass("bar"),
