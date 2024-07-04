@@ -64,17 +64,11 @@ public class DataStoreProviders {
 
     @SuppressWarnings("unchecked")
     public static <T extends DataStoreProvider> T byStore(DataStore store) {
-        return (T) byStoreClass(store.getClass()).orElseThrow();
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T extends DataStoreProvider> Optional<T> byStoreClass(Class<?> c) {
         if (ALL == null) {
             throw new IllegalStateException("Not initialized");
         }
 
-        return (Optional<T>)
-                ALL.stream().filter(d -> d.getStoreClasses().contains(c)).findAny();
+        return (T) ALL.stream().filter(d -> d.getStoreClasses().contains(store.getClass())).findAny().orElseThrow(() -> new IllegalArgumentException("Unknown store class"));
     }
 
     public static List<DataStoreProvider> getAll() {

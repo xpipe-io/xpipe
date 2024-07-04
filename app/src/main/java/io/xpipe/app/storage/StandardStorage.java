@@ -1,5 +1,6 @@
 package io.xpipe.app.storage;
 
+import com.fasterxml.jackson.core.JacksonException;
 import io.xpipe.app.ext.DataStorageExtensionProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
@@ -7,6 +8,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.LocalStore;
 
+import io.xpipe.core.util.JacksonMapper;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 
@@ -129,6 +131,16 @@ public class StandardStorage extends DataStorage {
                         }
 
                         storeEntries.put(entry.get(), entry.get());
+                    } catch (JacksonException ex) {
+                        // Data corruption and schema changes are expected
+
+                        // We only keep invalid entries in developer mode as there's no point in keeping them in
+                        // production.
+                        if (AppPrefs.get().isDevelopmentEnvironment()) {
+                            directoriesToKeep.add(path);
+                        }
+
+                        ErrorEvent.fromThrowable(ex).expected().omit().build().handle();
                     } catch (IOException ex) {
                         // IO exceptions are not expected
                         exception.set(new IOException("Unable to load data from " + path + ". Is it corrupted?", ex));
@@ -221,7 +233,7 @@ public class StandardStorage extends DataStorage {
                     .filter(entry -> entry.getValidity() != DataStoreEntry.Validity.LOAD_FAILED)
                     .forEach(entry -> {
                         entry.dirty = true;
-                        entry.setStoreNode(DataStorageWriter.storeToNode(entry.getStore()));
+                        entry.setStoreNode(JacksonMapper.getDefault().valueToTree(entry.getStore()));
                     });
             save(false);
         }
