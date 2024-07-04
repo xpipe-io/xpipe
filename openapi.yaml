@@ -886,11 +886,15 @@ components:
         jvmVersion:
           type: string
           description: The version of the Java Virtual Machine in which the daemon is running
+        pro:
+          type: boolean
+          description: Whether the daemon supports professional edition features
       required:
         - version
         - canonicalVersion
         - buildVersion
         - jvmVersion
+        - pro
     AuthMethod:
       discriminator:
         propertyName: type
