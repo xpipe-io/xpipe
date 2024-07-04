@@ -27,11 +27,11 @@ import javafx.scene.text.TextAlignment;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
-public class StoreEntryListStatusComp extends SimpleComp {
+public class StoreEntryListOverviewComp extends SimpleComp {
 
     private final Property<StoreSortMode> sortMode;
 
-    public StoreEntryListStatusComp() {
+    public StoreEntryListOverviewComp() {
         this.sortMode = new SimpleObjectProperty<>();
         StoreViewState.get().getActiveCategory().subscribe(val -> {
             sortMode.setValue(val.getSortMode().getValue());
@@ -110,30 +110,20 @@ public class StoreEntryListStatusComp extends SimpleComp {
             });
         });
         var filter = new FilterComp(StoreViewState.get().getFilterString());
-        filter.apply(struc -> struc.get().sceneProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                struc.getText().requestFocus();
-            }
-        }));
-
         var f = filter.createRegion();
-        var hbox = new HBox(createButtons(), f);
+        var buttons = createAddButton();
+        var hbox = new HBox(buttons, f);
+        f.prefHeightProperty().bind(buttons.heightProperty());
         hbox.setSpacing(8);
         hbox.setAlignment(Pos.CENTER);
         HBox.setHgrow(f, Priority.ALWAYS);
 
         f.getStyleClass().add("filter-bar");
-        if (OsType.getLocal().equals(OsType.MACOS)) {
-            f.setPadding(new Insets(-2, 0, -2, 0));
-        } else {
-            f.setPadding(new Insets(-3, 0, -3, 0));
-        }
-
         AppFont.medium(hbox);
         return hbox;
     }
 
-    private Region createButtons() {
+    private Region createAddButton() {
         var menu = new MenuButton(null, new FontIcon("mdi2p-plus-thick"));
         menu.textProperty().bind(AppI18n.observable("addConnections"));
         menu.setAlignment(Pos.CENTER);
