@@ -59,6 +59,8 @@ public class AppTheme {
                 }
 
                 stage.getScene().getRoot().getStyleClass().add(t.getCssId());
+                stage.getScene().getStylesheets().removeAll(t.getAdditionalStylesheets());
+                stage.getScene().getStylesheets().addAll(t.getAdditionalStylesheets());
                 stage.getScene().getRoot().pseudoClassStateChanged(LIGHT, !t.isDark());
                 stage.getScene().getRoot().pseudoClassStateChanged(DARK, t.isDark());
             });
@@ -175,8 +177,8 @@ public class AppTheme {
 
         private final String name;
 
-        public DerivedTheme(String id, String cssId, String name, atlantafx.base.theme.Theme theme) {
-            super(id, cssId, theme);
+        public DerivedTheme(String id, String cssId, String name, atlantafx.base.theme.Theme theme, String transparentColor) {
+            super(id, cssId, theme, transparentColor);
             this.name = name;
         }
 
@@ -211,17 +213,17 @@ public class AppTheme {
     @AllArgsConstructor
     public static class Theme implements PrefsChoiceValue {
 
-        public static final Theme PRIMER_LIGHT = new Theme("light", "primer", new PrimerLight());
-        public static final Theme PRIMER_DARK = new Theme("dark", "primer", new PrimerDark());
-        public static final Theme NORD_LIGHT = new Theme("nordLight", "nord", new NordLight());
-        public static final Theme NORD_DARK = new Theme("nordDark", "nord", new NordDark());
-        public static final Theme CUPERTINO_LIGHT = new Theme("cupertinoLight", "cupertino", new CupertinoLight());
-        public static final Theme CUPERTINO_DARK = new Theme("cupertinoDark", "cupertino", new CupertinoDark());
-        public static final Theme DRACULA = new Theme("dracula", "dracula", new Dracula());
-        public static final Theme MOCHA = new DerivedTheme("mocha", "primer", "Mocha", new PrimerDark());
+        public static final Theme PRIMER_LIGHT = new Theme("light", "primer", new PrimerLight(), "#ffffff88");
+        public static final Theme PRIMER_DARK = new Theme("dark", "primer", new PrimerDark(), "#0d111788");
+        public static final Theme NORD_LIGHT = new Theme("nordLight", "nord", new NordLight(), "#ffffff88");
+        public static final Theme NORD_DARK = new Theme("nordDark", "nord", new NordDark(), "#0d111788");
+        public static final Theme CUPERTINO_LIGHT = new Theme("cupertinoLight", "cupertino", new CupertinoLight(), "#ffffff88");
+        public static final Theme CUPERTINO_DARK = new Theme("cupertinoDark", "cupertino", new CupertinoDark(), "#0d111788");
+        public static final Theme DRACULA = new Theme("dracula", "dracula", new Dracula(), "#0d111788");
+        public static final Theme MOCHA = new DerivedTheme("mocha", "primer", "Mocha", new PrimerDark(), "#0d111788");
 
         // Adjust this to create your own theme
-        public static final Theme CUSTOM = new DerivedTheme("custom", "primer", "Custom", new PrimerDark());
+        public static final Theme CUSTOM = new DerivedTheme("custom", "primer", "Custom", new PrimerDark(), "#0d111788");
 
         // Also include your custom theme here
         public static final List<Theme> ALL = List.of(
@@ -232,6 +234,8 @@ public class AppTheme {
         protected final String cssId;
 
         protected final atlantafx.base.theme.Theme theme;
+
+        protected final String transparentBackground;
 
         static Theme getDefaultLightTheme() {
             return switch (OsType.getLocal()) {
@@ -255,6 +259,10 @@ public class AppTheme {
 
         public void apply() {
             Application.setUserAgentStylesheet(theme.getUserAgentStylesheetBSS());
+        }
+
+        public List<String> getAdditionalStylesheets() {
+            return List.of(Styles.toDataURI(".root { -color-bg-default-transparent: " + transparentBackground + "; }"));
         }
 
         @Override

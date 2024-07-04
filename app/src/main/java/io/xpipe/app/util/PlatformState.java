@@ -5,14 +5,11 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
-
 import javafx.application.Platform;
-
 import lombok.Getter;
 import lombok.Setter;
 
 import java.awt.*;
-import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 
 public enum PlatformState {
@@ -24,8 +21,15 @@ public enum PlatformState {
     @Setter
     private static PlatformState current = PlatformState.NOT_INITIALIZED;
 
-    @Getter
-    private static Exception lastError;
+    private static Throwable lastError;
+    private static boolean expectedError;
+
+    public static Throwable getLastError() {
+        if (expectedError) {
+            ErrorEvent.expected(lastError);
+        }
+        return lastError;
+    }
 
     public static void teardown() {
         // This is bad and can get sometimes stuck
@@ -46,26 +50,25 @@ public enum PlatformState {
     public static void initPlatformOrThrow() throws Exception {
         initPlatformIfNeeded();
         if (lastError != null) {
-            throw lastError;
+            throw lastError instanceof Exception e ? e : new Exception(lastError);
         }
     }
 
     public static boolean initPlatformIfNeeded() {
         if (current == NOT_INITIALIZED) {
-            var t = PlatformState.initPlatform().orElse(null);
-            lastError = t instanceof Exception e ? e : t != null ? new Exception(t) : null;
+            PlatformState.initPlatform();
         }
-
         return current == RUNNING;
     }
 
-    private static Optional<Throwable> initPlatform() {
+    private static void initPlatform() {
         if (current == EXITED) {
-            return Optional.of(new IllegalStateException("Platform has already exited"));
+            lastError = new IllegalStateException("Platform has already exited");
+            return;
         }
 
         if (current == RUNNING) {
-            return Optional.empty();
+            return;
         }
 
         try {
@@ -85,11 +88,14 @@ public enum PlatformState {
                     + " You don't have to install XPipe on any system like a server, a WSL distribution, a hypervisor, etc.,"
                     + " to have full access to that system, a shell connection to it is enough for XPipe to work from your local machine.";
             PlatformState.setCurrent(PlatformState.EXITED);
-            return Optional.of(ErrorEvent.expected(new UnsupportedOperationException(msg)));
+            expectedError = true;
+            lastError = new UnsupportedOperationException(msg);
+            return;
         } catch (Throwable t) {
             TrackEvent.warn(t.getMessage());
             PlatformState.setCurrent(PlatformState.EXITED);
-            return Optional.of(t);
+            lastError = t;
+            return;
         }
 
         // Check if we have no fonts and set properties to load bundled ones
@@ -121,23 +127,26 @@ public enum PlatformState {
             try {
                 latch.await();
                 PlatformState.setCurrent(PlatformState.RUNNING);
-                return Optional.empty();
+                return;
             } catch (InterruptedException e) {
-                return Optional.of(e);
+                lastError = e;
+                return;
             }
         } catch (Throwable t) {
             // Check if we already exited
             if ("Platform.exit has been called".equals(t.getMessage())) {
                 PlatformState.setCurrent(PlatformState.EXITED);
-                return Optional.of(t);
+                lastError = t;
+                return;
             } else if ("Toolkit already initialized".equals(t.getMessage())) {
                 PlatformState.setCurrent(PlatformState.RUNNING);
-                return Optional.empty();
+                return;
             } else {
                 // Platform initialization has failed in this case
                 PlatformState.setCurrent(PlatformState.EXITED);
                 TrackEvent.error(t.getMessage());
-                return Optional.of(t);
+                lastError =t;
+                return;
             }
         }
     }

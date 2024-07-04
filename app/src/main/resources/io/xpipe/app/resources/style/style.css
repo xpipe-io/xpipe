@@ -10,19 +10,19 @@
 }
 
 .root:dark .background {
-    -fx-background-color: derive(-color-bg-default, 1%);
+    -fx-background-color: derive(-color-bg-default-transparent, 1%);
 }
 
 .root:light .background {
-    -fx-background-color: derive(-color-bg-default, -9%);
+    -fx-background-color: derive(-color-bg-default-transparent, -9%);
 }
 
 .root:dark.background {
-    -fx-background-color: derive(-color-bg-default, 1%);
+    -fx-background-color: derive(-color-bg-default-transparent, 1%);
 }
 
 .root:light.background {
-    -fx-background-color: derive(-color-bg-default, -9%);
+    -fx-background-color: derive(-color-bg-default-transparent, -9%);
 }
 
 .root:seamless-frame.layout > .background {
