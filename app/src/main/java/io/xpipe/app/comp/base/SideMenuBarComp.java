@@ -8,6 +8,7 @@ import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.Augment;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
+import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.update.UpdateAvailableAlert;
@@ -18,6 +19,8 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.css.PseudoClass;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -41,27 +44,21 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
 
         var selectedBorder = Bindings.createObjectBinding(
                 () -> {
-                    var c = Platform.getPreferences().getAccentColor();
-                    return new Border(new BorderStroke(
-                            c, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(0, 3, 0, 0)));
+                    var c = Platform.getPreferences().getAccentColor().desaturate();
+                    return new Background(new BackgroundFill(c,new CornerRadii(8), new Insets(5, 1, 5, 2)));
                 },
                 Platform.getPreferences().accentColorProperty());
 
         var hoverBorder = Bindings.createObjectBinding(
                 () -> {
-                    var c = Platform.getPreferences().getAccentColor().darker();
-                    return new Border(new BorderStroke(
-                            c, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(0, 3, 0, 0)));
+                    var c = Platform.getPreferences().getAccentColor().darker().desaturate();
+                    return new Background(new BackgroundFill(c,new CornerRadii(8), new Insets(5, 1, 5, 2)));
                 },
                 Platform.getPreferences().accentColorProperty());
 
         var noneBorder = Bindings.createObjectBinding(
                 () -> {
-                    return new Border(new BorderStroke(
-                            Color.TRANSPARENT,
-                            BorderStrokeStyle.SOLID,
-                            CornerRadii.EMPTY,
-                            new BorderWidths(0, 3, 0, 0)));
+                    return Background.fill(Color.TRANSPARENT);
                 },
                 Platform.getPreferences().accentColorProperty());
 
@@ -82,8 +79,16 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                         struc.get().pseudoClassStateChanged(selected, n.equals(e));
                     });
                 });
-                struc.get()
-                        .borderProperty()
+            });
+            b.accessibleText(e.name());
+
+            var indicator = Comp.empty().styleClass("indicator");
+            var stack = new StackComp(List.of(indicator, b)).apply(struc -> struc.get().setAlignment(Pos.CENTER_RIGHT));
+            stack.apply(struc -> {
+                var indicatorRegion = (Region) struc.get().getChildren().get(0);
+                indicatorRegion.setMaxWidth(7);
+                indicatorRegion
+                        .backgroundProperty()
                         .bind(Bindings.createObjectBinding(
                                 () -> {
                                     if (value.getValue().equals(e)) {
@@ -102,13 +107,12 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                                 selectedBorder,
                                 noneBorder));
             });
-            b.accessibleText(e.name());
-            vbox.getChildren().add(b.createRegion());
+            vbox.getChildren().add(stack.createRegion());
         }
 
         Augment<CompStructure<Button>> simpleBorders = struc -> {
             struc.get()
-                    .borderProperty()
+                    .backgroundProperty()
                     .bind(Bindings.createObjectBinding(
                             () -> {
                                 if (struc.get().isHover()) {
