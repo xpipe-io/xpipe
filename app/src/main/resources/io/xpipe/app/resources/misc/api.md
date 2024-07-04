@@ -1307,6 +1307,164 @@ curl -X POST http://localhost:21721/connection/toggle \
 
 </details>
 
+## Refreshes state of a connection
+
+<a id="opIdconnectionRefresh"></a>
+
+`POST /connection/refresh`
+
+Performs a refresh on the specified connection.
+
+This will update the connection state information and also any children if the connection type has any.
+
+> Body parameter
+
+```json
+{
+  "connection": "36ad9716-a209-4f7f-9814-078d3349280c"
+}
+```
+
+<h3 id="refreshes-state-of-a-connection-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|body|body|[ConnectionRefreshRequest](#schemaconnectionrefreshrequest)|true|none|
+
+> Example responses
+
+> 400 Response
+
+```json
+{
+  "message": "string"
+}
+```
+
+<h3 id="refreshes-state-of-a-connection-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The request was successful. The connection state was updated.|None|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
+|403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
+
+<aside class="warning">
+To perform this operation, you must be authenticated by means of one of the following methods:
+bearerAuth
+</aside>
+
+<details>
+
+<summary>Code samples</summary>
+
+```javascript
+const inputBody = '{
+  "connection": "36ad9716-a209-4f7f-9814-078d3349280c"
+}';
+const headers = {
+  'Content-Type':'application/json',
+  'Accept':'application/json',
+  'Authorization':'Bearer {access-token}'
+};
+
+fetch('http://localhost:21721/connection/refresh',
+{
+  method: 'POST',
+  body: inputBody,
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```python
+import requests
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json',
+  'Authorization': 'Bearer {access-token}'
+}
+
+data = """
+{
+  "connection": "36ad9716-a209-4f7f-9814-078d3349280c"
+}
+"""
+r = requests.post('http://localhost:21721/connection/refresh', headers = headers, data = data)
+
+print(r.json())
+
+```
+
+```java
+var uri = URI.create("http://localhost:21721/connection/refresh");
+var client = HttpClient.newHttpClient();
+var request = HttpRequest
+        .newBuilder()
+        .uri(uri)
+        .header("Content-Type", "application/json")
+        .header("Accept", "application/json")
+        .header("Authorization", "Bearer {access-token}")
+        .POST(HttpRequest.BodyPublishers.ofString("""
+{
+  "connection": "36ad9716-a209-4f7f-9814-078d3349280c"
+}
+        """))
+        .build();
+var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+System.out.println(response.statusCode());
+System.out.println(response.body());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Content-Type": []string{"application/json"},
+        "Accept": []string{"application/json"},
+        "Authorization": []string{"Bearer {access-token}"},
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("POST", "http://localhost:21721/connection/refresh", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+```shell
+# You can also use wget
+curl -X POST http://localhost:21721/connection/refresh \
+  -H 'Content-Type: application/json' \  -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
+  --data '
+{
+  "connection": "36ad9716-a209-4f7f-9814-078d3349280c"
+}
+'
+
+```
+
+</details>
+
 ## Start shell connection
 
 <a id="opIdshellStart"></a>
@@ -1334,11 +1492,14 @@ These errors will be returned with the HTTP return code 500.
 
 > Example responses
 
-> 400 Response
+> 200 Response
 
 ```json
 {
-  "message": "string"
+  "shellDialect": 0,
+  "osType": "string",
+  "osName": "string",
+  "temp": "string"
 }
 ```
 
@@ -1346,7 +1507,7 @@ These errors will be returned with the HTTP return code 500.
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
-|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The operation was successful. The shell session was started.|None|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The operation was successful. The shell session was started.|[ShellStartResponse](#schemashellstartresponse)|
 |400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
 |401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
 |403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
@@ -2621,6 +2782,32 @@ undefined
 |---|---|---|---|---|
 |connection|string|true|none|The connection uuid|
 
+<h2 id="tocS_ShellStartResponse">ShellStartResponse</h2>
+
+<a id="schemashellstartresponse"></a>
+<a id="schema_ShellStartResponse"></a>
+<a id="tocSshellstartresponse"></a>
+<a id="tocsshellstartresponse"></a>
+
+```json
+{
+  "shellDialect": 0,
+  "osType": "string",
+  "osName": "string",
+  "temp": "string"
+}
+
+```
+
+<h3>Properties</h3>
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|shellDialect|integer|true|none|The shell dialect|
+|osType|string|true|none|The general type of operating system|
+|osName|string|true|none|The display name of the operating system|
+|temp|string|true|none|The location of the temporary directory|
+
 <h2 id="tocS_ShellStopRequest">ShellStopRequest</h2>
 
 <a id="schemashellstoprequest"></a>
@@ -2917,6 +3104,26 @@ undefined
 |usageCategory|desktop|
 |usageCategory|group|
 
+<h2 id="tocS_ConnectionRefreshRequest">ConnectionRefreshRequest</h2>
+
+<a id="schemaconnectionrefreshrequest"></a>
+<a id="schema_ConnectionRefreshRequest"></a>
+<a id="tocSconnectionrefreshrequest"></a>
+<a id="tocsconnectionrefreshrequest"></a>
+
+```json
+{
+  "connection": "string"
+}
+
+```
+
+<h3>Properties</h3>
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|connection|string|true|none|The connection uuid|
+
 <h2 id="tocS_ConnectionAddRequest">ConnectionAddRequest</h2>
 
 <a id="schemaconnectionaddrequest"></a>
@@ -2927,7 +3134,6 @@ undefined
 ```json
 {
   "name": "string",
-  "category": "string",
   "data": {}
 }
 
@@ -2938,7 +3144,6 @@ undefined
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
 |name|string|true|none|The connection name|
-|category|string|false|none|The optional category uuid if you want to add the connection to a certain one. Otherwise the currently selected category will be used.|
 |data|object|true|none|The raw connection store data. Schemas for connection types are not documented but you can find the connection data of your existing connections in the xpipe vault.|
 
 <h2 id="tocS_ConnectionAddResponse">ConnectionAddResponse</h2>

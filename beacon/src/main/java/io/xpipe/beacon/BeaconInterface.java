@@ -72,7 +72,7 @@ public abstract class BeaconInterface<T> {
 
     public abstract String getPath();
 
-    public Object handle(HttpExchange exchange, T body) throws Exception {
+    public Object handle(HttpExchange exchange, T body) throws Throwable {
         throw new UnsupportedOperationException();
     }
 

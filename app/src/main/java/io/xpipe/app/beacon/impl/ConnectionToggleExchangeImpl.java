@@ -16,7 +16,7 @@ public class ConnectionToggleExchangeImpl extends ConnectionToggleExchange {
         if (!(e.getStore() instanceof SingletonSessionStore<?> singletonSessionStore)) {
             throw new BeaconClientException("Not a toggleable connection");
         }
-        if (msg.isState()) {
+        if (msg.getState()) {
             singletonSessionStore.startSessionIfNeeded();
         } else {
             singletonSessionStore.stopSessionIfNeeded();

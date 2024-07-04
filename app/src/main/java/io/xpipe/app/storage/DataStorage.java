@@ -16,6 +16,7 @@ import javafx.util.Pair;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.SneakyThrows;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -338,7 +339,12 @@ public abstract class DataStorage {
         listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
     }
 
+    @SneakyThrows
     public boolean refreshChildren(DataStoreEntry e) {
+        return refreshChildren(e,false);
+    }
+
+    public boolean refreshChildren(DataStoreEntry e, boolean throwOnFail) throws Exception {
         if (!(e.getStore() instanceof FixedHierarchyStore)) {
             return false;
         }
@@ -348,8 +354,12 @@ public abstract class DataStorage {
         try {
             newChildren = ((FixedHierarchyStore) (e.getStore())).listChildren(e).stream().filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null).toList();
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).handle();
-            return false;
+            if (throwOnFail) {
+                throw ex;
+            } else {
+                ErrorEvent.fromThrowable(ex).handle();
+                return false;
+            }
         } finally {
             e.decrementBusyCounter();
         }

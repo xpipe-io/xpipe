@@ -1,19 +1,39 @@
 package io.xpipe.app.beacon.impl;
 
 import com.sun.net.httpserver.HttpExchange;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.ConnectionAddExchange;
-
-import java.util.UUID;
+import io.xpipe.core.util.ValidationException;
 
 public class ConnectionAddExchangeImpl extends ConnectionAddExchange {
 
     @Override
-    public Object handle(HttpExchange exchange, Request msg) throws BeaconClientException {
-        var cat = msg.getCategory() != null ? msg.getCategory() : DataStorage.DEFAULT_CATEGORY_UUID;
-        var entry = DataStorage.get().addStoreEntryIfNotPresent(DataStoreEntry.createNew(UUID.randomUUID(), cat, msg.getName(), msg.getData()));
+    public Object handle(HttpExchange exchange, Request msg) throws Throwable {
+        var found = DataStorage.get().getStoreEntryIfPresent(msg.getData(), false);
+        if (found.isPresent()) {
+            return Response.builder().connection(found.get().getUuid()).build();
+        }
+
+        var entry = DataStoreEntry.createNew(msg.getName(), msg.getData());
+        try {
+            DataStorage.get().addStoreEntryInProgress(entry);
+            if (msg.getValidate()) {
+                entry.validateOrThrow();
+            }
+        } catch (Throwable ex) {
+            if (ex instanceof ValidationException) {
+                ErrorEvent.expected(ex);
+            } else if (ex instanceof StackOverflowError) {
+                // Cycles in connection graphs can fail hard but are expected
+                ErrorEvent.expected(ex);
+            }
+            throw ex;
+        } finally {
+            DataStorage.get().removeStoreEntryInProgress(entry);
+        }
+        DataStorage.get().addStoreEntryIfNotPresent(entry);
         return Response.builder().connection(entry.getUuid()).build();
     }
 }

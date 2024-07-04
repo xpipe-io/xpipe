@@ -8,11 +8,11 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.util.UUID;
 
-public class ConnectionToggleExchange extends BeaconInterface<ConnectionToggleExchange.Request> {
+public class ConnectionRefreshExchange extends BeaconInterface<ConnectionRefreshExchange.Request> {
 
     @Override
     public String getPath() {
-        return "/connection/toggle";
+        return "/connection/refresh";
     }
 
     @Jacksonized
@@ -21,9 +21,6 @@ public class ConnectionToggleExchange extends BeaconInterface<ConnectionToggleEx
     public static class Request {
         @NonNull
         UUID connection;
-
-        @NonNull
-        Boolean state;
     }
 
     @Jacksonized

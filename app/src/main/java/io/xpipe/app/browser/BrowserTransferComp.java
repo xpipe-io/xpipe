@@ -43,6 +43,7 @@ public class BrowserTransferComp extends SimpleComp {
 
         var background = new LabelComp(AppI18n.observable("transferDescription"))
                 .apply(struc -> struc.get().setGraphic(new FontIcon("mdi2d-download-outline")))
+                .apply(struc -> struc.get().setWrapText(true))
                 .visible(Bindings.isEmpty(syncItems));
         var backgroundStack =
                 new StackComp(List.of(background)).grow(true, true).styleClass("download-background");
@@ -77,6 +78,7 @@ public class BrowserTransferComp extends SimpleComp {
                         aBoolean -> aBoolean ? AppI18n.observable("dragLocalFiles") : AppI18n.observable("dragFiles")))
                 .apply(struc -> struc.get().setGraphic(new FontIcon("mdi2h-hand-left")))
                 .apply(struc -> AppFont.medium(struc.get()))
+                .apply(struc -> struc.get().setWrapText(true))
                 .hide(Bindings.isEmpty(syncItems));
 
         var downloadButton = new IconButtonComp("mdi2d-download", () -> {

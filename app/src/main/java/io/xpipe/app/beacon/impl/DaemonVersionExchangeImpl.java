@@ -2,6 +2,7 @@ package io.xpipe.app.beacon.impl;
 
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppVersion;
+import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.beacon.api.DaemonVersionExchange;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -19,6 +20,7 @@ public class DaemonVersionExchangeImpl extends DaemonVersionExchange {
                 + System.getProperty("java.vm.name") + " ("
                 + System.getProperty("java.vm.version") + ")";
         var version = AppProperties.get().getVersion();
+        var pro = LicenseProvider.get().hasPaidLicense();
         return Response.builder()
                 .version(version)
                 .canonicalVersion(AppVersion.parse(version)
@@ -26,6 +28,7 @@ public class DaemonVersionExchangeImpl extends DaemonVersionExchange {
                         .orElse("?"))
                 .buildVersion(AppProperties.get().getBuild())
                 .jvmVersion(jvmVersion)
+                .pro(pro)
                 .build();
     }
 }

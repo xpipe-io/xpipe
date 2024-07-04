@@ -139,6 +139,7 @@ open module io.xpipe.app {
             ConnectionBrowseExchangeImpl,
             ConnectionTerminalExchangeImpl,
             ConnectionToggleExchangeImpl,
+            ConnectionRefreshExchangeImpl,
             DaemonOpenExchangeImpl,
             DaemonFocusExchangeImpl,
             DaemonStatusExchangeImpl,

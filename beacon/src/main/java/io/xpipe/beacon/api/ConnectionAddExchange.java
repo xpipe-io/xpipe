@@ -26,7 +26,8 @@ public class ConnectionAddExchange extends BeaconInterface<ConnectionAddExchange
         @NonNull
         DataStore data;
 
-        UUID category;
+        @NonNull
+        Boolean validate;
     }
 
     @Jacksonized

@@ -283,6 +283,35 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /connection/refresh:
+    post:
+      summary: Refresh state of a connection
+      description: |
+        Performs a refresh on the specified connection.
+        
+        This will update the connection state information and also any children if the connection type has any.
+      operationId: connectionRefresh
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectionRefreshRequest'
+            examples:
+              simple:
+                summary: Refresh connection
+                value: { "connection": "36ad9716-a209-4f7f-9814-078d3349280c" }
+      responses:
+        '200':
+          description: The request was successful. The connection state was updated.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /shell/start:
     post:
       summary: Start shell connection
@@ -305,6 +334,10 @@ paths:
       responses:
         '200':
           description: The operation was successful. The shell session was started.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShellStartResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -549,6 +582,26 @@ components:
           description: The connection uuid
       required:
         - connection
+    ShellStartResponse:
+      type: object
+      properties:
+        shellDialect:
+          type: integer
+          description: The shell dialect
+        osType:
+          type: string
+          description: The general type of operating system
+        osName:
+          type: string
+          description: The display name of the operating system
+        temp:
+          type: string
+          description: The location of the temporary directory
+      required:
+        - shellDialect
+        - osType
+        - osName
+        - temp
     ShellStopRequest:
       type: object
       properties:
@@ -736,15 +789,20 @@ components:
           - lastUsed
           - lastModified
           - state
+    ConnectionRefreshRequest:
+      type: object
+      properties:
+        connection:
+          type: string
+          description: The connection uuid
+      required:
+        - connection
     ConnectionAddRequest:
       type: object
       properties:
         name:
           type: string
           description: The connection name
-        category:
-          type: string
-          description: The optional category uuid if you want to add the connection to a certain one. Otherwise the currently selected category will be used.
         data:
           type: object
           description: The raw connection store data. Schemas for connection types are not documented but you can find the connection data of your existing connections in the xpipe vault.

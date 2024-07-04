@@ -3,6 +3,7 @@ package io.xpipe.beacon.api;
 import io.xpipe.beacon.BeaconInterface;
 
 import lombok.Builder;
+import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
@@ -23,9 +24,15 @@ public class DaemonVersionExchange extends BeaconInterface<DaemonVersionExchange
     @Value
     public static class Response {
 
+        @NonNull
         String version;
+        @NonNull
         String canonicalVersion;
+        @NonNull
         String buildVersion;
+        @NonNull
         String jvmVersion;
+        @NonNull
+        Boolean pro;
     }
 }
