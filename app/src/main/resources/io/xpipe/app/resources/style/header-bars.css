@@ -136,12 +136,3 @@
     -fx-border-width: 0.05em;
     -fx-border-radius: 3px;
 }
-
-
-.store-header-bar .filter-bar .filter-background {
-    -fx-opacity: 0.7;
-}
-
-.filter-bar .input-line {
-    -fx-opacity: 0.2;
-}

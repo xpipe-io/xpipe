@@ -110,25 +110,15 @@ public class StoreEntryListStatusComp extends SimpleComp {
             });
         });
         var filter = new FilterComp(StoreViewState.get().getFilterString());
-        filter.apply(struc -> struc.get().sceneProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                struc.getText().requestFocus();
-            }
-        }));
-
         var f = filter.createRegion();
-        var hbox = new HBox(createButtons(), f);
+        var buttons = createButtons();
+        var hbox = new HBox(buttons, f);
+        f.prefHeightProperty().bind(buttons.heightProperty());
         hbox.setSpacing(8);
         hbox.setAlignment(Pos.CENTER);
         HBox.setHgrow(f, Priority.ALWAYS);
 
         f.getStyleClass().add("filter-bar");
-        if (OsType.getLocal().equals(OsType.MACOS)) {
-            f.setPadding(new Insets(-2, 0, -2, 0));
-        } else {
-            f.setPadding(new Insets(-3, 0, -3, 0));
-        }
-
         AppFont.medium(hbox);
         return hbox;
     }
