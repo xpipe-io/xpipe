@@ -50,15 +50,16 @@
     -fx-opacity: 1.0;
 }
 
-.browser .welcome {
-    -fx-border-color: -color-bg-inset, -color-border-default;
-    -fx-border-width: 2.65em 10 0 0, 0.05em 0 0 0;
-    -fx-border-insets: 0, 2.65em 0 0 0;
-    -fx-border-radius: 0 10 0 0, 0;
+.browser .top-spacer {
+    -fx-background-color: -color-bg-inset;
+    -fx-border-width: 0 0 0.05em 0;
+    -fx-border-color: -color-border-default;
+    -fx-pref-height: 2.65em;
+    -fx-max-height: 2.65em;
 }
 
-.root:seamless-frame .browser .welcome {
-    -fx-background-radius: 0 10 0 0, 0, 0;
+.root:seamless-frame .browser .top-spacer {
+    -fx-background-radius: 0 10 0 0;
 }
 
 .browser .welcome .button:hover {
