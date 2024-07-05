@@ -9,19 +9,37 @@
     -fx-background-color: transparent;
 }
 
-.root:dark .background {
+.root:dark:separate-frame .background {
+    -fx-background-color: derive(-color-bg-default, 1%);
+}
+
+.root:light:separate-frame .background {
+    -fx-background-color: derive(-color-bg-default, -9%);
+}
+
+.root:dark:separate-frame.background {
+    -fx-background-color: derive(-color-bg-default, 1%);
+}
+
+.root:light:separate-frame.background {
+    -fx-background-color: derive(-color-bg-default, -9%);
+}
+
+
+
+.root:dark:seamless-frame .background {
     -fx-background-color: derive(-color-bg-default-transparent, 1%);
 }
 
-.root:light .background {
+.root:light:seamless-frame .background {
     -fx-background-color: derive(-color-bg-default-transparent, -9%);
 }
 
-.root:dark.background {
+.root:dark:seamless-frame.background {
     -fx-background-color: derive(-color-bg-default-transparent, 1%);
 }
 
-.root:light.background {
+.root:light:seamless-frame.background {
     -fx-background-color: derive(-color-bg-default-transparent, -9%);
 }
 
