@@ -103,6 +103,12 @@ public class AppStyle {
         STYLESHEET_CONTENTS.values().forEach(s -> {
             scene.getStylesheets().add(s);
         });
+        if (AppPrefs.get() != null) {
+            var t = AppPrefs.get().theme.get();
+            if (t != null) {
+                scene.getStylesheets().addAll(t.getAdditionalStylesheets());
+            }
+        }
         TrackEvent.debug("Added stylesheets for scene");
 
         scenes.add(scene);

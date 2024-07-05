@@ -59,6 +59,8 @@ public class AppTheme {
                 }
 
                 stage.getScene().getRoot().getStyleClass().add(t.getCssId());
+                stage.getScene().getStylesheets().removeAll(t.getAdditionalStylesheets());
+                stage.getScene().getStylesheets().addAll(t.getAdditionalStylesheets());
                 stage.getScene().getRoot().pseudoClassStateChanged(LIGHT, !t.isDark());
                 stage.getScene().getRoot().pseudoClassStateChanged(DARK, t.isDark());
             });
@@ -255,6 +257,15 @@ public class AppTheme {
 
         public void apply() {
             Application.setUserAgentStylesheet(theme.getUserAgentStylesheetBSS());
+        }
+
+        public List<String> getAdditionalStylesheets() {
+            var r = AppResources.getResourceURL(AppResources.XPIPE_MODULE, "theme/" + getId() + ".css");
+            if (r.isEmpty()) {
+                return List.of();
+            } else {
+                return List.of(r.get().toString());
+            }
         }
 
         @Override

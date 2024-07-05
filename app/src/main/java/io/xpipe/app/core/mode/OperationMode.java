@@ -94,12 +94,14 @@ public abstract class OperationMode {
 
             // Handle uncaught exceptions
             Thread.setDefaultUncaughtExceptionHandler((thread, ex) -> {
+                // It seems like a few exceptions are thrown in the quantum renderer
+                // when in shutdown. We can ignore these
+                if (OperationMode.isInShutdown() && Platform.isFxApplicationThread() && ex instanceof NullPointerException) {
+                    return;
+                }
+
                 ErrorEvent.fromThrowable(ex).unhandled(true).build().handle();
             });
-
-            //            if (true) {
-            //                throw new OutOfMemoryError();
-            //            }
 
             TrackEvent.info("Initial setup");
             AppProperties.init();
