@@ -19,7 +19,3 @@
     -fx-background-color: -color-bg-subtle;
     -fx-border-width: 1 0 0 0;
 }
-
-.root:seamless-frame .dialog-comp .buttons {
-    -fx-background-color: transparent;
-}
