@@ -110,6 +110,7 @@ public class BeaconRequestHandler<T> implements HttpHandler {
                         .replace("$RequestBuilder", "")
                         .replace("Exchange$Request","Request")
                         .replace("at [Source: UNKNOWN; byte offset: #UNKNOWN]", "")
+                        .replaceAll("(\\w+) is marked non-null but is null", "field $1 is missing from object")
                         .trim();
                 writeError(exchange, new BeaconClientErrorResponse(message), 400);
             }

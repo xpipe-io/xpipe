@@ -56,6 +56,7 @@
     -color-fg-subtle: rgb(166, 173, 200);
     -color-fg-emphasis: rgb(180, 190, 254);
     -color-bg-default: rgb(30, 30, 46);
+    -color-bg-default-transparent: #1E1E2ED2;
     -color-bg-overlay: rgb(24, 24, 37);
     -color-bg-subtle: rgb(49, 50, 68);
     -color-bg-inset: rgb(17, 17, 27);

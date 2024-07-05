@@ -135,6 +135,7 @@ open module io.xpipe.app {
             ShellExecExchangeImpl,
             ConnectionQueryExchangeImpl,
             ConnectionInfoExchangeImpl,
+            ConnectionRemoveExchangeImpl,
             ConnectionAddExchangeImpl,
             ConnectionBrowseExchangeImpl,
             ConnectionTerminalExchangeImpl,

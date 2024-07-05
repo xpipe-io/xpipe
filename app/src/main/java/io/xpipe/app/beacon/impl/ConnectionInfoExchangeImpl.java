@@ -37,6 +37,7 @@ public class ConnectionInfoExchangeImpl extends ConnectionInfoExchange {
                     .usageCategory(e.getProvider().getUsageCategory())
                     .type(e.getProvider().getId())
                     .state(e.getStorePersistentState() != null ? e.getStorePersistentState() : new Object())
+                    .cache(e.getStoreCache())
                     .build();
             list.add(apply);
         }

@@ -204,6 +204,11 @@ public class AppTheme {
             Application.setUserAgentStylesheet(Styles.toDataURI(builder.toString()));
         }
 
+
+        public List<String> getAdditionalStylesheets() {
+            return List.of();
+        }
+
         @Override
         public ObservableValue<String> toTranslatedString() {
             return new SimpleStringProperty(name);

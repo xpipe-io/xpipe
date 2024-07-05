@@ -30,8 +30,9 @@ public final class BrowserBookmarkHeaderComp extends SimpleComp {
                         StoreViewState.get().getAllConnectionsCategory(),
                         StoreViewState.get().getActiveCategory(),
                         this.category)
-                .styleClass(Styles.LEFT_PILL);
-        var filter = new FilterComp(this.filter).styleClass(Styles.RIGHT_PILL).hgrow();
+                .styleClass(Styles.LEFT_PILL)
+                .minWidth(Region.USE_PREF_SIZE);
+        var filter = new FilterComp(this.filter).styleClass(Styles.RIGHT_PILL).minWidth(0).hgrow();
 
         var top = new HorizontalComp(List.of(category, filter))
                 .apply(struc -> struc.get().setFillHeight(true))

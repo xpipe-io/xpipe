@@ -38,6 +38,7 @@ open module io.xpipe.beacon {
             HandshakeExchange,
             ConnectionQueryExchange,
             ConnectionInfoExchange,
+            ConnectionRemoveExchange,
             ConnectionAddExchange,
             ConnectionBrowseExchange,
             ConnectionTerminalExchange,

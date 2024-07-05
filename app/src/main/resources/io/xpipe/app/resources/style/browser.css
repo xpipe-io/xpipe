@@ -52,8 +52,9 @@
 
 .browser .welcome {
     -fx-border-color: -color-bg-inset, -color-border-default;
-    -fx-border-width: 2.65em 0 0 0, 0.05em 0 0 0;
+    -fx-border-width: 2.65em 10 0 0, 0.05em 0 0 0;
     -fx-border-insets: 0, 2.65em 0 0 0;
+    -fx-border-radius: 0 10 0 0, 0;
 }
 
 .root:seamless-frame .browser .welcome {

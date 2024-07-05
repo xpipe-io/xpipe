@@ -623,6 +623,7 @@ curl -X POST http://localhost:21721/connection/info \
 `POST /connection/add`
 
 Creates the new connection in the xpipe vault from raw json data.
+This can also perform an optional validation first to make sure that the connection can be established.
 
 If an equivalent connection already exists, no new one will be added.
 
@@ -631,6 +632,7 @@ If an equivalent connection already exists, no new one will be added.
 ```json
 {
   "name": "my connection",
+  "validate": true,
   "category": "97458c07-75c0-4f9d-a06e-92d8cdf67c40",
   "data": {
     "type": "shellEnvironment",
@@ -690,6 +692,7 @@ bearerAuth
 ```javascript
 const inputBody = '{
   "name": "my connection",
+  "validate": true,
   "category": "97458c07-75c0-4f9d-a06e-92d8cdf67c40",
   "data": {
     "type": "shellEnvironment",
@@ -732,6 +735,7 @@ headers = {
 data = """
 {
   "name": "my connection",
+  "validate": true,
   "category": "97458c07-75c0-4f9d-a06e-92d8cdf67c40",
   "data": {
     "type": "shellEnvironment",
@@ -762,6 +766,7 @@ var request = HttpRequest
         .POST(HttpRequest.BodyPublishers.ofString("""
 {
   "name": "my connection",
+  "validate": true,
   "category": "97458c07-75c0-4f9d-a06e-92d8cdf67c40",
   "data": {
     "type": "shellEnvironment",
@@ -815,6 +820,7 @@ curl -X POST http://localhost:21721/connection/add \
   --data '
 {
   "name": "my connection",
+  "validate": true,
   "category": "97458c07-75c0-4f9d-a06e-92d8cdf67c40",
   "data": {
     "type": "shellEnvironment",
@@ -825,6 +831,174 @@ curl -X POST http://localhost:21721/connection/add \
     "shell": "pwsh",
     "elevated": false
   }
+}
+'
+
+```
+
+</details>
+
+## Remove connection
+
+<a id="opIdconnectionRemove"></a>
+
+`POST /connection/remove`
+
+Removes a set of connection. This includes any possible children associated with the connection.
+
+Some connections, for example the local machine, can not be removed.
+
+> Body parameter
+
+```json
+{
+  "connections": [
+    "36ad9716-a209-4f7f-9814-078d3349280c"
+  ]
+}
+```
+
+<h3 id="remove-connection-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|body|body|[ConnectionRemoveRequest](#schemaconnectionremoverequest)|true|none|
+
+> Example responses
+
+> 400 Response
+
+```json
+{
+  "message": "string"
+}
+```
+
+<h3 id="remove-connection-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The removal was successful.|None|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
+|403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
+
+<aside class="warning">
+To perform this operation, you must be authenticated by means of one of the following methods:
+bearerAuth
+</aside>
+
+<details>
+
+<summary>Code samples</summary>
+
+```javascript
+const inputBody = '{
+  "connections": [
+    "36ad9716-a209-4f7f-9814-078d3349280c"
+  ]
+}';
+const headers = {
+  'Content-Type':'application/json',
+  'Accept':'application/json',
+  'Authorization':'Bearer {access-token}'
+};
+
+fetch('http://localhost:21721/connection/remove',
+{
+  method: 'POST',
+  body: inputBody,
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```python
+import requests
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json',
+  'Authorization': 'Bearer {access-token}'
+}
+
+data = """
+{
+  "connections": [
+    "36ad9716-a209-4f7f-9814-078d3349280c"
+  ]
+}
+"""
+r = requests.post('http://localhost:21721/connection/remove', headers = headers, data = data)
+
+print(r.json())
+
+```
+
+```java
+var uri = URI.create("http://localhost:21721/connection/remove");
+var client = HttpClient.newHttpClient();
+var request = HttpRequest
+        .newBuilder()
+        .uri(uri)
+        .header("Content-Type", "application/json")
+        .header("Accept", "application/json")
+        .header("Authorization", "Bearer {access-token}")
+        .POST(HttpRequest.BodyPublishers.ofString("""
+{
+  "connections": [
+    "36ad9716-a209-4f7f-9814-078d3349280c"
+  ]
+}
+        """))
+        .build();
+var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+System.out.println(response.statusCode());
+System.out.println(response.body());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Content-Type": []string{"application/json"},
+        "Accept": []string{"application/json"},
+        "Authorization": []string{"Bearer {access-token}"},
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("POST", "http://localhost:21721/connection/remove", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+```shell
+# You can also use wget
+curl -X POST http://localhost:21721/connection/remove \
+  -H 'Content-Type: application/json' \  -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
+  --data '
+{
+  "connections": [
+    "36ad9716-a209-4f7f-9814-078d3349280c"
+  ]
 }
 '
 
@@ -1307,7 +1481,7 @@ curl -X POST http://localhost:21721/connection/toggle \
 
 </details>
 
-## Refreshes state of a connection
+## Refresh state of a connection
 
 <a id="opIdconnectionRefresh"></a>
 
@@ -1325,7 +1499,7 @@ This will update the connection state information and also any children if the c
 }
 ```
 
-<h3 id="refreshes-state-of-a-connection-parameters">Parameters</h3>
+<h3 id="refresh-state-of-a-connection-parameters">Parameters</h3>
 
 |Name|In|Type|Required|Description|
 |---|---|---|---|---|
@@ -1341,7 +1515,7 @@ This will update the connection state information and also any children if the c
 }
 ```
 
-<h3 id="refreshes-state-of-a-connection-responses">Responses</h3>
+<h3 id="refresh-state-of-a-connection-responses">Responses</h3>
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
@@ -2644,7 +2818,8 @@ Retrieves version information from the daemon
   "version": "string",
   "canonicalVersion": "string",
   "buildVersion": "string",
-  "jvmVersion": "string"
+  "jvmVersion": "string",
+  "pro": true
 }
 ```
 
@@ -3072,7 +3247,8 @@ undefined
     "usageCategory": "shell",
     "lastModified": "string",
     "lastUsed": "string",
-    "state": {}
+    "state": {},
+    "cache": {}
   }
 ]
 
@@ -3091,6 +3267,7 @@ undefined
 |lastModified|string|true|none|The timestamp of when the connection configuration was last modified in ISO 8601|
 |lastUsed|string|true|none|The timestamp of when the connection was last launched in ISO 8601|
 |state|object|true|none|The internal persistent state information about the connection|
+|cache|object|true|none|The temporary cache data for the connection|
 
 #### Enumerated Values
 
@@ -3134,7 +3311,8 @@ undefined
 ```json
 {
   "name": "string",
-  "data": {}
+  "data": {},
+  "validate": true
 }
 
 ```
@@ -3145,6 +3323,7 @@ undefined
 |---|---|---|---|---|
 |name|string|true|none|The connection name|
 |data|object|true|none|The raw connection store data. Schemas for connection types are not documented but you can find the connection data of your existing connections in the xpipe vault.|
+|validate|boolean|true|none|Whether to perform a connection validation before adding it, i.e., probe the connection first. If validation is enabled and fails, the connection will not be added|
 
 <h2 id="tocS_ConnectionAddResponse">ConnectionAddResponse</h2>
 
@@ -3165,6 +3344,28 @@ undefined
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
 |connection|string|true|none|The connection uuid|
+
+<h2 id="tocS_ConnectionRemoveRequest">ConnectionRemoveRequest</h2>
+
+<a id="schemaconnectionremoverequest"></a>
+<a id="schema_ConnectionRemoveRequest"></a>
+<a id="tocSconnectionremoverequest"></a>
+<a id="tocsconnectionremoverequest"></a>
+
+```json
+{
+  "connections": [
+    "string"
+  ]
+}
+
+```
+
+<h3>Properties</h3>
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|connections|[string]|true|none|The connections to remove|
 
 <h2 id="tocS_ConnectionBrowseRequest">ConnectionBrowseRequest</h2>
 
@@ -3291,7 +3492,8 @@ undefined
   "version": "string",
   "canonicalVersion": "string",
   "buildVersion": "string",
-  "jvmVersion": "string"
+  "jvmVersion": "string",
+  "pro": true
 }
 
 ```
@@ -3304,6 +3506,7 @@ undefined
 |canonicalVersion|string|true|none|The canonical version of the running daemon|
 |buildVersion|string|true|none|The build timestamp|
 |jvmVersion|string|true|none|The version of the Java Virtual Machine in which the daemon is running|
+|pro|boolean|true|none|Whether the daemon supports professional edition features|
 
 <h2 id="tocS_AuthMethod">AuthMethod</h2>
 
