@@ -1,20 +1,16 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
-import io.xpipe.app.fxcomps.augment.Augment;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.update.UpdateAvailableAlert;
 import io.xpipe.app.update.XPipeDistributionType;
-import io.xpipe.app.util.Hyperlinks;
-
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -65,7 +61,14 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         var selected = PseudoClass.getPseudoClass("selected");
         for (int i = 0; i < entries.size(); i++) {
             var e = entries.get(i);
-            var b = new IconButtonComp(e.icon(), () -> value.setValue(e));
+            var b = new IconButtonComp(e.icon(), () -> {
+                if (e.action() != null) {
+                    e.action().run();
+                    return;
+                }
+
+                value.setValue(e);
+            });
             var shortcut = e.combination();
             if (shortcut != null) {
                 b.apply(struc -> struc.get().getProperties().put("shortcut", shortcut));
@@ -85,7 +88,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
             var indicator = Comp.empty().styleClass("indicator");
             var stack = new StackComp(List.of(indicator, b)).apply(struc -> struc.get().setAlignment(Pos.CENTER_RIGHT));
             stack.apply(struc -> {
-                var indicatorRegion = (Region) struc.get().getChildren().get(0);
+                var indicatorRegion = (Region) struc.get().getChildren().getFirst();
                 indicatorRegion.setMaxWidth(7);
                 indicatorRegion
                         .backgroundProperty()
@@ -108,71 +111,6 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                                 noneBorder));
             });
             vbox.getChildren().add(stack.createRegion());
-        }
-
-        Augment<CompStructure<Button>> simpleBorders = struc -> {
-            struc.get()
-                    .backgroundProperty()
-                    .bind(Bindings.createObjectBinding(
-                            () -> {
-                                if (struc.get().isHover()) {
-                                    return hoverBorder.get();
-                                }
-
-                                return noneBorder.get();
-                            },
-                            struc.get().hoverProperty(),
-                            value,
-                            hoverBorder,
-                            selectedBorder,
-                            noneBorder));
-        };
-
-        {
-            var b = new IconButtonComp("mdi2g-github", () -> Hyperlinks.open(Hyperlinks.GITHUB))
-                    .tooltipKey("visitGithubRepository")
-                    .apply(simpleBorders)
-                    .accessibleTextKey("visitGithubRepository");
-            b.apply(struc -> {
-                AppFont.setSize(struc.get(), 2);
-            });
-            vbox.getChildren().add(b.createRegion());
-        }
-
-        {
-            var b = new IconButtonComp("mdi2d-discord", () -> Hyperlinks.open(Hyperlinks.DISCORD))
-                    .tooltipKey("discord")
-                    .apply(simpleBorders)
-                    .accessibleTextKey("discord");
-            b.apply(struc -> {
-                AppFont.setSize(struc.get(), 2);
-            });
-            vbox.getChildren().add(b.createRegion());
-        }
-
-        //        {
-        //            var b = new IconButtonComp("mdi2t-translate", () -> Hyperlinks.open(Hyperlinks.TRANSLATE))
-        //                    .tooltipKey("translate")
-        //                    .apply(simpleBorders)
-        //                    .accessibleTextKey("translate");
-        //            b.apply(struc -> {
-        //                AppFont.setSize(struc.get(), 2);
-        //            });
-        //            vbox.getChildren().add(b.createRegion());
-        //        }
-
-        {
-            var b = new IconButtonComp(
-                            "mdi2c-code-json",
-                            () -> Hyperlinks.open(
-                                    "http://localhost:" + AppBeaconServer.get().getPort()))
-                    .tooltipKey("api")
-                    .apply(simpleBorders)
-                    .accessibleTextKey("api");
-            b.apply(struc -> {
-                AppFont.setSize(struc.get(), 2);
-            });
-            vbox.getChildren().add(b.createRegion());
         }
 
         {

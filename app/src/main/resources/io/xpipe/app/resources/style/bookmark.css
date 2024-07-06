@@ -32,10 +32,6 @@
     -fx-padding: 1 0 9 9;
 }
 
-.root:pretty .bookmarks-container {
-    -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 2px, 0.25, 0, 1);
-}
-
 .bookmarks-header {
     -fx-min-height: 3.5em;
     -fx-pref-height: 3.5em;

@@ -1,10 +1,12 @@
 package io.xpipe.app.core;
 
+import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.browser.session.BrowserSessionComp;
 import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.comp.store.StoreLayoutComp;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.prefs.AppPrefsComp;
+import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LicenseProvider;
 
 import javafx.beans.property.Property;
@@ -75,22 +77,45 @@ public class AppLayoutModel {
                         AppI18n.observable("browser"),
                         "mdi2f-file-cabinet",
                         new BrowserSessionComp(BrowserSessionModel.DEFAULT),
+                        null,
                         new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.CONTROL_DOWN)),
                 new Entry(
                         AppI18n.observable("connections"),
                         "mdi2c-connection",
                         new StoreLayoutComp(),
+                        null,
                         new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.CONTROL_DOWN)),
                 new Entry(
                         AppI18n.observable("settings"),
                         "mdsmz-miscellaneous_services",
                         new AppPrefsComp(),
+                        null,
                         new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.CONTROL_DOWN)),
                 new Entry(
                         AppI18n.observable("explorePlans"),
                         "mdi2p-professional-hexagon",
                         LicenseProvider.get().overviewPage(),
-                        null)));
+                        null,
+                        null),
+                new Entry(
+                        AppI18n.observable("visitGithubRepository"),
+                        "mdi2g-github",
+                        new AppPrefsComp(),
+                        () -> Hyperlinks.open(Hyperlinks.GITHUB),
+                        new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.CONTROL_DOWN)),
+                new Entry(
+                        AppI18n.observable("discord"),
+                        "mdi2d-discord",
+                        new AppPrefsComp(),
+                        () -> Hyperlinks.open(Hyperlinks.DISCORD),
+                        new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.CONTROL_DOWN)),
+                new Entry(
+                        AppI18n.observable("api"),
+                        "mdi2c-code-json",
+                        new AppPrefsComp(),
+                        () -> Hyperlinks.open(
+                                "http://localhost:" + AppBeaconServer.get().getPort()),
+                        new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.CONTROL_DOWN))));
         return l;
     }
 
@@ -103,5 +128,5 @@ public class AppLayoutModel {
         double browserConnectionsWidth;
     }
 
-    public record Entry(ObservableValue<String> name, String icon, Comp<?> comp, KeyCombination combination) {}
+    public record Entry(ObservableValue<String> name, String icon, Comp<?> comp, Runnable action, KeyCombination combination) {}
 }

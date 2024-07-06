@@ -15,10 +15,6 @@
     -fx-padding: 0 6 8 8;
 }
 
-.root:pretty .browser .transfer {
-    -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 2px, 0.25, 0, 1);
-}
-
 .transfer > * {
     -fx-border-radius: 4;
     -fx-background-radius: 4;
@@ -237,11 +233,6 @@
     -fx-background-insets: 0, 7 0 0 0;
     -fx-border-width: 1;
     -fx-border-color: -color-border-default;
-}
-
-
-.root:pretty .browser .browser-content {
-    -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 2px, 0.25, 0, 1);
 }
 
 .browser .browser-content-container {
