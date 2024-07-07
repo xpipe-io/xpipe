@@ -1,1 +1,5 @@
 .root { -color-bg-default-transparent: #FFFFFFCC; }
+
+.root.cupertino .button {
+    -fx-effect: NONE;
+}

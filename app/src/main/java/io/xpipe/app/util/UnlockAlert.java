@@ -18,7 +18,7 @@ import javafx.stage.Stage;
 
 public class UnlockAlert {
 
-    public static void showIfNeeded() throws Exception {
+    public static void showIfNeeded() throws Throwable {
         if (AppPrefs.get().getLockCrypt().getValue() == null
                 || AppPrefs.get().getLockCrypt().getValue().isEmpty()) {
             return;

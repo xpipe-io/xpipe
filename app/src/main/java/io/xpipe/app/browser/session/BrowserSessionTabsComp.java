@@ -51,8 +51,6 @@ public class BrowserSessionTabsComp extends SimpleComp {
 
     public Region createSimple() {
         var multi = new MultiContentComp(Map.<Comp<?>, ObservableValue<Boolean>>of(
-                Comp.hspacer().styleClass("top-spacer"),
-                new SimpleBooleanProperty(true),
                 Comp.of(() -> createTabPane()),
                 Bindings.isNotEmpty(model.getSessionEntries()),
                 new BrowserWelcomeComp(model).apply(struc -> StackPane.setAlignment(struc.get(), Pos.CENTER_LEFT)),
@@ -60,7 +58,9 @@ public class BrowserSessionTabsComp extends SimpleComp {
                         () -> {
                             return model.getSessionEntries().size() == 0;
                         },
-                        model.getSessionEntries())));
+                        model.getSessionEntries()),
+                Comp.hspacer().styleClass("top-spacer"),
+                new SimpleBooleanProperty(true)));
         multi.apply(struc -> ((StackPane) struc.get()).setAlignment(Pos.TOP_CENTER));
         return multi.createRegion();
     }

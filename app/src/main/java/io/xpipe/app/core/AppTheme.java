@@ -59,10 +59,12 @@ public class AppTheme {
                 }
 
                 stage.getScene().getRoot().getStyleClass().add(t.getCssId());
-                stage.getScene().getStylesheets().removeAll(t.getAdditionalStylesheets());
                 stage.getScene().getStylesheets().addAll(t.getAdditionalStylesheets());
                 stage.getScene().getRoot().pseudoClassStateChanged(LIGHT, !t.isDark());
                 stage.getScene().getRoot().pseudoClassStateChanged(DARK, t.isDark());
+            });
+            AppPrefs.get().theme.addListener((observable, oldValue, newValue) -> {
+                stage.getScene().getStylesheets().removeAll(oldValue.getAdditionalStylesheets());
             });
 
             AppPrefs.get().performanceMode().subscribe(val -> {

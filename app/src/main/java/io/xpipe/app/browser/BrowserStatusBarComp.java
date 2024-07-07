@@ -57,10 +57,9 @@ public class BrowserStatusBarComp extends SimpleComp {
             if (p == null || p.done()) {
                 return null;
             } else {
-                var time =
-                        p.getTotal() > 50_000_000 && p.elapsedTime().compareTo(Duration.of(200, ChronoUnit.MILLIS)) > 0
-                                ? HumanReadableFormat.duration(p.expectedTimeRemaining())
-                                : "...";
+                var expected = p.expectedTimeRemaining();
+                var show = (p.getTotal() > 50_000_000 && p.elapsedTime().compareTo(Duration.of(200, ChronoUnit.MILLIS)) > 0) || expected.toMillis() > 5000;
+                var time = show ? HumanReadableFormat.duration(p.expectedTimeRemaining()) : "...";
                 return time;
             }
         });

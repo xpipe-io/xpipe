@@ -49,10 +49,10 @@ public enum PlatformState {
         setCurrent(PlatformState.EXITED);
     }
 
-    public static void initPlatformOrThrow() throws Exception {
+    public static void initPlatformOrThrow() throws Throwable {
         initPlatformIfNeeded();
         if (lastError != null) {
-            throw lastError instanceof Exception e ? e : new Exception(lastError);
+            throw getLastError();
         }
     }
 

@@ -54,6 +54,8 @@ public class AppMainWindow {
         scene.setFill(Color.TRANSPARENT);
         ModifiedStage.prepareStage(stage);
         stage.setScene(scene);
+        stage.opacityProperty().bind(AppPrefs.get().windowOpacity());
+        AppWindowHelper.addIcons(stage);
         AppWindowHelper.setupStylesheets(stage.getScene());
         return INSTANCE;
     }

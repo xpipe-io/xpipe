@@ -90,10 +90,6 @@
     -fx-opacity: 0.2;
 }
 
-.root:pretty .store-entry-comp .button-bar, .root:pretty .store-entry-comp .dropdown-comp {
-    -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 2px, 0.25, 0, 1);
-}
-
 .store-entry-comp .button-bar .button {
     -fx-padding: 6px;
 }

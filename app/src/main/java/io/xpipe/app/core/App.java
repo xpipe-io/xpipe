@@ -2,17 +2,14 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.comp.AppLayoutComp;
 import io.xpipe.app.core.window.AppMainWindow;
-import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.LicenseProvider;
-
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.stage.Stage;
-
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -32,8 +29,6 @@ public class App extends Application {
         TrackEvent.info("Application launched");
         APP = this;
         stage = primaryStage;
-        stage.opacityProperty().bind(AppPrefs.get().windowOpacity());
-        AppWindowHelper.addIcons(stage);
     }
 
     public void setupWindow() {
