@@ -32,6 +32,7 @@ public class AppLayoutComp extends Comp<CompStructure<Pane>> {
     @Override
     public CompStructure<Pane> createBase() {
         Map<Comp<?>, ObservableValue<Boolean>> map = model.getEntries().stream()
+                .filter(entry -> entry.comp() != null)
                 .collect(Collectors.toMap(
                         entry -> entry.comp(),
                         entry -> Bindings.createBooleanBinding(

@@ -100,19 +100,19 @@ public class AppLayoutModel {
                 new Entry(
                         AppI18n.observable("visitGithubRepository"),
                         "mdi2g-github",
-                        new AppPrefsComp(),
+                        null,
                         () -> Hyperlinks.open(Hyperlinks.GITHUB),
                         new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.CONTROL_DOWN)),
                 new Entry(
                         AppI18n.observable("discord"),
                         "mdi2d-discord",
-                        new AppPrefsComp(),
+                        null,
                         () -> Hyperlinks.open(Hyperlinks.DISCORD),
                         new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.CONTROL_DOWN)),
                 new Entry(
                         AppI18n.observable("api"),
                         "mdi2c-code-json",
-                        new AppPrefsComp(),
+                        null,
                         () -> Hyperlinks.open(
                                 "http://localhost:" + AppBeaconServer.get().getPort()),
                         new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.CONTROL_DOWN))));
