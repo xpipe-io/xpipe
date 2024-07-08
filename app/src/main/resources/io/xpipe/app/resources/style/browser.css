@@ -25,6 +25,7 @@
 
 .transfer:highlighted > * {
     -fx-border-color: -color-accent-emphasis;
+    -fx-background-color: derive(-color-bg-subtle, 5%);
 }
 
 .transfer .button {

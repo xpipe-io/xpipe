@@ -60,7 +60,7 @@ public interface NetworkTunnelStore extends DataStore {
 
     default NetworkTunnelSession sessionChain(int local, int remotePort) throws Exception {
         if (!isLocallyTunneable()) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("Unable to create tunnel chain as one intermediate system does not support tunneling");
         }
 
         var running = new AtomicBoolean();
