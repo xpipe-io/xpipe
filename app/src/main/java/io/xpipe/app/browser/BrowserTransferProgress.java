@@ -41,6 +41,7 @@ public class BrowserTransferProgress {
         var share = (double) transferred / total;
         var rest = (1.0 - share) / share;
         var restMillis = (long) (elapsed.toMillis() * rest);
-        return Duration.of(restMillis, ChronoUnit.MILLIS);
+        var startupAdjustment = (long) (restMillis / (1.0 + Math.max(10000 - elapsed.toMillis(), 0) / 10000.0));
+        return Duration.of(restMillis + startupAdjustment, ChronoUnit.MILLIS);
     }
 }

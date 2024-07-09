@@ -15,7 +15,7 @@
     -fx-padding: 0 6 8 8;
 }
 
-.transfer > * {
+.transfer > .download-background {
     -fx-border-radius: 4;
     -fx-background-radius: 4;
     -fx-border-color: -color-border-default;
@@ -23,7 +23,7 @@
     -fx-background-color: -color-bg-subtle;
 }
 
-.transfer:highlighted > * {
+.transfer:highlighted > .download-background {
     -fx-border-color: -color-accent-emphasis;
     -fx-background-color: derive(-color-bg-subtle, 5%);
 }
@@ -228,8 +228,8 @@
 
 .browser .browser-content {
     -fx-padding: 6 0 0 0;
-    -fx-border-radius: 10 10 4 4;
-    -fx-background-radius: 10 10 4 4;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
     -fx-background-color: -color-bg-subtle, -color-bg-default;
     -fx-background-insets: 0, 7 0 0 0;
     -fx-border-width: 1;

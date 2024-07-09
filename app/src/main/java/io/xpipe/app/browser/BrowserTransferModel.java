@@ -7,45 +7,49 @@ import io.xpipe.app.browser.file.LocalFileSystem;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.util.BooleanScope;
+import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.ShellTemp;
-
+import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
 import lombok.Value;
 import org.apache.commons.io.FileUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Optional;
 
 @Value
 public class BrowserTransferModel {
 
     private static final Path TEMP = ShellTemp.getLocalTempDataDirectory("download");
 
-    ExecutorService executor = Executors.newSingleThreadExecutor(r -> {
-        Thread t = Executors.defaultThreadFactory().newThread(r);
-        t.setDaemon(true);
-        t.setName("file downloader");
-        return t;
-    });
     BrowserSessionModel browserSessionModel;
     ObservableList<Item> items = FXCollections.observableArrayList();
-    BooleanProperty downloading = new SimpleBooleanProperty();
-    BooleanProperty allDownloaded = new SimpleBooleanProperty();
+
+    public BrowserTransferModel(BrowserSessionModel browserSessionModel) {
+        this.browserSessionModel = browserSessionModel;
+        var thread = ThreadHelper.createPlatformThread("file downloader", true,() -> {
+           while (true) {
+               Optional<Item> toDownload;
+               synchronized (items) {
+                   toDownload = items.stream().filter(item -> !item.downloadFinished().get()).findFirst();
+               }
+               if (toDownload.isPresent()) {
+                   downloadSingle(toDownload.get());
+               }
+               ThreadHelper.sleep(20);
+           }
+        });
+        thread.start();
+    }
 
     private void cleanDirectory() {
         if (!Files.isDirectory(TEMP)) {
@@ -63,95 +67,77 @@ public class BrowserTransferModel {
     }
 
     public void clear(boolean delete) {
-        items.clear();
+        synchronized (items) {
+            items.clear();
+        }
         if (delete) {
-            executor.submit(() -> {
-                cleanDirectory();
-            });
+            cleanDirectory();
         }
     }
 
     public void drop(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        entries.forEach(entry -> {
-            var name = entry.getFileName();
-            if (items.stream().anyMatch(item -> item.getName().equals(name))) {
-                return;
-            }
-
-            Path file = TEMP.resolve(name);
-            var item = new Item(model, name, entry, file);
-            items.add(item);
-            allDownloaded.set(false);
-        });
-    }
-
-    public void dropLocal(List<File> entries) {
-        if (entries.isEmpty()) {
-            return;
-        }
-
-        var empty = items.isEmpty();
-        try {
-            var paths = entries.stream().map(File::toPath).filter(Files::exists).toList();
-            for (Path path : paths) {
-                var entry = LocalFileSystem.getLocalBrowserEntry(path);
+        synchronized (items) {
+            entries.forEach(entry -> {
                 var name = entry.getFileName();
                 if (items.stream().anyMatch(item -> item.getName().equals(name))) {
                     return;
                 }
 
-                var item = new Item(null, name, entry, path);
-                item.progress.setValue(BrowserTransferProgress.finished(
-                        entry.getFileName(), entry.getRawFileEntry().getSize()));
+                Path file = TEMP.resolve(name);
+                var item = new Item(model, name, entry, file);
                 items.add(item);
-            }
-        } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).handle();
-        }
-        if (empty) {
-            allDownloaded.set(true);
+            });
         }
     }
 
-    public void download() {
-        executor.submit(() -> {
-            try {
-                FileUtils.forceMkdir(TEMP.toFile());
-            } catch (IOException e) {
-                ErrorEvent.fromThrowable(e).handle();
+    public void downloadSingle(Item item) {
+        try {
+            FileUtils.forceMkdir(TEMP.toFile());
+        } catch (IOException e) {
+            ErrorEvent.fromThrowable(e).handle();
+            return;
+        }
+
+            if (item.downloadFinished().get()) {
                 return;
             }
 
-            for (Item item : new ArrayList<>(items)) {
-                if (item.downloadFinished().get()) {
-                    continue;
-                }
+            if (item.getOpenFileSystemModel() != null
+                    && item.getOpenFileSystemModel().isClosed()) {
+                return;
+            }
 
-                if (item.getOpenFileSystemModel() != null
-                        && item.getOpenFileSystemModel().isClosed()) {
-                    continue;
-                }
-
-                try {
-                    try (var ignored = new BooleanScope(downloading).start()) {
-                        var op = new BrowserFileTransferOperation(
-                                LocalFileSystem.getLocalFileEntry(TEMP),
-                                List.of(item.getBrowserEntry().getRawFileEntry()),
-                                BrowserFileTransferMode.COPY,
-                                false,
-                                progress -> {
-                                    item.getProgress().setValue(progress);
-                                    item.getOpenFileSystemModel().getProgress().setValue(progress);
-                                });
-                        op.execute();
-                    }
-                } catch (Throwable t) {
-                    ErrorEvent.fromThrowable(t).handle();
+            try {
+                var op = new BrowserFileTransferOperation(
+                        LocalFileSystem.getLocalFileEntry(TEMP),
+                        List.of(item.getBrowserEntry().getRawFileEntry()),
+                        BrowserFileTransferMode.COPY,
+                        false,
+                        progress -> {
+                            item.getProgress().setValue(progress);
+                            item.getOpenFileSystemModel().getProgress().setValue(progress);
+                        });
+                op.execute();
+            } catch (Throwable t) {
+                ErrorEvent.fromThrowable(t).handle();
+                synchronized (items) {
                     items.remove(item);
                 }
             }
-            allDownloaded.set(true);
-        });
+    }
+
+    public void transferToDownloads() throws Exception {
+        if (items.isEmpty()) {
+            return;
+        }
+
+        var files = items.stream().map(item -> item.getLocalFile()).toList();
+        var downloads = DesktopHelper.getDownloadsDirectory();
+        for (Path file : files) {
+            Files.move(file, downloads.resolve(file.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+        }
+        clear(true);
+        DesktopHelper.browseFileInDirectory(downloads.resolve(files.getFirst().getFileName()));
     }
 
     @Value

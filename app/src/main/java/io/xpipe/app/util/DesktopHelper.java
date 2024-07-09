@@ -28,6 +28,23 @@ public class DesktopHelper {
         return Path.of(System.getProperty("user.home") + "/Desktop");
     }
 
+    public static Path getDownloadsDirectory() throws Exception {
+        if (OsType.getLocal() == OsType.WINDOWS) {
+            return Path.of(LocalShell.getLocalPowershell()
+                    .executeSimpleStringCommand("(New-Object -ComObject Shell.Application).NameSpace('shell:Downloads').Self.Path"));
+        } else if (OsType.getLocal() == OsType.LINUX) {
+            try (var cmd = LocalShell.getShell().command("xdg-user-dir DOWNLOAD").start()) {
+                var read = cmd.readStdoutDiscardErr();
+                var exit = cmd.getExitCode();
+                if (exit == 0) {
+                    return Path.of(read);
+                }
+            }
+        }
+
+        return Path.of(System.getProperty("user.home") + "/Downloads");
+    }
+
     public static void browsePathRemote(ShellControl sc, String path, FileKind kind) throws Exception {
         var d = sc.getShellDialect();
         switch (sc.getOsType()) {

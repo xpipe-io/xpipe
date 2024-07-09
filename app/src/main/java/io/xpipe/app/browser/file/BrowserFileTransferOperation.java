@@ -229,6 +229,9 @@ public class BrowserFileTransferOperation {
         OutputStream outputStream = null;
         try {
             var fileSize = sourceFile.getFileSystem().getFileSize(sourceFile.getPath());
+
+            // Read the first few bytes to figure out possible command failure early
+            // before creating the output stream
             inputStream = new BufferedInputStream(sourceFile.getFileSystem().openInput(sourceFile.getPath()), 1024);
             inputStream.mark(1024);
             var streamStart = new byte[1024];

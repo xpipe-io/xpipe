@@ -7,6 +7,7 @@ import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 
 import javafx.beans.binding.Bindings;
@@ -58,9 +59,15 @@ public class BrowserSelectionListComp extends SimpleComp {
                             return Comp.of(() -> {
                                 var image = PrettyImageHelper.ofFixedSizeSquare(entry.getIcon(), 24)
                                         .createRegion();
-                                var l = new Label(null, image);
+                                var t = nameTransformation.apply(entry);
+                                var l = new Label(t.getValue(), image);
                                 l.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
-                                l.textProperty().bind(PlatformThread.sync(nameTransformation.apply(entry)));
+                                t.addListener((observable, oldValue, newValue) -> {
+                                    PlatformThread.runLaterIfNeeded(() -> {
+                                        l.setText(newValue);
+                                    });
+                                });
+                                BindingsHelper.preserve(l, t);
                                 return l;
                             });
                         },
