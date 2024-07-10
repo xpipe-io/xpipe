@@ -3,6 +3,7 @@ package io.xpipe.app.browser;
 import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
+import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
@@ -55,7 +56,9 @@ public class BrowserWelcomeComp extends SimpleComp {
         var img = new PrettySvgComp(new SimpleStringProperty("Hips.svg"), 50, 75)
                 .padding(new Insets(5, 0, 0, 0))
                 .createRegion();
-        var hbox = new HBox(img, vbox);
+
+        var loading = LoadingOverlayComp.noProgress(Comp.empty(),model.getBusy()).createRegion();
+        var hbox = new HBox(img, vbox, new Spacer(), loading);
         hbox.setAlignment(Pos.CENTER_LEFT);
         hbox.setSpacing(15);
 
@@ -139,7 +142,6 @@ public class BrowserWelcomeComp extends SimpleComp {
                 .hide(empty)
                 .accessibleTextKey("restoreAllSessions");
         layout.getChildren().add(tile.createRegion());
-
         return layout;
     }
 

@@ -94,13 +94,15 @@ public class BrowserSessionModel extends BrowserAbstractSessionModel<BrowserSess
 
         OpenFileSystemModel model;
         try (var b = new BooleanScope(externalBusy != null ? externalBusy : new SimpleBooleanProperty()).start()) {
-            model = new OpenFileSystemModel(this, store, OpenFileSystemModel.SelectionMode.ALL);
-            model.init();
-            // Prevent multiple calls from interfering with each other
-            synchronized (BrowserSessionModel.this) {
-                sessionEntries.add(model);
-                // The tab pane doesn't automatically select new tabs
-                selectedEntry.setValue(model);
+            try (var sessionBusy = new BooleanScope(busy).exclusive().start()) {
+                model = new OpenFileSystemModel(this, store, OpenFileSystemModel.SelectionMode.ALL);
+                model.init();
+                // Prevent multiple calls from interfering with each other
+                synchronized (BrowserSessionModel.this) {
+                    sessionEntries.add(model);
+                    // The tab pane doesn't automatically select new tabs
+                    selectedEntry.setValue(model);
+                }
             }
         }
         if (path != null) {

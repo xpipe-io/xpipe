@@ -43,7 +43,7 @@
 }
 
 .transfer .button:hover {
-    -fx-background-color: -color-bg-subtle;
+    -fx-background-color: -color-accent-subtle;
     -fx-opacity: 1.0;
 }
 
@@ -61,6 +61,10 @@
 
 .browser .welcome .button:hover {
     -fx-background-color: -color-neutral-muted;
+}
+
+.browser .welcome .loading-comp {
+    -fx-background-color: transparent;
 }
 
 .browser .tile > * {

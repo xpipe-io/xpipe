@@ -17,6 +17,7 @@ public class BrowserAbstractSessionModel<T extends BrowserSessionTab<?>> {
 
     protected final ObservableList<T> sessionEntries = FXCollections.observableArrayList();
     protected final Property<T> selectedEntry = new SimpleObjectProperty<>();
+    protected final BooleanProperty busy = new SimpleBooleanProperty();
 
     public void closeAsync(BrowserSessionTab<?> e) {
         ThreadHelper.runAsync(() -> {

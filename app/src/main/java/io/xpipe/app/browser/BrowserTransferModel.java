@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +34,7 @@ public class BrowserTransferModel {
 
     BrowserSessionModel browserSessionModel;
     ObservableList<Item> items = FXCollections.observableArrayList();
+    ObservableBooleanValue empty = Bindings.createBooleanBinding(() -> items.isEmpty(), items);
 
     public BrowserTransferModel(BrowserSessionModel browserSessionModel) {
         this.browserSessionModel = browserSessionModel;
@@ -51,27 +53,41 @@ public class BrowserTransferModel {
         thread.start();
     }
 
-    private void cleanDirectory() {
+    public List<Item> getCurrentItems() {
+        synchronized (items) {
+            return new ArrayList<>(items);
+        }
+    }
+
+    private void cleanItem(Item item) {
         if (!Files.isDirectory(TEMP)) {
             return;
         }
 
-        try (var ls = Files.list(TEMP)) {
-            var list = ls.toList();
-            for (Path path : list) {
-                FileUtils.forceDelete(path.toFile());
-            }
+        if (!Files.exists(item.getLocalFile())) {
+            return;
+        }
+
+        try {
+            FileUtils.forceDelete(item.getLocalFile().toFile());
         } catch (IOException e) {
             ErrorEvent.fromThrowable(e).handle();
         }
     }
 
     public void clear(boolean delete) {
+        List<Item> toClear;
         synchronized (items) {
-            items.clear();
+            toClear = items.stream().filter(item -> item.downloadFinished().get()).toList();
+            if (toClear.isEmpty()) {
+                return;
+            }
+            items.removeAll(toClear);
         }
         if (delete) {
-            cleanDirectory();
+            for (Item item : toClear) {
+                cleanItem(item);
+            }
         }
     }
 
@@ -127,16 +143,20 @@ public class BrowserTransferModel {
     }
 
     public void transferToDownloads() throws Exception {
-        if (items.isEmpty()) {
-            return;
+        List<Item> toMove;
+        synchronized (items) {
+            toMove = items.stream().filter(item -> item.downloadFinished().get()).toList();
+            if (toMove.isEmpty()) {
+                return;
+            }
+            items.removeAll(toMove);
         }
 
-        var files = items.stream().map(item -> item.getLocalFile()).toList();
+        var files = toMove.stream().map(item -> item.getLocalFile()).toList();
         var downloads = DesktopHelper.getDownloadsDirectory();
         for (Path file : files) {
             Files.move(file, downloads.resolve(file.getFileName()), StandardCopyOption.REPLACE_EXISTING);
         }
-        clear(true);
         DesktopHelper.browseFileInDirectory(downloads.resolve(files.getFirst().getFileName()));
     }
 
