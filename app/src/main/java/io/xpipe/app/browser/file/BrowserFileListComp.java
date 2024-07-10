@@ -29,10 +29,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.skin.TableViewSkin;
 import javafx.scene.control.skin.VirtualFlow;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -60,6 +57,7 @@ public final class BrowserFileListComp extends SimpleComp {
     private static final PseudoClass DRAG_INTO_CURRENT = PseudoClass.getPseudoClass("drag-into-current");
 
     private final BrowserFileListModel fileList;
+    private final StringProperty typedSelection = new SimpleStringProperty("");
 
     public BrowserFileListComp(BrowserFileListModel fileList) {
         this.fileList = fileList;
@@ -130,8 +128,38 @@ public final class BrowserFileListComp extends SimpleComp {
         prepareTableShortcuts(table);
         prepareTableEntries(table);
         prepareTableChanges(table, mtimeCol, modeCol);
+        prepareTypedSelectionModel(table);
 
         return table;
+    }
+
+    private void prepareTypedSelectionModel(TableView<BrowserEntry> table) {
+        table.addEventHandler(KeyEvent.KEY_PRESSED,event -> {
+            var typed = event.getText();
+            if (typed.isEmpty()) {
+                return;
+            }
+
+            var updated = typedSelection.get() + typed;
+            var find = fileList.getShown().getValue().stream().filter(browserEntry -> browserEntry.getFileName().toLowerCase().startsWith(updated.toLowerCase())).findFirst();
+            if (find.isEmpty()) {
+                typedSelection.set("");
+                table.getSelectionModel().clearSelection();
+                event.consume();
+                return;
+            }
+
+            typedSelection.set(updated);
+            table.scrollTo(find.get());
+            table.getSelectionModel().select(find.get());
+            event.consume();
+        });
+
+        table.addEventFilter(KeyEvent.KEY_PRESSED,event -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                typedSelection.set("");
+            }
+        });
     }
 
     private void prepareTableSelectionModel(TableView<BrowserEntry> table) {
