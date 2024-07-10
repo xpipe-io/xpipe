@@ -84,6 +84,7 @@ public class AppBeaconServer {
     public static void reset() {
         if (INSTANCE != null) {
             INSTANCE.stop();
+            INSTANCE.deleteAuthSecret();
             INSTANCE = null;
         }
     }
@@ -110,6 +111,13 @@ public class AppBeaconServer {
         var id = UUID.randomUUID().toString();
         Files.writeString(file, id);
         localAuthSecret = id;
+    }
+
+    private void deleteAuthSecret() {
+        var file = XPipeInstallation.getLocalBeaconAuthFile();
+        try {
+            Files.delete(file);
+        } catch (IOException ignored) {}
     }
 
     private void start() throws IOException {
