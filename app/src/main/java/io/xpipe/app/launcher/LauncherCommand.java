@@ -132,6 +132,14 @@ public class LauncherCommand implements Callable<Integer> {
                             + " is already locked. Is another instance running?");
             OperationMode.halt(1);
         }
+
+        // If an instance is running as another user, we cannot connect to it as the xpipe_auth file is inaccessible
+        // Therefore the beacon client is not present.
+        // We still should check whether it is somehow occupied, otherwise beacon server startup will fail
+        if (BeaconClient.isOccupied(port)) {
+            TrackEvent.info("Another instance is already running on this port as another user. Quitting ...");
+            OperationMode.halt(1);
+        }
     }
 
     private XPipeDaemonMode getEffectiveMode() {
