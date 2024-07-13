@@ -166,7 +166,7 @@
 }
 
 .browser .path-text, .browser .browser-filter .text-field {
-    -fx-padding: 6 12;
+    -fx-padding: 5 12;
 }
 
 .browser .path-text:invisible {

@@ -30,6 +30,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -48,17 +49,18 @@ public class BrowserSessionTabsComp extends SimpleComp {
     }
 
     public Region createSimple() {
-        var multi = new MultiContentComp(Map.<Comp<?>, ObservableValue<Boolean>>of(
-                Comp.of(() -> createTabPane()),
-                Bindings.isNotEmpty(model.getSessionEntries()),
-                new BrowserWelcomeComp(model).apply(struc -> StackPane.setAlignment(struc.get(), Pos.CENTER_LEFT)),
+        var map = new LinkedHashMap<Comp<?>, ObservableValue<Boolean>>();
+        map.put(Comp.hspacer().styleClass("top-spacer"),
+                new SimpleBooleanProperty(true));
+        map.put(Comp.of(() -> createTabPane()),
+                Bindings.isNotEmpty(model.getSessionEntries()));
+        map.put(new BrowserWelcomeComp(model).apply(struc -> StackPane.setAlignment(struc.get(), Pos.CENTER_LEFT)),
                 Bindings.createBooleanBinding(
                         () -> {
                             return model.getSessionEntries().size() == 0;
                         },
-                        model.getSessionEntries()),
-                Comp.hspacer().styleClass("top-spacer"),
-                new SimpleBooleanProperty(true)));
+                        model.getSessionEntries()));
+        var multi = new MultiContentComp(map);
         multi.apply(struc -> ((StackPane) struc.get()).setAlignment(Pos.TOP_CENTER));
         return multi.createRegion();
     }

@@ -9,6 +9,7 @@ import io.xpipe.app.browser.file.BrowserContextMenu;
 import io.xpipe.app.browser.file.BrowserFileListComp;
 import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.comp.base.MultiContentComp;
+import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
@@ -88,6 +89,7 @@ public class OpenFileSystemComp extends SimpleComp {
         topBar.setAlignment(Pos.CENTER);
         topBar.getStyleClass().add("top-bar");
         var navBar = new BrowserNavBar(model).createStructure();
+        AppFont.medium(navBar.get());
         topBar.getChildren()
                 .setAll(
                         overview,
