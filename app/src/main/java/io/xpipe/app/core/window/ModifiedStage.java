@@ -20,7 +20,7 @@ import org.apache.commons.lang3.SystemUtils;
 public class ModifiedStage extends Stage {
 
     public static boolean mergeFrame() {
-        return SystemUtils.IS_OS_WINDOWS_11;
+        return SystemUtils.IS_OS_WINDOWS_11 || SystemUtils.IS_OS_MAC;
     }
 
     @SneakyThrows
@@ -62,24 +62,37 @@ public class ModifiedStage extends Stage {
             return;
         }
 
-        if (OsType.getLocal() != OsType.WINDOWS || AppPrefs.get() == null || AppPrefs.get().theme.getValue() == null) {
+        if (OsType.getLocal() == OsType.LINUX || AppPrefs.get() == null || AppPrefs.get().theme.getValue() == null) {
             stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), false);
             stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), true);
             return;
         }
 
-        var ctrl = new NativeWinWindowControl(stage);
-        ctrl.setWindowAttribute(
-                NativeWinWindowControl.DmwaWindowAttribute.DWMWA_USE_IMMERSIVE_DARK_MODE.get(),
-                AppPrefs.get().theme.getValue().isDark());
-        boolean seamlessFrame;
-        if (AppPrefs.get().performanceMode().get() || !mergeFrame()) {
-            seamlessFrame = false;
-        } else {
-            seamlessFrame = ctrl.setWindowBackdrop(NativeWinWindowControl.DwmSystemBackDropType.MICA_ALT);
+        switch (OsType.getLocal()) {
+            case OsType.Linux linux -> {
+            }
+            case OsType.MacOs macOs -> {
+                var ctrl = new NativeMacOsWindowControl(stage);
+                ctrl.setWindowDarkMode(AppPrefs.get().theme.getValue().isDark());
+                var seamlessFrame = !AppPrefs.get().performanceMode().get() && mergeFrame();
+                stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), seamlessFrame);
+                stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), !seamlessFrame);
+            }
+            case OsType.Windows windows -> {
+                var ctrl = new NativeWinWindowControl(stage);
+                ctrl.setWindowAttribute(
+                        NativeWinWindowControl.DmwaWindowAttribute.DWMWA_USE_IMMERSIVE_DARK_MODE.get(),
+                        AppPrefs.get().theme.getValue().isDark());
+                boolean seamlessFrame;
+                if (AppPrefs.get().performanceMode().get() || !mergeFrame()) {
+                    seamlessFrame = false;
+                } else {
+                    seamlessFrame = ctrl.setWindowBackdrop(NativeWinWindowControl.DwmSystemBackDropType.MICA_ALT);
+                }
+                stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), seamlessFrame);
+                stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), !seamlessFrame);
+            }
         }
-        stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), seamlessFrame);
-        stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), !seamlessFrame);
     }
 
     private static void updateStage(Stage stage) {
