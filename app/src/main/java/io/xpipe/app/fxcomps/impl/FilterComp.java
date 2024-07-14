@@ -39,7 +39,7 @@ public class FilterComp extends Comp<CompStructure<CustomTextField>> {
         filter.getStyleClass().add("filter-comp");
         filter.promptTextProperty().bind(AppI18n.observable("searchFilter"));
         filter.rightProperty().bind(Bindings.createObjectBinding(() -> {
-            return filter.isFocused() ? clear : fi;
+            return filter.isFocused() || (filter.getText() != null && !filter.getText().isEmpty()) ? clear : fi;
         }, filter.focusedProperty()));
         filter.setAccessibleText("Filter");
 

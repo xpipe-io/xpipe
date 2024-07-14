@@ -32,9 +32,9 @@ public class BrowserStatusBarComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var bar = new HorizontalComp(List.of(
-                createProgressEstimateStatus(),
                 createProgressNameStatus(),
                 createProgressStatus(),
+                createProgressEstimateStatus(),
                 Comp.hspacer(),
                 createClipboardStatus(),
                 createSelectionStatus()
