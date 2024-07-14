@@ -31,6 +31,8 @@ public interface DataStoreProvider {
         return true;
     }
 
+    default void onParentRefresh(DataStoreEntry entry) {}
+
     default void onChildrenRefresh(DataStoreEntry entry) {}
 
     default ObservableBooleanValue busy(StoreEntryWrapper wrapper) {
