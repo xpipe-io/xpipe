@@ -6,6 +6,7 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.MarkdownHelper;
 import io.xpipe.beacon.BeaconConfig;
 import io.xpipe.beacon.BeaconInterface;
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.XPipeInstallation;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -17,6 +18,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
@@ -110,6 +112,9 @@ public class AppBeaconServer {
         var file = XPipeInstallation.getLocalBeaconAuthFile();
         var id = UUID.randomUUID().toString();
         Files.writeString(file, id);
+        if (OsType.getLocal() != OsType.WINDOWS) {
+            Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("rw-rw----"));
+        }
         localAuthSecret = id;
     }
 
