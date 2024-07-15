@@ -1,7 +1,6 @@
 package io.xpipe.ext.base.service;
 
-import io.xpipe.app.comp.store.StoreEntryWrapper;
-
+import io.xpipe.app.comp.store.StoreSection;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 
@@ -15,9 +14,9 @@ public class MappedServiceStoreProvider extends FixedServiceStoreProvider {
     }
 
     @Override
-    public ObservableValue<String> informationString(StoreEntryWrapper wrapper) {
-        MappedServiceStore s = wrapper.getEntry().getStore().asNeeded();
-        return new SimpleStringProperty("Port " + s.getContainerPort() + " -> " + s.getRemotePort());
+    public ObservableValue<String> informationString(StoreSection section) {
+        MappedServiceStore s = section.getWrapper().getEntry().getStore().asNeeded();
+        return new SimpleStringProperty("Port " + s.getRemotePort() + " -> " + s.getContainerPort());
     }
 
     @Override

@@ -17,8 +17,8 @@ public class DenseStoreEntryComp extends StoreEntryComp {
 
     private final boolean showIcon;
 
-    public DenseStoreEntryComp(StoreEntryWrapper entry, boolean showIcon, Comp<?> content) {
-        super(entry, content);
+    public DenseStoreEntryComp(StoreSection section, boolean showIcon, Comp<?> content) {
+        super(section, content);
         this.showIcon = showIcon;
     }
 
@@ -28,14 +28,14 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         information.getStyleClass().add("information");
         AppFont.header(information);
 
-        var state = wrapper.getEntry().getProvider() != null
-                ? wrapper.getEntry().getProvider().stateDisplay(wrapper)
+        var state = getWrapper().getEntry().getProvider() != null
+                ? getWrapper().getEntry().getProvider().stateDisplay(getWrapper())
                 : Comp.empty();
         information.setGraphic(state.createRegion());
 
-        var info = wrapper.getEntry().getProvider() != null ? wrapper.getEntry().getProvider().informationString(wrapper) : new SimpleStringProperty();
-        var summary = wrapper.getSummary();
-        if (wrapper.getEntry().getProvider() != null) {
+        var info = getWrapper().getEntry().getProvider() != null ? getWrapper().getEntry().getProvider().informationString(section) : new SimpleStringProperty();
+        var summary = getWrapper().getSummary();
+        if (getWrapper().getEntry().getProvider() != null) {
             information
                     .textProperty()
                     .bind(PlatformThread.sync(Bindings.createStringBinding(
@@ -43,7 +43,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
                                 var val = summary.getValue();
                                 if (val != null
                                         && grid.isHover()
-                                        && wrapper.getEntry().getProvider().alwaysShowSummary()) {
+                                        && getWrapper().getEntry().getProvider().alwaysShowSummary()) {
                                     return val;
                                 } else {
                                     return info.getValue();
@@ -73,7 +73,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
                             return grid.getWidth() / 2.5;
                         },
                         grid.widthProperty()));
-        var notes = new StoreNotesComp(wrapper).createRegion();
+        var notes = new StoreNotesComp(getWrapper()).createRegion();
 
         if (showIcon) {
             var storeIcon = createIcon(30, 24);

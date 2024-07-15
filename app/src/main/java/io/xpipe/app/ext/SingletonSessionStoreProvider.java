@@ -30,7 +30,7 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
     @Override
     default StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
         var t = createToggleComp(sec);
-        return StoreEntryComp.create(sec.getWrapper(), t, preferLarge);
+        return StoreEntryComp.create(sec, t, preferLarge);
     }
 
     default StoreToggleComp createToggleComp(StoreSection sec) {

@@ -2,6 +2,7 @@ package io.xpipe.ext.base.script;
 
 import io.xpipe.app.comp.base.SystemStateComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
+import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.fxcomps.Comp;
@@ -76,8 +77,8 @@ public class ScriptGroupStoreProvider implements EnabledStoreProvider, DataStore
     }
 
     @Override
-    public ObservableValue<String> informationString(StoreEntryWrapper wrapper) {
-        ScriptGroupStore scriptStore = wrapper.getEntry().getStore().asNeeded();
+    public ObservableValue<String> informationString(StoreSection section) {
+        ScriptGroupStore scriptStore = section.getWrapper().getEntry().getStore().asNeeded();
         return new SimpleStringProperty(scriptStore.getDescription());
     }
 

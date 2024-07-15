@@ -80,7 +80,7 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
                     return true;
                 },
                 sec.getWrapper().getCache()));
-        return StoreEntryComp.create(sec.getWrapper(), toggle, preferLarge);
+        return StoreEntryComp.create(sec, toggle, preferLarge);
     }
 
     @Override
@@ -98,8 +98,8 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     }
 
     @Override
-    public ObservableValue<String> informationString(StoreEntryWrapper wrapper) {
-        AbstractServiceStore s = wrapper.getEntry().getStore().asNeeded();
+    public ObservableValue<String> informationString(StoreSection section) {
+        AbstractServiceStore s = section.getWrapper().getEntry().getStore().asNeeded();
         if (s.getLocalPort() != null) {
             return new SimpleStringProperty("Port " + s.getLocalPort() + " <- " + s.getRemotePort());
         } else {

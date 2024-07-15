@@ -87,7 +87,7 @@ public interface DataStoreProvider {
     }
 
     default StoreEntryComp customEntryComp(StoreSection s, boolean preferLarge) {
-        return StoreEntryComp.create(s.getWrapper(), null, preferLarge);
+        return StoreEntryComp.create(s, null, preferLarge);
     }
 
     default StoreSectionComp customSectionComp(StoreSection section, boolean topLevel) {
@@ -193,7 +193,7 @@ public interface DataStoreProvider {
         return null;
     }
 
-    default ObservableValue<String> informationString(StoreEntryWrapper wrapper) {
+    default ObservableValue<String> informationString(StoreSection section) {
         return new SimpleStringProperty(null);
     }
 

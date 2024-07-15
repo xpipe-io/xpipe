@@ -9,8 +9,8 @@ import javafx.scene.layout.*;
 
 public class StandardStoreEntryComp extends StoreEntryComp {
 
-    public StandardStoreEntryComp(StoreEntryWrapper entry, Comp<?> content) {
-        super(entry, content);
+    public StandardStoreEntryComp(StoreSection section, Comp<?> content) {
+        super(section, content);
     }
 
     @Override
@@ -20,7 +20,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
 
     protected Region createContent() {
         var name = createName().createRegion();
-        var notes = new StoreNotesComp(wrapper).createRegion();
+        var notes = new StoreNotesComp(getWrapper()).createRegion();
 
         var grid = new GridPane();
         grid.setHgap(7);

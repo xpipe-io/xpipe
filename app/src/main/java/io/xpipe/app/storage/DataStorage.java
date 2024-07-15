@@ -343,14 +343,14 @@ public abstract class DataStorage {
     }
 
     public boolean refreshChildren(DataStoreEntry e, boolean throwOnFail) throws Exception {
-        if (!(e.getStore() instanceof FixedHierarchyStore)) {
+        if (!(e.getStore() instanceof FixedHierarchyStore h)) {
             return false;
         }
 
         e.incrementBusyCounter();
         List<? extends DataStoreEntryRef<? extends FixedChildStore>> newChildren;
         try {
-            newChildren = ((FixedHierarchyStore) (e.getStore())).listChildren(e).stream().filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null).toList();
+            newChildren = h.listChildren(e).stream().filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null).toList();
         } catch (Exception ex) {
             if (throwOnFail) {
                 throw ex;
