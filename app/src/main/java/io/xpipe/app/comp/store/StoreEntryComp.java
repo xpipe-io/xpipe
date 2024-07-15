@@ -139,6 +139,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                 getWrapper().getEntry().getValidity().isUsable()
                         ? getWrapper().getBusy().or(getWrapper().getEntry().getProvider().busy(getWrapper()))
                         : getWrapper().getBusy());
+        AppFont.normal(button);
         return loading.createRegion();
     }
 
@@ -155,7 +156,6 @@ public abstract class StoreEntryComp extends SimpleComp {
                                         getWrapper().getEntry().getProvider().informationString(section))
                                 : new SimpleStringProperty());
         information.getStyleClass().add("information");
-        AppFont.header(information);
 
         var state = getWrapper().getEntry().getProvider() != null
                 ? getWrapper().getEntry().getProvider().stateDisplay(getWrapper())
@@ -194,9 +194,7 @@ public abstract class StoreEntryComp extends SimpleComp {
 
     protected Comp<?> createName() {
         LabelComp name = new LabelComp(getWrapper().nameProperty());
-        name.apply(struc -> struc.get().setTextOverrun(OverrunStyle.CENTER_ELLIPSIS))
-                .apply(struc -> struc.get().setPadding(new Insets(5, 5, 5, 0)));
-        name.apply(s -> AppFont.header(s.get()));
+        name.apply(struc -> struc.get().setTextOverrun(OverrunStyle.CENTER_ELLIPSIS));
         name.styleClass("name");
         return name;
     }
@@ -243,8 +241,8 @@ public abstract class StoreEntryComp extends SimpleComp {
         buttons.subscribe(update);
         update.run();
         ig.setAlignment(Pos.CENTER_RIGHT);
-        ig.setPadding(new Insets(5));
         ig.getStyleClass().add("button-bar");
+        AppFont.medium(ig);
         return ig;
     }
 

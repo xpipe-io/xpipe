@@ -1,10 +1,8 @@
 package io.xpipe.app.comp.store;
 
-import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.HPos;
@@ -26,7 +24,6 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         var information = new Label();
         information.setGraphicTextGap(7);
         information.getStyleClass().add("information");
-        AppFont.header(information);
 
         var state = getWrapper().getEntry().getProvider() != null
                 ? getWrapper().getEntry().getProvider().stateDisplay(getWrapper())
@@ -76,8 +73,8 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         var notes = new StoreNotesComp(getWrapper()).createRegion();
 
         if (showIcon) {
-            var storeIcon = createIcon(30, 24);
-            grid.getColumnConstraints().add(new ColumnConstraints(46));
+            var storeIcon = createIcon(28, 24);
+            grid.getColumnConstraints().add(new ColumnConstraints(38));
             grid.add(storeIcon, 0, 0);
             GridPane.setHalignment(storeIcon, HPos.CENTER);
         }

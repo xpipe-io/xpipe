@@ -1,6 +1,7 @@
 package io.xpipe.ext.base.service;
 
 import io.xpipe.app.comp.base.SystemStateComp;
+import io.xpipe.app.comp.store.DenseStoreEntryComp;
 import io.xpipe.app.comp.store.StoreEntryComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreSection;
@@ -80,7 +81,7 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
                     return true;
                 },
                 sec.getWrapper().getCache()));
-        return StoreEntryComp.create(sec, toggle, preferLarge);
+        return new DenseStoreEntryComp(sec, true, toggle);
     }
 
     @Override

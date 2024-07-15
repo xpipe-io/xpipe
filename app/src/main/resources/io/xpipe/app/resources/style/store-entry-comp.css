@@ -37,6 +37,14 @@
     -fx-opacity: 0.5;
 }
 
+.store-entry-grid .name {
+    -fx-padding: 2 0 0 0;
+}
+
+.store-entry-grid.dense .name {
+    -fx-padding: 0 0 0 0;
+}
+
 .store-entry-grid .icon {
     -fx-background-color: -color-bg-overlay;
     -fx-background-radius: 5px;
@@ -88,6 +96,14 @@
 
 .expand-button:disabled, .quick-access-button:disabled {
     -fx-opacity: 0.2;
+}
+
+.store-entry-comp .button-bar {
+    -fx-padding: 5;
+}
+
+.store-entry-grid.dense .button-bar {
+    -fx-padding: 3;
 }
 
 .store-entry-comp .button-bar .button {
