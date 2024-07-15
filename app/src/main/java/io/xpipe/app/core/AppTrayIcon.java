@@ -4,11 +4,11 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.OsType;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
-import javax.imageio.ImageIO;
 
 public class AppTrayIcon {
 
@@ -90,7 +90,8 @@ public class AppTrayIcon {
                 tray.add(this.trayIcon);
                 fixBackground();
             } catch (Exception e) {
-                ErrorEvent.fromThrowable("Unable to add TrayIcon", e).handle();
+                // This can sometimes fail on Linux
+                ErrorEvent.fromThrowable("Unable to add TrayIcon", e).expected().handle();
             }
         });
     }
