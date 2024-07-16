@@ -3,7 +3,6 @@ package io.xpipe.app.core.window;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
-
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
@@ -13,8 +12,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import javafx.util.Duration;
-
-import lombok.SneakyThrows;
 import org.apache.commons.lang3.SystemUtils;
 
 public class ModifiedStage extends Stage {
@@ -23,12 +20,8 @@ public class ModifiedStage extends Stage {
         return SystemUtils.IS_OS_WINDOWS_11 || SystemUtils.IS_OS_MAC;
     }
 
-    @SneakyThrows
-    @SuppressWarnings("unchecked")
     public static void init() {
-        var windowsField = Window.class.getDeclaredField("windows");
-        windowsField.setAccessible(true);
-        ObservableList<Window> list = (ObservableList<Window>) windowsField.get(null);
+        ObservableList<Window> list = Window.getWindows();
         list.addListener((ListChangeListener<Window>) c -> {
             if (c.next() && c.wasAdded()) {
                 var added = c.getAddedSubList().getFirst();

@@ -36,8 +36,6 @@ public class VaultCategory extends AppPrefsCategory {
         }
         builder.addTitle("vaultSecurity")
                 .sub(new OptionsBuilder()
-                        .nameAndDescription("encryptAllVaultData")
-                        .addToggle(prefs.encryptAllVaultData)
                         .nameAndDescription("workspaceLock")
                         .addComp(
                                 new ButtonComp(
@@ -57,7 +55,9 @@ public class VaultCategory extends AppPrefsCategory {
                         .addToggle(prefs.lockVaultOnHibernation)
                         .hide(prefs.getLockCrypt()
                                 .isNull()
-                                .or(prefs.getLockCrypt().isEmpty())));
+                                .or(prefs.getLockCrypt().isEmpty()))
+                        .nameAndDescription("encryptAllVaultData")
+                        .addToggle(prefs.encryptAllVaultData));
         return builder.buildComp();
     }
 }

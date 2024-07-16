@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.time.Duration;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -58,6 +59,8 @@ public interface CommandControl extends ProcessControl {
     InputStream startExternalStdout() throws Exception;
 
     OutputStream startExternalStdin() throws Exception;
+
+    public void setExitTimeout(Duration duration);
 
     boolean waitFor();
 

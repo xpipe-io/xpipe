@@ -24,6 +24,7 @@ public class FixedServiceStore extends AbstractServiceStore implements FixedChil
 
     @Override
     public void checkComplete() throws Throwable {
+        super.checkComplete();
         Validators.nonNull(displayParent);
         Validators.nonNull(displayParent.getStore());
     }

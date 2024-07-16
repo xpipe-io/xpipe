@@ -128,9 +128,6 @@ public class BrowserTransferComp extends SimpleComp {
                                 var selected = items.stream()
                                         .map(item -> item.getBrowserEntry())
                                         .toList();
-                                Dragboard db = struc.get().startDragAndDrop(TransferMode.COPY);
-
-                                var cc = new ClipboardContent();
                                 var files = items.stream()
                                         .filter(item -> item.downloadFinished().get())
                                         .map(item -> {
@@ -148,7 +145,13 @@ public class BrowserTransferComp extends SimpleComp {
                                         })
                                         .flatMap(Optional::stream)
                                         .toList();
+                                if (files.isEmpty()) {
+                                    return;
+                                }
+
+                                var cc = new ClipboardContent();
                                 cc.putFiles(files);
+                                Dragboard db = struc.get().startDragAndDrop(TransferMode.COPY);
                                 db.setContent(cc);
 
                                 Image image = BrowserSelectionListComp.snapshot(FXCollections.observableList(selected));

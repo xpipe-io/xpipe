@@ -24,6 +24,15 @@ public class BeaconClient {
         this.port = port;
     }
 
+    public static boolean isOccupied(int port) {
+        var file = XPipeInstallation.getLocalBeaconAuthFile();
+        var reachable = BeaconServer.isReachable(port);
+        if (!Files.exists(file) && !reachable) {
+            return false;
+        }
+        return reachable;
+    }
+
     public static BeaconClient establishConnection(int port, BeaconClientInformation information) throws Exception {
         var client = new BeaconClient(port);
         var auth = Files.readString(XPipeInstallation.getLocalBeaconAuthFile());

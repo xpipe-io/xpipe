@@ -91,7 +91,7 @@ public class AppDownloads {
             var changelog = json.required("changelog").asText();
             return Optional.of(changelog);
         } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t).omit().handle();
+            ErrorEvent.fromThrowable(t).omit().expected().handle();
         }
 
         try {

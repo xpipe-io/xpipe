@@ -75,7 +75,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
             }
             b.apply(new TooltipAugment<>(e.name(), shortcut));
             b.apply(struc -> {
-                AppFont.setSize(struc.get(), 2);
+                AppFont.setSize(struc.get(), 1);
                 struc.get().pseudoClassStateChanged(selected, value.getValue().equals(e));
                 value.addListener((c, o, n) -> {
                     PlatformThread.runLaterIfNeeded(() -> {
@@ -118,7 +118,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                     .tooltipKey("updateAvailableTooltip")
                     .accessibleTextKey("updateAvailableTooltip");
             b.apply(struc -> {
-                AppFont.setSize(struc.get(), 2);
+                AppFont.setSize(struc.get(), 1);
             });
             b.hide(PlatformThread.sync(Bindings.createBooleanBinding(
                     () -> {
