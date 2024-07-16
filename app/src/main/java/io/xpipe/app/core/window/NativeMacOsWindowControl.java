@@ -33,6 +33,6 @@ public class NativeMacOsWindowControl {
             return;
         }
 
-        NativeBridge.MacOsLibrary.INSTANCE.setAppearance(new NativeLong(nsWindow), darkMode);
+        NativeBridge.MacOsLibrary.INSTANCE.setAppearance(new NativeLong(nsWindow), seamlessFrame, darkMode);
     }
 }

@@ -13,6 +13,6 @@ public class NativeBridge {
 
         public static MacOsLibrary INSTANCE = Native.load("xpipe_bridge", MacOsLibrary.class, Map.of());
 
-        public abstract void setAppearance(NativeLong window, boolean dark);
+        public abstract void setAppearance(NativeLong window, boolean seamlessFrame, boolean dark);
     }
 }

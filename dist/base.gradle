@@ -234,10 +234,11 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                 def nativeLib = "$projectDir/native_lib/macos"
                 def proj = "$nativeLib/xpipe_bridge.xcodeproj"
                 exec {
-                    commandLine 'xcodebuild', proj, '-scheme', 'xpipe_bridge', "CONFIGURATION_BUILD_DIR=${project.getLayout().getBuildDirectory().dir("native_lib")}", 'build'
+                    environment 'CONFIGURATION_BUILD_DIR', project.getLayout().getBuildDirectory().dir("native_lib")
+                    commandLine '/Users/crschnick/Downloads/Xcode-beta.app/Contents/Developer/usr/bin/xcodebuild', '-configuration', 'Release', '-project', proj, '-scheme', 'xpipe_bridge', '-derivedDataPath', project.getLayout().getBuildDirectory().dir("native_lib").get(), 'build'
                 }
                 copy {
-                    from project.getLayout().getBuildDirectory().dir("native_lib").get().file('xpipe_bridge.dylib')
+                    from project.getLayout().getBuildDirectory().dir("native_lib").get().dir('macos').file('libxpipe_bridge.dylib')
                     into "$distDir/$app/Contents/runtime/Contents/Home/bin/"
                 }
             }
