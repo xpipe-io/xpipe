@@ -46,6 +46,8 @@ public interface OsType {
 
     sealed interface Local extends OsType permits OsType.Windows, OsType.Linux, OsType.MacOs {
 
+        String getId();
+
         default Any toAny() {
             return (Any) this;
         }
@@ -131,6 +133,11 @@ public interface OsType {
                 return "Windows";
             }
         }
+
+        @Override
+        public String getId() {
+            return "windows";
+        }
     }
 
     class Unix implements OsType {
@@ -198,6 +205,11 @@ public interface OsType {
     final class Linux extends Unix implements OsType, Local, Any {
 
         @Override
+        public String getId() {
+            return "linux";
+        }
+
+        @Override
         public String determineOperatingSystemName(ShellControl pc) throws Exception {
             try (CommandControl c = pc.command("lsb_release -a").start()) {
                 var text = c.readStdoutDiscardErr();
@@ -222,6 +234,11 @@ public interface OsType {
     final class Bsd extends Unix implements Any {}
 
     final class MacOs implements OsType, Local, Any {
+
+        @Override
+        public String getId() {
+            return "macos";
+        }
 
         @Override
         public String makeFileSystemCompatible(String name) {

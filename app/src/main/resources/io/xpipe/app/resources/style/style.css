@@ -9,7 +9,7 @@
     -fx-background-color: transparent;
 }
 
-.root:seamless-frame {
+.root.macos:seamless-frame {
     -fx-padding: 0 0 27 0;
 }
 

@@ -28,7 +28,7 @@ public class NativeMacOsWindowControl {
         this.nsWindow = (long) nativeHandle;
     }
 
-    public void setWindowDarkMode(boolean darkMode) {
+    public void setAppearance(boolean seamlessFrame, boolean darkMode) {
         if (!ModuleHelper.isImage()) {
             return;
         }
