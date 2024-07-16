@@ -252,7 +252,7 @@ public class FileBridge {
             // the modified time is the same for both write operations due to the file system modified time resolution being limited
             // We then can't identify changes purely based on the modified time, so the file size is the next best option
             // This might result in double change detection in rare cases, but that is irrelevant as it prevents files from being blanked
-            var changed = !newDate.equals(getLastModified()) || newSize > lastSize;
+            var changed = !newDate.equals(lastModified) || newSize > lastSize;
             lastSize = newSize;
             lastModified = newDate;
             return changed;
