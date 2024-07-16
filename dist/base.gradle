@@ -74,7 +74,7 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                 file("$distDir/base/app/xpiped.exe").writable = true
                 exec {
                     commandLine "$projectDir\\tools\\sign.bat", "$distDir/base/app/xpiped.exe"
-                    ignoreExitValue = true
+                    ignoreExitValue = !ci
                 }
                 file("$distDir/base/app/xpiped.exe").writable = false
             }
