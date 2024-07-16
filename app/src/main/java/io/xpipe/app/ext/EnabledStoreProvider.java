@@ -12,7 +12,7 @@ public interface EnabledStoreProvider extends DataStoreProvider {
     @Override
     default StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
         if (sec.getWrapper().getValidity().getValue() != DataStoreEntry.Validity.COMPLETE) {
-            return StoreEntryComp.create(sec, null, preferLarge);
+            return StoreEntryComp.create(sec.getWrapper(), null, preferLarge);
         }
 
         var enabled = StoreToggleComp.<StatefulDataStore<EnabledStoreState>>enableToggle(
@@ -20,6 +20,6 @@ public interface EnabledStoreProvider extends DataStoreProvider {
                     var state = s.getState().toBuilder().enabled(aBoolean).build();
                     s.setState(state);
                 });
-        return StoreEntryComp.create(sec, enabled, preferLarge);
+        return StoreEntryComp.create(sec.getWrapper(), enabled, preferLarge);
     }
 }

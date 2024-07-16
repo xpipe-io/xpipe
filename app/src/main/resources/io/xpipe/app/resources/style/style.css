@@ -63,7 +63,7 @@
 }
 
 .toggle-switch:has-graphic {
-    -fx-font-size: 0.75em;
+    -fx-font-size: 0.8em;
 }
 
 .store-layout .split-pane-divider {

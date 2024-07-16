@@ -4,7 +4,6 @@ import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.comp.base.SystemStateComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
-import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppI18n;
@@ -207,8 +206,8 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
     }
 
     @Override
-    public ObservableValue<String> informationString(StoreSection section) {
-        SimpleScriptStore scriptStore = section.getWrapper().getEntry().getStore().asNeeded();
+    public ObservableValue<String> informationString(StoreEntryWrapper wrapper) {
+        SimpleScriptStore scriptStore = wrapper.getEntry().getStore().asNeeded();
         return new SimpleStringProperty((scriptStore.getMinimumDialect() != null
                         ? scriptStore.getMinimumDialect().getDisplayName() + " "
                         : "")

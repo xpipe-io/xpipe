@@ -10,7 +10,9 @@ import io.xpipe.core.store.FixedChildStore;
 import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.store.StorePath;
 import io.xpipe.core.util.UuidHelper;
+
 import javafx.util.Pair;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -343,14 +345,14 @@ public abstract class DataStorage {
     }
 
     public boolean refreshChildren(DataStoreEntry e, boolean throwOnFail) throws Exception {
-        if (!(e.getStore() instanceof FixedHierarchyStore h)) {
+        if (!(e.getStore() instanceof FixedHierarchyStore)) {
             return false;
         }
 
         e.incrementBusyCounter();
         List<? extends DataStoreEntryRef<? extends FixedChildStore>> newChildren;
         try {
-            newChildren = h.listChildren(e).stream().filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null).toList();
+            newChildren = ((FixedHierarchyStore) (e.getStore())).listChildren(e).stream().filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null).toList();
         } catch (Exception ex) {
             if (throwOnFail) {
                 throw ex;
@@ -366,10 +368,6 @@ public abstract class DataStorage {
         var toRemove = oldChildren.stream()
                 .filter(oc -> oc.getStore() instanceof FixedChildStore)
                 .filter(oc -> {
-                    if (!oc.getValidity().isUsable()) {
-                        return true;
-                    }
-
                     var oid = ((FixedChildStore) oc.getStore()).getFixedId();
                     if (oid.isEmpty()) {
                         return false;
@@ -396,7 +394,6 @@ public abstract class DataStorage {
 
                     return oldChildren.stream()
                             .filter(oc -> oc.getStore() instanceof FixedChildStore)
-                            .filter(oc -> oc.getValidity().isUsable())
                             .filter(oc -> ((FixedChildStore) oc.getStore())
                                     .getFixedId()
                                     .isPresent())
@@ -410,7 +407,6 @@ public abstract class DataStorage {
                 .toList();
         var toUpdate = oldChildren.stream()
                 .filter(oc -> oc.getStore() instanceof FixedChildStore)
-                .filter(oc -> oc.getValidity().isUsable())
                 .map(oc -> {
                     var oid = ((FixedChildStore) oc.getStore()).getFixedId();
                     if (oid.isEmpty()) {
@@ -464,11 +460,10 @@ public abstract class DataStorage {
         });
         refreshEntries();
         saveAsync();
-        e.getProvider().onChildrenRefresh(e);
         toAdd.forEach(dataStoreEntryRef ->
-                dataStoreEntryRef.get().getProvider().onParentRefresh(dataStoreEntryRef.getEntry()));
+                dataStoreEntryRef.get().getProvider().onChildrenRefresh(dataStoreEntryRef.getEntry()));
         toUpdate.forEach(dataStoreEntryRef ->
-                dataStoreEntryRef.getKey().getProvider().onParentRefresh(dataStoreEntryRef.getKey()));
+                dataStoreEntryRef.getKey().getProvider().onChildrenRefresh(dataStoreEntryRef.getKey()));
         return !newChildren.isEmpty();
     }
 

@@ -1,8 +1,10 @@
 package io.xpipe.app.comp.store;
 
+import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.HPos;
@@ -15,8 +17,8 @@ public class DenseStoreEntryComp extends StoreEntryComp {
 
     private final boolean showIcon;
 
-    public DenseStoreEntryComp(StoreSection section, boolean showIcon, Comp<?> content) {
-        super(section, content);
+    public DenseStoreEntryComp(StoreEntryWrapper entry, boolean showIcon, Comp<?> content) {
+        super(entry, content);
         this.showIcon = showIcon;
     }
 
@@ -24,15 +26,16 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         var information = new Label();
         information.setGraphicTextGap(7);
         information.getStyleClass().add("information");
+        AppFont.header(information);
 
-        var state = getWrapper().getEntry().getProvider() != null
-                ? getWrapper().getEntry().getProvider().stateDisplay(getWrapper())
+        var state = wrapper.getEntry().getProvider() != null
+                ? wrapper.getEntry().getProvider().stateDisplay(wrapper)
                 : Comp.empty();
         information.setGraphic(state.createRegion());
 
-        var info = getWrapper().getEntry().getProvider() != null ? getWrapper().getEntry().getProvider().informationString(section) : new SimpleStringProperty();
-        var summary = getWrapper().getSummary();
-        if (getWrapper().getEntry().getProvider() != null) {
+        var info = wrapper.getEntry().getProvider() != null ? wrapper.getEntry().getProvider().informationString(wrapper) : new SimpleStringProperty();
+        var summary = wrapper.getSummary();
+        if (wrapper.getEntry().getProvider() != null) {
             information
                     .textProperty()
                     .bind(PlatformThread.sync(Bindings.createStringBinding(
@@ -40,7 +43,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
                                 var val = summary.getValue();
                                 if (val != null
                                         && grid.isHover()
-                                        && getWrapper().getEntry().getProvider().alwaysShowSummary()) {
+                                        && wrapper.getEntry().getProvider().alwaysShowSummary()) {
                                     return val;
                                 } else {
                                     return info.getValue();
@@ -70,11 +73,11 @@ public class DenseStoreEntryComp extends StoreEntryComp {
                             return grid.getWidth() / 2.5;
                         },
                         grid.widthProperty()));
-        var notes = new StoreNotesComp(getWrapper()).createRegion();
+        var notes = new StoreNotesComp(wrapper).createRegion();
 
         if (showIcon) {
-            var storeIcon = createIcon(28, 24);
-            grid.getColumnConstraints().add(new ColumnConstraints(38));
+            var storeIcon = createIcon(30, 24);
+            grid.getColumnConstraints().add(new ColumnConstraints(46));
             grid.add(storeIcon, 0, 0);
             GridPane.setHalignment(storeIcon, HPos.CENTER);
         }

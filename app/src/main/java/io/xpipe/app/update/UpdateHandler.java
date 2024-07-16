@@ -72,6 +72,11 @@ public abstract class UpdateHandler {
             preparedUpdate.setValue(null);
         }
 
+        // Check if file has been deleted
+        if (preparedUpdate.getValue() != null && preparedUpdate.getValue().getFile() != null && !Files.exists(preparedUpdate.getValue().getFile())) {
+            preparedUpdate.setValue(null);
+        }
+
         preparedUpdate.addListener((c, o, n) -> {
             AppCache.update("preparedUpdate", n);
         });

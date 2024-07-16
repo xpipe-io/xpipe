@@ -5,13 +5,12 @@ import io.xpipe.app.fxcomps.Comp;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.VPos;
 import javafx.scene.layout.*;
 
 public class StandardStoreEntryComp extends StoreEntryComp {
 
-    public StandardStoreEntryComp(StoreSection section, Comp<?> content) {
-        super(section, content);
+    public StandardStoreEntryComp(StoreEntryWrapper entry, Comp<?> content) {
+        super(entry, content);
     }
 
     @Override
@@ -21,21 +20,20 @@ public class StandardStoreEntryComp extends StoreEntryComp {
 
     protected Region createContent() {
         var name = createName().createRegion();
-        var notes = new StoreNotesComp(getWrapper()).createRegion();
+        var notes = new StoreNotesComp(wrapper).createRegion();
 
         var grid = new GridPane();
-        grid.setHgap(6);
+        grid.setHgap(7);
         grid.setVgap(0);
 
-        var storeIcon = createIcon(46, 40);
+        var storeIcon = createIcon(50, 40);
         grid.add(storeIcon, 0, 0, 1, 2);
-        grid.getColumnConstraints().add(new ColumnConstraints(56));
+        grid.getColumnConstraints().add(new ColumnConstraints(66));
 
         var nameAndNotes = new HBox(name, notes);
         nameAndNotes.setSpacing(1);
         nameAndNotes.setAlignment(Pos.CENTER_LEFT);
         grid.add(nameAndNotes, 1, 0);
-        GridPane.setValignment(nameAndNotes, VPos.CENTER);
         grid.add(createSummary(), 1, 1);
         var nameCC = new ColumnConstraints();
         nameCC.setMinWidth(100);

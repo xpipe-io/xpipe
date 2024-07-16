@@ -51,25 +51,21 @@ public abstract class StoreEntryComp extends SimpleComp {
             App.getApp().getStage().widthProperty().divide(2.1).add(-100);
     public static final ObservableDoubleValue INFO_WITH_CONTENT_WIDTH =
             App.getApp().getStage().widthProperty().divide(2.1).add(-200);
-    protected final StoreSection section;
+    protected final StoreEntryWrapper wrapper;
     protected final Comp<?> content;
 
-    public StoreEntryComp(StoreSection section, Comp<?> content) {
-        this.section = section;
+    public StoreEntryComp(StoreEntryWrapper wrapper, Comp<?> content) {
+        this.wrapper = wrapper;
         this.content = content;
     }
-    
-    public StoreEntryWrapper getWrapper() {
-        return section.getWrapper();
-    }
 
-    public static StoreEntryComp create(StoreSection section, Comp<?> content, boolean preferLarge) {
+    public static StoreEntryComp create(StoreEntryWrapper entry, Comp<?> content, boolean preferLarge) {
         var forceCondensed = AppPrefs.get() != null
                 && AppPrefs.get().condenseConnectionDisplay().get();
         if (!preferLarge || forceCondensed) {
-            return new DenseStoreEntryComp(section, true, content);
+            return new DenseStoreEntryComp(entry, true, content);
         } else {
-            return new StandardStoreEntryComp(section, content);
+            return new StandardStoreEntryComp(entry, content);
         }
     }
 
@@ -81,8 +77,8 @@ public abstract class StoreEntryComp extends SimpleComp {
             var forceCondensed = AppPrefs.get() != null
                     && AppPrefs.get().condenseConnectionDisplay().get();
             return forceCondensed
-                    ? new DenseStoreEntryComp(e, true, null)
-                    : new StandardStoreEntryComp(e, null);
+                    ? new DenseStoreEntryComp(e.getWrapper(), true, null)
+                    : new StandardStoreEntryComp(e.getWrapper(), null);
         }
     }
 
@@ -99,11 +95,11 @@ public abstract class StoreEntryComp extends SimpleComp {
         button.setPadding(Insets.EMPTY);
         button.setMaxWidth(5000);
         button.setFocusTraversable(true);
-        button.accessibleTextProperty().bind(getWrapper().nameProperty());
+        button.accessibleTextProperty().bind(wrapper.nameProperty());
         button.setOnAction(event -> {
             event.consume();
             ThreadHelper.runFailableAsync(() -> {
-                getWrapper().executeDefaultAction();
+                wrapper.executeDefaultAction();
             });
         });
         button.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
@@ -136,10 +132,9 @@ public abstract class StoreEntryComp extends SimpleComp {
 
         var loading = LoadingOverlayComp.noProgress(
                 Comp.of(() -> button),
-                getWrapper().getEntry().getValidity().isUsable()
-                        ? getWrapper().getBusy().or(getWrapper().getEntry().getProvider().busy(getWrapper()))
-                        : getWrapper().getBusy());
-        AppFont.normal(button);
+                wrapper.getEntry().getValidity().isUsable()
+                        ? wrapper.getBusy().or(wrapper.getEntry().getProvider().busy(wrapper))
+                        : wrapper.getBusy());
         return loading.createRegion();
     }
 
@@ -151,14 +146,15 @@ public abstract class StoreEntryComp extends SimpleComp {
         information
                 .textProperty()
                 .bind(
-                        getWrapper().getEntry().getProvider() != null
+                        wrapper.getEntry().getProvider() != null
                                 ? PlatformThread.sync(
-                                        getWrapper().getEntry().getProvider().informationString(section))
+                                        wrapper.getEntry().getProvider().informationString(wrapper))
                                 : new SimpleStringProperty());
         information.getStyleClass().add("information");
+        AppFont.header(information);
 
-        var state = getWrapper().getEntry().getProvider() != null
-                ? getWrapper().getEntry().getProvider().stateDisplay(getWrapper())
+        var state = wrapper.getEntry().getProvider() != null
+                ? wrapper.getEntry().getProvider().stateDisplay(wrapper)
                 : Comp.empty();
         information.setGraphic(state.createRegion());
 
@@ -167,14 +163,14 @@ public abstract class StoreEntryComp extends SimpleComp {
 
     protected Label createSummary() {
         var summary = new Label();
-        summary.textProperty().bind(getWrapper().getSummary());
+        summary.textProperty().bind(wrapper.getSummary());
         summary.getStyleClass().add("summary");
         AppFont.small(summary);
         return summary;
     }
 
     protected void applyState(Node node) {
-        PlatformThread.sync(getWrapper().getValidity()).subscribe(val -> {
+        PlatformThread.sync(wrapper.getValidity()).subscribe(val -> {
             switch (val) {
                 case LOAD_FAILED -> {
                     node.pseudoClassStateChanged(FAILED, true);
@@ -193,22 +189,24 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     protected Comp<?> createName() {
-        LabelComp name = new LabelComp(getWrapper().nameProperty());
-        name.apply(struc -> struc.get().setTextOverrun(OverrunStyle.CENTER_ELLIPSIS));
+        LabelComp name = new LabelComp(wrapper.nameProperty());
+        name.apply(struc -> struc.get().setTextOverrun(OverrunStyle.CENTER_ELLIPSIS))
+                .apply(struc -> struc.get().setPadding(new Insets(5, 5, 5, 0)));
+        name.apply(s -> AppFont.header(s.get()));
         name.styleClass("name");
         return name;
     }
 
     protected Node createIcon(int w, int h) {
-        var img = getWrapper().disabledProperty().get()
+        var img = wrapper.disabledProperty().get()
                 ? "disabled_icon.png"
-                : getWrapper().getEntry()
+                : wrapper.getEntry()
                         .getProvider()
-                        .getDisplayIconFileName(getWrapper().getEntry().getStore());
+                        .getDisplayIconFileName(wrapper.getEntry().getStore());
         var imageComp = PrettyImageHelper.ofFixedSize(img, w, h);
         var storeIcon = imageComp.createRegion();
-        if (getWrapper().getValidity().getValue().isUsable()) {
-            new TooltipAugment<>(getWrapper().getEntry().getProvider().displayName(), null).augment(storeIcon);
+        if (wrapper.getValidity().getValue().isUsable()) {
+            new TooltipAugment<>(wrapper.getEntry().getProvider().displayName(), null).augment(storeIcon);
         }
 
         var stack = new StackPane(storeIcon);
@@ -222,7 +220,7 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     protected Region createButtonBar() {
-        var list = new DerivedObservableList<>(getWrapper().getActionProviders(), false);
+        var list = new DerivedObservableList<>(wrapper.getActionProviders(), false);
         var buttons = list.mapped(actionProvider -> {
                     var button = buildButton(actionProvider);
                     return button != null ? button.createRegion() : null;
@@ -241,8 +239,8 @@ public abstract class StoreEntryComp extends SimpleComp {
         buttons.subscribe(update);
         update.run();
         ig.setAlignment(Pos.CENTER_RIGHT);
+        ig.setPadding(new Insets(5));
         ig.getStyleClass().add("button-bar");
-        AppFont.medium(ig);
         return ig;
     }
 
@@ -251,17 +249,17 @@ public abstract class StoreEntryComp extends SimpleComp {
         var branch = p.getBranchDataStoreCallSite();
         var cs = leaf != null ? leaf : branch;
 
-        if (cs == null || !cs.isMajor(getWrapper().getEntry().ref())) {
+        if (cs == null || !cs.isMajor(wrapper.getEntry().ref())) {
             return null;
         }
 
         var button = new IconButtonComp(
-                cs.getIcon(getWrapper().getEntry().ref()),
+                cs.getIcon(wrapper.getEntry().ref()),
                 leaf != null
                         ? () -> {
                             ThreadHelper.runFailableAsync(() -> {
-                                getWrapper().runAction(
-                                        leaf.createAction(getWrapper().getEntry().ref()), leaf.showBusy());
+                                wrapper.runAction(
+                                        leaf.createAction(wrapper.getEntry().ref()), leaf.showBusy());
                             });
                         }
                         : null);
@@ -278,8 +276,8 @@ public abstract class StoreEntryComp extends SimpleComp {
                         return cm;
                     }));
         }
-        button.accessibleText(cs.getName(getWrapper().getEntry().ref()).getValue());
-        button.apply(new TooltipAugment<>(cs.getName(getWrapper().getEntry().ref()), null));
+        button.accessibleText(cs.getName(wrapper.getEntry().ref()).getValue());
+        button.apply(new TooltipAugment<>(cs.getName(wrapper.getEntry().ref()), null));
         return button;
     }
 
@@ -300,7 +298,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         AppFont.normal(contextMenu.getStyleableNode());
 
         var hasSep = false;
-        for (var p : getWrapper().getActionProviders()) {
+        for (var p : wrapper.getActionProviders()) {
             var item = buildMenuItemForAction(p);
             if (item == null) {
                 continue;
@@ -323,36 +321,36 @@ public abstract class StoreEntryComp extends SimpleComp {
 
         var notes = new MenuItem(AppI18n.get("addNotes"), new FontIcon("mdi2n-note-text"));
         notes.setOnAction(event -> {
-            getWrapper().getNotes().setValue(new StoreNotes(null, getDefaultNotes()));
+            wrapper.getNotes().setValue(new StoreNotes(null, getDefaultNotes()));
             event.consume();
         });
-        notes.visibleProperty().bind(BindingsHelper.map(getWrapper().getNotes(), s -> s.getCommited() == null));
+        notes.visibleProperty().bind(BindingsHelper.map(wrapper.getNotes(), s -> s.getCommited() == null));
         contextMenu.getItems().add(notes);
 
         if (AppPrefs.get().developerMode().getValue()) {
             var browse = new MenuItem(AppI18n.get("browseInternalStorage"), new FontIcon("mdi2f-folder-open-outline"));
             browse.setOnAction(
-                    event -> DesktopHelper.browsePathLocal(getWrapper().getEntry().getDirectory()));
+                    event -> DesktopHelper.browsePathLocal(wrapper.getEntry().getDirectory()));
             contextMenu.getItems().add(browse);
 
             var copyId = new MenuItem(AppI18n.get("copyId"), new FontIcon("mdi2c-content-copy"));
             copyId.setOnAction(event ->
-                    ClipboardHelper.copyText(getWrapper().getEntry().getUuid().toString()));
+                    ClipboardHelper.copyText(wrapper.getEntry().getUuid().toString()));
             contextMenu.getItems().add(copyId);
         }
 
-        if (DataStorage.get().isRootEntry(getWrapper().getEntry())) {
+        if (DataStorage.get().isRootEntry(wrapper.getEntry())) {
             var color = new Menu(AppI18n.get("color"), new FontIcon("mdi2f-format-color-fill"));
             var none = new MenuItem("None");
             none.setOnAction(event -> {
-                getWrapper().getEntry().setColor(null);
+                wrapper.getEntry().setColor(null);
                 event.consume();
             });
             color.getItems().add(none);
             Arrays.stream(DataStoreColor.values()).forEach(dataStoreColor -> {
                 MenuItem m = new MenuItem(DataStoreFormatter.capitalize(dataStoreColor.getId()));
                 m.setOnAction(event -> {
-                    getWrapper().getEntry().setColor(dataStoreColor);
+                    wrapper.getEntry().setColor(dataStoreColor);
                     event.consume();
                 });
                 color.getItems().add(m);
@@ -360,10 +358,10 @@ public abstract class StoreEntryComp extends SimpleComp {
             contextMenu.getItems().add(color);
         }
 
-        if (getWrapper().getEntry().getProvider() != null) {
+        if (wrapper.getEntry().getProvider() != null) {
             var move = new Menu(AppI18n.get("moveTo"), new FontIcon("mdi2f-folder-move-outline"));
             StoreViewState.get()
-                    .getSortedCategories(getWrapper().getCategory().getValue().getRoot())
+                    .getSortedCategories(wrapper.getCategory().getValue().getRoot())
                     .getList()
                     .forEach(storeCategoryWrapper -> {
                         MenuItem m = new MenuItem();
@@ -371,12 +369,12 @@ public abstract class StoreEntryComp extends SimpleComp {
                                 .setValue("  ".repeat(storeCategoryWrapper.getDepth())
                                         + storeCategoryWrapper.getName().getValue());
                         m.setOnAction(event -> {
-                            getWrapper().moveTo(storeCategoryWrapper.getCategory());
+                            wrapper.moveTo(storeCategoryWrapper.getCategory());
                             event.consume();
                         });
                         if (storeCategoryWrapper.getParent() == null
                                 || storeCategoryWrapper.equals(
-                                        getWrapper().getCategory().getValue())) {
+                                        wrapper.getCategory().getValue())) {
                             m.setDisable(true);
                         }
 
@@ -388,10 +386,10 @@ public abstract class StoreEntryComp extends SimpleComp {
             var order = new Menu(AppI18n.get("order"), new FontIcon("mdal-bookmarks"));
             var noOrder = new MenuItem(AppI18n.get("none"), new FontIcon("mdi2r-reorder-horizontal"));
             noOrder.setOnAction(event -> {
-                getWrapper().setOrder(null);
+                wrapper.setOrder(null);
                 event.consume();
             });
-            if (getWrapper().getEntry().getExplicitOrder() == null) {
+            if (wrapper.getEntry().getExplicitOrder() == null) {
                 noOrder.setDisable(true);
             }
             order.getItems().add(noOrder);
@@ -399,20 +397,20 @@ public abstract class StoreEntryComp extends SimpleComp {
 
             var top = new MenuItem(AppI18n.get("stickToTop"), new FontIcon("mdi2o-order-bool-descending"));
             top.setOnAction(event -> {
-                getWrapper().setOrder(DataStoreEntry.Order.TOP);
+                wrapper.setOrder(DataStoreEntry.Order.TOP);
                 event.consume();
             });
-            if (DataStoreEntry.Order.TOP.equals(getWrapper().getEntry().getExplicitOrder())) {
+            if (DataStoreEntry.Order.TOP.equals(wrapper.getEntry().getExplicitOrder())) {
                 top.setDisable(true);
             }
             order.getItems().add(top);
 
             var bottom = new MenuItem(AppI18n.get("stickToBottom"), new FontIcon("mdi2o-order-bool-ascending"));
             bottom.setOnAction(event -> {
-                getWrapper().setOrder(DataStoreEntry.Order.BOTTOM);
+                wrapper.setOrder(DataStoreEntry.Order.BOTTOM);
                 event.consume();
             });
-            if (DataStoreEntry.Order.BOTTOM.equals(getWrapper().getEntry().getExplicitOrder())) {
+            if (DataStoreEntry.Order.BOTTOM.equals(wrapper.getEntry().getExplicitOrder())) {
                 bottom.setDisable(true);
             }
             order.getItems().add(bottom);
@@ -425,14 +423,14 @@ public abstract class StoreEntryComp extends SimpleComp {
         del.disableProperty()
                 .bind(Bindings.createBooleanBinding(
                         () -> {
-                            return !getWrapper().getDeletable().get()
+                            return !wrapper.getDeletable().get()
                                     && !AppPrefs.get()
                                             .developerDisableGuiRestrictions()
                                             .get();
                         },
-                        getWrapper().getDeletable(),
+                        wrapper.getDeletable(),
                         AppPrefs.get().developerDisableGuiRestrictions()));
-        del.setOnAction(event -> getWrapper().delete());
+        del.setOnAction(event -> wrapper.delete());
         contextMenu.getItems().add(del);
 
         return contextMenu;
@@ -443,12 +441,12 @@ public abstract class StoreEntryComp extends SimpleComp {
         var branch = p.getBranchDataStoreCallSite();
         var cs = leaf != null ? leaf : branch;
 
-        if (cs == null || cs.isMajor(getWrapper().getEntry().ref())) {
+        if (cs == null || cs.isMajor(wrapper.getEntry().ref())) {
             return null;
         }
 
-        var name = cs.getName(getWrapper().getEntry().ref());
-        var icon = cs.getIcon(getWrapper().getEntry().ref());
+        var name = cs.getName(wrapper.getEntry().ref());
+        var icon = cs.getIcon(wrapper.getEntry().ref());
         var item = (leaf != null && leaf.canLinkTo()) || branch != null
                 ? new Menu(null, new FontIcon(icon))
                 : new MenuItem(null, new FontIcon(icon));
@@ -474,21 +472,21 @@ public abstract class StoreEntryComp extends SimpleComp {
             run.textProperty().bind(AppI18n.observable("base.execute"));
             run.setOnAction(event -> {
                 ThreadHelper.runFailableAsync(() -> {
-                    getWrapper().runAction(leaf.createAction(getWrapper().getEntry().ref()), leaf.showBusy());
+                    wrapper.runAction(leaf.createAction(wrapper.getEntry().ref()), leaf.showBusy());
                 });
             });
             menu.getItems().add(run);
 
             var sc = new MenuItem(null, new FontIcon("mdi2c-code-greater-than"));
-            var url = "xpipe://action/" + p.getId() + "/" + getWrapper().getEntry().getUuid();
+            var url = "xpipe://action/" + p.getId() + "/" + wrapper.getEntry().getUuid();
             sc.textProperty().bind(AppI18n.observable("base.createShortcut"));
             sc.setOnAction(event -> {
                 ThreadHelper.runFailableAsync(() -> {
                     DesktopShortcuts.create(
                             url,
-                            getWrapper().nameProperty().getValue() + " ("
+                            wrapper.nameProperty().getValue() + " ("
                                     + p.getLeafDataStoreCallSite()
-                                            .getName(getWrapper().getEntry().ref())
+                                            .getName(wrapper.getEntry().ref())
                                             .getValue() + ")");
                 });
             });
@@ -518,7 +516,7 @@ public abstract class StoreEntryComp extends SimpleComp {
 
             event.consume();
             ThreadHelper.runFailableAsync(() -> {
-                getWrapper().runAction(leaf.createAction(getWrapper().getEntry().ref()), leaf.showBusy());
+                wrapper.runAction(leaf.createAction(wrapper.getEntry().ref()), leaf.showBusy());
             });
         });
 

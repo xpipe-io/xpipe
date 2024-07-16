@@ -6,11 +6,9 @@ import io.xpipe.app.comp.store.StoreEntryComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.comp.store.StoreViewState;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.ThreadHelper;
@@ -18,7 +16,6 @@ import io.xpipe.core.store.DataStore;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
 
 public abstract class AbstractServiceGroupStoreProvider implements DataStoreProvider {
 
@@ -30,7 +27,7 @@ public abstract class AbstractServiceGroupStoreProvider implements DataStoreProv
     @Override
     public StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
         var t = createToggleComp(sec);
-        return StoreEntryComp.create(sec, t, preferLarge);
+        return StoreEntryComp.create(sec.getWrapper(), t, preferLarge);
     }
 
     private StoreToggleComp createToggleComp(StoreSection sec) {
@@ -63,16 +60,6 @@ public abstract class AbstractServiceGroupStoreProvider implements DataStoreProv
                 },
                 StoreViewState.get().getAllEntries().getList()));
         return t;
-    }
-
-    @Override
-    public ObservableValue<String> informationString(StoreSection section) {
-        return Bindings.createStringBinding(() -> {
-            var all = section.getAllChildren().getList();
-            var shown = section.getShownChildren().getList();
-            var string = all.size() == shown.size() ? all.size() : shown.size() + "/" + all.size();
-            return all.size() > 0 ? (all.size() == 1 ? AppI18n.get("hasService", string) : AppI18n.get("hasServices", string)) : AppI18n.get("noServices");
-        }, section.getShownChildren().getList(), section.getAllChildren().getList(), AppPrefs.get().language());
     }
 
     @Override

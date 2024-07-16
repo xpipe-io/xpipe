@@ -31,8 +31,6 @@ public interface DataStoreProvider {
         return true;
     }
 
-    default void onParentRefresh(DataStoreEntry entry) {}
-
     default void onChildrenRefresh(DataStoreEntry entry) {}
 
     default ObservableBooleanValue busy(StoreEntryWrapper wrapper) {
@@ -87,7 +85,7 @@ public interface DataStoreProvider {
     }
 
     default StoreEntryComp customEntryComp(StoreSection s, boolean preferLarge) {
-        return StoreEntryComp.create(s, null, preferLarge);
+        return StoreEntryComp.create(s.getWrapper(), null, preferLarge);
     }
 
     default StoreSectionComp customSectionComp(StoreSection section, boolean topLevel) {
@@ -193,7 +191,7 @@ public interface DataStoreProvider {
         return null;
     }
 
-    default ObservableValue<String> informationString(StoreSection section) {
+    default ObservableValue<String> informationString(StoreEntryWrapper wrapper) {
         return new SimpleStringProperty(null);
     }
 
