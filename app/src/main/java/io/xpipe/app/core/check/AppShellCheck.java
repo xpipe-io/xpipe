@@ -5,6 +5,7 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.process.ProcessOutputException;
+import lombok.Value;
 
 import java.util.Optional;
 
@@ -17,15 +18,19 @@ public class AppShellCheck {
                 .getEffectiveLocalDialect()
                 .equals(ProcessControlProvider.get().getFallbackDialect());
         if (err.isPresent() && canFallback) {
-            var msg = formatMessage(err.get());
+            var msg = formatMessage(err.get().getMessage());
             ErrorEvent.fromThrowable(new IllegalStateException(msg)).handle();
             enableFallback();
             err = selfTestErrorCheck();
         }
 
         if (err.isPresent()) {
-            var msg = formatMessage(err.get());
-            ErrorEvent.fromThrowable(new IllegalStateException(msg)).handle();
+            var msg = formatMessage(err.get().getMessage());
+            var event = ErrorEvent.fromThrowable(new IllegalStateException(msg));
+            if (!err.get().isCanContinue()) {
+                event.term();
+            }
+            event.handle();
         }
     }
 
@@ -71,17 +76,24 @@ public class AppShellCheck {
         LocalShell.init();
     }
 
-    private static Optional<String> selfTestErrorCheck() {
+    private static Optional<FailureResult> selfTestErrorCheck() {
         try (var command = LocalShell.getShell().command("echo test").complex().start()) {
             var out = command.readStdoutOrThrow();
             if (!out.equals("test")) {
-                return Optional.of("Expected \"test\", got \"" + out + "\"");
+                return Optional.of(new FailureResult("Expected \"test\", got \"" + out + "\"", true));
             }
         } catch (ProcessOutputException ex) {
-            return Optional.of(ex.getOutput() != null ? ex.getOutput() : ex.toString());
+            return Optional.of(new FailureResult(ex.getOutput() != null ? ex.getOutput() : ex.toString(), true));
         } catch (Throwable t) {
-            return Optional.of(t.getMessage() != null ? t.getMessage() : t.toString());
+            return Optional.of(new FailureResult(t.getMessage() != null ? t.getMessage() : t.toString(), false));
         }
         return Optional.empty();
+    }
+
+    @Value
+    private static class FailureResult {
+
+        String message;
+        boolean canContinue;
     }
 }

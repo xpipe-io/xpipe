@@ -27,6 +27,7 @@ public class ShellDialects {
     public static ShellDialect CISCO;
     public static ShellDialect MIKROTIK;
     public static ShellDialect RBASH;
+    public static ShellDialect CONSTRAINED_POWERSHELL;
     public static ShellDialect OVH_BASTION;
 
     public static List<ShellDialect> getStartableDialects() {
@@ -85,6 +86,7 @@ public class ShellDialects {
             CISCO = byId("cisco");
             MIKROTIK = byId("mikrotik");
             RBASH = byId("rbash");
+            CONSTRAINED_POWERSHELL = byId("constrainedPowershell");
             OVH_BASTION = byId("ovhBastion");
         }
     }
