@@ -57,6 +57,11 @@
     -fx-padding: 0 0 0 0;
 }
 
+.root.macos:seamless-frame.layout > .background {
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
+}
+
 .root:seamless-frame.layout > .background > * {
     -fx-background-radius: 0 10 0 0;
     -fx-border-radius: 0 10 0 0;

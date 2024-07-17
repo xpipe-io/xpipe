@@ -67,7 +67,7 @@ public class ModifiedStage extends Stage {
             case OsType.MacOs macOs -> {
                 var ctrl = new NativeMacOsWindowControl(stage);
                 var seamlessFrame = !AppPrefs.get().performanceMode().get() && mergeFrame();
-                var seamlessFrameApplied = ctrl.setAppearance(seamlessFrame, AppPrefs.get().theme.getValue().isDark()) && seamlessFrame;
+                var seamlessFrameApplied = seamlessFrame && ctrl.setAppearance(seamlessFrame, AppPrefs.get().theme.getValue().isDark());
                 stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), seamlessFrameApplied);
                 stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), !seamlessFrameApplied);
             }
