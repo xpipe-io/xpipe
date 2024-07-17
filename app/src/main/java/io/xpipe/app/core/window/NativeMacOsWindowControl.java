@@ -28,11 +28,17 @@ public class NativeMacOsWindowControl {
         this.nsWindow = (long) nativeHandle;
     }
 
-    public void setAppearance(boolean seamlessFrame, boolean darkMode) {
+    public boolean setAppearance(boolean seamlessFrame, boolean darkMode) {
         if (!ModuleHelper.isImage()) {
-            return;
+            return false;
         }
 
-        NativeBridge.getMacOsLibrary().setAppearance(new NativeLong(nsWindow), seamlessFrame, darkMode);
+        var lib = NativeBridge.getMacOsLibrary();
+        if (lib.isEmpty()) {
+            return false;
+        }
+
+        lib.get().setAppearance(new NativeLong(nsWindow), seamlessFrame, darkMode);
+        return true;
     }
 }
