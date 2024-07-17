@@ -109,7 +109,7 @@ public class BrowserNavBar extends Comp<BrowserNavBar.Structure> {
         new TooltipAugment<>("history", new KeyCodeCombination(KeyCode.H, KeyCombination.ALT_DOWN))
                 .augment(historyButton);
 
-        var breadcrumbs = new BrowserBreadcrumbBar(model).grow(false, true);
+        var breadcrumbs = new BrowserBreadcrumbBar(model);
 
         var pathRegion = pathBar.createStructure().get();
         var breadcrumbsRegion = breadcrumbs.createRegion();
@@ -143,7 +143,7 @@ public class BrowserNavBar extends Comp<BrowserNavBar.Structure> {
         topBox.setFillHeight(true);
         topBox.setAlignment(Pos.CENTER);
         homeButton.minWidthProperty().bind(pathRegion.heightProperty());
-        homeButton.maxWidthProperty().bind(pathRegion.heightProperty().multiply(1.3));
+        homeButton.maxWidthProperty().bind(pathRegion.heightProperty());
         homeButton.minHeightProperty().bind(pathRegion.heightProperty());
         homeButton.maxHeightProperty().bind(pathRegion.heightProperty());
         historyButton.minHeightProperty().bind(pathRegion.heightProperty());

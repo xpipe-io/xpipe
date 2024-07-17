@@ -99,9 +99,9 @@
 }
 
 .browser .top-bar {
-    -fx-min-height: 3.5em;
-    -fx-pref-height: 3.5em;
-    -fx-max-height: 3.5em;
+    -fx-min-height: 3.3em;
+    -fx-pref-height: 3.3em;
+    -fx-max-height: 3.3em;
     -fx-padding: 9px 6px;
 }
 
@@ -149,7 +149,7 @@
 }
 
 .browser .breadcrumbs {
-    -fx-padding: 2px 10px 2px 10px;
+    -fx-padding: 0px 10px 0px 10px;
 }
 
 .browser .breadcrumbs {
@@ -166,7 +166,7 @@
 }
 
 .browser .path-text, .browser .browser-filter .text-field {
-    -fx-padding: 5 12;
+    -fx-padding: 3 12;
 }
 
 .browser .path-text:invisible {
