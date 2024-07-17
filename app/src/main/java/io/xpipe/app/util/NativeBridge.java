@@ -9,9 +9,27 @@ import java.util.Map;
 
 public class NativeBridge {
 
-    public static interface MacOsLibrary extends Library {
+    private static MacOsLibrary macOsLibrary;
 
-        public static MacOsLibrary INSTANCE = Native.load("xpipe_bridge", MacOsLibrary.class, Map.of());
+    public static MacOsLibrary getMacOsLibrary() {
+        if (macOsLibrary == null) {
+            try {
+                var l = Native.load("xpipe_bridge", MacOsLibrary.class, Map.of());
+                macOsLibrary = l;
+            } catch (Throwable t) {
+                ErrorEvent.fromThrowable(t).handle();
+                macOsLibrary = new MacOsLibrary() {
+                    @Override
+                    public void setAppearance(NativeLong window, boolean seamlessFrame, boolean dark) {
+
+                    }
+                };
+            }
+        }
+        return macOsLibrary;
+    }
+
+    public static interface MacOsLibrary extends Library {
 
         public abstract void setAppearance(NativeLong window, boolean seamlessFrame, boolean dark);
     }
