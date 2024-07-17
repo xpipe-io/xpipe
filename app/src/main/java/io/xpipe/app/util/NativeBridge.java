@@ -18,7 +18,7 @@ public class NativeBridge {
         if (macOsLibrary == null && !loadingFailed) {
             try {
                 System.setProperty("jna.library.path", XPipeInstallation.getCurrentInstallationBasePath()
-                        .resolve("Contents").resolve("runtime").resolve("Home").resolve("lib").toString());
+                        .resolve("Contents").resolve("runtime").resolve("Contents").resolve("Home").resolve("lib").toString());
                 var l = Native.load("xpipe_bridge", MacOsLibrary.class, Map.of());
                 macOsLibrary = l;
             } catch (Throwable t) {

@@ -10,7 +10,7 @@
 }
 
 .root.macos:seamless-frame {
-    -fx-padding: 0 0 27 0;
+    -fx-padding: 0 0 25 0;
 }
 
 .root:dark:separate-frame .background {
