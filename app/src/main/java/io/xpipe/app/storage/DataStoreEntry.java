@@ -259,7 +259,7 @@ public class DataStoreEntry extends StorageElement {
                 store,
                 storeNode,
                 false,
-                Validity.INCOMPLETE,
+                store == null ? Validity.LOAD_FAILED : Validity.INCOMPLETE,
                 configuration,
                 persistentState,
                 expanded,
@@ -500,6 +500,8 @@ public class DataStoreEntry extends StorageElement {
         DataStore newStore;
         try {
             newStore = JacksonMapper.getDefault().treeToValue(storeNode, DataStore.class);
+            // Check whether we have a provider as well
+            DataStoreProviders.byStore(newStore);
         } catch (Throwable e) {
             ErrorEvent.fromThrowable(e).handle();
             newStore = null;
