@@ -452,6 +452,7 @@ public class DataStoreEntry extends StorageElement {
 
         this.store = store;
         this.storeNode = JacksonMapper.getDefault().valueToTree(store);
+        this.provider = DataStoreProviders.byStore(store);
         if (updateTime) {
             lastModified = Instant.now();
         }
