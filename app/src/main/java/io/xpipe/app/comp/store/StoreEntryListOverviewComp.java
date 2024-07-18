@@ -95,8 +95,8 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                 createDateSortButton().createRegion(),
                 Comp.hspacer(2).createRegion(),
                 createAlphabeticalSortButton().createRegion());
-        AppFont.setSize(label, 3);
-        AppFont.setSize(c, 3);
+        AppFont.setSize(label, 2);
+        AppFont.setSize(c, 2);
         topBar.setAlignment(Pos.CENTER);
         topBar.getStyleClass().add("top");
         return topBar;
@@ -111,9 +111,11 @@ public class StoreEntryListOverviewComp extends SimpleComp {
         });
         var filter = new FilterComp(StoreViewState.get().getFilterString());
         var f = filter.createRegion();
-        var buttons = createAddButton();
-        var hbox = new HBox(buttons, f);
-        f.prefHeightProperty().bind(buttons.heightProperty());
+        var button = createAddButton();
+        var hbox = new HBox(button, f);
+        f.minHeightProperty().bind(button.heightProperty());
+        f.prefHeightProperty().bind(button.heightProperty());
+        f.maxHeightProperty().bind(button.heightProperty());
         hbox.setSpacing(8);
         hbox.setAlignment(Pos.CENTER);
         HBox.setHgrow(f, Priority.ALWAYS);
@@ -136,7 +138,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
         if (OsType.getLocal().equals(OsType.MACOS)) {
             menu.setPadding(new Insets(-2, 0, -2, 0));
         } else {
-            menu.setPadding(new Insets(-3, 0, -3, 0));
+            menu.setPadding(new Insets(-4, 0, -4, 0));
         }
 
         return menu;
@@ -164,6 +166,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
             }
         });
         alphabetical.apply(alphabeticalR -> {
+            AppFont.medium(alphabeticalR.get());
             alphabeticalR
                     .get()
                     .opacityProperty()
@@ -204,6 +207,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
             }
         });
         date.apply(dateR -> {
+            AppFont.medium(dateR.get());
             dateR.get()
                     .opacityProperty()
                     .bind(Bindings.createDoubleBinding(
