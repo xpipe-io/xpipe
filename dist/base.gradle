@@ -229,6 +229,19 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                     commandLine "$projectDir/misc/mac/sign_and_notarize.sh", "$projectDir", rootProject.arch.toString(), rootProject.productName
                 }
             }
+
+            if (fullVersion) {
+                def nativeLib = "$projectDir/native_lib/macos"
+                def proj = "$nativeLib/xpipe_bridge.xcodeproj"
+                exec {
+                    environment 'CONFIGURATION_BUILD_DIR', project.getLayout().getBuildDirectory().dir("native_lib")
+                    commandLine 'xcodebuild', '-configuration', 'Release', '-project', proj, '-scheme', 'xpipe_bridge', '-derivedDataPath', project.getLayout().getBuildDirectory().dir("native_lib").get(), 'build'
+                }
+                copy {
+                    from project.getLayout().getBuildDirectory().dir("native_lib/Build/Products/Release").get().file('libxpipe_bridge.dylib')
+                    into "$distDir/$app/Contents/runtime/Contents/Home/lib/"
+                }
+            }
         }
     }
 }

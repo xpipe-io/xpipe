@@ -9,6 +9,10 @@
     -fx-background-color: transparent;
 }
 
+.root:macos:seamless-frame {
+    -fx-padding: 0 0 25 0;
+}
+
 .root:dark:separate-frame .background {
     -fx-background-color: derive(-color-bg-default, 1%);
 }
@@ -51,6 +55,11 @@
     -fx-border-width: 1 1 0 0;
     -fx-border-color: -color-border-default;
     -fx-padding: 0 0 0 0;
+}
+
+.root:macos:seamless-frame.layout > .background {
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
 }
 
 .root:seamless-frame.layout > .background > * {

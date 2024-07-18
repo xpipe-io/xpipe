@@ -43,6 +43,7 @@ public class AppTheme {
 
     public static void initThemeHandlers(Stage stage) {
         Runnable r = () -> {
+            stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass(OsType.getLocal().getId()), true);
             if (AppPrefs.get() == null) {
                 var def = Theme.getDefaultLightTheme();
                 stage.getScene().getRoot().getStyleClass().add(def.getCssId());
