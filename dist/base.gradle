@@ -224,22 +224,22 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                     debugAttachArguments + ' ' + debugArguments)
             debugAttach.setExecutable(true, false)
 
-            if (System.getenv("MACOS_DEVELOPER_ID_APPLICATION_CERTIFICATE_NAME") != null) {
-                exec {
-                    commandLine "$projectDir/misc/mac/sign_and_notarize.sh", "$projectDir", rootProject.arch.toString(), rootProject.productName
-                }
-            }
-
             if (fullVersion) {
                 def nativeLib = "$projectDir/native_lib/macos"
                 def proj = "$nativeLib/xpipe_bridge.xcodeproj"
                 exec {
                     environment 'CONFIGURATION_BUILD_DIR', project.getLayout().getBuildDirectory().dir("native_lib")
-                    commandLine 'xcodebuild', '-configuration', 'Release', '-project', proj, '-scheme', 'xpipe_bridge', '-derivedDataPath', project.getLayout().getBuildDirectory().dir("native_lib").get(), 'build'
+                    commandLine 'xcodebuild', '-configuration', 'Release', '-project', proj, '-scheme', 'xpipe_bridge', '-derivedDataPath', project.getLayout().getBuildDirectory().dir("native_lib").get(), 'build', 'CODE_SIGNING_ALLOWED=NO'
                 }
                 copy {
                     from project.getLayout().getBuildDirectory().dir("native_lib/Build/Products/Release").get().file('libxpipe_bridge.dylib')
                     into "$distDir/$app/Contents/runtime/Contents/Home/lib/"
+                }
+            }
+
+            if (System.getenv("MACOS_DEVELOPER_ID_APPLICATION_CERTIFICATE_NAME") != null) {
+                exec {
+                    commandLine "$projectDir/misc/mac/sign_and_notarize.sh", "$projectDir", rootProject.arch.toString(), rootProject.productName
                 }
             }
         }
