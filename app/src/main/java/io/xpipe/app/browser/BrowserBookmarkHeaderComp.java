@@ -42,12 +42,11 @@ public final class BrowserBookmarkHeaderComp extends SimpleComp {
         var top = new HorizontalComp(List.of(category, filter))
                 .apply(struc -> struc.get().setFillHeight(true))
                 .apply(struc -> {
-                    ((Region) struc.get().getChildren().get(0))
-                            .prefHeightProperty()
-                            .bind(((Region) struc.get().getChildren().get(1)).heightProperty());
-                    ((Region) struc.get().getChildren().get(0))
-                            .minWidthProperty()
-                            .bind(struc.get().widthProperty().divide(2.0));
+                    var first = ((Region) struc.get().getChildren().get(0));
+                    var second = ((Region) struc.get().getChildren().get(1));
+                    first.prefHeightProperty().bind(second.heightProperty());
+                    first.minHeightProperty().bind(second.heightProperty());
+                    first.maxHeightProperty().bind(second.heightProperty());
                 })
                 .styleClass("bookmarks-header")
                 .createRegion();

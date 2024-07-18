@@ -35,6 +35,7 @@ public class FilterComp extends Comp<CompStructure<CustomTextField>> {
             }
         });
         var filter = new CustomTextField();
+        filter.setMinHeight(0);
         filter.setMaxHeight(2000);
         filter.getStyleClass().add("filter-comp");
         filter.promptTextProperty().bind(AppI18n.observable("searchFilter"));
