@@ -35,31 +35,26 @@
     -fx-background-color: -color-bg-subtle;
     -fx-border-width: 0 1 0 0;
     -fx-border-color: -color-border-default;
-    -fx-padding: 0.7em 0 0 0;
+    -fx-padding: 0.2em 0 0 0;
 }
 
 .prefs .sidebar .button {
     -fx-background-color: transparent;
-    -fx-padding: 0.5em 1em 0.5em 1.2em;
-    -fx-border-radius: 0;
-    -fx-background-radius: 0;
-    -fx-border-width: 1;
-    -fx-background-insets: 0;
-    -fx-border-insets: 0;
+    -fx-padding: 0.6em 1em 0.6em 1em;
+    -fx-background-radius: 0, 4, 4;
+    -fx-background-insets: 0, 2 4 2 4, 3 5 3 5;
 }
 
 .prefs .sidebar .button:selected {
-    -fx-background-color: -color-accent-subtle;
-    -fx-border-color: -color-accent-emphasis;
-    -fx-border-width: 1 0 1 0;
+    -fx-background-color: transparent, -color-accent-emphasis, -color-bg-default;
 }
 
 .prefs .sidebar .button:armed {
-    -fx-background-color: derive(-color-neutral-muted, 25%);
+    -fx-background-color: transparent, -color-accent-muted, derive(-color-neutral-muted, 25%);
 }
 
 .prefs .sidebar .button:hover, .root:key-navigation .prefs .sidebar .button:focused {
-    -fx-background-color: -color-neutral-muted;
+    -fx-background-color: transparent, -color-bg-overlay;
 }
 
 .prefs .theme-switcher .combo-box-popup .list-view {

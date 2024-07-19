@@ -207,7 +207,8 @@
     -fx-max-height: 2.65em;
 
 }
-.browser .tab-header-area {
+
+.browser .tab-pane.floating > .tab-header-area {
     -fx-border-width: 0 0 0.05em 0;
     -fx-border-color: -color-border-default;
 }

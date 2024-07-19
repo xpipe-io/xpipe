@@ -41,9 +41,9 @@ public class AppPrefsComp extends SimpleComp {
         pfxLimit.setAlignment(Pos.TOP_LEFT);
 
         var sidebar = new AppPrefsSidebarComp().createRegion();
-        sidebar.setMinWidth(350);
-        sidebar.setPrefWidth(350);
-        sidebar.setMaxWidth(350);
+        sidebar.setMinWidth(280);
+        sidebar.setPrefWidth(280);
+        sidebar.setMaxWidth(280);
 
         var split = new HBox(sidebar, pfxLimit);
         HBox.setHgrow(pfxLimit, Priority.ALWAYS);
