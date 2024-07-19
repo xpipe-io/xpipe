@@ -52,7 +52,7 @@ dependencies {
     api files("$rootDir/gradle/gradle_scripts/vernacular-1.16.jar")
     api 'org.bouncycastle:bcprov-jdk18on:1.78.1'
     api 'info.picocli:picocli:4.7.6'
-    api ('org.kohsuke:github-api:1.322') {
+    api ('org.kohsuke:github-api:1.323') {
         exclude group: 'org.apache.commons', module: 'commons-lang3'
     }
     api 'org.apache.commons:commons-lang3:3.14.0'
