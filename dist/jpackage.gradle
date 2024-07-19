@@ -54,7 +54,8 @@ jlink {
             '--no-header-files',
             '--no-man-pages',
             '--include-locales', "${String.join(",", languages)}",
-            '--compress', 'zip-9'
+            '--compress', 'zip-9',
+            '--ignore-signing-information'
     ]
 
     if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
