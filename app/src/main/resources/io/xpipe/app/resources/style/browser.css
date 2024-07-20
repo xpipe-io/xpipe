@@ -208,6 +208,20 @@
 
 }
 
+.browser .tab-header-area .control-buttons-tab {
+    -fx-opacity: 0;
+}
+
+.browser .tab-loading-indicator {
+    -fx-min-width: 2.5em;
+    -fx-pref-width: 2.5em;
+    -fx-max-width: 2.5em;
+    -fx-min-height: 2.5em;
+    -fx-pref-height: 2.5em;
+    -fx-max-height: 2.5em;
+    -fx-background-color: transparent;
+}
+
 .browser .tab-pane.floating > .tab-header-area {
     -fx-border-width: 0 0 0.05em 0;
     -fx-border-color: -color-border-default;

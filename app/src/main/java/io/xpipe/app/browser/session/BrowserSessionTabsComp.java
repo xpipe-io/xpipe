@@ -26,6 +26,8 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
@@ -207,11 +209,38 @@ public class BrowserSessionTabsComp extends SimpleComp {
             if (keyEvent.getCode() == KeyCode.W && keyEvent.isShortcutDown()) {
                 tabs.getTabs().remove(current);
                 keyEvent.consume();
+                return;
             }
 
             if (keyEvent.getCode() == KeyCode.W && keyEvent.isShortcutDown() && keyEvent.isShiftDown()) {
                 tabs.getTabs().clear();
                 keyEvent.consume();
+            }
+
+            if (keyEvent.getCode().isFunctionKey()) {
+                var start = KeyCode.F1.getCode();
+                var index = keyEvent.getCode().getCode() - start;
+                if (index < tabs.getTabs().size()) {
+                    tabs.getSelectionModel().select(index);
+                    keyEvent.consume();
+                    return;
+                }
+            }
+
+            var forward = new KeyCodeCombination(KeyCode.TAB, KeyCombination.CONTROL_DOWN);
+            if (forward.match(keyEvent)) {
+                var next = (tabs.getSelectionModel().getSelectedIndex() + 1) % tabs.getTabs().size();
+                tabs.getSelectionModel().select(next);
+                keyEvent.consume();
+                return;
+            }
+
+            var back = new KeyCodeCombination(KeyCode.TAB, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN);
+            if (back.match(keyEvent)) {
+                var previous = (tabs.getTabs().size() + tabs.getSelectionModel().getSelectedIndex() - 1) % tabs.getTabs().size();
+                tabs.getSelectionModel().select(previous);
+                keyEvent.consume();
+                return;
             }
         });
 

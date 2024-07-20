@@ -3,21 +3,24 @@ package io.xpipe.app.browser.session;
 import io.xpipe.app.browser.BrowserBookmarkComp;
 import io.xpipe.app.browser.BrowserBookmarkHeaderComp;
 import io.xpipe.app.browser.BrowserTransferComp;
+import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.comp.base.SideSplitPaneComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.impl.AnchorComp;
 import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.ShellStore;
-
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 
@@ -101,9 +104,22 @@ public class BrowserSessionComp extends SimpleComp {
 
         var split = new SimpleDoubleProperty();
         var tabs = new BrowserSessionTabsComp(model, split)
-                .apply(struc -> struc.get().setViewOrder(1))
-                .apply(struc -> struc.get().setPickOnBounds(false));
-        var splitPane = new SideSplitPaneComp(vertical, tabs)
+                .apply(struc -> {
+                    struc.get().setViewOrder(1);
+                    struc.get().setPickOnBounds(false);
+                    AnchorPane.setTopAnchor(struc.get(), 0.0);
+                    AnchorPane.setBottomAnchor(struc.get(), 0.0);
+                    AnchorPane.setLeftAnchor(struc.get(), 0.0);
+                    AnchorPane.setRightAnchor(struc.get(), 0.0);
+                });
+        var loadingIndicator = LoadingOverlayComp.noProgress(Comp.empty(),model.getBusy())
+                .apply(struc -> {
+                    AnchorPane.setTopAnchor(struc.get(), 0.0);
+                    AnchorPane.setRightAnchor(struc.get(), 0.0);
+                })
+                .styleClass("tab-loading-indicator");
+        var loadingStack = new AnchorComp(List.of(tabs, loadingIndicator));
+        var splitPane = new SideSplitPaneComp(vertical, loadingStack)
                 .withInitialWidth(AppLayoutModel.get().getSavedState().getBrowserConnectionsWidth())
                 .withOnDividerChange(d -> {
                     AppLayoutModel.get().getSavedState().setBrowserConnectionsWidth(d);

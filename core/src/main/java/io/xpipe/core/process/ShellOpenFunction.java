@@ -27,7 +27,7 @@ public interface ShellOpenFunction {
 
             @Override
             public CommandBuilder prepareWithInitCommand(@NonNull String command) {
-                throw new UnsupportedOperationException();
+                return CommandBuilder.of().add(command);
             }
         };
     }

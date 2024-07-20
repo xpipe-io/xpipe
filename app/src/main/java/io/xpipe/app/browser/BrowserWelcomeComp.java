@@ -1,9 +1,10 @@
 package io.xpipe.app.browser;
 
+import atlantafx.base.controls.Spacer;
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
-import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
@@ -17,7 +18,6 @@ import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.DerivedObservableList;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ThreadHelper;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -30,9 +30,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-
-import atlantafx.base.controls.Spacer;
-import atlantafx.base.theme.Styles;
 
 import java.util.List;
 
@@ -57,8 +54,7 @@ public class BrowserWelcomeComp extends SimpleComp {
                 .padding(new Insets(5, 0, 0, 0))
                 .createRegion();
 
-        var loading = LoadingOverlayComp.noProgress(Comp.empty(),model.getBusy()).createRegion();
-        var hbox = new HBox(img, vbox, new Spacer(), loading);
+        var hbox = new HBox(img, vbox);
         hbox.setAlignment(Pos.CENTER_LEFT);
         hbox.setSpacing(15);
 
