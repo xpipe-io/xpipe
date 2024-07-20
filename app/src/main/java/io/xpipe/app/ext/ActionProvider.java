@@ -16,6 +16,7 @@ import java.util.ServiceLoader;
 public interface ActionProvider {
 
     List<ActionProvider> ALL = new ArrayList<>();
+    List<ActionProvider> ALL_STANDALONE = new ArrayList<>();
 
     static void initProviders() {
         for (ActionProvider actionProvider : ALL) {
@@ -111,7 +112,7 @@ public interface ActionProvider {
 
         String getIcon(DataStoreEntryRef<T> store);
 
-        Class<T> getApplicableClass();
+        Class<?> getApplicableClass();
 
         default boolean showBusy() {
             return true;
@@ -120,9 +121,7 @@ public interface ActionProvider {
 
     interface BranchDataStoreCallSite<T extends DataStore> extends DataStoreCallSite<T> {
 
-        default List<ActionProvider> getChildren() {
-            return List.of();
-        }
+        List<ActionProvider> getChildren();
     }
 
     interface LeafDataStoreCallSite<T extends DataStore> extends DataStoreCallSite<T> {
@@ -145,6 +144,10 @@ public interface ActionProvider {
             ALL.addAll(ServiceLoader.load(layer, ActionProvider.class).stream()
                     .map(actionProviderProvider -> actionProviderProvider.get())
                     .toList());
+
+            var menuProviders = ALL.stream().map(actionProvider -> actionProvider.getBranchDataStoreCallSite() != null ?
+                    actionProvider.getBranchDataStoreCallSite().getChildren() : List.of()).flatMap(List::stream).toList();
+            ALL_STANDALONE.addAll(ALL.stream().filter(actionProvider -> menuProviders.stream().noneMatch(menuItem -> menuItem.getClass().equals(actionProvider.getClass()))).toList());
         }
     }
 }

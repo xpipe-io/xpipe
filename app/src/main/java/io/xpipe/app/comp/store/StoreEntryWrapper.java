@@ -45,7 +45,7 @@ public class StoreEntryWrapper {
         this.entry = entry;
         this.name = new SimpleStringProperty(entry.getName());
         this.lastAccess = new SimpleObjectProperty<>(entry.getLastAccess().minus(Duration.ofMillis(500)));
-        ActionProvider.ALL.stream()
+        ActionProvider.ALL_STANDALONE.stream()
                 .filter(dataStoreActionProvider -> {
                     return !entry.isDisabled()
                             && dataStoreActionProvider.getLeafDataStoreCallSite() != null
@@ -163,7 +163,7 @@ public class StoreEntryWrapper {
             defaultActionProvider.setValue(null);
         } else {
             try {
-                var defaultProvider = ActionProvider.ALL.stream()
+                var defaultProvider = ActionProvider.ALL_STANDALONE.stream()
                         .filter(e -> entry.getStore() != null
                                 && e.getDefaultDataStoreCallSite() != null
                                 && e.getDefaultDataStoreCallSite()
@@ -174,7 +174,7 @@ public class StoreEntryWrapper {
                         .orElse(null);
                 this.defaultActionProvider.setValue(defaultProvider);
 
-                var newProviders = ActionProvider.ALL.stream()
+                var newProviders = ActionProvider.ALL_STANDALONE.stream()
                         .filter(dataStoreActionProvider -> {
                             return showActionProvider(dataStoreActionProvider);
                         })

@@ -3,31 +3,29 @@ package io.xpipe.ext.base.service;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.Hyperlinks;
-
+import io.xpipe.core.store.DataStore;
 import javafx.beans.value.ObservableValue;
 
-import lombok.Value;
+import java.util.List;
 
 public class ServiceOpenAction implements ActionProvider {
 
     @Override
-    public LeafDataStoreCallSite<?> getLeafDataStoreCallSite() {
-        return new LeafDataStoreCallSite<AbstractServiceStore>() {
-
+    public BranchDataStoreCallSite<?> getBranchDataStoreCallSite() {
+        return new BranchDataStoreCallSite<DataStore>() {
             @Override
-            public boolean isMajor(DataStoreEntryRef<AbstractServiceStore> o) {
+            public boolean isMajor(DataStoreEntryRef<DataStore> o) {
                 return true;
             }
 
             @Override
-            public boolean canLinkTo() {
-                return true;
+            public ObservableValue<String> getName(DataStoreEntryRef<DataStore> store) {
+                return AppI18n.observable("openWebsite");
             }
 
             @Override
-            public ActionProvider.Action createAction(DataStoreEntryRef<AbstractServiceStore> store) {
-                return new Action(store.getStore());
+            public String getIcon(DataStoreEntryRef<DataStore> store) {
+                return "mdi2s-search-web";
             }
 
             @Override
@@ -36,27 +34,9 @@ public class ServiceOpenAction implements ActionProvider {
             }
 
             @Override
-            public ObservableValue<String> getName(DataStoreEntryRef<AbstractServiceStore> store) {
-                return AppI18n.observable("openWebsite");
-            }
-
-            @Override
-            public String getIcon(DataStoreEntryRef<AbstractServiceStore> store) {
-                return "mdi2s-search-web";
+            public List<ActionProvider> getChildren() {
+                return List.of(new ServiceOpenHttpAction(), new ServiceOpenHttpsAction());
             }
         };
-    }
-
-    @Value
-    static class Action implements ActionProvider.Action {
-
-        AbstractServiceStore serviceStore;
-
-        @Override
-        public void execute() throws Exception {
-            serviceStore.startSessionIfNeeded();
-            var l = serviceStore.getSession().getLocalPort();
-            Hyperlinks.open("http://localhost:" + l);
-        }
     }
 }
