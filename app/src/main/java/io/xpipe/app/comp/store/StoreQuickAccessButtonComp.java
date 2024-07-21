@@ -4,6 +4,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
+import io.xpipe.app.fxcomps.util.LabelGraphic;
 import io.xpipe.app.util.ContextMenuHelper;
 
 import javafx.geometry.Side;
@@ -44,7 +45,7 @@ public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
                 w.getEntry().getProvider().getDisplayIconFileName(w.getEntry().getStore());
         if (c.getList().isEmpty()) {
             var item = ContextMenuHelper.item(
-                    PrettyImageHelper.ofFixedSizeSquare(graphic, 16),
+                    new LabelGraphic.ImageGraphic(graphic, 16),
                     w.getName().getValue());
             item.setOnAction(event -> {
                 action.accept(w);
