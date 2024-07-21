@@ -1,11 +1,11 @@
 package io.xpipe.app.browser.file;
 
+import atlantafx.base.controls.Spacer;
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.SimpleCompStructure;
-import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.*;
@@ -13,7 +13,6 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystem;
-
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -34,14 +33,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 
-import atlantafx.base.controls.Spacer;
-import atlantafx.base.theme.Styles;
-
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static io.xpipe.app.util.HumanReadableFormat.byteCount;
 import static javafx.scene.control.TableColumn.SortType.ASCENDING;
@@ -134,6 +132,7 @@ public final class BrowserFileListComp extends SimpleComp {
     }
 
     private void prepareTypedSelectionModel(TableView<BrowserEntry> table) {
+        AtomicReference<Instant> lastFail = new AtomicReference<>();
         table.addEventHandler(KeyEvent.KEY_PRESSED,event -> {
             var typed = event.getText();
             if (typed.isEmpty()) {
@@ -143,15 +142,26 @@ public final class BrowserFileListComp extends SimpleComp {
             var updated = typedSelection.get() + typed;
             var find = fileList.getShown().getValue().stream().filter(browserEntry -> browserEntry.getFileName().toLowerCase().startsWith(updated.toLowerCase())).findFirst();
             if (find.isEmpty()) {
+                if (lastFail.get() == null) {
+                    lastFail.set(Instant.now());
+                }
+                var inCooldown = Duration.between(lastFail.get(), Instant.now()).toMillis() < 1000;
+                if (inCooldown) {
+                    event.consume();
+                    return;
+                }
+
+                lastFail.set(null);
                 typedSelection.set("");
                 table.getSelectionModel().clearSelection();
                 event.consume();
                 return;
             }
 
+            lastFail.set(null);
             typedSelection.set(updated);
             table.scrollTo(find.get());
-            table.getSelectionModel().select(find.get());
+            table.getSelectionModel().clearAndSelect(fileList.getShown().getValue().indexOf(find.get()));
             event.consume();
         });
 
@@ -270,38 +280,6 @@ public final class BrowserFileListComp extends SimpleComp {
                                 return row.getItem() != null;
                             },
                             row.itemProperty()));
-            new ContextMenuAugment<>(
-                            event -> {
-                                if (row.getItem() == null) {
-                                    return event.getButton() == MouseButton.SECONDARY;
-                                }
-
-                                if (row.getItem() != null
-                                        && row.getItem()
-                                                        .getRawFileEntry()
-                                                        .resolved()
-                                                        .getKind()
-                                                == FileKind.DIRECTORY) {
-                                    return event.getButton() == MouseButton.SECONDARY;
-                                }
-
-                                if (row.getItem() != null
-                                        && row.getItem()
-                                                        .getRawFileEntry()
-                                                        .resolved()
-                                                        .getKind()
-                                                != FileKind.DIRECTORY) {
-                                    return event.getButton() == MouseButton.SECONDARY
-                                            || event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2;
-                                }
-
-                                return false;
-                            },
-                            null,
-                            () -> {
-                                return new BrowserContextMenu(fileList.getFileSystemModel(), row.getItem(), false);
-                            })
-                    .augment(new SimpleCompStructure<>(row));
             var listEntry = Bindings.createObjectBinding(
                     () -> new BrowserFileListCompEntry(table, row, row.getItem(), fileList), row.itemProperty());
 

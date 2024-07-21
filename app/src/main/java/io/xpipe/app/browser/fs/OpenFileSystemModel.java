@@ -115,8 +115,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
                     && getCurrentPath().get() != null) {
                 if (getBrowserModel() instanceof BrowserSessionModel bm) {
                     bm.getSavedState()
-                            .add(new BrowserSavedState.Entry(
-                                    getEntry().get().getUuid(), getCurrentPath().get()));
+                            .add(new BrowserSavedState.Entry(getEntry().get().getUuid(), getCurrentPath().get()));
                 }
             }
             try {

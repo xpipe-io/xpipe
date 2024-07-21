@@ -7,6 +7,7 @@ import io.xpipe.core.store.FileKind;
 
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
@@ -31,6 +32,7 @@ public class BrowserFileListCompEntry {
 
     private Point2D lastOver = new Point2D(-1, -1);
     private TimerTask activeTask;
+    private ContextMenu lastContextMenu;
 
     public BrowserFileListCompEntry(
             TableView<BrowserEntry> tv, Node row, BrowserEntry item, BrowserFileListModel model) {
@@ -41,6 +43,19 @@ public class BrowserFileListCompEntry {
     }
 
     public void onMouseClick(MouseEvent t) {
+        if (showContextMenu(t)) {
+            if (lastContextMenu != null) {
+                lastContextMenu.hide();
+                lastContextMenu = null;
+            }
+
+            var cm = new BrowserContextMenu(model.getFileSystemModel(), item, false);
+            cm.show(row, t.getScreenX(), t.getScreenY());
+            lastContextMenu = cm;
+            t.consume();
+            return;
+        }
+
         if (item == null) {
             // Only clear for normal clicks
             if (t.isStillSincePress()) {
@@ -62,6 +77,23 @@ public class BrowserFileListCompEntry {
         t.consume();
     }
 
+    private boolean showContextMenu(MouseEvent event) {
+        if (item == null) {
+            return event.getButton() == MouseButton.SECONDARY;
+        }
+
+        if (item.getRawFileEntry().resolved().getKind() == FileKind.DIRECTORY) {
+            return event.getButton() == MouseButton.SECONDARY;
+        }
+
+        if (item.getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY) {
+            return event.getButton() == MouseButton.SECONDARY
+                    || event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2;
+        }
+
+        return false;
+    }
+    
     public void onMouseShiftClick(MouseEvent t) {
         if (t.getButton() != MouseButton.PRIMARY) {
             return;
