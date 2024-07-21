@@ -45,7 +45,7 @@ public final class BrowserBookmarkComp extends SimpleComp {
         BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment = (s, comp) -> {
             comp.disable(Bindings.createBooleanBinding(
                     () -> {
-                        return busy.get() || !applicable.test(s.getWrapper());
+                        return !applicable.test(s.getWrapper());
                     },
                     busy));
             comp.apply(struc -> {

@@ -63,10 +63,6 @@
     -fx-background-color: -color-neutral-muted;
 }
 
-.browser .welcome .loading-comp {
-    -fx-background-color: transparent;
-}
-
 .browser .tile > * {
     -fx-padding: 0.6em 0 0.6em 0;
 }
@@ -212,7 +208,7 @@
     -fx-opacity: 0;
 }
 
-.browser .tab-loading-indicator {
+.browser .tab-loading-indicator .loading-comp {
     -fx-min-width: 2.5em;
     -fx-pref-width: 2.5em;
     -fx-max-width: 2.5em;

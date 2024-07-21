@@ -255,6 +255,10 @@ public class BrowserSessionTabsComp extends SimpleComp {
             var keyCode = Arrays.stream(KeyCode.values()).filter(code -> code.getCode() == start + index).findAny().orElse(null);
             return keyCode != null ? new KeyCodeCombination(keyCode) : null;
         }, tabs.getTabs()));
+        select.setOnAction(event -> {
+            tabs.getSelectionModel().select(tab);
+            event.consume();
+        });
         cm.getItems().add(select);
 
         cm.getItems().add(new SeparatorMenuItem());

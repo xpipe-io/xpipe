@@ -46,7 +46,7 @@
 }
 
 .prefs .sidebar .button:selected {
-    -fx-background-color: transparent, -color-accent-emphasis, -color-bg-default;
+    -fx-background-color: transparent, -color-border-default, -color-bg-default;
 }
 
 .prefs .sidebar .button:armed {
@@ -54,7 +54,7 @@
 }
 
 .prefs .sidebar .button:hover, .root:key-navigation .prefs .sidebar .button:focused {
-    -fx-background-color: transparent, -color-bg-overlay;
+    -fx-background-color: transparent, -color-border-default, -color-bg-overlay;
 }
 
 .prefs .theme-switcher .combo-box-popup .list-view {
