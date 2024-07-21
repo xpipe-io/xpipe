@@ -32,6 +32,13 @@ public class AboutCategory extends AppPrefsCategory {
                                 .grow(true, false),
                         null)
                 .addComp(
+                        new TileButtonComp("slack", "slackDescription", "mdi2s-slack", e -> {
+                                    Hyperlinks.open(Hyperlinks.SLACK);
+                                    e.consume();
+                                })
+                                .grow(true, false),
+                        null)
+                .addComp(
                         new TileButtonComp("securityPolicy", "securityPolicyDescription", "mdrmz-security", e -> {
                                     Hyperlinks.open(Hyperlinks.SECURITY);
                                     e.consume();
