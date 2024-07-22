@@ -16,9 +16,7 @@ import io.xpipe.app.util.XPipeSession;
 import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeInstallation;
-
 import javafx.application.Platform;
-
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -85,6 +83,9 @@ public abstract class OperationMode {
     }
 
     private static void setup(String[] args) {
+        // Register stage theming early to make it apply for any potential early popups
+        ModifiedStage.init();
+
         try {
             // Only for handling SIGTERM
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -117,8 +118,6 @@ public abstract class OperationMode {
             AppExtensionManager.init(true);
             AppI18n.init();
             AppPrefs.initLocal();
-            // Register stage theming early to make it apply for any potential early popups
-            ModifiedStage.init();
             AppBeaconServer.setupPort();
             TrackEvent.info("Finished initial setup");
         } catch (Throwable ex) {
