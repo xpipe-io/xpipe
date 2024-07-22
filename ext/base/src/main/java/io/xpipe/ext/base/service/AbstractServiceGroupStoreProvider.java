@@ -70,6 +70,10 @@ public abstract class AbstractServiceGroupStoreProvider implements DataStoreProv
         return Bindings.createStringBinding(() -> {
             var all = section.getAllChildren().getList();
             var shown = section.getShownChildren().getList();
+            if (shown.size() == 0) {
+                return null;
+            }
+
             var string = all.size() == shown.size() ? all.size() : shown.size() + "/" + all.size();
             return all.size() > 0 ? (all.size() == 1 ? AppI18n.get("hasService", string) : AppI18n.get("hasServices", string)) : AppI18n.get("noServices");
         }, section.getShownChildren().getList(), section.getAllChildren().getList(), AppPrefs.get().language());
