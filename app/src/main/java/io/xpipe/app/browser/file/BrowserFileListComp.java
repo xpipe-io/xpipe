@@ -120,7 +120,7 @@ public final class BrowserFileListComp extends SimpleComp {
             return true;
         });
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
-        table.setFixedCellSize(34.0);
+        table.setFixedCellSize(32.0);
 
         prepareTableSelectionModel(table);
         prepareTableShortcuts(table);

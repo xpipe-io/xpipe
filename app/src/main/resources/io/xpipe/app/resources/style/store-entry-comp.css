@@ -41,6 +41,11 @@
     -fx-padding: 2 0 0 0;
 }
 
+.root:linux .store-entry-grid .name {
+    -fx-padding: 5 0 0 0;
+}
+
+
 .store-entry-grid.dense .name {
     -fx-padding: 0 0 0 0;
 }
