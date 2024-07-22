@@ -83,10 +83,10 @@ public abstract class OperationMode {
     }
 
     private static void setup(String[] args) {
-        // Register stage theming early to make it apply for any potential early popups
-        ModifiedStage.init();
-
         try {
+            // Register stage theming early to make it apply for any potential early popups
+            ModifiedStage.init();
+
             // Only for handling SIGTERM
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 TrackEvent.info("Received SIGTERM externally");

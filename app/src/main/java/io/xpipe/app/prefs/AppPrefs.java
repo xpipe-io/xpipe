@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 public class AppPrefs {
 
     public static final Path DEFAULT_STORAGE_DIR =
-            AppProperties.get().getDataDir().resolve("storage");
+            AppProperties.get() != null ? AppProperties.get().getDataDir().resolve("storage") : null;
     private static final String DEVELOPER_MODE_PROP = "io.xpipe.app.developerMode";
     private static AppPrefs INSTANCE;
     private final List<Mapping<?>> mapping = new ArrayList<>();
