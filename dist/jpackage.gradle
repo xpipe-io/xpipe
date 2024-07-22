@@ -119,7 +119,7 @@ task prepareMacOSInfo(type: DefaultTask) {
     doLast {
         file("${project.layout.buildDirectory.get()}/macos_resources").mkdirs()
         copy {
-            from replaceVariablesInFile("$projectDir/misc/mac/Info.plist",
+            from replaceVariablesInFile("$projectDir/jpackage/Info.plist",
                                         Map.of('__NAME__',
                                                rootProject.productName,
                                                '__VERSION__',
