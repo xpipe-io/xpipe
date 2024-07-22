@@ -54,29 +54,8 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
             debugAttach.setExecutable(true)
 
             copy {
-                from "$distDir/cli"
-                into "$distDir/base/cli/bin"
-            }
-            copy {
                 from "$distDir/licenses"
                 into "$distDir/base/licenses"
-            }
-            copy {
-                from "$projectDir/bundled_bin/$platformName"
-                into "$distDir/base/app/bundled"
-            }
-            copy {
-                from "$distDir/docs/html5"
-                into "$distDir/base/cli/docs"
-            }
-
-            if (rootProject.fullVersion) {
-                file("$distDir/base/app/xpiped.exe").writable = true
-                exec {
-                    commandLine "$projectDir\\tools\\sign.bat", "$distDir/base/app/xpiped.exe"
-                    ignoreExitValue = !ci
-                }
-                file("$distDir/base/app/xpiped.exe").writable = false
             }
         }
     }
@@ -129,26 +108,6 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                 from "$distDir/licenses"
                 into "$distDir/base/licenses"
             }
-            copy {
-                from "$distDir/cli/xpipe"
-                into "$distDir/base/cli/bin"
-            }
-            copy {
-                from "$distDir/docs/html5"
-                into "$distDir/base/cli/docs"
-            }
-            copy {
-                from "$distDir/cli/xpipe_completion"
-                into "$distDir/base/cli"
-            }
-            copy {
-                from "$distDir/docs/manpage"
-                into "$distDir/base/cli/man"
-            }
-            copy {
-                from "$projectDir/bundled_bin/$platformName"
-                into "$distDir/base/app/bundled"
-            }
         }
     }
 } else {
@@ -164,47 +123,17 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                 into "$distDir/$app/Contents/Resources/"
             }
             copy {
-                from "$distDir/cli/xpipe"
-                into "$distDir/$app/Contents/MacOS/"
-            }
-            copy {
                 from "$distDir/licenses"
                 into "$distDir/$app/Contents/Resources/licenses"
-            }
-            copy {
-                from "$distDir/docs/html5"
-                into "$distDir/$app/Contents/Resources/cli/docs"
-            }
-            copy {
-                from "$distDir/docs/manpage"
-                into "$distDir/$app/Contents/Resources/cli/man"
-            }
-            copy {
-                from "$distDir/cli/xpipe_completion"
-                into "$distDir/$app/Contents/Resources/cli/"
             }
             copy {
                 from "$projectDir/fonts"
                 into "$distDir/$app/Contents/Resources/fonts"
             }
             copy {
-                from "$projectDir/bundled_bin/$platformName"
-                into "$distDir/$app/Contents/Resources/bundled"
-            }
-            copy {
                 from "$rootDir/lang"
                 into "$distDir/$app/Contents/Resources/lang"
             }
-
-
-            copy {
-                from "$projectDir/PkgInstaller/darwin/Resources/uninstall.sh"
-                into "$distDir/$app/Contents/Resources/scripts/"
-            }
-            file("$distDir/$app/Contents/Resources/scripts/uninstall.sh").text = file("$distDir/$app/Contents/Resources/scripts/uninstall.sh").text
-                    .replaceAll("__PRODUCT__", productName)
-                    .replaceAll("__PRODUCT_KEBAP__", kebapProductName)
-                    .replaceAll("__VERSION__", versionString)
 
             def debugArguments = file("$projectDir/debug/debug_arguments.txt").text.lines().map(s -> '"' + s + '"').collect(Collectors.joining(
                     ' '))
@@ -223,25 +152,6 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                     'JVM-ARGS',
                     debugAttachArguments + ' ' + debugArguments)
             debugAttach.setExecutable(true, false)
-
-            if (fullVersion) {
-                def nativeLib = "$projectDir/native_lib/macos"
-                def proj = "$nativeLib/xpipe_bridge.xcodeproj"
-                exec {
-                    environment 'CONFIGURATION_BUILD_DIR', project.getLayout().getBuildDirectory().dir("native_lib")
-                    commandLine 'xcodebuild', '-configuration', 'Release', '-project', proj, '-scheme', 'xpipe_bridge', '-derivedDataPath', project.getLayout().getBuildDirectory().dir("native_lib").get(), 'build', 'CODE_SIGNING_ALLOWED=NO'
-                }
-                copy {
-                    from project.getLayout().getBuildDirectory().dir("native_lib/Build/Products/Release").get().file('libxpipe_bridge.dylib')
-                    into "$distDir/$app/Contents/runtime/Contents/Home/lib/"
-                }
-            }
-
-            if (System.getenv("MACOS_DEVELOPER_ID_APPLICATION_CERTIFICATE_NAME") != null) {
-                exec {
-                    commandLine "$projectDir/misc/mac/sign_and_notarize.sh", "$projectDir", rootProject.arch.toString(), rootProject.productName
-                }
-            }
         }
     }
 }

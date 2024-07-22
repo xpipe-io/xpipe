@@ -76,6 +76,7 @@ apply from: 'base.gradle'
 apply from: 'jpackage.gradle'
 
 if (rootProject.fullVersion) {
+    apply from: 'base_full.gradle'
     apply from: 'cli.gradle'
     apply from: 'portable.gradle'
     apply from: 'proguard.gradle'
