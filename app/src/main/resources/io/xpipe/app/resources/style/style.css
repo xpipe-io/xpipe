@@ -10,7 +10,7 @@
 }
 
 .root:macos:seamless-frame {
-    -fx-padding: 0 0 25 0;
+    -fx-padding: 0 0 27 0;
 }
 
 .root:dark:separate-frame .background {
@@ -50,8 +50,8 @@
 .root:seamless-frame.layout > .background {
     -fx-background-insets: 5 0 0 0;
     -fx-border-insets: 5 0 0 0;
-    -fx-background-radius: 0 10 0 0;
-    -fx-border-radius: 0 10 0 0;
+    -fx-background-radius: 0 6 0 0;
+    -fx-border-radius: 0 6 0 0;
     -fx-border-width: 1 1 0 0;
     -fx-border-color: -color-border-default;
     -fx-padding: 0 0 0 0;
@@ -63,8 +63,8 @@
 }
 
 .root:seamless-frame.layout > .background > * {
-    -fx-background-radius: 0 10 0 0;
-    -fx-border-radius: 0 10 0 0;
+    -fx-background-radius: 0 6 0 0;
+    -fx-border-radius: 0 6 0 0;
 }
 
 .toggle-switch:has-graphic .label {

@@ -45,8 +45,11 @@
     -fx-padding: 5 0 0 0;
 }
 
+.root:macos .store-entry-grid .name {
+    -fx-padding: 6 0 0 0;
+}
 
-.store-entry-grid.dense .name {
+.root .store-entry-grid.dense .name {
     -fx-padding: 0 0 0 0;
 }
 
