@@ -171,7 +171,11 @@ public class AppJacksonModule extends SimpleModule {
 
             // Compatibility fix for legacy local stores
             var toUse = e.getStore() instanceof LocalStore ? DataStorage.get().local() : e;
-            return toUse != null ? new DataStoreEntryRef<>(toUse) : null;
+            if (toUse == null) {
+                return null;
+            }
+
+            return new DataStoreEntryRef<>(toUse);
         }
     }
 }

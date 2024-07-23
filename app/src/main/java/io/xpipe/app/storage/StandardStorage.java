@@ -215,17 +215,26 @@ public class StandardStorage extends DataStorage {
             local.setColor(DataStoreColor.BLUE);
         }
 
-        callProviders();
+        // Reload stores, this time with all entry refs present
+        // These do however not have a completed validity yet
         refreshEntries();
+        // Bring entries into completed validity if possible
+        // Needed for chained stores
+        refreshEntries();
+        // Let providers work on complete stores
+        callProviders();
+        // Update validaties after any possible changes
+        refreshEntries();
+        // Add any possible missing synthetic parents
         storeEntriesSet.forEach(entry -> {
             var syntheticParent = getSyntheticParent(entry);
             syntheticParent.ifPresent(entry1 -> {
                 addStoreEntryIfNotPresent(entry1);
             });
         });
+        // Update validaties from synthetic parent I changes
         refreshEntries();
 
-        // Save to apply changes
         if (!hasFixedLocal) {
             storeEntriesSet.removeIf(dataStoreEntry ->
                     !dataStoreEntry.getUuid().equals(LOCAL_ID) && dataStoreEntry.getStore() instanceof LocalStore);
@@ -235,6 +244,7 @@ public class StandardStorage extends DataStorage {
                         entry.dirty = true;
                         entry.setStoreNode(JacksonMapper.getDefault().valueToTree(entry.getStore()));
                     });
+            // Save to apply changes
             save(false);
         }
 
