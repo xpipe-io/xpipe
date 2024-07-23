@@ -29,7 +29,7 @@ It currently supports:
 - Quickly perform various commonly used actions like starting/stopping containers, establishing tunnels, and more
 - Create desktop shortcuts that automatically open remote connections in your terminal  without having to open any GUI
 
-![connections](https://github.com/xpipe-io/xpipe/assets/72509152/5df3169a-4150-4478-a3de-ae1f9748c3c8)
+![connections](https://github.com/user-attachments/assets/07312929-1792-4589-b139-aa10bbcdc649)
 
 ## Powerful file management
 
@@ -39,8 +39,8 @@ It currently supports:
 - Dynamically elevate sessions with sudo when required without having to restart the session
 - Seamlessly transfer files from and to your system desktop environment
 - Work and perform transfers on multiple systems at the same time with the built-in tabbed multitasking
-
-![browser](https://github.com/xpipe-io/xpipe/assets/72509152/4d4e4e54-17c1-4ebe-acf8-f615cfce8b3f)
+  
+![browser](https://github.com/user-attachments/assets/7e5d8b3b-8cd7-4b71-ad79-9afb385de3fd)
 
 ## Terminal launcher
 
@@ -52,7 +52,7 @@ It currently supports:
 
 <br>
 <p align="center">
-  <img src="https://github.com/xpipe-io/xpipe/assets/72509152/02351317-f25d-4af3-8116-bc3b4fb92312" alt="Terminal launcher"/>
+  <img src="https://github.com/user-attachments/assets/6d369688-1c33-4b27-8de6-f7f2c5977410" alt="Terminal launcher"/>
 </p>
 <br>
 
@@ -63,7 +63,7 @@ It currently supports:
 - Setup shell init environments for connections to fully customize your work environment for every purpose
 - Open custom shells and custom remote connections by providing your own commands
 
-![scripts](https://github.com/xpipe-io/xpipe/assets/72509152/56533f22-b689-4201-b58a-eebe0a6d517a)
+![scripts](https://github.com/user-attachments/assets/cf39afaf-638d-48fc-9247-4c8d847d4ed4)
 
 ## Secure vault
 
@@ -72,7 +72,7 @@ It currently supports:
 - There are no servers involved, all your information stays on your systems. The XPipe application does not send any personal or sensitive information to outside services.
 - Vault changes can be pushed and pulled from your own remote git repository by multiple team members across many systems
 
-## API
+## Programmatic connection control via the API
 
 - The XPipe API provides programmatic access to XPipe’s features via an HTTP interface
 - Manage all your remote systems and access their file systems in your own favorite programming language
