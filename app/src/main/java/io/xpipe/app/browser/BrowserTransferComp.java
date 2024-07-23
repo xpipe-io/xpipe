@@ -56,11 +56,15 @@ public class BrowserTransferComp extends SimpleComp {
                             if (sourceItem.isEmpty()) {
                                 return new SimpleStringProperty("?");
                             }
-                            return Bindings.createStringBinding(() -> {
-                                var p = sourceItem.get().getProgress().getValue();
-                                var progressSuffix = p == null || sourceItem.get().downloadFinished().get() ? "" : " " + (p.getTransferred() * 100 / p.getTotal()) + "%";
-                                return entry.getFileName() + progressSuffix;
-                            }, sourceItem.get().getProgress());
+                            synchronized (sourceItem.get().getProgress()) {
+                                return Bindings.createStringBinding(() -> {
+                                    var p = sourceItem.get().getProgress().getValue();
+                                    var progressSuffix = p == null || sourceItem.get().downloadFinished().get() ?
+                                            "" :
+                                            " " + (p.getTransferred() * 100 / p.getTotal()) + "%";
+                                    return entry.getFileName() + progressSuffix;
+                                }, sourceItem.get().getProgress());
+                            }
                         })
                 .grow(false, true);
         var dragNotice = new LabelComp(AppI18n.observable("dragLocalFiles"))

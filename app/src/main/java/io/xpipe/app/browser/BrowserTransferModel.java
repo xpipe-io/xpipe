@@ -130,7 +130,9 @@ public class BrowserTransferModel {
                         BrowserFileTransferMode.COPY,
                         false,
                         progress -> {
-                            item.getProgress().setValue(progress);
+                            synchronized (item.getProgress()) {
+                                item.getProgress().setValue(progress);
+                            }
                             item.getOpenFileSystemModel().getProgress().setValue(progress);
                         });
                 op.execute();
