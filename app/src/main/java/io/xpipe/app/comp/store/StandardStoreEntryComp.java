@@ -46,7 +46,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         GridPane.setVgrow(nameAndNotes, Priority.ALWAYS);
 
         var summaryBox = new HBox(createSummary());
-        summaryBox.setAlignment(Pos.CENTER_LEFT);
+        summaryBox.setAlignment(Pos.TOP_LEFT);
         GridPane.setVgrow(summaryBox, Priority.ALWAYS);
         grid.add(summaryBox, 1, 1);
 
