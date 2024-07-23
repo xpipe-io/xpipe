@@ -165,14 +165,6 @@ public abstract class StoreEntryComp extends SimpleComp {
         return information;
     }
 
-    protected Label createSummary() {
-        var summary = new Label();
-        summary.textProperty().bind(getWrapper().getSummary());
-        summary.getStyleClass().add("summary");
-        AppFont.small(summary);
-        return summary;
-    }
-
     protected void applyState(Node node) {
         PlatformThread.sync(getWrapper().getValidity()).subscribe(val -> {
             switch (val) {

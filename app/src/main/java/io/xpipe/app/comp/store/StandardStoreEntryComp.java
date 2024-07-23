@@ -1,11 +1,11 @@
 package io.xpipe.app.comp.store;
 
+import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.Comp;
-
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.VPos;
+import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 
 public class StandardStoreEntryComp extends StoreEntryComp {
@@ -17,6 +17,14 @@ public class StandardStoreEntryComp extends StoreEntryComp {
     @Override
     public boolean isFullSize() {
         return true;
+    }
+
+    private Label createSummary() {
+        var summary = new Label();
+        summary.textProperty().bind(getWrapper().getSummary());
+        summary.getStyleClass().add("summary");
+        AppFont.small(summary);
+        return summary;
     }
 
     protected Region createContent() {
@@ -35,8 +43,13 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         nameAndNotes.setSpacing(1);
         nameAndNotes.setAlignment(Pos.CENTER_LEFT);
         grid.add(nameAndNotes, 1, 0);
-        GridPane.setValignment(nameAndNotes, VPos.CENTER);
-        grid.add(createSummary(), 1, 1);
+        GridPane.setVgrow(nameAndNotes, Priority.ALWAYS);
+
+        var summaryBox = new HBox(createSummary());
+        summaryBox.setAlignment(Pos.CENTER_LEFT);
+        GridPane.setVgrow(summaryBox, Priority.ALWAYS);
+        grid.add(summaryBox, 1, 1);
+
         var nameCC = new ColumnConstraints();
         nameCC.setMinWidth(100);
         nameCC.setHgrow(Priority.ALWAYS);
