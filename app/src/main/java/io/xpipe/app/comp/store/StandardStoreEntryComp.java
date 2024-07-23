@@ -2,6 +2,7 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.core.process.OsType;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -33,14 +34,14 @@ public class StandardStoreEntryComp extends StoreEntryComp {
 
         var grid = new GridPane();
         grid.setHgap(6);
-        grid.setVgap(0);
+        grid.setVgap(OsType.getLocal() == OsType.MACOS ? 2 : 0);
 
         var storeIcon = createIcon(46, 40);
         grid.add(storeIcon, 0, 0, 1, 2);
         grid.getColumnConstraints().add(new ColumnConstraints(56));
 
         var nameAndNotes = new HBox(name, notes);
-        nameAndNotes.setSpacing(1);
+        nameAndNotes.setSpacing(6);
         nameAndNotes.setAlignment(Pos.CENTER_LEFT);
         grid.add(nameAndNotes, 1, 0);
         GridPane.setVgrow(nameAndNotes, Priority.ALWAYS);
