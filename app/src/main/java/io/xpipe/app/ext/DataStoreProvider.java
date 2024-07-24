@@ -71,7 +71,7 @@ public interface DataStoreProvider {
         return null;
     }
 
-    default String browserDisplayName(DataStoreEntry entry) {
+    default String displayName(DataStoreEntry entry) {
         return entry.getName();
     }
 

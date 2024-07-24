@@ -10,7 +10,7 @@ import java.util.List;
 
 public class MappedServiceStoreProvider extends FixedServiceStoreProvider {
 
-    public String browserDisplayName(DataStoreEntry entry) {
+    public String displayName(DataStoreEntry entry) {
         MappedServiceStore s = entry.getStore().asNeeded();
         return DataStorage.get().getStoreEntryDisplayName(s.getHost().get()) + " - Port " + s.getContainerPort();
     }

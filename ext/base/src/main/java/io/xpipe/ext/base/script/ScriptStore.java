@@ -87,7 +87,7 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
             }
             return pc;
         } catch (StackOverflowError t) {
-            throw new RuntimeException("Unable to set up scripts. Is there a circular script dependency?", t);
+            throw ErrorEvent.expected(new RuntimeException("Unable to set up scripts. Is there a circular script dependency?", t));
         } catch (Throwable t) {
             throw new RuntimeException("Unable to set up scripts", t);
         }

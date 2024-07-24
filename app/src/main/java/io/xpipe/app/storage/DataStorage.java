@@ -879,7 +879,7 @@ public abstract class DataStorage {
             return "?";
         }
 
-        return entry.getProvider().browserDisplayName(entry);
+        return entry.getProvider().displayName(entry);
     }
 
     public Optional<DataStoreEntry> getStoreEntryIfPresent(UUID id) {
