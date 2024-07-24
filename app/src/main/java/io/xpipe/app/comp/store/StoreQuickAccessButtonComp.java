@@ -19,9 +19,9 @@ import java.util.function.Consumer;
 public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
 
     private final StoreSection section;
-    private final Consumer<StoreEntryWrapper> action;
+    private final Consumer<StoreSection> action;
 
-    public StoreQuickAccessButtonComp(StoreSection section, Consumer<StoreEntryWrapper> action) {
+    public StoreQuickAccessButtonComp(StoreSection section, Consumer<StoreSection> action) {
         this.section = section;
         this.action = action;
     }
@@ -48,7 +48,7 @@ public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
                     new LabelGraphic.ImageGraphic(graphic, 16),
                     w.getName().getValue());
             item.setOnAction(event -> {
-                action.accept(w);
+                action.accept(section);
                 contextMenu.hide();
                 event.consume();
             });
@@ -73,7 +73,7 @@ public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
                     return;
                 }
 
-                action.accept(w);
+                action.accept(section);
                 contextMenu.hide();
                 event.consume();
             }

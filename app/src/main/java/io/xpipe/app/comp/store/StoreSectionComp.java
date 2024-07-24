@@ -44,9 +44,9 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                     return section.getShownChildren().getList().isEmpty();
                 },
                 section.getShownChildren().getList());
-        Consumer<StoreEntryWrapper> quickAccessAction = w -> {
+        Consumer<StoreSection> quickAccessAction = w -> {
             ThreadHelper.runFailableAsync(() -> {
-                w.executeDefaultAction();
+                w.getWrapper().executeDefaultAction();
             });
         };
         var quickAccessButton = new StoreQuickAccessButtonComp(section, quickAccessAction)

@@ -101,9 +101,9 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                             comp.disable(new SimpleBooleanProperty(true));
                         }
                     },
-                    storeEntryWrapper -> {
-                        if (applicable.test(storeEntryWrapper)) {
-                            selected.setValue(storeEntryWrapper.getEntry().ref());
+                    sec -> {
+                        if (applicable.test(sec.getWrapper())) {
+                            selected.setValue(sec.getWrapper().getEntry().ref());
                             popover.hide();
                         }
                     });
