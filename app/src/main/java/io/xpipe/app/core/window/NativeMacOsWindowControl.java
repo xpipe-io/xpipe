@@ -3,6 +3,7 @@ package io.xpipe.app.core.window;
 import com.sun.jna.NativeLong;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.util.NativeBridge;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.util.ModuleHelper;
 import javafx.stage.Window;
 import lombok.Getter;
@@ -40,6 +41,9 @@ public class NativeMacOsWindowControl {
         }
 
         lib.get().setAppearance(new NativeLong(nsWindow), seamlessFrame, darkMode);
+        if (seamlessFrame) {
+            ThreadHelper.sleep(100);
+        }
         return true;
     }
 }
