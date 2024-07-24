@@ -223,7 +223,7 @@ public abstract class OperationMode {
                 CURRENT = null;
                 r.run();
             } catch (Throwable ex) {
-                ErrorEvent.fromThrowable(ex).build().handle();
+                ErrorEvent.fromThrowable(ex).handle();
                 OperationMode.halt(1);
             }
 

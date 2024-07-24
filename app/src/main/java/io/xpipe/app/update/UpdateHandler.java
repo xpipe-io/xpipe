@@ -2,19 +2,16 @@ package io.xpipe.app.update;
 
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.layout.Region;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
@@ -225,27 +222,10 @@ public abstract class UpdateHandler {
         }
 
         event("Executing update ...");
-        OperationMode.executeAfterShutdown(() -> {
-            try {
-                var performedUpdate = new PerformedUpdate(
-                        preparedUpdate.getValue().getVersion(),
-                        preparedUpdate.getValue().getBody(),
-                        preparedUpdate.getValue().getVersion());
-                AppCache.update("performedUpdate", performedUpdate);
-
-                executeUpdateOnCloseImpl();
-
-                // In case we perform any operations such as opening a terminal
-                // give it some time to open while this process is still alive
-                // Otherwise it might quit because the parent process is dead already
-                ThreadHelper.sleep(100);
-            } catch (Throwable ex) {
-                ex.printStackTrace();
-            }
-        });
+        executeUpdate();
     }
 
-    public void executeUpdateOnCloseImpl() throws Exception {
+    public void executeUpdate() {
         throw new UnsupportedOperationException();
     }
 
