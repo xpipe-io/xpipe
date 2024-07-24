@@ -147,7 +147,7 @@ public class BrowserWelcomeComp extends SimpleComp {
                 entry.get().getProvider().getDisplayIconFileName(entry.get().getStore());
         var view = PrettyImageHelper.ofFixedSize(graphic, 30, 24);
         return new ButtonComp(
-                        new SimpleStringProperty(DataStorage.get().getStoreDisplayName(entry.get())),
+                        new SimpleStringProperty(DataStorage.get().getStoreEntryDisplayName(entry.get())),
                         view.createRegion(),
                         () -> {
                             ThreadHelper.runAsync(() -> {
@@ -158,7 +158,7 @@ public class BrowserWelcomeComp extends SimpleComp {
                             });
                         })
                 .minWidth(250)
-                .accessibleText(DataStorage.get().getStoreDisplayName(entry.get()))
+                .accessibleText(DataStorage.get().getStoreEntryDisplayName(entry.get()))
                 .disable(disable)
                 .styleClass("entry-button")
                 .styleClass(Styles.LEFT_PILL)

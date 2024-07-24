@@ -23,6 +23,11 @@ import java.util.List;
 
 public abstract class AbstractServiceStoreProvider implements SingletonSessionStoreProvider, DataStoreProvider {
 
+    public String browserDisplayName(DataStoreEntry entry) {
+        AbstractServiceStore s = entry.getStore().asNeeded();
+        return DataStorage.get().getStoreEntryDisplayName(s.getHost().get()) + " - Port " + s.getRemotePort();
+    }
+
     @Override
     public DataStoreUsageCategory getUsageCategory() {
         return DataStoreUsageCategory.TUNNEL;

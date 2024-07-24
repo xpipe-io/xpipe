@@ -10,11 +10,9 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.JacksonizedValue;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -73,9 +71,8 @@ public interface DataStoreProvider {
         return null;
     }
 
-    default String browserDisplayName(DataStore store) {
-        var e = DataStorage.get().getStoreDisplayName(store);
-        return e.orElse("?");
+    default String browserDisplayName(DataStoreEntry entry) {
+        return entry.getName();
     }
 
     default List<String> getSearchableTerms(DataStore store) {

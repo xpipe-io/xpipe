@@ -870,24 +870,16 @@ public abstract class DataStorage {
                 .findFirst();
     }
 
-    public Optional<String> getStoreDisplayName(DataStore store) {
-        if (store == null) {
-            return Optional.empty();
-        }
-
-        return getStoreEntryIfPresent(store, true).map(dataStoreEntry -> dataStoreEntry.getName());
-    }
-
-    public String getStoreDisplayName(DataStoreEntry store) {
-        if (store == null) {
+    public String getStoreEntryDisplayName(DataStoreEntry entry) {
+        if (entry == null) {
             return "?";
         }
 
-        if (!store.getValidity().isUsable()) {
+        if (!entry.getValidity().isUsable()) {
             return "?";
         }
 
-        return store.getProvider().browserDisplayName(store.getStore());
+        return entry.getProvider().browserDisplayName(entry);
     }
 
     public Optional<DataStoreEntry> getStoreEntryIfPresent(UUID id) {

@@ -205,7 +205,7 @@ public class ErrorHandlerComp extends SimpleComp {
         header.setGraphicTextGap(6);
         AppFont.setSize(header, 3);
         var descriptionField = new TextArea(desc);
-        descriptionField.setPrefRowCount(Math.min((int) desc.lines().count(), 14));
+        descriptionField.setPrefRowCount(Math.max(5, Math.min((int) desc.lines().count(), 14)));
         descriptionField.setWrapText(true);
         descriptionField.setEditable(false);
         descriptionField.setPadding(Insets.EMPTY);

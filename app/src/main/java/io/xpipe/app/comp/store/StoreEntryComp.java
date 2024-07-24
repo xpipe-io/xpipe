@@ -478,7 +478,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                 ThreadHelper.runFailableAsync(() -> {
                     DesktopShortcuts.create(
                             url,
-                            getWrapper().nameProperty().getValue() + " ("
+                            DataStorage.get().getStoreEntryDisplayName(getWrapper().getEntry()) + " ("
                                     + p.getLeafDataStoreCallSite()
                                             .getName(getWrapper().getEntry().ref())
                                             .getValue() + ")");

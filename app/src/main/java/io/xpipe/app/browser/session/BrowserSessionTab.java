@@ -22,7 +22,7 @@ public abstract class BrowserSessionTab<T extends DataStore> {
     public BrowserSessionTab(BrowserAbstractSessionModel<?> browserModel, DataStoreEntryRef<? extends T> entry) {
         this.browserModel = browserModel;
         this.entry = entry;
-        this.name = DataStorage.get().getStoreDisplayName(entry.get());
+        this.name = DataStorage.get().getStoreEntryDisplayName(entry.get());
         this.tooltip = DataStorage.get().getStorePath(entry.getEntry()).toString();
     }
 
