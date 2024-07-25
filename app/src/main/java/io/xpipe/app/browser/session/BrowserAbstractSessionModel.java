@@ -2,12 +2,14 @@ package io.xpipe.app.browser.session;
 
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
 import lombok.Getter;
 
 @Getter

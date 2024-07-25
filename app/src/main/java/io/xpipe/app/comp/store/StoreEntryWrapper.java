@@ -151,7 +151,8 @@ public class StoreEntryWrapper {
             summary.setValue(null);
         } else {
             try {
-                summary.setValue(entry.getProvider() != null ? entry.getProvider().summaryString(this) : null);
+                summary.setValue(
+                        entry.getProvider() != null ? entry.getProvider().summaryString(this) : null);
             } catch (Exception ex) {
                 // Summary creation might fail or have a bug
                 ErrorEvent.fromThrowable(ex).handle();
@@ -167,8 +168,8 @@ public class StoreEntryWrapper {
                         .filter(e -> entry.getStore() != null
                                 && e.getDefaultDataStoreCallSite() != null
                                 && e.getDefaultDataStoreCallSite()
-                                .getApplicableClass()
-                                .isAssignableFrom(entry.getStore().getClass())
+                                        .getApplicableClass()
+                                        .isAssignableFrom(entry.getStore().getClass())
                                 && e.getDefaultDataStoreCallSite().isApplicable(entry.ref()))
                         .findFirst()
                         .orElse(null);

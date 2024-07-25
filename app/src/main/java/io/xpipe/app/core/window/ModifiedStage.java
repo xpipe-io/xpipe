@@ -3,6 +3,7 @@ package io.xpipe.app.core.window;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
+
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
@@ -12,6 +13,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import javafx.util.Duration;
+
 import org.apache.commons.lang3.SystemUtils;
 
 public class ModifiedStage extends Stage {
@@ -55,8 +57,10 @@ public class ModifiedStage extends Stage {
             return;
         }
 
-        var applyToStage = (OsType.getLocal() == OsType.WINDOWS) ||
-                (OsType.getLocal() == OsType.MACOS && AppMainWindow.getInstance() != null && AppMainWindow.getInstance().getStage() == stage);
+        var applyToStage = (OsType.getLocal() == OsType.WINDOWS)
+                || (OsType.getLocal() == OsType.MACOS
+                        && AppMainWindow.getInstance() != null
+                        && AppMainWindow.getInstance().getStage() == stage);
         if (!applyToStage || AppPrefs.get() == null || AppPrefs.get().theme.getValue() == null) {
             stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), false);
             stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), true);
@@ -64,14 +68,19 @@ public class ModifiedStage extends Stage {
         }
 
         switch (OsType.getLocal()) {
-            case OsType.Linux linux -> {
-            }
+            case OsType.Linux linux -> {}
             case OsType.MacOs macOs -> {
                 var ctrl = new NativeMacOsWindowControl(stage);
                 var seamlessFrame = !AppPrefs.get().performanceMode().get() && mergeFrame();
-                var seamlessFrameApplied = ctrl.setAppearance(seamlessFrame, AppPrefs.get().theme.getValue().isDark()) && seamlessFrame;
-                stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), seamlessFrameApplied);
-                stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), !seamlessFrameApplied);
+                var seamlessFrameApplied = ctrl.setAppearance(
+                                seamlessFrame, AppPrefs.get().theme.getValue().isDark())
+                        && seamlessFrame;
+                stage.getScene()
+                        .getRoot()
+                        .pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), seamlessFrameApplied);
+                stage.getScene()
+                        .getRoot()
+                        .pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), !seamlessFrameApplied);
             }
             case OsType.Windows windows -> {
                 var ctrl = new NativeWinWindowControl(stage);
@@ -84,8 +93,12 @@ public class ModifiedStage extends Stage {
                 } else {
                     seamlessFrame = ctrl.setWindowBackdrop(NativeWinWindowControl.DwmSystemBackDropType.MICA_ALT);
                 }
-                stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), seamlessFrame);
-                stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), !seamlessFrame);
+                stage.getScene()
+                        .getRoot()
+                        .pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), seamlessFrame);
+                stage.getScene()
+                        .getRoot()
+                        .pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), !seamlessFrame);
             }
         }
     }

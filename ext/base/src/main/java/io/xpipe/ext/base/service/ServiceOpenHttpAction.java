@@ -4,7 +4,9 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.Hyperlinks;
+
 import javafx.beans.value.ObservableValue;
+
 import lombok.Value;
 
 public class ServiceOpenHttpAction implements ActionProvider {
@@ -44,7 +46,7 @@ public class ServiceOpenHttpAction implements ActionProvider {
             }
         };
     }
-    
+
     @Value
     static class Action implements ActionProvider.Action {
 

@@ -45,8 +45,7 @@ public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
                 w.getEntry().getProvider().getDisplayIconFileName(w.getEntry().getStore());
         if (c.getList().isEmpty()) {
             var item = ContextMenuHelper.item(
-                    new LabelGraphic.ImageGraphic(graphic, 16),
-                    w.getName().getValue());
+                    new LabelGraphic.ImageGraphic(graphic, 16), w.getName().getValue());
             item.setOnAction(event -> {
                 action.accept(section);
                 contextMenu.hide();

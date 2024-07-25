@@ -16,7 +16,9 @@ import io.xpipe.app.util.XPipeSession;
 import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeInstallation;
+
 import javafx.application.Platform;
+
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -97,7 +99,9 @@ public abstract class OperationMode {
             Thread.setDefaultUncaughtExceptionHandler((thread, ex) -> {
                 // It seems like a few exceptions are thrown in the quantum renderer
                 // when in shutdown. We can ignore these
-                if (OperationMode.isInShutdown() && Platform.isFxApplicationThread() && ex instanceof NullPointerException) {
+                if (OperationMode.isInShutdown()
+                        && Platform.isFxApplicationThread()
+                        && ex instanceof NullPointerException) {
                     return;
                 }
 

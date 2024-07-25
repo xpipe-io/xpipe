@@ -1,12 +1,13 @@
 package io.xpipe.ext.base.service;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FixedChildStore;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
@@ -26,7 +27,7 @@ public class FixedServiceGroupStore extends AbstractServiceGroupStore<FixedServi
     @Override
     public void checkComplete() throws Throwable {
         super.checkComplete();
-        Validators.isType(getParent(),FixedServiceCreatorStore.class);
+        Validators.isType(getParent(), FixedServiceCreatorStore.class);
     }
 
     @Override

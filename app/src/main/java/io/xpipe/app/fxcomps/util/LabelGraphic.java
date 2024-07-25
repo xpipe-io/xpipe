@@ -2,7 +2,9 @@ package io.xpipe.app.fxcomps.util;
 
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
+
 import javafx.scene.Node;
+
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -32,7 +34,6 @@ public abstract class LabelGraphic {
             return new FontIcon(icon);
         }
     }
-
 
     @Value
     @EqualsAndHashCode(callSuper = true)

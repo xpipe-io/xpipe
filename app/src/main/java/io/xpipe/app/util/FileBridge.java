@@ -249,9 +249,12 @@ public class FileBridge {
             var newDate = getLastModified();
             // The size check is intended for cases in which editors first clear a file prior to writing it
             // In that case, multiple watch events are sent. If these happened very fast, it might be possible that
-            // the modified time is the same for both write operations due to the file system modified time resolution being limited
-            // We then can't identify changes purely based on the modified time, so the file size is the next best option
-            // This might result in double change detection in rare cases, but that is irrelevant as it prevents files from being blanked
+            // the modified time is the same for both write operations due to the file system modified time resolution
+            // being limited
+            // We then can't identify changes purely based on the modified time, so the file size is the next best
+            // option
+            // This might result in double change detection in rare cases, but that is irrelevant as it prevents files
+            // from being blanked
             var changed = !newDate.equals(lastModified) || newSize > lastSize;
             lastSize = newSize;
             lastModified = newDate;

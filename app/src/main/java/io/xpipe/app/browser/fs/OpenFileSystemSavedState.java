@@ -82,22 +82,24 @@ public class OpenFileSystemSavedState {
 
         if (delay) {
             // After 10 seconds
-            TIMEOUT_TIMER.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    // Synchronize with platform thread
-                    Platform.runLater(() -> {
-                        if (model.isClosed()) {
-                            return;
-                        }
+            TIMEOUT_TIMER.schedule(
+                    new TimerTask() {
+                        @Override
+                        public void run() {
+                            // Synchronize with platform thread
+                            Platform.runLater(() -> {
+                                if (model.isClosed()) {
+                                    return;
+                                }
 
-                        if (Objects.equals(lastDirectory, dir)) {
-                            updateRecent(dir);
-                            save();
+                                if (Objects.equals(lastDirectory, dir)) {
+                                    updateRecent(dir);
+                                    save();
+                                }
+                            });
                         }
-                    });
-                }
-            }, 10000);
+                    },
+                    10000);
         } else {
             updateRecent(dir);
             save();

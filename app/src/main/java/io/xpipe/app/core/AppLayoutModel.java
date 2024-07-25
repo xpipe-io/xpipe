@@ -128,5 +128,6 @@ public class AppLayoutModel {
         double browserConnectionsWidth;
     }
 
-    public record Entry(ObservableValue<String> name, String icon, Comp<?> comp, Runnable action, KeyCombination combination) {}
+    public record Entry(
+            ObservableValue<String> name, String icon, Comp<?> comp, Runnable action, KeyCombination combination) {}
 }

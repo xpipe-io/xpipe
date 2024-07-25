@@ -3,8 +3,8 @@ package io.xpipe.core.util;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import lombok.Getter;
@@ -91,7 +91,6 @@ public class JacksonMapper {
         return INSTANCE;
     }
 
-
     public static ObjectMapper getCensored() {
         if (!JacksonMapper.isInit()) {
             return BASE;
@@ -103,13 +102,18 @@ public class JacksonMapper {
             public void setupModule(SetupContext context) {
                 addSerializer(SecretValue.class, new JsonSerializer<>() {
                     @Override
-                    public void serialize(SecretValue value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+                    public void serialize(SecretValue value, JsonGenerator gen, SerializerProvider serializers)
+                            throws IOException {
                         gen.writeString("<secret>");
                     }
 
                     @Override
-                    public void serializeWithType(SecretValue value, JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer) throws
-                            IOException {
+                    public void serializeWithType(
+                            SecretValue value,
+                            JsonGenerator gen,
+                            SerializerProvider serializers,
+                            TypeSerializer typeSer)
+                            throws IOException {
                         gen.writeString("<secret>");
                     }
                 });

@@ -80,7 +80,8 @@ public class BrowserSessionModel extends BrowserAbstractSessionModel<BrowserSess
     public void openFileSystemSync(
             DataStoreEntryRef<? extends FileSystemStore> store,
             FailableFunction<OpenFileSystemModel, String, Exception> path,
-            BooleanProperty externalBusy) throws Exception {
+            BooleanProperty externalBusy)
+            throws Exception {
         if (store == null) {
             return;
         }

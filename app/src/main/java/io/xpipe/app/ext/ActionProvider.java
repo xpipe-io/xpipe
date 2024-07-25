@@ -145,9 +145,16 @@ public interface ActionProvider {
                     .map(actionProviderProvider -> actionProviderProvider.get())
                     .toList());
 
-            var menuProviders = ALL.stream().map(actionProvider -> actionProvider.getBranchDataStoreCallSite() != null ?
-                    actionProvider.getBranchDataStoreCallSite().getChildren() : List.of()).flatMap(List::stream).toList();
-            ALL_STANDALONE.addAll(ALL.stream().filter(actionProvider -> menuProviders.stream().noneMatch(menuItem -> menuItem.getClass().equals(actionProvider.getClass()))).toList());
+            var menuProviders = ALL.stream()
+                    .map(actionProvider -> actionProvider.getBranchDataStoreCallSite() != null
+                            ? actionProvider.getBranchDataStoreCallSite().getChildren()
+                            : List.of())
+                    .flatMap(List::stream)
+                    .toList();
+            ALL_STANDALONE.addAll(ALL.stream()
+                    .filter(actionProvider -> menuProviders.stream()
+                            .noneMatch(menuItem -> menuItem.getClass().equals(actionProvider.getClass())))
+                    .toList());
         }
     }
 }

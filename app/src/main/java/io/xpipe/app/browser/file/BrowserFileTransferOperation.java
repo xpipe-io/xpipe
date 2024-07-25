@@ -224,7 +224,13 @@ public class BrowserFileTransferOperation {
         updateProgress(BrowserTransferProgress.finished(source.getName(), totalSize.get()));
     }
 
-    private void transfer(FileSystem.FileEntry sourceFile, String targetFile, AtomicLong transferred, AtomicLong totalSize, Instant start) throws Exception {
+    private void transfer(
+            FileSystem.FileEntry sourceFile,
+            String targetFile,
+            AtomicLong transferred,
+            AtomicLong totalSize,
+            Instant start)
+            throws Exception {
         InputStream inputStream = null;
         OutputStream outputStream = null;
         try {

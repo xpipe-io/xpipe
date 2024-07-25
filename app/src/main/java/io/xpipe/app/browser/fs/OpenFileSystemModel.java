@@ -24,8 +24,10 @@ import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.ShellOpenFunction;
 import io.xpipe.core.store.*;
 import io.xpipe.core.util.FailableConsumer;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -113,7 +115,8 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
                     && savedState != null
                     && current != null) {
                 savedState.cd(current.getPath(), false);
-                BrowserSavedStateImpl.get().add(new BrowserSavedState.Entry(getEntry().get().getUuid(), current.getPath()));
+                BrowserSavedStateImpl.get()
+                        .add(new BrowserSavedState.Entry(getEntry().get().getUuid(), current.getPath()));
             }
             try {
                 fileSystem.close();

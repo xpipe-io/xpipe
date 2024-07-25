@@ -35,9 +35,13 @@ public final class BrowserBookmarkHeaderComp extends SimpleComp {
                 .apply(struc -> {
                     AppFont.medium(struc.get());
                 });
-        var filter = new FilterComp(this.filter).styleClass(Styles.RIGHT_PILL).minWidth(0).hgrow().apply(struc -> {
-            AppFont.medium(struc.get());
-        });
+        var filter = new FilterComp(this.filter)
+                .styleClass(Styles.RIGHT_PILL)
+                .minWidth(0)
+                .hgrow()
+                .apply(struc -> {
+                    AppFont.medium(struc.get());
+                });
 
         var top = new HorizontalComp(List.of(category, filter))
                 .apply(struc -> struc.get().setFillHeight(true))

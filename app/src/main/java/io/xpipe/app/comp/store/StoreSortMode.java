@@ -65,8 +65,7 @@ public interface StoreSortMode {
                                             .isUsable())
                                     .map(this::representative),
                             Stream.of(s))
-                    .max(Comparator.comparing(
-                            section -> date(section)))
+                    .max(Comparator.comparing(section -> date(section)))
                     .orElseThrow();
         }
 
@@ -103,8 +102,7 @@ public interface StoreSortMode {
                                             .isUsable())
                                     .map(this::representative),
                             Stream.of(s))
-                    .max(Comparator.comparing(
-                            section -> date(section)))
+                    .max(Comparator.comparing(section -> date(section)))
                     .orElseThrow();
         }
 

@@ -1,14 +1,14 @@
 package io.xpipe.app.storage;
 
-import com.fasterxml.jackson.core.JacksonException;
 import io.xpipe.app.ext.DataStorageExtensionProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.LocalStore;
-
 import io.xpipe.core.util.JacksonMapper;
+
+import com.fasterxml.jackson.core.JacksonException;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 
@@ -53,19 +53,27 @@ public class StandardStorage extends DataStorage {
         try {
             FileUtils.forceMkdir(dir.toFile());
         } catch (Exception e) {
-            ErrorEvent.fromThrowable("Unable to create vault directory", e).terminal(true).build().handle();
+            ErrorEvent.fromThrowable("Unable to create vault directory", e)
+                    .terminal(true)
+                    .build()
+                    .handle();
         }
 
         try {
             initSystemInfo();
         } catch (Exception e) {
-            ErrorEvent.fromThrowable("Unable to load vault system info", e).build().handle();
+            ErrorEvent.fromThrowable("Unable to load vault system info", e)
+                    .build()
+                    .handle();
         }
 
         try {
             initVaultKey();
         } catch (Exception e) {
-            ErrorEvent.fromThrowable("Unable to load vault key file", e).terminal(true).build().handle();
+            ErrorEvent.fromThrowable("Unable to load vault key file", e)
+                    .terminal(true)
+                    .build()
+                    .handle();
         }
 
         var storesDir = getStoresDir();
@@ -76,7 +84,10 @@ public class StandardStorage extends DataStorage {
             FileUtils.forceMkdir(categoriesDir.toFile());
             FileUtils.forceMkdir(dataDir.toFile());
         } catch (Exception e) {
-            ErrorEvent.fromThrowable("Unable to create vault directory", e).terminal(true).build().handle();
+            ErrorEvent.fromThrowable("Unable to create vault directory", e)
+                    .terminal(true)
+                    .build()
+                    .handle();
         }
 
         try {

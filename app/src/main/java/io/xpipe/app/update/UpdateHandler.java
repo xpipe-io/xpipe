@@ -7,11 +7,13 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.layout.Region;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
@@ -70,7 +72,9 @@ public abstract class UpdateHandler {
         }
 
         // Check if file has been deleted
-        if (preparedUpdate.getValue() != null && preparedUpdate.getValue().getFile() != null && !Files.exists(preparedUpdate.getValue().getFile())) {
+        if (preparedUpdate.getValue() != null
+                && preparedUpdate.getValue().getFile() != null
+                && !Files.exists(preparedUpdate.getValue().getFile())) {
             preparedUpdate.setValue(null);
         }
 

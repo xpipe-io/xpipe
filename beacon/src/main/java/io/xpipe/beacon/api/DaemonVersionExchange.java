@@ -26,12 +26,16 @@ public class DaemonVersionExchange extends BeaconInterface<DaemonVersionExchange
 
         @NonNull
         String version;
+
         @NonNull
         String canonicalVersion;
+
         @NonNull
         String buildVersion;
+
         @NonNull
         String jvmVersion;
+
         @NonNull
         Boolean pro;
     }

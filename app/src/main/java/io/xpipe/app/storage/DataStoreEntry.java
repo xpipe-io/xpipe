@@ -101,9 +101,7 @@ public class DataStoreEntry extends StorageElement {
         this.expanded = expanded;
         this.color = color;
         this.explicitOrder = explicitOrder;
-        this.provider = store != null
-                ? DataStoreProviders.byStore(store)
-                : null;
+        this.provider = store != null ? DataStoreProviders.byStore(store) : null;
         this.storePersistentStateNode = storePersistentState;
         this.notes = notes;
     }

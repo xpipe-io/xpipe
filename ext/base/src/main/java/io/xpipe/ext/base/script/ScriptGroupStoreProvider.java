@@ -78,7 +78,8 @@ public class ScriptGroupStoreProvider implements EnabledStoreProvider, DataStore
 
     @Override
     public ObservableValue<String> informationString(StoreSection section) {
-        ScriptGroupStore scriptStore = section.getWrapper().getEntry().getStore().asNeeded();
+        ScriptGroupStore scriptStore =
+                section.getWrapper().getEntry().getStore().asNeeded();
         return new SimpleStringProperty(scriptStore.getDescription());
     }
 

@@ -5,6 +5,7 @@ import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.ShellStoreState;
+
 import javafx.beans.value.ObservableValue;
 
 public class DataStoreFormatter {

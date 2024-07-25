@@ -104,19 +104,23 @@ public final class BrowserFileListModel {
 
         // This check will fail on case-insensitive file systems when changing the case of the file
         // So skip it in this case
-        var skipExistCheck = fileSystemModel.getFileSystem().getShell().orElseThrow().getOsType() == OsType.WINDOWS && old.getFileName()
-                .equalsIgnoreCase(newName);
+        var skipExistCheck =
+                fileSystemModel.getFileSystem().getShell().orElseThrow().getOsType() == OsType.WINDOWS
+                        && old.getFileName().equalsIgnoreCase(newName);
         if (!skipExistCheck) {
             boolean exists;
             try {
-                exists = fileSystemModel.getFileSystem().fileExists(newFullPath) || fileSystemModel.getFileSystem().directoryExists(newFullPath);
+                exists = fileSystemModel.getFileSystem().fileExists(newFullPath)
+                        || fileSystemModel.getFileSystem().directoryExists(newFullPath);
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).handle();
                 return old;
             }
 
             if (exists) {
-                ErrorEvent.fromMessage("Target " + newFullPath + " does already exist").expected().handle();
+                ErrorEvent.fromMessage("Target " + newFullPath + " does already exist")
+                        .expected()
+                        .handle();
                 fileSystemModel.refresh();
                 return old;
             }

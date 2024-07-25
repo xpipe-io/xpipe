@@ -1,7 +1,5 @@
 package io.xpipe.app.browser.file;
 
-import atlantafx.base.controls.Spacer;
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.core.AppI18n;
@@ -13,6 +11,7 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystem;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -32,6 +31,9 @@ import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+
+import atlantafx.base.controls.Spacer;
+import atlantafx.base.theme.Styles;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -133,15 +135,18 @@ public final class BrowserFileListComp extends SimpleComp {
 
     private void prepareTypedSelectionModel(TableView<BrowserEntry> table) {
         AtomicReference<Instant> lastFail = new AtomicReference<>();
-        table.addEventHandler(KeyEvent.KEY_PRESSED,event -> {
+        table.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             var typed = event.getText();
             if (typed.isEmpty()) {
                 return;
             }
 
             var updated = typedSelection.get() + typed;
-            var find = fileList.getShown().getValue().stream().filter(browserEntry -> browserEntry.getFileName().toLowerCase().startsWith(updated.toLowerCase())).findFirst();
-            if (find.isEmpty()) {
+            var found = fileList.getShown().getValue().stream()
+                    .filter(browserEntry ->
+                            browserEntry.getFileName().toLowerCase().startsWith(updated.toLowerCase()))
+                    .findFirst();
+            if (found.isEmpty()) {
                 if (lastFail.get() == null) {
                     lastFail.set(Instant.now());
                 }
@@ -161,8 +166,9 @@ public final class BrowserFileListComp extends SimpleComp {
 
             lastFail.set(null);
             typedSelection.set(updated);
-            table.scrollTo(find.get());
-            table.getSelectionModel().clearAndSelect(fileList.getShown().getValue().indexOf(find.get()));
+            table.scrollTo(found.get());
+            table.getSelectionModel()
+                    .clearAndSelect(fileList.getShown().getValue().indexOf(found.get()));
             event.consume();
         });
 
@@ -176,7 +182,7 @@ public final class BrowserFileListComp extends SimpleComp {
             lastFail.set(null);
         });
 
-        table.addEventFilter(KeyEvent.KEY_PRESSED,event -> {
+        table.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.ESCAPE) {
                 typedSelection.set("");
                 lastFail.set(null);
@@ -269,7 +275,6 @@ public final class BrowserFileListComp extends SimpleComp {
             emptyEntry.onDragDone(event);
         });
 
-
         // Don't let the list view see this event
         // otherwise it unselects everything as it doesn't understand shift clicks
         table.addEventFilter(MouseEvent.MOUSE_CLICKED, t -> {
@@ -349,7 +354,6 @@ public final class BrowserFileListComp extends SimpleComp {
             row.setOnDragDone(event -> {
                 listEntry.get().onDragDone(event);
             });
-
 
             return row;
         });

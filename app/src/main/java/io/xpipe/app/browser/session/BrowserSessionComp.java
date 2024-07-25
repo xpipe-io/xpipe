@@ -16,6 +16,7 @@ import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.ShellStore;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -103,16 +104,15 @@ public class BrowserSessionComp extends SimpleComp {
                 new VerticalComp(List.of(bookmarkTopBar, bookmarksContainer, localDownloadStage)).styleClass("left");
 
         var split = new SimpleDoubleProperty();
-        var tabs = new BrowserSessionTabsComp(model, split)
-                .apply(struc -> {
-                    struc.get().setViewOrder(1);
-                    struc.get().setPickOnBounds(false);
-                    AnchorPane.setTopAnchor(struc.get(), 0.0);
-                    AnchorPane.setBottomAnchor(struc.get(), 0.0);
-                    AnchorPane.setLeftAnchor(struc.get(), 0.0);
-                    AnchorPane.setRightAnchor(struc.get(), 0.0);
-                });
-        var loadingIndicator = LoadingOverlayComp.noProgress(Comp.empty(),model.getBusy())
+        var tabs = new BrowserSessionTabsComp(model, split).apply(struc -> {
+            struc.get().setViewOrder(1);
+            struc.get().setPickOnBounds(false);
+            AnchorPane.setTopAnchor(struc.get(), 0.0);
+            AnchorPane.setBottomAnchor(struc.get(), 0.0);
+            AnchorPane.setLeftAnchor(struc.get(), 0.0);
+            AnchorPane.setRightAnchor(struc.get(), 0.0);
+        });
+        var loadingIndicator = LoadingOverlayComp.noProgress(Comp.empty(), model.getBusy())
                 .apply(struc -> {
                     AnchorPane.setTopAnchor(struc.get(), 0.0);
                     AnchorPane.setRightAnchor(struc.get(), 0.0);

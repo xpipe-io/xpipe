@@ -68,7 +68,10 @@ public class DataStoreProviders {
             throw new IllegalStateException("Not initialized");
         }
 
-        return (T) ALL.stream().filter(d -> d.getStoreClasses().contains(store.getClass())).findAny().orElseThrow(() -> new IllegalArgumentException("Unknown store class"));
+        return (T) ALL.stream()
+                .filter(d -> d.getStoreClasses().contains(store.getClass()))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("Unknown store class"));
     }
 
     public static List<DataStoreProvider> getAll() {

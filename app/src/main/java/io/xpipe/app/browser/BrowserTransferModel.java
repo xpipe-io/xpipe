@@ -10,12 +10,14 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.ShellTemp;
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
 import lombok.Value;
 import org.apache.commons.io.FileUtils;
 
@@ -38,17 +40,19 @@ public class BrowserTransferModel {
 
     public BrowserTransferModel(BrowserSessionModel browserSessionModel) {
         this.browserSessionModel = browserSessionModel;
-        var thread = ThreadHelper.createPlatformThread("file downloader", true,() -> {
-           while (true) {
-               Optional<Item> toDownload;
-               synchronized (items) {
-                   toDownload = items.stream().filter(item -> !item.downloadFinished().get()).findFirst();
-               }
-               if (toDownload.isPresent()) {
-                   downloadSingle(toDownload.get());
-               }
-               ThreadHelper.sleep(20);
-           }
+        var thread = ThreadHelper.createPlatformThread("file downloader", true, () -> {
+            while (true) {
+                Optional<Item> toDownload;
+                synchronized (items) {
+                    toDownload = items.stream()
+                            .filter(item -> !item.downloadFinished().get())
+                            .findFirst();
+                }
+                if (toDownload.isPresent()) {
+                    downloadSingle(toDownload.get());
+                }
+                ThreadHelper.sleep(20);
+            }
         });
         thread.start();
     }
@@ -78,7 +82,8 @@ public class BrowserTransferModel {
     public void clear(boolean delete) {
         List<Item> toClear;
         synchronized (items) {
-            toClear = items.stream().filter(item -> item.downloadFinished().get()).toList();
+            toClear =
+                    items.stream().filter(item -> item.downloadFinished().get()).toList();
             if (toClear.isEmpty()) {
                 return;
             }
@@ -114,40 +119,41 @@ public class BrowserTransferModel {
             return;
         }
 
-            if (item.downloadFinished().get()) {
-                return;
-            }
+        if (item.downloadFinished().get()) {
+            return;
+        }
 
-            if (item.getOpenFileSystemModel() != null
-                    && item.getOpenFileSystemModel().isClosed()) {
-                return;
-            }
+        if (item.getOpenFileSystemModel() != null
+                && item.getOpenFileSystemModel().isClosed()) {
+            return;
+        }
 
-            try {
-                var op = new BrowserFileTransferOperation(
-                        LocalFileSystem.getLocalFileEntry(TEMP),
-                        List.of(item.getBrowserEntry().getRawFileEntry()),
-                        BrowserFileTransferMode.COPY,
-                        false,
-                        progress -> {
-                            synchronized (item.getProgress()) {
-                                item.getProgress().setValue(progress);
-                            }
-                            item.getOpenFileSystemModel().getProgress().setValue(progress);
-                        });
-                op.execute();
-            } catch (Throwable t) {
-                ErrorEvent.fromThrowable(t).handle();
-                synchronized (items) {
-                    items.remove(item);
-                }
+        try {
+            var op = new BrowserFileTransferOperation(
+                    LocalFileSystem.getLocalFileEntry(TEMP),
+                    List.of(item.getBrowserEntry().getRawFileEntry()),
+                    BrowserFileTransferMode.COPY,
+                    false,
+                    progress -> {
+                        synchronized (item.getProgress()) {
+                            item.getProgress().setValue(progress);
+                        }
+                        item.getOpenFileSystemModel().getProgress().setValue(progress);
+                    });
+            op.execute();
+        } catch (Throwable t) {
+            ErrorEvent.fromThrowable(t).handle();
+            synchronized (items) {
+                items.remove(item);
             }
+        }
     }
 
     public void transferToDownloads() throws Exception {
         List<Item> toMove;
         synchronized (items) {
-            toMove = items.stream().filter(item -> item.downloadFinished().get()).toList();
+            toMove =
+                    items.stream().filter(item -> item.downloadFinished().get()).toList();
             if (toMove.isEmpty()) {
                 return;
             }

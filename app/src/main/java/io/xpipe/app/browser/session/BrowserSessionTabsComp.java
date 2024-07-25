@@ -1,7 +1,5 @@
 package io.xpipe.app.browser.session;
 
-import atlantafx.base.controls.RingProgressIndicator;
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.BrowserWelcomeComp;
 import io.xpipe.app.comp.base.MultiContentComp;
 import io.xpipe.app.core.AppI18n;
@@ -15,6 +13,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ContextMenuHelper;
 import io.xpipe.app.util.InputHelper;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -31,6 +30,9 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+
+import atlantafx.base.controls.RingProgressIndicator;
+import atlantafx.base.theme.Styles;
 
 import java.util.*;
 
@@ -50,11 +52,10 @@ public class BrowserSessionTabsComp extends SimpleComp {
 
     public Region createSimple() {
         var map = new LinkedHashMap<Comp<?>, ObservableValue<Boolean>>();
-        map.put(Comp.hspacer().styleClass("top-spacer"),
-                new SimpleBooleanProperty(true));
-        map.put(Comp.of(() -> createTabPane()),
-                Bindings.isNotEmpty(model.getSessionEntries()));
-        map.put(new BrowserWelcomeComp(model).apply(struc -> StackPane.setAlignment(struc.get(), Pos.CENTER_LEFT)),
+        map.put(Comp.hspacer().styleClass("top-spacer"), new SimpleBooleanProperty(true));
+        map.put(Comp.of(() -> createTabPane()), Bindings.isNotEmpty(model.getSessionEntries()));
+        map.put(
+                new BrowserWelcomeComp(model).apply(struc -> StackPane.setAlignment(struc.get(), Pos.CENTER_LEFT)),
                 Bindings.createBooleanBinding(
                         () -> {
                             return model.getSessionEntries().size() == 0;
@@ -227,7 +228,8 @@ public class BrowserSessionTabsComp extends SimpleComp {
 
             var forward = new KeyCodeCombination(KeyCode.TAB, KeyCombination.CONTROL_DOWN);
             if (forward.match(keyEvent)) {
-                var next = (tabs.getSelectionModel().getSelectedIndex() + 1) % tabs.getTabs().size();
+                var next = (tabs.getSelectionModel().getSelectedIndex() + 1)
+                        % tabs.getTabs().size();
                 tabs.getSelectionModel().select(next);
                 keyEvent.consume();
                 return;
@@ -235,7 +237,8 @@ public class BrowserSessionTabsComp extends SimpleComp {
 
             var back = new KeyCodeCombination(KeyCode.TAB, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN);
             if (back.match(keyEvent)) {
-                var previous = (tabs.getTabs().size() + tabs.getSelectionModel().getSelectedIndex() - 1) % tabs.getTabs().size();
+                var previous = (tabs.getTabs().size() + tabs.getSelectionModel().getSelectedIndex() - 1)
+                        % tabs.getTabs().size();
                 tabs.getSelectionModel().select(previous);
                 keyEvent.consume();
                 return;
@@ -249,12 +252,18 @@ public class BrowserSessionTabsComp extends SimpleComp {
         var cm = ContextMenuHelper.create();
 
         var select = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("selectTab"));
-        select.acceleratorProperty().bind(Bindings.createObjectBinding(() -> {
-            var start = KeyCode.F1.getCode();
-            var index = tabs.getTabs().indexOf(tab);
-            var keyCode = Arrays.stream(KeyCode.values()).filter(code -> code.getCode() == start + index).findAny().orElse(null);
-            return keyCode != null ? new KeyCodeCombination(keyCode) : null;
-        }, tabs.getTabs()));
+        select.acceleratorProperty()
+                .bind(Bindings.createObjectBinding(
+                        () -> {
+                            var start = KeyCode.F1.getCode();
+                            var index = tabs.getTabs().indexOf(tab);
+                            var keyCode = Arrays.stream(KeyCode.values())
+                                    .filter(code -> code.getCode() == start + index)
+                                    .findAny()
+                                    .orElse(null);
+                            return keyCode != null ? new KeyCodeCombination(keyCode) : null;
+                        },
+                        tabs.getTabs()));
         select.setOnAction(event -> {
             tabs.getSelectionModel().select(tab);
             event.consume();
@@ -263,7 +272,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
 
         cm.getItems().add(new SeparatorMenuItem());
 
-        var close = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("closeTab" ));
+        var close = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("closeTab"));
         close.setAccelerator(new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN));
         close.setOnAction(event -> {
             tabs.getTabs().remove(tab);
@@ -273,7 +282,8 @@ public class BrowserSessionTabsComp extends SimpleComp {
 
         var closeOthers = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("closeOtherTabs"));
         closeOthers.setOnAction(event -> {
-            tabs.getTabs().removeAll(tabs.getTabs().stream().filter(t -> t != tab).toList());
+            tabs.getTabs()
+                    .removeAll(tabs.getTabs().stream().filter(t -> t != tab).toList());
             event.consume();
         });
         cm.getItems().add(closeOthers);
@@ -281,7 +291,10 @@ public class BrowserSessionTabsComp extends SimpleComp {
         var closeLeft = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("closeLeftTabs"));
         closeLeft.setOnAction(event -> {
             var index = tabs.getTabs().indexOf(tab);
-            tabs.getTabs().removeAll(tabs.getTabs().stream().filter(t -> tabs.getTabs().indexOf(t) < index).toList());
+            tabs.getTabs()
+                    .removeAll(tabs.getTabs().stream()
+                            .filter(t -> tabs.getTabs().indexOf(t) < index)
+                            .toList());
             event.consume();
         });
         cm.getItems().add(closeLeft);
@@ -289,13 +302,17 @@ public class BrowserSessionTabsComp extends SimpleComp {
         var closeRight = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("closeRightTabs"));
         closeRight.setOnAction(event -> {
             var index = tabs.getTabs().indexOf(tab);
-            tabs.getTabs().removeAll(tabs.getTabs().stream().filter(t -> tabs.getTabs().indexOf(t) > index).toList());
+            tabs.getTabs()
+                    .removeAll(tabs.getTabs().stream()
+                            .filter(t -> tabs.getTabs().indexOf(t) > index)
+                            .toList());
             event.consume();
         });
         cm.getItems().add(closeRight);
 
         var closeAll = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("closeAllTabs"));
-        closeAll.setAccelerator(new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
+        closeAll.setAccelerator(
+                new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
         closeAll.setOnAction(event -> {
             tabs.getTabs().clear();
             event.consume();

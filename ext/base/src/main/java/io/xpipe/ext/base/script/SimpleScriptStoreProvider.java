@@ -208,7 +208,8 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
 
     @Override
     public ObservableValue<String> informationString(StoreSection section) {
-        SimpleScriptStore scriptStore = section.getWrapper().getEntry().getStore().asNeeded();
+        SimpleScriptStore scriptStore =
+                section.getWrapper().getEntry().getStore().asNeeded();
         return new SimpleStringProperty((scriptStore.getMinimumDialect() != null
                         ? scriptStore.getMinimumDialect().getDisplayName() + " "
                         : "")

@@ -31,9 +31,11 @@ public class DesktopHelper {
     public static Path getDownloadsDirectory() throws Exception {
         if (OsType.getLocal() == OsType.WINDOWS) {
             return Path.of(LocalShell.getLocalPowershell()
-                    .executeSimpleStringCommand("(New-Object -ComObject Shell.Application).NameSpace('shell:Downloads').Self.Path"));
+                    .executeSimpleStringCommand(
+                            "(New-Object -ComObject Shell.Application).NameSpace('shell:Downloads').Self.Path"));
         } else if (OsType.getLocal() == OsType.LINUX) {
-            try (var cmd = LocalShell.getShell().command("xdg-user-dir DOWNLOAD").start()) {
+            try (var cmd =
+                    LocalShell.getShell().command("xdg-user-dir DOWNLOAD").start()) {
                 var read = cmd.readStdoutDiscardErr();
                 var exit = cmd.getExitCode();
                 if (exit == 0) {

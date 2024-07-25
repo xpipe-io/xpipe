@@ -18,9 +18,9 @@ public class AppRosettaCheck {
 
         var ret = LocalShell.getShell().executeSimpleStringCommand("sysctl -n sysctl.proc_translated");
         if (ret.equals("1")) {
-            ErrorEvent.fromMessage("You are running the Intel version of XPipe on an Apple Silicon system." +
-                    " There is a native build available that comes with much better performance." +
-                    " Please install that one instead.");
+            ErrorEvent.fromMessage("You are running the Intel version of XPipe on an Apple Silicon system."
+                    + " There is a native build available that comes with much better performance."
+                    + " Please install that one instead.");
         }
     }
 }

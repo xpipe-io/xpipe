@@ -105,8 +105,9 @@ public class AppExtensionManager {
             var sourceVersion = AppVersion.parse(sv)
                     .orElseThrow(() -> new IllegalArgumentException("Invalid source version: " + sv));
             if (AppProperties.get().isLocatorVersionCheck() && !installVersion.equals(sourceVersion)) {
-                throw new IllegalStateException("Incompatible development version. Source: " + iv + ", Installation: "
-                        + sv + "\n\nPlease try to check out the matching release version in the repository. See https://github.com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
+                throw new IllegalStateException(
+                        "Incompatible development version. Source: " + iv + ", Installation: " + sv
+                                + "\n\nPlease try to check out the matching release version in the repository. See https://github.com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
             }
 
             var extensions = XPipeInstallation.getLocalExtensionsDirectory(p);

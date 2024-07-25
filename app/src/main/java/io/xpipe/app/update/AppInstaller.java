@@ -1,8 +1,5 @@
 package io.xpipe.app.update;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
@@ -17,6 +14,10 @@ import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.core.util.XPipeInstallation;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Getter;
 
 import java.nio.file.Files;
@@ -85,7 +86,8 @@ public class AppInstaller {
                         .toString();
                 var logsDir =
                         AppLogs.get().getSessionLogsDirectory().getParent().toString();
-                var logFile = FileNames.join(logsDir, "installer_" + file.getFileName().toString() + ".log");
+                var logFile = FileNames.join(
+                        logsDir, "installer_" + file.getFileName().toString() + ".log");
                 var command = LocalShell.getShell().getShellDialect().equals(ShellDialects.CMD)
                         ? getCmdCommand(file.toString(), logFile, exec)
                         : getPowershellCommand(file.toString(), logFile, exec);
@@ -138,7 +140,9 @@ public class AppInstaller {
 
             @Override
             public void installLocal(Path file) throws Exception {
-                var start = AppPrefs.get() != null && AppPrefs.get().terminalType().getValue() != null && AppPrefs.get().terminalType().getValue().isAvailable();
+                var start = AppPrefs.get() != null
+                        && AppPrefs.get().terminalType().getValue() != null
+                        && AppPrefs.get().terminalType().getValue().isAvailable();
                 if (!start) {
                     return;
                 }
@@ -174,7 +178,9 @@ public class AppInstaller {
 
             @Override
             public void installLocal(Path file) throws Exception {
-                var start = AppPrefs.get() != null && AppPrefs.get().terminalType().getValue() != null && AppPrefs.get().terminalType().getValue().isAvailable();
+                var start = AppPrefs.get() != null
+                        && AppPrefs.get().terminalType().getValue() != null
+                        && AppPrefs.get().terminalType().getValue().isAvailable();
                 if (!start) {
                     return;
                 }
@@ -210,7 +216,9 @@ public class AppInstaller {
 
             @Override
             public void installLocal(Path file) throws Exception {
-                var start = AppPrefs.get() != null && AppPrefs.get().terminalType().getValue() != null && AppPrefs.get().terminalType().getValue().isAvailable();
+                var start = AppPrefs.get() != null
+                        && AppPrefs.get().terminalType().getValue() != null
+                        && AppPrefs.get().terminalType().getValue().isAvailable();
                 if (!start) {
                     return;
                 }

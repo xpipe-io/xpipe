@@ -93,7 +93,7 @@ public class BrowserFileListCompEntry {
 
         return false;
     }
-    
+
     public void onMouseShiftClick(MouseEvent t) {
         if (t.getButton() != MouseButton.PRIMARY) {
             return;

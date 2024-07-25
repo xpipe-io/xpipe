@@ -10,7 +10,9 @@ import io.xpipe.core.store.FixedChildStore;
 import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.store.StorePath;
 import io.xpipe.core.util.UuidHelper;
+
 import javafx.util.Pair;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -339,7 +341,7 @@ public abstract class DataStorage {
 
     @SneakyThrows
     public boolean refreshChildren(DataStoreEntry e) {
-        return refreshChildren(e,false);
+        return refreshChildren(e, false);
     }
 
     public boolean refreshChildren(DataStoreEntry e, boolean throwOnFail) throws Exception {
@@ -350,7 +352,9 @@ public abstract class DataStorage {
         e.incrementBusyCounter();
         List<? extends DataStoreEntryRef<? extends FixedChildStore>> newChildren;
         try {
-            newChildren = h.listChildren(e).stream().filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null).toList();
+            newChildren = h.listChildren(e).stream()
+                    .filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null)
+                    .toList();
         } catch (Exception ex) {
             if (throwOnFail) {
                 throw ex;

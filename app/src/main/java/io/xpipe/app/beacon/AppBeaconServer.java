@@ -122,7 +122,8 @@ public class AppBeaconServer {
         var file = XPipeInstallation.getLocalBeaconAuthFile();
         try {
             Files.delete(file);
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
     }
 
     private void start() throws IOException {

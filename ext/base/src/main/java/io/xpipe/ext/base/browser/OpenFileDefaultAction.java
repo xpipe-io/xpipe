@@ -48,6 +48,7 @@ public class OpenFileDefaultAction implements LeafAction {
 
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return model.getFileList().getEditing().getValue() == null && entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.FILE);
+        return model.getFileList().getEditing().getValue() == null
+                && entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.FILE);
     }
 }

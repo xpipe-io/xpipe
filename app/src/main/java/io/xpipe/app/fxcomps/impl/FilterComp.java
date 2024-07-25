@@ -1,16 +1,18 @@
 package io.xpipe.app.fxcomps.impl;
 
-import atlantafx.base.controls.CustomTextField;
 import io.xpipe.app.core.AppActionLinkDetector;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.scene.Cursor;
 import javafx.scene.input.MouseButton;
+
+import atlantafx.base.controls.CustomTextField;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.Objects;
@@ -39,9 +41,16 @@ public class FilterComp extends Comp<CompStructure<CustomTextField>> {
         filter.setMaxHeight(2000);
         filter.getStyleClass().add("filter-comp");
         filter.promptTextProperty().bind(AppI18n.observable("searchFilter"));
-        filter.rightProperty().bind(Bindings.createObjectBinding(() -> {
-            return filter.isFocused() || (filter.getText() != null && !filter.getText().isEmpty()) ? clear : fi;
-        }, filter.focusedProperty()));
+        filter.rightProperty()
+                .bind(Bindings.createObjectBinding(
+                        () -> {
+                            return filter.isFocused()
+                                            || (filter.getText() != null
+                                                    && !filter.getText().isEmpty())
+                                    ? clear
+                                    : fi;
+                        },
+                        filter.focusedProperty()));
         filter.setAccessibleText("Filter");
 
         filterText.subscribe(val -> {

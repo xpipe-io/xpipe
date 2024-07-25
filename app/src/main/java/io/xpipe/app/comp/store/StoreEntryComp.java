@@ -58,7 +58,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         this.section = section;
         this.content = content;
     }
-    
+
     public StoreEntryWrapper getWrapper() {
         return section.getWrapper();
     }
@@ -80,9 +80,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         } else {
             var forceCondensed = AppPrefs.get() != null
                     && AppPrefs.get().condenseConnectionDisplay().get();
-            return forceCondensed
-                    ? new DenseStoreEntryComp(e, true, null)
-                    : new StandardStoreEntryComp(e, null);
+            return forceCondensed ? new DenseStoreEntryComp(e, true, null) : new StandardStoreEntryComp(e, null);
         }
     }
 
@@ -137,7 +135,9 @@ public abstract class StoreEntryComp extends SimpleComp {
         var loading = LoadingOverlayComp.noProgress(
                 Comp.of(() -> button),
                 getWrapper().getEntry().getValidity().isUsable()
-                        ? getWrapper().getBusy().or(getWrapper().getEntry().getProvider().busy(getWrapper()))
+                        ? getWrapper()
+                                .getBusy()
+                                .or(getWrapper().getEntry().getProvider().busy(getWrapper()))
                         : getWrapper().getBusy());
         AppFont.normal(button);
         return loading.createRegion();
@@ -194,7 +194,8 @@ public abstract class StoreEntryComp extends SimpleComp {
     protected Node createIcon(int w, int h) {
         var img = getWrapper().disabledProperty().get()
                 ? "disabled_icon.png"
-                : getWrapper().getEntry()
+                : getWrapper()
+                        .getEntry()
                         .getProvider()
                         .getDisplayIconFileName(getWrapper().getEntry().getStore());
         var imageComp = PrettyImageHelper.ofFixedSize(img, w, h);
@@ -252,8 +253,11 @@ public abstract class StoreEntryComp extends SimpleComp {
                 leaf != null
                         ? () -> {
                             ThreadHelper.runFailableAsync(() -> {
-                                getWrapper().runAction(
-                                        leaf.createAction(getWrapper().getEntry().ref()), leaf.showBusy());
+                                getWrapper()
+                                        .runAction(
+                                                leaf.createAction(
+                                                        getWrapper().getEntry().ref()),
+                                                leaf.showBusy());
                             });
                         }
                         : null);
@@ -323,8 +327,8 @@ public abstract class StoreEntryComp extends SimpleComp {
 
         if (AppPrefs.get().developerMode().getValue()) {
             var browse = new MenuItem(AppI18n.get("browseInternalStorage"), new FontIcon("mdi2f-folder-open-outline"));
-            browse.setOnAction(
-                    event -> DesktopHelper.browsePathLocal(getWrapper().getEntry().getDirectory()));
+            browse.setOnAction(event ->
+                    DesktopHelper.browsePathLocal(getWrapper().getEntry().getDirectory()));
             contextMenu.getItems().add(browse);
 
             var copyId = new MenuItem(AppI18n.get("copyId"), new FontIcon("mdi2c-content-copy"));
@@ -466,19 +470,23 @@ public abstract class StoreEntryComp extends SimpleComp {
             run.textProperty().bind(AppI18n.observable("base.execute"));
             run.setOnAction(event -> {
                 ThreadHelper.runFailableAsync(() -> {
-                    getWrapper().runAction(leaf.createAction(getWrapper().getEntry().ref()), leaf.showBusy());
+                    getWrapper()
+                            .runAction(leaf.createAction(getWrapper().getEntry().ref()), leaf.showBusy());
                 });
             });
             menu.getItems().add(run);
 
             var sc = new MenuItem(null, new FontIcon("mdi2c-code-greater-than"));
-            var url = "xpipe://action/" + p.getId() + "/" + getWrapper().getEntry().getUuid();
+            var url = "xpipe://action/" + p.getId() + "/"
+                    + getWrapper().getEntry().getUuid();
             sc.textProperty().bind(AppI18n.observable("base.createShortcut"));
             sc.setOnAction(event -> {
                 ThreadHelper.runFailableAsync(() -> {
                     DesktopShortcuts.create(
                             url,
-                            DataStorage.get().getStoreEntryDisplayName(getWrapper().getEntry()) + " ("
+                            DataStorage.get()
+                                            .getStoreEntryDisplayName(
+                                                    getWrapper().getEntry()) + " ("
                                     + p.getLeafDataStoreCallSite()
                                             .getName(getWrapper().getEntry().ref())
                                             .getValue() + ")");

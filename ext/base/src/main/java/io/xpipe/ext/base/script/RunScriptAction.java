@@ -91,7 +91,8 @@ public class RunScriptAction implements BrowserAction, BranchAction {
                                 var content = e.getValue().assemble(sc);
                                 var script = ScriptHelper.createExecScript(sc, content);
                                 try {
-                                    sc.executeSimpleCommand(sc.getShellDialect().runScriptCommand(sc, script.toString()) + " " + args);
+                                    sc.executeSimpleCommand(
+                                            sc.getShellDialect().runScriptCommand(sc, script.toString()) + " " + args);
                                 } catch (Exception ex) {
                                     throw ErrorEvent.expected(ex);
                                 }
