@@ -136,7 +136,7 @@ public final class BrowserFileListComp extends SimpleComp {
     private void prepareTypedSelectionModel(TableView<BrowserEntry> table) {
         AtomicReference<Instant> lastFail = new AtomicReference<>();
         table.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            updateTypedSelection(table, lastFail, event);
+            updateTypedSelection(table, lastFail, event, false);
         });
 
         table.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
@@ -157,36 +157,38 @@ public final class BrowserFileListComp extends SimpleComp {
         });
     }
 
-    private void updateTypedSelection(TableView<BrowserEntry> table, AtomicReference<Instant> lastType, KeyEvent event) {
+    private void updateTypedSelection(TableView<BrowserEntry> table, AtomicReference<Instant> lastType, KeyEvent event, boolean recursive) {
         var typed = event.getText();
         if (typed.isEmpty()) {
             return;
         }
 
-        System.out.println(typedSelection.get() + " vs " + typed);
         var updated = typedSelection.get() + typed;
         var found = fileList.getShown().getValue().stream()
                 .filter(browserEntry ->
                         browserEntry.getFileName().toLowerCase().startsWith(updated.toLowerCase()))
                 .findFirst();
         if (found.isEmpty()) {
+            if (typedSelection.get().isEmpty()) {
+                return;
+            }
+
             var inCooldown = lastType.get() != null && Duration.between(lastType.get(), Instant.now()).toMillis() < 1000;
             if (inCooldown) {
-                System.out.println("cool");
                 lastType.set(Instant.now());
                 event.consume();
                 return;
             } else {
-                System.out.println("cancel");
                 lastType.set(null);
                 typedSelection.set("");
                 table.getSelectionModel().clearSelection();
-                updateTypedSelection(table, lastType, event);
+                if (!recursive) {
+                    updateTypedSelection(table, lastType, event, true);
+                }
                 return;
             }
         }
 
-        System.out.println("norm");
         lastType.set(Instant.now());
         typedSelection.set(updated);
         table.scrollTo(found.get());
@@ -590,7 +592,18 @@ public final class BrowserFileListComp extends SimpleComp {
                     event.consume();
                 }
             });
-            InputHelper.onExactKeyCode(tableView, KeyCode.SPACE, false, event -> {
+            InputHelper.onExactKeyCode(tableView, KeyCode.SPACE, true, event -> {
+                var selection = typedSelection.get() + " ";
+                var found = fileList.getShown().getValue().stream()
+                        .filter(browserEntry ->
+                                browserEntry.getFileName().toLowerCase().startsWith(selection))
+                        .findFirst();
+                // Ugly fix to prevent space from showing the menu when there is a file matching
+                // Due to the table view input map, these events always get sent and consumed, not allowing us to differentiate between these cases
+                if (found.isPresent()) {
+                    return;
+                }
+
                 var selected = fileList.getSelection();
                 // Only show one menu across all selected entries
                 if (selected.size() > 0 && selected.getLast() == getTableRow().getItem()) {
