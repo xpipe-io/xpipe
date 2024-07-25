@@ -152,7 +152,7 @@ public final class BrowserFileListComp extends SimpleComp {
                     return;
                 } else {
                     lastFail.set(null);
-                    typedSelection.set("");
+                    typedSelection.set(typed);
                     table.getSelectionModel().clearSelection();
                     event.consume();
                     return;
@@ -167,6 +167,11 @@ public final class BrowserFileListComp extends SimpleComp {
         });
 
         table.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            typedSelection.set("");
+            lastFail.set(null);
+        });
+
+        fileList.getFileSystemModel().getCurrentPath().addListener((observable, oldValue, newValue) -> {
             typedSelection.set("");
             lastFail.set(null);
         });
