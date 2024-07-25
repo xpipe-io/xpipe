@@ -302,6 +302,10 @@ public interface OsType {
                     "awk '/SOFTWARE LICENSE AGREEMENT FOR macOS/' '/System/Library/CoreServices/Setup "
                             + "Assistant.app/Contents/Resources/en.lproj/OSXSoftwareLicense.rtf' | "
                             + "awk -F 'macOS ' '{print $NF}' | awk '{print substr($0, 0, length($0)-1)}'");
+            // For preleases and others
+            if (name.isBlank()) {
+                name = "?";
+            }
             return properties.get("ProductName") + " " + name + " " + properties.get("ProductVersion");
         }
     }
