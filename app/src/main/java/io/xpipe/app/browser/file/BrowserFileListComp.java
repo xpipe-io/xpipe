@@ -136,40 +136,7 @@ public final class BrowserFileListComp extends SimpleComp {
     private void prepareTypedSelectionModel(TableView<BrowserEntry> table) {
         AtomicReference<Instant> lastFail = new AtomicReference<>();
         table.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            var typed = event.getText();
-            if (typed.isEmpty()) {
-                return;
-            }
-
-            var updated = typedSelection.get() + typed;
-            var found = fileList.getShown().getValue().stream()
-                    .filter(browserEntry ->
-                            browserEntry.getFileName().toLowerCase().startsWith(updated.toLowerCase()))
-                    .findFirst();
-            if (found.isEmpty()) {
-                if (lastFail.get() == null) {
-                    lastFail.set(Instant.now());
-                }
-                var inCooldown = Duration.between(lastFail.get(), Instant.now()).toMillis() < 1000;
-                if (inCooldown) {
-                    lastFail.set(Instant.now());
-                    event.consume();
-                    return;
-                } else {
-                    lastFail.set(null);
-                    typedSelection.set(typed);
-                    table.getSelectionModel().clearSelection();
-                    event.consume();
-                    return;
-                }
-            }
-
-            lastFail.set(null);
-            typedSelection.set(updated);
-            table.scrollTo(found.get());
-            table.getSelectionModel()
-                    .clearAndSelect(fileList.getShown().getValue().indexOf(found.get()));
-            event.consume();
+            updateTypedSelection(table, lastFail, event);
         });
 
         table.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
@@ -188,6 +155,43 @@ public final class BrowserFileListComp extends SimpleComp {
                 lastFail.set(null);
             }
         });
+    }
+
+    private void updateTypedSelection(TableView<BrowserEntry> table, AtomicReference<Instant> lastType, KeyEvent event) {
+        var typed = event.getText();
+        if (typed.isEmpty()) {
+            return;
+        }
+
+        System.out.println(typedSelection.get() + " vs " + typed);
+        var updated = typedSelection.get() + typed;
+        var found = fileList.getShown().getValue().stream()
+                .filter(browserEntry ->
+                        browserEntry.getFileName().toLowerCase().startsWith(updated.toLowerCase()))
+                .findFirst();
+        if (found.isEmpty()) {
+            var inCooldown = lastType.get() != null && Duration.between(lastType.get(), Instant.now()).toMillis() < 1000;
+            if (inCooldown) {
+                System.out.println("cool");
+                lastType.set(Instant.now());
+                event.consume();
+                return;
+            } else {
+                System.out.println("cancel");
+                lastType.set(null);
+                typedSelection.set("");
+                table.getSelectionModel().clearSelection();
+                updateTypedSelection(table, lastType, event);
+                return;
+            }
+        }
+
+        System.out.println("norm");
+        lastType.set(Instant.now());
+        typedSelection.set(updated);
+        table.scrollTo(found.get());
+        table.getSelectionModel().clearAndSelect(fileList.getShown().getValue().indexOf(found.get()));
+        event.consume();
     }
 
     private void prepareTableSelectionModel(TableView<BrowserEntry> table) {
