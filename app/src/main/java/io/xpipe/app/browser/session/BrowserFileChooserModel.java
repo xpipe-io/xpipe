@@ -65,6 +65,18 @@ public class BrowserFileChooserModel extends BrowserAbstractSessionModel<OpenFil
         onFinish.accept(stores);
     }
 
+
+    public void finishWithoutChoice() {
+        synchronized (BrowserFileChooserModel.this) {
+            var open = selectedEntry.getValue();
+            if (open != null) {
+                ThreadHelper.runAsync(() -> {
+                    open.close();
+                });
+            }
+        }
+    }
+
     public void openFileSystemAsync(
             DataStoreEntryRef<? extends FileSystemStore> store,
             FailableFunction<OpenFileSystemModel, String, Exception> path,

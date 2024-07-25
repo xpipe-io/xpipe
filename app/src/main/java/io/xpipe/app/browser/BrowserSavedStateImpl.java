@@ -29,7 +29,16 @@ public class BrowserSavedStateImpl implements BrowserSavedState {
         this.lastSystems = FXCollections.observableArrayList(lastSystems);
     }
 
-    public static BrowserSavedStateImpl load() {
+    private static BrowserSavedStateImpl INSTANCE;
+
+    public static BrowserSavedState get() {
+        if (INSTANCE == null) {
+            INSTANCE = load();
+        }
+        return INSTANCE;
+    }
+
+    private static BrowserSavedStateImpl load() {
         return AppCache.get("browser-state", BrowserSavedStateImpl.class, () -> {
             return new BrowserSavedStateImpl(FXCollections.observableArrayList());
         });

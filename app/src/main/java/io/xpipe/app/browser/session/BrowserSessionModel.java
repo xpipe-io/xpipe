@@ -23,15 +23,10 @@ import java.util.ArrayList;
 @Getter
 public class BrowserSessionModel extends BrowserAbstractSessionModel<BrowserSessionTab<?>> {
 
-    public static final BrowserSessionModel DEFAULT = new BrowserSessionModel(BrowserSavedStateImpl.load());
+    public static final BrowserSessionModel DEFAULT = new BrowserSessionModel();
 
     private final BrowserTransferModel localTransfersStage = new BrowserTransferModel(this);
-    private final BrowserSavedState savedState;
     private final Property<Boolean> draggingFiles = new SimpleBooleanProperty();
-
-    public BrowserSessionModel(BrowserSavedState savedState) {
-        this.savedState = savedState;
-    }
 
     public void restoreState(BrowserSavedState state) {
         ThreadHelper.runAsync(() -> {
@@ -62,9 +57,7 @@ public class BrowserSessionModel extends BrowserAbstractSessionModel<BrowserSess
 
                 closeSync(o);
             }
-            if (savedState != null) {
-                savedState.save();
-            }
+            BrowserSavedStateImpl.get().save();
         }
 
         // Delete all files

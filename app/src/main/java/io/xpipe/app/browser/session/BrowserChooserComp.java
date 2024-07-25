@@ -67,6 +67,10 @@ public class BrowserChooserComp extends SimpleComp {
                 window.close();
             });
             window.show();
+            window.setOnHidden(event -> {
+                model.finishWithoutChoice();
+                event.consume();
+            });
             ThreadHelper.runAsync(() -> {
                 model.openFileSystemAsync(store.get(), null, null);
             });

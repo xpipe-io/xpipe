@@ -43,7 +43,7 @@ public class BrowserWelcomeComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var state = model.getSavedState();
+        var state = BrowserSavedStateImpl.get();
 
         var welcome = new BrowserGreetingComp().createSimple();
 
