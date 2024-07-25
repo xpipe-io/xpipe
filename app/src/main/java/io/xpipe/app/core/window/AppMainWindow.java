@@ -184,7 +184,7 @@ public class AppMainWindow {
             stage.setY(state.windowY);
             stage.setWidth(state.windowWidth);
             stage.setHeight(state.windowHeight);
-            // stage.setMaximized(state.maximized);
+            stage.setMaximized(state.maximized);
 
             TrackEvent.debug("Window loaded saved bounds");
         } else if (!AppProperties.get().isShowcase()) {
