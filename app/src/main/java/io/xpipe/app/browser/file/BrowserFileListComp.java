@@ -147,15 +147,16 @@ public final class BrowserFileListComp extends SimpleComp {
                 }
                 var inCooldown = Duration.between(lastFail.get(), Instant.now()).toMillis() < 1000;
                 if (inCooldown) {
+                    lastFail.set(Instant.now());
+                    event.consume();
+                    return;
+                } else {
+                    lastFail.set(null);
+                    typedSelection.set("");
+                    table.getSelectionModel().clearSelection();
                     event.consume();
                     return;
                 }
-
-                lastFail.set(null);
-                typedSelection.set("");
-                table.getSelectionModel().clearSelection();
-                event.consume();
-                return;
             }
 
             lastFail.set(null);
@@ -165,9 +166,15 @@ public final class BrowserFileListComp extends SimpleComp {
             event.consume();
         });
 
+        table.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            typedSelection.set("");
+            lastFail.set(null);
+        });
+
         table.addEventFilter(KeyEvent.KEY_PRESSED,event -> {
             if (event.getCode() == KeyCode.ESCAPE) {
                 typedSelection.set("");
+                lastFail.set(null);
             }
         });
     }
