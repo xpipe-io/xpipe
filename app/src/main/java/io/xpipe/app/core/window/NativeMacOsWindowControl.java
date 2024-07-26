@@ -1,6 +1,7 @@
 package io.xpipe.app.core.window;
 
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.NativeBridge;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.util.ModuleHelper;
@@ -42,9 +43,13 @@ public class NativeMacOsWindowControl {
             return false;
         }
 
-        lib.get().setAppearance(new NativeLong(nsWindow), seamlessFrame, darkMode);
-        if (seamlessFrame) {
-            ThreadHelper.sleep(100);
+        try {
+            lib.get().setAppearance(new NativeLong(nsWindow), seamlessFrame, darkMode);
+            if (seamlessFrame) {
+                ThreadHelper.sleep(100);
+            }
+        } catch (Throwable e) {
+            ErrorEvent.fromThrowable(e).handle();
         }
         return true;
     }
