@@ -13,6 +13,7 @@ import io.xpipe.app.storage.DataStorage;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.Parent;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
@@ -61,7 +62,7 @@ public class AppLayoutComp extends Comp<CompStructure<Pane>> {
             sidebarR.getChildrenUnmodifiable().forEach(node -> {
                 var shortcut = (KeyCodeCombination) node.getProperties().get("shortcut");
                 if (shortcut != null && shortcut.match(event)) {
-                    ((ButtonBase) node).fire();
+                    ((ButtonBase) ((Parent) node).getChildrenUnmodifiable().get(1)).fire();
                     event.consume();
                     return;
                 }

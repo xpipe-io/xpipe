@@ -220,7 +220,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
                 }
             }
 
-            var forward = new KeyCodeCombination(KeyCode.TAB, KeyCombination.CONTROL_DOWN);
+            var forward = new KeyCodeCombination(KeyCode.TAB, KeyCombination.SHORTCUT_DOWN);
             if (forward.match(keyEvent)) {
                 var next = (tabs.getSelectionModel().getSelectedIndex() + 1)
                         % tabs.getTabs().size();
@@ -229,7 +229,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
                 return;
             }
 
-            var back = new KeyCodeCombination(KeyCode.TAB, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN);
+            var back = new KeyCodeCombination(KeyCode.TAB, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN);
             if (back.match(keyEvent)) {
                 var previous = (tabs.getTabs().size() + tabs.getSelectionModel().getSelectedIndex() - 1)
                         % tabs.getTabs().size();

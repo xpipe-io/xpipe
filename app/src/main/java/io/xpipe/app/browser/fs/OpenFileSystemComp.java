@@ -119,13 +119,13 @@ public class OpenFileSystemComp extends SimpleComp {
         });
 
         InputHelper.onKeyCombination(
-                root, new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN), true, keyEvent -> {
+                root, new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN), true, keyEvent -> {
                     filter.toggleButton().fire();
                     filter.textField().requestFocus();
                     keyEvent.consume();
                 });
         InputHelper.onKeyCombination(
-                root, new KeyCodeCombination(KeyCode.L, KeyCombination.CONTROL_DOWN), true, keyEvent -> {
+                root, new KeyCodeCombination(KeyCode.L, KeyCombination.SHORTCUT_DOWN), true, keyEvent -> {
                     navBar.textField().requestFocus();
                     keyEvent.consume();
                 });

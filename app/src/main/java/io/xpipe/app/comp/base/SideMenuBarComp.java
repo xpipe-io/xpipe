@@ -71,9 +71,6 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                 value.setValue(e);
             });
             var shortcut = e.combination();
-            if (shortcut != null) {
-                b.apply(struc -> struc.get().getProperties().put("shortcut", shortcut));
-            }
             b.apply(new TooltipAugment<>(e.name(), shortcut));
             b.apply(struc -> {
                 AppFont.setSize(struc.get(), 1);
@@ -112,6 +109,9 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                                 selectedBorder,
                                 noneBorder));
             });
+            if (shortcut != null) {
+                stack.apply(struc -> struc.get().getProperties().put("shortcut", shortcut));
+            }
             vbox.getChildren().add(stack.createRegion());
         }
 
