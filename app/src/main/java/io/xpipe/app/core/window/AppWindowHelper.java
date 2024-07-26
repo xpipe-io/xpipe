@@ -144,7 +144,7 @@ public class AppWindowHelper {
                 event.consume();
             });
             AppWindowBounds.fixInvalidStagePosition(s);
-            a.getDialogPane().getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            a.getDialogPane().getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
                 if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {
                     s.close();
                     event.consume();
@@ -262,7 +262,7 @@ public class AppWindowHelper {
             }
         });
 
-        scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+        scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {
                 stage.close();
                 event.consume();

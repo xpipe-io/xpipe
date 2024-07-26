@@ -193,7 +193,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
             }
         });
 
-        tabs.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
+        tabs.addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {
             var current = tabs.getSelectionModel().getSelectedItem();
             if (current == null) {
                 return;

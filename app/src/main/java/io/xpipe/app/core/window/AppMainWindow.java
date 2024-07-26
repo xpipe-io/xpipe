@@ -273,7 +273,7 @@ public class AppMainWindow {
         contentR.prefHeightProperty().bind(stage.getScene().heightProperty());
 
         if (OsType.getLocal().equals(OsType.LINUX) || OsType.getLocal().equals(OsType.MACOS)) {
-            stage.getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
                 if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {
                     AppPrefs.get().closeBehaviour().getValue().run();
                     event.consume();
