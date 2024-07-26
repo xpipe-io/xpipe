@@ -11,29 +11,29 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviourAlert;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import javax.imageio.ImageIO;
 
 public class AppMainWindow {
 
@@ -169,8 +169,8 @@ public class AppMainWindow {
             e.consume();
         });
 
-        stage.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode().equals(KeyCode.Q) && event.isShortcutDown()) {
+        stage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if (new KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN).match(event)) {
                 stage.close();
                 AppPrefs.get().closeBehaviour().getValue().run();
                 event.consume();
@@ -274,7 +274,7 @@ public class AppMainWindow {
 
         if (OsType.getLocal().equals(OsType.LINUX) || OsType.getLocal().equals(OsType.MACOS)) {
             stage.getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-                if (event.getCode().equals(KeyCode.W) && event.isShortcutDown()) {
+                if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {
                     AppPrefs.get().closeBehaviour().getValue().run();
                     event.consume();
                 }

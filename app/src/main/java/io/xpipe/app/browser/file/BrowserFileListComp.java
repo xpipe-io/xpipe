@@ -135,7 +135,7 @@ public final class BrowserFileListComp extends SimpleComp {
 
     private void prepareTypedSelectionModel(TableView<BrowserEntry> table) {
         AtomicReference<Instant> lastFail = new AtomicReference<>();
-        table.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+        table.addEventHandler(KeyEvent.KEY_TYPED, event -> {
             updateTypedSelection(table, lastFail, event, false);
         });
 
@@ -158,7 +158,7 @@ public final class BrowserFileListComp extends SimpleComp {
     }
 
     private void updateTypedSelection(TableView<BrowserEntry> table, AtomicReference<Instant> lastType, KeyEvent event, boolean recursive) {
-        var typed = event.getText();
+        var typed = event.getCharacter();
         if (typed.isEmpty()) {
             return;
         }

@@ -18,6 +18,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -143,7 +145,7 @@ public class AppWindowHelper {
             });
             AppWindowBounds.fixInvalidStagePosition(s);
             a.getDialogPane().getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-                if (event.getCode().equals(KeyCode.W) && event.isShortcutDown()) {
+                if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {
                     s.close();
                     event.consume();
                     return;
@@ -261,7 +263,7 @@ public class AppWindowHelper {
         });
 
         scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode().equals(KeyCode.W) && event.isShortcutDown()) {
+            if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {
                 stage.close();
                 event.consume();
             }

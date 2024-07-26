@@ -1,5 +1,7 @@
 package io.xpipe.app.browser.session;
 
+import atlantafx.base.controls.RingProgressIndicator;
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.BrowserWelcomeComp;
 import io.xpipe.app.comp.base.MultiContentComp;
 import io.xpipe.app.core.AppI18n;
@@ -12,8 +14,6 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ContextMenuHelper;
-import io.xpipe.app.util.InputHelper;
-
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -24,15 +24,9 @@ import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
+import javafx.scene.input.*;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-
-import atlantafx.base.controls.RingProgressIndicator;
-import atlantafx.base.theme.Styles;
 
 import java.util.*;
 
@@ -199,19 +193,19 @@ public class BrowserSessionTabsComp extends SimpleComp {
             }
         });
 
-        InputHelper.onInput(tabs, true, keyEvent -> {
+        tabs.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
             var current = tabs.getSelectionModel().getSelectedItem();
             if (current == null) {
                 return;
             }
 
-            if (keyEvent.getCode() == KeyCode.W && keyEvent.isShortcutDown()) {
+            if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(keyEvent)) {
                 tabs.getTabs().remove(current);
                 keyEvent.consume();
                 return;
             }
 
-            if (keyEvent.getCode() == KeyCode.W && keyEvent.isShortcutDown() && keyEvent.isShiftDown()) {
+            if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN).match(keyEvent)) {
                 tabs.getTabs().clear();
                 keyEvent.consume();
             }
