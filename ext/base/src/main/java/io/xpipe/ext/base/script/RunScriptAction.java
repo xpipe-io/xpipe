@@ -2,27 +2,23 @@ package io.xpipe.ext.base.script;
 
 import io.xpipe.app.browser.action.BranchAction;
 import io.xpipe.app.browser.action.BrowserAction;
-import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ScriptHelper;
+import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.store.FilePath;
-
+import io.xpipe.ext.base.browser.MultiExecuteAction;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
-
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class RunScriptAction implements BrowserAction, BranchAction {
 
@@ -69,43 +65,39 @@ public class RunScriptAction implements BrowserAction, BranchAction {
     }
 
     @Override
-    public List<LeafAction> getBranchingActions(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public List<BranchAction> getBranchingActions(OpenFileSystemModel model, List<BrowserEntry> entries) {
         var sc = model.getFileSystem().getShell().orElseThrow();
         var scripts = getInstances(sc);
-        List<LeafAction> actions = scripts.entrySet().stream()
+        List<BranchAction> actions = scripts.entrySet().stream()
                 .map(e -> {
-                    return new LeafAction() {
-                        @Override
-                        public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
-                            var args = entries.stream()
-                                    .map(browserEntry -> new FilePath(browserEntry
-                                                    .getRawFileEntry()
-                                                    .getPath())
-                                            .quoteIfNecessary())
-                                    .collect(Collectors.joining(" "));
-                            execute(model, args);
-                        }
-
-                        private void execute(OpenFileSystemModel model, String args) throws Exception {
-                            if (model.getBrowserModel() instanceof BrowserSessionModel bm) {
-                                var content = e.getValue().assemble(sc);
-                                var script = ScriptHelper.createExecScript(sc, content);
-                                try {
-                                    sc.executeSimpleCommand(
-                                            sc.getShellDialect().runScriptCommand(sc, script.toString()) + " " + args);
-                                } catch (Exception ex) {
-                                    throw ErrorEvent.expected(ex);
-                                }
-                            }
-                        }
+                    return new MultiExecuteAction() {
 
                         @Override
                         public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                             return new SimpleStringProperty(e.getKey());
                         }
+
+                        @Override
+                        protected CommandBuilder createCommand(ShellControl sc, OpenFileSystemModel model, BrowserEntry entry) {
+                            if (!(model.getBrowserModel() instanceof BrowserSessionModel bm)) {
+                                return null;
+                            }
+
+                            var content = e.getValue().assemble(sc);
+                            var script = ScriptHelper.createExecScript(sc, content);
+                            var builder = CommandBuilder.of().add(sc.getShellDialect().runScriptCommand(sc, script.toString()));
+                            entries.stream()
+                                    .map(browserEntry -> browserEntry
+                                            .getRawFileEntry()
+                                            .getPath())
+                                    .forEach(s -> {
+                                        builder.addFile(s);
+                                    });
+                            return builder;
+                        }
                     };
                 })
-                .map(leafAction -> (LeafAction) leafAction)
+                .map(leafAction -> (BranchAction) leafAction)
                 .toList();
         return actions;
     }
