@@ -152,7 +152,7 @@ public interface OsType {
         public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
             var home = getHomeDirectory(pc);
             return List.of(
-                    home, FileNames.join(home, "Downloads"), FileNames.join(home, "Documents"), "/etc", "/tmp", "/var");
+                    home, "/home", FileNames.join(home, "Downloads"), FileNames.join(home, "Documents"), "/etc", "/tmp", "/var");
         }
 
         @Override

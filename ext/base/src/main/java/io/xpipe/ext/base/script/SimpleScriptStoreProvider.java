@@ -46,11 +46,6 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
     }
 
     @Override
-    public boolean shouldEdit() {
-        return true;
-    }
-
-    @Override
     public boolean shouldHaveChildren() {
         return false;
     }
@@ -114,7 +109,7 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                 .getDeclaredConstructor(Property.class, boolean.class)
                 .newInstance(dialect, false);
 
-        var vals = List.of(0, 1, 2);
+        var vals = List.of(0, 1, 2, 3);
         var selectedStart = new ArrayList<Integer>();
         if (st.isInitScript()) {
             selectedStart.add(0);
@@ -124,6 +119,9 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
         }
         if (st.isFileScript()) {
             selectedStart.add(2);
+        }
+        if (st.isRunnableScript()) {
+            selectedStart.add(3);
         }
         var name = new Function<Integer, String>() {
 
@@ -139,6 +137,10 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
 
                 if (integer == 2) {
                     return AppI18n.get("fileScript");
+                }
+
+                if (integer == 3) {
+                    return AppI18n.get("runnableScript");
                 }
                 return "?";
             }
@@ -200,6 +202,7 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                                     .initScript(selectedExecTypes.contains(0))
                                     .shellScript(selectedExecTypes.contains(1))
                                     .fileScript(selectedExecTypes.contains(2))
+                                    .runnableScript(selectedExecTypes.contains(3))
                                     .build();
                         },
                         store)

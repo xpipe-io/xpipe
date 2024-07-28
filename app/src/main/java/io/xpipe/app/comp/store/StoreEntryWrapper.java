@@ -204,7 +204,7 @@ public class StoreEntryWrapper {
         if (branch != null
                 && entry.getStore() != null
                 && branch.getApplicableClass().isAssignableFrom(entry.getStore().getClass())) {
-            return branch.getChildren().stream().anyMatch(child -> {
+            return branch.getChildren(entry.ref()).stream().anyMatch(child -> {
                 return showActionProvider(child);
             });
         }

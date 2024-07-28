@@ -35,7 +35,7 @@ public class ServiceOpenAction implements ActionProvider {
             }
 
             @Override
-            public List<ActionProvider> getChildren() {
+            public List<ActionProvider> getChildren(DataStoreEntryRef<DataStore> store) {
                 return List.of(new ServiceOpenHttpAction(), new ServiceOpenHttpsAction());
             }
         };

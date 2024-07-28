@@ -121,7 +121,11 @@ public interface ActionProvider {
 
     interface BranchDataStoreCallSite<T extends DataStore> extends DataStoreCallSite<T> {
 
-        List<ActionProvider> getChildren();
+        default boolean isDynamicallyGenerated(){
+            return false;
+        }
+
+        List<? extends ActionProvider> getChildren(DataStoreEntryRef<T> store);
     }
 
     interface LeafDataStoreCallSite<T extends DataStore> extends DataStoreCallSite<T> {
@@ -146,8 +150,9 @@ public interface ActionProvider {
                     .toList());
 
             var menuProviders = ALL.stream()
-                    .map(actionProvider -> actionProvider.getBranchDataStoreCallSite() != null
-                            ? actionProvider.getBranchDataStoreCallSite().getChildren()
+                    .map(actionProvider -> actionProvider.getBranchDataStoreCallSite() != null &&
+                            !actionProvider.getBranchDataStoreCallSite().isDynamicallyGenerated()
+                            ? actionProvider.getBranchDataStoreCallSite().getChildren(null)
                             : List.of())
                     .flatMap(List::stream)
                     .toList();

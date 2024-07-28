@@ -142,6 +142,14 @@ public class OpenFileSystemComp extends SimpleComp {
                     }
                     keyEvent.consume();
                 });
+        InputHelper.onKeyCombination(
+                root, new KeyCodeCombination(KeyCode.BACK_SPACE), true, keyEvent -> {
+                    var p = model.getCurrentParentDirectory();
+                    if (p != null) {
+                        model.cdAsync(p.getPath());
+                    }
+                    keyEvent.consume();
+                });
         return root;
     }
 

@@ -265,7 +265,7 @@ public abstract class StoreEntryComp extends SimpleComp {
             button.apply(new ContextMenuAugment<>(
                     mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, keyEvent -> false, () -> {
                         var cm = ContextMenuHelper.create();
-                        branch.getChildren().forEach(childProvider -> {
+                        branch.getChildren(getWrapper().getEntry().ref()).forEach(childProvider -> {
                             var menu = buildMenuItemForAction(childProvider);
                             if (menu != null) {
                                 cm.getItems().add(menu);
@@ -460,7 +460,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         Menu menu = item instanceof Menu m ? m : null;
 
         if (branch != null) {
-            var items = branch.getChildren().stream()
+            var items = branch.getChildren(getWrapper().getEntry().ref()).stream()
                     .map(c -> buildMenuItemForAction(c))
                     .toList();
             menu.getItems().addAll(items);

@@ -80,10 +80,6 @@ public interface DataStoreProvider {
         return List.of();
     }
 
-    default boolean shouldEdit() {
-        return false;
-    }
-
     default StoreEntryComp customEntryComp(StoreSection s, boolean preferLarge) {
         return StoreEntryComp.create(s, null, preferLarge);
     }
