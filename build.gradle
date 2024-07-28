@@ -142,11 +142,13 @@ project.ext {
             "-Dio.xpipe.app.arch=$rootProject.arch",
             "-Dio.xpipe.app.languages=${String.join(",", languages)}",
             "-Dfile.encoding=UTF-8",
-            // Disable this for now as it requires Windows 10+
-            // '-XX:+UseZGC',
             "-Dvisualvm.display.name=XPipe",
             "-Djavafx.preloader=io.xpipe.app.core.AppPreloader"
     ]
+    // Disable this for now as it requires Windows 10+
+    if (!org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+        jvmRunArgs += ['-XX:+UseZGC']
+    }
     if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
         jvmRunArgs += ["-Dapple.awt.application.appearance=system"]
     }
