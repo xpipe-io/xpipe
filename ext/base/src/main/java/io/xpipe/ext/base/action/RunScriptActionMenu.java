@@ -1,10 +1,12 @@
 package io.xpipe.ext.base.action;
 
+import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.process.ShellStoreState;
+import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.ext.base.script.ScriptHierarchy;
 import javafx.beans.property.SimpleStringProperty;
@@ -16,7 +18,7 @@ import java.util.List;
 public class RunScriptActionMenu implements ActionProvider {
 
     @Value
-    private static class ScriptAction implements ActionProvider {
+    private static class ScriptActionProvider implements ActionProvider {
 
         ScriptHierarchy hierarchy;
 
@@ -96,7 +98,43 @@ public class RunScriptActionMenu implements ActionProvider {
 
                 @Override
                 public List<? extends ActionProvider> getChildren(DataStoreEntryRef<ShellStore> store) {
-                    return hierarchy.getChildren().stream().map(c -> new ScriptAction(c)).toList();
+                    return hierarchy.getChildren().stream().map(c -> new ScriptActionProvider(c)).toList();
+                }
+            };
+        }
+    }
+
+    private static class NoScriptsActionProvider implements ActionProvider {
+
+        private static class Action implements ActionProvider.Action {
+
+            @Override
+            public void execute() throws Exception {
+                StoreViewState.get().getAllScriptsCategory().select();
+            }
+        }
+
+        @Override
+        public LeafDataStoreCallSite<?> getLeafDataStoreCallSite() {
+            return new LeafDataStoreCallSite<ShellStore>() {
+                @Override
+                public Action createAction(DataStoreEntryRef<ShellStore> store) {
+                    return new Action();
+                }
+
+                @Override
+                public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
+                    return AppI18n.observable("noScriptsAvailable");
+                }
+
+                @Override
+                public String getIcon(DataStoreEntryRef<ShellStore> store) {
+                    return "mdi2i-image-filter-none";
+                }
+
+                @Override
+                public Class<?> getApplicableClass() {
+                    return ShellStore.class;
                 }
             };
         }
@@ -132,10 +170,24 @@ public class RunScriptActionMenu implements ActionProvider {
             }
 
             @Override
+            public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
+                if (o.getStore() instanceof LocalStore) {
+                    return true;
+                }
+
+                var state = o.getEntry().getStorePersistentState();
+                if (!(state instanceof ShellStoreState shellStoreState) || shellStoreState.getShellDialect() == null) {
+                    return false;
+                }
+
+                return true;
+            }
+
+            @Override
             public List<? extends ActionProvider> getChildren(DataStoreEntryRef<ShellStore> store) {
                 var state = store.getEntry().getStorePersistentState();
                 if (!(state instanceof ShellStoreState shellStoreState) || shellStoreState.getShellDialect() == null) {
-                    return List.of();
+                    return List.of(new NoScriptsActionProvider());
                 }
 
                 var hierarchy = ScriptHierarchy.buildEnabledHierarchy(ref -> {
@@ -149,7 +201,12 @@ public class RunScriptActionMenu implements ActionProvider {
 
                     return true;
                 });
-                return hierarchy.getChildren().stream().map(c -> new ScriptAction(c)).toList();
+                var list = hierarchy.getChildren().stream().map(c -> new ScriptActionProvider(c)).toList();
+                if (list.isEmpty()) {
+                    return List.of(new NoScriptsActionProvider());
+                } else {
+                    return list;
+                }
             }
         };
     }
