@@ -163,7 +163,12 @@ public class BrowserTransferModel {
         var files = toMove.stream().map(item -> item.getLocalFile()).toList();
         var downloads = DesktopHelper.getDownloadsDirectory();
         for (Path file : files) {
-            Files.move(file, downloads.resolve(file.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+            var target = downloads.resolve(file.getFileName());
+            // Prevent DirectoryNotEmptyException
+            if (Files.exists(target) && Files.isDirectory(target)) {
+                Files.delete(target);
+            }
+            Files.move(file, target, StandardCopyOption.REPLACE_EXISTING);
         }
         DesktopHelper.browseFileInDirectory(downloads.resolve(files.getFirst().getFileName()));
     }
