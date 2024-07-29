@@ -6,7 +6,6 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.process.ShellStoreState;
-import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.ext.base.script.ScriptHierarchy;
 import javafx.beans.property.SimpleStringProperty;
@@ -171,10 +170,6 @@ public class RunScriptActionMenu implements ActionProvider {
 
             @Override
             public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
-                if (o.getStore() instanceof LocalStore) {
-                    return true;
-                }
-
                 var state = o.getEntry().getStorePersistentState();
                 if (!(state instanceof ShellStoreState shellStoreState) || shellStoreState.getShellDialect() == null) {
                     return false;

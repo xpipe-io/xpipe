@@ -54,13 +54,14 @@ public class ScriptHierarchy {
 
                     return all.contains(check);
                 }))
+                .map(hierarchy -> condenseHierarchy(hierarchy))
                 .filter(hierarchy -> hierarchy.show())
                 .sorted(Comparator.comparing(scriptHierarchy -> scriptHierarchy.getBase().get().getName().toLowerCase()))
                 .toList();
-        return new ScriptHierarchy(null, mapped);
+        return condenseHierarchy(new ScriptHierarchy(null, mapped));
     }
 
-    public static ScriptHierarchy buildHierarchy(DataStoreEntryRef<ScriptStore> ref, Predicate<DataStoreEntryRef<ScriptStore>> include) {
+    private static ScriptHierarchy buildHierarchy(DataStoreEntryRef<ScriptStore> ref, Predicate<DataStoreEntryRef<ScriptStore>> include) {
         if (ref.getStore() instanceof ScriptGroupStore groupStore) {
             var children = groupStore.getEffectiveScripts().stream().filter(include)
                     .map(c -> buildHierarchy(c, include))
@@ -70,6 +71,19 @@ public class ScriptHierarchy {
             return new ScriptHierarchy(ref, children);
         } else {
             return new ScriptHierarchy(ref, List.of());
+        }
+    }
+
+
+    public static ScriptHierarchy condenseHierarchy(ScriptHierarchy hierarchy) {
+        var children = hierarchy.getChildren().stream()
+                .map(c -> condenseHierarchy(c))
+                .toList();
+        if (children.size() == 1 && !children.getFirst().isLeaf()) {
+            var nestedChildren = children.getFirst().getChildren();
+            return new ScriptHierarchy(hierarchy.getBase(), nestedChildren);
+        } else {
+            return new ScriptHierarchy(hierarchy.getBase(), children);
         }
     }
 
