@@ -148,6 +148,10 @@ public interface DataStoreProvider {
             return DataStoreUsageCategory.DATABASE;
         }
 
+        if (cc == DataStoreCreationCategory.SERIAL) {
+            return DataStoreUsageCategory.SERIAL;
+        }
+
         return null;
     }
 
