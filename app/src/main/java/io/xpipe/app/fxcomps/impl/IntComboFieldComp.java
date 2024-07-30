@@ -6,56 +6,47 @@ import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
-import javafx.scene.control.TextField;
+import javafx.collections.FXCollections;
+import javafx.scene.control.ComboBox;
 import javafx.scene.input.KeyEvent;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class IntFieldComp extends Comp<CompStructure<TextField>> {
+public class IntComboFieldComp extends Comp<CompStructure<ComboBox<String>>> {
 
     Property<Integer> value;
-    int minValue;
-    int maxValue;
+    List<Integer> predefined;
+    boolean allowNegative;
 
-    public IntFieldComp(Property<Integer> value) {
+    public IntComboFieldComp(Property<Integer> value, List<Integer> predefined, boolean allowNegative) {
         this.value = value;
-        this.minValue = 0;
-        this.maxValue = Integer.MAX_VALUE;
-    }
-
-    public IntFieldComp(Property<Integer> value, int minValue, int maxValue) {
-        this.value = value;
-        this.minValue = minValue;
-        this.maxValue = maxValue;
+        this.predefined = predefined;
+        this.allowNegative = allowNegative;
     }
 
     @Override
-    public CompStructure<TextField> createBase() {
-        var text = new TextField(value.getValue() != null ? value.getValue().toString() : null);
+    public CompStructure<ComboBox<String>> createBase() {
+        var text = new ComboBox<String>();
+        text.setEditable(true);
+        text.setValue(value.getValue() != null ? value.getValue().toString() : null);
+        text.setItems(FXCollections.observableList(predefined.stream().map(integer -> "" + integer).toList()));
+        text.setMaxWidth(2000);
 
         value.addListener((ChangeListener<Number>) (observableValue, oldValue, newValue) -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 if (newValue == null) {
-                    text.setText("");
+                    text.setValue("");
                 } else {
-                    if (newValue.intValue() < minValue) {
-                        value.setValue(minValue);
-                        return;
-                    }
-
-                    if (newValue.intValue() > maxValue) {
-                        value.setValue(maxValue);
-                        return;
-                    }
-
-                    text.setText(newValue.toString());
+                    text.setValue(newValue.toString());
                 }
             });
         });
 
         text.addEventFilter(KeyEvent.KEY_TYPED, keyEvent -> {
-            if (minValue < 0) {
+            if (allowNegative) {
                 if (!"-0123456789".contains(keyEvent.getCharacter())) {
                     keyEvent.consume();
                 }
@@ -66,21 +57,17 @@ public class IntFieldComp extends Comp<CompStructure<TextField>> {
             }
         });
 
-        text.textProperty().addListener((observableValue, oldValue, newValue) -> {
+        text.valueProperty().addListener((observableValue, oldValue, newValue) -> {
             if (newValue == null
                     || newValue.isEmpty()
-                    || (minValue < 0 && "-".equals(newValue))
+                    || (allowNegative && "-".equals(newValue))
                     || !newValue.matches("-?\\d+")) {
                 value.setValue(null);
                 return;
             }
 
             int intValue = Integer.parseInt(newValue);
-            if (minValue > intValue || intValue > maxValue) {
-                text.textProperty().setValue(oldValue);
-            }
-
-            value.setValue(Integer.parseInt(text.textProperty().get()));
+            value.setValue(intValue);
         });
 
         return new SimpleCompStructure<>(text);
