@@ -170,7 +170,12 @@ public class StoreCreationComp extends DialogComp {
                         if (!DataStorage.get().getStoreEntries().contains(e)) {
                             DataStorage.get().addStoreEntryIfNotPresent(newE);
                         } else {
-                            DataStorage.get().updateEntry(e, newE);
+                            // We didn't change anything
+                            if (e.getStore().equals(newE.getStore())) {
+                                e.setName(newE.getName());
+                            } else {
+                                DataStorage.get().updateEntry(e, newE);
+                            }
                         }
                     });
                 },

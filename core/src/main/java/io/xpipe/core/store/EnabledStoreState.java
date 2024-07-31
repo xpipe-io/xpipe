@@ -19,6 +19,6 @@ public class EnabledStoreState extends DataStoreState {
     @Override
     public DataStoreState mergeCopy(DataStoreState newer) {
         var n = (EnabledStoreState) newer;
-        return EnabledStoreState.builder().enabled(n.enabled).build();
+        return EnabledStoreState.builder().enabled(enabled || n.enabled).build();
     }
 }

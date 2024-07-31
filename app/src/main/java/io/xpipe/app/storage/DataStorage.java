@@ -273,6 +273,10 @@ public abstract class DataStorage {
     }
 
     public void updateEntry(DataStoreEntry entry, DataStoreEntry newEntry) {
+        var state = entry.getStorePersistentState();
+        var newState = state.mergeCopy(newEntry.getStorePersistentState());
+        newEntry.setStorePersistentState(newState);
+
         var oldParent = DataStorage.get().getDefaultDisplayParent(entry);
         var newParent = DataStorage.get().getDefaultDisplayParent(newEntry);
         var sameParent = Objects.equals(oldParent, newParent);
