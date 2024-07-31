@@ -51,7 +51,7 @@ public class StoreCreationComp extends DialogComp {
     Stage window;
     BiConsumer<DataStoreEntry, Boolean> consumer;
     Property<DataStoreProvider> provider;
-    Property<DataStore> store;
+    ObjectProperty<DataStore> store;
     Predicate<DataStoreProvider> filter;
     BooleanProperty busy = new SimpleBooleanProperty();
     Property<Validator> validator = new SimpleObjectProperty<>(new SimpleValidator());
@@ -60,6 +60,7 @@ public class StoreCreationComp extends DialogComp {
     ObservableValue<DataStoreEntry> entry;
     BooleanProperty changedSinceError = new SimpleBooleanProperty();
     BooleanProperty skippable = new SimpleBooleanProperty();
+    BooleanProperty connectable = new SimpleBooleanProperty();
     StringProperty name;
     DataStoreEntry existingEntry;
     boolean staticDisplay;
@@ -68,7 +69,7 @@ public class StoreCreationComp extends DialogComp {
             Stage window,
             BiConsumer<DataStoreEntry, Boolean> consumer,
             Property<DataStoreProvider> provider,
-            Property<DataStore> store,
+            ObjectProperty<DataStore> store,
             Predicate<DataStoreProvider> filter,
             String initialName,
             DataStoreEntry existingEntry,
@@ -93,6 +94,12 @@ public class StoreCreationComp extends DialogComp {
             store.setValue(null);
             if (n != null) {
                 store.setValue(n.defaultStore());
+            }
+        });
+
+        this.provider.subscribe((n) -> {
+            if (n != null) {
+                connectable.setValue(n.canConnectDuringCreation());
             }
         });
 
@@ -239,7 +246,16 @@ public class StoreCreationComp extends DialogComp {
                         finish();
                     }
                 })
-                .visible(skippable));
+                .visible(skippable),
+                new ButtonComp(AppI18n.observable("connect"), null, () -> {
+                    var temp = DataStoreEntry.createTempWrapper(store.getValue());
+                    var action = provider.getValue().launchAction(temp);
+                    ThreadHelper.runFailableAsync(() -> {
+                        action.execute();
+                    });
+                }).visible(connectable.and(Bindings.createBooleanBinding(() -> {
+                    return store.getValue() != null && store.getValue().isComplete();
+                }, store))));
     }
 
     @Override
