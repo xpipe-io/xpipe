@@ -3,6 +3,7 @@ package io.xpipe.ext.base.action;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.process.ShellStoreState;
@@ -17,7 +18,7 @@ import java.util.List;
 public class RunScriptActionMenu implements ActionProvider {
 
     @Value
-    private static class ScriptActionProvider implements ActionProvider {
+    private static class TerminalRunActionProvider implements ActionProvider {
 
         ScriptHierarchy hierarchy;
 
@@ -41,10 +42,6 @@ public class RunScriptActionMenu implements ActionProvider {
 
         @Override
         public LeafDataStoreCallSite<?> getLeafDataStoreCallSite() {
-            if (!hierarchy.isLeaf()) {
-                return null;
-            }
-
             return new LeafDataStoreCallSite<ShellStore>() {
                 @Override
                 public Action createAction(DataStoreEntryRef<ShellStore> store) {
@@ -53,12 +50,15 @@ public class RunScriptActionMenu implements ActionProvider {
 
                 @Override
                 public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
-                    return new SimpleStringProperty(hierarchy.getBase().get().getName());
+                    var t = AppPrefs.get().terminalType().getValue();
+                    return AppI18n.observable(
+                            "executeInTerminal",
+                            t != null ? t.toTranslatedString().getValue() : "?");
                 }
 
                 @Override
                 public String getIcon(DataStoreEntryRef<ShellStore> store) {
-                    return "mdi2p-play-box-multiple-outline";
+                    return "mdi2d-desktop-mac";
                 }
 
                 @Override
@@ -67,10 +67,91 @@ public class RunScriptActionMenu implements ActionProvider {
                 }
             };
         }
+    }
+
+    @Value
+    private static class BackgroundRunActionProvider implements ActionProvider {
+
+        ScriptHierarchy hierarchy;
+
+        @Value
+        private class Action implements ActionProvider.Action {
+
+            DataStoreEntryRef<ShellStore> shellStore;
+
+            @Override
+            public void execute() throws Exception {
+                try (var sc = shellStore.getStore().control().start()) {
+                    var script = hierarchy.getLeafBase().getStore().assembleScriptChain(sc);
+                    sc.command(script).execute();
+                }
+            }
+        }
+
+        @Override
+        public LeafDataStoreCallSite<?> getLeafDataStoreCallSite() {
+            return new LeafDataStoreCallSite<ShellStore>() {
+                @Override
+                public Action createAction(DataStoreEntryRef<ShellStore> store) {
+                    return new Action(store);
+                }
+
+                @Override
+                public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
+                    return AppI18n.observable("executeInBackground");
+                }
+
+                @Override
+                public String getIcon(DataStoreEntryRef<ShellStore> store) {
+                    return "mdi2f-flip-to-back";
+                }
+
+                @Override
+                public Class<?> getApplicableClass() {
+                    return ShellStore.class;
+                }
+            };
+        }
+    }
+
+    @Value
+    private static class ScriptActionProvider implements ActionProvider {
+
+        ScriptHierarchy hierarchy;
+
+        private BranchDataStoreCallSite<?> getLeafSite() {
+            return new BranchDataStoreCallSite<ShellStore>() {
+
+                @Override
+                public Class<ShellStore> getApplicableClass() {
+                    return ShellStore.class;
+                }
+
+                @Override
+                public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
+                    return new SimpleStringProperty(hierarchy.getBase().get().getName());
+                }
+
+                @Override
+                public boolean isDynamicallyGenerated() {
+                    return true;
+                }
+
+                @Override
+                public String getIcon(DataStoreEntryRef<ShellStore> store) {
+                    return "mdi2p-play-box-multiple-outline";
+                }
+
+                @Override
+                public List<? extends ActionProvider> getChildren(DataStoreEntryRef<ShellStore> store) {
+                    return List.of(new TerminalRunActionProvider(hierarchy), new BackgroundRunActionProvider(hierarchy));
+                }
+            };
+        }
 
         public BranchDataStoreCallSite<?> getBranchDataStoreCallSite() {
             if (hierarchy.isLeaf()) {
-                return null;
+                return getLeafSite();
             }
 
             return new BranchDataStoreCallSite<ShellStore>() {
