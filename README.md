@@ -197,6 +197,7 @@ The distributed XPipe application consists out of two parts:
 - The closed-source extensions, mostly for professional edition features, which are not included in this repository
 
 Additional features are available in the professional edition. For more details see https://xpipe.io/pricing.
+If your enterprise puts great emphasis on having access to the full source code, there are also full source-available enterprise options available.
 
 ## More links
 

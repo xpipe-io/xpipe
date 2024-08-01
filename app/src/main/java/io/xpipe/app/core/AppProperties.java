@@ -42,6 +42,7 @@ public class AppProperties {
     boolean locatePtb;
     boolean locatorVersionCheck;
     boolean isTest;
+    boolean autoAcceptEula;
 
     public AppProperties() {
         var appDir = Path.of(System.getProperty("user.dir")).resolve("app");
@@ -107,6 +108,9 @@ public class AppProperties {
                 .map(s -> !Boolean.parseBoolean(s))
                 .orElse(true);
         isTest = isJUnitTest();
+        autoAcceptEula = Optional.ofNullable(System.getProperty("io.xpipe.app.acceptEula"))
+                .map(Boolean::parseBoolean)
+                .orElse(false);
     }
 
     private static boolean isJUnitTest() {

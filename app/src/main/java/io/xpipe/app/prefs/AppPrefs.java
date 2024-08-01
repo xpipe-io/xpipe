@@ -175,6 +175,7 @@ public class AppPrefs {
                         new SecurityCategory(),
                         new HttpApiCategory(),
                         new WorkflowCategory(),
+                        new ProfilesCategory(),
                         new TroubleshootCategory(),
                         new DeveloperCategory())
                 .filter(appPrefsCategory -> appPrefsCategory.show())
