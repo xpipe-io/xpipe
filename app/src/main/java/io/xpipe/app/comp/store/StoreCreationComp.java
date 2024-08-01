@@ -1,5 +1,6 @@
 package io.xpipe.app.comp.store;
 
+import atlantafx.base.controls.Spacer;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.DialogComp;
 import io.xpipe.app.comp.base.ErrorOverlayComp;
@@ -21,7 +22,6 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.ValidationException;
-
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -33,8 +33,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
-import atlantafx.base.controls.Spacer;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import net.synedra.validatorfx.GraphicDecorationStackPane;
@@ -414,11 +412,9 @@ public class StoreCreationComp extends DialogComp {
     private Region createLayout() {
         var layout = new BorderPane();
         layout.getStyleClass().add("store-creator");
-        layout.setPadding(new Insets(20));
         var providerChoice = new StoreProviderChoiceComp(filter, provider, staticDisplay);
-        if (staticDisplay) {
-            providerChoice.apply(struc -> struc.get().setDisable(true));
-        } else {
+        var showProviders = !staticDisplay && providerChoice.getProviders().size() > 1;
+        if (showProviders) {
             providerChoice.onSceneAssign(struc -> struc.get().requestFocus());
         }
         providerChoice.apply(GrowAugment.create(true, false));
@@ -443,9 +439,14 @@ public class StoreCreationComp extends DialogComp {
 
         var sep = new Separator();
         sep.getStyleClass().add("spacer");
-        var top = new VBox(providerChoice.createRegion(), new Spacer(7, Orientation.VERTICAL), sep);
+        var top = new VBox(providerChoice.createRegion(), new Spacer(5, Orientation.VERTICAL), sep);
         top.getStyleClass().add("top");
-        layout.setTop(top);
+        if (showProviders) {
+            layout.setTop(top);
+            layout.setPadding(new Insets(15, 20, 20, 20));
+        } else {
+            layout.setPadding(new Insets(5, 20, 20, 20));
+        }
 
         var valSp = new GraphicDecorationStackPane();
         valSp.getChildren().add(layout);

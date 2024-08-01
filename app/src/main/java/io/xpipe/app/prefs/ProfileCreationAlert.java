@@ -39,7 +39,7 @@ public class ProfileCreationAlert {
                             .addPath(path)
                             .buildComp()
                             .minWidth(500)
-                            .padding(new Insets(10))
+                            .padding(new Insets(5, 20, 20, 20))
                             .apply(struc -> AppFont.small(struc.get()))
                             .createRegion();
                     alert.getButtonTypes().add(ButtonType.CANCEL);
