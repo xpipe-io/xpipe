@@ -85,13 +85,13 @@ def getArchName() {
 
 def getPlatformName() {
     def currentOS = DefaultNativePlatform.currentOperatingSystem;
-    def platform = null
+    def platform
     if (currentOS.isWindows()) {
         platform = 'windows'
-    } else if (currentOS.isLinux()) {
-        platform = 'linux'
-    } else if (currentOS.isMacOsX()) {
+    }  else if (currentOS.isMacOsX()) {
         platform = 'osx'
+    } else {
+        platform = 'linux'
     }
     return platform;
 }
