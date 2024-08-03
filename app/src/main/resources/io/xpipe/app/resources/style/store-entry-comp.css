@@ -25,14 +25,6 @@
     -fx-text-fill: #ee4829;
 }
 
-.store-entry-grid:incomplete .summary {
-    -fx-text-fill: #ee4829;
-}
-
-.store-entry-grid:incomplete .information {
-    -fx-text-fill: #ee4829;
-}
-
 .store-entry-grid:incomplete .icon {
     -fx-opacity: 0.5;
 }
