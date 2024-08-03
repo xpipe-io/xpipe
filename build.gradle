@@ -145,8 +145,8 @@ project.ext {
             "-Dvisualvm.display.name=XPipe",
             "-Djavafx.preloader=io.xpipe.app.core.AppPreloader"
     ]
-    // Disable this for now as it requires Windows 10+
-    if (!org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+    // Disable this on Windows for now as it requires Windows 10+
+    if (org.gradle.internal.os.OperatingSystem.current().isLinux() || org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
         jvmRunArgs += ['-XX:+UseZGC']
     }
     if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {

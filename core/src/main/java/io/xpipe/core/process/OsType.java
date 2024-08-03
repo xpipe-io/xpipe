@@ -21,10 +21,8 @@ public interface OsType {
             return MACOS;
         } else if (osName.contains("win")) {
             return WINDOWS;
-        } else if (osName.contains("nux")) {
-            return LINUX;
         } else {
-            throw new UnsupportedOperationException("Unknown operating system");
+            return LINUX;
         }
     }
 
