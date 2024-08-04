@@ -113,6 +113,9 @@ public class AppTheme {
                     }
                 });
             });
+        } catch (UnsupportedOperationException ex) {
+            // The platform preferences are sometimes not initialized yet
+            ErrorEvent.fromThrowable(ex).expected().omit().handle();
         } catch (Throwable t) {
             ErrorEvent.fromThrowable(t).omit().handle();
         }
@@ -136,6 +139,9 @@ public class AppTheme {
             } else {
                 AppPrefs.get().theme.setValue(Theme.getDefaultLightTheme());
             }
+        } catch (UnsupportedOperationException ex) {
+            // The platform preferences are sometimes not initialized yet
+            ErrorEvent.fromThrowable(ex).expected().omit().handle();
         } catch (Exception ex) {
             // The color scheme query can fail if the toolkit is not initialized properly
             AppPrefs.get().theme.setValue(Theme.getDefaultLightTheme());
