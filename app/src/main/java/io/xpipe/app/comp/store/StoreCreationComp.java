@@ -256,8 +256,8 @@ public class StoreCreationComp extends DialogComp {
                     ThreadHelper.runFailableAsync(() -> {
                         action.execute();
                     });
-                }).visible(connectable.and(Bindings.createBooleanBinding(() -> {
-                    return store.getValue() != null && store.getValue().isComplete();
+                }).hide(connectable.not().or(Bindings.createBooleanBinding(() -> {
+                    return store.getValue() == null || !store.getValue().isComplete();
                 }, store))));
     }
 

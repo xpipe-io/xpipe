@@ -101,7 +101,7 @@
     -fx-border-color: -color-neutral-emphasis;
 }
 
-.text {
+* {
     -fx-font-smoothing-type: gray;
 }
 
