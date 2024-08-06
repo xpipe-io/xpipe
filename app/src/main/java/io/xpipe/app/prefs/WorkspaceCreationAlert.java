@@ -19,7 +19,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.nio.file.Files;
 
-public class ProfileCreationAlert {
+public class WorkspaceCreationAlert {
 
     public static void showAsync() {
         ThreadHelper.runFailableAsync(() -> {
@@ -28,14 +28,14 @@ public class ProfileCreationAlert {
     }
 
     private static void show() throws Exception {
-        var name = new SimpleObjectProperty<>("New profile");
+        var name = new SimpleObjectProperty<>("New workspace");
         var path = new SimpleObjectProperty<>(AppProperties.get().getDataDir());
         var show = AppWindowHelper.showBlockingAlert(alert -> {
-                    alert.setTitle(AppI18n.get("profileCreationAlertTitle"));
+                    alert.setTitle(AppI18n.get("workspaceCreationAlertTitle"));
                     var content = new OptionsBuilder()
-                            .nameAndDescription("profileName")
+                            .nameAndDescription("workspaceName")
                             .addString(name)
-                            .nameAndDescription("profilePath")
+                            .nameAndDescription("workspacePath")
                             .addPath(path)
                             .buildComp()
                             .minWidth(500)
@@ -54,7 +54,7 @@ public class ProfileCreationAlert {
         }
 
         if (Files.exists(path.get()) && !FileUtils.isEmptyDirectory(path.get().toFile())) {
-            ErrorEvent.fromMessage("New profile directory is not empty").expected().handle();
+            ErrorEvent.fromMessage("New workspace directory is not empty").expected().handle();
             return;
         }
 
