@@ -10,6 +10,9 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.scene.Cursor;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 
 import atlantafx.base.controls.CustomTextField;
@@ -52,6 +55,13 @@ public class FilterComp extends Comp<CompStructure<CustomTextField>> {
                         },
                         filter.focusedProperty()));
         filter.setAccessibleText("Filter");
+
+        filter.addEventFilter(KeyEvent.KEY_PRESSED,event -> {
+            if (new KeyCodeCombination(KeyCode.ESCAPE).match(event)) {
+                filter.getScene().getRoot().requestFocus();
+                event.consume();
+            }
+        });
 
         filterText.subscribe(val -> {
             PlatformThread.runLaterIfNeeded(() -> {

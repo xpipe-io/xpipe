@@ -40,7 +40,7 @@ public class ScanAlert {
         });
     }
 
-    private static void showForShellStore(DataStoreEntry initial) {
+    public static void showForShellStore(DataStoreEntry initial) {
         show(initial, (DataStoreEntry entry, ShellControl sc) -> {
             if (!sc.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
                 return null;
