@@ -66,7 +66,7 @@ dependencies {
     api group: 'org.kordamp.ikonli', name: 'ikonli-material-pack', version: "12.2.0"
     api group: 'org.kordamp.ikonli', name: 'ikonli-feather-pack', version: "12.2.0"
     api group: 'org.slf4j', name: 'slf4j-api', version: '2.0.13'
-    api group: 'org.slf4j', name: 'slf4j-jdk-platform-logging', version: '2.0.13'
+    api group: 'org.slf4j', name: 'slf4j-jdk-platform-logging', version: '2.0.14'
     api 'io.xpipe:modulefs:0.1.5'
     api 'net.synedra:validatorfx:0.4.2'
     api files("$rootDir/gradle/gradle_scripts/atlantafx-base-2.0.2.jar")
