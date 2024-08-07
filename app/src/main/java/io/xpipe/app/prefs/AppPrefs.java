@@ -14,18 +14,16 @@ import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.util.PasswordLockSecretValue;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.ModuleHelper;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableStringValue;
 import javafx.beans.value.ObservableValue;
-
 import lombok.Getter;
 import lombok.Value;
+import org.apache.commons.io.FileUtils;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Stream;
@@ -490,7 +488,7 @@ public class AppPrefs {
         }
 
         try {
-            Files.createDirectories(storageDirectory.get());
+            FileUtils.forceMkdir(storageDirectory.getValue().toFile());
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).expected().build().handle();
             storageDirectory.setValue(DEFAULT_STORAGE_DIR);
