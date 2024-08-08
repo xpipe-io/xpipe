@@ -4,27 +4,31 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.XPipeInstallation;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class DesktopShortcuts {
 
-    private static void createWindowsShortcut(String target, String name) throws Exception {
+    private static Path createWindowsShortcut(String executable, String args, String name) throws Exception {
         var icon = XPipeInstallation.getLocalDefaultInstallationIcon();
-        var shortcutTarget = XPipeInstallation.getLocalDefaultCliExecutable();
         var shortcutPath = DesktopHelper.getDesktopDirectory().resolve(name + ".lnk");
         var content = String.format(
                 """
-                        set "TARGET=%s"
-                        set "SHORTCUT=%s"
-                        set PWS=powershell.exe -ExecutionPolicy Restricted -NoLogo -NonInteractive -NoProfile
-
-                        %%PWS%% -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('%%SHORTCUT%%'); $S.IconLocation='%s'; $S.WindowStyle=7; $S.TargetPath = '%%TARGET%%'; $S.Arguments = 'open %s'; $S.Save()"
+                        $TARGET="%s"
+                        $SHORTCUT="%s"
+                        $ws = New-Object -ComObject WScript.Shell
+                        $s = $ws.CreateShortcut("$SHORTCUT")
+                        $S.IconLocation='%s'
+                        $S.WindowStyle=7
+                        $S.TargetPath = "$TARGET"
+                        $S.Arguments = '%s'
+                        $S.Save()
                         """,
-                shortcutTarget, shortcutPath, icon, target);
-        LocalShell.getShell().executeSimpleCommand(content);
+                executable, shortcutPath, icon, args);
+        LocalShell.getLocalPowershell().executeSimpleCommand(content);
+        return shortcutPath;
     }
 
-    private static void createLinuxShortcut(String target, String name) throws Exception {
-        var exec = XPipeInstallation.getLocalDefaultCliExecutable();
+    private static Path createLinuxShortcut(String executable, String args, String name) throws Exception {
         var icon = XPipeInstallation.getLocalDefaultInstallationIcon();
         var content = String.format(
                 """
@@ -32,19 +36,19 @@ public class DesktopShortcuts {
                         Type=Application
                         Name=%s
                         Comment=Open with XPipe
-                        Exec="%s" open %s
+                        Exec="%s" %s
                         Icon=%s
                         Terminal=false
                         Categories=Utility;Development;
                         """,
-                name, exec, target, icon);
+                name, executable, args, icon);
         var file = DesktopHelper.getDesktopDirectory().resolve(name + ".desktop");
         Files.writeString(file, content);
         file.toFile().setExecutable(true);
+        return file;
     }
 
-    private static void createMacOSShortcut(String target, String name) throws Exception {
-        var exec = XPipeInstallation.getLocalDefaultCliExecutable();
+    private static Path createMacOSShortcut(String executable, String args, String name) throws Exception {
         var icon = XPipeInstallation.getLocalDefaultInstallationIcon();
         var base = DesktopHelper.getDesktopDirectory().resolve(name + ".app");
         var content = String.format(
@@ -52,18 +56,18 @@ public class DesktopShortcuts {
                         #!/usr/bin/env sh
                         "%s" open %s
                         """,
-                exec, target);
+                executable, args);
 
         try (var pc = LocalShell.getShell()) {
             pc.getShellDialect().deleteFileOrDirectory(pc, base.toString()).executeAndCheck();
             pc.executeSimpleCommand(pc.getShellDialect().getMkdirsCommand(base + "/Contents/MacOS"));
             pc.executeSimpleCommand(pc.getShellDialect().getMkdirsCommand(base + "/Contents/Resources"));
 
-            var executable = base + "/Contents/MacOS/" + name;
+            var macExec = base + "/Contents/MacOS/" + name;
             pc.getShellDialect()
-                    .createScriptTextFileWriteCommand(pc, content, executable)
+                    .createScriptTextFileWriteCommand(pc, content, macExec)
                     .execute();
-            pc.executeSimpleCommand("chmod ugo+x \"" + executable + "\"");
+            pc.executeSimpleCommand("chmod ugo+x \"" + macExec + "\"");
 
             pc.getShellDialect()
                     .createTextFileWriteCommand(pc, "APPL????", base + "/Contents/PkgInfo")
@@ -85,15 +89,21 @@ public class DesktopShortcuts {
                     .execute();
             pc.executeSimpleCommand("cp \"" + icon + "\" \"" + base + "/Contents/Resources/icon.icns\"");
         }
+        return base;
     }
 
-    public static void create(String target, String name) throws Exception {
+    public static Path createCliOpen(String action, String name) throws Exception {
+        var exec = XPipeInstallation.getLocalDefaultCliExecutable();
+        return create(exec, "open " + action, name);
+    }
+
+    public static Path create(String executable, String args, String name) throws Exception {
         if (OsType.getLocal().equals(OsType.WINDOWS)) {
-            createWindowsShortcut(target, name);
+            return createWindowsShortcut(executable, args, name);
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
-            createLinuxShortcut(target, name);
+            return createLinuxShortcut(executable, args, name);
         } else {
-            createMacOSShortcut(target, name);
+            return createMacOSShortcut(executable, args, name);
         }
     }
 }

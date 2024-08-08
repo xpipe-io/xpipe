@@ -1,9 +1,8 @@
 package io.xpipe.core.store;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 
 import java.io.InputStream;
@@ -37,9 +36,10 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public FileSystem open() throws Exception {
         shellControl.start();
-        if (!shellControl.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
+        var d = shellControl.getShellDialect().getDumbMode();
+        if (!d.supportsAnyPossibleInteraction()) {
             shellControl.close();
-            throw new UnsupportedOperationException("System shell does not support file system interaction");
+            d.throwIfUnsupported();
         }
         return this;
     }

@@ -37,11 +37,13 @@ public class AppProperties {
     boolean useVirtualThreads;
     boolean debugThreads;
     Path dataDir;
+    Path defaultDataDir;
     boolean showcase;
     AppVersion canonicalVersion;
     boolean locatePtb;
     boolean locatorVersionCheck;
     boolean isTest;
+    boolean autoAcceptEula;
 
     public AppProperties() {
         var appDir = Path.of(System.getProperty("user.dir")).resolve("app");
@@ -86,6 +88,7 @@ public class AppProperties {
         debugThreads = Optional.ofNullable(System.getProperty("io.xpipe.app.debugThreads"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
+        defaultDataDir = Path.of(System.getProperty("user.home"), isStaging() ? ".xpipe-ptb" : ".xpipe");
         dataDir = Optional.ofNullable(System.getProperty("io.xpipe.app.dataDir"))
                 .map(s -> {
                     var p = Path.of(s);
@@ -94,7 +97,7 @@ public class AppProperties {
                     }
                     return p;
                 })
-                .orElse(Path.of(System.getProperty("user.home"), isStaging() ? ".xpipe-ptb" : ".xpipe"));
+                .orElse(defaultDataDir);
         showcase = Optional.ofNullable(System.getProperty("io.xpipe.app.showcase"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
@@ -107,6 +110,9 @@ public class AppProperties {
                 .map(s -> !Boolean.parseBoolean(s))
                 .orElse(true);
         isTest = isJUnitTest();
+        autoAcceptEula = Optional.ofNullable(System.getProperty("io.xpipe.app.acceptEula"))
+                .map(Boolean::parseBoolean)
+                .orElse(false);
     }
 
     private static boolean isJUnitTest() {

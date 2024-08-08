@@ -100,6 +100,10 @@ public interface DataStoreProvider {
         return Comp.empty();
     }
 
+    default boolean canConnectDuringCreation() {
+        return false;
+    }
+
     default Comp<?> createInsightsComp(ObservableValue<DataStore> store) {
         var content = Bindings.createStringBinding(
                 () -> {
@@ -146,6 +150,10 @@ public interface DataStoreProvider {
 
         if (cc == DataStoreCreationCategory.DATABASE) {
             return DataStoreUsageCategory.DATABASE;
+        }
+
+        if (cc == DataStoreCreationCategory.SERIAL) {
+            return DataStoreUsageCategory.SERIAL;
         }
 
         return null;

@@ -1,5 +1,7 @@
 package io.xpipe.app.beacon;
 
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpServer;
 import io.xpipe.app.core.AppResources;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
@@ -8,13 +10,10 @@ import io.xpipe.beacon.BeaconConfig;
 import io.xpipe.beacon.BeaconInterface;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.XPipeInstallation;
-
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpServer;
 import lombok.Getter;
 
 import java.io.IOException;
-import java.net.InetAddress;
+import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -127,7 +126,7 @@ public class AppBeaconServer {
     }
 
     private void start() throws IOException {
-        server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), port), 10);
+        server = HttpServer.create(new InetSocketAddress(Inet4Address.getByAddress(new byte[]{ 0x7f,0x00,0x00,0x01 }), port), 10);
         BeaconInterface.getAll().forEach(beaconInterface -> {
             server.createContext(beaconInterface.getPath(), new BeaconRequestHandler<>(beaconInterface));
         });

@@ -145,23 +145,20 @@ public abstract class WindowsRegistry {
                     .add("/v")
                     .addQuoted(valueName);
 
-            String output;
-            try (var c = shellControl.command(command).start()) {
-                output = c.readStdoutDiscardErr();
-                if (c.getExitCode() != 0) {
-                    return Optional.empty();
-                }
+            var output = shellControl.command(command).readStdoutIfPossible();
+            if (output.isEmpty()) {
+                return Optional.empty();
             }
 
             // Output has the following format:
             // \n<Version information>\n\n<key>\t<registry type>\t<value>
-            if (output.contains("\t")) {
-                String[] parsed = output.split("\t");
+            if (output.get().contains("\t")) {
+                String[] parsed = output.get().split("\t");
                 return Optional.of(parsed[parsed.length - 1]);
             }
 
-            if (output.contains("    ")) {
-                String[] parsed = output.split("    ");
+            if (output.get().contains("    ")) {
+                String[] parsed = output.get().split("    ");
                 return Optional.of(parsed[parsed.length - 1]);
             }
 
@@ -176,14 +173,7 @@ public abstract class WindowsRegistry {
                     .add("/v")
                     .addQuoted(valueName)
                     .add("/s");
-            try (var c = shellControl.command(command).start()) {
-                var output = c.readStdoutDiscardErr();
-                if (c.getExitCode() != 0) {
-                    return Optional.empty();
-                } else {
-                    return Optional.of(output);
-                }
-            }
+            return shellControl.command(command).readStdoutIfPossible();
         }
 
         @Override
@@ -196,22 +186,17 @@ public abstract class WindowsRegistry {
                     .add("/s")
                     .add("/e")
                     .add("/d");
-            try (var c = shellControl.command(command).start()) {
-                var output = c.readStdoutDiscardErr();
-                if (c.getExitCode() != 0) {
+            return shellControl.command(command).readStdoutIfPossible().flatMap(output -> {
+                return output.lines().findFirst().flatMap(s -> {
+                    if (s.startsWith("HKEY_CURRENT_USER\\")) {
+                        return Optional.of(new Key(HKEY_CURRENT_USER, s.replace("HKEY_CURRENT_USER\\", "")));
+                    }
+                    if (s.startsWith("HKEY_LOCAL_MACHINE\\")) {
+                        return Optional.of(new Key(HKEY_LOCAL_MACHINE, s.replace("HKEY_LOCAL_MACHINE\\", "")));
+                    }
                     return Optional.empty();
-                } else {
-                    return output.lines().findFirst().flatMap(s -> {
-                        if (s.startsWith("HKEY_CURRENT_USER\\")) {
-                            return Optional.of(new Key(HKEY_CURRENT_USER, s.replace("HKEY_CURRENT_USER\\", "")));
-                        }
-                        if (s.startsWith("HKEY_LOCAL_MACHINE\\")) {
-                            return Optional.of(new Key(HKEY_LOCAL_MACHINE, s.replace("HKEY_LOCAL_MACHINE\\", "")));
-                        }
-                        return Optional.empty();
-                    });
-                }
-            }
+                });
+            });
         }
     }
 }

@@ -42,6 +42,8 @@ public class StoreCreationMenu {
 
         // menu.getItems().add(category("addCommand", "mdi2c-code-greater-than", DataStoreCreationCategory.COMMAND, "cmd"));
 
+        menu.getItems().add(category("addSerial", "mdi2s-serial-port", DataStoreCreationCategory.SERIAL, "serial"));
+
         menu.getItems().add(category("addDatabase", "mdi2d-database-plus", DataStoreCreationCategory.DATABASE, null));
     }
 

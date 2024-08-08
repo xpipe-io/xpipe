@@ -1,16 +1,10 @@
 package io.xpipe.core.process;
 
-import io.xpipe.core.util.FailableConsumer;
-
-import com.fasterxml.jackson.databind.JsonNode;
-
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 public interface CommandControl extends ProcessControl {
@@ -70,31 +64,13 @@ public interface CommandControl extends ProcessControl {
 
     CommandControl elevated(ElevationFunction function);
 
-    void withStdoutOrThrow(FailableConsumer<InputStreamReader, Exception> c);
-
     String[] readStdoutAndStderr() throws Exception;
 
-    String readStdoutDiscardErr() throws Exception;
-
-    String readStderrDiscardStdout() throws Exception;
-
     void discardOrThrow() throws Exception;
-
-    void accumulateStdout(Consumer<String> con);
-
-    void accumulateStderr(Consumer<String> con);
 
     byte[] readRawBytesOrThrow() throws Exception;
 
     String readStdoutOrThrow() throws Exception;
-
-    JsonNode readStdoutJsonOrThrow() throws Exception;
-
-    String readStderrOrThrow() throws Exception;
-
-    String readStdoutAndWait() throws Exception;
-
-    String readStderrAndWait() throws Exception;
 
     Optional<String> readStdoutIfPossible() throws Exception;
 
@@ -112,10 +88,6 @@ public interface CommandControl extends ProcessControl {
             return false;
         }
     }
-
-    void discardOut();
-
-    void discardErr();
 
     enum TerminalExitMode {
         KEEP_OPEN,

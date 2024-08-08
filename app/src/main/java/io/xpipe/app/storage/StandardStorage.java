@@ -437,7 +437,7 @@ public class StandardStorage extends DataStorage {
             var s = Files.readString(file);
             vaultKey = new String(Base64.getDecoder().decode(s), StandardCharsets.UTF_8);
         } else {
-            Files.createDirectories(dir);
+            FileUtils.forceMkdir(dir.toFile());
             vaultKey = UUID.randomUUID().toString();
             Files.writeString(file, Base64.getEncoder().encodeToString(vaultKey.getBytes(StandardCharsets.UTF_8)));
         }
@@ -458,7 +458,7 @@ public class StandardStorage extends DataStorage {
                 Files.writeString(file, s);
             }
         } else {
-            Files.createDirectories(dir);
+            FileUtils.forceMkdir(dir.toFile());
             var s = OsType.getLocal().getName();
             Files.writeString(file, s);
         }

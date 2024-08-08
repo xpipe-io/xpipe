@@ -22,6 +22,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
 import lombok.SneakyThrows;
+import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -63,7 +64,7 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
         var html = MarkdownHelper.toHtml(markdown, s -> s, htmlTransformation, null);
         try {
             // Workaround for https://bugs.openjdk.org/browse/JDK-8199014
-            Files.createDirectories(file.getParent());
+            FileUtils.forceMkdir(file.getParent().toFile());
             Files.writeString(file, html);
             return file;
         } catch (IOException e) {

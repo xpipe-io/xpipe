@@ -70,7 +70,9 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
                             .bind(Bindings.createDoubleBinding(
                                     () -> {
                                         var v = bar.getVisibleAmount();
-                                        return v < 1.0 ? 1.0 : 0.0;
+                                        // Check for rounding and accuracy issues
+                                        // It might not be exactly equal to 1.0
+                                        return v < 0.99 ? 1.0 : 0.0;
                                     },
                                     bar.visibleAmountProperty()));
                 }

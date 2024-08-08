@@ -11,7 +11,7 @@ public interface EnabledStoreProvider extends DataStoreProvider {
 
     @Override
     default StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
-        if (sec.getWrapper().getValidity().getValue() != DataStoreEntry.Validity.COMPLETE) {
+        if (sec.getWrapper().getValidity().getValue() == DataStoreEntry.Validity.LOAD_FAILED) {
             return StoreEntryComp.create(sec, null, preferLarge);
         }
 

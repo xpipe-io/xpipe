@@ -50,7 +50,7 @@ public class BlobManager {
 
     public Path newBlobFile() throws IOException {
         var file = TEMP.resolve(UUID.randomUUID().toString());
-        Files.createDirectories(file.getParent());
+        FileUtils.forceMkdir(file.getParent().toFile());
         return file;
     }
 

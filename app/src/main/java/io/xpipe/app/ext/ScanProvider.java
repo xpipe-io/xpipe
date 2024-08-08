@@ -2,10 +2,8 @@ package io.xpipe.app.ext;
 
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.core.util.ModuleLayerLoader;
-
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
@@ -20,10 +18,6 @@ public abstract class ScanProvider {
 
     public static List<ScanProvider> getAll() {
         return ALL;
-    }
-
-    public ScanOperation create(DataStore store) {
-        return null;
     }
 
     public ScanOperation create(DataStoreEntry entry, ShellControl sc) throws Exception {
