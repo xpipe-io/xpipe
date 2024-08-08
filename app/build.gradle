@@ -55,7 +55,7 @@ dependencies {
     api ('org.kohsuke:github-api:1.323') {
         exclude group: 'org.apache.commons', module: 'commons-lang3'
     }
-    api 'org.apache.commons:commons-lang3:3.15.0'
+    api 'org.apache.commons:commons-lang3:3.16.0'
     api 'io.sentry:sentry:7.12.1'
     api 'commons-io:commons-io:2.16.1'
     api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.17.2"
