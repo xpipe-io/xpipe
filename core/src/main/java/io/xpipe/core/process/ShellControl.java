@@ -208,10 +208,6 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl singularSubShell(ShellOpenFunction command);
 
-    void writeLineAndReadEcho(String command) throws Exception;
-
-    void writeLineAndReadEcho(String command, boolean log) throws Exception;
-
     void cd(String directory) throws Exception;
 
     default CommandControl command(String command) {

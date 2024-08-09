@@ -118,7 +118,9 @@ public interface ShellDialect {
 
     CommandControl printUsernameCommand(ShellControl shellControl);
 
-    String getPrintExitCodeCommand(String prefix, String suffix);
+    String getPrintStartEchoCommand(String prefix);
+
+    String getPrintExitCodeCommand(String id, String prefix, String suffix);
 
     int assignMissingExitCode();
 
