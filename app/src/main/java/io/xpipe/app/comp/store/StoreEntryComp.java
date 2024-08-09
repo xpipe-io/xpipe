@@ -482,7 +482,7 @@ public abstract class StoreEntryComp extends SimpleComp {
             sc.textProperty().bind(AppI18n.observable("base.createShortcut"));
             sc.setOnAction(event -> {
                 ThreadHelper.runFailableAsync(() -> {
-                    DesktopShortcuts.create(
+                    DesktopShortcuts.createCliOpen(
                             url,
                             DataStorage.get()
                                             .getStoreEntryDisplayName(

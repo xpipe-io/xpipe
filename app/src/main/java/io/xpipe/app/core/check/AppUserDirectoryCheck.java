@@ -2,6 +2,7 @@ package io.xpipe.app.core.check;
 
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
+import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,9 +13,9 @@ public class AppUserDirectoryCheck {
         var dataDirectory = AppProperties.get().getDataDir();
 
         try {
-            Files.createDirectories(dataDirectory);
+            FileUtils.forceMkdir(dataDirectory.toFile());
             var testDirectory = dataDirectory.resolve("permissions_check");
-            Files.createDirectories(testDirectory);
+            FileUtils.forceMkdir(testDirectory.toFile());
             if (!Files.exists(testDirectory)) {
                 throw new IOException("Directory creation in user home directory failed silently");
             }

@@ -29,7 +29,7 @@ public class StoreProviderChoiceComp extends Comp<CompStructure<ComboBox<DataSto
     Property<DataStoreProvider> provider;
     boolean staticDisplay;
 
-    private List<DataStoreProvider> getProviders() {
+    public List<DataStoreProvider> getProviders() {
         return DataStoreProviders.getAll().stream()
                 .filter(val -> filter == null || filter.test(val))
                 .toList();

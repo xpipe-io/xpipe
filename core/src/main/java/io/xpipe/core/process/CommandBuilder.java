@@ -255,6 +255,10 @@ public class CommandBuilder {
     }
 
     public String buildFull(ShellControl sc) throws Exception {
+        if (sc == null) {
+            return buildSimple();
+        }
+
         var s = buildBase(sc);
         LinkedHashMap<String, String> map = new LinkedHashMap<>();
         for (var e : environmentVariables.entrySet()) {

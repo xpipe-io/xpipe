@@ -13,6 +13,11 @@ import java.util.UUID;
 public class AskpassExchange extends BeaconInterface<AskpassExchange.Request> {
 
     @Override
+    public boolean acceptInShutdown() {
+        return true;
+    }
+
+    @Override
     public String getPath() {
         return "/askpass";
     }

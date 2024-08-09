@@ -23,7 +23,7 @@ public class ContextualFileReference {
 
     private static String getDataDir() {
         if (DataStorage.get() == null) {
-            return lastDataDir != null ? lastDataDir : normalized(AppPrefs.DEFAULT_STORAGE_DIR);
+            return lastDataDir != null ? lastDataDir : normalized(AppPrefs.DEFAULT_STORAGE_DIR.resolve("data"));
         }
 
         return lastDataDir = normalized(DataStorage.get().getDataDir());

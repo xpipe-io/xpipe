@@ -157,7 +157,7 @@ public class DataStoreEntry extends StorageElement {
                 null,
                 uuid,
                 categoryUuid,
-                name,
+                name.trim(),
                 Instant.now(),
                 Instant.now(),
                 storeFromNode,
@@ -194,7 +194,7 @@ public class DataStoreEntry extends StorageElement {
         var categoryUuid = Optional.ofNullable(json.get("categoryUuid"))
                 .map(jsonNode -> UUID.fromString(jsonNode.textValue()))
                 .orElse(DataStorage.DEFAULT_CATEGORY_UUID);
-        var name = json.required("name").textValue();
+        var name = json.required("name").textValue().trim();
 
         var persistentState = stateJson.get("persistentState");
         var lastUsed = Optional.ofNullable(stateJson.get("lastUsed"))

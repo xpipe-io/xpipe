@@ -1,6 +1,7 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEvent;
+import org.apache.commons.io.FileUtils;
 
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
@@ -21,7 +22,7 @@ public class AppDataLock {
     public static boolean lock() {
         try {
             var file = getLockFile().toFile();
-            Files.createDirectories(file.toPath().getParent());
+            FileUtils.forceMkdir(file.getParentFile());
             if (!Files.exists(file.toPath())) {
                 try {
                     // It is possible that another instance creates the lock at almost the same time

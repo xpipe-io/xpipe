@@ -190,12 +190,11 @@ public class BrowserTransferModel {
         }
 
         public ObservableBooleanValue downloadFinished() {
-            return Bindings.createBooleanBinding(
-                    () -> {
-                        return progress.getValue() != null
-                                && progress.getValue().done();
-                    },
-                    progress);
+            synchronized (progress) {
+                return Bindings.createBooleanBinding(() -> {
+                    return progress.getValue() != null && progress.getValue().done();
+                }, progress);
+            }
         }
     }
 }

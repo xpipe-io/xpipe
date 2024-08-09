@@ -163,10 +163,10 @@ public class StoreSection {
         var allChildren = all.filtered(
                 other -> {
                     // Legacy implementation that does not use children caches. Use for testing
-                    //            if (true) return DataStorage.get()
-                    //                    .getDisplayParent(other.getEntry())
-                    //                    .map(found -> found.equals(e.getEntry()))
-                    //                    .orElse(false);
+//                                if (true) return DataStorage.get()
+//                                        .getDefaultDisplayParent(other.getEntry())
+//                                        .map(found -> found.equals(e.getEntry()))
+//                                        .orElse(false);
 
                     // is children. This check is fast as the children are cached in the storage
                     return DataStorage.get().getStoreChildren(e.getEntry()).contains(other.getEntry())

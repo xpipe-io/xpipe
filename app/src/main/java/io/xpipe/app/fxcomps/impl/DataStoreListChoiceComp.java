@@ -53,7 +53,7 @@ public class DataStoreListChoiceComp<T extends DataStore> extends SimpleComp {
                             });
                             return new HorizontalComp(List.of(label, Comp.hspacer(), delete)).styleClass("entry");
                         },
-                        true)
+                        false)
                 .padding(new Insets(0))
                 .apply(struc -> struc.get().setMinHeight(0))
                 .apply(struc -> ((VBox) struc.get().getContent()).setSpacing(5));

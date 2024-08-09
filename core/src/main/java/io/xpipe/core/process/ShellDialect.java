@@ -130,7 +130,7 @@ public interface ShellDialect {
 
     default void prepareCommandForShell(CommandBuilder b) {}
 
-    String prepareTerminalInitFileOpenCommand(ShellDialect parentDialect, ShellControl sc, String file);
+    String prepareTerminalInitFileOpenCommand(ShellDialect parentDialect, ShellControl sc, String file, boolean exit);
 
     String runScriptCommand(ShellControl parent, String file);
 
