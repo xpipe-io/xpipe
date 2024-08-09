@@ -16,11 +16,10 @@ public class DesktopHelper {
             return Path.of(LocalShell.getLocalPowershell()
                     .executeSimpleStringCommand("[Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)"));
         } else if (OsType.getLocal() == OsType.LINUX) {
-            try (var cmd = LocalShell.getShell().command("xdg-user-dir DESKTOP").start()) {
-                var read = cmd.readStdoutDiscardErr();
-                var exit = cmd.getExitCode();
-                if (exit == 0) {
-                    return Path.of(read);
+            try (var sc = LocalShell.getShell().start()) {
+                var out = sc.command("xdg-user-dir DESKTOP").readStdoutIfPossible();
+                if (out.isPresent()) {
+                    return Path.of(out.get());
                 }
             }
         }
@@ -34,12 +33,10 @@ public class DesktopHelper {
                     .executeSimpleStringCommand(
                             "(New-Object -ComObject Shell.Application).NameSpace('shell:Downloads').Self.Path"));
         } else if (OsType.getLocal() == OsType.LINUX) {
-            try (var cmd =
-                    LocalShell.getShell().command("xdg-user-dir DOWNLOAD").start()) {
-                var read = cmd.readStdoutDiscardErr();
-                var exit = cmd.getExitCode();
-                if (exit == 0) {
-                    return Path.of(read);
+            try (var sc = LocalShell.getShell().start()) {
+                var out = sc.command("xdg-user-dir DOWNLOAD").readStdoutIfPossible();
+                if (out.isPresent()) {
+                    return Path.of(out.get());
                 }
             }
         }

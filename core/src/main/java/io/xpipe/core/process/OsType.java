@@ -181,19 +181,15 @@ public interface OsType {
         @Override
         public String determineOperatingSystemName(ShellControl pc) throws Exception {
             String type = "Unknown";
-            try (CommandControl c = pc.command("uname -o").start()) {
-                var text = c.readStdoutDiscardErr();
-                if (c.getExitCode() == 0) {
-                    type = text.strip();
-                }
+            var uname = pc.command("uname -o").readStdoutIfPossible();
+            if (uname.isPresent()) {
+                type = uname.get();
             }
 
             String version = "?";
-            try (CommandControl c = pc.command("uname -r").start()) {
-                var text = c.readStdoutDiscardErr();
-                if (c.getExitCode() == 0) {
-                    version = text.strip();
-                }
+            var unameR = pc.command("uname -r").readStdoutIfPossible();
+            if (unameR.isPresent()) {
+                version = unameR.get();
             }
 
             return type + " " + version;
@@ -209,18 +205,14 @@ public interface OsType {
 
         @Override
         public String determineOperatingSystemName(ShellControl pc) throws Exception {
-            try (CommandControl c = pc.command("lsb_release -a").start()) {
-                var text = c.readStdoutDiscardErr();
-                if (c.getExitCode() == 0) {
-                    return PropertiesFormatsParser.parse(text, ":").getOrDefault("Description", "Unknown");
-                }
+            var rel = pc.command("lsb_release -a").readStdoutIfPossible();
+            if (rel.isPresent()) {
+                return PropertiesFormatsParser.parse(rel.get(), ":").getOrDefault("Description", "Unknown");
             }
 
-            try (CommandControl c = pc.command("cat /etc/*release").start()) {
-                var text = c.readStdoutDiscardErr();
-                if (c.getExitCode() == 0) {
-                    return PropertiesFormatsParser.parse(text, "=").getOrDefault("PRETTY_NAME", "Unknown");
-                }
+            var cat = pc.command("cat /etc/*release").readStdoutIfPossible();
+            if (cat.isPresent()) {
+                return PropertiesFormatsParser.parse(cat.get(), "=").getOrDefault("PRETTY_NAME", "Unknown");
             }
 
             return super.determineOperatingSystemName(pc);

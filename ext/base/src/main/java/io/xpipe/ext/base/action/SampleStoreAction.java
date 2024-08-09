@@ -10,13 +10,11 @@ import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.store.ShellStore;
-
 import javafx.beans.value.ObservableValue;
-
 import lombok.Value;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.StringReader;
 
 public class SampleStoreAction implements ActionProvider {
 
@@ -83,23 +81,14 @@ public class SampleStoreAction implements ActionProvider {
                         sc.executeSimpleStringCommand(sc.getShellDialect().getEchoCommand("hello!", false));
 
                 // You can also implement custom handling for more complex commands
-                try (CommandControl cc = sc.command("ls").start()) {
-                    // Discard stderr
-                    cc.discardErr();
-
-                    // Read the stdout lines as a stream
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(cc.getStdout(), cc.getCharset()));
-                    // We don't have to close this stream here, that will be automatically done by the command control
-                    // after the try-with block
-                    reader.lines().filter(s -> !s.isBlank()).forEach(s -> {
-                        System.out.println(s);
-                    });
-
-                    // Waits for command completion and returns exit code
-                    if (cc.getExitCode() != 0) {
-                        // Handle failure
-                    }
-                }
+                var lsOut = sc.command("ls").readStdoutOrThrow();
+                // Read the stdout lines as a stream
+                BufferedReader reader = new BufferedReader(new StringReader(lsOut));
+                // We don't have to close this stream here, that will be automatically done by the command control
+                // after the try-with block
+                reader.lines().filter(s -> !s.isBlank()).forEach(s -> {
+                    System.out.println(s);
+                });
 
                 // Commands can also be more complex and span multiple lines.
                 // In this case, XPipe will internally write a command to a script file and then execute the script

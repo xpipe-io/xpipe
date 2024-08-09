@@ -128,3 +128,7 @@
 .root:dark .loading-comp {
     -fx-background-color: rgba(0, 0, 0, 0.5);
 }
+
+.root:light .stacked-ikonli-font-icon > .background-icon { -fx-opacity: 0; }
+
+.stacked-ikonli-font-icon > .background-icon { -fx-opacity: 0.2; }

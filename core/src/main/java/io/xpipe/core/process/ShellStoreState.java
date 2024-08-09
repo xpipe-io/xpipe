@@ -19,6 +19,7 @@ public class ShellStoreState extends DataStoreState implements OsNameState {
     OsType.Any osType;
     String osName;
     ShellDialect shellDialect;
+    ShellTtyState ttyState;
     Boolean running;
 
     public boolean isRunning() {
@@ -39,6 +40,7 @@ public class ShellStoreState extends DataStoreState implements OsNameState {
         b.osType(useNewer(osType, shellStoreState.getOsType()))
                 .osName(useNewer(osName, shellStoreState.getOsName()))
                 .shellDialect(useNewer(shellDialect, shellStoreState.getShellDialect()))
+                .ttyState(useNewer(ttyState, shellStoreState.getTtyState()))
                 .running(useNewer(running, shellStoreState.getRunning()));
     }
 }

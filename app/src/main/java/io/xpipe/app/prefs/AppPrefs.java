@@ -109,6 +109,9 @@ public class AppPrefs {
             map(new SimpleBooleanProperty(false), "developerDisableGuiRestrictions", Boolean.class);
     private final ObservableBooleanValue developerDisableGuiRestrictionsEffective =
             bindDeveloperTrue(developerDisableGuiRestrictions);
+    final BooleanProperty developerForceSshTty =
+            map(new SimpleBooleanProperty(false), "developerForceSshTty", Boolean.class);
+
     final ObjectProperty<SupportedLocale> language =
             map(new SimpleObjectProperty<>(SupportedLocale.getEnglish()), "language", SupportedLocale.class);
 
@@ -433,6 +436,10 @@ public class AppPrefs {
 
     public ObservableBooleanValue developerDisableGuiRestrictions() {
         return developerDisableGuiRestrictionsEffective;
+    }
+
+    public ObservableBooleanValue developerForceSshTty() {
+        return bindDeveloperTrue(developerForceSshTty);
     }
 
     @SuppressWarnings("unchecked")

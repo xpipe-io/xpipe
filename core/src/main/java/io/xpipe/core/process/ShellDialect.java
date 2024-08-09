@@ -184,5 +184,5 @@ public interface ShellDialect {
 
     String getDisplayName();
 
-    boolean doesEchoInput();
+    boolean doesEchoInputByDefault();
 }
