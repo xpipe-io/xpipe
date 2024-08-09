@@ -12,6 +12,11 @@ import lombok.extern.jackson.Jacksonized;
 public class HandshakeExchange extends BeaconInterface<HandshakeExchange.Request> {
 
     @Override
+    public boolean acceptInShutdown() {
+        return true;
+    }
+
+    @Override
     public String getPath() {
         return "/handshake";
     }

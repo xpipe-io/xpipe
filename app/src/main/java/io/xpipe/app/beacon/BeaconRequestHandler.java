@@ -28,7 +28,8 @@ public class BeaconRequestHandler<T> implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) {
-        if (OperationMode.isInShutdown()) {
+        if (OperationMode.isInShutdown() && !beaconInterface.acceptInShutdown()) {
+            writeError(exchange, new BeaconClientErrorResponse("Daemon is currently in shutdown"), 400);
             return;
         }
 
