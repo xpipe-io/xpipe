@@ -33,26 +33,49 @@ public class SystemStateComp extends SimpleComp {
             PlatformThread.runLaterIfNeeded(() -> fi.setIconLiteral(i));
         });
 
-        var border = new FontIcon("mdi2c-circle-outline");
+        var bg = new FontIcon("mdi2s-square-rounded");
+        bg.getStyleClass().add("background-icon");
+
+        var border = new FontIcon("mdi2s-square-rounded-outline");
         border.getStyleClass().add("outer-icon");
-        border.setOpacity(0.5);
+        border.setOpacity(0.3);
 
         var success = Styles.toDataURI(
-                ".stacked-ikonli-font-icon > .outer-icon { -fx-icon-color: -color-success-emphasis; }");
+                """
+                .stacked-ikonli-font-icon > .outer-icon { -fx-icon-color: -color-success-emphasis; }
+                
+                .stacked-ikonli-font-icon > .background-icon { -fx-icon-color: -color-success-9; }
+                """
+        );
         var failure =
-                Styles.toDataURI(".stacked-ikonli-font-icon > .outer-icon { -fx-icon-color: -color-danger-emphasis; }");
+                Styles.toDataURI(
+                        """
+                        .stacked-ikonli-font-icon > .outer-icon { -fx-icon-color: -color-danger-emphasis; }
+                        
+                        .stacked-ikonli-font-icon > .background-icon { -fx-icon-color: -color-danger-9; }
+                        """
+                );
         var other =
-                Styles.toDataURI(".stacked-ikonli-font-icon > .outer-icon { -fx-icon-color: -color-accent-emphasis; }");
+                Styles.toDataURI(
+                        """
+                        .stacked-ikonli-font-icon > .outer-icon { -fx-icon-color: -color-accent-emphasis; }
+                        
+                        .stacked-ikonli-font-icon > .background-icon { -fx-icon-color: -color-accent-9; }
+                        """
+                );
 
         var pane = new StackedFontIcon();
-        pane.getChildren().addAll(fi, border);
+        pane.getChildren().addAll(bg, fi, border);
         pane.setAlignment(Pos.CENTER);
 
         var dataClass1 =
                 """
             .stacked-ikonli-font-icon > .outer-icon {
-                -fx-icon-size: 22px;
+                -fx-icon-size: 26px;
             }
+             .stacked-ikonli-font-icon > .background-icon {
+                 -fx-icon-size: 26px;
+             }
             .stacked-ikonli-font-icon > .inner-icon {
                 -fx-icon-size: 12px;
             }

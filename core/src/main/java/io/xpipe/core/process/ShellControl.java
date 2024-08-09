@@ -67,6 +67,7 @@ public interface ShellControl extends ProcessControl {
             var s = store.getState().toBuilder()
                     .osType(shellControl.getOsType())
                     .shellDialect(shellControl.getOriginalShellDialect())
+                    .ttyState(shellControl.getTtyState())
                     .running(true)
                     .osName(shellControl.getOsName())
                     .build();
