@@ -6,6 +6,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.ShellStoreState;
 
+import io.xpipe.core.process.ShellTtyState;
 import javafx.beans.value.ObservableValue;
 
 public class DataStoreFormatter {
@@ -41,7 +42,8 @@ public class DataStoreFormatter {
                     return s.getShellDialect().getDisplayName();
                 }
 
-                return s.isRunning() ? formattedOsName(s.getOsName()) : "Connection failed";
+                var prefix = s.getTtyState() != ShellTtyState.NONE ? "[PTY] " : "";
+                return s.isRunning() ? prefix + formattedOsName(s.getOsName()) : "Connection failed";
             }
 
             return "?";

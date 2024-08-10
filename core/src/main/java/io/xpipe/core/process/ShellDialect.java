@@ -9,6 +9,7 @@ import io.xpipe.core.util.StreamCharset;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -119,6 +120,8 @@ public interface ShellDialect {
     CommandControl printUsernameCommand(ShellControl shellControl);
 
     String getPrintStartEchoCommand(String prefix);
+
+    Optional<String> executeRobustBootstrapOutputCommand(ShellControl shellControl, String original) throws Exception;
 
     String getPrintExitCodeCommand(String id, String prefix, String suffix);
 

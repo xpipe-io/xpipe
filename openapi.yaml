@@ -627,6 +627,9 @@ components:
         osName:
           type: string
           description: The display name of the operating system
+        ttyState:
+          type: string
+          description: Whether a tty/pty has been allocated for the connection. If allocated, input and output will be unreliable. It is not recommended to use a shell connection then.
         temp:
           type: string
           description: The location of the temporary directory

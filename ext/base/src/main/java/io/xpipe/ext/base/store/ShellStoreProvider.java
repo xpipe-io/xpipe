@@ -4,7 +4,6 @@ import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.comp.base.OsLogoComp;
 import io.xpipe.app.comp.base.SystemStateComp;
 import io.xpipe.app.comp.base.TtyWarningComp;
-import io.xpipe.app.comp.store.StoreEntryComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.ext.ActionProvider;
@@ -13,6 +12,7 @@ import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.process.ShellTtyState;
@@ -20,6 +20,7 @@ import io.xpipe.core.store.ShellStore;
 import io.xpipe.ext.base.script.ScriptStore;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.value.ObservableValue;
 
 public interface ShellStoreProvider extends DataStoreProvider {
 
@@ -30,11 +31,6 @@ public interface ShellStoreProvider extends DataStoreProvider {
                     return state.getTtyState() == ShellTtyState.NONE;
                 },
                 w.getPersistentState()));
-    }
-
-    @Override
-    default StoreEntryComp customEntryComp(StoreSection s, boolean preferLarge) {
-        return StoreEntryComp.create(s, createTtyWarning(s.getWrapper()), preferLarge);
     }
 
     @Override
@@ -65,5 +61,10 @@ public interface ShellStoreProvider extends DataStoreProvider {
     @Override
     default DataStoreUsageCategory getUsageCategory() {
         return DataStoreUsageCategory.SHELL;
+    }
+
+    @Override
+    default ObservableValue<String> informationString(StoreSection section) {
+        return DataStoreFormatter.shellInformation(section.getWrapper());
     }
 }

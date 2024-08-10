@@ -1673,6 +1673,7 @@ These errors will be returned with the HTTP return code 500.
   "shellDialect": 0,
   "osType": "string",
   "osName": "string",
+  "ttyState": "string",
   "temp": "string"
 }
 ```
@@ -2969,6 +2970,7 @@ undefined
   "shellDialect": 0,
   "osType": "string",
   "osName": "string",
+  "ttyState": "string",
   "temp": "string"
 }
 
@@ -2981,6 +2983,7 @@ undefined
 |shellDialect|integer|true|none|The shell dialect|
 |osType|string|true|none|The general type of operating system|
 |osName|string|true|none|The display name of the operating system|
+|ttyState|string|false|none|Whether a tty/pty has been allocated for the connection. If allocated, input and output will be unreliable. It is not recommended to use a shell connection then.|
 |temp|string|true|none|The location of the temporary directory|
 
 <h2 id="tocS_ShellStopRequest">ShellStopRequest</h2>

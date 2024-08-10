@@ -36,6 +36,7 @@ public class ShellStartExchangeImpl extends ShellStartExchange {
                 .osType(control.getOsType())
                 .osName(control.getOsName())
                 .temp(control.getSystemTemporaryDirectory())
+                .ttyState(control.getTtyState())
                 .build();
     }
 }
