@@ -104,7 +104,7 @@ public class DataStoreFormatter {
                     DataStoreFormatter.cut(name, lengthShare), DataStoreFormatter.cut(region, length - lengthShare));
         }
 
-        if (input.endsWith(".compute.amazonaws.com")) {
+        if (input.endsWith(".compute.amazonaws.com") || input.endsWith(".compute.internal")) {
             var split = input.split("\\.");
             var name = split[0];
             var region = split[1];
