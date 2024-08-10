@@ -42,7 +42,7 @@ public class DataStoreFormatter {
                     return s.getShellDialect().getDisplayName();
                 }
 
-                var prefix = s.getTtyState() != ShellTtyState.NONE ? "[PTY] " : "";
+                var prefix = s.getTtyState() != null && s.getTtyState() != ShellTtyState.NONE ? "[PTY] " : "";
                 return s.isRunning() ? prefix + formattedOsName(s.getOsName()) : "Connection failed";
             }
 

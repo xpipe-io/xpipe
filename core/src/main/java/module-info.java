@@ -17,6 +17,7 @@ open module io.xpipe.core {
     requires com.fasterxml.jackson.databind;
     requires java.net.http;
     requires static lombok;
+    requires java.sql;
 
     uses com.fasterxml.jackson.databind.Module;
     uses ProcessControlProvider;

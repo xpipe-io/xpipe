@@ -36,6 +36,11 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public FileSystem open() throws Exception {
         shellControl.start();
+
+        if (!shellControl.getTtyState().isPreservesOutput() || !shellControl.getTtyState().isSupportsInput()) {
+            throw new UnsupportedOperationException("Shell has a PTY allocated and does not support file system operations");
+        }
+
         var d = shellControl.getShellDialect().getDumbMode();
         if (!d.supportsAnyPossibleInteraction()) {
             shellControl.close();
