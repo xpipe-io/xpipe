@@ -413,7 +413,7 @@ public class StoreCreationComp extends DialogComp {
         var layout = new BorderPane();
         layout.getStyleClass().add("store-creator");
         var providerChoice = new StoreProviderChoiceComp(filter, provider, staticDisplay);
-        var showProviders = (!staticDisplay && providerChoice.getProviders().size() > 1) ||
+        var showProviders = (!staticDisplay && (providerChoice.getProviders().size() > 1 || providerChoice.getProviders().getFirst().showProviderChoice())) ||
                 (staticDisplay && provider.getValue().showProviderChoice());
         if (showProviders) {
             providerChoice.onSceneAssign(struc -> struc.get().requestFocus());
