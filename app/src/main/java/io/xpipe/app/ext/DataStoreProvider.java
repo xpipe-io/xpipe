@@ -26,6 +26,10 @@ import java.util.List;
 
 public interface DataStoreProvider {
 
+    default boolean showProviderChoice() {
+        return true;
+    }
+
     default boolean shouldShow(StoreEntryWrapper w) {
         return true;
     }

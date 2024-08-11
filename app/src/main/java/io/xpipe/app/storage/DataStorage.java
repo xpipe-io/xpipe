@@ -448,7 +448,9 @@ public abstract class DataStorage {
             nc.get().notifyUpdate(false, true);
         });
 
-        deleteWithChildren(toRemove.toArray(DataStoreEntry[]::new));
+        if (h.removeLeftovers()) {
+            deleteWithChildren(toRemove.toArray(DataStoreEntry[]::new));
+        }
         addStoreEntriesIfNotPresent(toAdd.stream().map(DataStoreEntryRef::get).toArray(DataStoreEntry[]::new));
         toUpdate.forEach(pair -> {
             // Update state by merging
