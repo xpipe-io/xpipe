@@ -96,9 +96,13 @@
     -fx-background-radius: 4px;
     -fx-border-width: 0.05em;
     -fx-border-radius: 4px;
-    -fx-padding: 1em;
+    -fx-padding: 1px;
     -fx-background-color: -color-bg-default;
     -fx-border-color: -color-neutral-emphasis;
+}
+
+.scan-list .list-content {
+    -fx-padding: 0.7em 1px 1em 1em;
 }
 
 * {
@@ -128,7 +132,3 @@
 .root:dark .loading-comp {
     -fx-background-color: rgba(0, 0, 0, 0.5);
 }
-
-.root:light .stacked-ikonli-font-icon > .background-icon { -fx-opacity: 0; }
-
-.stacked-ikonli-font-icon > .background-icon { -fx-opacity: 0.2; }

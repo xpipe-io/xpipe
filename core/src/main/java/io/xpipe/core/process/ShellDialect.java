@@ -105,8 +105,6 @@ public interface ShellDialect {
 
     String nullStdin(String command);
 
-    String getScriptPermissionsCommand(String file);
-
     ShellDialectAskpass getAskpass();
 
     String getSetEnvironmentVariableCommand(String variable, String value);
@@ -132,8 +130,6 @@ public interface ShellDialect {
     }
 
     CommandBuilder getOpenScriptCommand(String file);
-
-    default void prepareCommandForShell(CommandBuilder b) {}
 
     String prepareTerminalInitFileOpenCommand(ShellDialect parentDialect, ShellControl sc, String file, boolean exit);
 

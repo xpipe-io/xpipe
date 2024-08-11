@@ -142,6 +142,11 @@ public class ScanAlert {
         }
 
         @Override
+        protected Comp<?> pane(Comp<?> content) {
+            return content;
+        }
+
+        @Override
         public Comp<?> content() {
             StackPane stackPane = new StackPane();
             stackPane.getStyleClass().add("scan-list");
@@ -166,7 +171,7 @@ public class ScanAlert {
                     .apply(struc -> {
                         VBox.setVgrow(struc.get().getChildren().get(1), ALWAYS);
                     })
-                    .padding(new Insets(20));
+                    .padding(new Insets(5, 20, 20, 20));
 
             entry.subscribe(newValue -> {
                 selected.clear();
