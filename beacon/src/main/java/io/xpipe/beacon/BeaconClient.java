@@ -24,6 +24,15 @@ public class BeaconClient {
         this.port = port;
     }
 
+    public static boolean isOccupied(int port) {
+        var file = XPipeInstallation.getLocalBeaconAuthFile();
+        var reachable = BeaconServer.isReachable(port);
+        if (!Files.exists(file) && !reachable) {
+            return false;
+        }
+        return reachable;
+    }
+
     public static BeaconClient establishConnection(int port, BeaconClientInformation information) throws Exception {
         var client = new BeaconClient(port);
         var auth = Files.readString(XPipeInstallation.getLocalBeaconAuthFile());
@@ -55,7 +64,8 @@ public class BeaconClient {
         var client = HttpClient.newHttpClient();
         HttpResponse<String> response;
         try {
-            var uri = URI.create("http://localhost:" + port + prov.getPath());
+            // Use direct IP to prevent DNS lookups and potential blocks (e.g. portmaster)
+            var uri = URI.create("http://127.0.0.1:" + port + prov.getPath());
             var builder = HttpRequest.newBuilder();
             if (token != null) {
                 builder.header("Authorization", "Bearer " + token);

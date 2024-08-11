@@ -124,10 +124,10 @@ public class StoreViewState {
 
     public void updateDisplay() {
         allEntries.getList().forEach(e -> e.applyLastAccess());
-        toggleStoreListUpdate();
+        triggerStoreListUpdate();
     }
 
-    public void toggleStoreListUpdate() {
+    public void triggerStoreListUpdate() {
         PlatformThread.runLaterIfNeeded(() -> {
             entriesListUpdateObservable.set(entriesListUpdateObservable.get() + 1);
         });
@@ -152,7 +152,7 @@ public class StoreViewState {
             @Override
             public void onStoreListUpdate() {
                 Platform.runLater(() -> {
-                    toggleStoreListUpdate();
+                    triggerStoreListUpdate();
                 });
             }
 

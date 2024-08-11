@@ -1,6 +1,6 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.util.LabelGraphic;
 
 import javafx.application.Platform;
 import javafx.geometry.Side;
@@ -36,14 +36,14 @@ public class ContextMenuHelper {
         return contextMenu;
     }
 
-    public static MenuItem item(Comp<?> graphic, String name) {
-        var i = new MenuItem(name, graphic.createRegion());
+    public static MenuItem item(LabelGraphic graphic, String name) {
+        var i = new MenuItem(name, graphic.createGraphicNode());
         return i;
     }
 
     public static void toggleShow(ContextMenu contextMenu, Node ref, Side side) {
         if (!contextMenu.isShowing()) {
-            contextMenu.show(ref, Side.RIGHT, 0, 0);
+            contextMenu.show(ref, side, 0, 0);
         } else {
             contextMenu.hide();
         }

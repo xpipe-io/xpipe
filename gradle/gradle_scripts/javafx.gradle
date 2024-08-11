@@ -4,10 +4,10 @@ def currentOS = DefaultNativePlatform.currentOperatingSystem;
 def platform = null
 if (currentOS.isWindows()) {
     platform = 'win'
-} else if (currentOS.isLinux()) {
-    platform = 'linux'
 } else if (currentOS.isMacOsX()) {
     platform = 'mac'
+} else {
+    platform = 'linux'
 }
 
 if (System.getProperty ("os.arch") == 'aarch64') {

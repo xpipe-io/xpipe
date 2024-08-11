@@ -1,6 +1,7 @@
 package io.xpipe.ext.base.service;
 
 import io.xpipe.app.comp.base.SystemStateComp;
+import io.xpipe.app.comp.store.DenseStoreEntryComp;
 import io.xpipe.app.comp.store.StoreEntryComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreSection;
@@ -21,6 +22,11 @@ import javafx.beans.value.ObservableValue;
 import java.util.List;
 
 public abstract class AbstractServiceStoreProvider implements SingletonSessionStoreProvider, DataStoreProvider {
+
+    public String displayName(DataStoreEntry entry) {
+        AbstractServiceStore s = entry.getStore().asNeeded();
+        return DataStorage.get().getStoreEntryDisplayName(s.getHost().get()) + " - Port " + s.getRemotePort();
+    }
 
     @Override
     public DataStoreUsageCategory getUsageCategory() {
@@ -80,7 +86,7 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
                     return true;
                 },
                 sec.getWrapper().getCache()));
-        return StoreEntryComp.create(sec.getWrapper(), toggle, preferLarge);
+        return new DenseStoreEntryComp(sec, true, toggle);
     }
 
     @Override
@@ -98,8 +104,8 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     }
 
     @Override
-    public ObservableValue<String> informationString(StoreEntryWrapper wrapper) {
-        AbstractServiceStore s = wrapper.getEntry().getStore().asNeeded();
+    public ObservableValue<String> informationString(StoreSection section) {
+        AbstractServiceStore s = section.getWrapper().getEntry().getStore().asNeeded();
         if (s.getLocalPort() != null) {
             return new SimpleStringProperty("Port " + s.getLocalPort() + " <- " + s.getRemotePort());
         } else {

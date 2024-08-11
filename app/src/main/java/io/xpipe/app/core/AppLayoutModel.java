@@ -78,19 +78,19 @@ public class AppLayoutModel {
                         "mdi2f-file-cabinet",
                         new BrowserSessionComp(BrowserSessionModel.DEFAULT),
                         null,
-                        new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.CONTROL_DOWN)),
+                        new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN)),
                 new Entry(
                         AppI18n.observable("connections"),
                         "mdi2c-connection",
                         new StoreLayoutComp(),
                         null,
-                        new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.CONTROL_DOWN)),
+                        new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN)),
                 new Entry(
                         AppI18n.observable("settings"),
                         "mdsmz-miscellaneous_services",
                         new AppPrefsComp(),
                         null,
-                        new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.CONTROL_DOWN)),
+                        new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.SHORTCUT_DOWN)),
                 new Entry(
                         AppI18n.observable("explorePlans"),
                         "mdi2p-professional-hexagon",
@@ -102,20 +102,20 @@ public class AppLayoutModel {
                         "mdi2g-github",
                         null,
                         () -> Hyperlinks.open(Hyperlinks.GITHUB),
-                        new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.CONTROL_DOWN)),
+                        null),
                 new Entry(
                         AppI18n.observable("discord"),
                         "mdi2d-discord",
                         null,
                         () -> Hyperlinks.open(Hyperlinks.DISCORD),
-                        new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.CONTROL_DOWN)),
+                        null),
                 new Entry(
                         AppI18n.observable("api"),
                         "mdi2c-code-json",
                         null,
                         () -> Hyperlinks.open(
                                 "http://localhost:" + AppBeaconServer.get().getPort()),
-                        new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.CONTROL_DOWN))));
+                        null)));
         return l;
     }
 
@@ -128,5 +128,6 @@ public class AppLayoutModel {
         double browserConnectionsWidth;
     }
 
-    public record Entry(ObservableValue<String> name, String icon, Comp<?> comp, Runnable action, KeyCombination combination) {}
+    public record Entry(
+            ObservableValue<String> name, String icon, Comp<?> comp, Runnable action, KeyCombination combination) {}
 }

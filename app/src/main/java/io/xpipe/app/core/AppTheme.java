@@ -43,6 +43,10 @@ public class AppTheme {
 
     public static void initThemeHandlers(Stage stage) {
         Runnable r = () -> {
+            stage.getScene()
+                    .getRoot()
+                    .pseudoClassStateChanged(
+                            PseudoClass.getPseudoClass(OsType.getLocal().getId()), true);
             if (AppPrefs.get() == null) {
                 var def = Theme.getDefaultLightTheme();
                 stage.getScene().getRoot().getStyleClass().add(def.getCssId());
@@ -109,6 +113,9 @@ public class AppTheme {
                     }
                 });
             });
+        } catch (UnsupportedOperationException ex) {
+            // The platform preferences are sometimes not initialized yet
+            ErrorEvent.fromThrowable(ex).expected().omit().handle();
         } catch (Throwable t) {
             ErrorEvent.fromThrowable(t).omit().handle();
         }
@@ -132,6 +139,9 @@ public class AppTheme {
             } else {
                 AppPrefs.get().theme.setValue(Theme.getDefaultLightTheme());
             }
+        } catch (UnsupportedOperationException ex) {
+            // The platform preferences are sometimes not initialized yet
+            ErrorEvent.fromThrowable(ex).expected().omit().handle();
         } catch (Exception ex) {
             // The color scheme query can fail if the toolkit is not initialized properly
             AppPrefs.get().theme.setValue(Theme.getDefaultLightTheme());
@@ -205,7 +215,6 @@ public class AppTheme {
 
             Application.setUserAgentStylesheet(Styles.toDataURI(builder.toString()));
         }
-
 
         public List<String> getAdditionalStylesheets() {
             return List.of();

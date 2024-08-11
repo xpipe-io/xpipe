@@ -9,6 +9,7 @@ import io.xpipe.app.browser.file.BrowserContextMenu;
 import io.xpipe.app.browser.file.BrowserFileListComp;
 import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.comp.base.MultiContentComp;
+import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
@@ -84,10 +85,11 @@ public class OpenFileSystemComp extends SimpleComp {
         var filter = new BrowserFilterComp(model, model.getFilter()).createStructure();
 
         var topBar = new HBox();
-        filter.textField().prefHeightProperty().bind(topBar.heightProperty());
         topBar.setAlignment(Pos.CENTER);
         topBar.getStyleClass().add("top-bar");
         var navBar = new BrowserNavBar(model).createStructure();
+        filter.textField().prefHeightProperty().bind(navBar.get().heightProperty());
+        AppFont.medium(navBar.get());
         topBar.getChildren()
                 .setAll(
                         overview,
@@ -117,13 +119,13 @@ public class OpenFileSystemComp extends SimpleComp {
         });
 
         InputHelper.onKeyCombination(
-                root, new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN), true, keyEvent -> {
+                root, new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN), true, keyEvent -> {
                     filter.toggleButton().fire();
                     filter.textField().requestFocus();
                     keyEvent.consume();
                 });
         InputHelper.onKeyCombination(
-                root, new KeyCodeCombination(KeyCode.L, KeyCombination.CONTROL_DOWN), true, keyEvent -> {
+                root, new KeyCodeCombination(KeyCode.L, KeyCombination.SHORTCUT_DOWN), true, keyEvent -> {
                     navBar.textField().requestFocus();
                     keyEvent.consume();
                 });
@@ -134,6 +136,14 @@ public class OpenFileSystemComp extends SimpleComp {
                 });
         InputHelper.onKeyCombination(
                 root, new KeyCodeCombination(KeyCode.UP, KeyCombination.ALT_DOWN), true, keyEvent -> {
+                    var p = model.getCurrentParentDirectory();
+                    if (p != null) {
+                        model.cdAsync(p.getPath());
+                    }
+                    keyEvent.consume();
+                });
+        InputHelper.onKeyCombination(
+                root, new KeyCodeCombination(KeyCode.BACK_SPACE), true, keyEvent -> {
                     var p = model.getCurrentParentDirectory();
                     if (p != null) {
                         model.cdAsync(p.getPath());

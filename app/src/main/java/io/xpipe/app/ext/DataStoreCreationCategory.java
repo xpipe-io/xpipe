@@ -9,5 +9,6 @@ public enum DataStoreCreationCategory {
     TUNNEL,
     SCRIPT,
     CLUSTER,
-    DESKTOP
+    DESKTOP,
+    SERIAL
 }

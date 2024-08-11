@@ -26,6 +26,7 @@ public class ShellTemp {
             temp = temp.resolve(user != null ? user : "user");
 
             try {
+                FileUtils.forceMkdir(temp.toFile());
                 // We did not set this in earlier versions. If we are running as a different user, it might fail
                 Files.setPosixFilePermissions(temp, PosixFilePermissions.fromString("rwxrwxrwx"));
             } catch (Exception e) {

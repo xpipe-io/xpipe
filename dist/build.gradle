@@ -1,8 +1,8 @@
 
 plugins {
     id 'org.beryx.jlink' version '3.0.1'
-    id "org.asciidoctor.jvm.convert" version "4.0.2"
-    id 'org.jreleaser' version '1.12.0'
+    id "org.asciidoctor.jvm.convert" version "4.0.3"
+    id 'org.jreleaser' version '1.13.1'
     id("com.netflix.nebula.ospackage") version "11.9.1"
     id 'org.gradle.crypto.checksum' version '1.4.0'
     id 'signing'
@@ -40,11 +40,11 @@ task createChecksums(type: Checksum) {
     doLast {
         def artifactChecksumsSha256Hex = new HashMap<String, String>()
         for (final def file in outputDirectory.get().getAsFileTree().files) {
-            if (file.toString().endsWith('mapping.map') || file.toString().endsWith('.asc')) {
+            def name = file.name.lastIndexOf('.').with {it != -1 ? file.name[0..<it] : file.name}
+            if (name.endsWith('mapping.map') || name.endsWith('.asc')) {
                 continue
             }
 
-            def name = file.name.lastIndexOf('.').with {it != -1 ? file.name[0..<it] : file.name}
             artifactChecksumsSha256Hex.put(name, file.text.trim())
         }
 
@@ -76,6 +76,7 @@ apply from: 'base.gradle'
 apply from: 'jpackage.gradle'
 
 if (rootProject.fullVersion) {
+    apply from: 'base_full.gradle'
     apply from: 'cli.gradle'
     apply from: 'portable.gradle'
     apply from: 'proguard.gradle'

@@ -1,10 +1,11 @@
 package io.xpipe.app.beacon.impl;
 
-import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.ConnectionToggleExchange;
 import io.xpipe.core.store.SingletonSessionStore;
+
+import com.sun.net.httpserver.HttpExchange;
 
 public class ConnectionToggleExchangeImpl extends ConnectionToggleExchange {
 

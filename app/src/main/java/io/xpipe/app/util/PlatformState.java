@@ -6,7 +6,9 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
+
 import javafx.application.Platform;
+
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.SystemUtils;
@@ -121,7 +123,8 @@ public enum PlatformState {
         }
 
         if (SystemUtils.IS_OS_WINDOWS && ModifiedStage.mergeFrame()) {
-            // This is primarily intended to fix Windows unified stage transparency issues (https://bugs.openjdk.org/browse/JDK-8329382)
+            // This is primarily intended to fix Windows unified stage transparency issues
+            // (https://bugs.openjdk.org/browse/JDK-8329382)
             System.setProperty("prism.forceUploadingPainter", "true");
         }
 
@@ -152,7 +155,7 @@ public enum PlatformState {
                 // Platform initialization has failed in this case
                 PlatformState.setCurrent(PlatformState.EXITED);
                 TrackEvent.error(t.getMessage());
-                lastError =t;
+                lastError = t;
                 return;
             }
         }

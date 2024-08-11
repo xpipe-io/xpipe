@@ -62,6 +62,10 @@ public abstract class BeaconInterface<T> {
         return (Class<T>) Class.forName(name);
     }
 
+    public boolean acceptInShutdown() {
+        return false;
+    }
+
     public boolean requiresCompletedStartup() {
         return true;
     }

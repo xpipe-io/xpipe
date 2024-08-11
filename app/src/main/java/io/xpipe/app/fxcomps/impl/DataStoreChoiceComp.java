@@ -1,7 +1,5 @@
 package io.xpipe.app.fxcomps.impl;
 
-import atlantafx.base.controls.Popover;
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.store.*;
 import io.xpipe.app.core.AppFont;
@@ -15,6 +13,7 @@ import io.xpipe.app.util.DataStoreCategoryChoiceComp;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.store.ShellStore;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -26,6 +25,9 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+
+import atlantafx.base.controls.Popover;
+import atlantafx.base.theme.Styles;
 import lombok.RequiredArgsConstructor;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -101,9 +103,9 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                             comp.disable(new SimpleBooleanProperty(true));
                         }
                     },
-                    storeEntryWrapper -> {
-                        if (applicable.test(storeEntryWrapper)) {
-                            selected.setValue(storeEntryWrapper.getEntry().ref());
+                    sec -> {
+                        if (applicable.test(sec.getWrapper())) {
+                            selected.setValue(sec.getWrapper().getEntry().ref());
                             popover.hide();
                         }
                     });
@@ -112,22 +114,31 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                             StoreViewState.get().getActiveCategory(),
                             selectedCategory)
                     .styleClass(Styles.LEFT_PILL);
-            var filter =
-                    new FilterComp(filterText).styleClass(Styles.CENTER_PILL).hgrow();
+            var filter = new FilterComp(filterText).styleClass(Styles.CENTER_PILL).hgrow();
 
             var addButton = Comp.of(() -> {
                         MenuButton m = new MenuButton(null, new FontIcon("mdi2p-plus-box-outline"));
+                        m.setMaxHeight(100);
+                        m.setMinHeight(0);
                         StoreCreationMenu.addButtons(m);
                         return m;
                     })
                     .accessibleTextKey("addConnection")
-                    .padding(new Insets(-2))
-                    .styleClass(Styles.RIGHT_PILL)
-                    .grow(false, true);
+                    .padding(new Insets(-5))
+                    .styleClass(Styles.RIGHT_PILL);
 
-            var top = new HorizontalComp(List.of(category, filter.hgrow(), addButton))
+            var top = new HorizontalComp(List.of(category, filter, addButton))
                     .styleClass("top")
                     .apply(struc -> struc.get().setFillHeight(true))
+                    .apply(struc -> {
+                        var first = ((Region) struc.get().getChildren().get(0));
+                        var second = ((Region) struc.get().getChildren().get(1));
+                        var third = ((Region) struc.get().getChildren().get(1));
+                        second.prefHeightProperty().bind(first.heightProperty());
+                        second.minHeightProperty().bind(first.heightProperty());
+                        second.maxHeightProperty().bind(first.heightProperty());
+                        third.prefHeightProperty().bind(first.heightProperty());
+                    })
                     .apply(struc -> {
                         // Ugly solution to focus the text field
                         // Somehow this does not work through the normal on shown listeners

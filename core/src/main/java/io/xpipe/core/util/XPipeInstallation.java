@@ -32,7 +32,7 @@ public class XPipeInstallation {
     }
 
     public static Path getLocalBeaconAuthFile() {
-        return Path.of(System.getProperty("java.io.tmpdir"), "xpipe_auth");
+        return Path.of(System.getProperty("java.io.tmpdir"), isStaging() ? "xpipe_ptb_auth" : "xpipe_auth");
     }
 
     public static String createExternalAsyncLaunchCommand(

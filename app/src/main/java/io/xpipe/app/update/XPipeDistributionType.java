@@ -99,16 +99,13 @@ public enum XPipeDistributionType {
             // In theory, we can also add  && !AppProperties.get().isStaging() here, but we want to replicate the
             // production behavior
             if (OsType.getLocal().equals(OsType.WINDOWS)) {
-                try (var chocoOut =
-                        sc.command("choco search --local-only -r xpipe").start()) {
-                    var out = chocoOut.readStdoutDiscardErr();
-                    if (chocoOut.getExitCode() == 0) {
-                        var split = out.split("\\|");
-                        if (split.length == 2) {
-                            var version = split[1];
-                            if (AppProperties.get().getVersion().equals(version)) {
-                                return CHOCO;
-                            }
+                var out = sc.command("choco search --local-only -r xpipe").readStdoutIfPossible();
+                if (out.isPresent()) {
+                    var split = out.get().split("\\|");
+                    if (split.length == 2) {
+                        var version = split[1];
+                        if (AppProperties.get().getVersion().equals(version)) {
+                            return CHOCO;
                         }
                     }
                 }
@@ -117,17 +114,15 @@ public enum XPipeDistributionType {
             // In theory, we can also add  && !AppProperties.get().isStaging() here, but we want to replicate the
             // production behavior
             if (OsType.getLocal().equals(OsType.MACOS)) {
-                try (var brewOut = sc.command("brew list --casks --versions").start()) {
-                    var out = brewOut.readStdoutDiscardErr();
-                    if (brewOut.getExitCode() == 0) {
-                        if (out.lines().anyMatch(s -> {
-                            var split = s.split(" ");
-                            return split.length == 2
-                                    && split[0].equals("xpipe")
-                                    && split[1].equals(AppProperties.get().getVersion());
-                        })) {
-                            return HOMEBREW;
-                        }
+                var out = sc.command("brew list --casks --versions").readStdoutIfPossible();
+                if (out.isPresent()) {
+                    if (out.get().lines().anyMatch(s -> {
+                        var split = s.split(" ");
+                        return split.length == 2
+                                && split[0].equals("xpipe")
+                                && split[1].equals(AppProperties.get().getVersion());
+                    })) {
+                        return HOMEBREW;
                     }
                 }
             }

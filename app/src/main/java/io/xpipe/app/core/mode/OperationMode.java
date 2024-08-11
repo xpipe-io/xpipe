@@ -86,6 +86,9 @@ public abstract class OperationMode {
 
     private static void setup(String[] args) {
         try {
+            // Register stage theming early to make it apply for any potential early popups
+            ModifiedStage.init();
+
             // Only for handling SIGTERM
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 TrackEvent.info("Received SIGTERM externally");
@@ -96,7 +99,9 @@ public abstract class OperationMode {
             Thread.setDefaultUncaughtExceptionHandler((thread, ex) -> {
                 // It seems like a few exceptions are thrown in the quantum renderer
                 // when in shutdown. We can ignore these
-                if (OperationMode.isInShutdown() && Platform.isFxApplicationThread() && ex instanceof NullPointerException) {
+                if (OperationMode.isInShutdown()
+                        && Platform.isFxApplicationThread()
+                        && ex instanceof NullPointerException) {
                     return;
                 }
 
@@ -117,8 +122,6 @@ public abstract class OperationMode {
             AppExtensionManager.init(true);
             AppI18n.init();
             AppPrefs.initLocal();
-            // Register stage theming early to make it apply for any potential early popups
-            ModifiedStage.init();
             AppBeaconServer.setupPort();
             TrackEvent.info("Finished initial setup");
         } catch (Throwable ex) {
@@ -224,7 +227,7 @@ public abstract class OperationMode {
                 CURRENT = null;
                 r.run();
             } catch (Throwable ex) {
-                ErrorEvent.fromThrowable(ex).build().handle();
+                ErrorEvent.fromThrowable(ex).handle();
                 OperationMode.halt(1);
             }
 

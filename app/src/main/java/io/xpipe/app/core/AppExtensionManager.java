@@ -93,7 +93,7 @@ public class AppExtensionManager {
             Path p = Path.of(localInstallation);
             if (!Files.exists(p)) {
                 throw new IllegalStateException(
-                        "Required local XPipe installation was not found but is required for development");
+                        "Required local XPipe installation was not found but is required for development. See https://github.com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
             }
 
             var iv = getLocalInstallVersion();
@@ -105,8 +105,9 @@ public class AppExtensionManager {
             var sourceVersion = AppVersion.parse(sv)
                     .orElseThrow(() -> new IllegalArgumentException("Invalid source version: " + sv));
             if (AppProperties.get().isLocatorVersionCheck() && !installVersion.equals(sourceVersion)) {
-                throw new IllegalStateException("Incompatible development version. Source: " + iv + ", Installation: "
-                        + sv + "\n\nPlease try to check out the matching release version in the repository.");
+                throw new IllegalStateException(
+                        "Incompatible development version. Source: " + iv + ", Installation: " + sv
+                                + "\n\nPlease try to check out the matching release version in the repository. See https://github.com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
             }
 
             var extensions = XPipeInstallation.getLocalExtensionsDirectory(p);

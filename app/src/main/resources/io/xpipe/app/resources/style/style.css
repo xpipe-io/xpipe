@@ -9,6 +9,10 @@
     -fx-background-color: transparent;
 }
 
+.root:macos:seamless-frame {
+    -fx-padding: 0 0 27 0;
+}
+
 .root:dark:separate-frame .background {
     -fx-background-color: derive(-color-bg-default, 1%);
 }
@@ -46,16 +50,21 @@
 .root:seamless-frame.layout > .background {
     -fx-background-insets: 5 0 0 0;
     -fx-border-insets: 5 0 0 0;
-    -fx-background-radius: 0 10 0 0;
-    -fx-border-radius: 0 10 0 0;
+    -fx-background-radius: 0 6 0 0;
+    -fx-border-radius: 0 6 0 0;
     -fx-border-width: 1 1 0 0;
     -fx-border-color: -color-border-default;
     -fx-padding: 0 0 0 0;
 }
 
+.root:macos:seamless-frame.layout > .background {
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
+}
+
 .root:seamless-frame.layout > .background > * {
-    -fx-background-radius: 0 10 0 0;
-    -fx-border-radius: 0 10 0 0;
+    -fx-background-radius: 0 6 0 0;
+    -fx-border-radius: 0 6 0 0;
 }
 
 .toggle-switch:has-graphic .label {
@@ -63,7 +72,7 @@
 }
 
 .toggle-switch:has-graphic {
-    -fx-font-size: 0.8em;
+    -fx-font-size: 0.75em;
 }
 
 .store-layout .split-pane-divider {
@@ -87,12 +96,16 @@
     -fx-background-radius: 4px;
     -fx-border-width: 0.05em;
     -fx-border-radius: 4px;
-    -fx-padding: 1em;
+    -fx-padding: 1px;
     -fx-background-color: -color-bg-default;
     -fx-border-color: -color-neutral-emphasis;
 }
 
-.text {
+.scan-list .list-content {
+    -fx-padding: 0.7em 1px 1em 1em;
+}
+
+* {
     -fx-font-smoothing-type: gray;
 }
 

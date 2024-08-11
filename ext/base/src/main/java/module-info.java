@@ -12,6 +12,9 @@ import io.xpipe.ext.base.script.ScriptDataStorageProvider;
 import io.xpipe.ext.base.script.ScriptGroupStoreProvider;
 import io.xpipe.ext.base.script.SimpleScriptStoreProvider;
 import io.xpipe.ext.base.service.*;
+import io.xpipe.ext.base.store.StorePauseAction;
+import io.xpipe.ext.base.store.StoreStartAction;
+import io.xpipe.ext.base.store.StoreStopAction;
 
 open module io.xpipe.ext.base {
     exports io.xpipe.ext.base;
@@ -60,10 +63,16 @@ open module io.xpipe.ext.base {
             JavapAction,
             JarAction;
     provides ActionProvider with
+            StoreStopAction,
+            StoreStartAction,
+            StorePauseAction,
             ServiceOpenAction,
+            ServiceOpenHttpAction,
+            ServiceOpenHttpsAction,
             ServiceCopyUrlAction,
             CloneStoreAction,
             RefreshChildrenStoreAction,
+            RunScriptActionMenu,
             LaunchStoreAction,
             XPipeUrlAction,
             EditStoreAction,

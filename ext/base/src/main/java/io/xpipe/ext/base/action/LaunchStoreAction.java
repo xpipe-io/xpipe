@@ -90,7 +90,7 @@ public class LaunchStoreAction implements ActionProvider {
 
         @Override
         public void execute() throws Exception {
-            var storeName = DataStorage.get().getStoreDisplayName(entry);
+            var storeName = DataStorage.get().getStoreEntryDisplayName(entry);
             if (entry.getStore() instanceof ShellStore s) {
                 TerminalLauncher.open(entry, storeName, null, ScriptStore.controlWithDefaultScripts(s.control()));
                 return;

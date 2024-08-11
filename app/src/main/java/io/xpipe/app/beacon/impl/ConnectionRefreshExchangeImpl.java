@@ -1,10 +1,11 @@
 package io.xpipe.app.beacon.impl;
 
-import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.ConnectionRefreshExchange;
+
+import com.sun.net.httpserver.HttpExchange;
 
 public class ConnectionRefreshExchangeImpl extends ConnectionRefreshExchange {
 

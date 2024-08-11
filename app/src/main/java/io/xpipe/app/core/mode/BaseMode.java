@@ -7,6 +7,7 @@ import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppAvCheck;
 import io.xpipe.app.core.check.AppCertutilCheck;
+import io.xpipe.app.core.check.AppRosettaCheck;
 import io.xpipe.app.core.check.AppShellCheck;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataStoreProviders;
@@ -51,6 +52,7 @@ public class BaseMode extends OperationMode {
         AppSid.init();
         LocalShell.init();
         AppShellCheck.check();
+        AppRosettaCheck.check();
         XPipeDistributionType.init();
         AppPrefs.setLocalDefaultsIfNeeded();
         // Initialize beacon server as we should be prepared for git askpass commands

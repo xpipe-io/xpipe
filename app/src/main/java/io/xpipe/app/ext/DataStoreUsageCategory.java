@@ -16,5 +16,7 @@ public enum DataStoreUsageCategory {
     @JsonProperty("desktop")
     DESKTOP,
     @JsonProperty("group")
-    GROUP;
+    GROUP,
+    @JsonProperty("serial")
+    SERIAL;
 }

@@ -40,12 +40,13 @@ public class StoreEntryWrapper {
     private final Property<StoreCategoryWrapper> category = new SimpleObjectProperty<>();
     private final Property<String> summary = new SimpleObjectProperty<>();
     private final Property<StoreNotes> notes;
+    private final IntegerProperty childrenStateUpdateObservable = new SimpleIntegerProperty();
 
     public StoreEntryWrapper(DataStoreEntry entry) {
         this.entry = entry;
         this.name = new SimpleStringProperty(entry.getName());
         this.lastAccess = new SimpleObjectProperty<>(entry.getLastAccess().minus(Duration.ofMillis(500)));
-        ActionProvider.ALL.stream()
+        ActionProvider.ALL_STANDALONE.stream()
                 .filter(dataStoreActionProvider -> {
                     return !entry.isDisabled()
                             && dataStoreActionProvider.getLeafDataStoreCallSite() != null
@@ -61,6 +62,12 @@ public class StoreEntryWrapper {
                 });
         this.notes = new SimpleObjectProperty<>(new StoreNotes(entry.getNotes(), entry.getNotes()));
         setupListeners();
+    }
+
+    public void triggerChildrenStateUpdate() {
+        PlatformThread.runLaterIfNeeded(() -> {
+            childrenStateUpdateObservable.set(childrenStateUpdateObservable.get() + 1);
+        });
     }
 
     public void applyLastAccess() {
@@ -151,7 +158,8 @@ public class StoreEntryWrapper {
             summary.setValue(null);
         } else {
             try {
-                summary.setValue(entry.getProvider() != null ? entry.getProvider().summaryString(this) : null);
+                summary.setValue(
+                        entry.getProvider() != null ? entry.getProvider().summaryString(this) : null);
             } catch (Exception ex) {
                 // Summary creation might fail or have a bug
                 ErrorEvent.fromThrowable(ex).handle();
@@ -163,18 +171,18 @@ public class StoreEntryWrapper {
             defaultActionProvider.setValue(null);
         } else {
             try {
-                var defaultProvider = ActionProvider.ALL.stream()
+                var defaultProvider = ActionProvider.ALL_STANDALONE.stream()
                         .filter(e -> entry.getStore() != null
                                 && e.getDefaultDataStoreCallSite() != null
                                 && e.getDefaultDataStoreCallSite()
-                                .getApplicableClass()
-                                .isAssignableFrom(entry.getStore().getClass())
+                                        .getApplicableClass()
+                                        .isAssignableFrom(entry.getStore().getClass())
                                 && e.getDefaultDataStoreCallSite().isApplicable(entry.ref()))
                         .findFirst()
                         .orElse(null);
                 this.defaultActionProvider.setValue(defaultProvider);
 
-                var newProviders = ActionProvider.ALL.stream()
+                var newProviders = ActionProvider.ALL_STANDALONE.stream()
                         .filter(dataStoreActionProvider -> {
                             return showActionProvider(dataStoreActionProvider);
                         })
@@ -203,7 +211,7 @@ public class StoreEntryWrapper {
         if (branch != null
                 && entry.getStore() != null
                 && branch.getApplicableClass().isAssignableFrom(entry.getStore().getClass())) {
-            return branch.getChildren().stream().anyMatch(child -> {
+            return branch.getChildren(entry.ref()).stream().anyMatch(child -> {
                 return showActionProvider(child);
             });
         }

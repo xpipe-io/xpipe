@@ -1,6 +1,7 @@
 package io.xpipe.app.browser.fs;
 
 import io.xpipe.app.browser.BrowserSavedState;
+import io.xpipe.app.browser.BrowserSavedStateImpl;
 import io.xpipe.app.browser.BrowserTransferProgress;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.file.BrowserFileListModel;
@@ -8,7 +9,6 @@ import io.xpipe.app.browser.file.BrowserFileTransferMode;
 import io.xpipe.app.browser.file.BrowserFileTransferOperation;
 import io.xpipe.app.browser.file.FileSystemHelper;
 import io.xpipe.app.browser.session.BrowserAbstractSessionModel;
-import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.browser.session.BrowserSessionTab;
 import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.fxcomps.Comp;
@@ -110,14 +110,13 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
                 return;
             }
 
+            var current = getCurrentDirectory();
             if (DataStorage.get().getStoreEntries().contains(getEntry().get())
                     && savedState != null
-                    && getCurrentPath().get() != null) {
-                if (getBrowserModel() instanceof BrowserSessionModel bm) {
-                    bm.getSavedState()
-                            .add(new BrowserSavedState.Entry(
-                                    getEntry().get().getUuid(), getCurrentPath().get()));
-                }
+                    && current != null) {
+                savedState.cd(current.getPath(), false);
+                BrowserSavedStateImpl.get()
+                        .add(new BrowserSavedState.Entry(getEntry().get().getUuid(), current.getPath()));
             }
             try {
                 fileSystem.close();
@@ -300,7 +299,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
         // path = FileSystemHelper.normalizeDirectoryPath(this, path);
 
         filter.setValue(null);
-        savedState.cd(path);
+        savedState.cd(path, true);
         history.updateCurrent(path);
         currentPath.set(path);
         loadFilesSync(path);
@@ -461,7 +460,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
     }
 
     public void initWithDefaultDirectory() {
-        savedState.cd(null);
+        savedState.cd(null, false);
         history.updateCurrent(null);
     }
 

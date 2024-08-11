@@ -4,8 +4,6 @@ import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.SimpleCompStructure;
-import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.*;
@@ -29,10 +27,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.skin.TableViewSkin;
 import javafx.scene.control.skin.VirtualFlow;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -40,11 +35,13 @@ import javafx.scene.layout.Region;
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static io.xpipe.app.util.HumanReadableFormat.byteCount;
 import static javafx.scene.control.TableColumn.SortType.ASCENDING;
@@ -60,6 +57,7 @@ public final class BrowserFileListComp extends SimpleComp {
     private static final PseudoClass DRAG_INTO_CURRENT = PseudoClass.getPseudoClass("drag-into-current");
 
     private final BrowserFileListModel fileList;
+    private final StringProperty typedSelection = new SimpleStringProperty("");
 
     public BrowserFileListComp(BrowserFileListModel fileList) {
         this.fileList = fileList;
@@ -124,14 +122,78 @@ public final class BrowserFileListComp extends SimpleComp {
             return true;
         });
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
-        table.setFixedCellSize(34.0);
+        table.setFixedCellSize(32.0);
 
         prepareTableSelectionModel(table);
         prepareTableShortcuts(table);
         prepareTableEntries(table);
         prepareTableChanges(table, mtimeCol, modeCol);
+        prepareTypedSelectionModel(table);
 
         return table;
+    }
+
+    private void prepareTypedSelectionModel(TableView<BrowserEntry> table) {
+        AtomicReference<Instant> lastFail = new AtomicReference<>();
+        table.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            updateTypedSelection(table, lastFail, event, false);
+        });
+
+        table.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            typedSelection.set("");
+            lastFail.set(null);
+        });
+
+        fileList.getFileSystemModel().getCurrentPath().addListener((observable, oldValue, newValue) -> {
+            typedSelection.set("");
+            lastFail.set(null);
+        });
+
+        table.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                typedSelection.set("");
+                lastFail.set(null);
+            }
+        });
+    }
+
+    private void updateTypedSelection(TableView<BrowserEntry> table, AtomicReference<Instant> lastType, KeyEvent event, boolean recursive) {
+        var typed = event.getText();
+        if (typed.isEmpty()) {
+            return;
+        }
+
+        var updated = typedSelection.get() + typed;
+        var found = fileList.getShown().getValue().stream()
+                .filter(browserEntry ->
+                        browserEntry.getFileName().toLowerCase().startsWith(updated.toLowerCase()))
+                .findFirst();
+        if (found.isEmpty()) {
+            if (typedSelection.get().isEmpty()) {
+                return;
+            }
+
+            var inCooldown = lastType.get() != null && Duration.between(lastType.get(), Instant.now()).toMillis() < 1000;
+            if (inCooldown) {
+                lastType.set(Instant.now());
+                event.consume();
+                return;
+            } else {
+                lastType.set(null);
+                typedSelection.set("");
+                table.getSelectionModel().clearSelection();
+                if (!recursive) {
+                    updateTypedSelection(table, lastType, event, true);
+                }
+                return;
+            }
+        }
+
+        lastType.set(Instant.now());
+        typedSelection.set(updated);
+        table.scrollTo(found.get());
+        table.getSelectionModel().clearAndSelect(fileList.getShown().getValue().indexOf(found.get()));
+        event.consume();
     }
 
     private void prepareTableSelectionModel(TableView<BrowserEntry> table) {
@@ -167,7 +229,7 @@ public final class BrowserFileListComp extends SimpleComp {
     }
 
     private void prepareTableShortcuts(TableView<BrowserEntry> table) {
-        table.setOnKeyPressed(event -> {
+        table.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             var selected = fileList.getSelection();
             var action = BrowserAction.getFlattened(fileList.getFileSystemModel(), selected).stream()
                     .filter(browserAction -> browserAction.isApplicable(fileList.getFileSystemModel(), selected)
@@ -219,7 +281,6 @@ public final class BrowserFileListComp extends SimpleComp {
             emptyEntry.onDragDone(event);
         });
 
-
         // Don't let the list view see this event
         // otherwise it unselects everything as it doesn't understand shift clicks
         table.addEventFilter(MouseEvent.MOUSE_CLICKED, t -> {
@@ -242,38 +303,6 @@ public final class BrowserFileListComp extends SimpleComp {
                                 return row.getItem() != null;
                             },
                             row.itemProperty()));
-            new ContextMenuAugment<>(
-                            event -> {
-                                if (row.getItem() == null) {
-                                    return event.getButton() == MouseButton.SECONDARY;
-                                }
-
-                                if (row.getItem() != null
-                                        && row.getItem()
-                                                        .getRawFileEntry()
-                                                        .resolved()
-                                                        .getKind()
-                                                == FileKind.DIRECTORY) {
-                                    return event.getButton() == MouseButton.SECONDARY;
-                                }
-
-                                if (row.getItem() != null
-                                        && row.getItem()
-                                                        .getRawFileEntry()
-                                                        .resolved()
-                                                        .getKind()
-                                                != FileKind.DIRECTORY) {
-                                    return event.getButton() == MouseButton.SECONDARY
-                                            || event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2;
-                                }
-
-                                return false;
-                            },
-                            null,
-                            () -> {
-                                return new BrowserContextMenu(fileList.getFileSystemModel(), row.getItem(), false);
-                            })
-                    .augment(new SimpleCompStructure<>(row));
             var listEntry = Bindings.createObjectBinding(
                     () -> new BrowserFileListCompEntry(table, row, row.getItem(), fileList), row.itemProperty());
 
@@ -331,7 +360,6 @@ public final class BrowserFileListComp extends SimpleComp {
             row.setOnDragDone(event -> {
                 listEntry.get().onDragDone(event);
             });
-
 
             return row;
         });
@@ -564,7 +592,18 @@ public final class BrowserFileListComp extends SimpleComp {
                     event.consume();
                 }
             });
-            InputHelper.onExactKeyCode(tableView, KeyCode.SPACE, false, event -> {
+            InputHelper.onExactKeyCode(tableView, KeyCode.SPACE, true, event -> {
+                var selection = typedSelection.get() + " ";
+                var found = fileList.getShown().getValue().stream()
+                        .filter(browserEntry ->
+                                browserEntry.getFileName().toLowerCase().startsWith(selection))
+                        .findFirst();
+                // Ugly fix to prevent space from showing the menu when there is a file matching
+                // Due to the table view input map, these events always get sent and consumed, not allowing us to differentiate between these cases
+                if (found.isPresent()) {
+                    return;
+                }
+
                 var selected = fileList.getSelection();
                 // Only show one menu across all selected entries
                 if (selected.size() > 0 && selected.getLast() == getTableRow().getItem()) {

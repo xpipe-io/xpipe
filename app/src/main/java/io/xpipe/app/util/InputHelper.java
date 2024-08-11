@@ -2,10 +2,7 @@ package io.xpipe.app.util;
 
 import javafx.event.EventHandler;
 import javafx.event.EventTarget;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -27,11 +24,7 @@ public class InputHelper {
 
     public static void onExactKeyCode(EventTarget target, KeyCode code, boolean filter, Consumer<KeyEvent> r) {
         EventHandler<KeyEvent> keyEventEventHandler = event -> {
-            if (event.isAltDown() || event.isShiftDown() || event.isShortcutDown()) {
-                return;
-            }
-
-            if (code == event.getCode()) {
+            if (new KeyCodeCombination(code).match(event)) {
                 r.accept(event);
             }
         };
@@ -42,20 +35,9 @@ public class InputHelper {
         }
     }
 
-    public static void onInput(EventTarget target, boolean filter, Consumer<KeyEvent> r) {
-        EventHandler<KeyEvent> keyEventEventHandler = event -> {
-            r.accept(event);
-        };
-        if (filter) {
-            target.addEventFilter(KeyEvent.KEY_PRESSED, keyEventEventHandler);
-        } else {
-            target.addEventHandler(KeyEvent.KEY_PRESSED, keyEventEventHandler);
-        }
-    }
-
     public static void onLeft(EventTarget target, boolean filter, Consumer<KeyEvent> r) {
         EventHandler<KeyEvent> e = event -> {
-            if (event.getCode() == KeyCode.LEFT || event.getCode() == KeyCode.NUMPAD4) {
+            if (new KeyCodeCombination(KeyCode.LEFT).match(event) || new KeyCodeCombination(KeyCode.NUMPAD4).match(event)) {
                 r.accept(event);
             }
         };
@@ -68,7 +50,7 @@ public class InputHelper {
 
     public static void onRight(EventTarget target, boolean filter, Consumer<KeyEvent> r) {
         EventHandler<KeyEvent> e = event -> {
-            if (event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.NUMPAD6) {
+            if (new KeyCodeCombination(KeyCode.RIGHT).match(event) || new KeyCodeCombination(KeyCode.NUMPAD6).match(event)) {
                 r.accept(event);
             }
         };

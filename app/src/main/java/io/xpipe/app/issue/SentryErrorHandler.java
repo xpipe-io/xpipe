@@ -82,7 +82,7 @@ public class SentryErrorHandler implements ErrorHandler {
             causeField.set(copy, adjustCopy(throwable.getCause(), true));
 
             return copy;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             // This can fail for example when the underlying exception is not serializable
             // and comes from some third party library
             if (AppLogs.get() != null) {

@@ -10,10 +10,12 @@ import io.xpipe.app.storage.DataStoreEntry;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.css.PseudoClass;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Region;
 
+import java.util.HashSet;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
@@ -41,13 +43,13 @@ public final class BrowserBookmarkComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        BooleanProperty busy = new SimpleBooleanProperty(false);
+        var busyEntries = FXCollections.<StoreSection>observableSet(new HashSet<>());
         BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment = (s, comp) -> {
             comp.disable(Bindings.createBooleanBinding(
                     () -> {
-                        return busy.get() || !applicable.test(s.getWrapper());
+                        return busyEntries.contains(s) || !applicable.test(s.getWrapper());
                     },
-                    busy));
+                    busyEntries));
             comp.apply(struc -> {
                 selected.addListener((observable, oldValue, newValue) -> {
                     PlatformThread.runLaterIfNeeded(() -> {
@@ -70,7 +72,17 @@ public final class BrowserBookmarkComp extends SimpleComp {
                         category,
                         StoreViewState.get().getEntriesListUpdateObservable()),
                 augment,
-                entryWrapper -> action.accept(entryWrapper, busy));
+                selectedAction -> {
+                    BooleanProperty busy = new SimpleBooleanProperty(false);
+                    action.accept(selectedAction.getWrapper(), busy);
+                    busy.addListener((observable, oldValue, newValue) -> {
+                        if (newValue) {
+                            busyEntries.add(selectedAction);
+                        } else {
+                            busyEntries.remove(selectedAction);
+                        }
+                    });
+                });
 
         var r = section.vgrow().createRegion();
         r.getStyleClass().add("bookmark-list");

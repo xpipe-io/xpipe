@@ -2,7 +2,6 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.DesktopHelper;
@@ -21,10 +20,8 @@ public class SyncCategory extends AppPrefsCategory {
         builder.addTitle("sync")
                 .sub(new OptionsBuilder()
                         .name("enableGitStorage")
-                        .description(
-                                AppProperties.get().isStaging() && !prefs.developerMode().getValue() ? "enableGitStoragePtbDisabled" : "enableGitStorage")
+                        .description("enableGitStorageDescription")
                         .addToggle(prefs.enableGitStorage)
-                        .disable(AppProperties.get().isStaging() && !prefs.developerMode().getValue())
                         .nameAndDescription("storageGitRemote")
                         .addString(prefs.storageGitRemote, true)
                         .disable(prefs.enableGitStorage.not())

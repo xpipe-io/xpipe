@@ -8,6 +8,8 @@ public interface ShellDumbMode {
         return true;
     }
 
+    default void throwIfUnsupported() {}
+
     default ShellDialect getSwitchDialect() {
         return null;
     }
@@ -24,6 +26,14 @@ public interface ShellDumbMode {
     }
 
     class Unsupported implements ShellDumbMode {
+
+        private final String message;
+
+        public Unsupported(String message) {this.message = message;}
+
+        public void throwIfUnsupported() {
+            throw new UnsupportedOperationException(message);
+        }
 
         @Override
         public boolean supportsAnyPossibleInteraction() {

@@ -72,32 +72,38 @@ public class OpenFileSystemSavedState {
         AppCache.update("fs-state-" + model.getEntry().get().getUuid(), this);
     }
 
-    public void cd(String dir) {
+    public void cd(String dir, boolean delay) {
         if (dir == null) {
             lastDirectory = null;
             return;
         }
 
         lastDirectory = dir;
-        // After 10 seconds
-        TIMEOUT_TIMER.schedule(
-                new TimerTask() {
-                    @Override
-                    public void run() {
-                        // Synchronize with platform thread
-                        Platform.runLater(() -> {
-                            if (model.isClosed()) {
-                                return;
-                            }
 
-                            if (Objects.equals(lastDirectory, dir)) {
-                                updateRecent(dir);
-                                save();
-                            }
-                        });
-                    }
-                },
-                10000);
+        if (delay) {
+            // After 10 seconds
+            TIMEOUT_TIMER.schedule(
+                    new TimerTask() {
+                        @Override
+                        public void run() {
+                            // Synchronize with platform thread
+                            Platform.runLater(() -> {
+                                if (model.isClosed()) {
+                                    return;
+                                }
+
+                                if (Objects.equals(lastDirectory, dir)) {
+                                    updateRecent(dir);
+                                    save();
+                                }
+                            });
+                        }
+                    },
+                    10000);
+        } else {
+            updateRecent(dir);
+            save();
+        }
     }
 
     private void updateRecent(String dir) {

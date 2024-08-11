@@ -18,6 +18,8 @@ import java.util.function.Function;
 
 public interface ShellControl extends ProcessControl {
 
+    ShellTtyState getTtyState();
+
     void setNonInteractive();
 
     boolean isInteractive();
@@ -65,6 +67,7 @@ public interface ShellControl extends ProcessControl {
             var s = store.getState().toBuilder()
                     .osType(shellControl.getOsType())
                     .shellDialect(shellControl.getOriginalShellDialect())
+                    .ttyState(shellControl.getTtyState())
                     .running(true)
                     .osName(shellControl.getOsName())
                     .build();
@@ -113,22 +116,9 @@ public interface ShellControl extends ProcessControl {
                 script));
     }
 
-    default byte[] executeSimpleRawBytesCommand(String command) throws Exception {
-        try (CommandControl c = command(command).start()) {
-            return c.readRawBytesOrThrow();
-        }
-    }
-
     default String executeSimpleStringCommand(String command) throws Exception {
         try (CommandControl c = command(command).start()) {
             return c.readStdoutOrThrow();
-        }
-    }
-
-    default Optional<String> executeSimpleStringCommandAndCheck(String command) throws Exception {
-        try (CommandControl c = command(command).start()) {
-            var out = c.readStdoutDiscardErr();
-            return c.getExitCode() == 0 ? Optional.of(out) : Optional.empty();
         }
     }
 
@@ -147,20 +137,6 @@ public interface ShellControl extends ProcessControl {
     default void executeSimpleCommand(String command) throws Exception {
         try (CommandControl c = command(command).start()) {
             c.discardOrThrow();
-        }
-    }
-
-    default void executeSimpleCommand(String command, String failMessage) throws Exception {
-        try (CommandControl c = command(command).start()) {
-            c.discardOrThrow();
-        } catch (ProcessOutputException out) {
-            throw ProcessOutputException.withPrefix(failMessage, out);
-        }
-    }
-
-    default String executeSimpleStringCommand(ShellDialect type, String command) throws Exception {
-        try (var sub = subShell(type).start()) {
-            return sub.executeSimpleStringCommand(command);
         }
     }
 
@@ -231,10 +207,6 @@ public interface ShellControl extends ProcessControl {
     ShellControl subShell(ShellOpenFunction command, ShellOpenFunction terminalCommand);
 
     ShellControl singularSubShell(ShellOpenFunction command);
-
-    void writeLineAndReadEcho(String command) throws Exception;
-
-    void writeLineAndReadEcho(String command, boolean log) throws Exception;
 
     void cd(String directory) throws Exception;
 

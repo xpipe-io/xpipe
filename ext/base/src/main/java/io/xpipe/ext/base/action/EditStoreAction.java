@@ -33,12 +33,6 @@ public class EditStoreAction implements ActionProvider {
             }
 
             @Override
-            public boolean isMajor(DataStoreEntryRef<DataStore> o) {
-                var provider = o.get().getProvider();
-                return provider.shouldEdit();
-            }
-
-            @Override
             public ObservableValue<String> getName(DataStoreEntryRef<DataStore> store) {
                 return AppI18n.observable("base.edit");
             }

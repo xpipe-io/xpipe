@@ -12,10 +12,12 @@ import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.LabelComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.util.HumanReadableFormat;
+
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
+
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
@@ -37,8 +39,7 @@ public class BrowserStatusBarComp extends SimpleComp {
                 createProgressEstimateStatus(),
                 Comp.hspacer(),
                 createClipboardStatus(),
-                createSelectionStatus()
-        ));
+                createSelectionStatus()));
         bar.spacing(15);
         bar.styleClass("status-bar");
 
@@ -58,12 +59,16 @@ public class BrowserStatusBarComp extends SimpleComp {
                 return null;
             } else {
                 var expected = p.expectedTimeRemaining();
-                var show = (p.getTotal() > 50_000_000 && p.elapsedTime().compareTo(Duration.of(200, ChronoUnit.MILLIS)) > 0) || expected.toMillis() > 5000;
-                var time = show ? HumanReadableFormat.duration(p.expectedTimeRemaining()) : "...";
+                var show = p.elapsedTime().compareTo(Duration.of(200, ChronoUnit.MILLIS)) > 0
+                        && (p.getTotal() > 50_000_000 || expected.toMillis() > 5000);
+                var time = show ? HumanReadableFormat.duration(p.expectedTimeRemaining()) : "";
                 return time;
             }
         });
-        var progressComp = new LabelComp(text).styleClass("progress").apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT)).prefWidth(90);
+        var progressComp = new LabelComp(text)
+                .styleClass("progress")
+                .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
+                .prefWidth(90);
         return progressComp;
     }
 
@@ -77,7 +82,10 @@ public class BrowserStatusBarComp extends SimpleComp {
                 return transferred + " / " + all;
             }
         });
-        var progressComp = new LabelComp(text).styleClass("progress").apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT)).prefWidth(150);
+        var progressComp = new LabelComp(text)
+                .styleClass("progress")
+                .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
+                .prefWidth(150);
         return progressComp;
     }
 
@@ -89,7 +97,10 @@ public class BrowserStatusBarComp extends SimpleComp {
                 return p.getName();
             }
         });
-        var progressComp = new LabelComp(text).styleClass("progress").apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT)).prefWidth(180);
+        var progressComp = new LabelComp(text)
+                .styleClass("progress")
+                .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
+                .prefWidth(180);
         return progressComp;
     }
 
@@ -159,7 +170,6 @@ public class BrowserStatusBarComp extends SimpleComp {
         r.setOnDragDone(event -> {
             emptyEntry.onDragDone(event);
         });
-
 
         // Use status bar as an extension of file list
         new ContextMenuAugment<>(

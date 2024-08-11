@@ -9,7 +9,6 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
-
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;
@@ -28,14 +27,18 @@ public abstract class MultiExecuteAction implements BranchAction {
                         model.withShell(
                                 pc -> {
                                     for (BrowserEntry entry : entries) {
+                                        var cmd = pc.command(createCommand(pc, model, entry));
+                                        if (cmd == null) {
+                                            continue;
+                                        }
+
                                         TerminalLauncher.open(
                                                 model.getEntry().getEntry(),
                                                 entry.getRawFileEntry().getName(),
                                                 model.getCurrentDirectory() != null
                                                         ? model.getCurrentDirectory()
                                                                 .getPath()
-                                                        : null,
-                                                pc.command(createCommand(pc, model, entry)));
+                                                        : null, cmd);
                                     }
                                 },
                                 false);
@@ -61,7 +64,12 @@ public abstract class MultiExecuteAction implements BranchAction {
                         model.withShell(
                                 pc -> {
                                     for (BrowserEntry entry : entries) {
-                                        pc.command(createCommand(pc, model, entry))
+                                        var cmd = createCommand(pc, model, entry);
+                                        if (cmd == null) {
+                                            continue;
+                                        }
+
+                                        pc.command(cmd)
                                                 .withWorkingDirectory(model.getCurrentDirectory()
                                                         .getPath())
                                                 .execute();

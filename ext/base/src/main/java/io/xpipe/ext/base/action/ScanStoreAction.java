@@ -7,9 +7,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ScanAlert;
 import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.store.ShellStore;
-
 import javafx.beans.value.ObservableValue;
-
 import lombok.Value;
 
 public class ScanStoreAction implements ActionProvider {
@@ -67,7 +65,9 @@ public class ScanStoreAction implements ActionProvider {
 
         @Override
         public void execute() {
-            ScanAlert.showAsync(entry);
+            if (entry == null || entry.getStore() instanceof ShellStore) {
+                ScanAlert.showForShellStore(entry);
+            }
         }
     }
 }

@@ -11,7 +11,7 @@ public class TrayMode extends PlatformMode {
 
     @Override
     public boolean isSupported() {
-        return !OsType.getLocal().equals(OsType.MACOS)
+        return OsType.getLocal().equals(OsType.WINDOWS)
                 && super.isSupported()
                 && Desktop.isDesktopSupported()
                 && SystemTray.isSupported();

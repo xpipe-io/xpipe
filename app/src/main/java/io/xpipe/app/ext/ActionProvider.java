@@ -16,6 +16,7 @@ import java.util.ServiceLoader;
 public interface ActionProvider {
 
     List<ActionProvider> ALL = new ArrayList<>();
+    List<ActionProvider> ALL_STANDALONE = new ArrayList<>();
 
     static void initProviders() {
         for (ActionProvider actionProvider : ALL) {
@@ -111,7 +112,7 @@ public interface ActionProvider {
 
         String getIcon(DataStoreEntryRef<T> store);
 
-        Class<T> getApplicableClass();
+        Class<?> getApplicableClass();
 
         default boolean showBusy() {
             return true;
@@ -120,9 +121,11 @@ public interface ActionProvider {
 
     interface BranchDataStoreCallSite<T extends DataStore> extends DataStoreCallSite<T> {
 
-        default List<ActionProvider> getChildren() {
-            return List.of();
+        default boolean isDynamicallyGenerated(){
+            return false;
         }
+
+        List<? extends ActionProvider> getChildren(DataStoreEntryRef<T> store);
     }
 
     interface LeafDataStoreCallSite<T extends DataStore> extends DataStoreCallSite<T> {
@@ -144,6 +147,18 @@ public interface ActionProvider {
         public void init(ModuleLayer layer) {
             ALL.addAll(ServiceLoader.load(layer, ActionProvider.class).stream()
                     .map(actionProviderProvider -> actionProviderProvider.get())
+                    .toList());
+
+            var menuProviders = ALL.stream()
+                    .map(actionProvider -> actionProvider.getBranchDataStoreCallSite() != null &&
+                            !actionProvider.getBranchDataStoreCallSite().isDynamicallyGenerated()
+                            ? actionProvider.getBranchDataStoreCallSite().getChildren(null)
+                            : List.of())
+                    .flatMap(List::stream)
+                    .toList();
+            ALL_STANDALONE.addAll(ALL.stream()
+                    .filter(actionProvider -> menuProviders.stream()
+                            .noneMatch(menuItem -> menuItem.getClass().equals(actionProvider.getClass())))
                     .toList());
         }
     }

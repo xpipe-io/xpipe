@@ -180,6 +180,10 @@ public interface SecretRetrievalStrategy {
             return new SecretQuery() {
                 @Override
                 public SecretQueryResult query(String prompt) {
+                    if (command == null || command.isBlank()) {
+                        throw ErrorEvent.expected(new IllegalStateException("No custom command specified"));
+                    }
+
                     try (var cc = new LocalStore().control().command(command).start()) {
                         return new SecretQueryResult(
                                 InPlaceSecretValue.of(cc.readStdoutOrThrow()), SecretQueryState.NORMAL);

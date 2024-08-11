@@ -4,6 +4,7 @@ import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.comp.base.SystemStateComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
+import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppI18n;
@@ -41,11 +42,6 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
 
     @Override
     public boolean editByDefault() {
-        return true;
-    }
-
-    @Override
-    public boolean shouldEdit() {
         return true;
     }
 
@@ -113,7 +109,7 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                 .getDeclaredConstructor(Property.class, boolean.class)
                 .newInstance(dialect, false);
 
-        var vals = List.of(0, 1, 2);
+        var vals = List.of(0, 1, 2, 3);
         var selectedStart = new ArrayList<Integer>();
         if (st.isInitScript()) {
             selectedStart.add(0);
@@ -123,6 +119,9 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
         }
         if (st.isFileScript()) {
             selectedStart.add(2);
+        }
+        if (st.isRunnableScript()) {
+            selectedStart.add(3);
         }
         var name = new Function<Integer, String>() {
 
@@ -138,6 +137,10 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
 
                 if (integer == 2) {
                     return AppI18n.get("fileScript");
+                }
+
+                if (integer == 3) {
+                    return AppI18n.get("runnableScript");
                 }
                 return "?";
             }
@@ -199,6 +202,7 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                                     .initScript(selectedExecTypes.contains(0))
                                     .shellScript(selectedExecTypes.contains(1))
                                     .fileScript(selectedExecTypes.contains(2))
+                                    .runnableScript(selectedExecTypes.contains(3))
                                     .build();
                         },
                         store)
@@ -206,8 +210,9 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
     }
 
     @Override
-    public ObservableValue<String> informationString(StoreEntryWrapper wrapper) {
-        SimpleScriptStore scriptStore = wrapper.getEntry().getStore().asNeeded();
+    public ObservableValue<String> informationString(StoreSection section) {
+        SimpleScriptStore scriptStore =
+                section.getWrapper().getEntry().getStore().asNeeded();
         return new SimpleStringProperty((scriptStore.getMinimumDialect() != null
                         ? scriptStore.getMinimumDialect().getDisplayName() + " "
                         : "")

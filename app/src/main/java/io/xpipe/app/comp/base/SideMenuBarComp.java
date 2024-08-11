@@ -11,6 +11,7 @@ import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.update.UpdateAvailableAlert;
 import io.xpipe.app.update.XPipeDistributionType;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -41,14 +42,14 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         var selectedBorder = Bindings.createObjectBinding(
                 () -> {
                     var c = Platform.getPreferences().getAccentColor().desaturate();
-                    return new Background(new BackgroundFill(c,new CornerRadii(8), new Insets(10, 1, 10, 2)));
+                    return new Background(new BackgroundFill(c, new CornerRadii(8), new Insets(10, 1, 10, 2)));
                 },
                 Platform.getPreferences().accentColorProperty());
 
         var hoverBorder = Bindings.createObjectBinding(
                 () -> {
                     var c = Platform.getPreferences().getAccentColor().darker().desaturate();
-                    return new Background(new BackgroundFill(c,new CornerRadii(8), new Insets(10, 1, 10, 2)));
+                    return new Background(new BackgroundFill(c, new CornerRadii(8), new Insets(10, 1, 10, 2)));
                 },
                 Platform.getPreferences().accentColorProperty());
 
@@ -70,12 +71,9 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                 value.setValue(e);
             });
             var shortcut = e.combination();
-            if (shortcut != null) {
-                b.apply(struc -> struc.get().getProperties().put("shortcut", shortcut));
-            }
             b.apply(new TooltipAugment<>(e.name(), shortcut));
             b.apply(struc -> {
-                AppFont.setSize(struc.get(), 2);
+                AppFont.setSize(struc.get(), 1);
                 struc.get().pseudoClassStateChanged(selected, value.getValue().equals(e));
                 value.addListener((c, o, n) -> {
                     PlatformThread.runLaterIfNeeded(() -> {
@@ -86,7 +84,8 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
             b.accessibleText(e.name());
 
             var indicator = Comp.empty().styleClass("indicator");
-            var stack = new StackComp(List.of(indicator, b)).apply(struc -> struc.get().setAlignment(Pos.CENTER_RIGHT));
+            var stack = new StackComp(List.of(indicator, b))
+                    .apply(struc -> struc.get().setAlignment(Pos.CENTER_RIGHT));
             stack.apply(struc -> {
                 var indicatorRegion = (Region) struc.get().getChildren().getFirst();
                 indicatorRegion.setMaxWidth(7);
@@ -110,6 +109,9 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                                 selectedBorder,
                                 noneBorder));
             });
+            if (shortcut != null) {
+                stack.apply(struc -> struc.get().getProperties().put("shortcut", shortcut));
+            }
             vbox.getChildren().add(stack.createRegion());
         }
 
@@ -118,7 +120,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                     .tooltipKey("updateAvailableTooltip")
                     .accessibleTextKey("updateAvailableTooltip");
             b.apply(struc -> {
-                AppFont.setSize(struc.get(), 2);
+                AppFont.setSize(struc.get(), 1);
             });
             b.hide(PlatformThread.sync(Bindings.createBooleanBinding(
                     () -> {

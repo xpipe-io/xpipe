@@ -1,13 +1,13 @@
 package io.xpipe.core.store;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -36,10 +36,17 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public FileSystem open() throws Exception {
         shellControl.start();
-        if (!shellControl.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
+
+        var d = shellControl.getShellDialect().getDumbMode();
+        if (!d.supportsAnyPossibleInteraction()) {
             shellControl.close();
-            throw new UnsupportedOperationException("System shell does not support file system interaction");
+            d.throwIfUnsupported();
         }
+
+        if (!shellControl.getTtyState().isPreservesOutput() || !shellControl.getTtyState().isSupportsInput()) {
+            throw new UnsupportedOperationException("Shell has a PTY allocated and does not support file system operations");
+        }
+
         return this;
     }
 
@@ -53,10 +60,9 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public OutputStream openOutput(String file, long totalBytes) throws Exception {
-        return shellControl
-                .getShellDialect()
-                .createStreamFileWriteCommand(shellControl, file, totalBytes)
-                .startExternalStdin();
+        var cmd = shellControl.getShellDialect().createStreamFileWriteCommand(shellControl, file, totalBytes);
+        cmd.setExitTimeout(Duration.ofMillis(Long.MAX_VALUE));
+        return cmd.startExternalStdin();
     }
 
     @Override

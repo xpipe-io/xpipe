@@ -13,10 +13,9 @@ import io.xpipe.app.storage.DataStorage;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.Parent;
 import javafx.scene.control.ButtonBase;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -63,28 +62,11 @@ public class AppLayoutComp extends Comp<CompStructure<Pane>> {
             sidebarR.getChildrenUnmodifiable().forEach(node -> {
                 var shortcut = (KeyCodeCombination) node.getProperties().get("shortcut");
                 if (shortcut != null && shortcut.match(event)) {
-                    ((ButtonBase) node).fire();
+                    ((ButtonBase) ((Parent) node).getChildrenUnmodifiable().get(1)).fire();
                     event.consume();
                     return;
                 }
             });
-            if (event.isConsumed()) {
-                return;
-            }
-
-            var forward = new KeyCodeCombination(KeyCode.TAB, KeyCombination.CONTROL_DOWN);
-            if (forward.match(event)) {
-                var next = (model.getEntries().indexOf(model.getSelected().getValue()) + 1) % 3;
-                model.getSelected().setValue(model.getEntries().get(next));
-                return;
-            }
-
-            var back = new KeyCodeCombination(KeyCode.TAB, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN);
-            if (back.match(event)) {
-                var next = (model.getEntries().indexOf(model.getSelected().getValue()) + 2) % 3;
-                model.getSelected().setValue(model.getEntries().get(next));
-                return;
-            }
         });
         AppFont.normal(pane);
         pane.getStyleClass().add("layout");

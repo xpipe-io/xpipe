@@ -101,9 +101,7 @@ public class DataStoreEntry extends StorageElement {
         this.expanded = expanded;
         this.color = color;
         this.explicitOrder = explicitOrder;
-        this.provider = store != null
-                ? DataStoreProviders.byStore(store)
-                : null;
+        this.provider = store != null ? DataStoreProviders.byStore(store) : null;
         this.storePersistentStateNode = storePersistentState;
         this.notes = notes;
     }
@@ -159,7 +157,7 @@ public class DataStoreEntry extends StorageElement {
                 null,
                 uuid,
                 categoryUuid,
-                name,
+                name.trim(),
                 Instant.now(),
                 Instant.now(),
                 storeFromNode,
@@ -196,7 +194,7 @@ public class DataStoreEntry extends StorageElement {
         var categoryUuid = Optional.ofNullable(json.get("categoryUuid"))
                 .map(jsonNode -> UUID.fromString(jsonNode.textValue()))
                 .orElse(DataStorage.DEFAULT_CATEGORY_UUID);
-        var name = json.required("name").textValue();
+        var name = json.required("name").textValue().trim();
 
         var persistentState = stateJson.get("persistentState");
         var lastUsed = Optional.ofNullable(stateJson.get("lastUsed"))
@@ -259,7 +257,7 @@ public class DataStoreEntry extends StorageElement {
                 store,
                 storeNode,
                 false,
-                Validity.INCOMPLETE,
+                store == null ? Validity.LOAD_FAILED : Validity.INCOMPLETE,
                 configuration,
                 persistentState,
                 expanded,
@@ -452,6 +450,7 @@ public class DataStoreEntry extends StorageElement {
 
         this.store = store;
         this.storeNode = JacksonMapper.getDefault().valueToTree(store);
+        this.provider = DataStoreProviders.byStore(store);
         if (updateTime) {
             lastModified = Instant.now();
         }
@@ -500,6 +499,8 @@ public class DataStoreEntry extends StorageElement {
         DataStore newStore;
         try {
             newStore = JacksonMapper.getDefault().treeToValue(storeNode, DataStore.class);
+            // Check whether we have a provider as well
+            DataStoreProviders.byStore(newStore);
         } catch (Throwable e) {
             ErrorEvent.fromThrowable(e).handle();
             newStore = null;

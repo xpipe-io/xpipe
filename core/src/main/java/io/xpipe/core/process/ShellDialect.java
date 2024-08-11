@@ -9,6 +9,7 @@ import io.xpipe.core.util.StreamCharset;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -104,8 +105,6 @@ public interface ShellDialect {
 
     String nullStdin(String command);
 
-    String getScriptPermissionsCommand(String file);
-
     ShellDialectAskpass getAskpass();
 
     String getSetEnvironmentVariableCommand(String variable, String value);
@@ -118,7 +117,11 @@ public interface ShellDialect {
 
     CommandControl printUsernameCommand(ShellControl shellControl);
 
-    String getPrintExitCodeCommand(String prefix, String suffix);
+    String getPrintStartEchoCommand(String prefix);
+
+    Optional<String> executeRobustBootstrapOutputCommand(ShellControl shellControl, String original) throws Exception;
+
+    String getPrintExitCodeCommand(String id, String prefix, String suffix);
 
     int assignMissingExitCode();
 
@@ -128,9 +131,7 @@ public interface ShellDialect {
 
     CommandBuilder getOpenScriptCommand(String file);
 
-    default void prepareCommandForShell(CommandBuilder b) {}
-
-    String prepareTerminalInitFileOpenCommand(ShellDialect parentDialect, ShellControl sc, String file);
+    String prepareTerminalInitFileOpenCommand(ShellDialect parentDialect, ShellControl sc, String file, boolean exit);
 
     String runScriptCommand(ShellControl parent, String file);
 
@@ -184,5 +185,5 @@ public interface ShellDialect {
 
     String getDisplayName();
 
-    boolean doesEchoInput();
+    boolean doesEchoInputByDefault();
 }

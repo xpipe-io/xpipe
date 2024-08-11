@@ -112,6 +112,11 @@ public class StoreCategoryWrapper {
     }
 
     public void update() {
+        // We are probably in shutdown then
+        if (StoreViewState.get() == null) {
+            return;
+        }
+
         // Avoid reupdating name when changed from the name property!
         var catName = translatedName(category.getName());
         if (!catName.equals(name.getValue())) {

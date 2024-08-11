@@ -95,7 +95,7 @@ public class StoreToggleComp extends SimpleComp {
                 v -> {
                     Platform.runLater(() -> {
                         setter.accept(section.getWrapper().getEntry().getStore().asNeeded(), v);
-                        StoreViewState.get().toggleStoreListUpdate();
+                        StoreViewState.get().triggerStoreListUpdate();
                     });
                 });
         t.tooltipKey("showAllChildren");

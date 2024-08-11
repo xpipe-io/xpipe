@@ -7,6 +7,7 @@ import io.xpipe.core.util.ModuleLayerLoader;
 
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCombination;
 
 import java.util.ArrayList;
@@ -19,11 +20,15 @@ public interface BrowserAction {
 
     static List<LeafAction> getFlattened(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return ALL.stream()
-                .map(browserAction -> browserAction instanceof LeafAction
-                        ? List.of((LeafAction) browserAction)
-                        : ((BranchAction) browserAction).getBranchingActions(model, entries))
+                .map(browserAction -> getFlattened(browserAction, model, entries))
                 .flatMap(List::stream)
                 .toList();
+    }
+
+    static List<LeafAction> getFlattened(BrowserAction browserAction, OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return browserAction instanceof LeafAction
+                        ? List.of((LeafAction) browserAction)
+                        : ((BranchAction) browserAction).getBranchingActions(model, entries).stream().map(action -> getFlattened(action, model, entries)).flatMap(List::stream).toList();
     }
 
     static LeafAction byId(String id, OpenFileSystemModel model, List<BrowserEntry> entries) {
@@ -32,6 +37,17 @@ public interface BrowserAction {
                 .findAny()
                 .orElseThrow();
     }
+
+    default List<BrowserEntry> resolveFilesIfNeeded(List<BrowserEntry> selected) {
+        return automaticallyResolveLinks()
+                ? selected.stream()
+                .map(browserEntry ->
+                        new BrowserEntry(browserEntry.getRawFileEntry().resolved(), browserEntry.getModel()))
+                .toList()
+                : selected;
+    }
+
+    MenuItem toMenuItem(OpenFileSystemModel model, List<BrowserEntry> selected);
 
     default void init(OpenFileSystemModel model) throws Exception {}
 

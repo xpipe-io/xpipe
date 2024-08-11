@@ -2,7 +2,6 @@ package io.xpipe.app.update;
 
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -69,6 +68,13 @@ public abstract class UpdateHandler {
                         .getValue()
                         .getVersion()
                         .equals(AppProperties.get().getVersion())) {
+            preparedUpdate.setValue(null);
+        }
+
+        // Check if file has been deleted
+        if (preparedUpdate.getValue() != null
+                && preparedUpdate.getValue().getFile() != null
+                && !Files.exists(preparedUpdate.getValue().getFile())) {
             preparedUpdate.setValue(null);
         }
 
@@ -220,27 +226,10 @@ public abstract class UpdateHandler {
         }
 
         event("Executing update ...");
-        OperationMode.executeAfterShutdown(() -> {
-            try {
-                var performedUpdate = new PerformedUpdate(
-                        preparedUpdate.getValue().getVersion(),
-                        preparedUpdate.getValue().getBody(),
-                        preparedUpdate.getValue().getVersion());
-                AppCache.update("performedUpdate", performedUpdate);
-
-                executeUpdateOnCloseImpl();
-
-                // In case we perform any operations such as opening a terminal
-                // give it some time to open while this process is still alive
-                // Otherwise it might quit because the parent process is dead already
-                ThreadHelper.sleep(100);
-            } catch (Throwable ex) {
-                ex.printStackTrace();
-            }
-        });
+        executeUpdate();
     }
 
-    public void executeUpdateOnCloseImpl() throws Exception {
+    public void executeUpdate() {
         throw new UnsupportedOperationException();
     }
 

@@ -15,7 +15,7 @@
     -fx-padding: 0 6 8 8;
 }
 
-.transfer > * {
+.transfer > .download-background {
     -fx-border-radius: 4;
     -fx-background-radius: 4;
     -fx-border-color: -color-border-default;
@@ -23,7 +23,7 @@
     -fx-background-color: -color-bg-subtle;
 }
 
-.transfer:highlighted > * {
+.transfer:highlighted > .download-background {
     -fx-border-color: -color-accent-emphasis;
     -fx-background-color: derive(-color-bg-subtle, 5%);
 }
@@ -43,7 +43,7 @@
 }
 
 .transfer .button:hover {
-    -fx-background-color: -color-bg-subtle;
+    -fx-background-color: -color-accent-subtle;
     -fx-opacity: 1.0;
 }
 
@@ -56,7 +56,7 @@
 }
 
 .root:seamless-frame .browser .top-spacer {
-    -fx-background-radius: 0 10 0 0;
+    -fx-background-radius: 0 6 0 0;
 }
 
 .browser .welcome .button:hover {
@@ -95,9 +95,9 @@
 }
 
 .browser .top-bar {
-    -fx-min-height: 3.5em;
-    -fx-pref-height: 3.5em;
-    -fx-max-height: 3.5em;
+    -fx-min-height: 3.3em;
+    -fx-pref-height: 3.3em;
+    -fx-max-height: 3.3em;
     -fx-padding: 9px 6px;
 }
 
@@ -145,7 +145,7 @@
 }
 
 .browser .breadcrumbs {
-    -fx-padding: 2px 10px 2px 10px;
+    -fx-padding: 0px 10px 0px 10px;
 }
 
 .browser .breadcrumbs {
@@ -162,7 +162,7 @@
 }
 
 .browser .path-text, .browser .browser-filter .text-field {
-    -fx-padding: 6 12;
+    -fx-padding: 3 12;
 }
 
 .browser .path-text:invisible {
@@ -203,7 +203,22 @@
     -fx-max-height: 2.65em;
 
 }
-.browser .tab-header-area {
+
+.browser .tab-header-area .control-buttons-tab {
+    -fx-opacity: 0;
+}
+
+.browser .tab-loading-indicator .loading-comp {
+    -fx-min-width: 2.5em;
+    -fx-pref-width: 2.5em;
+    -fx-max-width: 2.5em;
+    -fx-min-height: 2.5em;
+    -fx-pref-height: 2.5em;
+    -fx-max-height: 2.5em;
+    -fx-background-color: transparent;
+}
+
+.browser .tab-pane.floating > .tab-header-area {
     -fx-border-width: 0 0 0.05em 0;
     -fx-border-color: -color-border-default;
 }
@@ -223,13 +238,13 @@
 }
 
 .root:seamless-frame .browser .tab-header-area {
-    -fx-background-radius: 0 10 0 0;
+    -fx-background-radius: 0 6 0 0;
 }
 
 .browser .browser-content {
     -fx-padding: 6 0 0 0;
-    -fx-border-radius: 10 10 4 4;
-    -fx-background-radius: 10 10 4 4;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
     -fx-background-color: -color-bg-subtle, -color-bg-default;
     -fx-background-insets: 0, 7 0 0 0;
     -fx-border-width: 1;

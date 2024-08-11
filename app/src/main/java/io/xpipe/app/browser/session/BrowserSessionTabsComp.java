@@ -1,16 +1,19 @@
 package io.xpipe.app.browser.session;
 
+import atlantafx.base.controls.RingProgressIndicator;
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.BrowserWelcomeComp;
 import io.xpipe.app.comp.base.MultiContentComp;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
+import io.xpipe.app.fxcomps.util.LabelGraphic;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BooleanScope;
-import io.xpipe.app.util.InputHelper;
-
+import io.xpipe.app.util.ContextMenuHelper;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -20,20 +23,12 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.KeyCode;
+import javafx.scene.control.*;
+import javafx.scene.input.*;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
-import atlantafx.base.controls.RingProgressIndicator;
-import atlantafx.base.theme.Styles;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static atlantafx.base.theme.Styles.DENSE;
 import static atlantafx.base.theme.Styles.toggleStyleClass;
@@ -50,17 +45,17 @@ public class BrowserSessionTabsComp extends SimpleComp {
     }
 
     public Region createSimple() {
-        var multi = new MultiContentComp(Map.<Comp<?>, ObservableValue<Boolean>>of(
-                Comp.of(() -> createTabPane()),
-                Bindings.isNotEmpty(model.getSessionEntries()),
+        var map = new LinkedHashMap<Comp<?>, ObservableValue<Boolean>>();
+        map.put(Comp.hspacer().styleClass("top-spacer"), new SimpleBooleanProperty(true));
+        map.put(Comp.of(() -> createTabPane()), Bindings.isNotEmpty(model.getSessionEntries()));
+        map.put(
                 new BrowserWelcomeComp(model).apply(struc -> StackPane.setAlignment(struc.get(), Pos.CENTER_LEFT)),
                 Bindings.createBooleanBinding(
                         () -> {
                             return model.getSessionEntries().size() == 0;
                         },
-                        model.getSessionEntries()),
-                Comp.hspacer().styleClass("top-spacer"),
-                new SimpleBooleanProperty(true)));
+                        model.getSessionEntries()));
+        var multi = new MultiContentComp(map);
         multi.apply(struc -> ((StackPane) struc.get()).setAlignment(Pos.TOP_CENTER));
         return multi.createRegion();
     }
@@ -198,28 +193,132 @@ public class BrowserSessionTabsComp extends SimpleComp {
             }
         });
 
-        InputHelper.onInput(tabs, true, keyEvent -> {
+        tabs.addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {
             var current = tabs.getSelectionModel().getSelectedItem();
             if (current == null) {
                 return;
             }
 
-            if (keyEvent.getCode() == KeyCode.W && keyEvent.isShortcutDown()) {
+            if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(keyEvent)) {
                 tabs.getTabs().remove(current);
+                keyEvent.consume();
+                return;
+            }
+
+            if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN).match(keyEvent)) {
+                tabs.getTabs().clear();
                 keyEvent.consume();
             }
 
-            if (keyEvent.getCode() == KeyCode.W && keyEvent.isShortcutDown() && keyEvent.isShiftDown()) {
-                tabs.getTabs().clear();
+            if (keyEvent.getCode().isFunctionKey()) {
+                var start = KeyCode.F1.getCode();
+                var index = keyEvent.getCode().getCode() - start;
+                if (index < tabs.getTabs().size()) {
+                    tabs.getSelectionModel().select(index);
+                    keyEvent.consume();
+                    return;
+                }
+            }
+
+            var forward = new KeyCodeCombination(KeyCode.TAB, KeyCombination.SHORTCUT_DOWN);
+            if (forward.match(keyEvent)) {
+                var next = (tabs.getSelectionModel().getSelectedIndex() + 1)
+                        % tabs.getTabs().size();
+                tabs.getSelectionModel().select(next);
                 keyEvent.consume();
+                return;
+            }
+
+            var back = new KeyCodeCombination(KeyCode.TAB, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN);
+            if (back.match(keyEvent)) {
+                var previous = (tabs.getTabs().size() + tabs.getSelectionModel().getSelectedIndex() - 1)
+                        % tabs.getTabs().size();
+                tabs.getSelectionModel().select(previous);
+                keyEvent.consume();
+                return;
             }
         });
 
         return tabs;
     }
 
+    private ContextMenu createContextMenu(TabPane tabs, Tab tab) {
+        var cm = ContextMenuHelper.create();
+
+        var select = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("selectTab"));
+        select.acceleratorProperty()
+                .bind(Bindings.createObjectBinding(
+                        () -> {
+                            var start = KeyCode.F1.getCode();
+                            var index = tabs.getTabs().indexOf(tab);
+                            var keyCode = Arrays.stream(KeyCode.values())
+                                    .filter(code -> code.getCode() == start + index)
+                                    .findAny()
+                                    .orElse(null);
+                            return keyCode != null ? new KeyCodeCombination(keyCode) : null;
+                        },
+                        tabs.getTabs()));
+        select.setOnAction(event -> {
+            tabs.getSelectionModel().select(tab);
+            event.consume();
+        });
+        cm.getItems().add(select);
+
+        cm.getItems().add(new SeparatorMenuItem());
+
+        var close = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("closeTab"));
+        close.setAccelerator(new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN));
+        close.setOnAction(event -> {
+            tabs.getTabs().remove(tab);
+            event.consume();
+        });
+        cm.getItems().add(close);
+
+        var closeOthers = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("closeOtherTabs"));
+        closeOthers.setOnAction(event -> {
+            tabs.getTabs()
+                    .removeAll(tabs.getTabs().stream().filter(t -> t != tab).toList());
+            event.consume();
+        });
+        cm.getItems().add(closeOthers);
+
+        var closeLeft = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("closeLeftTabs"));
+        closeLeft.setOnAction(event -> {
+            var index = tabs.getTabs().indexOf(tab);
+            tabs.getTabs()
+                    .removeAll(tabs.getTabs().stream()
+                            .filter(t -> tabs.getTabs().indexOf(t) < index)
+                            .toList());
+            event.consume();
+        });
+        cm.getItems().add(closeLeft);
+
+        var closeRight = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("closeRightTabs"));
+        closeRight.setOnAction(event -> {
+            var index = tabs.getTabs().indexOf(tab);
+            tabs.getTabs()
+                    .removeAll(tabs.getTabs().stream()
+                            .filter(t -> tabs.getTabs().indexOf(t) > index)
+                            .toList());
+            event.consume();
+        });
+        cm.getItems().add(closeRight);
+
+        var closeAll = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("closeAllTabs"));
+        closeAll.setAccelerator(
+                new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
+        closeAll.setOnAction(event -> {
+            tabs.getTabs().clear();
+            event.consume();
+        });
+        cm.getItems().add(closeAll);
+
+        return cm;
+    }
+
     private Tab createTab(TabPane tabs, BrowserSessionTab<?> model) {
         var tab = new Tab();
+        tab.setContextMenu(createContextMenu(tabs, tab));
 
         var ring = new RingProgressIndicator(0, false);
         ring.setMinSize(16, 16);

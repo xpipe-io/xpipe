@@ -94,7 +94,7 @@ public class FileBridge {
             event("File " + TEMP.relativize(e.file) + " is probably still writing ...");
             ThreadHelper.sleep(AppPrefs.get().editorReloadTimeout().getValue());
 
-            // If still no read lock after 500ms, just don't parse it
+            // If still no read lock after some time, just don't parse it
             if (!Files.exists(changed)) {
                 event("Could not obtain read lock even after timeout. Ignoring change ...");
                 return;
@@ -105,9 +105,8 @@ public class FileBridge {
             event("Registering modification for file " + TEMP.relativize(e.file));
             event("Last modification for file: " + e.lastModified.toString() + " vs current one: "
                     + e.getLastModified());
-            if (e.hasChanged()) {
+            if (e.registerChange()) {
                 event("Registering change for file " + TEMP.relativize(e.file) + " for editor entry " + e.getName());
-                e.registerChange();
                 try (var in = Files.newInputStream(e.file)) {
                     var actualSize = (long) in.available();
                     var started = Instant.now();
@@ -219,6 +218,7 @@ public class FileBridge {
         private final BooleanScope scope;
         private final BiConsumer<InputStream, Long> writer;
         private Instant lastModified;
+        private long lastSize;
 
         public Entry(Path file, Object key, String name, BooleanScope scope, BiConsumer<InputStream, Long> writer) {
             this.file = file;
@@ -226,15 +226,6 @@ public class FileBridge {
             this.name = name;
             this.scope = scope;
             this.writer = writer;
-        }
-
-        public boolean hasChanged() {
-            try {
-                var newDate = Files.getLastModifiedTime(file).toInstant();
-                return !newDate.equals(lastModified);
-            } catch (IOException e) {
-                return false;
-            }
         }
 
         public Instant getLastModified() {
@@ -245,8 +236,29 @@ public class FileBridge {
             }
         }
 
-        public void registerChange() {
-            lastModified = getLastModified();
+        public long getSize() {
+            try {
+                return Files.size(file);
+            } catch (IOException e) {
+                return 0;
+            }
+        }
+
+        public boolean registerChange() {
+            var newSize = getSize();
+            var newDate = getLastModified();
+            // The size check is intended for cases in which editors first clear a file prior to writing it
+            // In that case, multiple watch events are sent. If these happened very fast, it might be possible that
+            // the modified time is the same for both write operations due to the file system modified time resolution
+            // being limited
+            // We then can't identify changes purely based on the modified time, so the file size is the next best
+            // option
+            // This might result in double change detection in rare cases, but that is irrelevant as it prevents files
+            // from being blanked
+            var changed = !newDate.equals(lastModified) || newSize > lastSize;
+            lastSize = newSize;
+            lastModified = newDate;
+            return changed;
         }
     }
 }

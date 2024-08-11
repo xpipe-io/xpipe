@@ -54,7 +54,8 @@ jlink {
             '--no-header-files',
             '--no-man-pages',
             '--include-locales', "${String.join(",", languages)}",
-            '--compress', 'zip-9'
+            '--compress', 'zip-9',
+            '--ignore-signing-information'
     ]
 
     if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
@@ -118,7 +119,7 @@ task prepareMacOSInfo(type: DefaultTask) {
     doLast {
         file("${project.layout.buildDirectory.get()}/macos_resources").mkdirs()
         copy {
-            from replaceVariablesInFile("$projectDir/misc/mac/Info.plist",
+            from replaceVariablesInFile("$projectDir/jpackage/Info.plist",
                                         Map.of('__NAME__',
                                                rootProject.productName,
                                                '__VERSION__',

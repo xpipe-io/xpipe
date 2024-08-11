@@ -12,6 +12,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.util.DerivedObservableList;
+import io.xpipe.app.fxcomps.util.LabelGraphic;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.util.ContextMenuHelper;
@@ -45,14 +46,14 @@ public class StoreCategoryComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var i = Bindings.createStringBinding(
+        var i = Bindings.createObjectBinding(
                 () -> {
                     if (!DataStorage.get().supportsSharing()
                             || !category.getCategory().canShare()) {
-                        return "mdal-keyboard_arrow_right";
+                        return new LabelGraphic.IconGraphic("mdal-keyboard_arrow_right");
                     }
 
-                    return category.getShare().getValue() ? "mdi2a-account-convert" : "mdi2a-account-cancel";
+                    return new LabelGraphic.IconGraphic(category.getShare().getValue() ? "mdi2a-account-convert" : "mdi2a-account-cancel");
                 },
                 category.getShare());
         var icon = new IconButtonComp(i)

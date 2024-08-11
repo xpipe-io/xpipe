@@ -1,11 +1,12 @@
 package io.xpipe.app.beacon.impl;
 
-import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.beacon.api.ConnectionAddExchange;
 import io.xpipe.core.util.ValidationException;
+
+import com.sun.net.httpserver.HttpExchange;
 
 public class ConnectionAddExchangeImpl extends ConnectionAddExchange {
 

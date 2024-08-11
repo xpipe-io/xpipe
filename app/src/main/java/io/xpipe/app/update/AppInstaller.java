@@ -2,13 +2,17 @@ package io.xpipe.app.update;
 
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.TerminalLauncher;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.LocalStore;
+import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.core.util.XPipeInstallation;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -20,10 +24,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class AppInstaller {
-
-    public static void installFileLocal(InstallerAssetType asset, Path localFile) throws Exception {
-        asset.installLocal(localFile.toString());
-    }
 
     public static InstallerAssetType getSuitablePlatformAsset() {
         if (OsType.getLocal().equals(OsType.WINDOWS)) {
@@ -53,7 +53,18 @@ public class AppInstaller {
     })
     public abstract static class InstallerAssetType {
 
-        public abstract void installLocal(String file) throws Exception;
+        protected void runAndClose(FailableRunnable<Exception> r) {
+            OperationMode.executeAfterShutdown(() -> {
+                r.run();
+
+                // In case we perform any operations such as opening a terminal
+                // give it some time to open while this process is still alive
+                // Otherwise it might quit because the parent process is dead already
+                ThreadHelper.sleep(100);
+            });
+        }
+
+        public abstract void installLocal(Path file) throws Exception;
 
         public boolean isCorrectAsset(String name) {
             return name.endsWith(getExtension())
@@ -66,7 +77,7 @@ public class AppInstaller {
         public static final class Msi extends InstallerAssetType {
 
             @Override
-            public void installLocal(String file) throws Exception {
+            public void installLocal(Path file) throws Exception {
                 var shellProcessControl = new LocalStore().control().start();
                 var exec = (AppProperties.get().isDevelopmentEnvironment()
                                 ? Path.of(XPipeInstallation.getLocalDefaultInstallationBasePath())
@@ -75,15 +86,19 @@ public class AppInstaller {
                         .toString();
                 var logsDir =
                         AppLogs.get().getSessionLogsDirectory().getParent().toString();
-                var logFile = FileNames.join(logsDir, "installer_" + FileNames.getFileName(file) + ".log");
+                var logFile = FileNames.join(
+                        logsDir, "installer_" + file.getFileName().toString() + ".log");
                 var command = LocalShell.getShell().getShellDialect().equals(ShellDialects.CMD)
-                        ? getCmdCommand(file, logFile, exec)
-                        : getPowershellCommand(file, logFile, exec);
+                        ? getCmdCommand(file.toString(), logFile, exec)
+                        : getPowershellCommand(file.toString(), logFile, exec);
                 var toRun = LocalShell.getShell().getShellDialect().equals(ShellDialects.CMD)
                         ? "start \"XPipe Updater\" /min cmd /c \"" + ScriptHelper.createLocalExecScript(command) + "\""
                         : "Start-Process -WindowStyle Minimized -FilePath powershell -ArgumentList  \"-ExecutionPolicy\", \"Bypass\", \"-File\", \"`\""
                                 + ScriptHelper.createLocalExecScript(command) + "`\"\"";
-                shellProcessControl.executeSimpleCommand(toRun);
+
+                runAndClose(() -> {
+                    shellProcessControl.executeSimpleCommand(toRun);
+                });
             }
 
             @Override
@@ -124,7 +139,14 @@ public class AppInstaller {
         public static final class Debian extends InstallerAssetType {
 
             @Override
-            public void installLocal(String file) throws Exception {
+            public void installLocal(Path file) throws Exception {
+                var start = AppPrefs.get() != null
+                        && AppPrefs.get().terminalType().getValue() != null
+                        && AppPrefs.get().terminalType().getValue().isAvailable();
+                if (!start) {
+                    return;
+                }
+
                 var name = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
                 var command = String.format(
                         """
@@ -139,7 +161,10 @@ public class AppInstaller {
                                              exec || read -rsp "Update failed ..."$'\\n' -n 1 key
                                              """,
                         file, file, name);
-                TerminalLauncher.openDirect("XPipe Updater", sc -> command);
+
+                runAndClose(() -> {
+                    TerminalLauncher.openDirect("XPipe Updater", sc -> command);
+                });
             }
 
             @Override
@@ -150,8 +175,16 @@ public class AppInstaller {
 
         @JsonTypeName("rpm")
         public static final class Rpm extends InstallerAssetType {
+
             @Override
-            public void installLocal(String file) throws Exception {
+            public void installLocal(Path file) throws Exception {
+                var start = AppPrefs.get() != null
+                        && AppPrefs.get().terminalType().getValue() != null
+                        && AppPrefs.get().terminalType().getValue().isAvailable();
+                if (!start) {
+                    return;
+                }
+
                 var name = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
                 var command = String.format(
                         """
@@ -166,7 +199,10 @@ public class AppInstaller {
                                              exec || read -rsp "Update failed ..."$'\\n' -n 1 key
                                              """,
                         file, file, name);
-                TerminalLauncher.openDirect("XPipe Updater", sc -> command);
+
+                runAndClose(() -> {
+                    TerminalLauncher.openDirect("XPipe Updater", sc -> command);
+                });
             }
 
             @Override
@@ -177,8 +213,16 @@ public class AppInstaller {
 
         @JsonTypeName("pkg")
         public static final class Pkg extends InstallerAssetType {
+
             @Override
-            public void installLocal(String file) throws Exception {
+            public void installLocal(Path file) throws Exception {
+                var start = AppPrefs.get() != null
+                        && AppPrefs.get().terminalType().getValue() != null
+                        && AppPrefs.get().terminalType().getValue().isAvailable();
+                if (!start) {
+                    return;
+                }
+
                 var name = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
                 var command = String.format(
                         """
@@ -193,7 +237,10 @@ public class AppInstaller {
                                            exec || echo "Update failed ..." && read -rs -k 1 key
                                            """,
                         file, file, name);
-                TerminalLauncher.openDirect("XPipe Updater", sc -> command);
+
+                runAndClose(() -> {
+                    TerminalLauncher.openDirect("XPipe Updater", sc -> command);
+                });
             }
 
             @Override

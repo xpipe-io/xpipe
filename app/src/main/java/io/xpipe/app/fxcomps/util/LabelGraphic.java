@@ -1,9 +1,8 @@
 package io.xpipe.app.fxcomps.util;
 
 import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 
 import lombok.EqualsAndHashCode;
@@ -12,8 +11,14 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 public abstract class LabelGraphic {
 
-    public static ObservableValue<LabelGraphic> fixedIcon(String icon) {
-        return new SimpleObjectProperty<>(new IconGraphic(icon));
+    public static LabelGraphic none() {
+        return new LabelGraphic() {
+
+            @Override
+            public Node createGraphicNode() {
+                return null;
+            }
+        };
     }
 
     public abstract Node createGraphicNode();
@@ -27,6 +32,19 @@ public abstract class LabelGraphic {
         @Override
         public Node createGraphicNode() {
             return new FontIcon(icon);
+        }
+    }
+
+    @Value
+    @EqualsAndHashCode(callSuper = true)
+    public static class ImageGraphic extends LabelGraphic {
+
+        String file;
+        int size;
+
+        @Override
+        public Node createGraphicNode() {
+            return PrettyImageHelper.ofFixedSizeSquare(file, size).createRegion();
         }
     }
 

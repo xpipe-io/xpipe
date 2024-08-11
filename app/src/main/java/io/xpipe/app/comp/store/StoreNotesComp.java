@@ -39,7 +39,6 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
                 .focusTraversableForAccessibility()
                 .tooltipKey("notes")
                 .styleClass("notes-button")
-                .grow(false, true)
                 .hide(BindingsHelper.map(n, s -> s.getCommited() == null && s.getCurrent() == null))
                 .createStructure()
                 .get();

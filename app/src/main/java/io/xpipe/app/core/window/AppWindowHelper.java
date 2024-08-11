@@ -8,6 +8,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
+
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
@@ -17,6 +18,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -25,7 +28,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
@@ -142,8 +144,8 @@ public class AppWindowHelper {
                 event.consume();
             });
             AppWindowBounds.fixInvalidStagePosition(s);
-            a.getDialogPane().getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-                if (event.getCode().equals(KeyCode.W) && event.isShortcutDown()) {
+            a.getDialogPane().getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+                if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {
                     s.close();
                     event.consume();
                     return;
@@ -260,8 +262,8 @@ public class AppWindowHelper {
             }
         });
 
-        scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode().equals(KeyCode.W) && event.isShortcutDown()) {
+        scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {
                 stage.close();
                 event.consume();
             }

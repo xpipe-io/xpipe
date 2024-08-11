@@ -28,7 +28,8 @@ public class BeaconRequestHandler<T> implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) {
-        if (OperationMode.isInShutdown()) {
+        if (OperationMode.isInShutdown() && !beaconInterface.acceptInShutdown()) {
+            writeError(exchange, new BeaconClientErrorResponse("Daemon is currently in shutdown"), 400);
             return;
         }
 
@@ -108,7 +109,7 @@ public class BeaconRequestHandler<T> implements HttpHandler {
                 // Make deserialization error message more readable
                 var message = ex.getMessage()
                         .replace("$RequestBuilder", "")
-                        .replace("Exchange$Request","Request")
+                        .replace("Exchange$Request", "Request")
                         .replace("at [Source: UNKNOWN; byte offset: #UNKNOWN]", "")
                         .replaceAll("(\\w+) is marked non-null but is null", "field $1 is missing from object")
                         .trim();
@@ -124,10 +125,13 @@ public class BeaconRequestHandler<T> implements HttpHandler {
         try {
             var emptyResponseClass = beaconInterface.getResponseClass().getDeclaredFields().length == 0;
             if (!emptyResponseClass && response != null) {
-                TrackEvent.trace("Sending response:\n" + object);
-                var tree = JacksonMapper.getDefault().valueToTree(response);
-                TrackEvent.trace("Sending raw response:\n" + tree.toPrettyString());
-                var bytes = tree.toPrettyString().getBytes(StandardCharsets.UTF_8);
+                TrackEvent.trace("Sending response:\n" + response);
+                TrackEvent.trace("Sending raw response:\n"
+                        + JacksonMapper.getCensored().valueToTree(response).toPrettyString());
+                var bytes = JacksonMapper.getDefault()
+                        .valueToTree(response)
+                        .toPrettyString()
+                        .getBytes(StandardCharsets.UTF_8);
                 exchange.sendResponseHeaders(200, bytes.length);
                 try (OutputStream os = exchange.getResponseBody()) {
                     os.write(bytes);

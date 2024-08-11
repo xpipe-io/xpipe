@@ -78,6 +78,10 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     LinuxPathType VSCODE_LINUX = new LinuxPathType("app.vscode", "code");
 
+    LinuxPathType ZED_LINUX = new LinuxPathType("app.zed", "zed");
+
+    ExternalEditorType ZED_MACOS = new MacOsEditor("app.zed", "Zed");
+
     LinuxPathType VSCODIUM_LINUX = new LinuxPathType("app.vscodium", "codium");
 
     LinuxPathType GNOME = new LinuxPathType("app.gnomeTextEditor", "gnome-text-editor");
@@ -124,8 +128,9 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     List<ExternalEditorType> WINDOWS_EDITORS =
             List.of(VSCODIUM_WINDOWS, VSCODE_INSIDERS_WINDOWS, VSCODE_WINDOWS, NOTEPADPLUSPLUS, NOTEPAD);
     List<LinuxPathType> LINUX_EDITORS =
-            List.of(VSCODIUM_LINUX, VSCODE_LINUX, KATE, GEDIT, PLUMA, LEAFPAD, MOUSEPAD, GNOME);
-    List<ExternalEditorType> MACOS_EDITORS = List.of(BBEDIT, VSCODIUM_MACOS, VSCODE_MACOS, SUBLIME_MACOS, TEXT_EDIT);
+            List.of(VSCODIUM_LINUX, VSCODE_LINUX, ZED_LINUX, KATE, GEDIT, PLUMA, LEAFPAD, MOUSEPAD, GNOME);
+    List<ExternalEditorType> MACOS_EDITORS =
+            List.of(BBEDIT, VSCODIUM_MACOS, VSCODE_MACOS, SUBLIME_MACOS, ZED_MACOS, TEXT_EDIT);
     List<ExternalEditorType> CROSS_PLATFORM_EDITORS = List.of(FLEET, INTELLIJ, PYCHARM, WEBSTORM, CLION);
 
     @SuppressWarnings("TrivialFunctionalExpressionUsage")

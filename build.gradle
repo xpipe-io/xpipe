@@ -12,7 +12,7 @@ buildscript {
 }
 
 plugins {
-    id "io.codearte.nexus-staging" version "0.30.0"
+    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
     id 'org.gradlex.extra-java-module-info' version '1.8' apply false
     id("com.diffplug.spotless") version "6.25.0" apply false
 }
@@ -41,6 +41,26 @@ subprojects {subproject ->
     }
 }
 
+
+def user = project.hasProperty('sonatypeUsername') ? project.property('sonatypeUsername') : System.getenv('SONATYPE_USERNAME')
+def pass = project.hasProperty('sonatypePassword') ? project.property('sonatypePassword') : System.getenv('SONATYPE_PASSWORD')
+
+tasks.withType(GenerateModuleMetadata) {
+    enabled = false
+}
+
+nexusPublishing  {
+    repositories {
+        sonatype  {
+            nexusUrl.set(uri('https://s01.oss.sonatype.org/service/local/'))
+            snapshotRepositoryUrl.set(uri('https://s01.oss.sonatype.org/content/repositories/snapshots/'))
+            username = user
+            password = pass
+        }
+    }
+    useStaging = true
+}
+
 var devProps = file("$rootDir/app/dev.properties")
 if (!devProps.exists()) {
     devProps.text = file("$rootDir/gradle/gradle_scripts/dev_default.properties").text
@@ -65,13 +85,13 @@ def getArchName() {
 
 def getPlatformName() {
     def currentOS = DefaultNativePlatform.currentOperatingSystem;
-    def platform = null
+    def platform
     if (currentOS.isWindows()) {
         platform = 'windows'
-    } else if (currentOS.isLinux()) {
-        platform = 'linux'
-    } else if (currentOS.isMacOsX()) {
+    }  else if (currentOS.isMacOsX()) {
         platform = 'osx'
+    } else {
+        platform = 'linux'
     }
     return platform;
 }
@@ -122,11 +142,13 @@ project.ext {
             "-Dio.xpipe.app.arch=$rootProject.arch",
             "-Dio.xpipe.app.languages=${String.join(",", languages)}",
             "-Dfile.encoding=UTF-8",
-            // Disable this for now as it requires Windows 10+
-            // '-XX:+UseZGC',
             "-Dvisualvm.display.name=XPipe",
             "-Djavafx.preloader=io.xpipe.app.core.AppPreloader"
     ]
+    // Disable this on Windows for now as it requires Windows 10+
+    if (org.gradle.internal.os.OperatingSystem.current().isLinux() || org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+        jvmRunArgs += ['-XX:+UseZGC']
+    }
     if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
         jvmRunArgs += ["-Dapple.awt.application.appearance=system"]
     }
@@ -212,3 +234,6 @@ task testAll(type: DefaultTask) {
     }
     finalizedBy(testReport)
 }
+
+group = 'io.xpipe'
+version = versionString

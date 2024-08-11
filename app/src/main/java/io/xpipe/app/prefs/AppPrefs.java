@@ -14,18 +14,16 @@ import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.util.PasswordLockSecretValue;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.ModuleHelper;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableStringValue;
 import javafx.beans.value.ObservableValue;
-
 import lombok.Getter;
 import lombok.Value;
+import org.apache.commons.io.FileUtils;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Stream;
@@ -33,7 +31,7 @@ import java.util.stream.Stream;
 public class AppPrefs {
 
     public static final Path DEFAULT_STORAGE_DIR =
-            AppProperties.get().getDataDir().resolve("storage");
+            AppProperties.get() != null ? AppProperties.get().getDataDir().resolve("storage") : null;
     private static final String DEVELOPER_MODE_PROP = "io.xpipe.app.developerMode";
     private static AppPrefs INSTANCE;
     private final List<Mapping<?>> mapping = new ArrayList<>();
@@ -111,6 +109,9 @@ public class AppPrefs {
             map(new SimpleBooleanProperty(false), "developerDisableGuiRestrictions", Boolean.class);
     private final ObservableBooleanValue developerDisableGuiRestrictionsEffective =
             bindDeveloperTrue(developerDisableGuiRestrictions);
+    final BooleanProperty developerForceSshTty =
+            map(new SimpleBooleanProperty(false), "developerForceSshTty", Boolean.class);
+
     final ObjectProperty<SupportedLocale> language =
             map(new SimpleObjectProperty<>(SupportedLocale.getEnglish()), "language", SupportedLocale.class);
 
@@ -175,6 +176,7 @@ public class AppPrefs {
                         new SecurityCategory(),
                         new HttpApiCategory(),
                         new WorkflowCategory(),
+                        new WorkspacesCategory(),
                         new TroubleshootCategory(),
                         new DeveloperCategory())
                 .filter(appPrefsCategory -> appPrefsCategory.show())
@@ -436,6 +438,10 @@ public class AppPrefs {
         return developerDisableGuiRestrictionsEffective;
     }
 
+    public ObservableBooleanValue developerForceSshTty() {
+        return bindDeveloperTrue(developerForceSshTty);
+    }
+
     @SuppressWarnings("unchecked")
     private <T> T map(T o, String name, Class<?> clazz) {
         mapping.add(new Mapping<>(name, (Property<T>) o, (Class<T>) clazz));
@@ -489,7 +495,7 @@ public class AppPrefs {
         }
 
         try {
-            Files.createDirectories(storageDirectory.get());
+            FileUtils.forceMkdir(storageDirectory.getValue().toFile());
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).expected().build().handle();
             storageDirectory.setValue(DEFAULT_STORAGE_DIR);

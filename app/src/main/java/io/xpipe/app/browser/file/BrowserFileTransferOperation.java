@@ -7,9 +7,7 @@ import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.FileSystem;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -220,60 +218,83 @@ public class BrowserFileTransferOperation {
                     continue;
                 }
 
-                InputStream inputStream = null;
-                OutputStream outputStream = null;
-                try {
-                    var fileSize = sourceFile.getFileSystem().getFileSize(sourceFile.getPath());
-                    inputStream = sourceFile.getFileSystem().openInput(sourceFile.getPath());
-                    outputStream = target.getFileSystem().openOutput(targetFile, fileSize);
-                    transferFile(sourceFile, inputStream, outputStream, transferred, totalSize, start);
-                    inputStream.transferTo(OutputStream.nullOutputStream());
-                } catch (Exception ex) {
-                    // Mark progress as finished to reset any progress display
-                    updateProgress(BrowserTransferProgress.finished(sourceFile.getName(), transferred.get()));
-
-                    if (inputStream != null) {
-                        try {
-                            inputStream.close();
-                        } catch (Exception om) {
-                            // This is expected as the process control has to be killed
-                            // When calling close, it will throw an exception when it has to kill
-                            // ErrorEvent.fromThrowable(om).handle();
-                        }
-                    }
-                    if (outputStream != null) {
-                        try {
-                            outputStream.close();
-                        } catch (Exception om) {
-                            // This is expected as the process control has to be killed
-                            // When calling close, it will throw an exception when it has to kill
-                            // ErrorEvent.fromThrowable(om).handle();
-                        }
-                    }
-                    throw ex;
-                }
-
-                Exception exception = null;
-                try {
-                    inputStream.close();
-                } catch (Exception om) {
-                    exception = om;
-                }
-                try {
-                    outputStream.close();
-                } catch (Exception om) {
-                    if (exception != null) {
-                        ErrorEvent.fromThrowable(om).handle();
-                    } else {
-                        exception = om;
-                    }
-                }
-                if (exception != null) {
-                    throw exception;
-                }
+                transfer(sourceFile, targetFile, transferred, totalSize, start);
             }
         }
         updateProgress(BrowserTransferProgress.finished(source.getName(), totalSize.get()));
+    }
+
+    private void transfer(
+            FileSystem.FileEntry sourceFile,
+            String targetFile,
+            AtomicLong transferred,
+            AtomicLong totalSize,
+            Instant start)
+            throws Exception {
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
+        try {
+            var fileSize = sourceFile.getFileSystem().getFileSize(sourceFile.getPath());
+
+            // Read the first few bytes to figure out possible command failure early
+            // before creating the output stream
+            inputStream = new BufferedInputStream(sourceFile.getFileSystem().openInput(sourceFile.getPath()), 1024);
+            inputStream.mark(1024);
+            var streamStart = new byte[1024];
+            var streamStartLength = inputStream.read(streamStart, 0, 1024);
+            if (streamStartLength < 1024) {
+                inputStream.close();
+                inputStream = new ByteArrayInputStream(streamStart);
+            } else {
+                inputStream.reset();
+            }
+
+            outputStream = target.getFileSystem().openOutput(targetFile, fileSize);
+            transferFile(sourceFile, inputStream, outputStream, transferred, totalSize, start);
+            inputStream.transferTo(OutputStream.nullOutputStream());
+        } catch (Exception ex) {
+            // Mark progress as finished to reset any progress display
+            updateProgress(BrowserTransferProgress.finished(sourceFile.getName(), transferred.get()));
+
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (Exception om) {
+                    // This is expected as the process control has to be killed
+                    // When calling close, it will throw an exception when it has to kill
+                    // ErrorEvent.fromThrowable(om).handle();
+                }
+            }
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (Exception om) {
+                    // This is expected as the process control has to be killed
+                    // When calling close, it will throw an exception when it has to kill
+                    // ErrorEvent.fromThrowable(om).handle();
+                }
+            }
+            throw ex;
+        }
+
+        Exception exception = null;
+        try {
+            inputStream.close();
+        } catch (Exception om) {
+            exception = om;
+        }
+        try {
+            outputStream.close();
+        } catch (Exception om) {
+            if (exception != null) {
+                ErrorEvent.fromThrowable(om).handle();
+            } else {
+                exception = om;
+            }
+        }
+        if (exception != null) {
+            throw exception;
+        }
     }
 
     private void deleteSingle(FileSystem.FileEntry source) throws Exception {

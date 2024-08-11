@@ -1,13 +1,15 @@
 package io.xpipe.core.util;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import lombok.Getter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -87,5 +89,37 @@ public class JacksonMapper {
         }
 
         return INSTANCE;
+    }
+
+    public static ObjectMapper getCensored() {
+        if (!JacksonMapper.isInit()) {
+            return BASE;
+        }
+
+        var c = INSTANCE.copy();
+        c.registerModule(new SimpleModule() {
+            @Override
+            public void setupModule(SetupContext context) {
+                addSerializer(SecretValue.class, new JsonSerializer<>() {
+                    @Override
+                    public void serialize(SecretValue value, JsonGenerator gen, SerializerProvider serializers)
+                            throws IOException {
+                        gen.writeString("<secret>");
+                    }
+
+                    @Override
+                    public void serializeWithType(
+                            SecretValue value,
+                            JsonGenerator gen,
+                            SerializerProvider serializers,
+                            TypeSerializer typeSer)
+                            throws IOException {
+                        gen.writeString("<secret>");
+                    }
+                });
+                super.setupModule(context);
+            }
+        });
+        return c;
     }
 }

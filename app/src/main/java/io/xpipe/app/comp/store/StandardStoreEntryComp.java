@@ -1,16 +1,19 @@
 package io.xpipe.app.comp.store;
 
+import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.core.process.OsType;
 
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 
 public class StandardStoreEntryComp extends StoreEntryComp {
 
-    public StandardStoreEntryComp(StoreEntryWrapper entry, Comp<?> content) {
-        super(entry, content);
+    public StandardStoreEntryComp(StoreSection section, Comp<?> content) {
+        super(section, content);
     }
 
     @Override
@@ -18,23 +21,37 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         return true;
     }
 
+    private Label createSummary() {
+        var summary = new Label();
+        summary.textProperty().bind(getWrapper().getSummary());
+        summary.getStyleClass().add("summary");
+        AppFont.small(summary);
+        return summary;
+    }
+
     protected Region createContent() {
         var name = createName().createRegion();
-        var notes = new StoreNotesComp(wrapper).createRegion();
+        var notes = new StoreNotesComp(getWrapper()).createRegion();
 
         var grid = new GridPane();
-        grid.setHgap(7);
-        grid.setVgap(0);
+        grid.setHgap(6);
+        grid.setVgap(OsType.getLocal() == OsType.MACOS ? 2 : 0);
 
-        var storeIcon = createIcon(50, 40);
+        var storeIcon = createIcon(46, 40);
         grid.add(storeIcon, 0, 0, 1, 2);
-        grid.getColumnConstraints().add(new ColumnConstraints(66));
+        grid.getColumnConstraints().add(new ColumnConstraints(56));
 
         var nameAndNotes = new HBox(name, notes);
-        nameAndNotes.setSpacing(1);
+        nameAndNotes.setSpacing(6);
         nameAndNotes.setAlignment(Pos.CENTER_LEFT);
         grid.add(nameAndNotes, 1, 0);
-        grid.add(createSummary(), 1, 1);
+        GridPane.setVgrow(nameAndNotes, Priority.ALWAYS);
+
+        var summaryBox = new HBox(createSummary());
+        summaryBox.setAlignment(Pos.TOP_LEFT);
+        GridPane.setVgrow(summaryBox, Priority.ALWAYS);
+        grid.add(summaryBox, 1, 1);
+
         var nameCC = new ColumnConstraints();
         nameCC.setMinWidth(100);
         nameCC.setHgrow(Priority.ALWAYS);

@@ -1,22 +1,23 @@
 package io.xpipe.app.beacon;
 
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpServer;
 import io.xpipe.app.core.AppResources;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.MarkdownHelper;
 import io.xpipe.beacon.BeaconConfig;
 import io.xpipe.beacon.BeaconInterface;
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.XPipeInstallation;
-
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpServer;
 import lombok.Getter;
 
 import java.io.IOException;
-import java.net.InetAddress;
+import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
@@ -84,6 +85,7 @@ public class AppBeaconServer {
     public static void reset() {
         if (INSTANCE != null) {
             INSTANCE.stop();
+            INSTANCE.deleteAuthSecret();
             INSTANCE = null;
         }
     }
@@ -109,11 +111,22 @@ public class AppBeaconServer {
         var file = XPipeInstallation.getLocalBeaconAuthFile();
         var id = UUID.randomUUID().toString();
         Files.writeString(file, id);
+        if (OsType.getLocal() != OsType.WINDOWS) {
+            Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("rw-rw----"));
+        }
         localAuthSecret = id;
     }
 
+    private void deleteAuthSecret() {
+        var file = XPipeInstallation.getLocalBeaconAuthFile();
+        try {
+            Files.delete(file);
+        } catch (IOException ignored) {
+        }
+    }
+
     private void start() throws IOException {
-        server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), port), 10);
+        server = HttpServer.create(new InetSocketAddress(Inet4Address.getByAddress(new byte[]{ 0x7f,0x00,0x00,0x01 }), port), 10);
         BeaconInterface.getAll().forEach(beaconInterface -> {
             server.createContext(beaconInterface.getPath(), new BeaconRequestHandler<>(beaconInterface));
         });

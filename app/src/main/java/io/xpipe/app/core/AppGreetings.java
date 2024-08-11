@@ -55,6 +55,12 @@ public class AppGreetings {
         if (set || AppProperties.get().isDevelopmentEnvironment()) {
             return;
         }
+
+        if (AppProperties.get().isAutoAcceptEula()) {
+            AppCache.update("legalAccepted", true);
+            return;
+        }
+
         var read = new SimpleBooleanProperty();
         var accepted = new SimpleBooleanProperty();
         AppWindowHelper.showBlockingAlert(alert -> {

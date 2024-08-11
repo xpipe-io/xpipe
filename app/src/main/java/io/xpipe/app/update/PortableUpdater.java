@@ -29,10 +29,6 @@ public class PortableUpdater extends UpdateHandler {
                 .createRegion();
     }
 
-    public void executeUpdateOnCloseImpl() {
-        throw new UnsupportedOperationException();
-    }
-
     public synchronized AvailableRelease refreshUpdateCheckImpl() throws Exception {
         var rel = AppDownloads.getLatestSuitableRelease();
         event("Determined latest suitable release "

@@ -1,6 +1,8 @@
 package io.xpipe.app.update;
 
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.issue.ErrorEvent;
 
 import javafx.scene.layout.Region;
 
@@ -43,13 +45,24 @@ public class GitHubUpdater extends UpdateHandler {
         preparedUpdate.setValue(rel);
     }
 
-    public void executeUpdateOnCloseImpl() throws Exception {
-        var downloadFile = preparedUpdate.getValue().getFile();
+    public void executeUpdate() {
+        var p = preparedUpdate.getValue();
+        var downloadFile = p.getFile();
         if (!Files.exists(downloadFile)) {
+            event("Prepared update file does not exist");
             return;
         }
 
-        AppInstaller.installFileLocal(preparedUpdate.getValue().getAssetType(), downloadFile);
+        try {
+            var performedUpdate = new PerformedUpdate(p.getVersion(), p.getBody(), p.getVersion());
+            AppCache.update("performedUpdate", performedUpdate);
+
+            var a = p.getAssetType();
+            a.installLocal(downloadFile);
+        } catch (Throwable t) {
+            ErrorEvent.fromThrowable(t).handle();
+            preparedUpdate.setValue(null);
+        }
     }
 
     public synchronized AvailableRelease refreshUpdateCheckImpl() throws Exception {

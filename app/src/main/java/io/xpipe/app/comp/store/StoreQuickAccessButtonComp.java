@@ -4,6 +4,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
+import io.xpipe.app.fxcomps.util.LabelGraphic;
 import io.xpipe.app.util.ContextMenuHelper;
 
 import javafx.geometry.Side;
@@ -18,9 +19,9 @@ import java.util.function.Consumer;
 public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
 
     private final StoreSection section;
-    private final Consumer<StoreEntryWrapper> action;
+    private final Consumer<StoreSection> action;
 
-    public StoreQuickAccessButtonComp(StoreSection section, Consumer<StoreEntryWrapper> action) {
+    public StoreQuickAccessButtonComp(StoreSection section, Consumer<StoreSection> action) {
         this.section = section;
         this.action = action;
     }
@@ -44,10 +45,9 @@ public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
                 w.getEntry().getProvider().getDisplayIconFileName(w.getEntry().getStore());
         if (c.getList().isEmpty()) {
             var item = ContextMenuHelper.item(
-                    PrettyImageHelper.ofFixedSizeSquare(graphic, 16),
-                    w.getName().getValue());
+                    new LabelGraphic.ImageGraphic(graphic, 16), w.getName().getValue());
             item.setOnAction(event -> {
-                action.accept(w);
+                action.accept(section);
                 contextMenu.hide();
                 event.consume();
             });
@@ -72,7 +72,7 @@ public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
                     return;
                 }
 
-                action.accept(w);
+                action.accept(section);
                 contextMenu.hide();
                 event.consume();
             }

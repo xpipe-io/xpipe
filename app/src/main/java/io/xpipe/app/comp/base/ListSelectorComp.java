@@ -88,6 +88,7 @@ public class ListSelectorComp<T> extends SimpleComp {
 
         var sp = new ScrollPane(vbox);
         sp.setFitToWidth(true);
+        sp.getStyleClass().add("list-selector-comp");
         return sp;
     }
 }

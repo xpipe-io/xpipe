@@ -8,6 +8,7 @@ import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
+import io.xpipe.app.fxcomps.util.LabelGraphic;
 import io.xpipe.app.storage.DataStoreColor;
 
 import javafx.beans.binding.Bindings;
@@ -34,12 +35,12 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
 
     private final StoreSection section;
     private final BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment;
-    private final Consumer<StoreEntryWrapper> action;
+    private final Consumer<StoreSection> action;
 
     public StoreSectionMiniComp(
             StoreSection section,
             BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment,
-            Consumer<StoreEntryWrapper> action) {
+            Consumer<StoreSection> action) {
         this.section = section;
         this.augment = augment;
         this.action = action;
@@ -68,7 +69,7 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                     })
                     .apply(struc -> {
                         struc.get().setOnAction(event -> {
-                            action.accept(section.getWrapper());
+                            action.accept(section);
                             event.consume();
                         });
                     })
@@ -81,8 +82,8 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                     new SimpleBooleanProperty(section.getWrapper().getExpanded().get()
                             && section.getShownChildren().getList().size() > 0);
             var button = new IconButtonComp(
-                            Bindings.createStringBinding(
-                                    () -> expanded.get() ? "mdal-keyboard_arrow_down" : "mdal-keyboard_arrow_right",
+                            Bindings.createObjectBinding(
+                                    () -> new LabelGraphic.IconGraphic(expanded.get() ? "mdal-keyboard_arrow_down" : "mdal-keyboard_arrow_right"),
                                     expanded),
                             () -> {
                                 expanded.set(!expanded.get());
@@ -105,7 +106,7 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                         return section.getShownChildren().getList().isEmpty();
                     },
                     section.getShownChildren().getList());
-            Consumer<StoreEntryWrapper> quickAccessAction = action;
+            Consumer<StoreSection> quickAccessAction = action;
             var quickAccessButton = new StoreQuickAccessButtonComp(section, quickAccessAction)
                     .vgrow()
                     .styleClass("quick-access-button")

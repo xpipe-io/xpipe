@@ -25,14 +25,6 @@
     -fx-text-fill: #ee4829;
 }
 
-.store-entry-grid:incomplete .summary {
-    -fx-text-fill: #ee4829;
-}
-
-.store-entry-grid:incomplete .information {
-    -fx-text-fill: #ee4829;
-}
-
 .store-entry-grid:incomplete .icon {
     -fx-opacity: 0.5;
 }
@@ -88,6 +80,14 @@
 
 .expand-button:disabled, .quick-access-button:disabled {
     -fx-opacity: 0.2;
+}
+
+.store-entry-comp .button-bar {
+    -fx-padding: 5;
+}
+
+.store-entry-grid.dense .button-bar {
+    -fx-padding: 3;
 }
 
 .store-entry-comp .button-bar .button {

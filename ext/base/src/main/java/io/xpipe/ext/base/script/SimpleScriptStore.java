@@ -10,6 +10,7 @@ import io.xpipe.core.process.ShellInitCommand;
 import io.xpipe.core.util.ValidationException;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.ext.base.SelfReferentialStore;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -24,20 +25,25 @@ import java.util.stream.Collectors;
 @Getter
 @Jacksonized
 @JsonTypeName("script")
-public class SimpleScriptStore extends ScriptStore implements ShellInitCommand.Terminal {
+public class SimpleScriptStore extends ScriptStore implements ShellInitCommand.Terminal, SelfReferentialStore {
 
     private final ShellDialect minimumDialect;
     private final String commands;
     private final boolean initScript;
     private final boolean shellScript;
     private final boolean fileScript;
+    private final boolean runnableScript;
 
     public boolean isCompatible(ShellControl shellControl) {
         var targetType = shellControl.getOriginalShellDialect();
         return minimumDialect.isCompatibleTo(targetType);
     }
 
-    public String assemble(ShellControl shellControl) {
+    public boolean isCompatible(ShellDialect dialect) {
+        return minimumDialect.isCompatibleTo(dialect);
+    }
+
+    private String assembleScript(ShellControl shellControl) {
         if (isCompatible(shellControl)) {
             var shebang = commands.startsWith("#");
             // Fix new lines and shebang
@@ -53,35 +59,46 @@ public class SimpleScriptStore extends ScriptStore implements ShellInitCommand.T
         return null;
     }
 
+    public String assembleScriptChain(ShellControl shellControl) {
+        var nl = shellControl.getShellDialect().getNewLine().getNewLineString();
+        var all = queryFlattenedScripts();
+        var r = all.stream().map(ref -> ref.getStore().assembleScript(shellControl)).filter(s -> s != null).toList();
+        if (r.isEmpty()) {
+            return null;
+        }
+        return String.join(nl, r);
+    }
+
     @Override
     public void checkComplete() throws Throwable {
         Validators.nonNull(group);
         super.checkComplete();
         Validators.nonNull(minimumDialect);
-        if (!initScript && !shellScript && !fileScript) {
+        if (!initScript && !shellScript && !fileScript && !isRunnableScript()) {
             throw new ValidationException(AppI18n.get("app.valueMustNotBeEmpty"));
         }
     }
 
-    public void queryFlattenedScripts(LinkedHashSet<SimpleScriptStore> all) {
+    public void queryFlattenedScripts(LinkedHashSet<DataStoreEntryRef<SimpleScriptStore>> all) {
         // Prevent loop
-        all.add(this);
+        DataStoreEntryRef<SimpleScriptStore> ref = getSelfEntry().ref();
+        all.add(ref);
         getEffectiveScripts().stream()
-                .filter(scriptStoreDataStoreEntryRef -> !all.contains(scriptStoreDataStoreEntryRef.getStore()))
+                .filter(scriptStoreDataStoreEntryRef -> !all.contains(scriptStoreDataStoreEntryRef))
                 .forEach(scriptStoreDataStoreEntryRef -> {
                     scriptStoreDataStoreEntryRef.getStore().queryFlattenedScripts(all);
                 });
-        all.remove(this);
-        all.add(this);
+        all.remove(ref);
+        all.add(ref);
     }
 
     @Override
     public List<DataStoreEntryRef<ScriptStore>> getEffectiveScripts() {
-        return scripts != null ? scripts.stream().filter(Objects::nonNull).toList() : List.of();
+        return scripts != null ? scripts.stream().filter(Objects::nonNull).filter(ref -> ref.get().getValidity().isUsable()).toList() : List.of();
     }
 
     @Override
     public Optional<String> terminalContent(ShellControl shellControl) {
-        return Optional.ofNullable(assemble(shellControl));
+        return Optional.ofNullable(assembleScriptChain(shellControl));
     }
 }

@@ -7,6 +7,7 @@ import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
+import io.xpipe.app.fxcomps.util.LabelGraphic;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -44,9 +45,9 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                     return section.getShownChildren().getList().isEmpty();
                 },
                 section.getShownChildren().getList());
-        Consumer<StoreEntryWrapper> quickAccessAction = w -> {
+        Consumer<StoreSection> quickAccessAction = w -> {
             ThreadHelper.runFailableAsync(() -> {
-                w.executeDefaultAction();
+                w.getWrapper().executeDefaultAction();
             });
         };
         var quickAccessButton = new StoreQuickAccessButtonComp(section, quickAccessAction)
@@ -68,11 +69,11 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
 
     private Comp<CompStructure<Button>> createExpandButton() {
         var expandButton = new IconButtonComp(
-                Bindings.createStringBinding(
-                        () -> section.getWrapper().getExpanded().get()
+                Bindings.createObjectBinding(
+                        () -> new LabelGraphic.IconGraphic(section.getWrapper().getExpanded().get()
                                         && section.getShownChildren().getList().size() > 0
                                 ? "mdal-keyboard_arrow_down"
-                                : "mdal-keyboard_arrow_right",
+                                : "mdal-keyboard_arrow_right"),
                         section.getWrapper().getExpanded(),
                         section.getShownChildren().getList()),
                 () -> {

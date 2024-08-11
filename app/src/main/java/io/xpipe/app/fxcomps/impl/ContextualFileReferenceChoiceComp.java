@@ -1,5 +1,6 @@
 package io.xpipe.app.fxcomps.impl;
 
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.session.BrowserChooserComp;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
@@ -15,39 +16,29 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystemStore;
-
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-
-import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
+import java.util.ArrayList;
 
 public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>> {
 
     private final Property<DataStoreEntryRef<? extends FileSystemStore>> fileSystem;
     private final Property<String> filePath;
+    private final boolean allowSync;
 
     public <T extends FileSystemStore> ContextualFileReferenceChoiceComp(
-            ObservableValue<DataStoreEntryRef<T>> fileSystem, Property<String> filePath) {
-        this.fileSystem = new SimpleObjectProperty<>();
-        fileSystem.subscribe(val -> {
-            this.fileSystem.setValue(val);
-        });
-        this.filePath = filePath;
-    }
-
-    public <T extends FileSystemStore> ContextualFileReferenceChoiceComp(
-            Property<DataStoreEntryRef<T>> fileSystem, Property<String> filePath) {
+            Property<DataStoreEntryRef<T>> fileSystem, Property<String> filePath, boolean allowSync
+    ) {
+        this.allowSync = allowSync;
         this.fileSystem = new SimpleObjectProperty<>();
         fileSystem.subscribe(val -> {
             this.fileSystem.setValue(val);
@@ -79,7 +70,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                             },
                             false);
                 })
-                .styleClass(Styles.CENTER_PILL)
+                .styleClass(allowSync ? Styles.CENTER_PILL : Styles.RIGHT_PILL)
                 .grow(false, true);
 
         var gitShareButton = new ButtonComp(null, new FontIcon("mdi2g-git"), () -> {
@@ -126,7 +117,13 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
         gitShareButton.tooltipKey("gitShareFileTooltip");
         gitShareButton.styleClass(Styles.RIGHT_PILL).grow(false, true);
 
-        var layout = new HorizontalComp(List.of(fileNameComp, fileBrowseButton, gitShareButton))
+        var nodes = new ArrayList<Comp<?>>();
+        nodes.add(fileNameComp);
+        nodes.add(fileBrowseButton);
+        if (allowSync) {
+            nodes.add(gitShareButton);
+        }
+        var layout = new HorizontalComp(nodes)
                 .apply(struc -> struc.get().setFillHeight(true));
 
         layout.apply(struc -> {

@@ -1,17 +1,21 @@
 package io.xpipe.app.fxcomps.impl;
 
-import atlantafx.base.controls.CustomTextField;
 import io.xpipe.app.core.AppActionLinkDetector;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
-import javafx.geometry.Pos;
 import javafx.scene.Cursor;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
+
+import atlantafx.base.controls.CustomTextField;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.Objects;
@@ -36,15 +40,28 @@ public class FilterComp extends Comp<CompStructure<CustomTextField>> {
             }
         });
         var filter = new CustomTextField();
-        filter.alignmentProperty().bind(Bindings.createObjectBinding(() -> {
-            return filter.isFocused() || (filter.getText() != null && !filter.getText().isEmpty()) ? Pos.CENTER_LEFT : Pos.CENTER;
-        }, filter.textProperty(), filter.focusedProperty()));
+        filter.setMinHeight(0);
         filter.setMaxHeight(2000);
         filter.getStyleClass().add("filter-comp");
         filter.promptTextProperty().bind(AppI18n.observable("searchFilter"));
-        filter.setLeft(fi);
-        filter.setRight(clear);
+        filter.rightProperty()
+                .bind(Bindings.createObjectBinding(
+                        () -> {
+                            return filter.isFocused()
+                                            || (filter.getText() != null
+                                                    && !filter.getText().isEmpty())
+                                    ? clear
+                                    : fi;
+                        },
+                        filter.focusedProperty()));
         filter.setAccessibleText("Filter");
+
+        filter.addEventFilter(KeyEvent.KEY_PRESSED,event -> {
+            if (new KeyCodeCombination(KeyCode.ESCAPE).match(event)) {
+                filter.getScene().getRoot().requestFocus();
+                event.consume();
+            }
+        });
 
         filterText.subscribe(val -> {
             PlatformThread.runLaterIfNeeded(() -> {

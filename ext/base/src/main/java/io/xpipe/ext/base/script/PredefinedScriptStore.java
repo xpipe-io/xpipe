@@ -61,16 +61,24 @@ public enum PredefinedScriptStore {
             .commands(file("starship_powershell.ps1"))
             .initScript(true)
             .build()),
-    APT_UPDATE("Apt update", () -> SimpleScriptStore.builder()
+    APT_UPDATE("Apt upgrade", () -> SimpleScriptStore.builder()
             .group(PredefinedScriptGroup.MANAGEMENT.getEntry())
             .minimumDialect(ShellDialects.SH)
-            .commands(file(("apt_update.sh")))
+            .commands(file(("apt_upgrade.sh")))
             .shellScript(true)
+            .runnableScript(true)
             .build()),
     REMOVE_CR("CRLF to LF", () -> SimpleScriptStore.builder()
             .group(PredefinedScriptGroup.FILES.getEntry())
             .minimumDialect(ShellDialects.SH)
             .commands(file(("crlf_to_lf.sh")))
+            .fileScript(true)
+            .shellScript(true)
+            .build()),
+    DIFF("Diff", () -> SimpleScriptStore.builder()
+            .group(PredefinedScriptGroup.FILES.getEntry())
+            .minimumDialect(ShellDialects.SH)
+            .commands(file(("diff.sh")))
             .fileScript(true)
             .build());
 

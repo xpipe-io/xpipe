@@ -23,15 +23,10 @@ import java.util.ArrayList;
 @Getter
 public class BrowserSessionModel extends BrowserAbstractSessionModel<BrowserSessionTab<?>> {
 
-    public static final BrowserSessionModel DEFAULT = new BrowserSessionModel(BrowserSavedStateImpl.load());
+    public static final BrowserSessionModel DEFAULT = new BrowserSessionModel();
 
     private final BrowserTransferModel localTransfersStage = new BrowserTransferModel(this);
-    private final BrowserSavedState savedState;
     private final Property<Boolean> draggingFiles = new SimpleBooleanProperty();
-
-    public BrowserSessionModel(BrowserSavedState savedState) {
-        this.savedState = savedState;
-    }
 
     public void restoreState(BrowserSavedState state) {
         ThreadHelper.runAsync(() -> {
@@ -62,9 +57,7 @@ public class BrowserSessionModel extends BrowserAbstractSessionModel<BrowserSess
 
                 closeSync(o);
             }
-            if (savedState != null) {
-                savedState.save();
-            }
+            BrowserSavedStateImpl.get().save();
         }
 
         // Delete all files
@@ -87,20 +80,23 @@ public class BrowserSessionModel extends BrowserAbstractSessionModel<BrowserSess
     public void openFileSystemSync(
             DataStoreEntryRef<? extends FileSystemStore> store,
             FailableFunction<OpenFileSystemModel, String, Exception> path,
-            BooleanProperty externalBusy) throws Exception {
+            BooleanProperty externalBusy)
+            throws Exception {
         if (store == null) {
             return;
         }
 
         OpenFileSystemModel model;
         try (var b = new BooleanScope(externalBusy != null ? externalBusy : new SimpleBooleanProperty()).start()) {
-            model = new OpenFileSystemModel(this, store, OpenFileSystemModel.SelectionMode.ALL);
-            model.init();
-            // Prevent multiple calls from interfering with each other
-            synchronized (BrowserSessionModel.this) {
-                sessionEntries.add(model);
-                // The tab pane doesn't automatically select new tabs
-                selectedEntry.setValue(model);
+            try (var sessionBusy = new BooleanScope(busy).exclusive().start()) {
+                model = new OpenFileSystemModel(this, store, OpenFileSystemModel.SelectionMode.ALL);
+                model.init();
+                // Prevent multiple calls from interfering with each other
+                synchronized (BrowserSessionModel.this) {
+                    sessionEntries.add(model);
+                    // The tab pane doesn't automatically select new tabs
+                    selectedEntry.setValue(model);
+                }
             }
         }
         if (path != null) {

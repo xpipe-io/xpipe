@@ -273,6 +273,13 @@ public abstract class DataStorage {
     }
 
     public void updateEntry(DataStoreEntry entry, DataStoreEntry newEntry) {
+        var state = entry.getStorePersistentState();
+        var nState = newEntry.getStorePersistentState();
+        if (state != null && nState != null) {
+            var updatedState = state.mergeCopy(nState);
+            newEntry.setStorePersistentState(updatedState);
+        }
+
         var oldParent = DataStorage.get().getDefaultDisplayParent(entry);
         var newParent = DataStorage.get().getDefaultDisplayParent(newEntry);
         var sameParent = Objects.equals(oldParent, newParent);
@@ -341,18 +348,20 @@ public abstract class DataStorage {
 
     @SneakyThrows
     public boolean refreshChildren(DataStoreEntry e) {
-        return refreshChildren(e,false);
+        return refreshChildren(e, false);
     }
 
     public boolean refreshChildren(DataStoreEntry e, boolean throwOnFail) throws Exception {
-        if (!(e.getStore() instanceof FixedHierarchyStore)) {
+        if (!(e.getStore() instanceof FixedHierarchyStore h)) {
             return false;
         }
 
         e.incrementBusyCounter();
         List<? extends DataStoreEntryRef<? extends FixedChildStore>> newChildren;
         try {
-            newChildren = ((FixedHierarchyStore) (e.getStore())).listChildren(e).stream().filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null).toList();
+            newChildren = h.listChildren(e).stream()
+                    .filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null)
+                    .toList();
         } catch (Exception ex) {
             if (throwOnFail) {
                 throw ex;
@@ -368,6 +377,10 @@ public abstract class DataStorage {
         var toRemove = oldChildren.stream()
                 .filter(oc -> oc.getStore() instanceof FixedChildStore)
                 .filter(oc -> {
+                    if (!oc.getValidity().isUsable()) {
+                        return true;
+                    }
+
                     var oid = ((FixedChildStore) oc.getStore()).getFixedId();
                     if (oid.isEmpty()) {
                         return false;
@@ -394,6 +407,7 @@ public abstract class DataStorage {
 
                     return oldChildren.stream()
                             .filter(oc -> oc.getStore() instanceof FixedChildStore)
+                            .filter(oc -> oc.getValidity().isUsable())
                             .filter(oc -> ((FixedChildStore) oc.getStore())
                                     .getFixedId()
                                     .isPresent())
@@ -407,6 +421,7 @@ public abstract class DataStorage {
                 .toList();
         var toUpdate = oldChildren.stream()
                 .filter(oc -> oc.getStore() instanceof FixedChildStore)
+                .filter(oc -> oc.getValidity().isUsable())
                 .map(oc -> {
                     var oid = ((FixedChildStore) oc.getStore()).getFixedId();
                     if (oid.isEmpty()) {
@@ -433,7 +448,9 @@ public abstract class DataStorage {
             nc.get().notifyUpdate(false, true);
         });
 
-        deleteWithChildren(toRemove.toArray(DataStoreEntry[]::new));
+        if (h.removeLeftovers()) {
+            deleteWithChildren(toRemove.toArray(DataStoreEntry[]::new));
+        }
         addStoreEntriesIfNotPresent(toAdd.stream().map(DataStoreEntryRef::get).toArray(DataStoreEntry[]::new));
         toUpdate.forEach(pair -> {
             // Update state by merging
@@ -460,10 +477,11 @@ public abstract class DataStorage {
         });
         refreshEntries();
         saveAsync();
+        e.getProvider().onChildrenRefresh(e);
         toAdd.forEach(dataStoreEntryRef ->
-                dataStoreEntryRef.get().getProvider().onChildrenRefresh(dataStoreEntryRef.getEntry()));
+                dataStoreEntryRef.get().getProvider().onParentRefresh(dataStoreEntryRef.getEntry()));
         toUpdate.forEach(dataStoreEntryRef ->
-                dataStoreEntryRef.getKey().getProvider().onChildrenRefresh(dataStoreEntryRef.getKey()));
+                dataStoreEntryRef.getKey().getProvider().onParentRefresh(dataStoreEntryRef.getKey()));
         return !newChildren.isEmpty();
     }
 
@@ -865,24 +883,16 @@ public abstract class DataStorage {
                 .findFirst();
     }
 
-    public Optional<String> getStoreDisplayName(DataStore store) {
-        if (store == null) {
-            return Optional.empty();
-        }
-
-        return getStoreEntryIfPresent(store, true).map(dataStoreEntry -> dataStoreEntry.getName());
-    }
-
-    public String getStoreDisplayName(DataStoreEntry store) {
-        if (store == null) {
+    public String getStoreEntryDisplayName(DataStoreEntry entry) {
+        if (entry == null) {
             return "?";
         }
 
-        if (!store.getValidity().isUsable()) {
+        if (!entry.getValidity().isUsable()) {
             return "?";
         }
 
-        return store.getProvider().browserDisplayName(store.getStore());
+        return entry.getProvider().displayName(entry);
     }
 
     public Optional<DataStoreEntry> getStoreEntryIfPresent(UUID id) {

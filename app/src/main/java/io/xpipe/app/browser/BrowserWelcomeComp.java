@@ -45,7 +45,7 @@ public class BrowserWelcomeComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var state = model.getSavedState();
+        var state = BrowserSavedStateImpl.get();
 
         var welcome = new BrowserGreetingComp().createSimple();
 
@@ -55,6 +55,7 @@ public class BrowserWelcomeComp extends SimpleComp {
         var img = new PrettySvgComp(new SimpleStringProperty("Hips.svg"), 50, 75)
                 .padding(new Insets(5, 0, 0, 0))
                 .createRegion();
+
         var hbox = new HBox(img, vbox);
         hbox.setAlignment(Pos.CENTER_LEFT);
         hbox.setSpacing(15);
@@ -139,7 +140,6 @@ public class BrowserWelcomeComp extends SimpleComp {
                 .hide(empty)
                 .accessibleTextKey("restoreAllSessions");
         layout.getChildren().add(tile.createRegion());
-
         return layout;
     }
 
@@ -149,7 +149,7 @@ public class BrowserWelcomeComp extends SimpleComp {
                 entry.get().getProvider().getDisplayIconFileName(entry.get().getStore());
         var view = PrettyImageHelper.ofFixedSize(graphic, 30, 24);
         return new ButtonComp(
-                        new SimpleStringProperty(DataStorage.get().getStoreDisplayName(entry.get())),
+                        new SimpleStringProperty(DataStorage.get().getStoreEntryDisplayName(entry.get())),
                         view.createRegion(),
                         () -> {
                             ThreadHelper.runAsync(() -> {
@@ -160,7 +160,7 @@ public class BrowserWelcomeComp extends SimpleComp {
                             });
                         })
                 .minWidth(250)
-                .accessibleText(DataStorage.get().getStoreDisplayName(entry.get()))
+                .accessibleText(DataStorage.get().getStoreEntryDisplayName(entry.get()))
                 .disable(disable)
                 .styleClass("entry-button")
                 .styleClass(Styles.LEFT_PILL)

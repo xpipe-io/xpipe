@@ -1,14 +1,14 @@
 package io.xpipe.app.storage;
 
-import com.fasterxml.jackson.core.JacksonException;
 import io.xpipe.app.ext.DataStorageExtensionProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.LocalStore;
-
 import io.xpipe.core.util.JacksonMapper;
+
+import com.fasterxml.jackson.core.JacksonException;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 
@@ -53,19 +53,27 @@ public class StandardStorage extends DataStorage {
         try {
             FileUtils.forceMkdir(dir.toFile());
         } catch (Exception e) {
-            ErrorEvent.fromThrowable("Unable to create vault directory", e).terminal(true).build().handle();
+            ErrorEvent.fromThrowable("Unable to create vault directory", e)
+                    .terminal(true)
+                    .build()
+                    .handle();
         }
 
         try {
             initSystemInfo();
         } catch (Exception e) {
-            ErrorEvent.fromThrowable("Unable to load vault system info", e).build().handle();
+            ErrorEvent.fromThrowable("Unable to load vault system info", e)
+                    .build()
+                    .handle();
         }
 
         try {
             initVaultKey();
         } catch (Exception e) {
-            ErrorEvent.fromThrowable("Unable to load vault key file", e).terminal(true).build().handle();
+            ErrorEvent.fromThrowable("Unable to load vault key file", e)
+                    .terminal(true)
+                    .build()
+                    .handle();
         }
 
         var storesDir = getStoresDir();
@@ -76,7 +84,10 @@ public class StandardStorage extends DataStorage {
             FileUtils.forceMkdir(categoriesDir.toFile());
             FileUtils.forceMkdir(dataDir.toFile());
         } catch (Exception e) {
-            ErrorEvent.fromThrowable("Unable to create vault directory", e).terminal(true).build().handle();
+            ErrorEvent.fromThrowable("Unable to create vault directory", e)
+                    .terminal(true)
+                    .build()
+                    .handle();
         }
 
         try {
@@ -215,17 +226,26 @@ public class StandardStorage extends DataStorage {
             local.setColor(DataStoreColor.BLUE);
         }
 
-        callProviders();
+        // Reload stores, this time with all entry refs present
+        // These do however not have a completed validity yet
         refreshEntries();
+        // Bring entries into completed validity if possible
+        // Needed for chained stores
+        refreshEntries();
+        // Let providers work on complete stores
+        callProviders();
+        // Update validaties after any possible changes
+        refreshEntries();
+        // Add any possible missing synthetic parents
         storeEntriesSet.forEach(entry -> {
             var syntheticParent = getSyntheticParent(entry);
             syntheticParent.ifPresent(entry1 -> {
                 addStoreEntryIfNotPresent(entry1);
             });
         });
+        // Update validaties from synthetic parent I changes
         refreshEntries();
 
-        // Save to apply changes
         if (!hasFixedLocal) {
             storeEntriesSet.removeIf(dataStoreEntry ->
                     !dataStoreEntry.getUuid().equals(LOCAL_ID) && dataStoreEntry.getStore() instanceof LocalStore);
@@ -235,6 +255,7 @@ public class StandardStorage extends DataStorage {
                         entry.dirty = true;
                         entry.setStoreNode(JacksonMapper.getDefault().valueToTree(entry.getStore()));
                     });
+            // Save to apply changes
             save(false);
         }
 
@@ -416,7 +437,7 @@ public class StandardStorage extends DataStorage {
             var s = Files.readString(file);
             vaultKey = new String(Base64.getDecoder().decode(s), StandardCharsets.UTF_8);
         } else {
-            Files.createDirectories(dir);
+            FileUtils.forceMkdir(dir.toFile());
             vaultKey = UUID.randomUUID().toString();
             Files.writeString(file, Base64.getEncoder().encodeToString(vaultKey.getBytes(StandardCharsets.UTF_8)));
         }
@@ -437,7 +458,7 @@ public class StandardStorage extends DataStorage {
                 Files.writeString(file, s);
             }
         } else {
-            Files.createDirectories(dir);
+            FileUtils.forceMkdir(dir.toFile());
             var s = OsType.getLocal().getName();
             Files.writeString(file, s);
         }

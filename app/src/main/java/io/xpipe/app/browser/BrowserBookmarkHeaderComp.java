@@ -2,6 +2,7 @@ package io.xpipe.app.browser;
 
 import io.xpipe.app.comp.store.StoreCategoryWrapper;
 import io.xpipe.app.comp.store.StoreViewState;
+import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.FilterComp;
 import io.xpipe.app.fxcomps.impl.HorizontalComp;
@@ -30,18 +31,26 @@ public final class BrowserBookmarkHeaderComp extends SimpleComp {
                         StoreViewState.get().getAllConnectionsCategory(),
                         StoreViewState.get().getActiveCategory(),
                         this.category)
-                .styleClass(Styles.LEFT_PILL);
-        var filter = new FilterComp(this.filter).styleClass(Styles.RIGHT_PILL).minWidth(0).hgrow();
+                .styleClass(Styles.LEFT_PILL)
+                .apply(struc -> {
+                    AppFont.medium(struc.get());
+                });
+        var filter = new FilterComp(this.filter)
+                .styleClass(Styles.RIGHT_PILL)
+                .minWidth(0)
+                .hgrow()
+                .apply(struc -> {
+                    AppFont.medium(struc.get());
+                });
 
         var top = new HorizontalComp(List.of(category, filter))
                 .apply(struc -> struc.get().setFillHeight(true))
                 .apply(struc -> {
-                    ((Region) struc.get().getChildren().get(0))
-                            .prefHeightProperty()
-                            .bind(((Region) struc.get().getChildren().get(1)).heightProperty());
-                    ((Region) struc.get().getChildren().get(0))
-                            .minWidthProperty()
-                            .bind(struc.get().widthProperty().divide(2.0));
+                    var first = ((Region) struc.get().getChildren().get(0));
+                    var second = ((Region) struc.get().getChildren().get(1));
+                    first.prefHeightProperty().bind(second.heightProperty());
+                    first.minHeightProperty().bind(second.heightProperty());
+                    first.maxHeightProperty().bind(second.heightProperty());
                 })
                 .styleClass("bookmarks-header")
                 .createRegion();

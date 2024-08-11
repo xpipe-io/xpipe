@@ -22,5 +22,4 @@ public class CustomServiceGroupStore extends AbstractServiceGroupStore<NetworkTu
         super.checkComplete();
         Validators.isType(getParent(), NetworkTunnelStore.class);
     }
-
 }

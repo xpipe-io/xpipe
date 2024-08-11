@@ -2,15 +2,15 @@
 
 Bir komut dosyasını birden fazla farklı senaryoda kullanabilirsiniz.
 
-Bir komut dosyası etkinleştirilirken, yürütme türleri XPipe'ın komut dosyasıyla ne yapacağını belirler.
+Bir komut dosyasını etkinleştirme geçiş düğmesi aracılığıyla etkinleştirirken, yürütme türleri XPipe'ın komut dosyasıyla ne yapacağını belirler.
 
-## Başlangıç betikleri
+## Başlangıç komut dosyası türü
 
-Bir komut dosyası init komut dosyası olarak belirlendiğinde, kabuk ortamlarında seçilebilir.
+Bir komut dosyası init komut dosyası olarak belirlendiğinde, init sırasında çalıştırılmak üzere kabuk ortamlarında seçilebilir.
 
 Ayrıca, bir betik etkinleştirilirse, tüm uyumlu kabuklarda otomatik olarak init'te çalıştırılacaktır.
 
-Örneğin, aşağıdaki gibi basit bir init betiği oluşturursanız
+Örneğin, basit bir init betiği oluşturursanız
 ```
 alias ll="ls -l"
 alias la="ls -A"
@@ -18,33 +18,43 @@ alias l="ls -CF"
 ```
 betik etkinleştirilmişse, tüm uyumlu kabuk oturumlarında bu takma adlara erişebileceksiniz.
 
-## Kabuk betikleri
+## Çalıştırılabilir komut dosyası türü
 
-Normal bir kabuk betiği, terminalinizdeki bir kabuk oturumunda çağrılmak üzere tasarlanmıştır.
-Etkinleştirildiğinde, betik hedef sisteme kopyalanır ve tüm uyumlu kabuklarda PATH'e yerleştirilir.
-Bu, betiği bir terminal oturumunun herhangi bir yerinden çağırmanıza olanak tanır.
-Betik adı küçük harflerle yazılır ve boşluklar alt çizgi ile değiştirilir, böylece betiği kolayca çağırabilirsiniz.
+Çalıştırılabilir bir kabuk betiği, bağlantı hub'ından belirli bir bağlantı için çağrılmak üzere tasarlanmıştır.
+Bu komut dosyası etkinleştirildiğinde, komut dosyası, uyumlu bir kabuk lehçesine sahip bir bağlantı için komut dosyaları düğmesinden çağrılabilecektir.
 
-Örneğin, `apti` adında aşağıdaki gibi basit bir kabuk betiği oluşturursanız
+Örneğin, geçerli işlem listesini göstermek için `ps` adında basit bir `sh` dialect kabuk betiği oluşturursanız
 ```
-sudo apt install "$1"
+ps -A
 ```
-betik etkinleştirilmişse bunu uyumlu herhangi bir sistemde `apti.sh <pkg>` ile çağırabilirsiniz.
+komut dosyasını komut dosyaları menüsündeki herhangi bir uyumlu bağlantıda çağırabilirsiniz.
 
-## Dosya komut dosyaları
+## Dosya komut dosyası türü
 
 Son olarak, dosya tarayıcı arayüzünden dosya girdileriyle özel komut dosyası da çalıştırabilirsiniz.
 Bir dosya komut dosyası etkinleştirildiğinde, dosya girdileriyle çalıştırılmak üzere dosya tarayıcısında görünecektir.
 
-Örneğin, aşağıdaki gibi basit bir dosya komut dosyası oluşturursanız
+Örneğin, aşağıdakileri içeren basit bir dosya komut dosyası oluşturursanız
 ```
-sudo apt install "$@"
+diff "$1" "$2"
 ```
-komut dosyası etkinleştirilmişse komut dosyasını seçilen dosyalar üzerinde çalıştırabilirsiniz.
+komut dosyası etkinleştirilmişse komut dosyasını seçili dosyalar üzerinde çalıştırabilirsiniz.
+Bu örnekte, komut dosyası yalnızca tam olarak iki dosya seçiliyse başarıyla çalışacaktır.
+Aksi takdirde, diff komutu başarısız olacaktır.
+
+## Kabuk oturumu komut dosyası türü
+
+Bir oturum betiği, terminalinizdeki bir kabuk oturumunda çağrılmak üzere tasarlanmıştır.
+Etkinleştirildiğinde, betik hedef sisteme kopyalanır ve tüm uyumlu kabuklarda PATH'e yerleştirilir.
+Bu, betiği bir terminal oturumunun herhangi bir yerinden çağırmanıza olanak tanır.
+Betik adı küçük harflerle yazılır ve boşluklar alt çizgilerle değiştirilir, böylece betiği kolayca çağırabilirsiniz.
+
+Örneğin, `sh` lehçeleri için `apti` adında basit bir kabuk betiği oluşturursanız
+```
+sudo apt install "$1"
+```
+betik etkinleştirilmişse, betiği herhangi bir uyumlu sistemde terminal oturumunda `apti.sh <pkg>` ile çağırabilirsiniz.
 
 ## Çoklu tipler
 
-Örnek dosya betiği yukarıdaki örnek kabuk betiği ile aynıdır,
-birden fazla senaryoda kullanılmaları gerekiyorsa, bir komut dosyasının yürütme türleri için birden fazla kutuyu da işaretleyebileceğinizi görürsünüz.
-
-
+Birden fazla senaryoda kullanılmaları gerekiyorsa, bir komut dosyasının yürütme türleri için birden fazla kutuyu da işaretleyebilirsiniz.

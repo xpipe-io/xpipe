@@ -196,6 +196,7 @@ public class ErrorHandlerComp extends SimpleComp {
         if (desc == null) {
             desc = AppI18n.get("errorNoDetail");
         }
+        desc = desc.trim();
 
         var graphic = new FontIcon("mdomz-warning");
         graphic.setIconColor(Color.RED);
@@ -204,7 +205,7 @@ public class ErrorHandlerComp extends SimpleComp {
         header.setGraphicTextGap(6);
         AppFont.setSize(header, 3);
         var descriptionField = new TextArea(desc);
-        descriptionField.setPrefRowCount(6);
+        descriptionField.setPrefRowCount(Math.max(5, Math.min((int) desc.lines().count(), 14)));
         descriptionField.setWrapText(true);
         descriptionField.setEditable(false);
         descriptionField.setPadding(Insets.EMPTY);

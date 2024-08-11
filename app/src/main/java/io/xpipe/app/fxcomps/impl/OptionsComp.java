@@ -33,13 +33,6 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
         this.entries = entries;
     }
 
-    public OptionsComp.Entry queryEntry(String key) {
-        return entries.stream()
-                .filter(entry -> entry.key != null && entry.key.equals(key))
-                .findAny()
-                .orElseThrow();
-    }
-
     @Override
     public CompStructure<Pane> createBase() {
         Pane pane;
@@ -70,6 +63,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                 name.getStyleClass().add("name");
                 name.textProperty().bind(entry.name());
                 name.setMinWidth(Region.USE_PREF_SIZE);
+                name.setMinHeight(Region.USE_PREF_SIZE);
                 name.setAlignment(Pos.CENTER_LEFT);
                 if (compRegion != null) {
                     name.visibleProperty().bind(PlatformThread.sync(compRegion.visibleProperty()));
@@ -82,6 +76,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                 description.getStyleClass().add("description");
                 description.textProperty().bind(entry.description());
                 description.setAlignment(Pos.CENTER_LEFT);
+                description.setMinHeight(Region.USE_PREF_SIZE);
                 if (compRegion != null) {
                     description.visibleProperty().bind(PlatformThread.sync(compRegion.visibleProperty()));
                     description.managedProperty().bind(PlatformThread.sync(compRegion.managedProperty()));

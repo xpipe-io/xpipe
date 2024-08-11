@@ -80,7 +80,10 @@ public class BrowserAlerts {
     private static String getSelectedElementsString(List<FileSystem.FileEntry> source) {
         var namesHeader = AppI18n.get("selectedElements");
         var names = namesHeader + "\n"
-                + source.stream().limit(10).map(entry -> "- " + new FilePath(entry.getPath()).getFileName()).collect(Collectors.joining("\n"));
+                + source.stream()
+                        .limit(10)
+                        .map(entry -> "- " + new FilePath(entry.getPath()).getFileName())
+                        .collect(Collectors.joining("\n"));
         if (source.size() > 10) {
             names += "\n+ " + (source.size() - 10) + " ...";
         }

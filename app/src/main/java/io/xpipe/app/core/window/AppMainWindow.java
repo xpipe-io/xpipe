@@ -16,6 +16,8 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
@@ -167,8 +169,8 @@ public class AppMainWindow {
             e.consume();
         });
 
-        stage.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode().equals(KeyCode.Q) && event.isShortcutDown()) {
+        stage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if (new KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN).match(event)) {
                 stage.close();
                 AppPrefs.get().closeBehaviour().getValue().run();
                 event.consume();
@@ -184,7 +186,7 @@ public class AppMainWindow {
             stage.setY(state.windowY);
             stage.setWidth(state.windowWidth);
             stage.setHeight(state.windowHeight);
-            // stage.setMaximized(state.maximized);
+            stage.setMaximized(state.maximized);
 
             TrackEvent.debug("Window loaded saved bounds");
         } else if (!AppProperties.get().isShowcase()) {
@@ -271,8 +273,8 @@ public class AppMainWindow {
         contentR.prefHeightProperty().bind(stage.getScene().heightProperty());
 
         if (OsType.getLocal().equals(OsType.LINUX) || OsType.getLocal().equals(OsType.MACOS)) {
-            stage.getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-                if (event.getCode().equals(KeyCode.W) && event.isShortcutDown()) {
+            stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+                if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {
                     AppPrefs.get().closeBehaviour().getValue().run();
                     event.consume();
                 }

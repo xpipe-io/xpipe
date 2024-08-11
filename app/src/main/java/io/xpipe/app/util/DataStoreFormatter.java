@@ -2,16 +2,12 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.ShellStoreState;
-import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.ShellStore;
 
+import io.xpipe.core.process.ShellTtyState;
 import javafx.beans.value.ObservableValue;
-
-import java.util.function.IntFunction;
 
 public class DataStoreFormatter {
 
@@ -46,7 +42,8 @@ public class DataStoreFormatter {
                     return s.getShellDialect().getDisplayName();
                 }
 
-                return s.isRunning() ? formattedOsName(s.getOsName()) : "Connection failed";
+                var prefix = s.getTtyState() != null && s.getTtyState() != ShellTtyState.NONE ? "[PTY] " : "";
+                return s.isRunning() ? prefix + formattedOsName(s.getOsName()) : "Connection failed";
             }
 
             return "?";
@@ -61,47 +58,8 @@ public class DataStoreFormatter {
         return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
     }
 
-    public static String formatSubHost(IntFunction<String> func, DataStore at, int length) {
-        var atString = at instanceof ShellStore shellStore && !ShellStore.isLocal(shellStore)
-                ? DataStorage.get().getStoreDisplayName(at).orElse(null)
-                : null;
-        if (atString == null) {
-            return func.apply(length);
-        }
-
-        var fileString = func.apply(length - atString.length() - 1);
-        return String.format("%s/%s", atString, fileString);
-    }
-
-    public static String formatAtHost(IntFunction<String> func, DataStore at, int length) {
-        var atString = at instanceof ShellStore shellStore && !ShellStore.isLocal(shellStore)
-                ? DataStorage.get().getStoreDisplayName(at).orElse(null)
-                : null;
-        if (atString == null) {
-            return func.apply(length);
-        }
-
-        var fileString = func.apply(length - atString.length() - 3);
-        return String.format("%s @ %s", fileString, atString);
-    }
-
-    public static String formatViaProxy(IntFunction<String> func, DataStoreEntry at, int length) {
-        var atString =
-                at.getStore() instanceof ShellStore shellStore && !ShellStore.isLocal(shellStore) ? at.getName() : null;
-        if (atString == null) {
-            return func.apply(length);
-        }
-
-        var fileString = func.apply(length - atString.length() - 3);
-        return String.format("%s > %s", atString, fileString);
-    }
-
     public static String toApostropheName(DataStoreEntry input) {
         return toName(input, Integer.MAX_VALUE) + "'s";
-    }
-
-    public static String toName(DataStoreEntry input) {
-        return toName(input, Integer.MAX_VALUE);
     }
 
     public static String toName(DataStoreEntry input, int length) {
@@ -146,7 +104,7 @@ public class DataStoreFormatter {
                     DataStoreFormatter.cut(name, lengthShare), DataStoreFormatter.cut(region, length - lengthShare));
         }
 
-        if (input.endsWith(".compute.amazonaws.com")) {
+        if (input.endsWith(".compute.amazonaws.com") || input.endsWith(".compute.internal")) {
             var split = input.split("\\.");
             var name = split[0];
             var region = split[1];

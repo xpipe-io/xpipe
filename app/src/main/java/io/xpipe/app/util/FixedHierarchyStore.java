@@ -9,5 +9,9 @@ import java.util.List;
 
 public interface FixedHierarchyStore extends DataStore {
 
+    default boolean removeLeftovers() {
+        return true;
+    }
+
     List<? extends DataStoreEntryRef<? extends FixedChildStore>> listChildren(DataStoreEntry self) throws Exception;
 }

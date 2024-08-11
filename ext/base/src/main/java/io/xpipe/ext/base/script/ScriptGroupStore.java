@@ -25,7 +25,7 @@ public class ScriptGroupStore extends ScriptStore implements GroupStore<ScriptSt
     }
 
     @Override
-    protected void queryFlattenedScripts(LinkedHashSet<SimpleScriptStore> all) {
+    protected void queryFlattenedScripts(LinkedHashSet<DataStoreEntryRef<SimpleScriptStore>> all) {
         getEffectiveScripts().forEach(simpleScriptStore -> {
             simpleScriptStore.getStore().queryFlattenedScripts(all);
         });
@@ -35,6 +35,7 @@ public class ScriptGroupStore extends ScriptStore implements GroupStore<ScriptSt
     public List<DataStoreEntryRef<ScriptStore>> getEffectiveScripts() {
         var self = getSelfEntry();
         return DataStorage.get().getDeepStoreChildren(self).stream()
+                .filter(entry -> entry.getValidity().isUsable())
                 .map(dataStoreEntry -> dataStoreEntry.<ScriptStore>ref())
                 .toList();
     }

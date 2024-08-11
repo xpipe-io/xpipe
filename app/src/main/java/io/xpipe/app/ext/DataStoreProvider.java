@@ -10,7 +10,6 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.JacksonizedValue;
@@ -27,9 +26,15 @@ import java.util.List;
 
 public interface DataStoreProvider {
 
+    default boolean showProviderChoice() {
+        return true;
+    }
+
     default boolean shouldShow(StoreEntryWrapper w) {
         return true;
     }
+
+    default void onParentRefresh(DataStoreEntry entry) {}
 
     default void onChildrenRefresh(DataStoreEntry entry) {}
 
@@ -71,21 +76,16 @@ public interface DataStoreProvider {
         return null;
     }
 
-    default String browserDisplayName(DataStore store) {
-        var e = DataStorage.get().getStoreDisplayName(store);
-        return e.orElse("?");
+    default String displayName(DataStoreEntry entry) {
+        return entry.getName();
     }
 
     default List<String> getSearchableTerms(DataStore store) {
         return List.of();
     }
 
-    default boolean shouldEdit() {
-        return false;
-    }
-
     default StoreEntryComp customEntryComp(StoreSection s, boolean preferLarge) {
-        return StoreEntryComp.create(s.getWrapper(), null, preferLarge);
+        return StoreEntryComp.create(s, null, preferLarge);
     }
 
     default StoreSectionComp customSectionComp(StoreSection section, boolean topLevel) {
@@ -102,6 +102,10 @@ public interface DataStoreProvider {
 
     default Comp<?> stateDisplay(StoreEntryWrapper w) {
         return Comp.empty();
+    }
+
+    default boolean canConnectDuringCreation() {
+        return false;
     }
 
     default Comp<?> createInsightsComp(ObservableValue<DataStore> store) {
@@ -152,6 +156,10 @@ public interface DataStoreProvider {
             return DataStoreUsageCategory.DATABASE;
         }
 
+        if (cc == DataStoreCreationCategory.SERIAL) {
+            return DataStoreUsageCategory.SERIAL;
+        }
+
         return null;
     }
 
@@ -191,7 +199,7 @@ public interface DataStoreProvider {
         return null;
     }
 
-    default ObservableValue<String> informationString(StoreEntryWrapper wrapper) {
+    default ObservableValue<String> informationString(StoreSection section) {
         return new SimpleStringProperty(null);
     }
 
