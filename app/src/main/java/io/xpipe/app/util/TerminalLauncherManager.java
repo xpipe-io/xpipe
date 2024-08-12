@@ -7,20 +7,19 @@ import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.TerminalInitScriptConfig;
 import io.xpipe.core.process.WorkingDirectoryFunction;
 import io.xpipe.core.store.FilePath;
-
 import lombok.Setter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
 import java.nio.file.Path;
-import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.SequencedMap;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 
 public class TerminalLauncherManager {
 
-    private static final Map<UUID, Entry> entries = new ConcurrentHashMap<>();
+    private static final SequencedMap<UUID, Entry> entries = new LinkedHashMap<>();
 
     private static void prepare(
             ProcessControl processControl, TerminalInitScriptConfig config, String directory, Entry entry) {
@@ -73,6 +72,15 @@ public class TerminalLauncherManager {
         return latch;
     }
 
+    public static Path waitForFirstLaunch() throws BeaconClientException, BeaconServerException {
+        if (entries.isEmpty()) {
+            throw new BeaconClientException("Unknown launch request");
+        }
+
+        var first = entries.firstEntry();
+        return waitForCompletion(first.getKey());
+    }
+
     public static Path waitForCompletion(UUID request) throws BeaconClientException, BeaconServerException {
         var e = entries.get(request);
         if (e == null) {
@@ -86,8 +94,8 @@ public class TerminalLauncherManager {
             }
 
             var r = e.getResult();
+            entries.remove(request);
             if (r instanceof ResultFailure failure) {
-                entries.remove(request);
                 var t = failure.getThrowable();
                 throw new BeaconServerException(t);
             }

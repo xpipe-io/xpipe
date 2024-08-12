@@ -16,10 +16,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.GitStorageHandler;
 import io.xpipe.app.update.XPipeDistributionType;
-import io.xpipe.app.util.FileBridge;
-import io.xpipe.app.util.LicenseProvider;
-import io.xpipe.app.util.LocalShell;
-import io.xpipe.app.util.UnlockAlert;
+import io.xpipe.app.util.*;
 
 public class BaseMode extends OperationMode {
 
@@ -78,6 +75,7 @@ public class BaseMode extends OperationMode {
     public void finalTeardown() {
         TrackEvent.info("Background mode shutdown started");
         BrowserSessionModel.DEFAULT.reset();
+        SshLocalBridge.reset();
         StoreViewState.reset();
         DataStoreProviders.reset();
         DataStorage.reset();

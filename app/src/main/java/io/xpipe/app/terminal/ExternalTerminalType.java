@@ -1,10 +1,10 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.storage.DataStoreColor;
-import io.xpipe.app.util.CommandSupport;
-import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.util.*;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.FailableFunction;
@@ -16,12 +16,107 @@ import lombok.With;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public interface ExternalTerminalType extends PrefsChoiceValue {
+
+    ExternalTerminalType MOBAXTERM = new WindowsType("app.mobaXterm","MobaXterm") {
+
+        @Override
+        protected Optional<Path> determineInstallation() {
+            try {
+            var r = WindowsRegistry.local().readValue(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\mobaxterm\\DefaultIcon");
+            return r.map(Path::of);
+            }  catch (Exception e) {
+                ErrorEvent.fromThrowable(e).omit().handle();
+                return Optional.empty();
+            }
+        }
+
+        @Override
+        public boolean supportsTabs() {
+            return true;
+        }
+
+        @Override
+        public boolean isRecommended() {
+            return false;
+        }
+
+        @Override
+        public boolean supportsColoredTitle() {
+            return true;
+        }
+
+        @Override
+        protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
+            try (var sc = LocalShell.getShell()) {
+                var fixedFile = configuration.getScriptFile().toString()
+                        .replaceAll("\\\\", "/")
+                        .replaceAll("\\s","\\$0");
+                var command = sc.getShellDialect() == ShellDialects.CMD ?
+                        CommandBuilder.of().addQuoted("cmd /c " + fixedFile) :
+                        CommandBuilder.of().addQuoted("powershell -NoProfile -ExecutionPolicy Bypass -File " + fixedFile);
+                sc.command(CommandBuilder.of().addFile(file.toString()).add("-newtab").add(command)).execute();
+            }
+        }
+    };
+
+    ExternalTerminalType TERMIUS = new ExternalTerminalType() {
+
+        @Override
+        public String getId() {
+            return "app.termius";
+        }
+
+        @Override
+        public boolean isAvailable() {
+            try (var sc = LocalShell.getShell()) {
+                return switch (OsType.getLocal()) {
+                    case OsType.Linux linux -> {
+                        yield CommandSupport.isInPathSilent(sc, "termius");
+                    }
+                    case OsType.MacOs macOs -> {
+                        yield CommandSupport.isInPathSilent(sc, "termius");
+                    }
+                    case OsType.Windows windows -> {
+                        var r = WindowsRegistry.local().readValue(WindowsRegistry.HKEY_CURRENT_USER, "SOFTWARE\\Classes\\termius");
+                        yield r.isPresent();
+                    }
+                };
+            }  catch (Exception e) {
+                ErrorEvent.fromThrowable(e).omit().handle();
+                return false;
+            }
+        }
+
+        @Override
+        public boolean supportsTabs() {
+            return true;
+        }
+
+        @Override
+        public boolean isRecommended() {
+            return false;
+        }
+
+        @Override
+        public boolean supportsColoredTitle() {
+            return true;
+        }
+
+        @Override
+        public void launch(LaunchConfiguration configuration) throws Exception {
+            SshLocalBridge.init();
+            var name = "xpipe_bridge";
+            var host = "localhost";
+            var port = 21722;
+            var user = System.getProperty("user.name");
+            Hyperlinks.open("termius://app/host-sharing#label=" + name + "&ip=" + host + "&port=" + port + "&username="
+                    + user + "&os=windows");
+        }
+    };
+
 
     ExternalTerminalType CMD = new SimplePathType("app.cmd", "cmd.exe", true) {
 
@@ -652,6 +747,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             TabbyTerminalType.TABBY_WINDOWS,
             AlacrittyTerminalType.ALACRITTY_WINDOWS,
             WezTerminalType.WEZTERM_WINDOWS,
+            TERMIUS,
+            MOBAXTERM,
             CMD,
             PWSH,
             POWERSHELL);
