@@ -9,7 +9,7 @@ public enum ShellTtyState {
     @JsonProperty("none")
     NONE(true, false, false, true, true),
     @JsonProperty("merged")
-    MERGED_STDERR(false, false, false, false, true),
+    MERGED_STDERR(false, true, false, false, false),
     @JsonProperty("pty")
     PTY_ALLOCATED(false, true, true, false, false);
 

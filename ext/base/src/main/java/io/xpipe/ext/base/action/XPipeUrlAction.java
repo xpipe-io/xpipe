@@ -43,7 +43,8 @@ public class XPipeUrlAction implements ActionProvider {
                         if (!entry.getValidity().isUsable()) {
                             return null;
                         }
-                        return new LaunchStoreAction.Action(entry);
+                        var p = entry.getProvider();
+                        return p.launchAction(entry);
                     }
                     case "action" -> {
                         var id = args.get(1);
