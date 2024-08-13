@@ -15,6 +15,10 @@ public abstract class EncryptedSecretValue implements SecretValue {
 
     String encryptedValue;
 
+    public EncryptedSecretValue(byte[] b) {
+        encryptedValue = SecretValue.toBase64e(encrypt(b));
+    }
+
     public EncryptedSecretValue(char[] c) {
         var utf8 = StandardCharsets.UTF_8.encode(CharBuffer.wrap(c));
         var bytes = new byte[utf8.limit()];
@@ -25,6 +29,17 @@ public abstract class EncryptedSecretValue implements SecretValue {
     @Override
     public String toString() {
         return "<encrypted secret>";
+    }
+
+    @Override
+    public byte[] getSecretRaw() {
+        try {
+            var bytes = SecretValue.fromBase64e(getEncryptedValue());
+            bytes = decrypt(bytes);
+            return bytes;
+        } catch (Exception ex) {
+            return new byte[0];
+        }
     }
 
     @Override

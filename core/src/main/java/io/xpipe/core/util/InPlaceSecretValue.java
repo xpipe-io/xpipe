@@ -5,15 +5,19 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
+import javax.crypto.SecretKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Random;
-import javax.crypto.SecretKey;
 
 @JsonTypeName("default")
 @SuperBuilder
 @Jacksonized
 @EqualsAndHashCode(callSuper = true)
 public class InPlaceSecretValue extends AesSecretValue {
+
+    public InPlaceSecretValue(byte[] b) {
+        super(b);
+    }
 
     public InPlaceSecretValue(char[] secret) {
         super(secret);
@@ -25,6 +29,10 @@ public class InPlaceSecretValue extends AesSecretValue {
 
     public static InPlaceSecretValue of(char[] c) {
         return new InPlaceSecretValue(c);
+    }
+
+    public static InPlaceSecretValue of(byte[] b) {
+        return new InPlaceSecretValue(b);
     }
 
     @Override

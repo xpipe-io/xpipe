@@ -41,6 +41,8 @@ public interface SecretValue {
         return r;
     }
 
+    byte[] getSecretRaw();
+
     char[] getSecret();
 
     default String getSecretValue() {

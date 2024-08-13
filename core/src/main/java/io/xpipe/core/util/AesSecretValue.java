@@ -4,6 +4,12 @@ import lombok.EqualsAndHashCode;
 import lombok.SneakyThrows;
 import lombok.experimental.SuperBuilder;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.security.NoSuchAlgorithmException;
@@ -11,12 +17,6 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Random;
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.GCMParameterSpec;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.SecretKeySpec;
 
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
@@ -39,6 +39,10 @@ public abstract class AesSecretValue extends EncryptedSecretValue {
 
     public AesSecretValue(char[] secret) {
         super(secret);
+    }
+
+    public AesSecretValue(byte[] b) {
+        super(b);
     }
 
     protected abstract int getIterationCount();
