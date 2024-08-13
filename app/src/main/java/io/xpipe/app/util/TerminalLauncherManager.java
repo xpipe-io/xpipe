@@ -72,12 +72,13 @@ public class TerminalLauncherManager {
         return latch;
     }
 
-    public static Path waitForFirstLaunch() throws BeaconClientException, BeaconServerException {
+    public static Path waitForNextLaunch() throws BeaconClientException, BeaconServerException {
         if (entries.isEmpty()) {
             throw new BeaconClientException("Unknown launch request");
         }
 
         var first = entries.firstEntry();
+        entries.remove(first.getKey());
         return waitForCompletion(first.getKey());
     }
 
@@ -94,8 +95,8 @@ public class TerminalLauncherManager {
             }
 
             var r = e.getResult();
-            entries.remove(request);
             if (r instanceof ResultFailure failure) {
+                entries.remove(request);
                 var t = failure.getThrowable();
                 throw new BeaconServerException(t);
             }

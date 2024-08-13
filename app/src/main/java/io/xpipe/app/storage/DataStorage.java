@@ -2,6 +2,7 @@ package io.xpipe.app.storage;
 
 import io.xpipe.app.comp.store.StoreSortMode;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.app.util.ThreadHelper;
@@ -120,9 +121,11 @@ public abstract class DataStorage {
     }
 
     public void forceRewrite() {
+        TrackEvent.info("Starting forced storage rewrite");
         getStoreEntries().forEach(dataStoreEntry -> {
             dataStoreEntry.reassignStore();
         });
+        TrackEvent.info("Finished forced storage rewrite");
     }
 
     private void dispose() {

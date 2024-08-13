@@ -20,6 +20,10 @@ public class SshLocalBridge {
 
     private static SshLocalBridge INSTANCE;
 
+    public static SshLocalBridge get() {
+        return INSTANCE;
+    }
+
     private final Path directory;
     private final int port;
     private final String user;
@@ -33,19 +37,19 @@ public class SshLocalBridge {
     }
 
     public Path getPubHostKey() {
-        return directory.resolve("host_key.pub");
+        return directory.resolve("xpipe_bridge_host_key.pub");
     }
 
     public Path getHostKey() {
-        return directory.resolve("host_key");
+        return directory.resolve("xpipe_bridge_host_key");
     }
 
     public Path getPubIdentityKey() {
-        return directory.resolve("identity.pub");
+        return directory.resolve("xpipe_bridge.pub");
     }
 
     public Path getIdentityKey() {
-        return directory.resolve("identity");
+        return directory.resolve("xpipe_bridge");
     }
 
     public Path getConfig() {
@@ -66,12 +70,15 @@ public class SshLocalBridge {
 
             var hostKey = INSTANCE.getHostKey();
             if (!sc.getShellDialect().createFileExistsCommand(sc, hostKey.toString()).executeAndCheck()) {
-                sc.executeSimpleCommand("ssh-keygen -q -N \"\" -t ed25519 -f \"" + hostKey + "\"");
+                sc.command(CommandBuilder.of().add("ssh-keygen", "-q", "-N")
+                        .addQuoted("").add("-C").addQuoted("XPipe SSH bridge host key")
+                        .add("-t", "ed25519", "-f").addFile(hostKey.toString())).execute();
             }
 
             var idKey = INSTANCE.getIdentityKey();
             if (!sc.getShellDialect().createFileExistsCommand(sc, idKey.toString()).executeAndCheck()) {
-                sc.executeSimpleCommand("ssh-keygen -q -N \"\" -t ed25519 -f \"" + idKey + "\"");
+                sc.command(CommandBuilder.of().add("ssh-keygen", "-q", "-N")
+                        .addQuoted("").add("-C").addQuoted("XPipe SSH bridge identity").add("-t", "ed25519", "-f").addFile(idKey.toString())).execute();
             }
 
             var config = INSTANCE.getConfig();
@@ -92,7 +99,7 @@ public class SshLocalBridge {
                     .formatted(command, pidFile.toString(), "" + port, INSTANCE.getHostKey().toString(),  INSTANCE.getPubIdentityKey());;
             Files.writeString(config, content);
 
-            INSTANCE.updateConfig();
+            // INSTANCE.updateConfig();
 
             var exec =  getSshd(sc);
             var launchCommand = CommandBuilder.of().addFile(exec).add("-f").addFile(INSTANCE.getConfig().toString()).add("-p", "" + port);

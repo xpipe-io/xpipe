@@ -1,5 +1,9 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.comp.base.MarkdownComp;
+import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.ExternalApplicationType;
@@ -8,17 +12,180 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.FailableFunction;
-
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import lombok.Getter;
 import lombok.Value;
 import lombok.With;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
 public interface ExternalTerminalType extends PrefsChoiceValue {
+
+//    ExternalTerminalType PUTTY = new WindowsType("app.putty","putty") {
+//
+//        @Override
+//        protected Optional<Path> determineInstallation() {
+//            try {
+//                var r = WindowsRegistry.local().readValue(WindowsRegistry.HKEY_LOCAL_MACHINE,
+//                        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\Xshell.exe");
+//                return r.map(Path::of);
+//            }  catch (Exception e) {
+//                ErrorEvent.fromThrowable(e).omit().handle();
+//                return Optional.empty();
+//            }
+//        }
+//
+//        @Override
+//        public boolean supportsTabs() {
+//            return true;
+//        }
+//
+//        @Override
+//        public boolean isRecommended() {
+//            return false;
+//        }
+//
+//        @Override
+//        public boolean supportsColoredTitle() {
+//            return false;
+//        }
+//
+//        @Override
+//        protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
+//            try (var sc = LocalShell.getShell()) {
+//                SshLocalBridge.init();
+//                var b = SshLocalBridge.get();
+//                var command = CommandBuilder.of().addFile(file.toString()).add("-ssh", "localhost", "-l").addQuoted(b.getUser())
+//                        .add("-i").addFile(b.getIdentityKey().toString()).add("-P", "" + b.getPort()).add("-hostkey").addFile(b.getPubHostKey().toString());
+//                sc.executeSimpleCommand(command);
+//            }
+//        }
+//    };
+
+    ExternalTerminalType XSHELL = new WindowsType("app.xShell","Xshell") {
+
+        @Override
+        protected Optional<Path> determineInstallation() {
+            try {
+                var r = WindowsRegistry.local().readValue(WindowsRegistry.HKEY_LOCAL_MACHINE,
+                        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\Xshell.exe");
+                return r.map(Path::of);
+            }  catch (Exception e) {
+                ErrorEvent.fromThrowable(e).omit().handle();
+                return Optional.empty();
+            }
+        }
+
+        @Override
+        public boolean supportsTabs() {
+            return true;
+        }
+
+        @Override
+        public boolean isRecommended() {
+            return false;
+        }
+
+        @Override
+        public boolean supportsColoredTitle() {
+            return false;
+        }
+
+        @Override
+        protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
+            SshLocalBridge.init();
+            if (!showInfo()) {
+                return;
+            }
+
+            try (var sc = LocalShell.getShell()) {
+                var b = SshLocalBridge.get();
+                var command = CommandBuilder.of().addFile(file.toString()).add("-url").addQuoted("ssh://" + b.getUser() + "@localhost:" + b.getPort())
+                        .add("-i", "xpipe_bridge");
+                sc.executeSimpleCommand(command);
+            }
+        }
+
+        private boolean showInfo() {
+            boolean set = AppCache.get("xshellSetup", Boolean.class, () -> false);
+            if (set) {
+                return true;
+            }
+
+            var b = SshLocalBridge.get();
+            var r = AppWindowHelper.showBlockingAlert(
+                    alert -> {
+                        alert.setTitle(AppI18n.get("xshellSetup"));
+                        alert.setAlertType(Alert.AlertType.NONE);
+
+                        var activated = AppI18n.get().getMarkdownDocumentation("app:xshellSetup");
+                        var markdown = new MarkdownComp(activated, s -> s.formatted(b.getIdentityKey(), "xpipe_bridge"))
+                                .prefWidth(450)
+                                .prefHeight(400)
+                                .createRegion();
+                        alert.getDialogPane().setContent(markdown);
+
+                        alert.getButtonTypes().add(new ButtonType(AppI18n.get("ok"), ButtonBar.ButtonData.OK_DONE));
+                    });
+            r.filter(buttonType -> buttonType.getButtonData().isDefaultButton());
+            r.ifPresent(buttonType -> {
+                    AppCache.update("xshellSetup", true);
+            });
+            return r.isPresent();
+        }
+    };
+
+    ExternalTerminalType SECURECRT = new WindowsType("app.secureCrt","SecureCRT") {
+
+        @Override
+        protected Optional<Path> determineInstallation() {
+            try (var sc = LocalShell.getShell().start()) {
+                var env = sc.executeSimpleStringCommand(
+                        sc.getShellDialect().getPrintEnvironmentVariableCommand("ProgramFiles"));
+                var file = Path.of(env, "VanDyke Software\\SecureCRT\\SecureCRT.exe");
+                if (!Files.exists(file)) {
+                    return Optional.empty();
+                }
+
+                return Optional.of(file);
+            }  catch (Exception e) {
+                ErrorEvent.fromThrowable(e).omit().handle();
+                return Optional.empty();
+            }
+        }
+
+        @Override
+        public boolean supportsTabs() {
+            return true;
+        }
+
+        @Override
+        public boolean isRecommended() {
+            return false;
+        }
+
+        @Override
+        public boolean supportsColoredTitle() {
+            return false;
+        }
+
+        @Override
+        protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
+            try (var sc = LocalShell.getShell()) {
+                SshLocalBridge.init();
+                var b = SshLocalBridge.get();
+                var command = CommandBuilder.of().addFile(file.toString()).add("/T").add("/SSH2", "/ACCEPTHOSTKEYS", "/I").addFile(
+                        b.getIdentityKey().toString()).add("/P", "" + b.getPort()).add("/L").addQuoted(b.getUser()).add("localhost");
+                sc.executeSimpleCommand(command);
+            }
+        }
+    };
 
     ExternalTerminalType MOBAXTERM = new WindowsType("app.mobaXterm","MobaXterm") {
 
@@ -108,12 +275,44 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
             SshLocalBridge.init();
+            if (!showInfo()) {
+                return;
+            }
+
             var name = "xpipe_bridge";
             var host = "localhost";
-            var port = 21722;
-            var user = System.getProperty("user.name");
+            var port = SshLocalBridge.get().getPort();
+            var user = SshLocalBridge.get().getUser();
             Hyperlinks.open("termius://app/host-sharing#label=" + name + "&ip=" + host + "&port=" + port + "&username="
-                    + user + "&os=windows");
+                    + user + "&os=undefined");
+        }
+
+        private boolean showInfo() {
+            boolean set = AppCache.get("termiusSetup", Boolean.class, () -> false);
+            if (set) {
+                return true;
+            }
+
+            var b = SshLocalBridge.get();
+            var r = AppWindowHelper.showBlockingAlert(
+                    alert -> {
+                        alert.setTitle(AppI18n.get("termiusSetup"));
+                        alert.setAlertType(Alert.AlertType.NONE);
+
+                        var activated = AppI18n.get().getMarkdownDocumentation("app:termiusSetup");
+                        var markdown = new MarkdownComp(activated, s -> s.formatted(b.getIdentityKey(), "xpipe_bridge"))
+                                .prefWidth(450)
+                                .prefHeight(400)
+                                .createRegion();
+                        alert.getDialogPane().setContent(markdown);
+
+                        alert.getButtonTypes().add(new ButtonType(AppI18n.get("ok"), ButtonBar.ButtonData.OK_DONE));
+                    });
+            r.filter(buttonType -> buttonType.getButtonData().isDefaultButton());
+            r.ifPresent(buttonType -> {
+                AppCache.update("termiusSetup", true);
+            });
+            return r.isPresent();
         }
     };
 
@@ -747,8 +946,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             TabbyTerminalType.TABBY_WINDOWS,
             AlacrittyTerminalType.ALACRITTY_WINDOWS,
             WezTerminalType.WEZTERM_WINDOWS,
-            TERMIUS,
             MOBAXTERM,
+            SECURECRT,
+            TERMIUS,
+            XSHELL,
             CMD,
             PWSH,
             POWERSHELL);
