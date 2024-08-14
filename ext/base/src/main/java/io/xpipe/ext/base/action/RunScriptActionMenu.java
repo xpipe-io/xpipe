@@ -7,6 +7,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.process.ShellStoreState;
+import io.xpipe.core.process.ShellTtyState;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.ext.base.script.ScriptHierarchy;
 import javafx.beans.property.SimpleStringProperty;
@@ -251,12 +252,14 @@ public class RunScriptActionMenu implements ActionProvider {
 
             @Override
             public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
-                var state = o.getEntry().getStorePersistentState();
-                if (!(state instanceof ShellStoreState shellStoreState) || shellStoreState.getShellDialect() == null) {
+                var state = o.get().getStorePersistentState();
+                if (state instanceof ShellStoreState shellStoreState) {
+                    return (shellStoreState.getShellDialect() == null
+                            || shellStoreState.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) &&
+                            (shellStoreState.getTtyState() == null || shellStoreState.getTtyState() == ShellTtyState.NONE);
+                } else {
                     return false;
                 }
-
-                return true;
             }
 
             @Override

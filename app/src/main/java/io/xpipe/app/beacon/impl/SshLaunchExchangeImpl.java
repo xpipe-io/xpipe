@@ -23,8 +23,7 @@ public class SshLaunchExchangeImpl extends SshLaunchExchange {
                         TerminalInitScriptConfig.ofName(DataStorage.get().getStoreEntryDisplayName(found.get())),null);
             }
         }
-        TerminalLauncherManager.submitAsync(UUID.randomUUID(), ((ShellStore) DataStorage.get().local().getStore()).control(),
-                TerminalInitScriptConfig.ofName("abc"),null);
+
         var r = TerminalLauncherManager.waitForNextLaunch();
         var c = ProcessControlProvider.get().getEffectiveLocalDialect().getOpenScriptCommand(r.toString()).buildBaseParts(null);
         return Response.builder().command(c).build();

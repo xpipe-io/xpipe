@@ -12,6 +12,8 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.ShellStoreState;
+import io.xpipe.core.process.ShellTtyState;
 import io.xpipe.core.store.ShellStore;
 
 import javafx.application.Platform;
@@ -34,7 +36,10 @@ public class ScanAlert {
 
     public static void showAsync(DataStoreEntry entry) {
         ThreadHelper.runAsync(() -> {
-            if (entry == null || entry.getStore() instanceof ShellStore) {
+            var showForCon = entry == null || (entry.getStore() instanceof ShellStore && (
+                    !(entry.getStorePersistentState() instanceof ShellStoreState shellStoreState) ||
+                            shellStoreState.getTtyState() == null || shellStoreState.getTtyState() == ShellTtyState.NONE));
+            if (showForCon) {
                 showForShellStore(entry);
             }
         });
@@ -43,6 +48,10 @@ public class ScanAlert {
     public static void showForShellStore(DataStoreEntry initial) {
         show(initial, (DataStoreEntry entry, ShellControl sc) -> {
             if (!sc.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
+                return null;
+            }
+
+            if (sc.getTtyState() != ShellTtyState.NONE) {
                 return null;
             }
 

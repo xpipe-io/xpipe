@@ -3,7 +3,6 @@ package io.xpipe.app.fxcomps.impl;
 import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.session.BrowserChooserComp;
 import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.fxcomps.Comp;
@@ -19,7 +18,6 @@ import io.xpipe.core.store.FileSystemStore;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.control.Alert;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -94,13 +92,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                 var f = data.resolve(FileNames.getFileName(currentPath.trim()));
                 var source = Path.of(currentPath.trim());
                 if (Files.exists(source)) {
-                    var shouldCopy = AppWindowHelper.showBlockingAlert(alert -> {
-                                alert.setTitle(AppI18n.get("confirmGitShareTitle"));
-                                alert.setHeaderText(AppI18n.get("confirmGitShareHeader"));
-                                alert.setAlertType(Alert.AlertType.CONFIRMATION);
-                            })
-                            .map(buttonType -> buttonType.getButtonData().isDefaultButton())
-                            .orElse(false);
+                    var shouldCopy = AppWindowHelper.showConfirmationAlert("confirmGitShareTitle","confirmGitShareHeader", "confirmGitShareContent");
                     if (!shouldCopy) {
                         return;
                     }

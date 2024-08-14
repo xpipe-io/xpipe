@@ -203,7 +203,8 @@ public class StoreEntryWrapper {
         var branch = p.getBranchDataStoreCallSite();
         if (branch != null
                 && entry.getStore() != null
-                && branch.getApplicableClass().isAssignableFrom(entry.getStore().getClass())) {
+                && branch.getApplicableClass().isAssignableFrom(entry.getStore().getClass())
+                && branch.isApplicable(entry.ref())) {
             return branch.getChildren(entry.ref()).stream().anyMatch(child -> {
                 return showActionProvider(child);
             });

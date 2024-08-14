@@ -12,9 +12,7 @@ import lombok.Value;
 import lombok.experimental.NonFinal;
 
 import java.nio.file.Path;
-import java.util.LinkedHashMap;
-import java.util.SequencedMap;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 public class TerminalLauncherManager {
@@ -53,69 +51,78 @@ public class TerminalLauncherManager {
         }
     }
 
-    public static void submitSync(
-            UUID request, ProcessControl processControl, TerminalInitScriptConfig config, String directory) {
-        var entry = new Entry(request, processControl, config, directory, null);
-        entries.put(request, entry);
-        prepare(processControl, config, directory, entry);
-    }
-
     public static CountDownLatch submitAsync(
             UUID request, ProcessControl processControl, TerminalInitScriptConfig config, String directory) {
-        var entry = new Entry(request, processControl, config, directory, null);
-        entries.put(request, entry);
-        var latch = new CountDownLatch(1);
-        ThreadHelper.runAsync(() -> {
-            prepare(processControl, config, directory, entry);
-            latch.countDown();
-        });
-        return latch;
+        synchronized (entries) {
+            var entry = new Entry(request, processControl, config, directory, null);
+            entries.put(request, entry);
+            var latch = new CountDownLatch(1);
+            ThreadHelper.runAsync(() -> {
+                prepare(processControl, config, directory, entry);
+                latch.countDown();
+            });
+            return latch;
+        }
     }
 
     public static Path waitForNextLaunch() throws BeaconClientException, BeaconServerException {
-        if (entries.isEmpty()) {
-            throw new BeaconClientException("Unknown launch request");
-        }
+        Map.Entry<UUID, Entry> first;
+        synchronized (entries) {
+            if (entries.isEmpty()) {
+                throw new BeaconClientException("Unknown launch request");
+            }
 
-        var first = entries.firstEntry();
-        entries.remove(first.getKey());
-        return waitForCompletion(first.getKey());
+            first = entries.firstEntry();
+            entries.remove(first.getKey());
+        }
+        return waitForCompletion(first.getValue());
     }
 
     public static Path waitForCompletion(UUID request) throws BeaconClientException, BeaconServerException {
-        var e = entries.get(request);
+        Entry e;
+        synchronized (entries) {
+            e = entries.get(request);
+        }
         if (e == null) {
             throw new BeaconClientException("Unknown launch request " + request);
         }
 
+        return waitForCompletion(e);
+    }
+
+    public static Path waitForCompletion(Entry e) throws BeaconClientException, BeaconServerException {
         while (true) {
             if (e.result == null) {
                 ThreadHelper.sleep(10);
                 continue;
             }
 
-            var r = e.getResult();
-            if (r instanceof ResultFailure failure) {
-                entries.remove(request);
-                var t = failure.getThrowable();
-                throw new BeaconServerException(t);
-            }
+            synchronized (entries) {
+                var r = e.getResult();
+                if (r instanceof ResultFailure failure) {
+                    entries.remove(e.getRequest());
+                    var t = failure.getThrowable();
+                    throw new BeaconServerException(t);
+                }
 
-            return ((ResultSuccess) r).getTargetScript();
+                return ((ResultSuccess) r).getTargetScript();
+            }
         }
     }
 
     public static Path performLaunch(UUID request) throws BeaconClientException {
-        var e = entries.remove(request);
-        if (e == null) {
-            throw new BeaconClientException("Unknown launch request " + request);
-        }
+        synchronized (entries) {
+            var e = entries.remove(request);
+            if (e == null) {
+                throw new BeaconClientException("Unknown launch request " + request);
+            }
 
-        if (!(e.result instanceof ResultSuccess)) {
-            throw new BeaconClientException("Invalid launch request state " + request);
-        }
+            if (!(e.result instanceof ResultSuccess)) {
+                throw new BeaconClientException("Invalid launch request state " + request);
+            }
 
-        return ((ResultSuccess) e.getResult()).getTargetScript();
+            return ((ResultSuccess) e.getResult()).getTargetScript();
+        }
     }
 
     public interface Result {}

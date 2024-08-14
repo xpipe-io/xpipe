@@ -26,7 +26,8 @@ public interface ShellStoreProvider extends DataStoreProvider {
             @Override
             public void execute() throws Exception {
                 ShellStore store = entry.getStore().asNeeded();
-                TerminalLauncher.open(entry, DataStorage.get().getStoreEntryDisplayName(entry), null, ScriptStore.controlWithDefaultScripts(store.control()));
+                TerminalLauncher.open(entry, DataStorage.get().getStoreEntryDisplayName(entry), null,
+                        ScriptStore.controlWithDefaultScripts(store.control()));
             }
         };
     }
