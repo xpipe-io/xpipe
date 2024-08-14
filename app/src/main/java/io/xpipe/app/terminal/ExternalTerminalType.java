@@ -106,8 +106,9 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
             try (var sc = LocalShell.getShell()) {
                 var b = SshLocalBridge.get();
+                var keyName = b.getIdentityKey().getFileName().toString();
                 var command = CommandBuilder.of().addFile(file.toString()).add("-url").addQuoted("ssh://" + b.getUser() + "@localhost:" + b.getPort())
-                        .add("-i", "xpipe_bridge");
+                        .add("-i", keyName);
                 sc.executeSimpleCommand(command);
             }
         }
@@ -119,13 +120,14 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             }
 
             var b = SshLocalBridge.get();
+            var keyName = b.getIdentityKey().getFileName().toString();
             var r = AppWindowHelper.showBlockingAlert(
                     alert -> {
                         alert.setTitle(AppI18n.get("xshellSetup"));
                         alert.setAlertType(Alert.AlertType.NONE);
 
-                        var activated = AppI18n.get().getMarkdownDocumentation("app:xshellSetup");
-                        var markdown = new MarkdownComp(activated, s -> s.formatted(b.getIdentityKey(), "xpipe_bridge"))
+                        var activated = AppI18n.get().getMarkdownDocumentation("app:xshellSetup").formatted(b.getIdentityKey(), keyName);
+                        var markdown = new MarkdownComp(activated, s -> s)
                                 .prefWidth(450)
                                 .prefHeight(400)
                                 .createRegion();
@@ -279,10 +281,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 return;
             }
 
-            var name = "xpipe_bridge";
             var host = "localhost";
-            var port = SshLocalBridge.get().getPort();
-            var user = SshLocalBridge.get().getUser();
+            var b = SshLocalBridge.get();
+            var port = b.getPort();
+            var user = b.getUser();
+            var name = b.getIdentityKey().getFileName().toString();
             Hyperlinks.open("termius://app/host-sharing#label=" + name + "&ip=" + host + "&port=" + port + "&username="
                     + user + "&os=undefined");
         }
@@ -294,13 +297,14 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             }
 
             var b = SshLocalBridge.get();
+            var keyName = b.getIdentityKey().getFileName().toString();
             var r = AppWindowHelper.showBlockingAlert(
                     alert -> {
                         alert.setTitle(AppI18n.get("termiusSetup"));
                         alert.setAlertType(Alert.AlertType.NONE);
 
-                        var activated = AppI18n.get().getMarkdownDocumentation("app:termiusSetup");
-                        var markdown = new MarkdownComp(activated, s -> s.formatted(b.getIdentityKey(), "xpipe_bridge"))
+                        var activated = AppI18n.get().getMarkdownDocumentation("app:termiusSetup").formatted(b.getIdentityKey(), keyName);
+                        var markdown = new MarkdownComp(activated, s -> s)
                                 .prefWidth(450)
                                 .prefHeight(400)
                                 .createRegion();

@@ -36,20 +36,24 @@ public class SshLocalBridge {
         this.user = user;
     }
 
+    private String getName() {
+        return AppProperties.get().isStaging() ? "xpipe_ptb_bridge" : "xpipe_bridge";
+    }
+
     public Path getPubHostKey() {
-        return directory.resolve("xpipe_bridge_host_key.pub");
+        return directory.resolve(getName() + "_host_key.pub");
     }
 
     public Path getHostKey() {
-        return directory.resolve("xpipe_bridge_host_key");
+        return directory.resolve(getName() + "_host_key");
     }
 
     public Path getPubIdentityKey() {
-        return directory.resolve("xpipe_bridge.pub");
+        return directory.resolve(getName() + ".pub");
     }
 
     public Path getIdentityKey() {
-        return directory.resolve("xpipe_bridge");
+        return directory.resolve(getName());
     }
 
     public Path getConfig() {
@@ -64,7 +68,8 @@ public class SshLocalBridge {
         try (var sc = LocalShell.getShell().start()) {
             var bridgeDir = AppProperties.get().getDataDir().resolve("ssh_bridge");
             Files.createDirectories(bridgeDir);
-            var port = AppBeaconServer.get().getPort() + 1;
+            // Add a gap to not interfere with PTB or dev ports
+            var port = AppBeaconServer.get().getPort() + 10;
             var user = sc.getShellDialect().printUsernameCommand(sc).readStdoutOrThrow();
             INSTANCE = new SshLocalBridge(bridgeDir, port, user);
 
@@ -116,17 +121,17 @@ public class SshLocalBridge {
         }
 
         var content = Files.readString(file);
-        if (content.contains("xpipe_bridge")) {
+        if (content.contains(getName())) {
             return;
         }
 
         var updated = content + "\n\n" + """
-                                       Host xpipe_bridge
+                                       Host %s
                                            HostName localhost
                                            User "%s"
                                            Port %s
                                            IdentityFile "%s"
-                                       """.formatted(port, user, getIdentityKey());
+                                       """.formatted(getName(), port, user, getIdentityKey());
         Files.writeString(file, updated);
     }
 
