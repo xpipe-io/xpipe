@@ -52,7 +52,7 @@ public class StoreCategoryComp extends SimpleComp {
                         return "mdal-keyboard_arrow_right";
                     }
 
-                    return category.getShare().getValue() ? "mdi2a-account-convert" : "mdi2a-account-cancel";
+                    return category.getShare().getValue() ? "mdi2g-git" : "mdi2a-account-cancel";
                 },
                 category.getShare());
         var icon = new IconButtonComp(i)
