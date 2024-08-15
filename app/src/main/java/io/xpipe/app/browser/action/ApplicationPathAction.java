@@ -10,6 +10,12 @@ public interface ApplicationPathAction extends BrowserAction {
     String getExecutable();
 
     @Override
+    default void init(OpenFileSystemModel model) throws Exception {
+        // Cache result for later calls
+        model.getCache().isApplicationInPath(getExecutable());
+    }
+
+    @Override
     default boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return model.getCache().isApplicationInPath(getExecutable());
     }
