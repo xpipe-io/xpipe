@@ -6,6 +6,7 @@ import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 
+import io.xpipe.core.process.OsType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 
@@ -24,7 +25,9 @@ public class BrowserGreetingComp extends SimpleComp {
             });
         });
         AppFont.setSize(r, 7);
-        r.getStyleClass().add(Styles.TEXT_BOLD);
+        if (OsType.getLocal() != OsType.MACOS) {
+            r.getStyleClass().add(Styles.TEXT_BOLD);
+        }
         return r;
     }
 

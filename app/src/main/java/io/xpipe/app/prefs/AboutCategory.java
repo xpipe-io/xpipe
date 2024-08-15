@@ -11,6 +11,7 @@ import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.JfxHelper;
 import io.xpipe.app.util.OptionsBuilder;
 
+import io.xpipe.core.process.OsType;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.scene.control.ScrollPane;
@@ -116,8 +117,11 @@ public class AboutCategory extends AppPrefsCategory {
                                     "Version " + AppProperties.get().getVersion() + " ("
                                             + AppProperties.get().getArch() + ")"),
                             "logo.png");
-                })
-                .styleClass(Styles.TEXT_BOLD);
+                });
+
+        if (OsType.getLocal() != OsType.MACOS) {
+               title.styleClass(Styles.TEXT_BOLD);
+        }
 
         var section = new OptionsBuilder()
                 .addComp(title, null)

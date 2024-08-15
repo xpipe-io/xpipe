@@ -8,6 +8,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ScanAlert;
 
+import io.xpipe.core.process.OsType;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -26,7 +27,9 @@ public class StoreIntroComp extends SimpleComp {
     private Region createIntro() {
         var title = new Label();
         title.textProperty().bind(AppI18n.observable("storeIntroTitle"));
-        title.getStyleClass().add(Styles.TEXT_BOLD);
+        if (OsType.getLocal() != OsType.MACOS) {
+            title.getStyleClass().add(Styles.TEXT_BOLD);
+        }
         AppFont.setSize(title, 7);
 
         var introDesc = new Label();
@@ -63,7 +66,9 @@ public class StoreIntroComp extends SimpleComp {
     private Region createImportIntro() {
         var title = new Label();
         title.textProperty().bind(AppI18n.observable("importConnectionsTitle"));
-        title.getStyleClass().add(Styles.TEXT_BOLD);
+        if (OsType.getLocal() != OsType.MACOS) {
+            title.getStyleClass().add(Styles.TEXT_BOLD);
+        }
         AppFont.setSize(title, 7);
 
         var importDesc = new Label();
