@@ -58,10 +58,6 @@ public class BrowserSessionComp extends SimpleComp {
                     return;
                 }
 
-                if (entry.getStore() instanceof ShellStore fileSystem) {
-                    model.openFileSystemAsync(entry.ref(), null, busy);
-                }
-
                 var a = entry.getProvider().browserAction(model, entry, busy);
                 if (a != null) {
                     a.execute();
