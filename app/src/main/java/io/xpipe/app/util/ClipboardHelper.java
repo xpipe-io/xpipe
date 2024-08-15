@@ -37,7 +37,7 @@ public class ClipboardHelper {
             withPassword.put(DataFormat.PLAIN_TEXT, pass.getSecretValue());
             clipboard.setContent(withPassword);
 
-            var transition = new PauseTransition(Duration.millis(10000));
+            var transition = new PauseTransition(Duration.millis(15000));
             transition.setOnFinished(e -> {
                 var present = clipboard.getString();
                 if (present != null && present.equals(pass.getSecretValue())) {

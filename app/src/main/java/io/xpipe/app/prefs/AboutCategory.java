@@ -39,6 +39,13 @@ public class AboutCategory extends AppPrefsCategory {
                                 .grow(true, false),
                         null)
                 .addComp(
+                        new TileButtonComp("tryPtb", "tryPtbDescription", "mdi2t-test-tube", e -> {
+                            Hyperlinks.open(Hyperlinks.GITHUB_PTB);
+                            e.consume();
+                        })
+                                .grow(true, false),
+                        null)
+                .addComp(
                         new TileButtonComp("securityPolicy", "securityPolicyDescription", "mdrmz-security", e -> {
                                     Hyperlinks.open(Hyperlinks.SECURITY);
                                     e.consume();
