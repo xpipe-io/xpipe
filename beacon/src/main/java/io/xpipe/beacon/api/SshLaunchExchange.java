@@ -19,7 +19,7 @@ public class SshLaunchExchange extends BeaconInterface<SshLaunchExchange.Request
     @Builder
     @Value
     public static class Request {
-        String storePath;
+        String arguments;
     }
 
     @Jacksonized

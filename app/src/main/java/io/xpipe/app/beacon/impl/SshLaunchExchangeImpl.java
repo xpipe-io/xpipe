@@ -1,27 +1,19 @@
 package io.xpipe.app.beacon.impl;
 
 import com.sun.net.httpserver.HttpExchange;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.TerminalLauncherManager;
+import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.SshLaunchExchange;
 import io.xpipe.core.process.ProcessControlProvider;
-import io.xpipe.core.process.TerminalInitScriptConfig;
-import io.xpipe.core.store.ShellStore;
-import io.xpipe.core.store.StorePath;
-
-import java.util.UUID;
+import io.xpipe.core.process.ShellDialects;
 
 public class SshLaunchExchangeImpl extends SshLaunchExchange {
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) throws Exception {
-        if (msg.getStorePath() != null && !msg.getStorePath().contains("SSH_ORIGINAL_COMMAND")) {
-            var storePath = StorePath.create(msg.getStorePath());
-            var found = DataStorage.get().getStoreEntries().stream().filter(entry -> DataStorage.get().getStorePath(entry).equals(storePath)).findFirst();
-            if (found.isPresent() && found.get().getStore() instanceof ShellStore shellStore) {
-                TerminalLauncherManager.submitAsync(UUID.randomUUID(), shellStore.control(),
-                        TerminalInitScriptConfig.ofName(DataStorage.get().getStoreEntryDisplayName(found.get())),null);
-            }
+        var usedDialect = ShellDialects.ALL.stream().filter(dialect -> dialect.getExecutableName().equalsIgnoreCase(msg.getArguments())).findFirst();
+        if (msg.getArguments() != null && usedDialect.isEmpty() && !msg.getArguments().contains("SSH_ORIGINAL_COMMAND")) {
+            throw new BeaconClientException("Unexpected argument: " + msg.getArguments());
         }
 
         var r = TerminalLauncherManager.waitForNextLaunch();
