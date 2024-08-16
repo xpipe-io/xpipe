@@ -75,6 +75,7 @@ public class AppWindowHelper {
         addIcons(stage);
         setupContent(stage, contentFunc, bindSize, loading);
         setupStylesheets(stage.getScene());
+        AppWindowBounds.fixInvalidStagePosition(stage);
 
         if (AppPrefs.get() != null && AppPrefs.get().enforceWindowModality().get()) {
             stage.initModality(Modality.WINDOW_MODAL);
@@ -142,6 +143,7 @@ public class AppWindowHelper {
                 });
                 event.consume();
             });
+            AppWindowBounds.fixInvalidStagePosition(s);
             a.getDialogPane().getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
                 if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {
                     s.close();

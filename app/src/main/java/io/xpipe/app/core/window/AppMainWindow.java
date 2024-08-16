@@ -117,6 +117,7 @@ public class AppMainWindow {
     }
 
     private void setupListeners() {
+        AppWindowBounds.fixInvalidStagePosition(stage);
         stage.xProperty().addListener((c, o, n) -> {
             if (windowActive.get()) {
                 onChange();
