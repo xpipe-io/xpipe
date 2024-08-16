@@ -10,8 +10,8 @@ import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.JfxHelper;
 import io.xpipe.app.util.OptionsBuilder;
-
 import io.xpipe.core.process.OsType;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.scene.control.ScrollPane;
@@ -41,9 +41,9 @@ public class AboutCategory extends AppPrefsCategory {
                         null)
                 .addComp(
                         new TileButtonComp("tryPtb", "tryPtbDescription", "mdi2t-test-tube", e -> {
-                            Hyperlinks.open(Hyperlinks.GITHUB_PTB);
-                            e.consume();
-                        })
+                                    Hyperlinks.open(Hyperlinks.GITHUB_PTB);
+                                    e.consume();
+                                })
                                 .grow(true, false),
                         null)
                 .addComp(
@@ -111,16 +111,15 @@ public class AboutCategory extends AppPrefsCategory {
 
     private Comp<?> createProperties() {
         var title = Comp.of(() -> {
-                    return JfxHelper.createNamedEntry(
-                            AppI18n.observable("xPipeClient"),
-                            new SimpleStringProperty(
-                                    "Version " + AppProperties.get().getVersion() + " ("
-                                            + AppProperties.get().getArch() + ")"),
-                            "logo.png");
-                });
+            return JfxHelper.createNamedEntry(
+                    AppI18n.observable("xPipeClient"),
+                    new SimpleStringProperty("Version " + AppProperties.get().getVersion() + " ("
+                            + AppProperties.get().getArch() + ")"),
+                    "logo.png");
+        });
 
         if (OsType.getLocal() != OsType.MACOS) {
-               title.styleClass(Styles.TEXT_BOLD);
+            title.styleClass(Styles.TEXT_BOLD);
         }
 
         var section = new OptionsBuilder()

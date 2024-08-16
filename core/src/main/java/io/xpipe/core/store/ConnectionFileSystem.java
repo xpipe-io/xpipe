@@ -1,8 +1,9 @@
 package io.xpipe.core.store;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 
 import java.io.InputStream;
@@ -43,8 +44,10 @@ public class ConnectionFileSystem implements FileSystem {
             d.throwIfUnsupported();
         }
 
-        if (!shellControl.getTtyState().isPreservesOutput() || !shellControl.getTtyState().isSupportsInput()) {
-            throw new UnsupportedOperationException("Shell has a PTY allocated and does not support file system operations");
+        if (!shellControl.getTtyState().isPreservesOutput()
+                || !shellControl.getTtyState().isSupportsInput()) {
+            throw new UnsupportedOperationException(
+                    "Shell has a PTY allocated and does not support file system operations");
         }
 
         return this;

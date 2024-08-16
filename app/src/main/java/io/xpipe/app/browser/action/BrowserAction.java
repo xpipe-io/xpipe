@@ -25,10 +25,15 @@ public interface BrowserAction {
                 .toList();
     }
 
-    static List<LeafAction> getFlattened(BrowserAction browserAction, OpenFileSystemModel model, List<BrowserEntry> entries) {
+    static List<LeafAction> getFlattened(
+            BrowserAction browserAction, OpenFileSystemModel model, List<BrowserEntry> entries) {
         return browserAction instanceof LeafAction
-                        ? List.of((LeafAction) browserAction)
-                        : ((BranchAction) browserAction).getBranchingActions(model, entries).stream().map(action -> getFlattened(action, model, entries)).flatMap(List::stream).toList();
+                ? List.of((LeafAction) browserAction)
+                : ((BranchAction) browserAction)
+                        .getBranchingActions(model, entries).stream()
+                                .map(action -> getFlattened(action, model, entries))
+                                .flatMap(List::stream)
+                                .toList();
     }
 
     static LeafAction byId(String id, OpenFileSystemModel model, List<BrowserEntry> entries) {
@@ -41,9 +46,9 @@ public interface BrowserAction {
     default List<BrowserEntry> resolveFilesIfNeeded(List<BrowserEntry> selected) {
         return automaticallyResolveLinks()
                 ? selected.stream()
-                .map(browserEntry ->
-                        new BrowserEntry(browserEntry.getRawFileEntry().resolved(), browserEntry.getModel()))
-                .toList()
+                        .map(browserEntry ->
+                                new BrowserEntry(browserEntry.getRawFileEntry().resolved(), browserEntry.getModel()))
+                        .toList()
                 : selected;
     }
 

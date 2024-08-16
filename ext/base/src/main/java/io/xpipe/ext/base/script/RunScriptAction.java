@@ -11,9 +11,11 @@ import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.ext.base.browser.MultiExecuteSelectionAction;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -47,7 +49,8 @@ public class RunScriptAction implements BrowserAction, BranchAction {
         return actions;
     }
 
-    private List<? extends BrowserAction> createActionForScriptHierarchy(OpenFileSystemModel model, List<BrowserEntry> selected) {
+    private List<? extends BrowserAction> createActionForScriptHierarchy(
+            OpenFileSystemModel model, List<BrowserEntry> selected) {
         var sc = model.getFileSystem().getShell().orElseThrow();
         var hierarchy = ScriptHierarchy.buildEnabledHierarchy(ref -> {
             if (!ref.getStore().isFileScript()) {
@@ -67,10 +70,13 @@ public class RunScriptAction implements BrowserAction, BranchAction {
             return createActionForScript(model, hierarchy.getLeafBase());
         }
 
-        var list = hierarchy.getChildren().stream().map(c -> createActionForScriptHierarchy(model, c)).toList();
+        var list = hierarchy.getChildren().stream()
+                .map(c -> createActionForScriptHierarchy(model, c))
+                .toList();
         return new BranchAction() {
             @Override
-            public List<? extends BrowserAction> getBranchingActions(OpenFileSystemModel model, List<BrowserEntry> entries) {
+            public List<? extends BrowserAction> getBranchingActions(
+                    OpenFileSystemModel model, List<BrowserEntry> entries) {
                 return list;
             }
 
@@ -91,7 +97,8 @@ public class RunScriptAction implements BrowserAction, BranchAction {
             }
 
             @Override
-            protected CommandBuilder createCommand(ShellControl sc, OpenFileSystemModel model, List<BrowserEntry> selected) {
+            protected CommandBuilder createCommand(
+                    ShellControl sc, OpenFileSystemModel model, List<BrowserEntry> selected) {
                 if (!(model.getBrowserModel() instanceof BrowserSessionModel)) {
                     return null;
                 }
@@ -100,9 +107,7 @@ public class RunScriptAction implements BrowserAction, BranchAction {
                 var script = ScriptHelper.createExecScript(sc, content);
                 var builder = CommandBuilder.of().add(sc.getShellDialect().runScriptCommand(sc, script.toString()));
                 selected.stream()
-                        .map(browserEntry -> browserEntry
-                                .getRawFileEntry()
-                                .getPath())
+                        .map(browserEntry -> browserEntry.getRawFileEntry().getPath())
                         .forEach(s -> {
                             builder.addFile(s);
                         });

@@ -29,7 +29,9 @@ public interface ShellDumbMode {
 
         private final String message;
 
-        public Unsupported(String message) {this.message = message;}
+        public Unsupported(String message) {
+            this.message = message;
+        }
 
         public void throwIfUnsupported() {
             throw new UnsupportedOperationException(message);

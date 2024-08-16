@@ -10,7 +10,9 @@ import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.store.ShellStore;
+
 import javafx.beans.value.ObservableValue;
+
 import lombok.Value;
 
 import java.io.BufferedReader;

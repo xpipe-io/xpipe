@@ -7,6 +7,7 @@ import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.TerminalInitScriptConfig;
 import io.xpipe.core.process.WorkingDirectoryFunction;
 import io.xpipe.core.store.FilePath;
+
 import lombok.Setter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
@@ -90,7 +91,7 @@ public class TerminalLauncherManager {
         return waitForCompletion(e);
     }
 
-    public static Path waitForCompletion(Entry e) throws BeaconClientException, BeaconServerException {
+    public static Path waitForCompletion(Entry e) throws BeaconServerException {
         while (true) {
             if (e.result == null) {
                 ThreadHelper.sleep(10);

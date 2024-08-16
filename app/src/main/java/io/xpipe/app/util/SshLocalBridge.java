@@ -8,6 +8,7 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.util.XPipeInstallation;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,6 +28,7 @@ public class SshLocalBridge {
     private final Path directory;
     private final int port;
     private final String user;
+
     @Setter
     private ShellControl runningShell;
 
@@ -74,22 +76,39 @@ public class SshLocalBridge {
             INSTANCE = new SshLocalBridge(bridgeDir, port, user);
 
             var hostKey = INSTANCE.getHostKey();
-            if (!sc.getShellDialect().createFileExistsCommand(sc, hostKey.toString()).executeAndCheck()) {
-                sc.command(CommandBuilder.of().add("ssh-keygen", "-q", "-N")
-                        .addQuoted("").add("-C").addQuoted("XPipe SSH bridge host key")
-                        .add("-t", "ed25519", "-f").addFile(hostKey.toString())).execute();
+            if (!sc.getShellDialect()
+                    .createFileExistsCommand(sc, hostKey.toString())
+                    .executeAndCheck()) {
+                sc.command(CommandBuilder.of()
+                                .add("ssh-keygen", "-q", "-N")
+                                .addQuoted("")
+                                .add("-C")
+                                .addQuoted("XPipe SSH bridge host key")
+                                .add("-t", "ed25519", "-f")
+                                .addFile(hostKey.toString()))
+                        .execute();
             }
 
             var idKey = INSTANCE.getIdentityKey();
-            if (!sc.getShellDialect().createFileExistsCommand(sc, idKey.toString()).executeAndCheck()) {
-                sc.command(CommandBuilder.of().add("ssh-keygen", "-q", "-N")
-                        .addQuoted("").add("-C").addQuoted("XPipe SSH bridge identity").add("-t", "ed25519", "-f").addFile(idKey.toString())).execute();
+            if (!sc.getShellDialect()
+                    .createFileExistsCommand(sc, idKey.toString())
+                    .executeAndCheck()) {
+                sc.command(CommandBuilder.of()
+                                .add("ssh-keygen", "-q", "-N")
+                                .addQuoted("")
+                                .add("-C")
+                                .addQuoted("XPipe SSH bridge identity")
+                                .add("-t", "ed25519", "-f")
+                                .addFile(idKey.toString()))
+                        .execute();
             }
 
             var config = INSTANCE.getConfig();
-            var command = "\"" + XPipeInstallation.getLocalDefaultCliExecutable() + "\" ssh-launch " + sc.getShellDialect().environmentVariable("SSH_ORIGINAL_COMMAND");
+            var command = "\"" + XPipeInstallation.getLocalDefaultCliExecutable() + "\" ssh-launch "
+                    + sc.getShellDialect().environmentVariable("SSH_ORIGINAL_COMMAND");
             var pidFile = bridgeDir.resolve("sshd.pid");
-            var content = """
+            var content =
+                    """
                           ForceCommand %s
                           PidFile "%s"
                           StrictModes no
@@ -101,14 +120,24 @@ public class SshLocalBridge {
                           PubkeyAuthentication yes
                           AuthorizedKeysFile "%s"
                           """
-                    .formatted(command, pidFile.toString(), "" + port, INSTANCE.getHostKey().toString(),  INSTANCE.getPubIdentityKey());;
+                            .formatted(
+                                    command,
+                                    pidFile.toString(),
+                                    "" + port,
+                                    INSTANCE.getHostKey().toString(),
+                                    INSTANCE.getPubIdentityKey());
             Files.writeString(config, content);
 
             // INSTANCE.updateConfig();
 
-            var exec =  getSshd(sc);
-            var launchCommand = CommandBuilder.of().addFile(exec).add("-f").addFile(INSTANCE.getConfig().toString()).add("-p", "" + port);
-            var control = ProcessControlProvider.get().createLocalProcessControl(true).start();
+            var exec = getSshd(sc);
+            var launchCommand = CommandBuilder.of()
+                    .addFile(exec)
+                    .add("-f")
+                    .addFile(INSTANCE.getConfig().toString())
+                    .add("-p", "" + port);
+            var control =
+                    ProcessControlProvider.get().createLocalProcessControl(true).start();
             control.writeLine(launchCommand.buildFull(control));
             INSTANCE.setRunningShell(control);
         }
@@ -125,19 +154,24 @@ public class SshLocalBridge {
             return;
         }
 
-        var updated = content + "\n\n" + """
+        var updated = content + "\n\n"
+                + """
                                        Host %s
                                            HostName localhost
                                            User "%s"
                                            Port %s
                                            IdentityFile "%s"
-                                       """.formatted(getName(), port, user, getIdentityKey());
+                                       """
+                        .formatted(getName(), port, user, getIdentityKey());
         Files.writeString(file, updated);
     }
 
     private static String getSshd(ShellControl sc) throws Exception {
         if (OsType.getLocal() == OsType.WINDOWS) {
-            return XPipeInstallation.getLocalBundledToolsDirectory().resolve("openssh").resolve("sshd").toString();
+            return XPipeInstallation.getLocalBundledToolsDirectory()
+                    .resolve("openssh")
+                    .resolve("sshd")
+                    .toString();
         } else {
             var exec = sc.executeSimpleStringCommand(sc.getShellDialect().getWhichCommand("sshd"));
             return exec;

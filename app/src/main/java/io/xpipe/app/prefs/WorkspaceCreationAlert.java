@@ -12,9 +12,11 @@ import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.XPipeInstallation;
+
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.scene.control.ButtonType;
+
 import org.apache.commons.io.FileUtils;
 
 import java.nio.file.Files;
@@ -54,21 +56,33 @@ public class WorkspaceCreationAlert {
         }
 
         if (Files.exists(path.get()) && !FileUtils.isEmptyDirectory(path.get().toFile())) {
-            ErrorEvent.fromMessage("New workspace directory is not empty").expected().handle();
+            ErrorEvent.fromMessage("New workspace directory is not empty")
+                    .expected()
+                    .handle();
             return;
         }
 
         var shortcutName = (AppProperties.get().isStaging() ? "XPipe PTB" : "XPipe") + " (" + name.get() + ")";
-        var file = switch (OsType.getLocal()) {
-            case OsType.Windows w -> {
-              var exec = XPipeInstallation.getCurrentInstallationBasePath().resolve(XPipeInstallation.getDaemonExecutablePath(w)).toString();
-              yield DesktopShortcuts.create(exec, "-Dio.xpipe.app.dataDir=\"" + path.get().toString() + "\" -Dio.xpipe.app.acceptEula=true", shortcutName);
-          }
-            default -> {
-                var exec = XPipeInstallation.getCurrentInstallationBasePath().resolve(XPipeInstallation.getRelativeCliExecutablePath(OsType.getLocal())).toString();
-                yield DesktopShortcuts.create(exec, "-d \"" + path.get().toString() + "\" --accept-eula", shortcutName);
-            }
-        };
+        var file =
+                switch (OsType.getLocal()) {
+                    case OsType.Windows w -> {
+                        var exec = XPipeInstallation.getCurrentInstallationBasePath()
+                                .resolve(XPipeInstallation.getDaemonExecutablePath(w))
+                                .toString();
+                        yield DesktopShortcuts.create(
+                                exec,
+                                "-Dio.xpipe.app.dataDir=\"" + path.get().toString()
+                                        + "\" -Dio.xpipe.app.acceptEula=true",
+                                shortcutName);
+                    }
+                    default -> {
+                        var exec = XPipeInstallation.getCurrentInstallationBasePath()
+                                .resolve(XPipeInstallation.getRelativeCliExecutablePath(OsType.getLocal()))
+                                .toString();
+                        yield DesktopShortcuts.create(
+                                exec, "-d \"" + path.get().toString() + "\" --accept-eula", shortcutName);
+                    }
+                };
         DesktopHelper.browseFileInDirectory(file);
         OperationMode.close();
     }

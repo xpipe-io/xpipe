@@ -2,12 +2,9 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
-
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
-
 import org.apache.commons.io.FilenameUtils;
-import org.slf4j.LoggerFactory;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -131,7 +128,7 @@ public class AppImages {
         }
 
         if (!Files.isRegularFile(p)) {
-            LoggerFactory.getLogger(AppImages.class).error("Image file " + p + " not found.");
+            TrackEvent.error("Image file " + p + " not found.");
             return DEFAULT_IMAGE;
         }
 

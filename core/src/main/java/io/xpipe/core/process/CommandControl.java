@@ -54,7 +54,7 @@ public interface CommandControl extends ProcessControl {
 
     OutputStream startExternalStdin() throws Exception;
 
-    public void setExitTimeout(Duration duration);
+    void setExitTimeout(Duration duration);
 
     boolean waitFor();
 

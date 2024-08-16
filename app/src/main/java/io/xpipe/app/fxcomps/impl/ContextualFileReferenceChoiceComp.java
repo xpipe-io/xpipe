@@ -1,6 +1,5 @@
 package io.xpipe.app.fxcomps.impl;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.session.BrowserChooserComp;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppLayoutModel;
@@ -15,11 +14,14 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystemStore;
+
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+
+import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.nio.file.Files;
@@ -34,8 +36,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
     private final boolean allowSync;
 
     public <T extends FileSystemStore> ContextualFileReferenceChoiceComp(
-            Property<DataStoreEntryRef<T>> fileSystem, Property<String> filePath, boolean allowSync
-    ) {
+            Property<DataStoreEntryRef<T>> fileSystem, Property<String> filePath, boolean allowSync) {
         this.allowSync = allowSync;
         this.fileSystem = new SimpleObjectProperty<>();
         fileSystem.subscribe(val -> {
@@ -92,7 +93,8 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                 var f = data.resolve(FileNames.getFileName(currentPath.trim()));
                 var source = Path.of(currentPath.trim());
                 if (Files.exists(source)) {
-                    var shouldCopy = AppWindowHelper.showConfirmationAlert("confirmGitShareTitle","confirmGitShareHeader", "confirmGitShareContent");
+                    var shouldCopy = AppWindowHelper.showConfirmationAlert(
+                            "confirmGitShareTitle", "confirmGitShareHeader", "confirmGitShareContent");
                     if (!shouldCopy) {
                         return;
                     }
@@ -115,8 +117,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
         if (allowSync) {
             nodes.add(gitShareButton);
         }
-        var layout = new HorizontalComp(nodes)
-                .apply(struc -> struc.get().setFillHeight(true));
+        var layout = new HorizontalComp(nodes).apply(struc -> struc.get().setFillHeight(true));
 
         layout.apply(struc -> {
             struc.get().focusedProperty().addListener((observable, oldValue, newValue) -> {

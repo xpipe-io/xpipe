@@ -139,7 +139,7 @@ public class AppInstaller {
         public static final class Debian extends InstallerAssetType {
 
             @Override
-            public void installLocal(Path file) throws Exception {
+            public void installLocal(Path file) {
                 var start = AppPrefs.get() != null
                         && AppPrefs.get().terminalType().getValue() != null
                         && AppPrefs.get().terminalType().getValue().isAvailable();
@@ -177,7 +177,7 @@ public class AppInstaller {
         public static final class Rpm extends InstallerAssetType {
 
             @Override
-            public void installLocal(Path file) throws Exception {
+            public void installLocal(Path file) {
                 var start = AppPrefs.get() != null
                         && AppPrefs.get().terminalType().getValue() != null
                         && AppPrefs.get().terminalType().getValue().isAvailable();
@@ -215,7 +215,7 @@ public class AppInstaller {
         public static final class Pkg extends InstallerAssetType {
 
             @Override
-            public void installLocal(Path file) throws Exception {
+            public void installLocal(Path file) {
                 var start = AppPrefs.get() != null
                         && AppPrefs.get().terminalType().getValue() != null
                         && AppPrefs.get().terminalType().getValue().isAvailable();

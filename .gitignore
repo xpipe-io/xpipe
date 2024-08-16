@@ -18,7 +18,6 @@ bin
 ComponentsGenerated.wxs
 !dist/javafx/**/lib
 !dist/javafx/**/bin
-dev.properties
 xcuserdata/
 *.dylib
 project.xcworkspace

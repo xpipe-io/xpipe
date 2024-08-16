@@ -56,7 +56,7 @@ public class FilterComp extends Comp<CompStructure<CustomTextField>> {
                         filter.focusedProperty()));
         filter.setAccessibleText("Filter");
 
-        filter.addEventFilter(KeyEvent.KEY_PRESSED,event -> {
+        filter.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (new KeyCodeCombination(KeyCode.ESCAPE).match(event)) {
                 filter.getScene().getRoot().requestFocus();
                 event.consume();

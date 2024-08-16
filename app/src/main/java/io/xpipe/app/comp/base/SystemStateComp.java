@@ -40,20 +40,15 @@ public class SystemStateComp extends SimpleComp {
         var success = Styles.toDataURI(
                 """
                 .stacked-ikonli-font-icon > .outer-icon { -fx-icon-color: -color-success-emphasis; }
+                """);
+        var failure = Styles.toDataURI(
                 """
-        );
-        var failure =
-                Styles.toDataURI(
-                        """
                         .stacked-ikonli-font-icon > .outer-icon { -fx-icon-color: -color-danger-emphasis; }
-                        """
-                );
-        var other =
-                Styles.toDataURI(
-                        """
+                        """);
+        var other = Styles.toDataURI(
+                """
                         .stacked-ikonli-font-icon > .outer-icon { -fx-icon-color: -color-accent-emphasis; }
-                        """
-                );
+                        """);
 
         var pane = new StackedFontIcon();
         pane.getChildren().addAll(fi, border);

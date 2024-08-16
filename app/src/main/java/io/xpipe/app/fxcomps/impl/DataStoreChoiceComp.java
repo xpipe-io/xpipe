@@ -114,7 +114,8 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                             StoreViewState.get().getActiveCategory(),
                             selectedCategory)
                     .styleClass(Styles.LEFT_PILL);
-            var filter = new FilterComp(filterText).styleClass(Styles.CENTER_PILL).hgrow();
+            var filter =
+                    new FilterComp(filterText).styleClass(Styles.CENTER_PILL).hgrow();
 
             var addButton = Comp.of(() -> {
                         MenuButton m = new MenuButton(null, new FontIcon("mdi2p-plus-box-outline"));

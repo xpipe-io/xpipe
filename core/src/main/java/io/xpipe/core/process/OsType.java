@@ -97,7 +97,13 @@ public interface OsType {
         public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
             var home = getHomeDirectory(pc);
             return List.of(
-                    home, "/home", FileNames.join(home, "Downloads"), FileNames.join(home, "Documents"), "/etc", "/tmp", "/var");
+                    home,
+                    "/home",
+                    FileNames.join(home, "Downloads"),
+                    FileNames.join(home, "Documents"),
+                    "/etc",
+                    "/tmp",
+                    "/var");
         }
 
         @Override
@@ -114,7 +120,6 @@ public interface OsType {
         public String getName() {
             return "Linux";
         }
-
     }
 
     final class Linux extends Unix implements OsType, Local, Any {
@@ -123,7 +128,6 @@ public interface OsType {
         public String getId() {
             return "linux";
         }
-
     }
 
     final class Solaris extends Unix implements Any {}
@@ -171,6 +175,5 @@ public interface OsType {
         public String getName() {
             return "Mac";
         }
-
     }
 }

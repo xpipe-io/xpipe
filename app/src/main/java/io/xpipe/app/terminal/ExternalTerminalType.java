@@ -12,9 +12,11 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.FailableFunction;
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
+
 import lombok.Getter;
 import lombok.Value;
 import lombok.With;
@@ -27,56 +29,60 @@ import java.util.*;
 
 public interface ExternalTerminalType extends PrefsChoiceValue {
 
-//    ExternalTerminalType PUTTY = new WindowsType("app.putty","putty") {
-//
-//        @Override
-//        protected Optional<Path> determineInstallation() {
-//            try {
-//                var r = WindowsRegistry.local().readValue(WindowsRegistry.HKEY_LOCAL_MACHINE,
-//                        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\Xshell.exe");
-//                return r.map(Path::of);
-//            }  catch (Exception e) {
-//                ErrorEvent.fromThrowable(e).omit().handle();
-//                return Optional.empty();
-//            }
-//        }
-//
-//        @Override
-//        public boolean supportsTabs() {
-//            return true;
-//        }
-//
-//        @Override
-//        public boolean isRecommended() {
-//            return false;
-//        }
-//
-//        @Override
-//        public boolean supportsColoredTitle() {
-//            return false;
-//        }
-//
-//        @Override
-//        protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
-//            try (var sc = LocalShell.getShell()) {
-//                SshLocalBridge.init();
-//                var b = SshLocalBridge.get();
-//                var command = CommandBuilder.of().addFile(file.toString()).add("-ssh", "localhost", "-l").addQuoted(b.getUser())
-//                        .add("-i").addFile(b.getIdentityKey().toString()).add("-P", "" + b.getPort()).add("-hostkey").addFile(b.getPubHostKey().toString());
-//                sc.executeSimpleCommand(command);
-//            }
-//        }
-//    };
+    //    ExternalTerminalType PUTTY = new WindowsType("app.putty","putty") {
+    //
+    //        @Override
+    //        protected Optional<Path> determineInstallation() {
+    //            try {
+    //                var r = WindowsRegistry.local().readValue(WindowsRegistry.HKEY_LOCAL_MACHINE,
+    //                        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\Xshell.exe");
+    //                return r.map(Path::of);
+    //            }  catch (Exception e) {
+    //                ErrorEvent.fromThrowable(e).omit().handle();
+    //                return Optional.empty();
+    //            }
+    //        }
+    //
+    //        @Override
+    //        public boolean supportsTabs() {
+    //            return true;
+    //        }
+    //
+    //        @Override
+    //        public boolean isRecommended() {
+    //            return false;
+    //        }
+    //
+    //        @Override
+    //        public boolean supportsColoredTitle() {
+    //            return false;
+    //        }
+    //
+    //        @Override
+    //        protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
+    //            try (var sc = LocalShell.getShell()) {
+    //                SshLocalBridge.init();
+    //                var b = SshLocalBridge.get();
+    //                var command = CommandBuilder.of().addFile(file.toString()).add("-ssh", "localhost",
+    // "-l").addQuoted(b.getUser())
+    //                        .add("-i").addFile(b.getIdentityKey().toString()).add("-P", "" +
+    // b.getPort()).add("-hostkey").addFile(b.getPubHostKey().toString());
+    //                sc.executeSimpleCommand(command);
+    //            }
+    //        }
+    //    };
 
-    ExternalTerminalType XSHELL = new WindowsType("app.xShell","Xshell") {
+    ExternalTerminalType XSHELL = new WindowsType("app.xShell", "Xshell") {
 
         @Override
         protected Optional<Path> determineInstallation() {
             try {
-                var r = WindowsRegistry.local().readValue(WindowsRegistry.HKEY_LOCAL_MACHINE,
-                        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\Xshell.exe");
+                var r = WindowsRegistry.local()
+                        .readValue(
+                                WindowsRegistry.HKEY_LOCAL_MACHINE,
+                                "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\Xshell.exe");
                 return r.map(Path::of);
-            }  catch (Exception e) {
+            } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).omit().handle();
                 return Optional.empty();
             }
@@ -107,7 +113,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             try (var sc = LocalShell.getShell()) {
                 var b = SshLocalBridge.get();
                 var keyName = b.getIdentityKey().getFileName().toString();
-                var command = CommandBuilder.of().addFile(file.toString()).add("-url").addQuoted("ssh://" + b.getUser() + "@localhost:" + b.getPort())
+                var command = CommandBuilder.of()
+                        .addFile(file.toString())
+                        .add("-url")
+                        .addQuoted("ssh://" + b.getUser() + "@localhost:" + b.getPort())
                         .add("-i", keyName);
                 sc.executeSimpleCommand(command);
             }
@@ -121,29 +130,30 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
             var b = SshLocalBridge.get();
             var keyName = b.getIdentityKey().getFileName().toString();
-            var r = AppWindowHelper.showBlockingAlert(
-                    alert -> {
-                        alert.setTitle(AppI18n.get("xshellSetup"));
-                        alert.setAlertType(Alert.AlertType.NONE);
+            var r = AppWindowHelper.showBlockingAlert(alert -> {
+                alert.setTitle(AppI18n.get("xshellSetup"));
+                alert.setAlertType(Alert.AlertType.NONE);
 
-                        var activated = AppI18n.get().getMarkdownDocumentation("app:xshellSetup").formatted(b.getIdentityKey(), keyName);
-                        var markdown = new MarkdownComp(activated, s -> s)
-                                .prefWidth(450)
-                                .prefHeight(400)
-                                .createRegion();
-                        alert.getDialogPane().setContent(markdown);
+                var activated = AppI18n.get()
+                        .getMarkdownDocumentation("app:xshellSetup")
+                        .formatted(b.getIdentityKey(), keyName);
+                var markdown = new MarkdownComp(activated, s -> s)
+                        .prefWidth(450)
+                        .prefHeight(400)
+                        .createRegion();
+                alert.getDialogPane().setContent(markdown);
 
-                        alert.getButtonTypes().add(new ButtonType(AppI18n.get("ok"), ButtonBar.ButtonData.OK_DONE));
-                    });
+                alert.getButtonTypes().add(new ButtonType(AppI18n.get("ok"), ButtonBar.ButtonData.OK_DONE));
+            });
             r.filter(buttonType -> buttonType.getButtonData().isDefaultButton());
             r.ifPresent(buttonType -> {
-                    AppCache.update("xshellSetup", true);
+                AppCache.update("xshellSetup", true);
             });
             return r.isPresent();
         }
     };
 
-    ExternalTerminalType SECURECRT = new WindowsType("app.secureCrt","SecureCRT") {
+    ExternalTerminalType SECURECRT = new WindowsType("app.secureCrt", "SecureCRT") {
 
         @Override
         protected Optional<Path> determineInstallation() {
@@ -156,7 +166,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 }
 
                 return Optional.of(file);
-            }  catch (Exception e) {
+            } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).omit().handle();
                 return Optional.empty();
             }
@@ -182,21 +192,29 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             try (var sc = LocalShell.getShell()) {
                 SshLocalBridge.init();
                 var b = SshLocalBridge.get();
-                var command = CommandBuilder.of().addFile(file.toString()).add("/T").add("/SSH2", "/ACCEPTHOSTKEYS", "/I").addFile(
-                        b.getIdentityKey().toString()).add("/P", "" + b.getPort()).add("/L").addQuoted(b.getUser()).add("localhost");
+                var command = CommandBuilder.of()
+                        .addFile(file.toString())
+                        .add("/T")
+                        .add("/SSH2", "/ACCEPTHOSTKEYS", "/I")
+                        .addFile(b.getIdentityKey().toString())
+                        .add("/P", "" + b.getPort())
+                        .add("/L")
+                        .addQuoted(b.getUser())
+                        .add("localhost");
                 sc.executeSimpleCommand(command);
             }
         }
     };
 
-    ExternalTerminalType MOBAXTERM = new WindowsType("app.mobaXterm","MobaXterm") {
+    ExternalTerminalType MOBAXTERM = new WindowsType("app.mobaXterm", "MobaXterm") {
 
         @Override
         protected Optional<Path> determineInstallation() {
             try {
-            var r = WindowsRegistry.local().readValue(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\mobaxterm\\DefaultIcon");
-            return r.map(Path::of);
-            }  catch (Exception e) {
+                var r = WindowsRegistry.local()
+                        .readValue(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\mobaxterm\\DefaultIcon");
+                return r.map(Path::of);
+            } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).omit().handle();
                 return Optional.empty();
             }
@@ -220,13 +238,20 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         @Override
         protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
             try (var sc = LocalShell.getShell()) {
-                var fixedFile = configuration.getScriptFile().toString()
+                var fixedFile = configuration
+                        .getScriptFile()
+                        .toString()
                         .replaceAll("\\\\", "/")
-                        .replaceAll("\\s","\\$0");
-                var command = sc.getShellDialect() == ShellDialects.CMD ?
-                        CommandBuilder.of().addQuoted("cmd /c " + fixedFile) :
-                        CommandBuilder.of().addQuoted("powershell -NoProfile -ExecutionPolicy Bypass -File " + fixedFile);
-                sc.command(CommandBuilder.of().addFile(file.toString()).add("-newtab").add(command)).execute();
+                        .replaceAll("\\s", "\\$0");
+                var command = sc.getShellDialect() == ShellDialects.CMD
+                        ? CommandBuilder.of().addQuoted("cmd /c " + fixedFile)
+                        : CommandBuilder.of()
+                                .addQuoted("powershell -NoProfile -ExecutionPolicy Bypass -File " + fixedFile);
+                sc.command(CommandBuilder.of()
+                                .addFile(file.toString())
+                                .add("-newtab")
+                                .add(command))
+                        .execute();
             }
         }
     };
@@ -249,11 +274,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                         yield CommandSupport.isInPathSilent(sc, "termius");
                     }
                     case OsType.Windows windows -> {
-                        var r = WindowsRegistry.local().readValue(WindowsRegistry.HKEY_CURRENT_USER, "SOFTWARE\\Classes\\termius");
+                        var r = WindowsRegistry.local()
+                                .readValue(WindowsRegistry.HKEY_CURRENT_USER, "SOFTWARE\\Classes\\termius");
                         yield r.isPresent();
                     }
                 };
-            }  catch (Exception e) {
+            } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).omit().handle();
                 return false;
             }
@@ -298,20 +324,21 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
             var b = SshLocalBridge.get();
             var keyName = b.getIdentityKey().getFileName().toString();
-            var r = AppWindowHelper.showBlockingAlert(
-                    alert -> {
-                        alert.setTitle(AppI18n.get("termiusSetup"));
-                        alert.setAlertType(Alert.AlertType.NONE);
+            var r = AppWindowHelper.showBlockingAlert(alert -> {
+                alert.setTitle(AppI18n.get("termiusSetup"));
+                alert.setAlertType(Alert.AlertType.NONE);
 
-                        var activated = AppI18n.get().getMarkdownDocumentation("app:termiusSetup").formatted(b.getIdentityKey(), keyName);
-                        var markdown = new MarkdownComp(activated, s -> s)
-                                .prefWidth(450)
-                                .prefHeight(400)
-                                .createRegion();
-                        alert.getDialogPane().setContent(markdown);
+                var activated = AppI18n.get()
+                        .getMarkdownDocumentation("app:termiusSetup")
+                        .formatted(b.getIdentityKey(), keyName);
+                var markdown = new MarkdownComp(activated, s -> s)
+                        .prefWidth(450)
+                        .prefHeight(400)
+                        .createRegion();
+                alert.getDialogPane().setContent(markdown);
 
-                        alert.getButtonTypes().add(new ButtonType(AppI18n.get("ok"), ButtonBar.ButtonData.OK_DONE));
-                    });
+                alert.getButtonTypes().add(new ButtonType(AppI18n.get("ok"), ButtonBar.ButtonData.OK_DONE));
+            });
             r.filter(buttonType -> buttonType.getButtonData().isDefaultButton());
             r.ifPresent(buttonType -> {
                 AppCache.update("termiusSetup", true);
@@ -319,7 +346,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return r.isPresent();
         }
     };
-
 
     ExternalTerminalType CMD = new SimplePathType("app.cmd", "cmd.exe", true) {
 

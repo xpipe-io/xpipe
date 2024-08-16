@@ -9,6 +9,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
+
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;
@@ -38,7 +39,8 @@ public abstract class MultiExecuteAction implements BranchAction {
                                                 model.getCurrentDirectory() != null
                                                         ? model.getCurrentDirectory()
                                                                 .getPath()
-                                                        : null, cmd);
+                                                        : null,
+                                                cmd);
                                     }
                                 },
                                 false);

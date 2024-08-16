@@ -121,7 +121,7 @@ public interface ActionProvider {
 
     interface BranchDataStoreCallSite<T extends DataStore> extends DataStoreCallSite<T> {
 
-        default boolean isDynamicallyGenerated(){
+        default boolean isDynamicallyGenerated() {
             return false;
         }
 
@@ -150,8 +150,10 @@ public interface ActionProvider {
                     .toList());
 
             var menuProviders = ALL.stream()
-                    .map(actionProvider -> actionProvider.getBranchDataStoreCallSite() != null &&
-                            !actionProvider.getBranchDataStoreCallSite().isDynamicallyGenerated()
+                    .map(actionProvider -> actionProvider.getBranchDataStoreCallSite() != null
+                                    && !actionProvider
+                                            .getBranchDataStoreCallSite()
+                                            .isDynamicallyGenerated()
                             ? actionProvider.getBranchDataStoreCallSite().getChildren(null)
                             : List.of())
                     .flatMap(List::stream)

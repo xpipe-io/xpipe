@@ -18,9 +18,7 @@ public class WorkspacesCategory extends AppPrefsCategory {
                 .addTitle("manageWorkspaces")
                 .sub(new OptionsBuilder()
                         .nameAndDescription("workspaceAdd")
-                        .addComp(
-                                new ButtonComp(AppI18n.observable("addWorkspace"),
-                                        WorkspaceCreationAlert::showAsync)))
+                        .addComp(new ButtonComp(AppI18n.observable("addWorkspace"), WorkspaceCreationAlert::showAsync)))
                 .buildComp();
     }
 }

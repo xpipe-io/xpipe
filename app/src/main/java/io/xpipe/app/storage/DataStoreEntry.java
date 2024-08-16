@@ -584,6 +584,6 @@ public class DataStoreEntry extends StorageElement {
         @JsonProperty("top")
         TOP,
         @JsonProperty("bottom")
-        BOTTOM;
+        BOTTOM
     }
 }

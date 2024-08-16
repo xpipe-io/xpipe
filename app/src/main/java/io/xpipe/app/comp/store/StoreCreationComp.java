@@ -1,6 +1,5 @@
 package io.xpipe.app.comp.store;
 
-import atlantafx.base.controls.Spacer;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.DialogComp;
 import io.xpipe.app.comp.base.ErrorOverlayComp;
@@ -22,6 +21,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.ValidationException;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -33,6 +33,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import atlantafx.base.controls.Spacer;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import net.synedra.validatorfx.GraphicDecorationStackPane;
@@ -242,23 +244,30 @@ public class StoreCreationComp extends DialogComp {
 
     @Override
     protected List<Comp<?>> customButtons() {
-        return List.of(new ButtonComp(AppI18n.observable("skip"), null, () -> {
-                    if (showInvalidConfirmAlert()) {
-                        commit(false);
-                    } else {
-                        finish();
-                    }
-                })
-                .visible(skippable),
+        return List.of(
+                new ButtonComp(AppI18n.observable("skip"), null, () -> {
+                            if (showInvalidConfirmAlert()) {
+                                commit(false);
+                            } else {
+                                finish();
+                            }
+                        })
+                        .visible(skippable),
                 new ButtonComp(AppI18n.observable("connect"), null, () -> {
-                    var temp = DataStoreEntry.createTempWrapper(store.getValue());
-                    var action = provider.getValue().launchAction(temp);
-                    ThreadHelper.runFailableAsync(() -> {
-                        action.execute();
-                    });
-                }).hide(connectable.not().or(Bindings.createBooleanBinding(() -> {
-                    return store.getValue() == null || !store.getValue().isComplete();
-                }, store))));
+                            var temp = DataStoreEntry.createTempWrapper(store.getValue());
+                            var action = provider.getValue().launchAction(temp);
+                            ThreadHelper.runFailableAsync(() -> {
+                                action.execute();
+                            });
+                        })
+                        .hide(connectable
+                                .not()
+                                .or(Bindings.createBooleanBinding(
+                                        () -> {
+                                            return store.getValue() == null
+                                                    || !store.getValue().isComplete();
+                                        },
+                                        store))));
     }
 
     @Override
@@ -413,8 +422,10 @@ public class StoreCreationComp extends DialogComp {
         var layout = new BorderPane();
         layout.getStyleClass().add("store-creator");
         var providerChoice = new StoreProviderChoiceComp(filter, provider, staticDisplay);
-        var showProviders = (!staticDisplay && (providerChoice.getProviders().size() > 1 || providerChoice.getProviders().getFirst().showProviderChoice())) ||
-                (staticDisplay && provider.getValue().showProviderChoice());
+        var showProviders = (!staticDisplay
+                        && (providerChoice.getProviders().size() > 1
+                                || providerChoice.getProviders().getFirst().showProviderChoice()))
+                || (staticDisplay && provider.getValue().showProviderChoice());
         if (showProviders) {
             providerChoice.onSceneAssign(struc -> struc.get().requestFocus());
         }

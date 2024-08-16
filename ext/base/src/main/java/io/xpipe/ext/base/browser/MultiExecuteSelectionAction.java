@@ -9,13 +9,15 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
+
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;
 
 public abstract class MultiExecuteSelectionAction implements BranchAction {
 
-    protected abstract CommandBuilder createCommand(ShellControl sc, OpenFileSystemModel model, List<BrowserEntry> entries);
+    protected abstract CommandBuilder createCommand(
+            ShellControl sc, OpenFileSystemModel model, List<BrowserEntry> entries);
 
     protected abstract String getTerminalTitle();
 
@@ -28,14 +30,15 @@ public abstract class MultiExecuteSelectionAction implements BranchAction {
                     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         model.withShell(
                                 pc -> {
-                                        var cmd = pc.command(createCommand(pc, model, entries));
-                                        TerminalLauncher.open(
-                                                model.getEntry().getEntry(),
-                                                getTerminalTitle(),
-                                                model.getCurrentDirectory() != null
-                                                        ? model.getCurrentDirectory()
-                                                                .getPath()
-                                                        : null, cmd);
+                                    var cmd = pc.command(createCommand(pc, model, entries));
+                                    TerminalLauncher.open(
+                                            model.getEntry().getEntry(),
+                                            getTerminalTitle(),
+                                            model.getCurrentDirectory() != null
+                                                    ? model.getCurrentDirectory()
+                                                            .getPath()
+                                                    : null,
+                                            cmd);
                                 },
                                 false);
                     }
@@ -61,8 +64,8 @@ public abstract class MultiExecuteSelectionAction implements BranchAction {
                                 pc -> {
                                     var cmd = createCommand(pc, model, entries);
                                     pc.command(cmd)
-                                            .withWorkingDirectory(model.getCurrentDirectory()
-                                                    .getPath())
+                                            .withWorkingDirectory(
+                                                    model.getCurrentDirectory().getPath())
                                             .execute();
                                 },
                                 false);

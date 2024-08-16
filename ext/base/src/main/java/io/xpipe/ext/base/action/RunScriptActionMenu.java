@@ -10,8 +10,10 @@ import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.process.ShellTtyState;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.ext.base.script.ScriptHierarchy;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
+
 import lombok.Value;
 
 import java.util.List;
@@ -34,7 +36,8 @@ public class RunScriptActionMenu implements ActionProvider {
                     var script = hierarchy.getLeafBase().getStore().assembleScriptChain(sc);
                     TerminalLauncher.open(
                             shellStore.getEntry(),
-                            hierarchy.getLeafBase().get().getName() + " - " + shellStore.get().getName(),
+                            hierarchy.getLeafBase().get().getName() + " - "
+                                    + shellStore.get().getName(),
                             null,
                             sc.command(script));
                 }
@@ -145,7 +148,8 @@ public class RunScriptActionMenu implements ActionProvider {
 
                 @Override
                 public List<? extends ActionProvider> getChildren(DataStoreEntryRef<ShellStore> store) {
-                    return List.of(new TerminalRunActionProvider(hierarchy), new BackgroundRunActionProvider(hierarchy));
+                    return List.of(
+                            new TerminalRunActionProvider(hierarchy), new BackgroundRunActionProvider(hierarchy));
                 }
             };
         }
@@ -179,7 +183,9 @@ public class RunScriptActionMenu implements ActionProvider {
 
                 @Override
                 public List<? extends ActionProvider> getChildren(DataStoreEntryRef<ShellStore> store) {
-                    return hierarchy.getChildren().stream().map(c -> new ScriptActionProvider(c)).toList();
+                    return hierarchy.getChildren().stream()
+                            .map(c -> new ScriptActionProvider(c))
+                            .toList();
                 }
             };
         }
@@ -190,7 +196,7 @@ public class RunScriptActionMenu implements ActionProvider {
         private static class Action implements ActionProvider.Action {
 
             @Override
-            public void execute() throws Exception {
+            public void execute() {
                 StoreViewState.get().getAllScriptsCategory().select();
             }
         }
@@ -255,8 +261,12 @@ public class RunScriptActionMenu implements ActionProvider {
                 var state = o.get().getStorePersistentState();
                 if (state instanceof ShellStoreState shellStoreState) {
                     return (shellStoreState.getShellDialect() == null
-                            || shellStoreState.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) &&
-                            (shellStoreState.getTtyState() == null || shellStoreState.getTtyState() == ShellTtyState.NONE);
+                                    || shellStoreState
+                                            .getShellDialect()
+                                            .getDumbMode()
+                                            .supportsAnyPossibleInteraction())
+                            && (shellStoreState.getTtyState() == null
+                                    || shellStoreState.getTtyState() == ShellTtyState.NONE);
                 } else {
                     return false;
                 }
@@ -280,7 +290,9 @@ public class RunScriptActionMenu implements ActionProvider {
 
                     return true;
                 });
-                var list = hierarchy.getChildren().stream().map(c -> new ScriptActionProvider(c)).toList();
+                var list = hierarchy.getChildren().stream()
+                        .map(c -> new ScriptActionProvider(c))
+                        .toList();
                 if (list.isEmpty()) {
                     return List.of(new NoScriptsActionProvider());
                 } else {

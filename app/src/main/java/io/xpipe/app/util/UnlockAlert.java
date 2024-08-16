@@ -6,7 +6,7 @@ import io.xpipe.app.prefs.AppPrefs;
 
 public class UnlockAlert {
 
-    public static void showIfNeeded() throws Throwable {
+    public static void showIfNeeded() {
         if (AppPrefs.get().getLockCrypt().getValue() == null
                 || AppPrefs.get().getLockCrypt().getValue().isEmpty()) {
             return;

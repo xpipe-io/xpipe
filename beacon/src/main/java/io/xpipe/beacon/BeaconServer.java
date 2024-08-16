@@ -20,7 +20,8 @@ public class BeaconServer {
 
     public static boolean isReachable(int port) {
         try (var socket = new Socket()) {
-            socket.connect(new InetSocketAddress(Inet4Address.getByAddress(new byte[]{ 0x7f,0x00,0x00,0x01 }), port), 5000);
+            socket.connect(
+                    new InetSocketAddress(Inet4Address.getByAddress(new byte[] {0x7f, 0x00, 0x00, 0x01}), port), 5000);
             return true;
         } catch (Exception e) {
             return false;

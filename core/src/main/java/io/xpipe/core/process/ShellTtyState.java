@@ -5,7 +5,6 @@ import lombok.Getter;
 
 @Getter
 public enum ShellTtyState {
-
     @JsonProperty("none")
     NONE(true, false, false, true, true),
     @JsonProperty("merged")
@@ -19,7 +18,12 @@ public enum ShellTtyState {
     private final boolean supportsInput;
     private final boolean preservesOutput;
 
-    ShellTtyState(boolean hasSeparateStreams, boolean hasAnsiEscapes, boolean echoesAllInput, boolean supportsInput, boolean preservesOutput) {
+    ShellTtyState(
+            boolean hasSeparateStreams,
+            boolean hasAnsiEscapes,
+            boolean echoesAllInput,
+            boolean supportsInput,
+            boolean preservesOutput) {
         this.hasSeparateStreams = hasSeparateStreams;
         this.hasAnsiEscapes = hasAnsiEscapes;
         this.echoesAllInput = echoesAllInput;

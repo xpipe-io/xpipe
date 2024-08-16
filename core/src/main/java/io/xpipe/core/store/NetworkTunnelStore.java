@@ -3,7 +3,6 @@ package io.xpipe.core.store;
 import io.xpipe.core.process.ShellControl;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public interface NetworkTunnelStore extends DataStore {
@@ -64,8 +63,6 @@ public interface NetworkTunnelStore extends DataStore {
                     "Unable to create tunnel chain as one intermediate system does not support tunneling");
         }
 
-        var running = new AtomicBoolean();
-        var runningCounter = new AtomicInteger();
         var counter = new AtomicInteger();
         var sessions = new ArrayList<NetworkTunnelSession>();
         NetworkTunnelStore current = this;
@@ -79,14 +76,6 @@ public interface NetworkTunnelStore extends DataStore {
             var currentRemotePort =
                     sessions.isEmpty() ? remotePort : sessions.getLast().getLocalPort();
             var t = func.create(currentLocalPort, currentRemotePort);
-            t.addListener(r -> {
-                if (r) {
-                    runningCounter.incrementAndGet();
-                } else {
-                    runningCounter.decrementAndGet();
-                }
-                running.set(runningCounter.get() == counter.get());
-            });
             t.start();
             sessions.add(t);
             counter.incrementAndGet();

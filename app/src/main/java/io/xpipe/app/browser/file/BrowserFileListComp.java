@@ -157,7 +157,8 @@ public final class BrowserFileListComp extends SimpleComp {
         });
     }
 
-    private void updateTypedSelection(TableView<BrowserEntry> table, AtomicReference<Instant> lastType, KeyEvent event, boolean recursive) {
+    private void updateTypedSelection(
+            TableView<BrowserEntry> table, AtomicReference<Instant> lastType, KeyEvent event, boolean recursive) {
         var typed = event.getText();
         if (typed.isEmpty()) {
             return;
@@ -165,15 +166,15 @@ public final class BrowserFileListComp extends SimpleComp {
 
         var updated = typedSelection.get() + typed;
         var found = fileList.getShown().getValue().stream()
-                .filter(browserEntry ->
-                        browserEntry.getFileName().toLowerCase().startsWith(updated.toLowerCase()))
+                .filter(browserEntry -> browserEntry.getFileName().toLowerCase().startsWith(updated.toLowerCase()))
                 .findFirst();
         if (found.isEmpty()) {
             if (typedSelection.get().isEmpty()) {
                 return;
             }
 
-            var inCooldown = lastType.get() != null && Duration.between(lastType.get(), Instant.now()).toMillis() < 1000;
+            var inCooldown = lastType.get() != null
+                    && Duration.between(lastType.get(), Instant.now()).toMillis() < 1000;
             if (inCooldown) {
                 lastType.set(Instant.now());
                 event.consume();
@@ -599,7 +600,8 @@ public final class BrowserFileListComp extends SimpleComp {
                                 browserEntry.getFileName().toLowerCase().startsWith(selection))
                         .findFirst();
                 // Ugly fix to prevent space from showing the menu when there is a file matching
-                // Due to the table view input map, these events always get sent and consumed, not allowing us to differentiate between these cases
+                // Due to the table view input map, these events always get sent and consumed, not allowing us to
+                // differentiate between these cases
                 if (found.isPresent()) {
                     return;
                 }

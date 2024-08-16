@@ -36,9 +36,11 @@ public class ScanAlert {
 
     public static void showAsync(DataStoreEntry entry) {
         ThreadHelper.runAsync(() -> {
-            var showForCon = entry == null || (entry.getStore() instanceof ShellStore && (
-                    !(entry.getStorePersistentState() instanceof ShellStoreState shellStoreState) ||
-                            shellStoreState.getTtyState() == null || shellStoreState.getTtyState() == ShellTtyState.NONE));
+            var showForCon = entry == null
+                    || (entry.getStore() instanceof ShellStore
+                            && (!(entry.getStorePersistentState() instanceof ShellStoreState shellStoreState)
+                                    || shellStoreState.getTtyState() == null
+                                    || shellStoreState.getTtyState() == ShellTtyState.NONE));
             if (showForCon) {
                 showForShellStore(entry);
             }

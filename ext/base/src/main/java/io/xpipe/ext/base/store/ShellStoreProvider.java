@@ -15,6 +15,7 @@ import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.ext.base.script.ScriptStore;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ObservableValue;
 
@@ -26,17 +27,21 @@ public interface ShellStoreProvider extends DataStoreProvider {
             @Override
             public void execute() throws Exception {
                 ShellStore store = entry.getStore().asNeeded();
-                TerminalLauncher.open(entry, DataStorage.get().getStoreEntryDisplayName(entry), null,
+                TerminalLauncher.open(
+                        entry,
+                        DataStorage.get().getStoreEntryDisplayName(entry),
+                        null,
                         ScriptStore.controlWithDefaultScripts(store.control()));
             }
         };
     }
 
     @Override
-    default ActionProvider.Action browserAction(BrowserSessionModel sessionModel, DataStoreEntry store, BooleanProperty busy) {
+    default ActionProvider.Action browserAction(
+            BrowserSessionModel sessionModel, DataStoreEntry store, BooleanProperty busy) {
         return new ActionProvider.Action() {
             @Override
-            public void execute() throws Exception {
+            public void execute() {
                 sessionModel.openFileSystemAsync(store.ref(), null, busy);
             }
         };

@@ -37,7 +37,8 @@ public class InputHelper {
 
     public static void onLeft(EventTarget target, boolean filter, Consumer<KeyEvent> r) {
         EventHandler<KeyEvent> e = event -> {
-            if (new KeyCodeCombination(KeyCode.LEFT).match(event) || new KeyCodeCombination(KeyCode.NUMPAD4).match(event)) {
+            if (new KeyCodeCombination(KeyCode.LEFT).match(event)
+                    || new KeyCodeCombination(KeyCode.NUMPAD4).match(event)) {
                 r.accept(event);
             }
         };
@@ -50,7 +51,8 @@ public class InputHelper {
 
     public static void onRight(EventTarget target, boolean filter, Consumer<KeyEvent> r) {
         EventHandler<KeyEvent> e = event -> {
-            if (new KeyCodeCombination(KeyCode.RIGHT).match(event) || new KeyCodeCombination(KeyCode.NUMPAD6).match(event)) {
+            if (new KeyCodeCombination(KeyCode.RIGHT).match(event)
+                    || new KeyCodeCombination(KeyCode.NUMPAD6).match(event)) {
                 r.accept(event);
             }
         };

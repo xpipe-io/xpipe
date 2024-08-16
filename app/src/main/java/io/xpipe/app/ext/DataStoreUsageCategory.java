@@ -18,5 +18,5 @@ public enum DataStoreUsageCategory {
     @JsonProperty("group")
     GROUP,
     @JsonProperty("serial")
-    SERIAL;
+    SERIAL
 }

@@ -4,12 +4,14 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+
 import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.scene.input.KeyEvent;
+
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
@@ -33,7 +35,8 @@ public class IntComboFieldComp extends Comp<CompStructure<ComboBox<String>>> {
         var text = new ComboBox<String>();
         text.setEditable(true);
         text.setValue(value.getValue() != null ? value.getValue().toString() : null);
-        text.setItems(FXCollections.observableList(predefined.stream().map(integer -> "" + integer).toList()));
+        text.setItems(FXCollections.observableList(
+                predefined.stream().map(integer -> "" + integer).toList()));
         text.setMaxWidth(2000);
         text.getStyleClass().add("int-combo-field-comp");
         text.setSkin(new ComboBoxListViewSkin<>(text));

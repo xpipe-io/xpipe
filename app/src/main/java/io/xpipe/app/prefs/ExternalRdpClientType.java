@@ -6,6 +6,7 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.SecretValue;
+
 import lombok.Value;
 
 import java.io.IOException;
@@ -16,7 +17,7 @@ import java.util.function.Supplier;
 
 public interface ExternalRdpClientType extends PrefsChoiceValue {
 
-    public static ExternalRdpClientType getApplicationLauncher() {
+    static ExternalRdpClientType getApplicationLauncher() {
         if (OsType.getLocal() == OsType.WINDOWS) {
             return MSTSC;
         } else {
@@ -76,9 +77,10 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
         @Override
         protected Optional<Path> determineInstallation() {
             try {
-                var r = WindowsRegistry.local().readValue(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\rdm\\DefaultIcon");
+                var r = WindowsRegistry.local()
+                        .readValue(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\rdm\\DefaultIcon");
                 return r.map(Path::of);
-            }  catch (Exception e) {
+            } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).omit().handle();
                 return Optional.empty();
             }
@@ -87,7 +89,11 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
         @Override
         protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
             var config = writeConfig(configuration.getConfig());
-            LocalShell.getShell().executeSimpleCommand(CommandBuilder.of().addFile(file.toString()).addFile(config.toString()).discardOutput());
+            LocalShell.getShell()
+                    .executeSimpleCommand(CommandBuilder.of()
+                            .addFile(file.toString())
+                            .addFile(config.toString())
+                            .discardOutput());
             ThreadHelper.runFailableAsync(() -> {
                 // Startup is slow
                 ThreadHelper.sleep(10000);

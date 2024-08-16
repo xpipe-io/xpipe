@@ -8,9 +8,9 @@ import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellInitCommand;
 import io.xpipe.core.util.ValidationException;
+import io.xpipe.ext.base.SelfReferentialStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.ext.base.SelfReferentialStore;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -62,7 +62,10 @@ public class SimpleScriptStore extends ScriptStore implements ShellInitCommand.T
     public String assembleScriptChain(ShellControl shellControl) {
         var nl = shellControl.getShellDialect().getNewLine().getNewLineString();
         var all = queryFlattenedScripts();
-        var r = all.stream().map(ref -> ref.getStore().assembleScript(shellControl)).filter(s -> s != null).toList();
+        var r = all.stream()
+                .map(ref -> ref.getStore().assembleScript(shellControl))
+                .filter(s -> s != null)
+                .toList();
         if (r.isEmpty()) {
             return null;
         }
@@ -94,7 +97,12 @@ public class SimpleScriptStore extends ScriptStore implements ShellInitCommand.T
 
     @Override
     public List<DataStoreEntryRef<ScriptStore>> getEffectiveScripts() {
-        return scripts != null ? scripts.stream().filter(Objects::nonNull).filter(ref -> ref.get().getValidity().isUsable()).toList() : List.of();
+        return scripts != null
+                ? scripts.stream()
+                        .filter(Objects::nonNull)
+                        .filter(ref -> ref.get().getValidity().isUsable())
+                        .toList()
+                : List.of();
     }
 
     @Override

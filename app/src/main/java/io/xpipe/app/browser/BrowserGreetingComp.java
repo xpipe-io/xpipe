@@ -5,8 +5,8 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-
 import io.xpipe.core.process.OsType;
+
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 

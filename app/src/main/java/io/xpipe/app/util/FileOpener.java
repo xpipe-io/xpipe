@@ -3,14 +3,10 @@ package io.xpipe.app.util;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.CommandControl;
 import io.xpipe.core.process.OsType;
-
-import lombok.SneakyThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -107,23 +103,6 @@ public class FileOpener {
                                 output.accept(new String(toByteArray(), StandardCharsets.UTF_8));
                             }
                         },
-                        file -> openInTextEditor(file));
-    }
-
-    public static void openCommandOutput(String keyName, Object key, CommandControl cc) {
-        FileBridge.get()
-                .openIO(
-                        keyName,
-                        key,
-                        null,
-                        () -> new FilterInputStream(cc.getStdout()) {
-                            @Override
-                            @SneakyThrows
-                            public void close() {
-                                cc.close();
-                            }
-                        },
-                        null,
                         file -> openInTextEditor(file));
     }
 }

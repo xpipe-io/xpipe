@@ -114,10 +114,10 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
 
         protected Optional<Path> determineFromPath() {
             // Try to locate if it is in the Path
-            try (var sc = LocalShell.getShell()
-                    .start()) {
+            try (var sc = LocalShell.getShell().start()) {
                 var out = sc.command(CommandBuilder.ofFunction(
-                        var1 -> var1.getShellDialect().getWhichCommand(executable))).readStdoutIfPossible();
+                                var1 -> var1.getShellDialect().getWhichCommand(executable)))
+                        .readStdoutIfPossible();
                 if (out.isPresent()) {
                     var first = out.get().lines().findFirst();
                     if (first.isPresent()) {

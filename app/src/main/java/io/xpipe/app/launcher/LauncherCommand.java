@@ -89,8 +89,9 @@ public class LauncherCommand implements Callable<Integer> {
             // there might be another instance running, for example
             // starting up or listening on another port
             if (!AppDataLock.lock()) {
-                TrackEvent.info("Data directory " + AppProperties.get().getDataDir().toString()
-                        + " is already locked. Is another instance running?");
+                TrackEvent.info(
+                        "Data directory " + AppProperties.get().getDataDir().toString()
+                                + " is already locked. Is another instance running?");
                 OperationMode.halt(1);
             }
 
@@ -104,28 +105,43 @@ public class LauncherCommand implements Callable<Integer> {
             // If an instance is running as another user, we cannot connect to it as the xpipe_auth file is inaccessible
             // Therefore the beacon client is not present.
             // We still should check whether it is somehow occupied, otherwise beacon server startup will fail
-            TrackEvent.info("Another instance is already running on this port as another user or is not reachable. Quitting ...");
+            TrackEvent.info(
+                    "Another instance is already running on this port as another user or is not reachable. Quitting ...");
             OperationMode.halt(1);
             return;
         }
 
         try {
-            client.get().performRequest(DaemonFocusExchange.Request.builder().mode(getEffectiveMode()).build());
+            client.get()
+                    .performRequest(DaemonFocusExchange.Request.builder()
+                            .mode(getEffectiveMode())
+                            .build());
             if (!inputs.isEmpty()) {
-                client.get().performRequest(DaemonOpenExchange.Request.builder().arguments(inputs).build());
+                client.get()
+                        .performRequest(DaemonOpenExchange.Request.builder()
+                                .arguments(inputs)
+                                .build());
             }
         } catch (Exception ex) {
             var cli = XPipeInstallation.getLocalDefaultCliExecutable();
-            ErrorEvent.fromThrowable("Unable to connect to existing running daemon instance as it did not respond." +
-                    " Either try to kill the process xpiped manually or use the command \"" +
-                    cli +
-                    "\" daemon stop --force.", ex).term().expected().handle();
+            ErrorEvent.fromThrowable(
+                            "Unable to connect to existing running daemon instance as it did not respond."
+                                    + " Either try to kill the process xpiped manually or use the command \""
+                                    + cli
+                                    + "\" daemon stop --force.",
+                            ex)
+                    .term()
+                    .expected()
+                    .handle();
         }
 
         if (OsType.getLocal().equals(OsType.MACOS)) {
             Desktop.getDesktop().setOpenURIHandler(e -> {
                 try {
-                    client.get().performRequest(DaemonOpenExchange.Request.builder().arguments(List.of(e.getURI().toString())).build());
+                    client.get()
+                            .performRequest(DaemonOpenExchange.Request.builder()
+                                    .arguments(List.of(e.getURI().toString()))
+                                    .build());
                 } catch (Exception ex) {
                     ErrorEvent.fromThrowable(ex).expected().omit().handle();
                 }

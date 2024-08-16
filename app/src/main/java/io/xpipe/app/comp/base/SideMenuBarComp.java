@@ -60,8 +60,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                 Platform.getPreferences().accentColorProperty());
 
         var selected = PseudoClass.getPseudoClass("selected");
-        for (int i = 0; i < entries.size(); i++) {
-            var e = entries.get(i);
+        for (AppLayoutModel.Entry e : entries) {
             var b = new IconButtonComp(e.icon(), () -> {
                 if (e.action() != null) {
                     e.action().run();
@@ -84,30 +83,21 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
             b.accessibleText(e.name());
 
             var indicator = Comp.empty().styleClass("indicator");
-            var stack = new StackComp(List.of(indicator, b))
-                    .apply(struc -> struc.get().setAlignment(Pos.CENTER_RIGHT));
+            var stack = new StackComp(List.of(indicator, b)).apply(struc -> struc.get().setAlignment(Pos.CENTER_RIGHT));
             stack.apply(struc -> {
                 var indicatorRegion = (Region) struc.get().getChildren().getFirst();
                 indicatorRegion.setMaxWidth(7);
-                indicatorRegion
-                        .backgroundProperty()
-                        .bind(Bindings.createObjectBinding(
-                                () -> {
-                                    if (value.getValue().equals(e)) {
-                                        return selectedBorder.get();
-                                    }
+                indicatorRegion.backgroundProperty().bind(Bindings.createObjectBinding(() -> {
+                    if (value.getValue().equals(e)) {
+                        return selectedBorder.get();
+                    }
 
-                                    if (struc.get().isHover()) {
-                                        return hoverBorder.get();
-                                    }
+                    if (struc.get().isHover()) {
+                        return hoverBorder.get();
+                    }
 
-                                    return noneBorder.get();
-                                },
-                                struc.get().hoverProperty(),
-                                value,
-                                hoverBorder,
-                                selectedBorder,
-                                noneBorder));
+                    return noneBorder.get();
+                }, struc.get().hoverProperty(), value, hoverBorder, selectedBorder, noneBorder));
             });
             if (shortcut != null) {
                 stack.apply(struc -> struc.get().getProperties().put("shortcut", shortcut));

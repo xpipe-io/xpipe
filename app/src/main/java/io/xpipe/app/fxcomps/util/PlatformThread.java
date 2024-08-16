@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class PlatformThread {
 
     public static <T> ObservableValue<T> syncHighFrequency(ObservableValue<T> observable) {
-        var prop = new SimpleObjectProperty<T>(observable.getValue());
+        var prop = new SimpleObjectProperty<>(observable.getValue());
         var applied = new AtomicBoolean(true);
         observable.addListener((observable1, oldValue, newValue) -> {
             if (Platform.isFxApplicationThread()) {

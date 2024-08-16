@@ -37,8 +37,8 @@ public class NativeBridge {
         return Optional.ofNullable(macOsLibrary);
     }
 
-    public static interface MacOsLibrary extends Library {
+    public interface MacOsLibrary extends Library {
 
-        public abstract void setAppearance(NativeLong window, boolean seamlessFrame, boolean dark);
+        void setAppearance(NativeLong window, boolean seamlessFrame, boolean dark);
     }
 }

@@ -2,6 +2,7 @@ package io.xpipe.ext.base.script;
 
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
+
 import lombok.Value;
 
 import java.util.Comparator;
@@ -37,10 +38,12 @@ public class ScriptHierarchy {
             }
         }
 
-        var top = all.stream().filter(ref -> {
-            var parent = DataStorage.get().getDefaultDisplayParent(ref.get());
-            return parent.isEmpty();
-        }).toList();
+        var top = all.stream()
+                .filter(ref -> {
+                    var parent = DataStorage.get().getDefaultDisplayParent(ref.get());
+                    return parent.isEmpty();
+                })
+                .toList();
 
         var mapped = top.stream()
                 .map(ref -> buildHierarchy(ref, check -> {
@@ -56,17 +59,21 @@ public class ScriptHierarchy {
                 }))
                 .map(hierarchy -> condenseHierarchy(hierarchy))
                 .filter(hierarchy -> hierarchy.show())
-                .sorted(Comparator.comparing(scriptHierarchy -> scriptHierarchy.getBase().get().getName().toLowerCase()))
+                .sorted(Comparator.comparing(scriptHierarchy ->
+                        scriptHierarchy.getBase().get().getName().toLowerCase()))
                 .toList();
         return condenseHierarchy(new ScriptHierarchy(null, mapped));
     }
 
-    private static ScriptHierarchy buildHierarchy(DataStoreEntryRef<ScriptStore> ref, Predicate<DataStoreEntryRef<ScriptStore>> include) {
+    private static ScriptHierarchy buildHierarchy(
+            DataStoreEntryRef<ScriptStore> ref, Predicate<DataStoreEntryRef<ScriptStore>> include) {
         if (ref.getStore() instanceof ScriptGroupStore groupStore) {
-            var children = groupStore.getEffectiveScripts().stream().filter(include)
+            var children = groupStore.getEffectiveScripts().stream()
+                    .filter(include)
                     .map(c -> buildHierarchy(c, include))
                     .filter(hierarchy -> hierarchy.show())
-                    .sorted(Comparator.comparing(scriptHierarchy -> scriptHierarchy.getBase().get().getName().toLowerCase()))
+                    .sorted(Comparator.comparing(scriptHierarchy ->
+                            scriptHierarchy.getBase().get().getName().toLowerCase()))
                     .toList();
             return new ScriptHierarchy(ref, children);
         } else {
@@ -74,11 +81,9 @@ public class ScriptHierarchy {
         }
     }
 
-
     public static ScriptHierarchy condenseHierarchy(ScriptHierarchy hierarchy) {
-        var children = hierarchy.getChildren().stream()
-                .map(c -> condenseHierarchy(c))
-                .toList();
+        var children =
+                hierarchy.getChildren().stream().map(c -> condenseHierarchy(c)).toList();
         if (children.size() == 1 && !children.getFirst().isLeaf()) {
             var nestedChildren = children.getFirst().getChildren();
             return new ScriptHierarchy(hierarchy.getBase(), nestedChildren);

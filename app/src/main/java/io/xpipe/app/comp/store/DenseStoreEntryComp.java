@@ -3,6 +3,7 @@ package io.xpipe.app.comp.store;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.HPos;
@@ -41,10 +42,9 @@ public class DenseStoreEntryComp extends StoreEntryComp {
                             () -> {
                                 var val = summary.getValue();
                                 var p = getWrapper().getEntry().getProvider();
-                                if (val != null && grid.isHover()
-                                        && p.alwaysShowSummary()) {
+                                if (val != null && grid.isHover() && p.alwaysShowSummary()) {
                                     return val;
-                                } else if (info.getValue() == null && p.alwaysShowSummary()){
+                                } else if (info.getValue() == null && p.alwaysShowSummary()) {
                                     return val;
                                 } else {
                                     return info.getValue();

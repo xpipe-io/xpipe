@@ -7,8 +7,8 @@ import io.xpipe.app.fxcomps.impl.PrettySvgComp;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ScanAlert;
-
 import io.xpipe.core.process.OsType;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

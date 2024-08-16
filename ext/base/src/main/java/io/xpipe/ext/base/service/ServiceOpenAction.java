@@ -13,7 +13,7 @@ public class ServiceOpenAction implements ActionProvider {
 
     @Override
     public BranchDataStoreCallSite<?> getBranchDataStoreCallSite() {
-        return new BranchDataStoreCallSite<DataStore>() {
+        return new BranchDataStoreCallSite<>() {
             @Override
             public boolean isMajor(DataStoreEntryRef<DataStore> o) {
                 return true;
