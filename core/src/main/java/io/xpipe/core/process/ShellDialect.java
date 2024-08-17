@@ -1,5 +1,6 @@
 package io.xpipe.core.process;
 
+import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.util.NewLine;
@@ -79,7 +80,7 @@ public interface ShellDialect {
 
     String assembleCommand(String command, Map<String, String> variables);
 
-    Stream<FileSystem.FileEntry> listFiles(FileSystem fs, ShellControl control, String dir) throws Exception;
+    Stream<FileEntry> listFiles(FileSystem fs, ShellControl control, String dir) throws Exception;
 
     Stream<String> listRoots(ShellControl control) throws Exception;
 

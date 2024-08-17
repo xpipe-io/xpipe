@@ -6,7 +6,7 @@ import io.xpipe.app.browser.file.LocalFileSystem;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.ProcessControlProvider;
-import io.xpipe.core.store.FileSystem;
+import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.util.FailableRunnable;
 
 import javafx.beans.property.Property;
@@ -69,7 +69,7 @@ public class BrowserClipboard {
 
     @SneakyThrows
     public static ClipboardContent startDrag(
-            FileSystem.FileEntry base, List<BrowserEntry> selected, BrowserFileTransferMode mode) {
+            FileEntry base, List<BrowserEntry> selected, BrowserFileTransferMode mode) {
         if (selected.isEmpty()) {
             return null;
         }
@@ -82,7 +82,7 @@ public class BrowserClipboard {
     }
 
     @SneakyThrows
-    public static void startCopy(FileSystem.FileEntry base, List<BrowserEntry> selected) {
+    public static void startCopy(FileEntry base, List<BrowserEntry> selected) {
         if (selected.isEmpty()) {
             currentCopyClipboard.setValue(null);
             return;
@@ -118,7 +118,7 @@ public class BrowserClipboard {
     @Value
     public static class Instance {
         UUID uuid;
-        FileSystem.FileEntry baseDirectory;
+        FileEntry baseDirectory;
         List<BrowserEntry> entries;
         BrowserFileTransferMode mode;
 

@@ -1,5 +1,7 @@
 package io.xpipe.app.browser.file;
 
+import atlantafx.base.controls.Spacer;
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.core.AppI18n;
@@ -8,10 +10,10 @@ import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.store.FileEntry;
+import io.xpipe.core.store.FileInfo;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileNames;
-import io.xpipe.core.store.FileSystem;
-
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -31,9 +33,6 @@ import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-
-import atlantafx.base.controls.Spacer;
-import atlantafx.base.theme.Styles;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -58,6 +57,7 @@ public final class BrowserFileListComp extends SimpleComp {
 
     private final BrowserFileListModel fileList;
     private final StringProperty typedSelection = new SimpleStringProperty("");
+    private final DoubleProperty ownerWidth = new SimpleDoubleProperty();
 
     public BrowserFileListComp(BrowserFileListModel fileList) {
         this.fileList = fileList;
@@ -103,12 +103,23 @@ public final class BrowserFileListComp extends SimpleComp {
         var modeCol = new TableColumn<BrowserEntry, String>();
         modeCol.textProperty().bind(AppI18n.observable("attributes"));
         modeCol.setCellValueFactory(param -> new SimpleObjectProperty<>(
-                param.getValue().getRawFileEntry().resolved().getMode()));
+                param.getValue().getRawFileEntry().resolved().getInfo() instanceof FileInfo.Unix u ? u.getPermissions() : null));
         modeCol.setCellFactory(col -> new FileModeCell());
         modeCol.setResizable(false);
         modeCol.setPrefWidth(120);
         modeCol.setSortable(false);
         modeCol.setReorderable(false);
+
+        var ownerCol = new TableColumn<BrowserEntry, String>();
+        ownerCol.textProperty().bind(AppI18n.observable("owner"));
+        ownerCol.setCellValueFactory(param -> {
+            return new SimpleObjectProperty<>(formatOwner(param.getValue()));
+        });
+        ownerCol.setCellFactory(col -> new FileOwnerCell());
+        ownerCol.setSortable(false);
+        ownerCol.setReorderable(false);
+        ownerCol.prefWidthProperty().bind(ownerWidth);
+        ownerCol.setResizable(false);
 
         var table = new TableView<BrowserEntry>();
         table.setAccessibleText("Directory contents");
@@ -121,16 +132,37 @@ public final class BrowserFileListComp extends SimpleComp {
             fileList.setComparator(table.getComparator());
             return true;
         });
-        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_NEXT_COLUMN);
         table.setFixedCellSize(32.0);
+
+        table.widthProperty().subscribe((newValue) -> {
+            ownerCol.setVisible(newValue.doubleValue() > 1000);
+        });
 
         prepareTableSelectionModel(table);
         prepareTableShortcuts(table);
         prepareTableEntries(table);
-        prepareTableChanges(table, mtimeCol, modeCol);
+        prepareTableChanges(table, mtimeCol, modeCol, ownerCol);
         prepareTypedSelectionModel(table);
 
         return table;
+    }
+
+    private String formatOwner(BrowserEntry param) {
+        FileInfo.Unix unix = param.getRawFileEntry().resolved().getInfo() instanceof FileInfo.Unix u ? u : null;
+        if (unix == null) {
+            return null;
+        }
+
+        var m = fileList.getFileSystemModel();
+        var user = unix.getUser() != null ? unix.getUser() : m.getCache().getUsers().get(unix.getUid());
+        var group = unix.getGroup() != null ? unix.getGroup() : m.getCache().getGroups().get(unix.getGid());
+        var uid = String.valueOf(unix.getUid() != null ? unix.getUid() : m.getCache().getUidForUser(user)).replaceAll("000$", "k");
+        var gid = String.valueOf(unix.getGid() != null ? unix.getGid() : m.getCache().getGidForGroup(group)).replaceAll("000$", "k");
+        if (uid.equals(gid)) {
+            return user + " [" + uid + "]";
+        }
+        return user + " [" + uid + "] / " + group + " [" + gid + "]";
     }
 
     private void prepareTypedSelectionModel(TableView<BrowserEntry> table) {
@@ -369,8 +401,9 @@ public final class BrowserFileListComp extends SimpleComp {
     private void prepareTableChanges(
             TableView<BrowserEntry> table,
             TableColumn<BrowserEntry, Instant> mtimeCol,
-            TableColumn<BrowserEntry, String> modeCol) {
-        var lastDir = new SimpleObjectProperty<FileSystem.FileEntry>();
+            TableColumn<BrowserEntry, String> modeCol,
+            TableColumn<BrowserEntry, String> ownerCol) {
+        var lastDir = new SimpleObjectProperty<FileEntry>();
         Runnable updateHandler = () -> {
             Platform.runLater(() -> {
                 var newItems = new ArrayList<>(fileList.getShown().getValue());
@@ -386,17 +419,27 @@ public final class BrowserFileListComp extends SimpleComp {
                     }
                 }
 
+                ownerWidth.set(fileList.getAll().getValue().stream()
+                        .map(browserEntry -> formatOwner(browserEntry))
+                        .map(s -> s != null ? s.length() * 10 : 0)
+                        .max(Comparator.naturalOrder()).orElse(150));
                 if (fileList.getFileSystemModel().getFileSystem() != null) {
                     var shell = fileList.getFileSystemModel()
                             .getFileSystem()
                             .getShell()
                             .orElseThrow();
-                    var hasAttributes = !OsType.WINDOWS.equals(shell.getOsType());
-                    if (!hasAttributes) {
+                    var notWindows = !OsType.WINDOWS.equals(shell.getOsType());
+                    if (!notWindows) {
                         table.getColumns().remove(modeCol);
+                        table.getColumns().remove(ownerCol);
                     } else {
                         if (!table.getColumns().contains(modeCol)) {
                             table.getColumns().add(modeCol);
+                        }
+                        if (!table.getColumns().contains(ownerCol)) {
+                            table.getColumns().add(table.getColumns().size() - 1, ownerCol);
+                        } else {
+                            table.getColumns().remove(ownerCol);
                         }
                     }
                 }
@@ -491,6 +534,23 @@ public final class BrowserFileListComp extends SimpleComp {
                 setText(null);
             } else {
                 setText(mode);
+            }
+        }
+    }
+
+    private static class FileOwnerCell extends TableCell<BrowserEntry, String> {
+
+        public FileOwnerCell() {
+            setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
+        }
+
+        @Override
+        protected void updateItem(String owner, boolean empty) {
+            super.updateItem(owner, empty);
+            if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                setText(null);
+            } else {
+                setText(owner);
             }
         }
     }
@@ -648,7 +708,7 @@ public final class BrowserFileListComp extends SimpleComp {
                                             .getPath()
                             : getTableRow().getItem().getFileName();
                     var fileName = normalName;
-                    var hidden = getTableRow().getItem().getRawFileEntry().isHidden() || fileName.startsWith(".");
+                    var hidden = getTableRow().getItem().getRawFileEntry().getInfo().explicitlyHidden() || fileName.startsWith(".");
                     getTableRow().pseudoClassStateChanged(HIDDEN, hidden);
                     text.set(fileName);
                     // Visibility seems to be bugged, so use opacity

@@ -25,7 +25,7 @@ public class UnzipAction extends ExecuteApplicationAction implements FileTypeAct
 
     @Override
     protected String createCommand(OpenFileSystemModel model, BrowserEntry entry) {
-        return "unzip -o " + entry.getOptionallyQuotedFileName() + " -d "
+        return "unzip -o " + FileNames.quoteIfNecessary(entry.getRawFileEntry().getPath()) + " -d "
                 + FileNames.quoteIfNecessary(FileNames.getBaseName(entry.getFileName()));
     }
 

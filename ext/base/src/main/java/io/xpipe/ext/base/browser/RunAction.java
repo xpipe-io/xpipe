@@ -7,8 +7,8 @@ import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
+import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
-import io.xpipe.core.store.FileSystem;
 
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
@@ -20,12 +20,12 @@ import java.util.stream.Stream;
 
 public class RunAction extends MultiExecuteAction {
 
-    private boolean isExecutable(FileSystem.FileEntry e) {
+    private boolean isExecutable(FileEntry e) {
         if (e.getKind() != FileKind.FILE) {
             return false;
         }
 
-        if (e.getExecutable() != null && e.getExecutable()) {
+        if (e.getInfo() != null && e.getInfo().possiblyExecutable()) {
             return true;
         }
 

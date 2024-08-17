@@ -2,28 +2,27 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.icon.BrowserIconDirectoryType;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
+import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileNames;
-import io.xpipe.core.store.FileSystem;
-
 import lombok.Getter;
 
 @Getter
 public class BrowserEntry {
 
     private final BrowserFileListModel model;
-    private final FileSystem.FileEntry rawFileEntry;
+    private final FileEntry rawFileEntry;
     private final BrowserIconFileType fileType;
     private final BrowserIconDirectoryType directoryType;
 
-    public BrowserEntry(FileSystem.FileEntry rawFileEntry, BrowserFileListModel model) {
+    public BrowserEntry(FileEntry rawFileEntry, BrowserFileListModel model) {
         this.rawFileEntry = rawFileEntry;
         this.model = model;
         this.fileType = fileType(rawFileEntry);
         this.directoryType = directoryType(rawFileEntry);
     }
 
-    private static BrowserIconFileType fileType(FileSystem.FileEntry rawFileEntry) {
+    private static BrowserIconFileType fileType(FileEntry rawFileEntry) {
         if (rawFileEntry == null) {
             return null;
         }
@@ -42,7 +41,7 @@ public class BrowserEntry {
         return null;
     }
 
-    private static BrowserIconDirectoryType directoryType(FileSystem.FileEntry rawFileEntry) {
+    private static BrowserIconDirectoryType directoryType(FileEntry rawFileEntry) {
         if (rawFileEntry == null) {
             return null;
         }
@@ -74,11 +73,6 @@ public class BrowserEntry {
     }
 
     public String getFileName() {
-        return getRawFileEntry().getName();
-    }
-
-    public String getOptionallyQuotedFileName() {
-        var n = getFileName();
-        return FileNames.quoteIfNecessary(n);
+        return FileNames.getFileName(getRawFileEntry().getPath());
     }
 }

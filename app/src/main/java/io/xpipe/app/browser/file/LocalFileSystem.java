@@ -1,5 +1,6 @@
 package io.xpipe.app.browser.file;
 
+import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.store.LocalStore;
@@ -18,17 +19,15 @@ public class LocalFileSystem {
         }
     }
 
-    public static FileSystem.FileEntry getLocalFileEntry(Path file) throws Exception {
+    public static FileEntry getLocalFileEntry(Path file) throws Exception {
         if (localFileSystem == null) {
             throw new IllegalStateException();
         }
 
-        return new FileSystem.FileEntry(
+        return new FileEntry(
                 localFileSystem.open(),
                 file.toString(),
                 Files.getLastModifiedTime(file).toInstant(),
-                Files.isHidden(file),
-                Files.isExecutable(file),
                 Files.size(file),
                 null,
                 Files.isDirectory(file) ? FileKind.DIRECTORY : FileKind.FILE);

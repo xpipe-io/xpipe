@@ -2,10 +2,7 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.BrowserTransferProgress;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.store.FileKind;
-import io.xpipe.core.store.FileNames;
-import io.xpipe.core.store.FilePath;
-import io.xpipe.core.store.FileSystem;
+import io.xpipe.core.store.*;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -18,8 +15,8 @@ import java.util.function.Consumer;
 
 public class BrowserFileTransferOperation {
 
-    private final FileSystem.FileEntry target;
-    private final List<FileSystem.FileEntry> files;
+    private final FileEntry target;
+    private final List<FileEntry> files;
     private final BrowserFileTransferMode transferMode;
     private final boolean checkConflicts;
     private final Consumer<BrowserTransferProgress> progress;
@@ -27,8 +24,8 @@ public class BrowserFileTransferOperation {
     BrowserAlerts.FileConflictChoice lastConflictChoice;
 
     public BrowserFileTransferOperation(
-            FileSystem.FileEntry target,
-            List<FileSystem.FileEntry> files,
+            FileEntry target,
+            List<FileEntry> files,
             BrowserFileTransferMode transferMode,
             boolean checkConflicts,
             Consumer<BrowserTransferProgress> progress) {
@@ -40,7 +37,7 @@ public class BrowserFileTransferOperation {
     }
 
     public static BrowserFileTransferOperation ofLocal(
-            FileSystem.FileEntry target,
+            FileEntry target,
             List<Path> files,
             BrowserFileTransferMode transferMode,
             boolean checkConflicts,
@@ -133,7 +130,7 @@ public class BrowserFileTransferOperation {
         }
     }
 
-    private void handleSingleOnSameFileSystem(FileSystem.FileEntry source) throws Exception {
+    private void handleSingleOnSameFileSystem(FileEntry source) throws Exception {
         // Prevent dropping directory into itself
         if (source.getPath().equals(target.getPath())) {
             return;
@@ -163,12 +160,12 @@ public class BrowserFileTransferOperation {
         }
     }
 
-    private void handleSingleAcrossFileSystems(FileSystem.FileEntry source) throws Exception {
+    private void handleSingleAcrossFileSystems(FileEntry source) throws Exception {
         if (target.getKind() != FileKind.DIRECTORY) {
             throw new IllegalStateException("Target " + target.getPath() + " is not a directory");
         }
 
-        var flatFiles = new LinkedHashMap<FileSystem.FileEntry, String>();
+        var flatFiles = new LinkedHashMap<FileEntry, String>();
 
         // Prevent dropping directory into itself
         if (source.getFileSystem().equals(target.getFileSystem())
@@ -182,8 +179,8 @@ public class BrowserFileTransferOperation {
             flatFiles.put(source, directoryName);
 
             var baseRelative = FileNames.toDirectory(FileNames.getParent(source.getPath()));
-            List<FileSystem.FileEntry> list = source.getFileSystem().listFilesRecursively(source.getPath());
-            for (FileSystem.FileEntry fileEntry : list) {
+            List<FileEntry> list = source.getFileSystem().listFilesRecursively(source.getPath());
+            for (FileEntry fileEntry : list) {
                 var rel = FileNames.toUnix(FileNames.relativize(baseRelative, fileEntry.getPath()));
                 flatFiles.put(fileEntry, rel);
                 if (fileEntry.getKind() == FileKind.FILE) {
@@ -225,7 +222,7 @@ public class BrowserFileTransferOperation {
     }
 
     private void transfer(
-            FileSystem.FileEntry sourceFile,
+            FileEntry sourceFile,
             String targetFile,
             AtomicLong transferred,
             AtomicLong totalSize,
@@ -297,14 +294,14 @@ public class BrowserFileTransferOperation {
         }
     }
 
-    private void deleteSingle(FileSystem.FileEntry source) throws Exception {
+    private void deleteSingle(FileEntry source) throws Exception {
         source.getFileSystem().delete(source.getPath());
     }
 
     private static final int DEFAULT_BUFFER_SIZE = 1024;
 
     private void transferFile(
-            FileSystem.FileEntry sourceFile,
+            FileEntry sourceFile,
             InputStream inputStream,
             OutputStream outputStream,
             AtomicLong transferred,

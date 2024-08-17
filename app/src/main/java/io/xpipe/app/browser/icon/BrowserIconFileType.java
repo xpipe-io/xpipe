@@ -1,9 +1,10 @@
 package io.xpipe.app.browser.icon;
 
 import io.xpipe.app.core.AppResources;
+import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
-import io.xpipe.core.store.FileSystem;
 
+import io.xpipe.core.store.FileNames;
 import lombok.Getter;
 
 import java.io.BufferedReader;
@@ -60,7 +61,7 @@ public abstract class BrowserIconFileType {
 
     public abstract String getId();
 
-    public abstract boolean matches(FileSystem.FileEntry entry);
+    public abstract boolean matches(FileEntry entry);
 
     public abstract String getIcon();
 
@@ -78,14 +79,16 @@ public abstract class BrowserIconFileType {
         }
 
         @Override
-        public boolean matches(FileSystem.FileEntry entry) {
+        public boolean matches(FileEntry entry) {
             if (entry.getKind() == FileKind.DIRECTORY) {
                 return false;
             }
 
-            return (entry.getExtension() != null
-                            && endings.contains("." + entry.getExtension().toLowerCase(Locale.ROOT)))
-                    || endings.contains(entry.getName());
+            var name = FileNames.getFileName(entry.getPath());
+            var ext = FileNames.getExtension(entry.getPath());
+            return (ext != null
+                            && endings.contains("." + ext.toLowerCase(Locale.ROOT)))
+                    || endings.contains(name);
         }
 
         @Override

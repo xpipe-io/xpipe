@@ -2,9 +2,9 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppWindowHelper;
+import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FilePath;
-import io.xpipe.core.store.FileSystem;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
@@ -45,7 +45,7 @@ public class BrowserAlerts {
                 .orElse(FileConflictChoice.CANCEL);
     }
 
-    public static boolean showMoveAlert(List<FileSystem.FileEntry> source, FileSystem.FileEntry target) {
+    public static boolean showMoveAlert(List<FileEntry> source, FileEntry target) {
         if (source.stream().noneMatch(entry -> entry.getKind() == FileKind.DIRECTORY)) {
             return true;
         }
@@ -61,7 +61,7 @@ public class BrowserAlerts {
                 .orElse(false);
     }
 
-    public static boolean showDeleteAlert(List<FileSystem.FileEntry> source) {
+    public static boolean showDeleteAlert(List<FileEntry> source) {
         if (source.stream().noneMatch(entry -> entry.getKind() == FileKind.DIRECTORY)) {
             return true;
         }
@@ -77,7 +77,7 @@ public class BrowserAlerts {
                 .orElse(false);
     }
 
-    private static String getSelectedElementsString(List<FileSystem.FileEntry> source) {
+    private static String getSelectedElementsString(List<FileEntry> source) {
         var namesHeader = AppI18n.get("selectedElements");
         var names = namesHeader + "\n"
                 + source.stream()

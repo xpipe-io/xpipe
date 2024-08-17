@@ -10,7 +10,7 @@ import io.xpipe.app.fxcomps.util.DerivedObservableList;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.store.FileSystem;
+import io.xpipe.core.store.FileEntry;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -40,10 +40,10 @@ public class BrowserOverviewComp extends SimpleComp {
 
         ShellControl sc = model.getFileSystem().getShell().orElseThrow();
 
-        var commonPlatform = FXCollections.<FileSystem.FileEntry>observableArrayList();
+        var commonPlatform = FXCollections.<FileEntry>observableArrayList();
         ThreadHelper.runFailableAsync(() -> {
             var common = sc.getOsType().determineInterestingPaths(sc).stream()
-                    .map(s -> FileSystem.FileEntry.ofDirectory(model.getFileSystem(), s))
+                    .map(s -> FileEntry.ofDirectory(model.getFileSystem(), s))
                     .filter(entry -> {
                         try {
                             return sc.getShellDialect()
@@ -63,15 +63,16 @@ public class BrowserOverviewComp extends SimpleComp {
         var commonPane = new SimpleTitledPaneComp(AppI18n.observable("common"), commonOverview)
                 .apply(struc -> VBox.setVgrow(struc.get(), Priority.NEVER));
 
-        var roots = sc.getShellDialect()
-                .listRoots(sc)
-                .map(s -> FileSystem.FileEntry.ofDirectory(model.getFileSystem(), s))
+        var roots = model.getFileSystem()
+                .listRoots()
+                .stream()
+                .map(s -> FileEntry.ofDirectory(model.getFileSystem(), s))
                 .toList();
         var rootsOverview = new BrowserFileOverviewComp(model, FXCollections.observableArrayList(roots), false);
         var rootsPane = new SimpleTitledPaneComp(AppI18n.observable("roots"), rootsOverview);
 
         var recent = new DerivedObservableList<>(model.getSavedState().getRecentDirectories(), true)
-                .mapped(s -> FileSystem.FileEntry.ofDirectory(model.getFileSystem(), s.getDirectory()))
+                .mapped(s -> FileEntry.ofDirectory(model.getFileSystem(), s.getDirectory()))
                 .getList();
         var recentOverview = new BrowserFileOverviewComp(model, recent, true);
         var recentPane = new SimpleTitledPaneComp(AppI18n.observable("recent"), recentOverview);

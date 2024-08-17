@@ -8,7 +8,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.HorizontalComp;
-import io.xpipe.core.store.FileSystem;
+import io.xpipe.core.store.FileEntry;
 
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -26,12 +26,12 @@ import java.util.function.Function;
 public class BrowserFileOverviewComp extends SimpleComp {
 
     OpenFileSystemModel model;
-    ObservableList<FileSystem.FileEntry> list;
+    ObservableList<FileEntry> list;
     boolean grow;
 
     @Override
     protected Region createSimple() {
-        Function<FileSystem.FileEntry, Comp<?>> factory = entry -> {
+        Function<FileEntry, Comp<?>> factory = entry -> {
             return Comp.of(() -> {
                 var icon = BrowserIcons.createIcon(entry);
                 var graphic = new HorizontalComp(List.of(

@@ -3,6 +3,7 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystem;
@@ -125,19 +126,17 @@ public class FileSystemHelper {
         }
     }
 
-    public static FileSystem.FileEntry getRemoteWrapper(FileSystem fileSystem, String file) throws Exception {
-        return new FileSystem.FileEntry(
+    public static FileEntry getRemoteWrapper(FileSystem fileSystem, String file) throws Exception {
+        return new FileEntry(
                 fileSystem,
                 file,
                 Instant.now(),
-                false,
-                false,
                 fileSystem.getFileSize(file),
                 null,
                 fileSystem.directoryExists(file) ? FileKind.DIRECTORY : FileKind.FILE);
     }
 
-    public static void delete(List<FileSystem.FileEntry> files) {
+    public static void delete(List<FileEntry> files) {
         if (files.isEmpty()) {
             return;
         }

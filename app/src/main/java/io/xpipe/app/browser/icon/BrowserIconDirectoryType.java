@@ -1,9 +1,10 @@
 package io.xpipe.app.browser.icon;
 
 import io.xpipe.app.core.AppResources;
+import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
-import io.xpipe.core.store.FileSystem;
 
+import io.xpipe.core.store.FileNames;
 import lombok.Getter;
 
 import java.io.BufferedReader;
@@ -36,12 +37,12 @@ public abstract class BrowserIconDirectoryType {
             }
 
             @Override
-            public boolean matches(FileSystem.FileEntry entry) {
+            public boolean matches(FileEntry entry) {
                 return entry.getPath().equals("/") || entry.getPath().matches("\\w:\\\\");
             }
 
             @Override
-            public String getIcon(FileSystem.FileEntry entry, boolean open) {
+            public String getIcon(FileEntry entry, boolean open) {
                 return open ? "default_root_folder_opened.svg" : "default_root_folder.svg";
             }
         });
@@ -81,9 +82,9 @@ public abstract class BrowserIconDirectoryType {
 
     public abstract String getId();
 
-    public abstract boolean matches(FileSystem.FileEntry entry);
+    public abstract boolean matches(FileEntry entry);
 
-    public abstract String getIcon(FileSystem.FileEntry entry, boolean open);
+    public abstract String getIcon(FileEntry entry, boolean open);
 
     public static class Simple extends BrowserIconDirectoryType {
 
@@ -102,16 +103,17 @@ public abstract class BrowserIconDirectoryType {
         }
 
         @Override
-        public boolean matches(FileSystem.FileEntry entry) {
+        public boolean matches(FileEntry entry) {
             if (entry.getKind() != FileKind.DIRECTORY) {
                 return false;
             }
 
-            return names.contains(entry.getName());
+            var name = FileNames.getFileName(entry.getPath());
+            return names.contains(name);
         }
 
         @Override
-        public String getIcon(FileSystem.FileEntry entry, boolean open) {
+        public String getIcon(FileEntry entry, boolean open) {
             return open ? this.open.getIcon() : this.closed.getIcon();
         }
     }

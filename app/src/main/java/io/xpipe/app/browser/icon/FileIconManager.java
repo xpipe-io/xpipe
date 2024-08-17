@@ -2,8 +2,8 @@ package io.xpipe.app.browser.icon;
 
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.core.AppResources;
+import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
-import io.xpipe.core.store.FileSystem;
 
 public class FileIconManager {
 
@@ -18,7 +18,7 @@ public class FileIconManager {
         }
     }
 
-    public static synchronized String getFileIcon(FileSystem.FileEntry entry, boolean open) {
+    public static synchronized String getFileIcon(FileEntry entry, boolean open) {
         if (entry == null) {
             return null;
         }

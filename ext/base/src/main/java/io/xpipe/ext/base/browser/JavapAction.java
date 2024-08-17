@@ -5,6 +5,7 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
 
+import io.xpipe.core.store.FileNames;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 
@@ -34,6 +35,6 @@ public class JavapAction extends ToFileCommandAction implements FileTypeAction, 
 
     @Override
     protected String createCommand(OpenFileSystemModel model, BrowserEntry entry) {
-        return "javap -c -p " + entry.getOptionallyQuotedFileName();
+        return "javap -c -p " + FileNames.quoteIfNecessary(entry.getRawFileEntry().getPath());
     }
 }

@@ -166,7 +166,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
         cdSyncWithoutCheck(currentPath.get());
     }
 
-    public FileSystem.FileEntry getCurrentParentDirectory() {
+    public FileEntry getCurrentParentDirectory() {
         var current = getCurrentDirectory();
         if (current == null) {
             return null;
@@ -177,10 +177,10 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
             return null;
         }
 
-        return new FileSystem.FileEntry(fileSystem, parent, null, false, false, 0, null, FileKind.DIRECTORY);
+        return new FileEntry(fileSystem, parent, null, 0, null, FileKind.DIRECTORY);
     }
 
-    public FileSystem.FileEntry getCurrentDirectory() {
+    public FileEntry getCurrentDirectory() {
         if (currentPath.get() == null) {
             return null;
         }
@@ -189,7 +189,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
             return null;
         }
 
-        return new FileSystem.FileEntry(fileSystem, currentPath.get(), null, false, false, 0, null, FileKind.DIRECTORY);
+        return new FileEntry(fileSystem, currentPath.get(), null, 0, null, FileKind.DIRECTORY);
     }
 
     public void cdAsync(String path) {
@@ -305,7 +305,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
         loadFilesSync(path);
     }
 
-    public void withFiles(String dir, FailableConsumer<Stream<FileSystem.FileEntry>, Exception> consumer)
+    public void withFiles(String dir, FailableConsumer<Stream<FileEntry>, Exception> consumer)
             throws Exception {
         BooleanScope.executeExclusive(busy, () -> {
             if (dir != null) {
@@ -341,7 +341,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
         }
     }
 
-    public void dropLocalFilesIntoAsync(FileSystem.FileEntry entry, List<Path> files) {
+    public void dropLocalFilesIntoAsync(FileEntry entry, List<Path> files) {
         ThreadHelper.runFailableAsync(() -> {
             BooleanScope.executeExclusive(busy, () -> {
                 if (fileSystem == null) {
@@ -358,7 +358,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
     }
 
     public void dropFilesIntoAsync(
-            FileSystem.FileEntry target, List<FileSystem.FileEntry> files, BrowserFileTransferMode mode) {
+            FileEntry target, List<FileEntry> files, BrowserFileTransferMode mode) {
         // We don't have to do anything in this case
         if (files.isEmpty()) {
             return;

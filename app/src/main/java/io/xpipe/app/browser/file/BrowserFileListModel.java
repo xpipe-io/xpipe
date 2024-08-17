@@ -3,9 +3,9 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileNames;
-import io.xpipe.core.store.FileSystem;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -55,7 +55,7 @@ public final class BrowserFileListModel {
         });
     }
 
-    public void setAll(Stream<FileSystem.FileEntry> newFiles) {
+    public void setAll(Stream<FileEntry> newFiles) {
         try (var s = newFiles) {
             var l = s.filter(entry -> entry != null)
                     .map(entry -> new BrowserEntry(entry, this))

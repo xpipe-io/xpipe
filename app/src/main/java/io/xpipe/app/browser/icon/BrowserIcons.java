@@ -2,7 +2,7 @@ package io.xpipe.app.browser.icon;
 
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
-import io.xpipe.core.store.FileSystem;
+import io.xpipe.core.store.FileEntry;
 
 public class BrowserIcons {
 
@@ -18,7 +18,7 @@ public class BrowserIcons {
         return PrettyImageHelper.ofFixedSizeSquare(type.getIcon(), 24);
     }
 
-    public static Comp<?> createIcon(FileSystem.FileEntry entry) {
+    public static Comp<?> createIcon(FileEntry entry) {
         return PrettyImageHelper.ofFixedSizeSquare(FileIconManager.getFileIcon(entry, false), 24);
     }
 }

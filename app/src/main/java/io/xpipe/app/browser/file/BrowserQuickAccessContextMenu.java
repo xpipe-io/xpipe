@@ -6,8 +6,8 @@ import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.util.BooleanAnimationTimer;
 import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
-import io.xpipe.core.store.FileSystem;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -92,7 +92,7 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
     }
 
     private List<MenuItem> updateMenuItems(Menu m, BrowserEntry entry, boolean updateInstantly) throws Exception {
-        List<FileSystem.FileEntry> list = new ArrayList<>();
+        List<FileEntry> list = new ArrayList<>();
         model.withFiles(entry.getRawFileEntry().resolved().getPath(), newFiles -> {
             try (var s = newFiles) {
                 var l = s.map(fileEntry -> fileEntry.resolved()).toList();
