@@ -47,20 +47,20 @@ public class OpenFileSystemCache extends ShellControlCache {
         var lines = sc.command(CommandBuilder.of().add("cat").addFile("/etc/passwd")).readStdoutOrThrow();
         lines.lines().forEach(s -> {
             var split = s.split(":");
-            users.put(Integer.parseInt(split[2]), split[0]);
+            users.putIfAbsent(Integer.parseInt(split[2]), split[0]);
         });
     }
 
     private void loadGroups() throws Exception {
         var sc = model.getFileSystem().getShell().orElseThrow();
-        if (sc.getOsType() == OsType.WINDOWS) {
+        if (sc.getOsType() == OsType.WINDOWS || sc.getOsType() == OsType.MACOS) {
             return;
         }
 
         var lines = sc.command(CommandBuilder.of().add("cat").addFile("/etc/group")).readStdoutOrThrow();
         lines.lines().forEach(s -> {
             var split = s.split(":");
-            groups.put(Integer.parseInt(split[2]), split[0]);
+            groups.putIfAbsent(Integer.parseInt(split[2]), split[0]);
         });
     }
 

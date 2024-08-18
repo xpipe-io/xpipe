@@ -136,7 +136,7 @@ public final class BrowserFileListComp extends SimpleComp {
         table.setFixedCellSize(32.0);
         var os = fileList.getFileSystemModel().getFileSystem().getShell().orElseThrow().getOsType();
         table.widthProperty().subscribe((newValue) -> {
-            if (os != OsType.WINDOWS) {
+            if (os != OsType.WINDOWS && os != OsType.MACOS) {
                 ownerCol.setVisible(newValue.doubleValue() > 1000);
             }
             var width = getFilenameWidth(table);
@@ -441,7 +441,7 @@ public final class BrowserFileListComp extends SimpleComp {
 
                 if (fileList.getFileSystemModel().getFileSystem() != null) {
                     var shell = fileList.getFileSystemModel().getFileSystem().getShell().orElseThrow();
-                    if (OsType.WINDOWS.equals(shell.getOsType())) {
+                    if (OsType.WINDOWS.equals(shell.getOsType()) || OsType.MACOS.equals(shell.getOsType())) {
                         modeCol.setVisible(false);
                         ownerCol.setVisible(false);
                     } else {

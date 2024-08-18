@@ -33,13 +33,14 @@ public class ChgrpAction implements BranchAction {
 
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return model.getFileSystem().getShell().orElseThrow().getOsType() != OsType.WINDOWS;
+        var os = model.getFileSystem().getShell().orElseThrow().getOsType();
+        return os != OsType.WINDOWS && os != OsType.MACOS;
     }
 
     @Override
     public List<LeafAction> getBranchingActions(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return model.getCache().getGroups().entrySet().stream()
-                .filter(e -> !e.getValue().equals("nogroup") && (e.getKey().equals(0) || e.getKey() >= 1000))
+                .filter(e -> !e.getValue().equals("nohome") && !e.getValue().equals("nogroup") && !e.getValue().equals("nobody") && (e.getKey().equals(0) || e.getKey() >= 1000))
                 .map(e -> e.getValue()).map(s -> (LeafAction) new Chgrp(s)).toList();
     }
 
