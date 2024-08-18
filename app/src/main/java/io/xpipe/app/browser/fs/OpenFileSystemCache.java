@@ -5,10 +5,9 @@ import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialect;
-
 import lombok.Getter;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Getter
@@ -16,8 +15,8 @@ public class OpenFileSystemCache extends ShellControlCache {
 
     private final OpenFileSystemModel model;
     private final String username;
-    private final Map<Integer, String> users = new HashMap<>();
-    private final Map<Integer, String> groups = new HashMap<>();
+    private final Map<Integer, String> users = new LinkedHashMap<>();
+    private final Map<Integer, String> groups = new LinkedHashMap<>();
 
     public OpenFileSystemCache(OpenFileSystemModel model) throws Exception {
         super(model.getFileSystem().getShell().orElseThrow());

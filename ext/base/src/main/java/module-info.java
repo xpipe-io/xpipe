@@ -52,6 +52,8 @@ open module io.xpipe.ext.base {
             EditFileAction,
             RunAction,
             ChmodAction,
+            ChownAction,
+            ChgrpAction,
             CopyAction,
             CopyPathAction,
             PasteAction,

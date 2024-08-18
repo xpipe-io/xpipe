@@ -289,11 +289,7 @@
     -fx-font-size: 0.9em;
     -fx-font-weight: bolder;
     -fx-opacity: 0.9;
-    -fx-padding: 0 0 0 12;
-}
-
-.browser .table-row-cell {
-    -fx-padding: 0 0 0 5;
+    -fx-padding: 0 0 0 7;
 }
 
 .browser .table-row-cell:empty {

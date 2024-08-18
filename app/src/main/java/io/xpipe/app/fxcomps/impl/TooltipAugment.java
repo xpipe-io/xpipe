@@ -4,13 +4,11 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.augment.Augment;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Window;
-import javafx.util.Duration;
 
 public class TooltipAugment<S extends CompStructure<?>> implements Augment<S> {
 
@@ -46,7 +44,6 @@ public class TooltipAugment<S extends CompStructure<?>> implements Augment<S> {
         tt.setWrapText(true);
         tt.setMaxWidth(400);
         tt.getStyleClass().add("fancy-tooltip");
-        tt.setHideDelay(Duration.INDEFINITE);
         Tooltip.install(struc.get(), tt);
     }
 

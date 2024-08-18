@@ -81,6 +81,7 @@ public final class BrowserFileListComp extends SimpleComp {
         filenameCol.setSortType(ASCENDING);
         filenameCol.setCellFactory(col -> new FilenameCell(fileList.getEditing(), col.getTableView()));
         filenameCol.setReorderable(false);
+        filenameCol.setResizable(false);
 
         var sizeCol = new TableColumn<BrowserEntry, Number>();
         sizeCol.textProperty().bind(AppI18n.observable("size"));
@@ -118,34 +119,51 @@ public final class BrowserFileListComp extends SimpleComp {
         ownerCol.setCellFactory(col -> new FileOwnerCell());
         ownerCol.setSortable(false);
         ownerCol.setReorderable(false);
-        ownerCol.prefWidthProperty().bind(ownerWidth);
         ownerCol.setResizable(false);
 
         var table = new TableView<BrowserEntry>();
+        table.setSkin(new TableViewSkin<>(table));
         table.setAccessibleText("Directory contents");
         table.setPlaceholder(new Region());
         table.getStyleClass().add(Styles.STRIPED);
-        table.getColumns().setAll(filenameCol, sizeCol, modeCol, mtimeCol);
+        table.getColumns().setAll(filenameCol, sizeCol, modeCol, ownerCol, mtimeCol);
         table.getSortOrder().add(filenameCol);
         table.setFocusTraversable(true);
         table.setSortPolicy(param -> {
             fileList.setComparator(table.getComparator());
             return true;
         });
-        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_NEXT_COLUMN);
         table.setFixedCellSize(32.0);
-
+        var os = fileList.getFileSystemModel().getFileSystem().getShell().orElseThrow().getOsType();
         table.widthProperty().subscribe((newValue) -> {
-            ownerCol.setVisible(newValue.doubleValue() > 1000);
+            if (os != OsType.WINDOWS) {
+                ownerCol.setVisible(newValue.doubleValue() > 1000);
+            }
+            var width = getFilenameWidth(table);
+            filenameCol.setPrefWidth(width);
+        });
+
+        table.lookupAll(".scroll-bar").stream().filter(node -> node.getPseudoClassStates().contains(PseudoClass.getPseudoClass("horizontal"))).findFirst().ifPresent(node -> {
+            Region region = (Region) node;
+            region.setMinHeight(0);
+            region.setPrefHeight(0);
+            region.setMaxHeight(0);
         });
 
         prepareTableSelectionModel(table);
         prepareTableShortcuts(table);
         prepareTableEntries(table);
-        prepareTableChanges(table, mtimeCol, modeCol, ownerCol);
+        prepareTableChanges(table, filenameCol, mtimeCol, modeCol, ownerCol);
         prepareTypedSelectionModel(table);
 
         return table;
+    }
+
+    private double getFilenameWidth(TableView<?> tableView) {
+        var sum = tableView.getColumns().stream().filter(tableColumn -> tableColumn.isVisible() &&
+                tableView.getColumns().indexOf(tableColumn) != 0)
+                .mapToDouble(value -> value.getPrefWidth()).sum() + 7;
+        return tableView.getWidth() - sum;
     }
 
     private String formatOwner(BrowserEntry param) {
@@ -400,72 +418,60 @@ public final class BrowserFileListComp extends SimpleComp {
 
     private void prepareTableChanges(
             TableView<BrowserEntry> table,
+            TableColumn<BrowserEntry, String> filenameCol,
             TableColumn<BrowserEntry, Instant> mtimeCol,
             TableColumn<BrowserEntry, String> modeCol,
             TableColumn<BrowserEntry, String> ownerCol) {
         var lastDir = new SimpleObjectProperty<FileEntry>();
         Runnable updateHandler = () -> {
-            Platform.runLater(() -> {
+            PlatformThread.runLaterIfNeeded(() -> {
                 var newItems = new ArrayList<>(fileList.getShown().getValue());
+                table.getItems().clear();
 
-                var hasModifiedDate = newItems.size() == 0
-                        || newItems.stream()
-                                .anyMatch(entry -> entry.getRawFileEntry().getDate() != null);
+                var hasModifiedDate = newItems.size() == 0 || newItems.stream().anyMatch(entry -> entry.getRawFileEntry().getDate() != null);
                 if (!hasModifiedDate) {
-                    table.getColumns().remove(mtimeCol);
+                    mtimeCol.setVisible(false);
                 } else {
-                    if (!table.getColumns().contains(mtimeCol)) {
-                        table.getColumns().add(mtimeCol);
-                    }
+                    mtimeCol.setVisible(true);
                 }
 
-                ownerWidth.set(fileList.getAll().getValue().stream()
-                        .map(browserEntry -> formatOwner(browserEntry))
-                        .map(s -> s != null ? s.length() * 10 : 0)
-                        .max(Comparator.naturalOrder()).orElse(150));
+                ownerWidth.set(fileList.getAll().getValue().stream().map(browserEntry -> formatOwner(browserEntry)).map(
+                        s -> s != null ? s.length() * 9 : 0).max(Comparator.naturalOrder()).orElse(150));
+                ownerCol.setPrefWidth(ownerWidth.get());
+
                 if (fileList.getFileSystemModel().getFileSystem() != null) {
-                    var shell = fileList.getFileSystemModel()
-                            .getFileSystem()
-                            .getShell()
-                            .orElseThrow();
-                    var notWindows = !OsType.WINDOWS.equals(shell.getOsType());
-                    if (!notWindows) {
-                        table.getColumns().remove(modeCol);
-                        table.getColumns().remove(ownerCol);
+                    var shell = fileList.getFileSystemModel().getFileSystem().getShell().orElseThrow();
+                    if (OsType.WINDOWS.equals(shell.getOsType())) {
+                        modeCol.setVisible(false);
+                        ownerCol.setVisible(false);
                     } else {
-                        if (!table.getColumns().contains(modeCol)) {
-                            table.getColumns().add(modeCol);
-                        }
-                        if (!table.getColumns().contains(ownerCol)) {
-                            table.getColumns().add(table.getColumns().size() - 1, ownerCol);
-                        } else {
-                            table.getColumns().remove(ownerCol);
+                        modeCol.setVisible(true);
+                        if (table.getWidth() > 1000) {
+                            ownerCol.setVisible(true);
                         }
                     }
                 }
 
-                if (!table.getItems().equals(newItems)) {
-                    // Sort the list ourselves as sorting the table would incur a lot of cell updates
-                    var obs = FXCollections.observableList(newItems);
-                    table.getItems().setAll(obs);
-                }
+                // Sort the list ourselves as sorting the table would incur a lot of cell updates
+                var obs = FXCollections.observableList(newItems);
+                table.getItems().setAll(obs);
 
+                var width = getFilenameWidth(table);
+                filenameCol.setPrefWidth(width);
+
+                TableViewSkin<?> skin = (TableViewSkin<?>) table.getSkin();
                 var currentDirectory = fileList.getFileSystemModel().getCurrentDirectory();
-                if (!Objects.equals(lastDir.get(), currentDirectory)) {
-                    TableViewSkin<?> skin = (TableViewSkin<?>) table.getSkin();
-                    if (skin != null) {
-                        VirtualFlow<?> flow =
-                                (VirtualFlow<?>) skin.getChildren().get(1);
-                        ScrollBar vbar =
-                                (ScrollBar) flow.getChildrenUnmodifiable().get(2);
-                        if (vbar.getValue() != 0.0) {
-                            table.scrollTo(0);
-                        }
+                if (skin != null && !Objects.equals(lastDir.get(), currentDirectory)) {
+                    VirtualFlow<?> flow = (VirtualFlow<?>) skin.getChildren().get(1);
+                    ScrollBar vbar = (ScrollBar) flow.getChildrenUnmodifiable().get(2);
+                    if (vbar.getValue() != 0.0) {
+                        table.scrollTo(0);
                     }
                 }
                 lastDir.setValue(currentDirectory);
             });
         };
+
         updateHandler.run();
         fileList.getShown().addListener((observable, oldValue, newValue) -> {
             updateHandler.run();
@@ -606,9 +612,7 @@ public final class BrowserFileListComp extends SimpleComp {
                                                         .getCurrentParentDirectory());
                                         return notDir || isParentLink;
                                     },
-                                    itemProperty())
-                            .not()
-                            .not())
+                                    itemProperty()))
                     .focusTraversable(false)
                     .createRegion();
 
