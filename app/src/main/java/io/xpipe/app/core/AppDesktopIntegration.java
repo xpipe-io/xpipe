@@ -9,10 +9,10 @@ import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.desktop.*;
 import java.util.List;
-import javax.imageio.ImageIO;
 
 public class AppDesktopIntegration {
 
@@ -45,7 +45,7 @@ public class AppDesktopIntegration {
                 });
             }
 
-            // This will initialize the toolkit on macos and create the dock icon
+            // This will initialize the toolkit on macOS and create the dock icon
             // macOS does not like applications that run fully in the background, so always do it
             if (OsType.getLocal().equals(OsType.MACOS) && Desktop.isDesktopSupported()) {
                 Desktop.getDesktop().setPreferencesHandler(e -> {
@@ -68,7 +68,7 @@ public class AppDesktopIntegration {
                     }
                 });
 
-                // Set dock icon explicitly on mac
+                // Set dock icon explicitly on macOS
                 // This is necessary in case XPipe was started through a script as it will have no icon otherwise
                 if (AppProperties.get().isDeveloperMode()
                         && AppLogs.get().isWriteToSysout()

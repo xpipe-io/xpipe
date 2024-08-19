@@ -44,11 +44,15 @@ public class OpenFileSystemCache extends ShellControlCache {
             return;
         }
 
-        var lines = sc.command(CommandBuilder.of().add("cat").addFile("/etc/passwd")).readStdoutOrThrow();
+        var lines = sc.command(CommandBuilder.of().add("cat").addFile("/etc/passwd")).readStdoutIfPossible().orElse("");
         lines.lines().forEach(s -> {
             var split = s.split(":");
             users.putIfAbsent(Integer.parseInt(split[2]), split[0]);
         });
+
+        if (users.isEmpty()) {
+            users.put(0, "root");
+        }
     }
 
     private void loadGroups() throws Exception {
@@ -57,11 +61,15 @@ public class OpenFileSystemCache extends ShellControlCache {
             return;
         }
 
-        var lines = sc.command(CommandBuilder.of().add("cat").addFile("/etc/group")).readStdoutOrThrow();
+        var lines = sc.command(CommandBuilder.of().add("cat").addFile("/etc/group")).readStdoutIfPossible().orElse("");
         lines.lines().forEach(s -> {
             var split = s.split(":");
             groups.putIfAbsent(Integer.parseInt(split[2]), split[0]);
         });
+
+        if (groups.isEmpty()) {
+            groups.put(0, "root");
+        }
     }
 
     public boolean isRoot() {
