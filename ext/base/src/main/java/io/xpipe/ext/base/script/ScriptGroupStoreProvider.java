@@ -10,17 +10,15 @@ import io.xpipe.app.fxcomps.impl.DataStoreChoiceComp;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.store.DataStore;
-
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
-
 import lombok.SneakyThrows;
 
 import java.util.List;
 
-public class ScriptGroupStoreProvider implements EnabledStoreProvider, DataStoreProvider {
+public class ScriptGroupStoreProvider implements EnabledParentStoreProvider, DataStoreProvider {
 
     @Override
     public DataStoreUsageCategory getUsageCategory() {

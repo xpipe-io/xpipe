@@ -7,6 +7,7 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
+import javafx.geometry.Pos;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
@@ -32,6 +33,7 @@ public class ToggleSwitchComp extends SimpleComp {
                 event.consume();
             }
         });
+        s.setAlignment(Pos.CENTER);
         s.getStyleClass().add("toggle-switch-comp");
         s.setSelected(selected.getValue());
         s.selectedProperty().addListener((observable, oldValue, newValue) -> {

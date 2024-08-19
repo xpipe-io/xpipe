@@ -40,7 +40,7 @@ public class OpenFileSystemCache extends ShellControlCache {
 
     private void loadUsers() throws Exception {
         var sc = model.getFileSystem().getShell().orElseThrow();
-        if (sc.getOsType() == OsType.WINDOWS) {
+        if (sc.getOsType() == OsType.WINDOWS || sc.getOsType() == OsType.MACOS) {
             return;
         }
 

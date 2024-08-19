@@ -31,7 +31,9 @@ public abstract class LabelGraphic {
 
         @Override
         public Node createGraphicNode() {
-            return new FontIcon(icon);
+            var fi = new FontIcon(icon);
+            fi.getStyleClass().add("graphic");
+            return fi;
         }
     }
 
@@ -44,7 +46,7 @@ public abstract class LabelGraphic {
 
         @Override
         public Node createGraphicNode() {
-            return PrettyImageHelper.ofFixedSizeSquare(file, size).createRegion();
+            return PrettyImageHelper.ofFixedSizeSquare(file, size).styleClass("graphic").createRegion();
         }
     }
 
@@ -56,7 +58,7 @@ public abstract class LabelGraphic {
 
         @Override
         public Node createGraphicNode() {
-            return comp.createRegion();
+            return comp.styleClass("graphic").createRegion();
         }
     }
 }
