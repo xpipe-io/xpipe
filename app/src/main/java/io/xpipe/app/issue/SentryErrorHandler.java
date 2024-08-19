@@ -1,5 +1,8 @@
 package io.xpipe.app.issue;
 
+import io.sentry.*;
+import io.sentry.protocol.SentryId;
+import io.sentry.protocol.User;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppState;
@@ -7,10 +10,6 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.LicenseProvider;
-
-import io.sentry.*;
-import io.sentry.protocol.SentryId;
-import io.sentry.protocol.User;
 import org.apache.commons.io.FileUtils;
 
 import java.io.ByteArrayInputStream;
@@ -98,7 +97,7 @@ public class SentryErrorHandler implements ErrorHandler {
         }
 
         if (ee.getThrowable() != null) {
-            var adjusted = adjustCopy(ee.getThrowable(), !ee.isShouldSendDiagnostics());
+            var adjusted = adjustCopy(ee.getThrowable(), !ee.isShouldSendDiagnostics() && !ee.isLicenseRequired());
             return Sentry.captureException(adjusted, sc -> fillScope(ee, sc));
         }
 
@@ -153,7 +152,6 @@ public class SentryErrorHandler implements ErrorHandler {
                         : "false");
         s.setTag("terminal", Boolean.toString(ee.isTerminal()));
         s.setTag("omitted", Boolean.toString(ee.isOmitted()));
-        s.setTag("diagnostics", Boolean.toString(ee.isShouldSendDiagnostics()));
         s.setTag(
                 "logs",
                 Boolean.toString(
@@ -161,8 +159,11 @@ public class SentryErrorHandler implements ErrorHandler {
         s.setTag("inShutdown", Boolean.toString(OperationMode.isInShutdown()));
         s.setTag("unhandled", Boolean.toString(ee.isUnhandled()));
 
+        s.setTag("diagnostics", Boolean.toString(ee.isShouldSendDiagnostics()));
+        s.setTag("licenseRequired", Boolean.toString(ee.isLicenseRequired()));
+
         var exMessage = ee.getThrowable() != null ? ee.getThrowable().getMessage() : null;
-        if (ee.getDescription() != null && !ee.getDescription().equals(exMessage) && ee.isShouldSendDiagnostics()) {
+        if (ee.getDescription() != null && !ee.getDescription().equals(exMessage) && (ee.isShouldSendDiagnostics() || ee.isLicenseRequired())) {
             s.setTag("message", ee.getDescription().lines().collect(Collectors.joining(" ")));
         }
 

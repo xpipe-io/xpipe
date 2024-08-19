@@ -35,7 +35,7 @@ public class GuiErrorHandler extends GuiErrorHandlerBase implements ErrorHandler
                 .findFirst();
         if (lex.isPresent()) {
             LicenseProvider.get().showLicenseAlert(lex.get());
-            event.setShouldSendDiagnostics(true);
+            event.setLicenseRequired(true);
             event.clearAttachments();
             ErrorAction.ignore().handle(event);
         } else {

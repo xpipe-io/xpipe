@@ -37,6 +37,9 @@ public class ErrorEvent {
     @Setter
     private boolean shouldSendDiagnostics;
 
+    @Setter
+    private boolean licenseRequired;
+
     @Singular
     private List<Path> attachments;
 
