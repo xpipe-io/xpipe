@@ -175,7 +175,8 @@ public abstract class DataStorage {
                     true,
                     ALL_CONNECTIONS_CATEGORY_UUID,
                     StoreSortMode.getDefault(),
-                    false));
+                    false,
+                    true));
         }
 
         storeCategories.forEach(dataStoreCategory -> {

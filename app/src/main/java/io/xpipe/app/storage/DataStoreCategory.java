@@ -41,8 +41,9 @@ public class DataStoreCategory extends StorageElement {
             boolean dirty,
             UUID parentCategory,
             StoreSortMode sortMode,
-            boolean share) {
-        super(directory, uuid, name, lastUsed, lastModified, dirty);
+            boolean share,
+            boolean expanded) {
+        super(directory, uuid, name, lastUsed, lastModified, expanded, dirty);
         this.parentCategory = parentCategory;
         this.sortMode = sortMode;
         this.share = share;
@@ -58,7 +59,8 @@ public class DataStoreCategory extends StorageElement {
                 true,
                 parentCategory,
                 StoreSortMode.getDefault(),
-                false);
+                false,
+                true);
     }
 
     public static DataStoreCategory createNew(UUID parentCategory, @NonNull UUID uuid, @NonNull String name) {
@@ -71,7 +73,8 @@ public class DataStoreCategory extends StorageElement {
                 true,
                 parentCategory,
                 StoreSortMode.getDefault(),
-                false);
+                false,
+                true);
     }
 
     public static Optional<DataStoreCategory> fromDirectory(Path dir) throws Exception {
@@ -108,9 +111,12 @@ public class DataStoreCategory extends StorageElement {
                 .map(jsonNode -> jsonNode.textValue())
                 .map(Instant::parse)
                 .orElse(Instant.now());
+        var expanded = Optional.ofNullable(stateJson.get("expanded"))
+                .map(jsonNode -> jsonNode.booleanValue())
+                .orElse(true);
 
         return Optional.of(
-                new DataStoreCategory(dir, uuid, name, lastUsed, lastModified, false, parentUuid, sortMode, share));
+                new DataStoreCategory(dir, uuid, name, lastUsed, lastModified, false, parentUuid, sortMode, share, expanded));
     }
 
     public void setSortMode(StoreSortMode sortMode) {
@@ -177,6 +183,7 @@ public class DataStoreCategory extends StorageElement {
         stateObj.put("lastUsed", lastUsed.toString());
         stateObj.put("lastModified", lastModified.toString());
         stateObj.put("sortMode", sortMode.getId());
+        stateObj.put("expanded", expanded);
         obj.put("parentUuid", parentCategory != null ? parentCategory.toString() : null);
 
         var entryString = mapper.writeValueAsString(obj);

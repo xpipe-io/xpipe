@@ -6,9 +6,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -30,6 +28,7 @@ public class StoreCategoryWrapper {
     private final Property<Boolean> share;
     private final ObservableList<StoreCategoryWrapper> children;
     private final ObservableList<StoreEntryWrapper> containedEntries;
+    private final BooleanProperty expanded = new SimpleBooleanProperty();
 
     public StoreCategoryWrapper(DataStoreCategory category) {
         var d = 0;
@@ -111,6 +110,10 @@ public class StoreCategoryWrapper {
         });
     }
 
+    public void toggleExpanded() {
+        this.expanded.set(!expanded.getValue());
+    }
+
     public void update() {
         // We are probably in shutdown then
         if (StoreViewState.get() == null) {
@@ -126,6 +129,7 @@ public class StoreCategoryWrapper {
         lastAccess.setValue(category.getLastAccess().minus(Duration.ofMillis(500)));
         sortMode.setValue(category.getSortMode());
         share.setValue(category.isShare());
+        expanded.setValue(category.isExpanded());
 
         containedEntries.setAll(StoreViewState.get().getAllEntries().getList().stream()
                 .filter(entry -> {

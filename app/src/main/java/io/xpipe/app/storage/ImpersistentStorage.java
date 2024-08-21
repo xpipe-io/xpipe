@@ -33,6 +33,7 @@ public class ImpersistentStorage extends DataStorage {
                     true,
                     ALL_CONNECTIONS_CATEGORY_UUID,
                     StoreSortMode.getDefault(),
+                    true,
                     true);
             storeCategories.add(cat);
             selectedCategory = getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).orElseThrow();

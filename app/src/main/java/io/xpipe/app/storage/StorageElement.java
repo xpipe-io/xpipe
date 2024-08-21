@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Value;
+import lombok.experimental.NonFinal;
 import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.io.FileUtils;
 
@@ -37,14 +38,27 @@ public abstract class StorageElement {
     @Getter
     protected Instant lastModified;
 
+    @NonFinal
+    @Getter
+    protected boolean expanded;
+
     public StorageElement(
-            Path directory, UUID uuid, String name, Instant lastUsed, Instant lastModified, boolean dirty) {
+            Path directory, UUID uuid, String name, Instant lastUsed, Instant lastModified, boolean expanded, boolean dirty) {
         this.directory = directory;
         this.uuid = uuid;
         this.name = name;
         this.lastUsed = lastUsed;
         this.lastModified = lastModified;
+        this.expanded = expanded;
         this.dirty = dirty;
+    }
+
+    public void setExpanded(boolean expanded) {
+        var changed = expanded != this.expanded;
+        this.expanded = expanded;
+        if (changed) {
+            notifyUpdate(false, true);
+        }
     }
 
     public abstract Path[] getShareableFiles();

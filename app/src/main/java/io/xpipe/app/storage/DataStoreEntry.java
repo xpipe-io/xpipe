@@ -44,9 +44,6 @@ public class DataStoreEntry extends StorageElement {
     @NonFinal
     Configuration configuration;
 
-    @NonFinal
-    boolean expanded;
-
     AtomicInteger busyCounter = new AtomicInteger();
 
     @Getter
@@ -92,13 +89,12 @@ public class DataStoreEntry extends StorageElement {
             DataStoreColor color,
             String notes,
             Order explicitOrder) {
-        super(directory, uuid, name, lastUsed, lastModified, dirty);
+        super(directory, uuid, name, lastUsed, lastModified, expanded, dirty);
         this.categoryUuid = categoryUuid;
         this.store = store;
         this.storeNode = storeNode;
         this.validity = validity;
         this.configuration = configuration;
-        this.expanded = expanded;
         this.color = color;
         this.explicitOrder = explicitOrder;
         this.provider = store != null ? DataStoreProviders.byStore(store) : null;
@@ -115,7 +111,7 @@ public class DataStoreEntry extends StorageElement {
             Instant lastModified,
             DataStore store,
             Order explicitOrder) {
-        super(directory, uuid, name, lastUsed, lastModified, false);
+        super(directory, uuid, name, lastUsed, lastModified, false,false);
         this.categoryUuid = categoryUuid;
         this.store = store;
         this.explicitOrder = explicitOrder;
@@ -399,14 +395,6 @@ public class DataStoreEntry extends StorageElement {
             Files.writeString(notesFile, notes);
         }
         dirty = false;
-    }
-
-    public void setExpanded(boolean expanded) {
-        var changed = expanded != this.expanded;
-        this.expanded = expanded;
-        if (changed) {
-            notifyUpdate(false, true);
-        }
     }
 
     public void setNotes(String newNotes) {

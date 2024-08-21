@@ -49,13 +49,16 @@ public class StoreCategoryComp extends SimpleComp {
                 () -> {
                     if (!DataStorage.get().supportsSharing()
                             || !category.getCategory().canShare()) {
-                        return "mdal-keyboard_arrow_right";
+                        var exp = category.getExpanded().get() && category.getChildren().size() > 0;
+                        return exp ? "mdal-keyboard_arrow_down" : "mdal-keyboard_arrow_right";
                     }
 
                     return category.getShare().getValue() ? "mdi2g-git" : "mdi2a-account-cancel";
                 },
-                category.getShare());
-        var icon = new IconButtonComp(i)
+                category.getShare(), category.getExpanded(), category.getChildren());
+        var icon = new IconButtonComp(i, () -> {
+            category.toggleExpanded();
+        })
                 .apply(struc -> AppFont.small(struc.get()))
                 .apply(struc -> {
                     struc.get().setAlignment(Pos.CENTER);
@@ -116,8 +119,10 @@ public class StoreCategoryComp extends SimpleComp {
         var children =
                 new ListBoxViewComp<>(l, l, storeCategoryWrapper -> new StoreCategoryComp(storeCategoryWrapper), false);
 
-        var emptyBinding = Bindings.isEmpty(category.getChildren());
-        var v = new VerticalComp(List.of(categoryButton, children.hide(emptyBinding)));
+        var hide = Bindings.createBooleanBinding(() -> {
+            return !category.getExpanded().get() || category.getChildren().isEmpty();
+        }, category.getChildren(), category.getExpanded());
+        var v = new VerticalComp(List.of(categoryButton, children.hide(hide)));
         v.styleClass("category");
         v.apply(struc -> {
             StoreViewState.get().getActiveCategory().subscribe(val -> {
