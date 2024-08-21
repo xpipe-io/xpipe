@@ -79,7 +79,7 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
                 getItems().addAll(r.getItems());
 
                 // Prevent NPE in show()
-                if (getScene() == null || anchor == null) {
+                if (getScene() == null || anchor == null || anchor.getScene() == null) {
                     return;
                 }
                 show(anchor, Side.RIGHT, 0, 0);

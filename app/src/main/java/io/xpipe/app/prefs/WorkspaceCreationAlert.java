@@ -6,10 +6,7 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.util.DesktopHelper;
-import io.xpipe.app.util.DesktopShortcuts;
-import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.XPipeInstallation;
 
@@ -24,6 +21,7 @@ import java.nio.file.Files;
 public class WorkspaceCreationAlert {
 
     public static void showAsync() {
+        LicenseProvider.get().getFeature("workspaces").throwIfUnsupported();
         ThreadHelper.runFailableAsync(() -> {
             show();
         });
