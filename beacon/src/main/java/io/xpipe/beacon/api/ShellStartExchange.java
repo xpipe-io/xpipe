@@ -36,7 +36,7 @@ public class ShellStartExchange extends BeaconInterface<ShellStartExchange.Reque
         ShellDialect shellDialect;
 
         @NonNull
-        OsType osType;
+        OsType.Any osType;
 
         @NonNull
         String osName;
