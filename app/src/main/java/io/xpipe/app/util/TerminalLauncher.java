@@ -49,7 +49,7 @@ public class TerminalLauncher {
             throw ErrorEvent.expected(new IllegalStateException(AppI18n.get("noTerminalSet")));
         }
 
-        var color = entry != null ? DataStorage.get().getRootForEntry(entry).getColor() : null;
+        var color = entry != null ? DataStorage.get().getEffectiveColor(entry) : null;
         var prefix = entry != null && color != null && type.supportsColoredTitle() ? color.getEmoji() + " " : "";
         var cleanTitle = (title != null ? title : entry != null ? entry.getName() : "?");
         var adjustedTitle = prefix + cleanTitle;

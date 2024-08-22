@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public abstract class StorageElement {
@@ -42,13 +43,18 @@ public abstract class StorageElement {
     @Getter
     protected boolean expanded;
 
+    protected @NonFinal
+    @Getter DataColor color;
+
+
     public StorageElement(
-            Path directory, UUID uuid, String name, Instant lastUsed, Instant lastModified, boolean expanded, boolean dirty) {
+            Path directory, UUID uuid, String name, Instant lastUsed, Instant lastModified, DataColor color, boolean expanded, boolean dirty) {
         this.directory = directory;
         this.uuid = uuid;
         this.name = name;
         this.lastUsed = lastUsed;
         this.lastModified = lastModified;
+        this.color = color;
         this.expanded = expanded;
         this.dirty = dirty;
     }
@@ -81,6 +87,14 @@ public abstract class StorageElement {
 
     public final void deleteFromDisk() throws IOException {
         FileUtils.deleteDirectory(directory.toFile());
+    }
+
+    public void setColor(DataColor newColor) {
+        var changed = !Objects.equals(color, newColor);
+        this.color = newColor;
+        if (changed) {
+            notifyUpdate(false, true);
+        }
     }
 
     public abstract void writeDataToDisk() throws Exception;

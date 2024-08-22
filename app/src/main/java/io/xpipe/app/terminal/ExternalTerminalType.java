@@ -7,7 +7,7 @@ import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.ExternalApplicationType;
-import io.xpipe.app.storage.DataStoreColor;
+import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.FilePath;
@@ -1103,7 +1103,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     @Value
     class LaunchConfiguration {
-        DataStoreColor color;
+        DataColor color;
         String coloredTitle;
         String cleanTitle;
 

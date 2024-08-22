@@ -30,6 +30,7 @@ public class ImpersistentStorage extends DataStorage {
                     "Default",
                     Instant.now(),
                     Instant.now(),
+                    null,
                     true,
                     ALL_CONNECTIONS_CATEGORY_UUID,
                     StoreSortMode.getDefault(),

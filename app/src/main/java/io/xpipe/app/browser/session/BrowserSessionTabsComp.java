@@ -364,9 +364,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
 
                     StackPane c = (StackPane) tabs.lookup("#" + id + " .tab-container");
                     c.getStyleClass().add("color-box");
-                    var color = DataStorage.get()
-                            .getRootForEntry(model.getEntry().get())
-                            .getColor();
+                    var color = DataStorage.get().getEffectiveColor(model.getEntry().get());
                     if (color != null) {
                         c.getStyleClass().add(color.getId());
                     }

@@ -1,5 +1,6 @@
 package io.xpipe.app.storage;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.xpipe.app.comp.store.StoreSortMode;
 import io.xpipe.core.util.JacksonMapper;
 
@@ -38,12 +39,13 @@ public class DataStoreCategory extends StorageElement {
             String name,
             Instant lastUsed,
             Instant lastModified,
+            DataColor color,
             boolean dirty,
             UUID parentCategory,
             StoreSortMode sortMode,
             boolean share,
             boolean expanded) {
-        super(directory, uuid, name, lastUsed, lastModified, expanded, dirty);
+        super(directory, uuid, name, lastUsed, lastModified, color, expanded, dirty);
         this.parentCategory = parentCategory;
         this.sortMode = sortMode;
         this.share = share;
@@ -56,6 +58,7 @@ public class DataStoreCategory extends StorageElement {
                 name,
                 Instant.now(),
                 Instant.now(),
+                null,
                 true,
                 parentCategory,
                 StoreSortMode.getDefault(),
@@ -70,6 +73,7 @@ public class DataStoreCategory extends StorageElement {
                 name,
                 Instant.now(),
                 Instant.now(),
+                null,
                 true,
                 parentCategory,
                 StoreSortMode.getDefault(),
@@ -95,8 +99,17 @@ public class DataStoreCategory extends StorageElement {
                 .filter(jsonNode -> !jsonNode.isNull())
                 .map(jsonNode -> UUID.fromString(jsonNode.textValue()))
                 .orElse(null);
-
+        var color = Optional.ofNullable(json.get("color"))
+                .map(node -> {
+                    try {
+                        return mapper.treeToValue(node, DataColor.class);
+                    } catch (JsonProcessingException e) {
+                        return null;
+                    }
+                })
+                .orElse(null);
         var name = json.required("name").textValue();
+
         var sortMode = Optional.ofNullable(stateJson.get("sortMode"))
                 .map(JsonNode::asText)
                 .flatMap(string -> StoreSortMode.fromId(string))
@@ -116,7 +129,7 @@ public class DataStoreCategory extends StorageElement {
                 .orElse(true);
 
         return Optional.of(
-                new DataStoreCategory(dir, uuid, name, lastUsed, lastModified, false, parentUuid, sortMode, share, expanded));
+                new DataStoreCategory(dir, uuid, name, lastUsed, lastModified, color, false, parentUuid, sortMode, share, expanded));
     }
 
     public void setSortMode(StoreSortMode sortMode) {
@@ -180,6 +193,7 @@ public class DataStoreCategory extends StorageElement {
         obj.put("uuid", uuid.toString());
         obj.put("name", name);
         obj.put("share", share);
+        obj.set("color", mapper.valueToTree(color));
         stateObj.put("lastUsed", lastUsed.toString());
         stateObj.put("lastModified", lastModified.toString());
         stateObj.put("sortMode", sortMode.getId());

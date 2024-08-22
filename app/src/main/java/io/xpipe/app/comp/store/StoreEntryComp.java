@@ -17,7 +17,7 @@ import io.xpipe.app.fxcomps.util.DerivedObservableList;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStoreColor;
+import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.*;
@@ -345,7 +345,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                 event.consume();
             });
             color.getItems().add(none);
-            Arrays.stream(DataStoreColor.values()).forEach(dataStoreColor -> {
+            Arrays.stream(DataColor.values()).forEach(dataStoreColor -> {
                 MenuItem m = new MenuItem(DataStoreFormatter.capitalize(dataStoreColor.getId()));
                 m.setOnAction(event -> {
                     getWrapper().getEntry().setColor(dataStoreColor);

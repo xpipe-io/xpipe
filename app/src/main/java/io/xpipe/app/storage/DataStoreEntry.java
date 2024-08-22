@@ -60,9 +60,6 @@ public class DataStoreEntry extends StorageElement {
     JsonNode storePersistentStateNode;
 
     @NonFinal
-    DataStoreColor color;
-
-    @NonFinal
     @Setter
     Set<DataStoreEntry> childrenCache = null;
 
@@ -86,16 +83,15 @@ public class DataStoreEntry extends StorageElement {
             Configuration configuration,
             JsonNode storePersistentState,
             boolean expanded,
-            DataStoreColor color,
+            DataColor color,
             String notes,
             Order explicitOrder) {
-        super(directory, uuid, name, lastUsed, lastModified, expanded, dirty);
+        super(directory, uuid, name, lastUsed, lastModified, color, expanded, dirty);
         this.categoryUuid = categoryUuid;
         this.store = store;
         this.storeNode = storeNode;
         this.validity = validity;
         this.configuration = configuration;
-        this.color = color;
         this.explicitOrder = explicitOrder;
         this.provider = store != null ? DataStoreProviders.byStore(store) : null;
         this.storePersistentStateNode = storePersistentState;
@@ -111,7 +107,7 @@ public class DataStoreEntry extends StorageElement {
             Instant lastModified,
             DataStore store,
             Order explicitOrder) {
-        super(directory, uuid, name, lastUsed, lastModified, false,false);
+        super(directory, uuid, name, lastUsed, lastModified, null, false,false);
         this.categoryUuid = categoryUuid;
         this.store = store;
         this.explicitOrder = explicitOrder;
@@ -119,7 +115,6 @@ public class DataStoreEntry extends StorageElement {
         this.validity = Validity.INCOMPLETE;
         this.configuration = Configuration.defaultConfiguration();
         this.expanded = false;
-        this.color = null;
         this.provider = null;
         this.storePersistentStateNode = null;
     }
@@ -225,7 +220,7 @@ public class DataStoreEntry extends StorageElement {
         var color = Optional.ofNullable(stateJson.get("color"))
                 .map(node -> {
                     try {
-                        return mapper.treeToValue(node, DataStoreColor.class);
+                        return mapper.treeToValue(node, DataColor.class);
                     } catch (JsonProcessingException e) {
                         return null;
                     }
@@ -372,9 +367,9 @@ public class DataStoreEntry extends StorageElement {
         obj.put("uuid", uuid.toString());
         obj.put("name", name);
         obj.put("categoryUuid", categoryUuid.toString());
+        obj.set("color", mapper.valueToTree(color));
         stateObj.put("lastUsed", lastUsed.toString());
         stateObj.put("lastModified", lastModified.toString());
-        stateObj.set("color", mapper.valueToTree(color));
         stateObj.set("persistentState", storePersistentStateNode);
         obj.set("configuration", mapper.valueToTree(configuration));
         stateObj.put("expanded", expanded);
@@ -400,14 +395,6 @@ public class DataStoreEntry extends StorageElement {
     public void setNotes(String newNotes) {
         var changed = !Objects.equals(notes, newNotes);
         this.notes = newNotes;
-        if (changed) {
-            notifyUpdate(false, true);
-        }
-    }
-
-    public void setColor(DataStoreColor newColor) {
-        var changed = !Objects.equals(color, newColor);
-        this.color = newColor;
         if (changed) {
             notifyUpdate(false, true);
         }

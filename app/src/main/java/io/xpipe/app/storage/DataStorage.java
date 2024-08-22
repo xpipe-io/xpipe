@@ -172,6 +172,7 @@ public abstract class DataStorage {
                     "Default",
                     Instant.now(),
                     Instant.now(),
+                    null,
                     true,
                     ALL_CONNECTIONS_CATEGORY_UUID,
                     StoreSortMode.getDefault(),
@@ -691,6 +692,22 @@ public abstract class DataStorage {
         }
 
         return false;
+    }
+
+    public DataColor getEffectiveColor(DataStoreEntry entry) {
+        var root = getRootForEntry(entry);
+        if (root.getColor() != null) {
+            return root.getColor();
+        }
+
+        var cats = getCategoryParentHierarchy(getStoreCategoryIfPresent(entry.getCategoryUuid()).orElseThrow());
+        for (DataStoreCategory cat : cats.reversed()) {
+            if (cat.getColor() != null) {
+                return cat.getColor();
+            }
+        }
+
+        return null;
     }
 
     public DataStoreEntry getRootForEntry(DataStoreEntry entry) {

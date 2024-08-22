@@ -6,7 +6,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
-import io.xpipe.app.storage.DataStoreColor;
+import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -36,7 +36,7 @@ public class StoreEntryWrapper {
     private final BooleanProperty expanded = new SimpleBooleanProperty();
     private final Property<Object> persistentState = new SimpleObjectProperty<>();
     private final Property<Map<String, Object>> cache = new SimpleObjectProperty<>(Map.of());
-    private final Property<DataStoreColor> color = new SimpleObjectProperty<>();
+    private final Property<DataColor> color = new SimpleObjectProperty<>();
     private final Property<StoreCategoryWrapper> category = new SimpleObjectProperty<>();
     private final Property<String> summary = new SimpleObjectProperty<>();
     private final Property<StoreNotes> notes;

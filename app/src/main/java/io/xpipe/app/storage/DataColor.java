@@ -1,12 +1,15 @@
 package io.xpipe.app.storage;
 
-import javafx.scene.paint.Color;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
+import javafx.scene.Node;
+import javafx.scene.paint.Color;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 @Getter
-public enum DataStoreColor {
+public enum DataColor {
     @JsonProperty("red")
     RED("red", "\uD83D\uDD34", Color.DARKRED),
 
@@ -23,7 +26,7 @@ public enum DataStoreColor {
     private final String emoji;
     private final Color terminalColor;
 
-    DataStoreColor(String id, String emoji, Color terminalColor) {
+    DataColor(String id, String emoji, Color terminalColor) {
         this.id = id;
         this.emoji = emoji;
         this.terminalColor = terminalColor;
@@ -37,5 +40,19 @@ public enum DataStoreColor {
     public String toHexString() {
         var value = terminalColor;
         return "#" + (format(value.getRed()) + format(value.getGreen()) + format(value.getBlue())).toUpperCase();
+    }
+
+    public static void applyStyleClasses(DataColor color, Node node) {
+        var newList = new ArrayList<>(node.getStyleClass());
+        newList.removeIf(s -> Arrays.stream(DataColor.values())
+                .anyMatch(
+                        dataStoreColor -> dataStoreColor.getId().equals(s)));
+        newList.remove("gray");
+        if (color != null) {
+            newList.add(color.getId());
+        } else {
+            newList.add("gray");
+        }
+        node.getStyleClass().setAll(newList);
     }
 }

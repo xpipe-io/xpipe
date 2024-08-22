@@ -6,6 +6,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 
+import io.xpipe.app.storage.DataColor;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,6 +30,7 @@ public class StoreCategoryWrapper {
     private final ObservableList<StoreCategoryWrapper> children;
     private final ObservableList<StoreEntryWrapper> containedEntries;
     private final BooleanProperty expanded = new SimpleBooleanProperty();
+    private final Property<DataColor> color = new SimpleObjectProperty<>();
 
     public StoreCategoryWrapper(DataStoreCategory category) {
         var d = 0;
@@ -51,6 +53,7 @@ public class StoreCategoryWrapper {
         this.share = new SimpleObjectProperty<>(category.isShare());
         this.children = FXCollections.observableArrayList();
         this.containedEntries = FXCollections.observableArrayList();
+        this.color.setValue(category.getColor());
         setupListeners();
     }
 
@@ -130,6 +133,7 @@ public class StoreCategoryWrapper {
         sortMode.setValue(category.getSortMode());
         share.setValue(category.isShare());
         expanded.setValue(category.isExpanded());
+        color.setValue(category.getColor());
 
         containedEntries.setAll(StoreViewState.get().getAllEntries().getList().stream()
                 .filter(entry -> {

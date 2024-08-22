@@ -223,7 +223,7 @@ public class StandardStorage extends DataStorage {
 
         var local = DataStorage.get().getStoreEntry(LOCAL_ID);
         if (storeEntriesSet.stream().noneMatch(entry -> entry.getColor() != null)) {
-            local.setColor(DataStoreColor.BLUE);
+            local.setColor(DataColor.BLUE);
         }
 
         // Reload stores, this time with all entry refs present

@@ -2,6 +2,7 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 
 import javafx.beans.property.Property;
@@ -15,7 +16,7 @@ import lombok.Value;
 
 import java.util.Objects;
 
-public class LazyTextFieldComp extends Comp<LazyTextFieldComp.Structure> {
+public class LazyTextFieldComp extends Comp<CompStructure<TextField>> {
 
     private final Property<String> currentValue;
     private final Property<String> appliedValue;
@@ -26,8 +27,7 @@ public class LazyTextFieldComp extends Comp<LazyTextFieldComp.Structure> {
     }
 
     @Override
-    public LazyTextFieldComp.Structure createBase() {
-        var sp = new StackPane();
+    public CompStructure<TextField> createBase() {
         var r = new TextField();
 
         r.setOnKeyPressed(ke -> {
@@ -48,23 +48,14 @@ public class LazyTextFieldComp extends Comp<LazyTextFieldComp.Structure> {
             }
         });
 
-        sp.focusedProperty().addListener((c, o, n) -> {
-            if (n) {
-                r.setDisable(false);
-                r.requestFocus();
-            }
-        });
-
         // Handles external updates
         PlatformThread.sync(appliedValue).addListener((observable, oldValue, n) -> {
             currentValue.setValue(n);
         });
 
-        r.setPrefWidth(0);
-        sp.getChildren().add(r);
-        sp.prefWidthProperty().bind(r.prefWidthProperty());
-        sp.prefHeightProperty().bind(r.prefHeightProperty());
+        r.setMinWidth(0);
         r.setDisable(true);
+        r.prefWidthProperty().bind(r.minWidthProperty());
 
         currentValue.subscribe(n -> {
             PlatformThread.runLaterIfNeeded(() -> {
@@ -86,7 +77,7 @@ public class LazyTextFieldComp extends Comp<LazyTextFieldComp.Structure> {
             }
         });
         r.getStyleClass().add("lazy-text-field-comp");
-        return new Structure(sp, r);
+        return new SimpleCompStructure<>(r);
     }
 
     @Value

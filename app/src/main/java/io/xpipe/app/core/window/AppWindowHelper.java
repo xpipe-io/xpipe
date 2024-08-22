@@ -214,8 +214,9 @@ public class AppWindowHelper {
             var r = scene.getRoot();
             if (r != null) {
                 var acc = Platform.isAccessibilityActive();
-                r.pseudoClassStateChanged(PseudoClass.getPseudoClass("key-navigation"), kb && !acc);
-                r.pseudoClassStateChanged(PseudoClass.getPseudoClass("normal-navigation"), !kb && !acc);
+                // This property is broken on some systems
+                r.pseudoClassStateChanged(PseudoClass.getPseudoClass("key-navigation"), kb);
+                r.pseudoClassStateChanged(PseudoClass.getPseudoClass("normal-navigation"), !kb);
                 r.pseudoClassStateChanged(PseudoClass.getPseudoClass("accessibility-navigation"), acc);
             }
         });
@@ -223,7 +224,8 @@ public class AppWindowHelper {
         Platform.accessibilityActiveProperty().addListener((observable, oldValue, newValue) -> {
             var r = scene.getRoot();
             if (r != null) {
-                r.pseudoClassStateChanged(PseudoClass.getPseudoClass("key-navigation"), false);
+                // This property is broken on some systems
+                r.pseudoClassStateChanged(PseudoClass.getPseudoClass("key-navigation"), true);
                 r.pseudoClassStateChanged(PseudoClass.getPseudoClass("normal-navigation"), false);
                 r.pseudoClassStateChanged(PseudoClass.getPseudoClass("accessibility-navigation"), true);
             }

@@ -8,7 +8,7 @@ import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
-import io.xpipe.app.storage.DataStoreColor;
+import io.xpipe.app.storage.DataColor;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -168,7 +168,7 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                                 return;
                             }
 
-                            struc.get().getStyleClass().removeIf(s -> Arrays.stream(DataStoreColor.values())
+                            struc.get().getStyleClass().removeIf(s -> Arrays.stream(DataColor.values())
                                     .anyMatch(dataStoreColor ->
                                             dataStoreColor.getId().equals(s)));
                             struc.get().getStyleClass().remove("gray");

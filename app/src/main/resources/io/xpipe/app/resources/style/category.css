@@ -1,7 +1,8 @@
 .category-button {
-    -fx-opacity: 0.8;
-    -fx-border-width: 0;
     -fx-background-color: transparent;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-border-width: 1px;
     -fx-padding: 0 0 0 2;
     -fx-background-insets: 0;
 }
@@ -10,31 +11,43 @@
     -fx-background-color: transparent;
 }
 
-.category-button .settings {
-    -fx-opacity: 1.0;
-}
-
 .category-button:hover, .root:key-navigation .category-button:focused {
     -fx-background-color: -color-bg-default;
 }
 
 .category:selected .category-button {
-    -fx-opacity: 1.0;
-    -fx-background-radius: 4px;
-    -fx-border-radius: 4px;
-    -fx-border-width: 1px;
     -fx-border-color: -color-border-default;
     -fx-background-color: -color-bg-default;
 }
 
-.category .separator {
-    -fx-padding: 0 5 0 5;
+.root:light .category.yellow > .category-button .expand-button .ikonli-font-icon {
+    -fx-icon-color: #888800;
 }
 
-
-.category .separator .line {
-    -fx-pref-height: 1;
-    -fx-background-color: -color-fg-default;
-    -fx-opacity: 0.5;
+.root:light .category.green > .category-button .expand-button .ikonli-font-icon {
+    -fx-icon-color: #0d770d;
 }
 
+.root:light .category.blue > .category-button  .expand-button .ikonli-font-icon {
+    -fx-icon-color: #1c62be;
+}
+
+.root:light .category.red > .category-button  .expand-button .ikonli-font-icon {
+    -fx-icon-color: #a40000;
+}
+
+.root:dark .category.yellow > .category-button .expand-button .ikonli-font-icon {
+    -fx-icon-color: yellow;
+}
+
+.root:dark .category.green > .category-button .expand-button .ikonli-font-icon {
+    -fx-icon-color: green;
+}
+
+.root:dark .category.blue > .category-button  .expand-button .ikonli-font-icon {
+    -fx-icon-color: #397fd5;
+}
+
+.root:dark .category.red > .category-button  .expand-button .ikonli-font-icon {
+    -fx-icon-color: red;
+}

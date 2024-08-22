@@ -7,7 +7,7 @@ import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
-import io.xpipe.app.storage.DataStoreColor;
+import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.binding.Bindings;
@@ -175,7 +175,7 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                         }
 
                         var newList = new ArrayList<>(struc.get().getStyleClass());
-                        newList.removeIf(s -> Arrays.stream(DataStoreColor.values())
+                        newList.removeIf(s -> Arrays.stream(DataColor.values())
                                 .anyMatch(
                                         dataStoreColor -> dataStoreColor.getId().equals(s)));
                         newList.remove("gray");
