@@ -618,7 +618,10 @@ public final class BrowserFileListComp extends SimpleComp {
 
             editing.addListener((observable, oldValue, newValue) -> {
                 if (getTableRow().getItem() != null && getTableRow().getItem().equals(newValue)) {
-                    PlatformThread.runLaterIfNeeded(() -> textField.requestFocus());
+                    PlatformThread.runLaterIfNeeded(() -> {
+                        textField.setDisable(false);
+                        textField.requestFocus();
+                    });
                 }
             });
 

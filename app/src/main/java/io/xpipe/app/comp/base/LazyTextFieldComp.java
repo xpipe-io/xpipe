@@ -45,6 +45,7 @@ public class LazyTextFieldComp extends Comp<CompStructure<TextField>> {
         r.focusedProperty().addListener((c, o, n) -> {
             if (!n) {
                 appliedValue.setValue(currentValue.getValue());
+                r.setDisable(true);
             }
         });
 
@@ -71,11 +72,6 @@ public class LazyTextFieldComp extends Comp<CompStructure<TextField>> {
             currentValue.setValue(newValue);
         });
 
-        r.focusedProperty().addListener((c, o, n) -> {
-            if (!n) {
-                r.setDisable(true);
-            }
-        });
         r.getStyleClass().add("lazy-text-field-comp");
         return new SimpleCompStructure<>(r);
     }

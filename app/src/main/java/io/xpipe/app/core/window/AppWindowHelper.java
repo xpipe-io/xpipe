@@ -213,21 +213,11 @@ public class AppWindowHelper {
         InputHelper.onNavigationInput(scene, (kb) -> {
             var r = scene.getRoot();
             if (r != null) {
-                var acc = Platform.isAccessibilityActive();
                 // This property is broken on some systems
+                var acc = Platform.isAccessibilityActive();
                 r.pseudoClassStateChanged(PseudoClass.getPseudoClass("key-navigation"), kb);
                 r.pseudoClassStateChanged(PseudoClass.getPseudoClass("normal-navigation"), !kb);
                 r.pseudoClassStateChanged(PseudoClass.getPseudoClass("accessibility-navigation"), acc);
-            }
-        });
-
-        Platform.accessibilityActiveProperty().addListener((observable, oldValue, newValue) -> {
-            var r = scene.getRoot();
-            if (r != null) {
-                // This property is broken on some systems
-                r.pseudoClassStateChanged(PseudoClass.getPseudoClass("key-navigation"), true);
-                r.pseudoClassStateChanged(PseudoClass.getPseudoClass("normal-navigation"), false);
-                r.pseudoClassStateChanged(PseudoClass.getPseudoClass("accessibility-navigation"), true);
             }
         });
     }
