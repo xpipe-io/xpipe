@@ -186,6 +186,15 @@ public class DataStoreEntry extends StorageElement {
                 .map(jsonNode -> UUID.fromString(jsonNode.textValue()))
                 .orElse(DataStorage.DEFAULT_CATEGORY_UUID);
         var name = json.required("name").textValue().trim();
+        var color = Optional.ofNullable(json.get("color"))
+                .map(node -> {
+                    try {
+                        return mapper.treeToValue(node, DataColor.class);
+                    } catch (JsonProcessingException e) {
+                        return null;
+                    }
+                })
+                .orElse(null);
 
         var persistentState = stateJson.get("persistentState");
         var lastUsed = Optional.ofNullable(stateJson.get("lastUsed"))
@@ -217,15 +226,16 @@ public class DataStoreEntry extends StorageElement {
         var expanded = Optional.ofNullable(stateJson.get("expanded"))
                 .map(jsonNode -> jsonNode.booleanValue())
                 .orElse(true);
-        var color = Optional.ofNullable(stateJson.get("color"))
-                .map(node -> {
-                    try {
-                        return mapper.treeToValue(node, DataColor.class);
-                    } catch (JsonProcessingException e) {
-                        return null;
-                    }
-                })
-                .orElse(null);
+
+        if (color == null) {
+            color = Optional.ofNullable(stateJson.get("color")).map(node -> {
+                try {
+                    return mapper.treeToValue(node, DataColor.class);
+                } catch (JsonProcessingException e) {
+                    return null;
+                }
+            }).orElse(null);
+        }
 
         String notes = null;
         if (Files.exists(notesFile)) {
