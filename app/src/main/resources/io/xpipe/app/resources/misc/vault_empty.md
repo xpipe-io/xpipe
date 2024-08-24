@@ -1,22 +1,26 @@
 # XPipe Vault (Keep this repository private!)
 
-⚠️ No connections have been pushed to this git repository.
-The push was successful but no connections were added.
+The git remote push succeeded. However, no connections have been pushed to this git repository yet.
+
+See below on how to do this.
 
 ## Troubleshooting
 
 ### Adding categories to the repository
 
+By default, no categories are set to shared so that you have explicit control on what connections to commit.
+
 To have your connections of a category put inside your git repository,
 you need to click on the `⚙️` icon (when hovering over the category)
 in your `Connections` tab under the category overview on the left side.
-Then click on `Add to git repository`, to sync the category and connections to your git repository.
+Then click on `Add to git repository` to sync the category and connections to your git repository.
+This will add all shareable connections to the git repository.
 
 ### Local connections are not synced
 
-Any connection under the local machine can not be shared as it refers to connections and data that are only available on a specific system.
+Any connection located under the local machine can not be shared as it refers to connections and data that are only available on the local system.
 
-Certain file-based connections, for example SSH configs, can be shared via git if the underlying data, in this case the file, have been added to the git repository as well in the `data` directory.
+Certain connections that are based on a local file, for example SSH configs, can be shared via git if the underlying data, in this case the file, have been added to the git repository as well.
 
 ### Other issues
 

@@ -19,11 +19,11 @@ You have the option to fetch any sensitive information like passwords from outsi
 In case you choose to store passwords and other secrets within XPipe, all sensitive information is encrypted when it is saved using AES with either:
 
 - A dynamically generated key file `vaultkey` (The data can then only be decrypted with that file present)
-- A custom master passphrase that can be set by you in the settings menu combined with the vault key file (This option is only as secure as the password you choose)
+- A custom master passphrase that can be set by you in the settings menu, combined with the vault key file (This option is only as secure as the password you choose)
 
 By default, general connection data is not encrypted, only secrets are.
 So things like hostnames and usernames are stored without encryption, which is in line with many other tools.
-There is an available vault setting to encrypt all connection data if you want to do that.
+There is an available vault setting in the settings menu to encrypt all connection data if you want to do that.
 
 ## Cloning the repository on other systems
 
@@ -38,24 +38,29 @@ Set the token permission for repository to Read and Write. The rest of the token
 Even if your git client prompts you for a password, you should enter your token unless your provider still uses passwords.
 
 If you don't want to enter your credentials every time, you can use any git credentials manager for that.
-For more information, see:
+For more information, see for example:
 - https://git-scm.com/doc/credential-helpers
 - https://docs.github.com/en/get-started/getting-started-with-git/caching-your-github-credentials-in-git
+
+Some modern git clients also take care of storing credentials automatically.
 
 ## Troubleshooting
 
 ### Adding categories to the repository
 
+By default, no categories are set to shared so that you have explicit control on what connections to commit.
+
 To have your connections of a category put inside your git repository,
 you need to click on the `⚙️` icon (when hovering over the category)
 in your `Connections` tab under the category overview on the left side.
-Then click on `Add to git repository`, to sync the category and connections to your git repository.
+Then click on `Add to git repository` to sync the category and connections to your git repository.
+This will add all shareable connections to the git repository.
 
-### Some local connections are not synced
+### Local connections are not synced
 
-Any connection under the local machine can not be shared as it refers to connections and data that are only available on a specific system.
+Any connection located under the local machine can not be shared as it refers to connections and data that are only available on the local system.
 
-Certain file-based connections, for example SSH configs, can be shared via git if the underlying data, in this case the file, have been added to the git repository as well in the `data` directory.
+Certain connections that are based on a local file, for example SSH configs, can be shared via git if the underlying data, in this case the file, have been added to the git repository as well.
 
 ### Other issues
 
