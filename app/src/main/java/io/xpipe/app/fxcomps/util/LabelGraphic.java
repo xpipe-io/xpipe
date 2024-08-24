@@ -46,7 +46,9 @@ public abstract class LabelGraphic {
 
         @Override
         public Node createGraphicNode() {
-            return PrettyImageHelper.ofFixedSizeSquare(file, size).styleClass("graphic").createRegion();
+            return PrettyImageHelper.ofFixedSizeSquare(file, size)
+                    .styleClass("graphic")
+                    .createRegion();
         }
     }
 

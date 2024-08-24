@@ -71,7 +71,8 @@ public abstract class MultiExecuteSelectionAction implements BranchAction {
                                     long exitCode;
                                     try (var command = pc.command(cmd)
                                             .withWorkingDirectory(
-                                                    model.getCurrentDirectory().getPath()).start()) {
+                                                    model.getCurrentDirectory().getPath())
+                                            .start()) {
                                         var r = command.readStdoutAndStderr();
                                         out.set(r[0]);
                                         err.set(r[1]);
@@ -79,7 +80,8 @@ public abstract class MultiExecuteSelectionAction implements BranchAction {
                                     }
                                     // Only throw actual error output
                                     if (exitCode != 0) {
-                                        throw ErrorEvent.expected(ProcessOutputException.of(exitCode, out.get(), err.get()));
+                                        throw ErrorEvent.expected(
+                                                ProcessOutputException.of(exitCode, out.get(), err.get()));
                                     }
                                 },
                                 false);

@@ -14,10 +14,13 @@ public class LinkFileEntry extends FileEntry {
     FileEntry target;
 
     public LinkFileEntry(
-            FileSystem fileSystem, @NonNull String path, Instant date, long size, @NonNull FileInfo info,
-            @NonNull FileEntry target
-    ) {
-        super(fileSystem, path, date, size, info,  FileKind.LINK);
+            FileSystem fileSystem,
+            @NonNull String path,
+            Instant date,
+            long size,
+            @NonNull FileInfo info,
+            @NonNull FileEntry target) {
+        super(fileSystem, path, date, size, info, FileKind.LINK);
         this.target = target;
     }
 

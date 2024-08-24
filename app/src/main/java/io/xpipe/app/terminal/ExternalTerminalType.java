@@ -13,8 +13,8 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.FailableFunction;
-
 import io.xpipe.core.util.XPipeInstallation;
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
@@ -240,12 +240,17 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         @Override
         protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
             try (var sc = LocalShell.getShell()) {
-                // Since mobaxterm uses its own cygwin environment, we have to provide the beacon auth secret to the tmp there as well
+                // Since mobaxterm uses its own cygwin environment, we have to provide the beacon auth secret to the tmp
+                // there as well
                 // Otherwise it can't connect
                 var slashTemp = Path.of(System.getenv("APPDATA"), "MobaXterm", "slash", "tmp");
                 if (Files.exists(slashTemp)) {
-                    var authFileName = XPipeInstallation.getLocalBeaconAuthFile().getFileName().toString();
-                    Files.writeString(Path.of(slashTemp.toString(), authFileName),AppBeaconServer.get().getLocalAuthSecret());
+                    var authFileName = XPipeInstallation.getLocalBeaconAuthFile()
+                            .getFileName()
+                            .toString();
+                    Files.writeString(
+                            Path.of(slashTemp.toString(), authFileName),
+                            AppBeaconServer.get().getLocalAuthSecret());
                 }
 
                 var fixedFile = configuration

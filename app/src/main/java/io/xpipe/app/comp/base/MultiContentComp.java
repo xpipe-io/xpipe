@@ -47,25 +47,25 @@ public class MultiContentComp extends SimpleComp {
         return stack;
     }
 
-//    Lazy impl
-//    @Override
-//    protected Region createSimple() {
-//        var stack = new StackPane();
-//        for (Map.Entry<Comp<?>, ObservableValue<Boolean>> e : content.entrySet()) {
-//            var r = e.getKey().createRegion();
-//            e.getValue().subscribe(val -> {
-//                PlatformThread.runLaterIfNeeded(() -> {
-//                    r.setManaged(val);
-//                    r.setVisible(val);
-//                    if (val && !stack.getChildren().contains(r)) {
-//                        stack.getChildren().add(r);
-//                    } else {
-//                        stack.getChildren().remove(r);
-//                    }
-//                });
-//            });
-//        }
-//
-//        return stack;
-//    }
+    //    Lazy impl
+    //    @Override
+    //    protected Region createSimple() {
+    //        var stack = new StackPane();
+    //        for (Map.Entry<Comp<?>, ObservableValue<Boolean>> e : content.entrySet()) {
+    //            var r = e.getKey().createRegion();
+    //            e.getValue().subscribe(val -> {
+    //                PlatformThread.runLaterIfNeeded(() -> {
+    //                    r.setManaged(val);
+    //                    r.setVisible(val);
+    //                    if (val && !stack.getChildren().contains(r)) {
+    //                        stack.getChildren().add(r);
+    //                    } else {
+    //                        stack.getChildren().remove(r);
+    //                    }
+    //                });
+    //            });
+    //        }
+    //
+    //        return stack;
+    //    }
 }

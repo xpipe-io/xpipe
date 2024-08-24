@@ -2,8 +2,10 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
+
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
+
 import org.apache.commons.io.FilenameUtils;
 
 import java.awt.image.BufferedImage;

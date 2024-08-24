@@ -1,9 +1,9 @@
 package io.xpipe.app.storage;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.xpipe.app.comp.store.StoreSortMode;
 import io.xpipe.core.util.JacksonMapper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -128,8 +128,8 @@ public class DataStoreCategory extends StorageElement {
                 .map(jsonNode -> jsonNode.booleanValue())
                 .orElse(true);
 
-        return Optional.of(
-                new DataStoreCategory(dir, uuid, name, lastUsed, lastModified, color, false, parentUuid, sortMode, share, expanded));
+        return Optional.of(new DataStoreCategory(
+                dir, uuid, name, lastUsed, lastModified, color, false, parentUuid, sortMode, share, expanded));
     }
 
     public void setSortMode(StoreSortMode sortMode) {

@@ -10,6 +10,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.EnabledStoreState;
 import io.xpipe.core.store.StatefulDataStore;
+
 import javafx.beans.property.SimpleBooleanProperty;
 
 public interface EnabledParentStoreProvider extends DataStoreProvider {
@@ -32,11 +33,14 @@ public interface EnabledParentStoreProvider extends DataStoreProvider {
                     var state = s.getState().toBuilder().enabled(aBoolean).build();
                     s.setState(state);
 
-                    var children = DataStorage.get().getStoreChildren(sec.getWrapper().getEntry());
+                    var children =
+                            DataStorage.get().getStoreChildren(sec.getWrapper().getEntry());
                     ThreadHelper.runFailableAsync(() -> {
                         for (DataStoreEntry child : children) {
                             if (child.getStorePersistentState() instanceof EnabledStoreState enabledStoreState) {
-                                child.setStorePersistentState(enabledStoreState.toBuilder().enabled(aBoolean).build());
+                                child.setStorePersistentState(enabledStoreState.toBuilder()
+                                        .enabled(aBoolean)
+                                        .build());
                             }
                         }
                     });

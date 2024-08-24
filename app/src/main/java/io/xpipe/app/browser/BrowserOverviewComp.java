@@ -63,9 +63,7 @@ public class BrowserOverviewComp extends SimpleComp {
         var commonPane = new SimpleTitledPaneComp(AppI18n.observable("common"), commonOverview)
                 .apply(struc -> VBox.setVgrow(struc.get(), Priority.NEVER));
 
-        var roots = model.getFileSystem()
-                .listRoots()
-                .stream()
+        var roots = model.getFileSystem().listRoots().stream()
                 .map(s -> FileEntry.ofDirectory(model.getFileSystem(), s))
                 .toList();
         var rootsOverview = new BrowserFileOverviewComp(model, FXCollections.observableArrayList(roots), false);

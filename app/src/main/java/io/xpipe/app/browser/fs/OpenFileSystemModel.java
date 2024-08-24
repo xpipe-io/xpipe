@@ -305,8 +305,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
         loadFilesSync(path);
     }
 
-    public void withFiles(String dir, FailableConsumer<Stream<FileEntry>, Exception> consumer)
-            throws Exception {
+    public void withFiles(String dir, FailableConsumer<Stream<FileEntry>, Exception> consumer) throws Exception {
         BooleanScope.executeExclusive(busy, () -> {
             if (dir != null) {
                 startIfNeeded();
@@ -357,8 +356,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
         });
     }
 
-    public void dropFilesIntoAsync(
-            FileEntry target, List<FileEntry> files, BrowserFileTransferMode mode) {
+    public void dropFilesIntoAsync(FileEntry target, List<FileEntry> files, BrowserFileTransferMode mode) {
         // We don't have to do anything in this case
         if (files.isEmpty()) {
             return;

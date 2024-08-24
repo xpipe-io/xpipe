@@ -58,14 +58,9 @@ public class StoreToggleComp extends SimpleComp {
         ObservableValue<LabelGraphic> g = val.map(aBoolean -> aBoolean
                 ? new LabelGraphic.IconGraphic("mdi2c-circle-slice-8")
                 : new LabelGraphic.IconGraphic("mdi2p-power"));
-        var t = new StoreToggleComp(
-                nameKey,
-                g,
-                section,
-                value,
-                v -> {
-                    setter.accept(section.getWrapper().getEntry().getStore().asNeeded(), v);
-                });
+        var t = new StoreToggleComp(nameKey, g, section, value, v -> {
+            setter.accept(section.getWrapper().getEntry().getStore().asNeeded(), v);
+        });
         t.tooltipKey("enabled");
         t.value.subscribe((newValue) -> {
             val.set(newValue);

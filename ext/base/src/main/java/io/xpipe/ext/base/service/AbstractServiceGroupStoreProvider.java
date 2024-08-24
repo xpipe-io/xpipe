@@ -35,20 +35,22 @@ public abstract class AbstractServiceGroupStoreProvider implements DataStoreProv
     }
 
     private StoreToggleComp createToggleComp(StoreSection sec) {
-        var t = StoreToggleComp.<AbstractServiceGroupStore<?>>enableToggle(null, sec, new SimpleBooleanProperty(false), (g, aBoolean) -> {
-            var children = DataStorage.get().getStoreChildren(sec.getWrapper().getEntry());
-            ThreadHelper.runFailableAsync(() -> {
-                for (DataStoreEntry child : children) {
-                    if (child.getStore() instanceof AbstractServiceStore serviceStore) {
-                        if (aBoolean) {
-                            serviceStore.startSessionIfNeeded();
-                        } else {
-                            serviceStore.stopSessionIfNeeded();
+        var t = StoreToggleComp.<AbstractServiceGroupStore<?>>enableToggle(
+                null, sec, new SimpleBooleanProperty(false), (g, aBoolean) -> {
+                    var children =
+                            DataStorage.get().getStoreChildren(sec.getWrapper().getEntry());
+                    ThreadHelper.runFailableAsync(() -> {
+                        for (DataStoreEntry child : children) {
+                            if (child.getStore() instanceof AbstractServiceStore serviceStore) {
+                                if (aBoolean) {
+                                    serviceStore.startSessionIfNeeded();
+                                } else {
+                                    serviceStore.stopSessionIfNeeded();
+                                }
+                            }
                         }
-                    }
-                }
-            });
-        });
+                    });
+                });
         t.setCustomVisibility(Bindings.createBooleanBinding(
                 () -> {
                     var children =

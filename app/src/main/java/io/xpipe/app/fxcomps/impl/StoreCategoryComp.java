@@ -17,6 +17,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.util.ContextMenuHelper;
 import io.xpipe.app.util.DataStoreFormatter;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.css.PseudoClass;
@@ -31,6 +32,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
+
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -57,13 +59,15 @@ public class StoreCategoryComp extends SimpleComp {
 
         var expandIcon = Bindings.createStringBinding(
                 () -> {
-                    var exp = category.getExpanded().get() && category.getChildren().size() > 0;
+                    var exp = category.getExpanded().get()
+                            && category.getChildren().size() > 0;
                     return exp ? "mdal-keyboard_arrow_down" : "mdal-keyboard_arrow_right";
                 },
-                category.getExpanded(), category.getChildren());
+                category.getExpanded(),
+                category.getChildren());
         var expandButton = new IconButtonComp(expandIcon, () -> {
-            category.toggleExpanded();
-        })
+                    category.toggleExpanded();
+                })
                 .apply(struc -> AppFont.medium(struc.get()))
                 .apply(struc -> {
                     struc.get().setAlignment(Pos.CENTER);
@@ -87,7 +91,8 @@ public class StoreCategoryComp extends SimpleComp {
 
                     return category.getShare().getValue() ? "mdi2g-git" : "mdi2a-account-cancel";
                 },
-                category.getShare(), hover);
+                category.getShare(),
+                hover);
         var statusButton = new IconButtonComp(statusIcon)
                 .apply(struc -> AppFont.small(struc.get()))
                 .apply(struc -> {
@@ -98,10 +103,10 @@ public class StoreCategoryComp extends SimpleComp {
                 })
                 .apply(new ContextMenuAugment<>(
                         mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, null, () -> {
-                    var cm = createContextMenu(name);
-                    showing.bind(cm.showingProperty());
-                    return cm;
-                }))
+                            var cm = createContextMenu(name);
+                            showing.bind(cm.showingProperty());
+                            return cm;
+                        }))
                 .styleClass("status-button");
 
         var shownList = new DerivedObservableList<>(category.getContainedEntries(), true)
@@ -114,7 +119,8 @@ public class StoreCategoryComp extends SimpleComp {
                 .getList();
         var count = new CountComp<>(shownList, category.getContainedEntries(), string -> "(" + string + ")");
 
-        var showStatus = hover.or(new SimpleBooleanProperty(DataStorage.get().supportsSharing())).or(showing);
+        var showStatus = hover.or(new SimpleBooleanProperty(DataStorage.get().supportsSharing()))
+                .or(showing);
         var focus = new SimpleBooleanProperty();
         var h = new HorizontalComp(List.of(
                 expandButton,
@@ -153,9 +159,13 @@ public class StoreCategoryComp extends SimpleComp {
                 new ListBoxViewComp<>(l, l, storeCategoryWrapper -> new StoreCategoryComp(storeCategoryWrapper), false);
         children.styleClass("children");
 
-        var hide = Bindings.createBooleanBinding(() -> {
-            return !category.getExpanded().get() || category.getChildren().isEmpty();
-        }, category.getChildren(), category.getExpanded());
+        var hide = Bindings.createBooleanBinding(
+                () -> {
+                    return !category.getExpanded().get()
+                            || category.getChildren().isEmpty();
+                },
+                category.getChildren(),
+                category.getExpanded());
         var v = new VerticalComp(List.of(categoryButton, children.hide(hide)));
         v.styleClass("category");
         v.apply(struc -> {

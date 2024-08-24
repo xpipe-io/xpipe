@@ -107,7 +107,7 @@ public class DataStoreEntry extends StorageElement {
             Instant lastModified,
             DataStore store,
             Order explicitOrder) {
-        super(directory, uuid, name, lastUsed, lastModified, null, false,false);
+        super(directory, uuid, name, lastUsed, lastModified, null, false, false);
         this.categoryUuid = categoryUuid;
         this.store = store;
         this.explicitOrder = explicitOrder;
@@ -228,13 +228,15 @@ public class DataStoreEntry extends StorageElement {
                 .orElse(true);
 
         if (color == null) {
-            color = Optional.ofNullable(stateJson.get("color")).map(node -> {
-                try {
-                    return mapper.treeToValue(node, DataColor.class);
-                } catch (JsonProcessingException e) {
-                    return null;
-                }
-            }).orElse(null);
+            color = Optional.ofNullable(stateJson.get("color"))
+                    .map(node -> {
+                        try {
+                            return mapper.treeToValue(node, DataColor.class);
+                        } catch (JsonProcessingException e) {
+                            return null;
+                        }
+                    })
+                    .orElse(null);
         }
 
         String notes = null;

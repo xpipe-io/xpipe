@@ -1,8 +1,9 @@
 package io.xpipe.app.storage;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -45,8 +46,7 @@ public enum DataColor {
     public static void applyStyleClasses(DataColor color, Node node) {
         var newList = new ArrayList<>(node.getStyleClass());
         newList.removeIf(s -> Arrays.stream(DataColor.values())
-                .anyMatch(
-                        dataStoreColor -> dataStoreColor.getId().equals(s)));
+                .anyMatch(dataStoreColor -> dataStoreColor.getId().equals(s)));
         newList.remove("gray");
         if (color != null) {
             newList.add(color.getId());

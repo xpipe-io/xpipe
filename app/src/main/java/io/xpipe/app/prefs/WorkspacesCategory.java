@@ -16,11 +16,17 @@ public class WorkspacesCategory extends AppPrefsCategory {
     @Override
     protected Comp<?> create() {
         return new OptionsBuilder()
-                .addTitle(AppI18n.observable("manageWorkspaces").map(s -> s + (LicenseProvider.get().getFeature("workspaces").isSupported() ? "" : " (Pro)")))
+                .addTitle(AppI18n.observable("manageWorkspaces")
+                        .map(s -> s
+                                + (LicenseProvider.get()
+                                                .getFeature("workspaces")
+                                                .isSupported()
+                                        ? ""
+                                        : " (Pro)")))
                 .sub(new OptionsBuilder()
                         .nameAndDescription("workspaceAdd")
                         .addComp(new ButtonComp(AppI18n.observable("addWorkspace"), WorkspaceCreationAlert::showAsync)))
-                        .disable(!LicenseProvider.get().getFeature("workspaces").isSupported())
+                .disable(!LicenseProvider.get().getFeature("workspaces").isSupported())
                 .buildComp();
     }
 }

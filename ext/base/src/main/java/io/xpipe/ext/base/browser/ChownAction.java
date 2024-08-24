@@ -7,9 +7,11 @@ import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -40,8 +42,12 @@ public class ChownAction implements BranchAction {
     @Override
     public List<LeafAction> getBranchingActions(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return model.getCache().getUsers().entrySet().stream()
-                .filter(e -> !e.getValue().equals("nohome") && !e.getValue().equals("nobody") && (e.getKey().equals(0) || e.getKey() >= 1000))
-                .map(e -> e.getValue()).map(s -> (LeafAction) new Chown(s)).toList();
+                .filter(e -> !e.getValue().equals("nohome")
+                        && !e.getValue().equals("nobody")
+                        && (e.getKey().equals(0) || e.getKey() >= 1000))
+                .map(e -> e.getValue())
+                .map(s -> (LeafAction) new Chown(s))
+                .toList();
     }
 
     private static class Chown implements LeafAction {

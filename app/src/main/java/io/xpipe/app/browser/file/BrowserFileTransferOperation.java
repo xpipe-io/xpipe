@@ -222,11 +222,7 @@ public class BrowserFileTransferOperation {
     }
 
     private void transfer(
-            FileEntry sourceFile,
-            String targetFile,
-            AtomicLong transferred,
-            AtomicLong totalSize,
-            Instant start)
+            FileEntry sourceFile, String targetFile, AtomicLong transferred, AtomicLong totalSize, Instant start)
             throws Exception {
         InputStream inputStream = null;
         OutputStream outputStream = null;

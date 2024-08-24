@@ -43,12 +43,17 @@ public abstract class StorageElement {
     @Getter
     protected boolean expanded;
 
-    protected @NonFinal
-    @Getter DataColor color;
-
+    protected @NonFinal @Getter DataColor color;
 
     public StorageElement(
-            Path directory, UUID uuid, String name, Instant lastUsed, Instant lastModified, DataColor color, boolean expanded, boolean dirty) {
+            Path directory,
+            UUID uuid,
+            String name,
+            Instant lastUsed,
+            Instant lastModified,
+            DataColor color,
+            boolean expanded,
+            boolean dirty) {
         this.directory = directory;
         this.uuid = uuid;
         this.name = name;

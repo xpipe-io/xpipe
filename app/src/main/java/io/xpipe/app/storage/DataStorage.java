@@ -700,7 +700,8 @@ public abstract class DataStorage {
             return root.getColor();
         }
 
-        var cats = getCategoryParentHierarchy(getStoreCategoryIfPresent(entry.getCategoryUuid()).orElseThrow());
+        var cats = getCategoryParentHierarchy(
+                getStoreCategoryIfPresent(entry.getCategoryUuid()).orElseThrow());
         for (DataStoreCategory cat : cats.reversed()) {
             if (cat.getColor() != null) {
                 return cat.getColor();

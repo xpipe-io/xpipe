@@ -1,8 +1,5 @@
 package io.xpipe.app.issue;
 
-import io.sentry.*;
-import io.sentry.protocol.SentryId;
-import io.sentry.protocol.User;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppState;
@@ -10,6 +7,10 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.LicenseProvider;
+
+import io.sentry.*;
+import io.sentry.protocol.SentryId;
+import io.sentry.protocol.User;
 import org.apache.commons.io.FileUtils;
 
 import java.io.ByteArrayInputStream;
@@ -163,7 +164,9 @@ public class SentryErrorHandler implements ErrorHandler {
         s.setTag("licenseRequired", Boolean.toString(ee.isLicenseRequired()));
 
         var exMessage = ee.getThrowable() != null ? ee.getThrowable().getMessage() : null;
-        if (ee.getDescription() != null && !ee.getDescription().equals(exMessage) && (ee.isShouldSendDiagnostics() || ee.isLicenseRequired())) {
+        if (ee.getDescription() != null
+                && !ee.getDescription().equals(exMessage)
+                && (ee.isShouldSendDiagnostics() || ee.isLicenseRequired())) {
             s.setTag("message", ee.getDescription().lines().collect(Collectors.joining(" ")));
         }
 

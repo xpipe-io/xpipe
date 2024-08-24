@@ -12,7 +12,7 @@ public class DesktopShortcuts {
         var icon = XPipeInstallation.getLocalDefaultInstallationIcon();
         var shortcutPath = DesktopHelper.getDesktopDirectory().resolve(name + ".lnk");
         var content = String.format(
-                """
+                        """
                         $TARGET="%s"
                         $SHORTCUT="%s"
                         $ws = New-Object -ComObject WScript.Shell
@@ -23,7 +23,8 @@ public class DesktopShortcuts {
                         $S.Arguments = '%s'
                         $S.Save()
                         """,
-                executable, shortcutPath, icon, args).replaceAll("\n", ";");
+                        executable, shortcutPath, icon, args)
+                .replaceAll("\n", ";");
         LocalShell.getLocalPowershell().executeSimpleCommand(content);
         return shortcutPath;
     }
