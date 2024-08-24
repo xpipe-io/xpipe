@@ -1,6 +1,5 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
@@ -13,12 +12,9 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.FailableFunction;
-import io.xpipe.core.util.XPipeInstallation;
-
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
-
 import lombok.Getter;
 import lombok.Value;
 import lombok.With;
@@ -240,32 +236,24 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         @Override
         protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
             try (var sc = LocalShell.getShell()) {
-                // Since mobaxterm uses its own cygwin environment, we have to provide the beacon auth secret to the tmp
-                // there as well
-                // Otherwise it can't connect
-                var slashTemp = Path.of(System.getenv("APPDATA"), "MobaXterm", "slash", "tmp");
-                if (Files.exists(slashTemp)) {
-                    var authFileName = XPipeInstallation.getLocalBeaconAuthFile()
-                            .getFileName()
-                            .toString();
-                    Files.writeString(
-                            Path.of(slashTemp.toString(), authFileName),
-                            AppBeaconServer.get().getLocalAuthSecret());
-                }
-
-                var fixedFile = configuration
-                        .getScriptFile()
+                SshLocalBridge.init();
+                var b = SshLocalBridge.get();
+                var command = CommandBuilder.of()
+                        .addFile("ssh")
+                        .addQuoted(b.getUser() + "@localhost")
+                        .add("-i")
+                        .add("\"$(cygpath \"" + b.getIdentityKey().toString() + "\")\"")
+                        .add("-p")
+                        .add("" + b.getPort());
+                var script = ScriptHelper.createExecScript(ShellDialects.BASH, sc, command.buildFull(sc));
+                var fixedFile = script
                         .toString()
                         .replaceAll("\\\\", "/")
                         .replaceAll("\\s", "\\$0");
-                var command = sc.getShellDialect() == ShellDialects.CMD
-                        ? CommandBuilder.of().addQuoted("cmd /c " + fixedFile)
-                        : CommandBuilder.of()
-                                .addQuoted("powershell -NoProfile -ExecutionPolicy Bypass -File " + fixedFile);
                 sc.command(CommandBuilder.of()
                                 .addFile(file.toString())
                                 .add("-newtab")
-                                .add(command))
+                                .add(fixedFile))
                         .execute();
             }
         }
