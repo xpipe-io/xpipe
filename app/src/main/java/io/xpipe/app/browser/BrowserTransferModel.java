@@ -166,7 +166,7 @@ public class BrowserTransferModel {
             var target = downloads.resolve(file.getFileName());
             // Prevent DirectoryNotEmptyException
             if (Files.exists(target) && Files.isDirectory(target)) {
-                Files.delete(target);
+                FileUtils.deleteDirectory(target.toFile());
             }
             Files.move(file, target, StandardCopyOption.REPLACE_EXISTING);
         }

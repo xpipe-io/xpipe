@@ -634,6 +634,10 @@ public final class BrowserFileListComp extends SimpleComp {
                 var it = getTableRow().getItem();
                 editing.setValue(null);
                 ThreadHelper.runAsync(() -> {
+                    if (it == null) {
+                        return;
+                    }
+
                     var r = fileList.rename(it, newValue);
                     Platform.runLater(() -> {
                         updateItem(getItem(), isEmpty());

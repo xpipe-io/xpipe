@@ -10,6 +10,7 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.update.UpdateChangelogAlert;
+import io.xpipe.app.util.NativeBridge;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.stage.Stage;
@@ -37,6 +38,7 @@ public class GuiMode extends PlatformMode {
 
         AppGreetings.showIfNeeded();
         AppPtbCheck.check();
+        NativeBridge.init();
 
         TrackEvent.info("Waiting for window setup completion ...");
         PlatformThread.runLaterIfNeededBlocking(() -> {

@@ -12,7 +12,7 @@ public class SshLaunchExchangeImpl extends SshLaunchExchange {
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) throws Exception {
-        var usedDialect = ShellDialects.ALL.stream()
+        var usedDialect = ShellDialects.getStartableDialects().stream()
                 .filter(dialect -> dialect.getExecutableName().equalsIgnoreCase(msg.getArguments()))
                 .findFirst();
         if (msg.getArguments() != null
@@ -21,6 +21,8 @@ public class SshLaunchExchangeImpl extends SshLaunchExchange {
             throw new BeaconClientException("Unexpected argument: " + msg.getArguments());
         }
 
+        // There are sometimes multiple requests by a terminal client (e.g. Termius)
+        // This might fail sometimes, but it is expected
         var r = TerminalLauncherManager.waitForNextLaunch();
         var c = ProcessControlProvider.get()
                 .getEffectiveLocalDialect()

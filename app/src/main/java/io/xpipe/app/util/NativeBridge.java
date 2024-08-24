@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.XPipeInstallation;
 
 import com.sun.jna.Library;
@@ -14,6 +15,13 @@ public class NativeBridge {
 
     private static MacOsLibrary macOsLibrary;
     private static boolean loadingFailed;
+
+    public static void init() {
+        // Preload
+        if (OsType.getLocal() == OsType.MACOS) {
+            getMacOsLibrary();
+        }
+    }
 
     public static Optional<MacOsLibrary> getMacOsLibrary() {
         if (macOsLibrary == null && !loadingFailed) {

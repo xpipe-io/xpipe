@@ -99,7 +99,8 @@ public final class BrowserFileListModel {
     }
 
     public BrowserEntry rename(BrowserEntry old, String newName) {
-        if (fileSystemModel == null
+        if (old == null || newName == null
+                || fileSystemModel == null
                 || fileSystemModel.isClosed()
                 || fileSystemModel.getCurrentPath().get() == null) {
             return old;

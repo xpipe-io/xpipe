@@ -5,14 +5,17 @@ import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.process.CommandBuilder;
+import io.xpipe.core.process.ProcessOutputException;
 import io.xpipe.core.process.ShellControl;
 
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class MultiExecuteSelectionAction implements BranchAction {
 
@@ -63,10 +66,21 @@ public abstract class MultiExecuteSelectionAction implements BranchAction {
                         model.withShell(
                                 pc -> {
                                     var cmd = createCommand(pc, model, entries);
-                                    pc.command(cmd)
+                                    AtomicReference<String> out = new AtomicReference<>();
+                                    AtomicReference<String> err = new AtomicReference<>();
+                                    long exitCode;
+                                    try (var command = pc.command(cmd)
                                             .withWorkingDirectory(
-                                                    model.getCurrentDirectory().getPath())
-                                            .execute();
+                                                    model.getCurrentDirectory().getPath()).start()) {
+                                        var r = command.readStdoutAndStderr();
+                                        out.set(r[0]);
+                                        err.set(r[1]);
+                                        exitCode = command.getExitCode();
+                                    }
+                                    // Only throw actual error output
+                                    if (exitCode != 0) {
+                                        throw ErrorEvent.expected(ProcessOutputException.of(exitCode, out.get(), err.get()));
+                                    }
                                 },
                                 false);
                     }

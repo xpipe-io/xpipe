@@ -23,7 +23,7 @@ public class DesktopShortcuts {
                         $S.Arguments = '%s'
                         $S.Save()
                         """,
-                executable, shortcutPath, icon, args);
+                executable, shortcutPath, icon, args).replaceAll("\n", ";");
         LocalShell.getLocalPowershell().executeSimpleCommand(content);
         return shortcutPath;
     }

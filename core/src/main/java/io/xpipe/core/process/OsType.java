@@ -28,7 +28,7 @@ public interface OsType {
 
     List<String> determineInterestingPaths(ShellControl pc) throws Exception;
 
-    String getHomeDirectory(ShellControl pc) throws Exception;
+    String getUserHomeDirectory(ShellControl pc) throws Exception;
 
     String getFileSystemSeparator();
 
@@ -55,7 +55,7 @@ public interface OsType {
 
         @Override
         public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
-            var home = getHomeDirectory(pc);
+            var home = getUserHomeDirectory(pc);
             return List.of(
                     home,
                     FileNames.join(home, "Documents"),
@@ -64,7 +64,7 @@ public interface OsType {
         }
 
         @Override
-        public String getHomeDirectory(ShellControl pc) throws Exception {
+        public String getUserHomeDirectory(ShellControl pc) throws Exception {
             return pc.executeSimpleStringCommand(
                     pc.getShellDialect().getPrintEnvironmentVariableCommand("USERPROFILE"));
         }
@@ -95,10 +95,10 @@ public interface OsType {
 
         @Override
         public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
-            var home = getHomeDirectory(pc);
+            var home = getUserHomeDirectory(pc);
             return List.of(
                     home,
-                    "/home",
+                    FileNames.getParent(home),
                     FileNames.join(home, "Downloads"),
                     FileNames.join(home, "Documents"),
                     "/etc",
@@ -107,7 +107,7 @@ public interface OsType {
         }
 
         @Override
-        public String getHomeDirectory(ShellControl pc) throws Exception {
+        public String getUserHomeDirectory(ShellControl pc) throws Exception {
             return pc.executeSimpleStringCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("HOME"));
         }
 
@@ -149,7 +149,7 @@ public interface OsType {
 
         @Override
         public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
-            var home = getHomeDirectory(pc);
+            var home = getUserHomeDirectory(pc);
             return List.of(
                     home,
                     FileNames.join(home, "Downloads"),
@@ -162,7 +162,7 @@ public interface OsType {
         }
 
         @Override
-        public String getHomeDirectory(ShellControl pc) throws Exception {
+        public String getUserHomeDirectory(ShellControl pc) throws Exception {
             return pc.executeSimpleStringCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("HOME"));
         }
 
