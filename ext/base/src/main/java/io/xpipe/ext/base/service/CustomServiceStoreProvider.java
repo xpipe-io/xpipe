@@ -8,7 +8,6 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.NetworkTunnelStore;
-
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 
@@ -18,7 +17,7 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
 
     @Override
     public DataStoreCreationCategory getCreationCategory() {
-        return DataStoreCreationCategory.SERVICE;
+        return DataStoreCreationCategory.TUNNEL;
     }
 
     @Override

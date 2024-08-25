@@ -4,7 +4,6 @@ public enum DataStoreCreationCategory {
     HOST,
     DATABASE,
     SHELL,
-    SERVICE,
     COMMAND,
     TUNNEL,
     SCRIPT,

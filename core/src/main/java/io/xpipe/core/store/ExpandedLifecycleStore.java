@@ -2,7 +2,7 @@ package io.xpipe.core.store;
 
 public interface ExpandedLifecycleStore extends DataStore {
 
-    default void initializeValidate() {}
+    default void initializeStore() {}
 
-    default void finalizeValidate() throws Exception {}
+    default void finalizeStore() throws Exception {}
 }

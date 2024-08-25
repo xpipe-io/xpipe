@@ -2,6 +2,7 @@ package io.xpipe.core.process;
 
 import io.xpipe.core.store.FileNames;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -96,14 +97,18 @@ public interface OsType {
         @Override
         public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
             var home = getUserHomeDirectory(pc);
-            return List.of(
+            var list = new ArrayList<>(List.of(
                     home,
-                    FileNames.getParent(home),
                     FileNames.join(home, "Downloads"),
                     FileNames.join(home, "Documents"),
                     "/etc",
                     "/tmp",
-                    "/var");
+                    "/var"));
+            var parentHome = FileNames.getParent(home);
+            if (parentHome != null && !parentHome.equals("/")) {
+                list.add(3, parentHome);
+            }
+            return list;
         }
 
         @Override

@@ -194,11 +194,9 @@ public final class BrowserFileListComp extends SimpleComp {
                 ? unix.getGroup()
                 : m.getCache().getGroups().get(unix.getGid());
         var uid = String.valueOf(
-                        unix.getUid() != null ? unix.getUid() : m.getCache().getUidForUser(user))
-                .replaceAll("000$", "k");
+                        unix.getUid() != null ? unix.getUid() : m.getCache().getUidForUser(user));
         var gid = String.valueOf(
-                        unix.getGid() != null ? unix.getGid() : m.getCache().getGidForGroup(group))
-                .replaceAll("000$", "k");
+                        unix.getGid() != null ? unix.getGid() : m.getCache().getGidForGroup(group));
         if (uid.equals(gid)) {
             return user + " [" + uid + "]";
         }

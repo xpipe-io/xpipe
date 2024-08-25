@@ -35,10 +35,8 @@ public class StoreCreationMenu {
         menu.getItems()
                 .add(category("addScript", "mdi2s-script-text-outline", DataStoreCreationCategory.SCRIPT, "script"));
 
-        menu.getItems().add(category("addService", "mdi2c-cloud-braces", DataStoreCreationCategory.SERVICE, null));
-
         menu.getItems()
-                .add(category("addTunnel", "mdi2v-vector-polyline-plus", DataStoreCreationCategory.TUNNEL, null));
+                .add(category("addTunnel", "mdi2v-vector-polyline-plus", DataStoreCreationCategory.TUNNEL, "customService"));
 
         menu.getItems().add(category("addCommand", "mdi2c-code-greater-than", DataStoreCreationCategory.COMMAND, null));
 
@@ -82,8 +80,10 @@ public class StoreCreationMenu {
                     category);
             event.consume();
         });
+        // Ugly sorting
         var providers = sub.stream()
-                .sorted((o1, o2) -> -o1.getModuleName().compareTo(o2.getModuleName()))
+                .sorted((o1, o2) -> category == DataStoreCreationCategory.DESKTOP ?
+                        -o1.getModuleName().compareTo(o2.getModuleName()) : o1.getModuleName().compareTo(o2.getModuleName()))
                 .toList();
         for (int i = 0; i < providers.size(); i++) {
             var dataStoreProvider = providers.get(i);

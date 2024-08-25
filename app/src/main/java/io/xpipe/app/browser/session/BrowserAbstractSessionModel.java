@@ -37,7 +37,7 @@ public class BrowserAbstractSessionModel<T extends BrowserSessionTab<?>> {
         }
     }
 
-    void closeSync(BrowserSessionTab<?> e) {
+    public void closeSync(BrowserSessionTab<?> e) {
         e.close();
         synchronized (BrowserAbstractSessionModel.this) {
             this.sessionEntries.remove(e);

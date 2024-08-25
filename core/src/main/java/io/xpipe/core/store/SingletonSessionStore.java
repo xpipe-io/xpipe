@@ -4,7 +4,7 @@ public interface SingletonSessionStore<T extends Session>
         extends ExpandedLifecycleStore, InternalCacheDataStore, SessionListener {
 
     @Override
-    default void finalizeValidate() throws Exception {
+    default void finalizeStore() throws Exception {
         stopSessionIfNeeded();
     }
 

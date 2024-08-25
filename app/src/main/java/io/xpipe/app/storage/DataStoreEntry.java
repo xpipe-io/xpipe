@@ -520,7 +520,7 @@ public class DataStoreEntry extends StorageElement {
             try {
                 incrementBusyCounter();
                 notifyUpdate(false, false);
-                lifecycleStore.initializeValidate();
+                lifecycleStore.initializeStore();
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).handle();
             } finally {
@@ -536,7 +536,7 @@ public class DataStoreEntry extends StorageElement {
             try {
                 incrementBusyCounter();
                 notifyUpdate(false, false);
-                lifecycleStore.finalizeValidate();
+                lifecycleStore.finalizeStore();
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).handle();
             } finally {
