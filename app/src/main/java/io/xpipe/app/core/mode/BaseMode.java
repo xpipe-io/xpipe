@@ -14,7 +14,7 @@ import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.GitStorageHandler;
+import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.*;
 
@@ -54,8 +54,8 @@ public class BaseMode extends OperationMode {
         AppPrefs.setLocalDefaultsIfNeeded();
         // Initialize beacon server as we should be prepared for git askpass commands
         AppBeaconServer.init();
-        GitStorageHandler.getInstance().init();
-        GitStorageHandler.getInstance().setupRepositoryAndPull();
+        DataStorageSyncHandler.getInstance().init();
+        DataStorageSyncHandler.getInstance().retrieveSyncedData();
         AppPrefs.initSharedRemote();
         UnlockAlert.showIfNeeded();
         DataStorage.init();

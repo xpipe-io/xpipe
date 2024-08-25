@@ -89,9 +89,9 @@ public class StoreCategoryComp extends SimpleComp {
                         return "mdi2a-account-lock";
                     }
 
-                    return category.getShare().getValue() ? "mdi2g-git" : "mdi2a-account-cancel";
+                    return category.getSync().getValue() ? "mdi2g-git" : "mdi2a-account-cancel";
                 },
-                category.getShare(),
+                category.getSync(),
                 hover);
         var statusButton = new IconButtonComp(statusIcon)
                 .apply(struc -> AppFont.small(struc.get()))
@@ -217,25 +217,25 @@ public class StoreCategoryComp extends SimpleComp {
             share.textProperty()
                     .bind(Bindings.createStringBinding(
                             () -> {
-                                if (category.getShare().getValue()) {
+                                if (category.getSync().getValue()) {
                                     return AppI18n.get("unshare");
                                 } else {
                                     return AppI18n.get("share");
                                 }
                             },
-                            category.getShare()));
+                            category.getSync()));
             share.graphicProperty()
                     .bind(Bindings.createObjectBinding(
                             () -> {
-                                if (category.getShare().getValue()) {
+                                if (category.getSync().getValue()) {
                                     return new FontIcon("mdi2b-block-helper");
                                 } else {
                                     return new FontIcon("mdi2g-git");
                                 }
                             },
-                            category.getShare()));
+                            category.getSync()));
             share.setOnAction(event -> {
-                category.getShare().setValue(!category.getShare().getValue());
+                category.getSync().setValue(!category.getSync().getValue());
             });
             contextMenu.getItems().add(share);
         }

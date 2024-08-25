@@ -4,17 +4,17 @@ import io.xpipe.core.process.ProcessControlProvider;
 
 import java.nio.file.Path;
 
-public interface GitStorageHandler {
+public interface DataStorageSyncHandler {
 
-    static GitStorageHandler getInstance() {
-        return (GitStorageHandler) ProcessControlProvider.get().getGitStorageHandler();
+    static DataStorageSyncHandler getInstance() {
+        return (DataStorageSyncHandler) ProcessControlProvider.get().getGitStorageHandler();
     }
 
-    boolean supportsShare();
+    boolean supportsSync();
 
     void init();
 
-    void setupRepositoryAndPull();
+    void retrieveSyncedData();
 
     void afterStorageLoad();
 

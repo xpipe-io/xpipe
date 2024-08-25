@@ -315,8 +315,8 @@ public abstract class DataStorage {
         saveAsync();
     }
 
-    public void shareCategory(DataStoreCategory category, boolean share) {
-        category.setShare(share);
+    public void syncCategory(DataStoreCategory category, boolean share) {
+        category.setSync(share);
 
         DataStoreCategory p = category;
         if (share) {
@@ -324,7 +324,7 @@ public abstract class DataStorage {
                             .getStoreCategoryIfPresent(p.getParentCategory())
                             .orElse(null))
                     != null) {
-                p.setShare(true);
+                p.setSync(true);
             }
         }
 

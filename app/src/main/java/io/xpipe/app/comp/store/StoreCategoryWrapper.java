@@ -26,7 +26,7 @@ public class StoreCategoryWrapper {
     private final DataStoreCategory category;
     private final Property<Instant> lastAccess;
     private final Property<StoreSortMode> sortMode;
-    private final Property<Boolean> share;
+    private final Property<Boolean> sync;
     private final ObservableList<StoreCategoryWrapper> children;
     private final ObservableList<StoreEntryWrapper> containedEntries;
     private final BooleanProperty expanded = new SimpleBooleanProperty();
@@ -50,7 +50,7 @@ public class StoreCategoryWrapper {
         this.name = new SimpleStringProperty(category.getName());
         this.lastAccess = new SimpleObjectProperty<>(category.getLastAccess());
         this.sortMode = new SimpleObjectProperty<>(category.getSortMode());
-        this.share = new SimpleObjectProperty<>(category.isShare());
+        this.sync = new SimpleObjectProperty<>(category.isSync());
         this.children = FXCollections.observableArrayList();
         this.containedEntries = FXCollections.observableArrayList();
         this.color.setValue(category.getColor());
@@ -108,8 +108,8 @@ public class StoreCategoryWrapper {
             category.setSortMode(newValue);
         });
 
-        share.addListener((observable, oldValue, newValue) -> {
-            DataStorage.get().shareCategory(category, newValue);
+        sync.addListener((observable, oldValue, newValue) -> {
+            DataStorage.get().syncCategory(category, newValue);
         });
     }
 
@@ -131,7 +131,7 @@ public class StoreCategoryWrapper {
 
         lastAccess.setValue(category.getLastAccess().minus(Duration.ofMillis(500)));
         sortMode.setValue(category.getSortMode());
-        share.setValue(category.isShare());
+        sync.setValue(category.isSync());
         expanded.setValue(category.isExpanded());
         color.setValue(category.getColor());
 

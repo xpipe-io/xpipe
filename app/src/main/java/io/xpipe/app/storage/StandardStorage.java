@@ -29,7 +29,7 @@ public class StandardStorage extends DataStorage {
     private final List<Path> directoriesToKeep = new ArrayList<>();
 
     @Getter
-    private final GitStorageHandler gitStorageHandler;
+    private final DataStorageSyncHandler dataStorageSyncHandler;
 
     private String vaultKey;
 
@@ -37,7 +37,7 @@ public class StandardStorage extends DataStorage {
     private boolean disposed;
 
     StandardStorage() {
-        this.gitStorageHandler = GitStorageHandler.getInstance();
+        this.dataStorageSyncHandler = DataStorageSyncHandler.getInstance();
     }
 
     @Override
@@ -263,7 +263,7 @@ public class StandardStorage extends DataStorage {
 
         loaded = true;
         busyIo.unlock();
-        this.gitStorageHandler.afterStorageLoad();
+        this.dataStorageSyncHandler.afterStorageLoad();
     }
 
     private void callProviders() {
@@ -297,7 +297,7 @@ public class StandardStorage extends DataStorage {
             return;
         }
 
-        this.gitStorageHandler.beforeStorageSave();
+        this.dataStorageSyncHandler.beforeStorageSave();
 
         try {
             FileUtils.forceMkdir(getStoresDir().toFile());
@@ -317,7 +317,7 @@ public class StandardStorage extends DataStorage {
                 var exists = Files.exists(e.getDirectory());
                 var dirty = e.isDirty();
                 e.writeDataToDisk();
-                gitStorageHandler.handleCategory(e, exists, dirty);
+                dataStorageSyncHandler.handleCategory(e, exists, dirty);
             } catch (IOException ex) {
                 // IO exceptions are not expected
                 exception.set(ex);
@@ -334,7 +334,7 @@ public class StandardStorage extends DataStorage {
                         var exists = Files.exists(e.getDirectory());
                         var dirty = e.isDirty();
                         e.writeDataToDisk();
-                        gitStorageHandler.handleEntry(e, exists, dirty);
+                        dataStorageSyncHandler.handleEntry(e, exists, dirty);
                     } catch (Exception ex) {
                         // Data corruption and schema changes are expected
                         exception.set(ex);
@@ -348,7 +348,7 @@ public class StandardStorage extends DataStorage {
         }
 
         deleteLeftovers();
-        gitStorageHandler.afterStorageSave();
+        dataStorageSyncHandler.afterStorageSave();
         if (dispose) {
             disposed = true;
         }
@@ -357,7 +357,7 @@ public class StandardStorage extends DataStorage {
 
     @Override
     public boolean supportsSharing() {
-        return gitStorageHandler.supportsShare();
+        return dataStorageSyncHandler.supportsSync();
     }
 
     private void deleteLeftovers() {
@@ -387,7 +387,7 @@ public class StandardStorage extends DataStorage {
                                 .tag("uuid", uuid)
                                 .handle();
                         FileUtils.forceDelete(file.toFile());
-                        gitStorageHandler.handleDeletion(file, uuid.toString());
+                        dataStorageSyncHandler.handleDeletion(file, uuid.toString());
                     }
                 } catch (Exception ex) {
                     ErrorEvent.fromThrowable(ex).expected().omit().build().handle();
@@ -420,7 +420,7 @@ public class StandardStorage extends DataStorage {
                                 .tag("uuid", uuid)
                                 .handle();
                         FileUtils.forceDelete(file.toFile());
-                        gitStorageHandler.handleDeletion(file, uuid.toString());
+                        dataStorageSyncHandler.handleDeletion(file, uuid.toString());
                     }
                 } catch (Exception ex) {
                     ErrorEvent.fromThrowable(ex).expected().omit().build().handle();

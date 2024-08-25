@@ -31,7 +31,7 @@ public class DataStoreCategory extends StorageElement {
     StoreSortMode sortMode;
 
     @NonFinal
-    boolean share;
+    boolean sync;
 
     public DataStoreCategory(
             Path directory,
@@ -43,12 +43,12 @@ public class DataStoreCategory extends StorageElement {
             boolean dirty,
             UUID parentCategory,
             StoreSortMode sortMode,
-            boolean share,
+            boolean sync,
             boolean expanded) {
         super(directory, uuid, name, lastUsed, lastModified, color, expanded, dirty);
         this.parentCategory = parentCategory;
         this.sortMode = sortMode;
-        this.share = share;
+        this.sync = sync;
     }
 
     public static DataStoreCategory createNew(UUID parentCategory, @NonNull String name) {
@@ -140,10 +140,10 @@ public class DataStoreCategory extends StorageElement {
         }
     }
 
-    public void setShare(boolean newShare) {
-        var changed = share != newShare;
+    public void setSync(boolean newShare) {
+        var changed = sync != newShare;
         if (changed) {
-            this.share = newShare;
+            this.sync = newShare;
             notifyUpdate(false, true);
         }
     }
@@ -174,7 +174,7 @@ public class DataStoreCategory extends StorageElement {
             return false;
         }
 
-        return isShare();
+        return isSync();
     }
 
     @Override
@@ -192,7 +192,7 @@ public class DataStoreCategory extends StorageElement {
         ObjectNode stateObj = JsonNodeFactory.instance.objectNode();
         obj.put("uuid", uuid.toString());
         obj.put("name", name);
-        obj.put("share", share);
+        obj.put("share", sync);
         obj.set("color", mapper.valueToTree(color));
         stateObj.put("lastUsed", lastUsed.toString());
         stateObj.put("lastModified", lastModified.toString());
