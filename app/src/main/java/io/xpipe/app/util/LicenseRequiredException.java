@@ -1,7 +1,5 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.core.AppI18n;
-
 import lombok.Getter;
 
 @Getter
@@ -10,21 +8,12 @@ public class LicenseRequiredException extends RuntimeException {
     private final LicensedFeature feature;
 
     public LicenseRequiredException(LicensedFeature feature) {
-        super(feature.getDisplayName() + " "
-                + (feature.isPlural() ? AppI18n.get("areOnlySupported") : AppI18n.get("isOnlySupported")));
-        this.feature = feature;
-    }
-
-    public LicenseRequiredException(LicensedFeature feature, int limit) {
-        super(feature.getDisplayName() + " "
-                + (feature.isPlural()
-                        ? AppI18n.get("areOnlySupportedLimit", limit)
-                        : AppI18n.get("isOnlySupportedLimit", limit)));
+        super(LicenseProvider.get().formatExceptionMessage(feature.getDisplayName(), feature.isPlural(), feature));
         this.feature = feature;
     }
 
     public LicenseRequiredException(String featureName, boolean plural, LicensedFeature feature) {
-        super(featureName + " " + (plural ? AppI18n.get("areOnlySupported") : AppI18n.get("isOnlySupported")));
+        super(LicenseProvider.get().formatExceptionMessage(featureName, plural, feature));
         this.feature = feature;
     }
 }
