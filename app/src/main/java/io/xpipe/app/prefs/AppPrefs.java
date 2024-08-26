@@ -43,7 +43,7 @@ public class AppPrefs {
     final BooleanProperty dontAcceptNewHostKeys =
             mapVaultSpecific(new SimpleBooleanProperty(false), "dontAcceptNewHostKeys", Boolean.class);
     final BooleanProperty performanceMode = map(new SimpleBooleanProperty(false), "performanceMode", Boolean.class);
-    final BooleanProperty useBundledTools = map(new SimpleBooleanProperty(false), "useBundledTools", Boolean.class);
+    public final BooleanProperty useBundledTools = map(new SimpleBooleanProperty(false), "useBundledTools", Boolean.class);
     public final ObjectProperty<AppTheme.Theme> theme =
             map(new SimpleObjectProperty<>(), "theme", AppTheme.Theme.class);
     final BooleanProperty useSystemFont = map(new SimpleBooleanProperty(true), "useSystemFont", Boolean.class);

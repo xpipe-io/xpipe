@@ -197,7 +197,7 @@ public final class BrowserFileListComp extends SimpleComp {
                         unix.getUid() != null ? unix.getUid() : m.getCache().getUidForUser(user));
         var gid = String.valueOf(
                         unix.getGid() != null ? unix.getGid() : m.getCache().getGidForGroup(group));
-        if (uid.equals(gid)) {
+        if (uid.equals(gid) && user.equals(group)) {
             return user + " [" + uid + "]";
         }
         return user + " [" + uid + "] / " + group + " [" + gid + "]";

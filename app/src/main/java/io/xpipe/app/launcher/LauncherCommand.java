@@ -81,7 +81,7 @@ public class LauncherCommand implements Callable<Integer> {
         }
     }
 
-    private void checkStart() {
+    private void checkStart(int attemptCounter) {
         var port = AppBeaconServer.get().getPort();
         var reachable = BeaconServer.isReachable(port);
         if (!reachable) {
@@ -112,17 +112,22 @@ public class LauncherCommand implements Callable<Integer> {
         }
 
         try {
-            client.get()
-                    .performRequest(DaemonFocusExchange.Request.builder()
-                            .mode(getEffectiveMode())
-                            .build());
+            client.get().performRequest(DaemonFocusExchange.Request.builder()
+                    .mode(getEffectiveMode())
+                    .build());
             if (!inputs.isEmpty()) {
-                client.get()
-                        .performRequest(DaemonOpenExchange.Request.builder()
-                                .arguments(inputs)
-                                .build());
+                client.get().performRequest(DaemonOpenExchange.Request.builder()
+                        .arguments(inputs)
+                        .build());
             }
         } catch (Exception ex) {
+            // Wait until shutdown has completed
+            if (ex.getMessage() != null && ex.getMessage().contains("Daemon is currently in shutdown") && attemptCounter < 10) {
+                ThreadHelper.sleep(1000);
+                checkStart(++attemptCounter);
+                return;
+            }
+
             var cli = XPipeInstallation.getLocalDefaultCliExecutable();
             ErrorEvent.fromThrowable(
                             "Unable to connect to existing running daemon instance as it did not respond."
@@ -172,7 +177,7 @@ public class LauncherCommand implements Callable<Integer> {
     @Override
     @SneakyThrows
     public Integer call() {
-        checkStart();
+        checkStart(0);
 
         // Initialize base mode first to have access to the preferences to determine effective mode
         OperationMode.switchToSyncOrThrow(OperationMode.BACKGROUND);

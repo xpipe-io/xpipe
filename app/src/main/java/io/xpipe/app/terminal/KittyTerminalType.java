@@ -155,12 +155,14 @@ public interface KittyTerminalType extends ExternalTerminalType {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
+            // We use the absolute path to force the usage of macOS netcat
+            // Homebrew versions have different option formats
             try (var sc = LocalShell.getShell().start()) {
-                CommandSupport.isInPathOrThrow(sc, "nc", "Netcat", null);
+                CommandSupport.isInPathOrThrow(sc, "/usr/bin/nc", "Netcat", null);
             }
 
             var toClose = prepare();
-            var socketWrite = CommandBuilder.of().add("nc", "-U");
+            var socketWrite = CommandBuilder.of().add("/usr/bin/nc", "-U");
             open(configuration, socketWrite);
             if (toClose) {
                 closeInitial(socketWrite);
