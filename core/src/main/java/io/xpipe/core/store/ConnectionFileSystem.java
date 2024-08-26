@@ -47,7 +47,7 @@ public class ConnectionFileSystem implements FileSystem {
         if (!shellControl.getTtyState().isPreservesOutput()
                 || !shellControl.getTtyState().isSupportsInput()) {
             throw new UnsupportedOperationException(
-                    "Shell has a PTY allocated and does not support file system operations");
+                    "Shell has a PTY allocated and as a result does not support file system operations");
         }
 
         return this;

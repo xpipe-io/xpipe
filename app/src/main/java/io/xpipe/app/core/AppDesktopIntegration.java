@@ -9,18 +9,14 @@ import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.desktop.*;
 import java.util.List;
-import javax.imageio.ImageIO;
 
 public class AppDesktopIntegration {
 
     public static void setupDesktopIntegrations() {
-        if (PlatformState.getCurrent() != PlatformState.RUNNING) {
-            return;
-        }
-
         try {
             if (Desktop.isDesktopSupported()) {
                 Desktop.getDesktop().addAppEventListener(new SystemSleepListener() {
@@ -49,6 +45,10 @@ public class AppDesktopIntegration {
             // macOS does not like applications that run fully in the background, so always do it
             if (OsType.getLocal().equals(OsType.MACOS) && Desktop.isDesktopSupported()) {
                 Desktop.getDesktop().setPreferencesHandler(e -> {
+                    if (PlatformState.getCurrent() != PlatformState.RUNNING) {
+                        return;
+                    }
+
                     AppLayoutModel.get().selectSettings();
                 });
 
@@ -84,19 +84,6 @@ public class AppDesktopIntegration {
                     }
                 }
             }
-
-            if (OsType.getLocal().equals(OsType.LINUX) && !GraphicsEnvironment.isHeadless()) {
-                try {
-                    Toolkit xToolkit = Toolkit.getDefaultToolkit();
-                    java.lang.reflect.Field awtAppClassNameField =
-                            xToolkit.getClass().getDeclaredField("awtAppClassName");
-                    awtAppClassNameField.setAccessible(true);
-                    awtAppClassNameField.set(xToolkit, "XPipe");
-                } catch (Exception e) {
-                    ErrorEvent.fromThrowable(e).omit().handle();
-                }
-            }
-
         } catch (Throwable ex) {
             ErrorEvent.fromThrowable(ex).term().handle();
         }
