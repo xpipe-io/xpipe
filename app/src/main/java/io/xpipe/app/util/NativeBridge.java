@@ -1,7 +1,9 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.XPipeInstallation;
 
 import com.sun.jna.Library;
@@ -24,6 +26,10 @@ public class NativeBridge {
     }
 
     public static Optional<MacOsLibrary> getMacOsLibrary() {
+        if (!ModuleHelper.isImage() || !AppProperties.get().isFullVersion()) {
+            return Optional.empty();
+        }
+
         if (macOsLibrary == null && !loadingFailed) {
             try {
                 System.setProperty(

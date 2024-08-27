@@ -177,10 +177,13 @@ public interface KittyTerminalType extends ExternalTerminalType {
                     return false;
                 }
 
+                var time = System.currentTimeMillis();
                 sc.executeSimpleCommand(CommandBuilder.of()
                         .add("open", "-a", "kitty.app", "--args")
                         .add("-o", "allow_remote_control=socket-only", "--listen-on", "unix:" + getSocket()));
-                ThreadHelper.sleep(1000);
+                var elapsed = System.currentTimeMillis() - time;
+                // Good heuristic on how long to wait
+                ThreadHelper.sleep(5 * elapsed);
                 return true;
             }
         }
