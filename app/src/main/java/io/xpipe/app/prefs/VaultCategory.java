@@ -2,14 +2,17 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.util.LockChangeAlert;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.Validator;
 import io.xpipe.core.util.XPipeInstallation;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 
+import javafx.beans.property.SimpleBooleanProperty;
 import lombok.SneakyThrows;
 
 public class VaultCategory extends AppPrefsCategory {
@@ -34,6 +37,20 @@ public class VaultCategory extends AppPrefsCategory {
             });
             builder.addTitle("storage").sub(sub);
         }
+
+        var encryptVault = new SimpleBooleanProperty(prefs.encryptAllVaultData().get());
+        encryptVault.addListener((observable, oldValue, newValue) -> {
+            if (!newValue && !AppWindowHelper.showConfirmationAlert(
+                    "confirmVaultUnencryptTitle", "confirmVaultUnencryptHeader", "confirmVaultUnencryptContent")) {
+                Platform.runLater(() -> {
+                    encryptVault.set(true);
+                });
+                return;
+            }
+
+            prefs.encryptAllVaultData.setValue(newValue);
+        });
+
         builder.addTitle("vaultSecurity")
                 .sub(new OptionsBuilder()
                         .nameAndDescription("workspaceLock")
@@ -57,7 +74,7 @@ public class VaultCategory extends AppPrefsCategory {
                                 .isNull()
                                 .or(prefs.getLockCrypt().isEmpty()))
                         .nameAndDescription("encryptAllVaultData")
-                        .addToggle(prefs.encryptAllVaultData));
+                        .addToggle(encryptVault));
         return builder.buildComp();
     }
 }
