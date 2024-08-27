@@ -46,7 +46,7 @@ public class NativeMacOsWindowControl {
         try {
             lib.get().setAppearance(new NativeLong(nsWindow), seamlessFrame, darkMode);
             if (seamlessFrame) {
-                ThreadHelper.sleep(150);
+                ThreadHelper.sleep(200);
             }
         } catch (Throwable e) {
             ErrorEvent.fromThrowable(e).handle();

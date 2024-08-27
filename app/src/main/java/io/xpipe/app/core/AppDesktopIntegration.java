@@ -21,23 +21,22 @@ public class AppDesktopIntegration {
             if (Desktop.isDesktopSupported()) {
                 Desktop.getDesktop().addAppEventListener(new SystemSleepListener() {
                     @Override
-                    public void systemAboutToSleep(SystemSleepEvent e) {
+                    public void systemAboutToSleep(SystemSleepEvent e) {}
+
+                    @Override
+                    public void systemAwoke(SystemSleepEvent e) {
                         if (AppPrefs.get() != null
                                 && AppPrefs.get().lockVaultOnHibernation().get()
                                 && AppPrefs.get().getLockCrypt().get() != null
                                 && !AppPrefs.get().getLockCrypt().get().isBlank()) {
                             // If we run this at the same time as the system is sleeping, there might be exceptions
                             // because the platform does not like being shut down while sleeping
-                            // This hopefully assures that it will be run later, probably on system wake
+                            // This assures that it will be run later, on system wake
                             ThreadHelper.runAsync(() -> {
                                 ThreadHelper.sleep(1000);
                                 OperationMode.close();
                             });
-                        }
-                    }
-
-                    @Override
-                    public void systemAwoke(SystemSleepEvent e) {}
+                        }}
                 });
             }
 

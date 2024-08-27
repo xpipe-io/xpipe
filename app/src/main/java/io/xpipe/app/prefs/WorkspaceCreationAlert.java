@@ -5,18 +5,12 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppWindowHelper;
-import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.XPipeInstallation;
-
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.scene.control.ButtonType;
-
-import org.apache.commons.io.FileUtils;
-
-import java.nio.file.Files;
 
 public class WorkspaceCreationAlert {
 
@@ -50,13 +44,6 @@ public class WorkspaceCreationAlert {
                 .orElse(false);
 
         if (!show || name.get() == null || path.get() == null) {
-            return;
-        }
-
-        if (Files.exists(path.get()) && !FileUtils.isEmptyDirectory(path.get().toFile())) {
-            ErrorEvent.fromMessage("New workspace directory is not empty")
-                    .expected()
-                    .handle();
             return;
         }
 
