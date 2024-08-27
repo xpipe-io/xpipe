@@ -229,7 +229,7 @@ public abstract class DataStorage {
 
     public abstract boolean supportsSharing();
 
-    public boolean shouldShare(DataStoreCategory category) {
+    public boolean shouldSync(DataStoreCategory category) {
         if (!category.canShare()) {
             return false;
         }
@@ -246,8 +246,8 @@ public abstract class DataStorage {
         return true;
     }
 
-    public boolean shouldShare(DataStoreEntry entry) {
-        if (!shouldShare(DataStorage.get()
+    public boolean shouldSync(DataStoreEntry entry) {
+        if (!shouldSync(DataStorage.get()
                 .getStoreCategoryIfPresent(entry.getCategoryUuid())
                 .orElseThrow())) {
             return false;

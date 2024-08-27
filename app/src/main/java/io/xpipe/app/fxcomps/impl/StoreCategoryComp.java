@@ -86,10 +86,10 @@ public class StoreCategoryComp extends SimpleComp {
 
                     if (!DataStorage.get().supportsSharing()
                             || !category.getCategory().canShare()) {
-                        return "mdi2a-account-lock";
+                        return "mdi2g-git";
                     }
 
-                    return category.getSync().getValue() ? "mdi2g-git" : "mdi2a-account-cancel";
+                    return category.getSync().getValue() ? "mdi2g-git" : "mdi2c-cancel";
                 },
                 category.getSync(),
                 hover);
