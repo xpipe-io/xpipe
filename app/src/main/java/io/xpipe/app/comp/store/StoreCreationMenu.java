@@ -30,15 +30,13 @@ public class StoreCreationMenu {
 
         menu.getItems().add(category("addDesktop", "mdi2c-camera-plus", DataStoreCreationCategory.DESKTOP, null));
 
-        menu.getItems().add(category("addShell", "mdi2t-text-box-multiple", DataStoreCreationCategory.SHELL, null));
+        menu.getItems().add(category("addShell", "mdi2t-text-box-multiple", DataStoreCreationCategory.SHELL, "shellEnvironment"));
 
         menu.getItems()
                 .add(category("addScript", "mdi2s-script-text-outline", DataStoreCreationCategory.SCRIPT, "script"));
 
         menu.getItems()
                 .add(category("addTunnel", "mdi2v-vector-polyline-plus", DataStoreCreationCategory.TUNNEL, "customService"));
-
-        menu.getItems().add(category("addCommand", "mdi2c-code-greater-than", DataStoreCreationCategory.COMMAND, null));
 
         menu.getItems().add(category("addSerial", "mdi2s-serial-port", DataStoreCreationCategory.SERIAL, "serial"));
 
