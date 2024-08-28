@@ -4,6 +4,7 @@ import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.TerminalLauncher;
@@ -163,7 +164,9 @@ public class AppInstaller {
                         file, file, name);
 
                 runAndClose(() -> {
-                    TerminalLauncher.openDirect("XPipe Updater", sc -> command);
+                    // We can't use the SSH bridge
+                    var type = ExternalTerminalType.determineNonSshBridgeFallback(AppPrefs.get().terminalType().getValue());
+                    TerminalLauncher.openDirect("XPipe Updater", sc -> command, type);
                 });
             }
 
@@ -201,7 +204,9 @@ public class AppInstaller {
                         file, file, name);
 
                 runAndClose(() -> {
-                    TerminalLauncher.openDirect("XPipe Updater", sc -> command);
+                    // We can't use the SSH bridge
+                    var type = ExternalTerminalType.determineNonSshBridgeFallback(AppPrefs.get().terminalType().getValue());
+                    TerminalLauncher.openDirect("XPipe Updater", sc -> command, type);
                 });
             }
 
@@ -239,7 +244,9 @@ public class AppInstaller {
                         file, file, name);
 
                 runAndClose(() -> {
-                    TerminalLauncher.openDirect("XPipe Updater", sc -> command);
+                    // We can't use the SSH bridge
+                    var type = ExternalTerminalType.determineNonSshBridgeFallback(AppPrefs.get().terminalType().getValue());
+                    TerminalLauncher.openDirect("XPipe Updater", sc -> command, type);
                 });
             }
 

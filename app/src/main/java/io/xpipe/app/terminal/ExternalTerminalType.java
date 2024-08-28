@@ -70,6 +70,31 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     //        }
     //    };
 
+    static ExternalTerminalType determineNonSshBridgeFallback(ExternalTerminalType type) {
+        if (type == XSHELL || type == MOBAXTERM || type == SECURECRT) {
+            return CMD;
+        }
+
+        if (type != TERMIUS) {
+            return type;
+        }
+
+        switch (OsType.getLocal()) {
+            case OsType.Linux linux -> {
+                // This should not be termius as all others take precedence
+                var def = determineDefault(type);
+                // If there's no other terminal available, use a fallback which won't work
+                return def != TERMIUS ? def : XTERM;
+            }
+            case OsType.MacOs macOs -> {
+                return MACOS_TERMINAL;
+            }
+            case OsType.Windows windows -> {
+                return CMD;
+            }
+        }
+    }
+
     ExternalTerminalType XSHELL = new WindowsType("app.xShell", "Xshell") {
 
         @Override
@@ -319,21 +344,21 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     + user + "&os=undefined");
         }
 
-        private boolean showInfo() {
-            boolean set = AppCache.get("termiusSetup", Boolean.class, () -> false);
+        private boolean showInfo() throws IOException {
+            boolean set = AppCache.get("termiusSetupa", Boolean.class, () -> false);
             if (set) {
                 return true;
             }
 
             var b = SshLocalBridge.get();
-            var keyName = b.getIdentityKey().getFileName().toString();
+            var keyContent = Files.readString(b.getIdentityKey());
             var r = AppWindowHelper.showBlockingAlert(alert -> {
                 alert.setTitle(AppI18n.get("termiusSetup"));
                 alert.setAlertType(Alert.AlertType.NONE);
 
                 var activated = AppI18n.get()
                         .getMarkdownDocumentation("app:termiusSetup")
-                        .formatted(b.getIdentityKey(), keyName);
+                        .formatted(b.getIdentityKey(), keyContent);
                 var markdown = new MarkdownComp(activated, s -> s)
                         .prefWidth(450)
                         .prefHeight(400)
@@ -471,7 +496,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public boolean supportsColoredTitle() {
-            return true;
+            return false;
         }
 
         @Override
@@ -979,13 +1004,13 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             TabbyTerminalType.TABBY_WINDOWS,
             AlacrittyTerminalType.ALACRITTY_WINDOWS,
             WezTerminalType.WEZTERM_WINDOWS,
+            CMD,
+            PWSH,
+            POWERSHELL,
             MOBAXTERM,
             SECURECRT,
             TERMIUS,
-            XSHELL,
-            CMD,
-            PWSH,
-            POWERSHELL);
+            XSHELL);
     List<ExternalTerminalType> LINUX_TERMINALS = List.of(
             KittyTerminalType.KITTY_LINUX,
             AlacrittyTerminalType.ALACRITTY_LINUX,
@@ -1002,7 +1027,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             XTERM,
             DEEPIN_TERMINAL,
             FOOT,
-            Q_TERMINAL);
+            Q_TERMINAL,
+            TERMIUS);
     List<ExternalTerminalType> MACOS_TERMINALS = List.of(
             KittyTerminalType.KITTY_MACOS,
             WARP,
@@ -1010,7 +1036,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             TabbyTerminalType.TABBY_MAC_OS,
             AlacrittyTerminalType.ALACRITTY_MAC_OS,
             WezTerminalType.WEZTERM_MAC_OS,
-            MACOS_TERMINAL);
+            MACOS_TERMINAL,
+            TERMIUS);
 
     List<ExternalTerminalType> ALL = getTypes(OsType.getLocal(), false, true);
 

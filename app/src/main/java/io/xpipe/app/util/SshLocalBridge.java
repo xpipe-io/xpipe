@@ -67,11 +67,16 @@ public class SshLocalBridge {
             return;
         }
 
+        var server = AppBeaconServer.get();
+        if (server == null) {
+            return;
+        }
+        // Add a gap to not interfere with PTB or dev ports
+        var port = server.getPort() + 10;
+
         try (var sc = LocalShell.getShell().start()) {
             var bridgeDir = AppProperties.get().getDataDir().resolve("ssh_bridge");
             Files.createDirectories(bridgeDir);
-            // Add a gap to not interfere with PTB or dev ports
-            var port = AppBeaconServer.get().getPort() + 10;
             var user = sc.getShellDialect().printUsernameCommand(sc).readStdoutOrThrow();
             INSTANCE = new SshLocalBridge(bridgeDir, port, user);
 

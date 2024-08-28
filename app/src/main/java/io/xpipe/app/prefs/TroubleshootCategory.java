@@ -6,6 +6,7 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.UserReportComp;
+import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.FileOpener;
 import io.xpipe.app.util.OptionsBuilder;
@@ -45,8 +46,10 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                                 XPipeInstallation.getCurrentInstallationBasePath()
                                                         .toString(),
                                                 XPipeInstallation.getDaemonDebugScriptPath(OsType.getLocal()));
+                                        // We can't use the SSH bridge
+                                        var type = ExternalTerminalType.determineNonSshBridgeFallback(AppPrefs.get().terminalType().getValue());
                                         TerminalLauncher.openDirect("XPipe Debug", sc -> sc.getShellDialect()
-                                                .runScriptCommand(sc, script));
+                                                .runScriptCommand(sc, script), type);
                                     });
                                     e.consume();
                                 })

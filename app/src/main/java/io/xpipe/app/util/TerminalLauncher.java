@@ -17,11 +17,15 @@ public class TerminalLauncher {
 
     public static void openDirect(String title, FailableFunction<ShellControl, String, Exception> command)
             throws Exception {
+        var type = AppPrefs.get().terminalType().getValue();
+        if (type == null) {
+            throw ErrorEvent.expected(new IllegalStateException(AppI18n.get("noTerminalSet")));
+        }
+        openDirect(title, command, type);
+    }
+    public static void openDirect(String title, FailableFunction<ShellControl, String, Exception> command, ExternalTerminalType type)
+            throws Exception {
         try (var sc = LocalShell.getShell().start()) {
-            var type = AppPrefs.get().terminalType().getValue();
-            if (type == null) {
-                throw ErrorEvent.expected(new IllegalStateException(AppI18n.get("noTerminalSet")));
-            }
             var script = ScriptHelper.constructTerminalInitFile(
                     sc.getShellDialect(),
                     sc,
