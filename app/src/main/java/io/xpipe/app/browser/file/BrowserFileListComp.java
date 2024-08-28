@@ -189,10 +189,10 @@ public final class BrowserFileListComp extends SimpleComp {
         var m = fileList.getFileSystemModel();
         var user = unix.getUser() != null
                 ? unix.getUser()
-                : m.getCache().getUsers().get(unix.getUid());
+                : m.getCache().getUsers().getOrDefault(unix.getUid(), "?");
         var group = unix.getGroup() != null
                 ? unix.getGroup()
-                : m.getCache().getGroups().get(unix.getGid());
+                : m.getCache().getGroups().getOrDefault(unix.getGid(), "?");
         var uid = String.valueOf(
                         unix.getUid() != null ? unix.getUid() : m.getCache().getUidForUser(user));
         var gid = String.valueOf(

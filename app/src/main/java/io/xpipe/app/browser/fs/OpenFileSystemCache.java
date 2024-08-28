@@ -58,7 +58,9 @@ public class OpenFileSystemCache extends ShellControlCache {
                 .orElse("");
         lines.lines().forEach(s -> {
             var split = s.split(":");
-            users.putIfAbsent(Integer.parseInt(split[2]), split[0]);
+            try {
+                users.putIfAbsent(Integer.parseInt(split[2]), split[0]);
+            } catch (NumberFormatException ignored) {}
         });
 
         if (users.isEmpty()) {
@@ -77,7 +79,9 @@ public class OpenFileSystemCache extends ShellControlCache {
                 .orElse("");
         lines.lines().forEach(s -> {
             var split = s.split(":");
-            groups.putIfAbsent(Integer.parseInt(split[2]), split[0]);
+            try {
+                groups.putIfAbsent(Integer.parseInt(split[2]), split[0]);
+            } catch (NumberFormatException ignored) {}
         });
 
         if (groups.isEmpty()) {
