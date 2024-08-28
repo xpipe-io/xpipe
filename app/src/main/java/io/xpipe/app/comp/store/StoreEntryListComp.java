@@ -28,6 +28,12 @@ public class StoreEntryListComp extends SimpleComp {
                     return custom;
                 },
                 true);
+        content.apply(struc -> {
+            // Reset scroll
+            StoreViewState.get().getActiveCategory().addListener((observable, oldValue, newValue) -> {
+                struc.get().setVvalue(0);
+            });
+        });
         return content.styleClass("store-list-comp");
     }
 
