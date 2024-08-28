@@ -36,16 +36,16 @@ public class StoreEntryListComp extends SimpleComp {
         var initialCount = 1;
         var showIntro = Bindings.createBooleanBinding(
                 () -> {
-                    var all = StoreViewState.get().getAllConnectionsCategory();
+                    var allCat = StoreViewState.get().getAllConnectionsCategory();
                     var connections = StoreViewState.get().getAllEntries().getList().stream()
-                            .filter(wrapper -> all.contains(wrapper))
+                            .filter(wrapper -> allCat.equals(wrapper.getCategory().getValue().getRoot()))
                             .toList();
                     return initialCount == connections.size()
                             && StoreViewState.get()
                                     .getActiveCategory()
                                     .getValue()
                                     .getRoot()
-                                    .equals(StoreViewState.get().getAllConnectionsCategory());
+                                    .equals(allCat);
                 },
                 StoreViewState.get().getAllEntries().getList(),
                 StoreViewState.get().getActiveCategory());
