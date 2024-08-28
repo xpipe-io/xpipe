@@ -361,7 +361,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                         .formatted(b.getIdentityKey(), keyContent);
                 var markdown = new MarkdownComp(activated, s -> s)
                         .prefWidth(450)
-                        .prefHeight(400)
+                        .prefHeight(450)
                         .createRegion();
                 alert.getDialogPane().setContent(markdown);
 
