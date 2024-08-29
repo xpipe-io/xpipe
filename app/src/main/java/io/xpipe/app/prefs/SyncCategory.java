@@ -42,7 +42,7 @@ public class SyncCategory extends AppPrefsCategory {
                         .addString(prefs.storageGitRemote)
                         .disable(prefs.enableGitStorage.not())
                         .addComp(terminalTest)
-                        .disable(prefs.storageGitRemote.isNull().and(prefs.enableGitStorage))
+                        .disable(prefs.storageGitRemote.isNull().or(prefs.enableGitStorage.not()))
                         .addComp(prefs.getCustomComp("gitVaultIdentityStrategy"))
                         .nameAndDescription("openDataDir")
                         .addComp(new ButtonComp(AppI18n.observable("openDataDirButton"), () -> {

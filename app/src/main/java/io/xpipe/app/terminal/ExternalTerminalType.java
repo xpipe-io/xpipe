@@ -299,7 +299,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             try (var sc = LocalShell.getShell()) {
                 return switch (OsType.getLocal()) {
                     case OsType.Linux linux -> {
-                        yield Files.exists(Path.of("/opt/termius"));
+                        yield Files.exists(Path.of("/opt/Termius"));
                     }
                     case OsType.MacOs macOs -> {
                         yield Files.exists(Path.of("/Applications/Termius.app"));
@@ -1030,12 +1030,13 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             XTERM,
             DEEPIN_TERMINAL,
             FOOT,
-            Q_TERMINAL
+            Q_TERMINAL,
+            TERMIUS
     );
     List<ExternalTerminalType> MACOS_TERMINALS = List.of(
-            KittyTerminalType.KITTY_MACOS,
             WARP,
             ITERM2,
+            KittyTerminalType.KITTY_MACOS,
             TabbyTerminalType.TABBY_MAC_OS,
             AlacrittyTerminalType.ALACRITTY_MAC_OS,
             WezTerminalType.WEZTERM_MAC_OS,
