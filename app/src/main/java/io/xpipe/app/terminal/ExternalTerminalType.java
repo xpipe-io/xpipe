@@ -82,7 +82,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         switch (OsType.getLocal()) {
             case OsType.Linux linux -> {
                 // This should not be termius as all others take precedence
-                var def = determineDefault(type);
+                var def = determineDefault(null);
                 // If there's no other terminal available, use a fallback which won't work
                 return def != TERMIUS ? def : XTERM;
             }
