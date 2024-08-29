@@ -1,17 +1,20 @@
 package io.xpipe.app.beacon.impl;
 
+import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.util.TerminalLauncherManager;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.SshLaunchExchange;
 import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.process.ShellDialects;
 
-import com.sun.net.httpserver.HttpExchange;
-
 public class SshLaunchExchangeImpl extends SshLaunchExchange {
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) throws Exception {
+        if ("echo $SHELL".equals(msg.getArguments())) {
+            return "/bin/bash";
+        }
+
         var usedDialect = ShellDialects.getStartableDialects().stream()
                 .filter(dialect -> dialect.getExecutableName().equalsIgnoreCase(msg.getArguments()))
                 .findFirst();

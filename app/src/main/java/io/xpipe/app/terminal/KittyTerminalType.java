@@ -83,7 +83,8 @@ public interface KittyTerminalType extends ExternalTerminalType {
 
     @Override
     default boolean isRecommended() {
-        return true;
+        // There are some race conditions with the socket
+        return false;
     }
 
     @Override

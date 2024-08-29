@@ -345,7 +345,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         private boolean showInfo() throws IOException {
-            boolean set = AppCache.get("termiusSetupa", Boolean.class, () -> false);
+            boolean set = AppCache.get("termiusSetup", Boolean.class, () -> false);
             if (set) {
                 return true;
             }
@@ -1012,9 +1012,9 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             TERMIUS,
             XSHELL);
     List<ExternalTerminalType> LINUX_TERMINALS = List.of(
-            KittyTerminalType.KITTY_LINUX,
             AlacrittyTerminalType.ALACRITTY_LINUX,
             WezTerminalType.WEZTERM_LINUX,
+            KittyTerminalType.KITTY_LINUX,
             KONSOLE,
             XFCE,
             ELEMENTARY,
