@@ -23,7 +23,7 @@ public class SshLaunchExchangeImpl extends SshLaunchExchange {
         if (msg.getArguments() != null
                 && usedDialect.isEmpty()
                 && !msg.getArguments().contains("SSH_ORIGINAL_COMMAND")) {
-            throw new BeaconClientException("Unexpected argument: " + msg.getArguments());
+            return Response.builder().command(List.of()).build();
         }
 
         // There are sometimes multiple requests by a terminal client (e.g. Termius)
