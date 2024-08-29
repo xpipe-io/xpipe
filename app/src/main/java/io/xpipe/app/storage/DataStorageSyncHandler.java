@@ -10,6 +10,8 @@ public interface DataStorageSyncHandler {
         return (DataStorageSyncHandler) ProcessControlProvider.get().getGitStorageHandler();
     }
 
+    void validateConnection();
+
     boolean supportsSync();
 
     void init();

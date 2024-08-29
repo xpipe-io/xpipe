@@ -151,7 +151,7 @@ public class AppInstaller {
                 var name = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
                 var command = String.format(
                         """
-                                             function exec {
+                                             exec() {
                                                  echo "Installing downloaded .deb installer ..."
                                                  echo "+ sudo apt install \\"%s\\""
                                                  DEBIAN_FRONTEND=noninteractive sudo apt-get install -qy "%s" || return 1
@@ -191,7 +191,7 @@ public class AppInstaller {
                 var name = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
                 var command = String.format(
                         """
-                                             function exec {
+                                             exec() {
                                                  echo "Installing downloaded .rpm installer ..."
                                                  echo "+ sudo rpm -U -v --force \\"%s\\""
                                                  sudo rpm -U -v --force "%s" || return 1
@@ -231,7 +231,7 @@ public class AppInstaller {
                 var name = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
                 var command = String.format(
                         """
-                                           function exec {
+                                           exec() {
                                                echo "Installing downloaded .pkg installer ..."
                                                echo "+ sudo installer -verboseR -allowUntrusted -pkg \\"%s\\" -target /"
                                                sudo installer -verboseR -allowUntrusted -pkg "%s" -target / || return 1
