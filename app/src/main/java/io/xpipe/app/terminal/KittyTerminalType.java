@@ -184,7 +184,7 @@ public interface KittyTerminalType extends ExternalTerminalType {
                         .add("-o", "allow_remote_control=socket-only", "--listen-on", "unix:" + getSocket()));
                 var elapsed = System.currentTimeMillis() - time;
                 // Good heuristic on how long to wait
-                ThreadHelper.sleep(5 * elapsed);
+                ThreadHelper.sleep(15 * elapsed);
                 return true;
             }
         }

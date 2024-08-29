@@ -299,7 +299,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             try (var sc = LocalShell.getShell()) {
                 return switch (OsType.getLocal()) {
                     case OsType.Linux linux -> {
-                        yield CommandSupport.isInPathSilent(sc, "termius");
+                        yield Files.exists(Path.of("/opt/termius"));
                     }
                     case OsType.MacOs macOs -> {
                         yield Files.exists(Path.of("/Applications/Termius.app"));
