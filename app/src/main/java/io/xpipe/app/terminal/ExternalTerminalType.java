@@ -72,7 +72,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     static ExternalTerminalType determineNonSshBridgeFallback(ExternalTerminalType type) {
         if (type == XSHELL || type == MOBAXTERM || type == SECURECRT) {
-            return CMD;
+            return ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.CMD ? CMD : POWERSHELL;
         }
 
         if (type != TERMIUS) {
@@ -90,7 +90,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 return MACOS_TERMINAL;
             }
             case OsType.Windows windows -> {
-                return CMD;
+                return ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.CMD ? CMD : POWERSHELL;
             }
         }
     }
@@ -270,7 +270,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                         .add("\"$(cygpath \"" + b.getIdentityKey().toString() + "\")\"")
                         .add("-p")
                         .add("" + b.getPort());
-                var script = ScriptHelper.createExecScript(ShellDialects.BASH, sc, command.buildFull(sc));
+                // Don't use local shell to build as it uses cygwin
+                var rawCommand = command.buildSimple();
+                var script = ScriptHelper.getExecScriptFile(sc, "sh");
+                Files.writeString(Path.of(script.toString()), rawCommand);
                 var fixedFile = script
                         .toString()
                         .replaceAll("\\\\", "/")
@@ -299,7 +302,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                         yield CommandSupport.isInPathSilent(sc, "termius");
                     }
                     case OsType.MacOs macOs -> {
-                        yield CommandSupport.isInPathSilent(sc, "termius");
+                        yield Files.exists(Path.of("/Applications/Termius.app"));
                     }
                     case OsType.Windows windows -> {
                         var r = WindowsRegistry.local()
@@ -1027,8 +1030,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             XTERM,
             DEEPIN_TERMINAL,
             FOOT,
-            Q_TERMINAL,
-            TERMIUS);
+            Q_TERMINAL
+    );
     List<ExternalTerminalType> MACOS_TERMINALS = List.of(
             KittyTerminalType.KITTY_MACOS,
             WARP,

@@ -7,12 +7,14 @@ import io.xpipe.beacon.api.SshLaunchExchange;
 import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.process.ShellDialects;
 
+import java.util.List;
+
 public class SshLaunchExchangeImpl extends SshLaunchExchange {
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) throws Exception {
         if ("echo $SHELL".equals(msg.getArguments())) {
-            return "/bin/bash";
+            return Response.builder().command(List.of("echo", "/bin/bash")).build();
         }
 
         var usedDialect = ShellDialects.getStartableDialects().stream()
