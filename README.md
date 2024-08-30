@@ -29,7 +29,7 @@ It currently supports:
 - Quickly perform various commonly used actions like starting/stopping containers, establishing tunnels, and more
 - Create desktop shortcuts that automatically open remote connections in your terminal  without having to open any GUI
 
-![connections](https://github.com/user-attachments/assets/07312929-1792-4589-b139-aa10bbcdc649)
+![Connections](https://github.com/xpipe-io/.github/raw/main/img/hub_shadow.png)
 
 ## Powerful file management
 
@@ -39,8 +39,8 @@ It currently supports:
 - Dynamically elevate sessions with sudo when required without having to restart the session
 - Seamlessly transfer files from and to your system desktop environment
 - Work and perform transfers on multiple systems at the same time with the built-in tabbed multitasking
-  
-![browser](https://github.com/user-attachments/assets/7e5d8b3b-8cd7-4b71-ad79-9afb385de3fd)
+
+![Browser](https://github.com/xpipe-io/.github/raw/main/img/browser_shadow.png)
 
 ## Terminal launcher
 
@@ -52,7 +52,7 @@ It currently supports:
 
 <br>
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/6d369688-1c33-4b27-8de6-f7f2c5977410" alt="Terminal launcher"/>
+  <img src="https://github.com/xpipe-io/.github/raw/main/img/terminal.gif" alt="Terminal launcher"/>
 </p>
 <br>
 
@@ -63,7 +63,7 @@ It currently supports:
 - Setup shell init environments for connections to fully customize your work environment for every purpose
 - Open custom shells and custom remote connections by providing your own commands
 
-![scripts](https://github.com/user-attachments/assets/cf39afaf-638d-48fc-9247-4c8d847d4ed4)
+![scripts](https://github.com/xpipe-io/.github/raw/main/img/scripts_shadow.png)
 
 ## Secure vault
 
