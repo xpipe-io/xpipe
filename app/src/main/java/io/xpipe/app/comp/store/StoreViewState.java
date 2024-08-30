@@ -55,6 +55,7 @@ public class StoreViewState {
         INSTANCE = new StoreViewState();
         INSTANCE.updateContent();
         INSTANCE.initSections();
+        INSTANCE.initFilterJump();
     }
 
     public static void reset() {
@@ -92,6 +93,20 @@ public class StoreViewState {
                     0);
             ErrorEvent.fromThrowable(exception).handle();
         }
+    }
+
+    private void initFilterJump() {
+        var all = getAllConnectionsCategory();
+        filter.addListener((observable, oldValue, newValue) -> {
+            var matchingCats = categories.getList().stream().filter(storeCategoryWrapper -> storeCategoryWrapper.getRoot().equals(all))
+                    .filter(storeCategoryWrapper -> storeCategoryWrapper.getDirectContainedEntries()
+                    .stream()
+                    .anyMatch(wrapper -> wrapper.matchesFilter(newValue)))
+                    .toList();
+            if (matchingCats.size() == 1) {
+                activeCategory.setValue(matchingCats.getFirst());
+            }
+        });
     }
 
     private void initContent() {

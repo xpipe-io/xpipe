@@ -109,7 +109,7 @@ public class StoreCategoryComp extends SimpleComp {
                         }))
                 .styleClass("status-button");
 
-        var shownList = new DerivedObservableList<>(category.getContainedEntries(), true)
+        var shownList = new DerivedObservableList<>(category.getAllContainedEntries(), true)
                 .filtered(
                         storeEntryWrapper -> {
                             return storeEntryWrapper.matchesFilter(
@@ -117,7 +117,7 @@ public class StoreCategoryComp extends SimpleComp {
                         },
                         StoreViewState.get().getFilterString())
                 .getList();
-        var count = new CountComp<>(shownList, category.getContainedEntries(), string -> "(" + string + ")");
+        var count = new CountComp<>(shownList, category.getAllContainedEntries(), string -> "(" + string + ")");
 
         var showStatus = hover.or(new SimpleBooleanProperty(DataStorage.get().supportsSharing()))
                 .or(showing);

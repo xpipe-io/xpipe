@@ -28,7 +28,8 @@ public class StoreCategoryWrapper {
     private final Property<StoreSortMode> sortMode;
     private final Property<Boolean> sync;
     private final ObservableList<StoreCategoryWrapper> children;
-    private final ObservableList<StoreEntryWrapper> containedEntries;
+    private final ObservableList<StoreEntryWrapper> directContainedEntries;
+    private final ObservableList<StoreEntryWrapper> allContainedEntries;
     private final BooleanProperty expanded = new SimpleBooleanProperty();
     private final Property<DataColor> color = new SimpleObjectProperty<>();
 
@@ -52,7 +53,8 @@ public class StoreCategoryWrapper {
         this.sortMode = new SimpleObjectProperty<>(category.getSortMode());
         this.sync = new SimpleObjectProperty<>(category.isSync());
         this.children = FXCollections.observableArrayList();
-        this.containedEntries = FXCollections.observableArrayList();
+        this.allContainedEntries = FXCollections.observableArrayList();
+        this.directContainedEntries = FXCollections.observableArrayList();
         this.color.setValue(category.getColor());
         setupListeners();
     }
@@ -70,7 +72,7 @@ public class StoreCategoryWrapper {
     }
 
     public boolean contains(StoreEntryWrapper entry) {
-        return entry.getEntry().getCategoryUuid().equals(category.getUuid()) || containedEntries.contains(entry);
+        return entry.getEntry().getCategoryUuid().equals(category.getUuid()) || allContainedEntries.contains(entry);
     }
 
     public void select() {
@@ -135,7 +137,12 @@ public class StoreCategoryWrapper {
         expanded.setValue(category.isExpanded());
         color.setValue(category.getColor());
 
-        containedEntries.setAll(StoreViewState.get().getAllEntries().getList().stream()
+        directContainedEntries.setAll(StoreViewState.get().getAllEntries().getList().stream()
+                .filter(entry -> {
+                    return entry.getEntry().getCategoryUuid().equals(category.getUuid());
+                })
+                .toList());
+        allContainedEntries.setAll(StoreViewState.get().getAllEntries().getList().stream()
                 .filter(entry -> {
                     return entry.getEntry().getCategoryUuid().equals(category.getUuid())
                             || (AppPrefs.get()
