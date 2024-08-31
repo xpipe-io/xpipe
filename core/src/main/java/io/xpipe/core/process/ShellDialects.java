@@ -44,11 +44,11 @@ public class ShellDialects {
     }
 
     public static boolean isPowershell(ShellControl sc) {
-        return sc.getShellDialect().equals(POWERSHELL) || sc.getShellDialect().equals(POWERSHELL_CORE);
-    }
+        if (sc.getShellDialect() == null) {
+            return false;
+        }
 
-    public static ShellDialect byName(String name) {
-        return byNameIfPresent(name).orElseThrow();
+        return sc.getShellDialect().equals(POWERSHELL) || sc.getShellDialect().equals(POWERSHELL_CORE);
     }
 
     public static Optional<ShellDialect> byNameIfPresent(String name) {
