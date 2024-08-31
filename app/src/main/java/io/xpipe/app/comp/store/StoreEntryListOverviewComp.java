@@ -70,12 +70,10 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                                     .equals(rootCategory);
                             // Sadly the all binding does not update when the individual visibility of entries changes
                             // But it is good enough.
-                            var showProvider =
-                                    !storeEntryWrapper.getEntry().getValidity().isUsable()
-                                            || storeEntryWrapper
-                                                    .getEntry()
-                                                    .getProvider()
-                                                    .shouldShow(storeEntryWrapper);
+                            var showProvider = true;
+                            try {
+                                showProvider = storeEntryWrapper.getEntry().getProvider().shouldShow(storeEntryWrapper);
+                            } catch (Exception ignored) {}
                             return inRootCategory && showProvider;
                         },
                         StoreViewState.get().getActiveCategory());
