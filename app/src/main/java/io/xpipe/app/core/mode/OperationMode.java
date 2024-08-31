@@ -255,6 +255,12 @@ public abstract class OperationMode {
     }
 
     public static void shutdown(boolean inShutdownHook, boolean hasError) {
+        // We can receive shutdown events while we are still starting up
+        // In that case ignore them until we are finished
+        if (isInStartup()) {
+            return;
+        }
+
         // In case we are stuck while in shutdown, instantly exit this application
         if (inShutdown && inShutdownHook) {
             TrackEvent.info("Received another shutdown request while in shutdown hook. Halting ...");
