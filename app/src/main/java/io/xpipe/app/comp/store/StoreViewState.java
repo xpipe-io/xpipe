@@ -176,6 +176,7 @@ public class StoreViewState {
                 var l = Arrays.stream(entry)
                         .map(StoreEntryWrapper::new)
                         .peek(storeEntryWrapper -> storeEntryWrapper.update())
+                        .peek(wrapper -> wrapper.applyLastAccess())
                         .toList();
                 Platform.runLater(() -> {
                     // Don't update anything if we have already reset

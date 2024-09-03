@@ -1,3 +1,11 @@
+.scroll-bar {
+    -fx-opacity: 1.0;
+}
+
+.scroll-bar .thumb {
+    -fx-opacity: 0.5;
+}
+
 .scroll-bar:vertical {
     -fx-min-width: 7px;
     -fx-pref-width: 7px;

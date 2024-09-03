@@ -121,6 +121,25 @@ public abstract class StorageElement {
         notifyUpdate(false, true);
     }
 
+    public void setLastModified(Instant lastModified) {
+        if (lastModified.equals(this.lastModified)) {
+            return;
+        }
+
+        this.lastModified = lastModified;
+        notifyUpdate(false, false);
+    }
+
+
+    public void setLastUsed(Instant lastUsed) {
+        if (lastUsed.equals(this.lastUsed)) {
+            return;
+        }
+
+        this.lastUsed = lastUsed;
+        notifyUpdate(false, false);
+    }
+
     public interface Listener {
         void onUpdate();
     }

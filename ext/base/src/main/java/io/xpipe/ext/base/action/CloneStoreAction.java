@@ -6,10 +6,10 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.DataStore;
-
 import javafx.beans.value.ObservableValue;
-
 import lombok.Value;
+
+import java.time.Duration;
 
 public class CloneStoreAction implements ActionProvider {
 
@@ -52,12 +52,15 @@ public class CloneStoreAction implements ActionProvider {
     @Value
     static class Action implements ActionProvider.Action {
 
-        DataStoreEntry store;
+        DataStoreEntry entry;
 
         @Override
         public void execute() {
-            DataStorage.get()
-                    .addStoreEntryIfNotPresent(DataStoreEntry.createNew(store.getName() + " (Copy)", store.getStore()));
+            var entry = DataStoreEntry.createNew(this.entry.getName() + " (Copy)", this.entry.getStore());
+            var instant = this.entry.getLastAccess().plus(Duration.ofSeconds(1));
+            entry.setLastModified(instant);
+            entry.setLastUsed(instant);
+            DataStorage.get().addStoreEntryIfNotPresent(entry);
         }
     }
 }
