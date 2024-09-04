@@ -426,6 +426,9 @@ public class StoreCreationComp extends DialogComp {
                         && (providerChoice.getProviders().size() > 1
                                 || providerChoice.getProviders().getFirst().showProviderChoice()))
                 || (staticDisplay && provider.getValue().showProviderChoice());
+        if (staticDisplay) {
+            providerChoice.apply(struc -> struc.get().setDisable(true));
+        }
         if (showProviders) {
             providerChoice.onSceneAssign(struc -> struc.get().requestFocus());
         }
