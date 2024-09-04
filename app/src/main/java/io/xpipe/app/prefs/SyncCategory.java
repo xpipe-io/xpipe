@@ -1,5 +1,6 @@
 package io.xpipe.app.prefs;
 
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
@@ -9,11 +10,14 @@ import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.ThreadHelper;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.layout.Region;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class SyncCategory extends AppPrefsCategory {
 
@@ -24,12 +28,18 @@ public class SyncCategory extends AppPrefsCategory {
 
     public Comp<?> create() {
         var prefs = AppPrefs.get();
+        AtomicReference<Region> button = new AtomicReference<>();
         var terminalTest = new StackComp(
                 List.of(new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
                     ThreadHelper.runAsync(() -> {
-                        DataStorageSyncHandler.getInstance().validateConnection();
+                        var r = DataStorageSyncHandler.getInstance().validateConnection();
+                        if (r) {
+                            Platform.runLater(() -> {
+                                button.get().getStyleClass().add(Styles.SUCCESS);
+                            });
+                        }
                     });
-                }).padding(new Insets(6, 10, 6, 6))))
+                }).apply(struc -> button.set(struc.get())).padding(new Insets(6, 10, 6, 6))))
                 .padding(new Insets(10, 0, 0, 0))
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
         var builder = new OptionsBuilder();

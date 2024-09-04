@@ -184,7 +184,7 @@ public class SshLocalBridge {
     }
 
     public static void reset() {
-        if (INSTANCE == null) {
+        if (INSTANCE == null || INSTANCE.getRunningShell() == null) {
             return;
         }
 
