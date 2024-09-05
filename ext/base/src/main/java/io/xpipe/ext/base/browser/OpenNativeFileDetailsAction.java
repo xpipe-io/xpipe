@@ -5,10 +5,13 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.LocalShell;
+import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileNames;
 
+import io.xpipe.core.store.FilePath;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -47,10 +50,16 @@ public class OpenNativeFileDetailsAction implements LeafAction {
                 case OsType.Linux linux -> {
                     var dbus = String.format(
                             """
-                                                dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItemProperties array:string:"file://%s" string:""
-                                                """,
+                            dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItemProperties array:string:"file://%s" string:""
+                            """,
                             localFile);
-                    sc.executeSimpleCommand(dbus);
+                    var success = sc.executeSimpleBooleanCommand(dbus);
+                    if (success) {
+                        return;
+                    }
+
+                    var file = new FilePath(e);
+                    sc.command(CommandBuilder.of().add("xdg-open").addFile(entry.getRawFileEntry().getKind() == FileKind.DIRECTORY ? file : file.getParent())).execute();
                 }
                 case OsType.MacOs macOs -> {
                     sc.osascriptCommand(String.format(
