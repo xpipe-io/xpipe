@@ -26,6 +26,10 @@ import java.util.List;
 
 public interface DataStoreProvider {
 
+    default int getOrderPriority() {
+        return 0;
+    }
+
     default boolean showProviderChoice() {
         return true;
     }

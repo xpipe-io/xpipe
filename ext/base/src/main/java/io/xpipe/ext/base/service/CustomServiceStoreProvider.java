@@ -16,6 +16,11 @@ import java.util.List;
 public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
 
     @Override
+    public int getOrderPriority() {
+        return -1;
+    }
+
+    @Override
     public DataStoreCreationCategory getCreationCategory() {
         return DataStoreCreationCategory.TUNNEL;
     }

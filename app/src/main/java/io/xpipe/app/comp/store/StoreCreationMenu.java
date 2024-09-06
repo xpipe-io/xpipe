@@ -13,6 +13,8 @@ import javafx.scene.control.SeparatorMenuItem;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.util.Comparator;
+
 public class StoreCreationMenu {
 
     public static void addButtons(MenuButton menu) {
@@ -40,7 +42,7 @@ public class StoreCreationMenu {
 
         menu.getItems().add(category("addSerial", "mdi2s-serial-port", DataStoreCreationCategory.SERIAL, "serial"));
 
-        menu.getItems().add(category("addDatabase", "mdi2d-database-plus", DataStoreCreationCategory.DATABASE, null));
+        // menu.getItems().add(category("addDatabase", "mdi2d-database-plus", DataStoreCreationCategory.DATABASE, null));
     }
 
     private static MenuItem category(
@@ -78,15 +80,16 @@ public class StoreCreationMenu {
                     category);
             event.consume();
         });
-        // Ugly sorting
+
         var providers = sub.stream()
-                .sorted((o1, o2) -> category == DataStoreCreationCategory.DESKTOP ?
-                        -o1.getModuleName().compareTo(o2.getModuleName()) : o1.getModuleName().compareTo(o2.getModuleName()))
+                .sorted(Comparator.comparingInt(dataStoreProvider -> dataStoreProvider.getOrderPriority()))
                 .toList();
+        int lastOrder = providers.getFirst().getOrderPriority();
         for (int i = 0; i < providers.size(); i++) {
             var dataStoreProvider = providers.get(i);
-            if (i > 0 && !providers.get(i - 1).getModuleName().equals(dataStoreProvider.getModuleName())) {
+            if (dataStoreProvider.getOrderPriority() != lastOrder) {
                 menu.getItems().add(new SeparatorMenuItem());
+                lastOrder = dataStoreProvider.getOrderPriority();
             }
 
             var item = new MenuItem();
