@@ -21,4 +21,9 @@ public class DaemonOpenExchangeImpl extends DaemonOpenExchange {
         LauncherInput.handle(msg.getArguments());
         return Response.builder().build();
     }
+
+    @Override
+    public boolean requiresEnabledApi() {
+        return false;
+    }
 }

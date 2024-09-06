@@ -25,4 +25,9 @@ public class DaemonModeExchangeImpl extends DaemonModeExchange {
                 .usedMode(OperationMode.map(OperationMode.get()))
                 .build();
     }
+
+    @Override
+    public boolean requiresEnabledApi() {
+        return false;
+    }
 }

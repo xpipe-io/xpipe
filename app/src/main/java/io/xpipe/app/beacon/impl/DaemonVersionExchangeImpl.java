@@ -31,4 +31,9 @@ public class DaemonVersionExchangeImpl extends DaemonVersionExchange {
                 .pro(pro)
                 .build();
     }
+
+    @Override
+    public boolean requiresEnabledApi() {
+        return false;
+    }
 }

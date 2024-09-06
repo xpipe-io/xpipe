@@ -12,4 +12,9 @@ public class DaemonFocusExchangeImpl extends DaemonFocusExchange {
         OperationMode.switchUp(OperationMode.map(msg.getMode()));
         return Response.builder().build();
     }
+
+    @Override
+    public boolean requiresEnabledApi() {
+        return false;
+    }
 }

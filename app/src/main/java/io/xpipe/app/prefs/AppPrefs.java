@@ -38,6 +38,8 @@ public class AppPrefs {
     private static AppPrefs INSTANCE;
     private final List<Mapping<?>> mapping = new ArrayList<>();
 
+    final BooleanProperty enableHttpApi =
+            mapVaultSpecific(new SimpleBooleanProperty(false), "enableHttpApi", Boolean.class);
     final BooleanProperty dontAutomaticallyStartVmSshServer =
             mapVaultSpecific(new SimpleBooleanProperty(false), "dontAutomaticallyStartVmSshServer", Boolean.class);
     final BooleanProperty dontAcceptNewHostKeys =
@@ -142,6 +144,10 @@ public class AppPrefs {
 
     public ObservableBooleanValue disableApiAuthentication() {
         return disableApiAuthentication;
+    }
+
+    public ObservableBooleanValue enableHttpApi() {
+        return enableHttpApi;
     }
 
     private final IntegerProperty editorReloadTimeout =

@@ -21,4 +21,9 @@ public class DaemonStopExchangeImpl extends DaemonStopExchange {
         });
         return Response.builder().success(true).build();
     }
+
+    @Override
+    public boolean requiresEnabledApi() {
+        return false;
+    }
 }

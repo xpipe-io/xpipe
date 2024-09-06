@@ -83,4 +83,8 @@ public abstract class BeaconInterface<T> {
     public boolean readRawRequestBody() {
         return false;
     }
+
+    public boolean requiresEnabledApi() {
+        return true;
+    }
 }

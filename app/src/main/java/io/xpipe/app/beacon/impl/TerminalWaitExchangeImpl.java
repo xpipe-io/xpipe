@@ -13,4 +13,9 @@ public class TerminalWaitExchangeImpl extends TerminalWaitExchange {
         TerminalLauncherManager.waitForCompletion(msg.getRequest());
         return Response.builder().build();
     }
+
+    @Override
+    public boolean requiresEnabledApi() {
+        return false;
+    }
 }

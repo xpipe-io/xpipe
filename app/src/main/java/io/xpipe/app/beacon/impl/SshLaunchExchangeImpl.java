@@ -2,7 +2,6 @@ package io.xpipe.app.beacon.impl;
 
 import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.util.TerminalLauncherManager;
-import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.SshLaunchExchange;
 import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.process.ShellDialects;
@@ -34,5 +33,10 @@ public class SshLaunchExchangeImpl extends SshLaunchExchange {
                 .getOpenScriptCommand(r.toString())
                 .buildBaseParts(null);
         return Response.builder().command(c).build();
+    }
+
+    @Override
+    public boolean requiresEnabledApi() {
+        return false;
     }
 }

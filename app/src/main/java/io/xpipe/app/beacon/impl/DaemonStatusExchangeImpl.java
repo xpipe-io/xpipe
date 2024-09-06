@@ -23,4 +23,9 @@ public class DaemonStatusExchangeImpl extends DaemonStatusExchange {
 
         return Response.builder().mode(mode).build();
     }
+
+    @Override
+    public boolean requiresEnabledApi() {
+        return false;
+    }
 }

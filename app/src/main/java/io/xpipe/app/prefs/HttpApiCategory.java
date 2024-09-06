@@ -16,6 +16,8 @@ public class HttpApiCategory extends AppPrefsCategory {
         return new OptionsBuilder()
                 .addTitle("httpServerConfiguration")
                 .sub(new OptionsBuilder()
+                        .nameAndDescription("enableHttpApi")
+                        .addToggle(prefs.enableHttpApi)
                         .nameAndDescription("apiKey")
                         .addString(prefs.apiKey)
                         .nameAndDescription("disableApiAuthentication")

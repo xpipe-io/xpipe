@@ -12,4 +12,9 @@ public class TerminalLaunchExchangeImpl extends TerminalLaunchExchange {
         var r = TerminalLauncherManager.performLaunch(msg.getRequest());
         return Response.builder().targetFile(r).build();
     }
+
+    @Override
+    public boolean requiresEnabledApi() {
+        return false;
+    }
 }

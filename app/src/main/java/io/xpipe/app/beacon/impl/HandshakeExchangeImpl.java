@@ -42,4 +42,9 @@ public class HandshakeExchangeImpl extends HandshakeExchange {
 
         return false;
     }
+
+    @Override
+    public boolean requiresEnabledApi() {
+        return false;
+    }
 }
