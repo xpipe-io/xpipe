@@ -77,15 +77,11 @@ public class BrowserSessionModel extends BrowserAbstractSessionModel<BrowserSess
         });
     }
 
-    public void openFileSystemSync(
+    public OpenFileSystemModel openFileSystemSync(
             DataStoreEntryRef<? extends FileSystemStore> store,
             FailableFunction<OpenFileSystemModel, String, Exception> path,
             BooleanProperty externalBusy)
             throws Exception {
-        if (store == null) {
-            return;
-        }
-
         OpenFileSystemModel model;
         try (var b = new BooleanScope(externalBusy != null ? externalBusy : new SimpleBooleanProperty()).start()) {
             try (var sessionBusy = new BooleanScope(busy).exclusive().start()) {
@@ -104,5 +100,6 @@ public class BrowserSessionModel extends BrowserAbstractSessionModel<BrowserSess
         } else {
             model.initWithDefaultDirectory();
         }
+        return model;
     }
 }

@@ -454,7 +454,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
     }
 
     public void initWithGivenDirectory(String dir) throws Exception {
-        cdSyncWithoutCheck(dir);
+        cdSync(dir);
     }
 
     public void initWithDefaultDirectory() {
