@@ -8,6 +8,7 @@ import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreUsageCategory;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -26,10 +27,11 @@ public interface ShellStoreProvider extends DataStoreProvider {
         return new ActionProvider.Action() {
             @Override
             public void execute() throws Exception {
-                ShellStore store = entry.getStore().asNeeded();
+                var replacement = ProcessControlProvider.get().replace(entry.ref());
+                ShellStore store = replacement.getStore().asNeeded();
                 TerminalLauncher.open(
-                        entry,
-                        DataStorage.get().getStoreEntryDisplayName(entry),
+                        replacement.get(),
+                        DataStorage.get().getStoreEntryDisplayName(replacement.get()),
                         null,
                         ScriptStore.controlWithDefaultScripts(store.control()));
             }
