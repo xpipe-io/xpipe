@@ -5,10 +5,6 @@ import io.xpipe.core.process.ShellControl;
 
 public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore {
 
-    static boolean isLocal(ShellStore s) {
-        return s instanceof LocalStore;
-    }
-
     @Override
     default FileSystem createFileSystem() {
         return new ConnectionFileSystem(control());

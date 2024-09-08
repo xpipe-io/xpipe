@@ -1,16 +1,5 @@
 package io.xpipe.core.util;
 
-import io.xpipe.core.dialog.BaseQueryElement;
-import io.xpipe.core.dialog.BusyElement;
-import io.xpipe.core.dialog.ChoiceElement;
-import io.xpipe.core.dialog.HeaderElement;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellDialect;
-import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.store.FilePath;
-import io.xpipe.core.store.LocalStore;
-import io.xpipe.core.store.StorePath;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -19,6 +8,15 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import io.xpipe.core.dialog.BaseQueryElement;
+import io.xpipe.core.dialog.BusyElement;
+import io.xpipe.core.dialog.ChoiceElement;
+import io.xpipe.core.dialog.HeaderElement;
+import io.xpipe.core.process.OsType;
+import io.xpipe.core.process.ShellDialect;
+import io.xpipe.core.process.ShellDialects;
+import io.xpipe.core.store.FilePath;
+import io.xpipe.core.store.StorePath;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -32,7 +30,6 @@ public class CoreJacksonModule extends SimpleModule {
     public void setupModule(SetupContext context) {
         context.registerSubtypes(
                 new NamedType(InPlaceSecretValue.class),
-                new NamedType(LocalStore.class),
                 new NamedType(BaseQueryElement.class),
                 new NamedType(ChoiceElement.class),
                 new NamedType(BusyElement.class),

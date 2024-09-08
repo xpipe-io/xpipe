@@ -1,7 +1,7 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.comp.store.StoreSortMode;
-import io.xpipe.core.store.LocalStore;
+import io.xpipe.app.ext.LocalStore;
 
 import java.time.Instant;
 import java.util.UUID;

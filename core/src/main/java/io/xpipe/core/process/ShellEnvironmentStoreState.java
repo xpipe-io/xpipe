@@ -11,15 +11,16 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder(toBuilder = true)
 @Jacksonized
-public class ShellNameStoreState extends ShellStoreState {
+public class ShellEnvironmentStoreState extends ShellStoreState {
 
     String shellName;
+    Boolean setDefault;
 
     @Override
     public DataStoreState mergeCopy(DataStoreState newer) {
-        var n = (ShellNameStoreState) newer;
+        var n = (ShellEnvironmentStoreState) newer;
         var b = toBuilder();
         mergeBuilder(n, b);
-        return b.shellName(useNewer(shellName, n.shellName)).build();
+        return b.shellName(useNewer(shellName, n.shellName)).setDefault(useNewer(setDefault,n.setDefault)).build();
     }
 }

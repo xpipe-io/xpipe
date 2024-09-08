@@ -12,8 +12,8 @@ import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.CommandControl;
-import io.xpipe.core.process.ProcessControlProvider;
-import io.xpipe.core.store.LocalStore;
+import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.LocalStore;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;

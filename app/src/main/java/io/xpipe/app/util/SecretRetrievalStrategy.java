@@ -3,7 +3,7 @@ package io.xpipe.app.util;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreSecret;
-import io.xpipe.core.store.LocalStore;
+import io.xpipe.app.ext.LocalStore;
 import io.xpipe.core.util.InPlaceSecretValue;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;

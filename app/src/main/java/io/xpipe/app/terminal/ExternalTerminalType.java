@@ -5,6 +5,7 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.ext.PrefsChoiceValue;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.storage.DataColor;

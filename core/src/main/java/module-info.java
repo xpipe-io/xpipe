@@ -1,4 +1,3 @@
-import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.util.CoreJacksonModule;
@@ -19,7 +18,6 @@ open module io.xpipe.core {
     requires static lombok;
 
     uses com.fasterxml.jackson.databind.Module;
-    uses ProcessControlProvider;
     uses io.xpipe.core.util.ProxyManagerProvider;
     uses io.xpipe.core.util.DataStateProvider;
     uses ModuleLayerLoader;

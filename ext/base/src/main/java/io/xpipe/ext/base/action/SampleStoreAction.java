@@ -8,7 +8,7 @@ import io.xpipe.core.process.CommandControl;
 import io.xpipe.core.process.ElevationFunction;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.store.LocalStore;
+import io.xpipe.app.ext.LocalStore;
 import io.xpipe.core.store.ShellStore;
 
 import javafx.beans.value.ObservableValue;
@@ -40,8 +40,7 @@ public class SampleStoreAction implements ActionProvider {
             @Override
             public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
                 // Allows you to individually check whether this action should be available for the specific store.
-                // In this case it should only be available for remote shell connections, not local ones.
-                return !ShellStore.isLocal(o.getStore());
+                return true;
             }
 
             @Override

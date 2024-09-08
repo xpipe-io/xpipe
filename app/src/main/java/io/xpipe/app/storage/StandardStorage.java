@@ -5,7 +5,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.store.LocalStore;
+import io.xpipe.app.ext.LocalStore;
 import io.xpipe.core.util.JacksonMapper;
 
 import com.fasterxml.jackson.core.JacksonException;

@@ -4,8 +4,10 @@ import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.core.store.FileSystemStore;
 import io.xpipe.core.store.ShellStore;
 
 import javafx.beans.property.SimpleBooleanProperty;
@@ -53,7 +55,8 @@ public class BrowseStoreAction implements ActionProvider {
 
         @Override
         public void execute() {
-            BrowserSessionModel.DEFAULT.openFileSystemAsync(entry.ref(), null, new SimpleBooleanProperty());
+            DataStoreEntryRef<FileSystemStore> replacement = ProcessControlProvider.get().replace(entry.ref());
+            BrowserSessionModel.DEFAULT.openFileSystemAsync(replacement, null, new SimpleBooleanProperty());
             AppLayoutModel.get().selectBrowser();
         }
     }

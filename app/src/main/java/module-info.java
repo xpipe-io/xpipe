@@ -110,6 +110,7 @@ open module io.xpipe.app {
     uses io.xpipe.app.util.LicensedFeature;
     uses io.xpipe.beacon.BeaconInterface;
     uses DataStorageExtensionProvider;
+    uses ProcessControlProvider;
 
     provides Module with
             AppJacksonModule;

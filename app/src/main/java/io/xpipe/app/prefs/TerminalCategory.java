@@ -13,7 +13,7 @@ import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.LocalStore;
+import io.xpipe.app.ext.LocalStore;
 
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;

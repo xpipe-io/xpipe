@@ -220,10 +220,7 @@ public interface ShellControl extends ProcessControl {
         return command(b);
     }
 
-    default CommandControl command(CommandBuilder builder) {
-        var sc = ProcessControlProvider.get().command(this, builder, builder);
-        return sc;
-    }
+    CommandControl command(CommandBuilder builder);
 
     void exitAndWait() throws IOException;
 }

@@ -1,6 +1,6 @@
 package io.xpipe.app.storage;
 
-import io.xpipe.core.process.ProcessControlProvider;
+import io.xpipe.app.ext.ProcessControlProvider;
 
 import java.nio.file.Path;
 

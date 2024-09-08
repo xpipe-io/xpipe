@@ -12,7 +12,7 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileNames;
-import io.xpipe.core.store.LocalStore;
+import io.xpipe.app.ext.LocalStore;
 import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.core.util.XPipeInstallation;
 
