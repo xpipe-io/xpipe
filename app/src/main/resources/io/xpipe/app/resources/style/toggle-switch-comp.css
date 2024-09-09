@@ -1,3 +1,19 @@
 .toggle-switch-comp:hover > .thumb-area, .root:key-navigation .toggle-switch-comp:focused > .thumb-area {
     -fx-background-color: -color-neutral-emphasis;
 }
+
+.toggle-switch-comp:has-graphic .label {
+    -fx-font-size: 1.7em;
+}
+
+.toggle-switch-comp:has-graphic {
+    -fx-font-size: 0.75em;
+}
+
+.toggle-switch-comp .label-container {
+    -fx-padding: -0.2em 0 0 0;
+}
+
+.root:linux .toggle-switch-comp .label-container {
+    -fx-padding: -0.05em 0 0 0;
+}
