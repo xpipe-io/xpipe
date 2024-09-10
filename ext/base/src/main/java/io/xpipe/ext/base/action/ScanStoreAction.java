@@ -31,15 +31,11 @@ public class ScanStoreAction implements ActionProvider {
 
             @Override
             public boolean isMajor(DataStoreEntryRef<ShellStore> o) {
-                return o.get().getProvider().shouldHaveChildren();
+                return true;
             }
 
             @Override
             public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
-                if (!o.get().getProvider().canHaveSubShells()) {
-                    return false;
-                }
-
                 var state = o.get().getStorePersistentState();
                 if (state instanceof ShellStoreState shellStoreState) {
                     return (shellStoreState.getShellDialect() == null

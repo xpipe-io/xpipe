@@ -197,7 +197,7 @@ public class StoreCreationComp extends DialogComp {
                     try {
                         DataStorage.get().addStoreEntryIfNotPresent(e);
                         if (validated
-                                && e.getProvider().shouldHaveChildren()
+                                && e.getProvider().shouldShowScan()
                                 && AppPrefs.get()
                                         .openConnectionSearchWindowOnConnectionCreation()
                                         .get()) {

@@ -46,6 +46,10 @@ public interface ShellControl extends ProcessControl {
 
     boolean isLocal();
 
+    default boolean canHaveSubshells() {
+        return true;
+    }
+
     ShellControl getMachineRootSession();
 
     ShellControl withoutLicenseCheck();

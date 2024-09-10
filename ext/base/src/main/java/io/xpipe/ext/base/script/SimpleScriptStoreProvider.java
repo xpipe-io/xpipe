@@ -46,7 +46,7 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
     }
 
     @Override
-    public boolean shouldHaveChildren() {
+    public boolean shouldShowScan() {
         return false;
     }
 

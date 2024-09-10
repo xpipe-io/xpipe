@@ -49,6 +49,10 @@ public class ScanAlert {
 
     public static void showForShellStore(DataStoreEntry initial) {
         show(initial, (DataStoreEntry entry, ShellControl sc) -> {
+            if (!sc.canHaveSubshells()) {
+                return null;
+            }
+
             if (!sc.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
                 return null;
             }

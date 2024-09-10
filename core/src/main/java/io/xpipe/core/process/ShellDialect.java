@@ -146,7 +146,11 @@ public interface ShellDialect {
 
     String getPrintWorkingDirectoryCommand();
 
-    StreamCharset getScriptCharset();
+    StreamCharset getTextCharset();
+
+    default StreamCharset getScriptCharset() {
+        return getTextCharset();
+    }
 
     CommandControl getFileCopyCommand(ShellControl parent, String oldFile, String newFile);
 

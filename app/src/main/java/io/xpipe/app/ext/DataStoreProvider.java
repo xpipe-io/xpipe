@@ -96,12 +96,8 @@ public interface DataStoreProvider {
         return new StoreSectionComp(section, topLevel);
     }
 
-    default boolean canHaveSubShells() {
+    default boolean shouldShowScan() {
         return true;
-    }
-
-    default boolean shouldHaveChildren() {
-        return canHaveSubShells();
     }
 
     default Comp<?> stateDisplay(StoreEntryWrapper w) {

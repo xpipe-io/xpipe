@@ -2,6 +2,7 @@ package io.xpipe.core.util;
 
 import lombok.Value;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
@@ -156,6 +157,20 @@ public class StreamCharset {
         }
 
         return detected.reader(inputStream);
+    }
+
+    public String read(byte[] b) throws Exception {
+        return read(new ByteArrayInputStream(b));
+    }
+
+    public String read(InputStream inputStream) throws Exception {
+        if (hasByteOrderMark()) {
+            var bom = inputStream.readNBytes(getByteOrderMark().length);
+            if (bom.length != 0 && !Arrays.equals(bom, getByteOrderMark())) {
+                throw new IllegalStateException("Charset does not match: " + charset.toString());
+            }
+        }
+        return new String(inputStream.readAllBytes(), charset);
     }
 
     public InputStreamReader reader(InputStream stream) throws Exception {
