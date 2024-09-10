@@ -178,7 +178,7 @@ public interface ShellDialect {
 
     String getWhichCommand(String executable);
 
-    Charset determineCharset(ShellControl control);
+    Charset determineCharset(ShellControl control) throws Exception;
 
     NewLine getNewLine();
 
