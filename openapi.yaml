@@ -10,8 +10,7 @@ info:
     The XPipe application will start up an HTTP server that can be used to send requests.
     Note that this server is HTTP-only for now as it runs only on localhost. HTTPS requests are not accepted.
     
-    You can either call the API directly or use one of the following community-made libraries:
-    - [https://github.com/coandco/python_xpipe_client](https://github.com/coandco/python_xpipe_client)
+    You can either call the API directly or using the python API at https://github.com/xpipe-io/xpipe-python-api.
     
     To start off with the API, you can query connections based on various filters.
     With the matched connections, you can start remote shell sessions for each one and run arbitrary commands in them.

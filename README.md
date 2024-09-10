@@ -76,8 +76,7 @@ It currently supports:
 
 - The XPipe API provides programmatic access to XPipe’s features via an HTTP interface
 - Manage all your remote systems and access their file systems in your own favorite programming language
-- Either call the API directly or with the help of a community-made library, such as:
-  * https://github.com/coandco/python_xpipe_client
+- Either call the API directly or with the help of the [python library](https://github.com/xpipe-io/xpipe-python-api)
 - Full documentation can be either found in the application itself under the API tab or in the [OpenAPI](/openapi.yaml) spec file
 
 # Downloads
