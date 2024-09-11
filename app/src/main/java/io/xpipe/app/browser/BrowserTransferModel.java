@@ -10,21 +10,18 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.ShellTemp;
 import io.xpipe.app.util.ThreadHelper;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
 import lombok.Value;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -162,13 +159,14 @@ public class BrowserTransferModel {
 
         var files = toMove.stream().map(item -> item.getLocalFile()).toList();
         var downloads = DesktopHelper.getDownloadsDirectory();
+        Files.createDirectories(downloads);
         for (Path file : files) {
             var target = downloads.resolve(file.getFileName());
             // Prevent DirectoryNotEmptyException
             if (Files.exists(target) && Files.isDirectory(target)) {
                 FileUtils.deleteDirectory(target.toFile());
             }
-            Files.move(file, target, StandardCopyOption.REPLACE_EXISTING);
+            FileUtils.moveDirectory(file.toFile(),target.toFile());
         }
         DesktopHelper.browseFileInDirectory(downloads.resolve(files.getFirst().getFileName()));
     }
