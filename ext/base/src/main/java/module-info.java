@@ -7,10 +7,7 @@ import io.xpipe.ext.base.browser.*;
 import io.xpipe.ext.base.desktop.DesktopApplicationStoreProvider;
 import io.xpipe.ext.base.desktop.DesktopCommandStoreProvider;
 import io.xpipe.ext.base.desktop.DesktopEnvironmentStoreProvider;
-import io.xpipe.ext.base.script.RunScriptAction;
-import io.xpipe.ext.base.script.ScriptDataStorageProvider;
-import io.xpipe.ext.base.script.ScriptGroupStoreProvider;
-import io.xpipe.ext.base.script.SimpleScriptStoreProvider;
+import io.xpipe.ext.base.script.*;
 import io.xpipe.ext.base.service.*;
 import io.xpipe.ext.base.store.StorePauseAction;
 import io.xpipe.ext.base.store.StoreStartAction;
@@ -65,6 +62,7 @@ open module io.xpipe.ext.base {
             JavapAction,
             JarAction;
     provides ActionProvider with
+            SimpleScriptQuickEditAction,
             StoreStopAction,
             StoreStartAction,
             StorePauseAction,

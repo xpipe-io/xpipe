@@ -21,7 +21,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.*;
 
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @Getter
 @AllArgsConstructor
 public abstract class ScriptStore extends JacksonizedValue implements DataStore, StatefulDataStore<EnabledStoreState> {
