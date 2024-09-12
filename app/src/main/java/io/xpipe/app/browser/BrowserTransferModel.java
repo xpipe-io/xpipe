@@ -166,7 +166,11 @@ public class BrowserTransferModel {
             if (Files.exists(target) && Files.isDirectory(target)) {
                 FileUtils.deleteDirectory(target.toFile());
             }
-            FileUtils.moveDirectory(file.toFile(),target.toFile());
+            if (Files.isDirectory(file)) {
+                FileUtils.moveDirectory(file.toFile(), target.toFile());
+            } else {
+                FileUtils.moveFile(file.toFile(), target.toFile());
+            }
         }
         DesktopHelper.browseFileInDirectory(downloads.resolve(files.getFirst().getFileName()));
     }
