@@ -1,5 +1,5 @@
 ---
-title: XPipe API Documentation v10.0
+title: XPipe API Documentation v11.3
 language_tabs:
   - javascript: JavaScript
   - python: Python
@@ -21,7 +21,7 @@ headingLevel: 2
 
 ---
 
-<h1 id="xpipe-api-documentation">XPipe API Documentation v10.0</h1>
+<h1 id="xpipe-api-documentation">XPipe API Documentation v11.3</h1>
 
 The XPipe API provides programmatic access to XPipe’s features.
 You can get started by either using this page as an API reference or alternatively import the OpenAPI definition file into your API client of choice:
@@ -31,7 +31,7 @@ You can get started by either using this page as an API reference or alternative
 The XPipe application will start up an HTTP server that can be used to send requests.
 Note that this server is HTTP-only for now as it runs only on localhost. HTTPS requests are not accepted.
 
-You can either call the API directly or using the python API at https://github.com/xpipe-io/xpipe-python-api.
+You can either call the API directly or using the official [XPipe Python API](https://github.com/xpipe-io/xpipe-python-api).
 
 To start off with the API, you can query connections based on various filters.
 With the matched connections, you can start remote shell sessions for each one and run arbitrary commands in them.
@@ -40,7 +40,7 @@ Any kind of passwords and other secrets are automatically provided by XPipe when
 If a required password is not stored and is set to be dynamically prompted, the running XPipe application will ask you to enter any required passwords.
 
 See the authentication handshake below on how to authenticate prior to sending requests.
-For development you can also skip the authentication step by disabling it in the settings menu.
+For development, you can also skip the authentication step by disabling it in the settings menu.
 
 Base URLs:
 

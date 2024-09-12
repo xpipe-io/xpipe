@@ -9,7 +9,13 @@ import io.xpipe.core.process.ShellTtyState;
 
 import javafx.beans.value.ObservableValue;
 
+import java.util.Arrays;
+
 public class DataStoreFormatter {
+
+    public static String join(String... elements) {
+        return String.join(" ", Arrays.stream(elements).filter(s -> s != null).toList());
+    }
 
     public static String formattedOsName(String osName) {
         osName = osName.replaceAll("^Microsoft ", "");

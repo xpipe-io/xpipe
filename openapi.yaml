@@ -10,7 +10,7 @@ info:
     The XPipe application will start up an HTTP server that can be used to send requests.
     Note that this server is HTTP-only for now as it runs only on localhost. HTTPS requests are not accepted.
     
-    You can either call the API directly or using the python API at https://github.com/xpipe-io/xpipe-python-api.
+    You can either call the API directly or using the official [XPipe Python API](https://github.com/xpipe-io/xpipe-python-api).
     
     To start off with the API, you can query connections based on various filters.
     With the matched connections, you can start remote shell sessions for each one and run arbitrary commands in them.
@@ -19,12 +19,12 @@ info:
     If a required password is not stored and is set to be dynamically prompted, the running XPipe application will ask you to enter any required passwords.
     
     See the authentication handshake below on how to authenticate prior to sending requests.
-    For development you can also skip the authentication step by disabling it in the settings menu.
+    For development, you can also skip the authentication step by disabling it in the settings menu.
   termsOfService: https://docs.xpipe.io/terms-of-service
   contact:
     name: XPipe - Contact us
     url: mailto:hello@xpipe.io
-  version: "10.0"
+  version: "11.3"
 externalDocs:
   description: XPipe - Plans and pricing
   url: https://xpipe.io/pricing
