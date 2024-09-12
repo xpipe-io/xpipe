@@ -3,6 +3,7 @@ package io.xpipe.ext.base.action;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.TerminalLauncher;
@@ -274,7 +275,8 @@ public class RunScriptActionMenu implements ActionProvider {
 
             @Override
             public List<? extends ActionProvider> getChildren(DataStoreEntryRef<ShellStore> store) {
-                var state = store.getEntry().getStorePersistentState();
+                var replacement = ProcessControlProvider.get().replace(store);
+                var state = replacement.getEntry().getStorePersistentState();
                 if (!(state instanceof ShellStoreState shellStoreState) || shellStoreState.getShellDialect() == null) {
                     return List.of(new NoScriptsActionProvider());
                 }
