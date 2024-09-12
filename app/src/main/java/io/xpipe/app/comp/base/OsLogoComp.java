@@ -23,7 +23,6 @@ public class OsLogoComp extends SimpleComp {
 
     private static final Map<String, String> ICONS = new HashMap<>();
     private static final String LINUX_DEFAULT = "linux-24.png";
-    private static final String LINUX_DEFAULT_SVG = "linux.svg";
     private final StoreEntryWrapper wrapper;
     private final ObservableValue<SystemStateComp.State> state;
 
@@ -67,11 +66,11 @@ public class OsLogoComp extends SimpleComp {
         if (ICONS.isEmpty()) {
             AppResources.with(AppResources.XPIPE_MODULE, "img/os", file -> {
                 try (var list = Files.list(file)) {
-                    list.filter(path -> path.toString().endsWith(".svg")
-                                    && !path.toString().endsWith(LINUX_DEFAULT_SVG))
+                    list.filter(path -> path.toString().endsWith(".png")
+                                    && !path.toString().endsWith(LINUX_DEFAULT))
                             .map(path -> FileNames.getFileName(path.toString()))
                             .forEach(path -> {
-                                var base = FileNames.getBaseName(path).replace("-dark", "") + "-24.png";
+                                var base = path.replace("-dark", "");
                                 ICONS.put(FileNames.getBaseName(base).split("-")[0], "os/" + base);
                             });
                 }
