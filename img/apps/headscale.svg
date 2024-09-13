@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 27.7.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill-rule:evenodd;clip-rule:evenodd;fill:#F8B5CB;}
+	.st1{fill-rule:evenodd;clip-rule:evenodd;fill:#A2A2A2;}
+	.st2{fill-rule:evenodd;clip-rule:evenodd;fill:#8D8D8D;}
+	.st3{fill-rule:evenodd;clip-rule:evenodd;fill:#303030;}
+</style>
+<g>
+	<ellipse class="st0" cx="49.5" cy="258.3" rx="49.5" ry="49.9"/>
+	<ellipse class="st1" cx="135.9" cy="234.2" rx="14.2" ry="14"/>
+	<ellipse class="st1" cx="135.9" cy="283.2" rx="14.2" ry="14"/>
+	<ellipse class="st1" cx="199.9" cy="283.2" rx="14.2" ry="14"/>
+	<ellipse class="st1" cx="200.1" cy="234.2" rx="14.2" ry="14"/>
+	<ellipse class="st2" cx="325" cy="258.8" rx="49.6" ry="50"/>
+	<ellipse class="st2" cx="431.6" cy="258.8" rx="49.6" ry="50"/>
+	<path class="st3" d="M273.3,173.5h-28.8v165h28.8v-11.9h-17v-141h17V173.5z"/>
+	<path class="st3" d="M483.2,173.5H512v165h-28.8v-11.9h17v-141h-17V173.5z"/>
+</g>
+</svg>

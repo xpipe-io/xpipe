@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 27.7.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns:serif="http://www.serif.com/"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
+	 style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill-rule:evenodd;clip-rule:evenodd;fill:url(#SVGID_1_);}
+	.st1{clip-path:url(#SVGID_00000034790738960105502940000014701682175743058564_);}
+</style>
+<g transform="matrix(1,0,0,1,-128,-128)">
+	<g id="logo" transform="matrix(1.5,0,0,1.5,-3136,-2698.29)">
+		
+			<radialGradient id="SVGID_1_" cx="2142.6816" cy="2318.9038" r="0.8366" gradientTransform="matrix(306 -177.1405 -295.6044 -510.6375 32206.8008 1565857.875)" gradientUnits="userSpaceOnUse">
+			<stop  offset="0" style="stop-color:#FF0066"/>
+			<stop  offset="1" style="stop-color:#FFB800"/>
+		</radialGradient>
+		<path class="st0" d="M2176,2140.2l85.3,85.3H2432l85.3-85.3l-170.7-256L2176,2140.2z"/>
+		<g>
+			<defs>
+				<polygon id="SVGID_00000162325029917335880240000006511876289089122749_" points="2176,2140.2 2261.3,2225.5 2432,2225.5 
+					2517.3,2140.2 2346.7,1884.2 				"/>
+			</defs>
+			<clipPath id="SVGID_00000036213155181828607460000010477739434854300607_">
+				<use xlink:href="#SVGID_00000162325029917335880240000006511876289089122749_"  style="overflow:visible;"/>
+			</clipPath>
+			<g style="clip-path:url(#SVGID_00000036213155181828607460000010477739434854300607_);">
+				<g transform="matrix(0.666667,0,0,0.666667,810.667,798.732)">
+					<g transform="matrix(1,-0,-0,1,2048,1628.2)">
+						<g>
+							
+								<image style="overflow:visible;enable-background:new    ;" width="384" height="768" id="_Image3" xlink:href="E9647D03.png"  transform="matrix(0.6667 0 0 0.6667 127.9995 -9.849433e-03)">
+							</image>
+						</g>
+					</g>
+				</g>
+			</g>
+		</g>
+	</g>
+</g>
+</svg>

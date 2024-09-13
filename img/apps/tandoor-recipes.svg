@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 27.7.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1"
+	 id="svg48" xmlns:svg="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:serif="http://www.serif.com/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
+	 style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill-rule:evenodd;clip-rule:evenodd;fill:url(#ellipse2_00000010307669315449706370000014513127205984986497_);}
+	.st1{clip-path:url(#SVGID_00000058559767621054285860000009499944787411136935_);}
+	.st2{fill-rule:evenodd;clip-rule:evenodd;fill:#161616;}
+	.st3{fill-rule:evenodd;clip-rule:evenodd;fill:#FFCB76;}
+	.st4{fill-rule:evenodd;clip-rule:evenodd;fill:#FF6F00;}
+	.st5{clip-path:url(#SVGID_00000047771782342127777390000013341067893810512297_);}
+	.st6{fill-rule:evenodd;clip-rule:evenodd;fill:#FFD100;}
+</style>
+<sodipodi:namedview  bordercolor="#666666" borderopacity="1" gridtolerance="10" guidetolerance="10" id="namedview50" inkscape:current-layer="svg48" inkscape:cx="781.42929" inkscape:cy="329.59753" inkscape:document-rotation="0" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-height="1377" inkscape:window-maximized="1" inkscape:window-width="2560" inkscape:window-x="1912" inkscape:window-y="1072" inkscape:zoom="0.4921875" objecttolerance="10" pagecolor="#ffffff" showgrid="false">
+	</sodipodi:namedview>
+<g id="Logo" transform="matrix(0.637323,0,0,0.637323,-243.095,-716.725)">
+	<g id="Kreis" transform="matrix(1.44936,0,0,1.50279,387.258,1039.34)">
+		
+			<linearGradient id="ellipse2_00000164508553991098987500000012226510708014340486_" gradientUnits="userSpaceOnUse" x1="-22.496" y1="324.0153" x2="-21.4293" y2="324.0153" gradientTransform="matrix(1.847421e-06 0 0 -1.915525e-06 3701.6409 -63.4106)">
+			<stop  offset="0" style="stop-color:#272727"/>
+			<stop  offset="1" style="stop-color:#6C6C6C"/>
+		</linearGradient>
+		
+			<ellipse id="ellipse2" style="fill-rule:evenodd;clip-rule:evenodd;fill:url(#ellipse2_00000164508553991098987500000012226510708014340486_);" cx="273.1" cy="324" rx="277.1" ry="267.3"/>
+		<g>
+			<defs>
+				<circle id="SVGID_1_" cx="273.1" cy="324" r="256"/>
+			</defs>
+			<clipPath id="SVGID_00000173154433467549755930000003003605049338957971_">
+				<use xlink:href="#SVGID_1_"  style="overflow:visible;"/>
+			</clipPath>
+			<g id="g18" style="clip-path:url(#SVGID_00000173154433467549755930000003003605049338957971_);">
+				<g id="Shadow" transform="matrix(1.10322,0,0,1.064,-5.58287,50.5786)">
+					<path id="path7" class="st2" d="M149.9,438.6l248.8,248.8l297.9-175.9L382.1,197L149.9,438.6z"/>
+					<g id="g11" transform="translate(-4.22105,0.775864)">
+						<path id="path9" class="st2" d="M205.4,173.4l295.8,295.8l111-97.4L299.6,59.2l-2.9,72L205.4,173.4z"/>
+					</g>
+					<g id="g15" transform="translate(-85.3876,27.8512)">
+						<path id="path13" class="st2" d="M308.5,140.1l295.8,295.8l2.9-65.7L294.6,57.5l-3.3,75.5L308.5,140.1z"/>
+					</g>
+				</g>
+			</g>
+		</g>
+	</g>
+	<g id="g23" transform="matrix(1.471,0,0,1.471,406.537,1149.69)">
+		<path id="path21" class="st3" d="M256.1,217.6c32.2,0,60.4-13.5,78.2-27.6c18.1-14.3,44.3-11.4,58.9,6.4
+			c24,29.1,38.4,66,38.4,106.1c0,65.7-40.5,146.7-96.9,175.1c-24.2,12.2-49.4,18-78.6,18l0,0h-0.1H256l0,0c-29.2,0-54.3-5.8-78.6-18
+			c-56.4-28.4-96.9-109.5-96.9-175.1c0-40.1,14.4-77,38.4-106.1c14.6-17.8,40.8-20.6,58.9-6.4C195.7,204.1,223.9,217.6,256.1,217.6
+			L256.1,217.6z"/>
+	</g>
+	<g id="Flame-2" transform="matrix(0.965725,0,0,0.89175,164.497,436.391)" serif:id="Flame 2">
+		<path id="path25" class="st4" d="M602,819.1c-2.6-3.7-2.6-8.8,0-12.5c2.6-3.7,7.1-5.2,11.1-3.5c20.4,8.1,47,20.7,67.7,37.6
+			c43,35.1,54.8,58.6,64.4,82.8c11.4,28.6,13,58.2,10.6,78.9c-6.9,59.2-51.4,108.2-114.6,108.2c-63.3,0-113.6-48.5-114.6-108.2
+			c-0.6-36,11.1-64.7,23.9-85.2c3.2-5.1,9.2-7.2,14.5-5.1c5.3,2.1,8.7,7.9,8.1,14c-1.8,12.9-3,26.4-2.4,37.2
+			c2.1,36.5,23.7,45.9,46,45.7c23.8-0.2,47.8-20.4,39.2-71.9C648.2,892,621.1,846.7,602,819.1L602,819.1z"/>
+		<g>
+			<defs>
+				<path id="SVGID_00000126320604333460962620000004599271963134376108_" d="M602,819.1c-2.6-3.7-2.6-8.8,0-12.5
+					c2.6-3.7,7.1-5.2,11.1-3.5c20.4,8.1,47,20.7,67.7,37.6c43,35.1,54.8,58.6,64.4,82.8c11.4,28.6,13,58.2,10.6,78.9
+					c-6.9,59.2-51.4,108.2-114.6,108.2c-63.3,0-113.6-48.5-114.6-108.2c-0.6-36,11.1-64.7,23.9-85.2c3.2-5.1,9.2-7.2,14.5-5.1
+					c5.3,2.1,8.7,7.9,8.1,14c-1.8,12.9-3,26.4-2.4,37.2c2.1,36.5,23.7,45.9,46,45.7c23.8-0.2,47.8-20.4,39.2-71.9
+					C648.2,892,621.1,846.7,602,819.1L602,819.1z"/>
+			</defs>
+			<clipPath id="SVGID_00000152966717745388160320000012987869077087764392_">
+				<use xlink:href="#SVGID_00000126320604333460962620000004599271963134376108_"  style="overflow:visible;"/>
+			</clipPath>
+			<g id="g34" style="clip-path:url(#SVGID_00000152966717745388160320000012987869077087764392_);">
+				<g id="g32" transform="matrix(1.28784,-0.270602,0.285942,1.59598,247.349,825.209)">
+					<path id="path30" class="st6" d="M255.9,30.8c26.2,12.4,54.4,41.1,62.2,78.1c12.9,61.5-23.2,78.5-54.2,77.1
+						c-49.7-2.4-66.5-41.8-33.2-89.1C251.3,67.5,232.1,19.5,255.9,30.8z"/>
+				</g>
+			</g>
+		</g>
+	</g>
+	<g id="Hut" transform="matrix(1.521,0,0,1.521,393.566,1149.06)">
+		<path id="path37" class="st2" d="M226.3,419.2c-5.9,0-11.1-2-15.1-5.2c-2.4-1.9-3.3-5.2-2.3-8.1c1-2.9,3.8-4.9,6.9-4.9
+			c14.8-0.1,40.3-0.1,40.3-0.1s25.5,0,40.3,0.1c3.1,0,5.8,1.9,6.9,4.9c1,2.9,0.1,6.2-2.3,8.1c-4,3.3-9.3,5.2-15.1,5.2H226.3z
+			 M214.6,387.6c-3.2,0-6.3-1.3-8.6-3.6c-2.3-2.3-3.6-5.4-3.6-8.6c0-6.7,0-13.8,0-13.8c0-4.4-2.9-8.2-7.2-9.4
+			c-14.7-4.1-25.5-17.3-25.5-33c0-18.9,15.8-34.3,35.4-34.3l0,0c7.5,0,14.2-4.7,16.7-11.8c3.4-9.8,13.2-20.9,34.1-20.9l0,0h0.2l0,0
+			c20.9,0,30.7,11.1,34.1,20.9c2.5,7.1,9.2,11.8,16.7,11.8l0,0c19.5,0,35.4,15.4,35.4,34.3c0,15.6-10.8,28.8-25.5,33
+			c-4.2,1.2-7.2,5-7.2,9.4c0,0,0,7,0,13.8c0,3.2-1.3,6.3-3.6,8.6c-2.3,2.3-5.4,3.6-8.6,3.6C276.9,387.6,235.3,387.6,214.6,387.6
+			L214.6,387.6z"/>
+	</g>
+</g>
+</svg>

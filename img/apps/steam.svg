@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 27.7.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:url(#SVGID_1_);}
+	.st1{fill:#FFFFFF;}
+</style>
+<symbol  id="B" viewBox="-32 -32 64 64">
+	<g>
+		
+			<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="7762.6479" y1="-8454.3125" x2="7762.6479" y2="-8453.3125" gradientTransform="matrix(63.931 0 0 64 -496273.8438 541044)">
+			<stop  offset="0" style="stop-color:#111D2E"/>
+			<stop  offset="0.212" style="stop-color:#051839"/>
+			<stop  offset="0.407" style="stop-color:#0A1B48"/>
+			<stop  offset="0.581" style="stop-color:#132E62"/>
+			<stop  offset="0.738" style="stop-color:#144B7E"/>
+			<stop  offset="0.873" style="stop-color:#136497"/>
+			<stop  offset="1" style="stop-color:#1387B8"/>
+		</linearGradient>
+		<path class="st0" d="M-30.7,9.2C-26.7,22.4-14.5,32,0,32c17.7,0,32-14.3,32-32S17.7-32,0-32C-17-32-30.9-18.8-32-2.1
+			C-29.9,1.4-29.1,3.5-30.7,9.2L-30.7,9.2z"/>
+		<path class="st1" d="M-1.7-8l0,0.2L-9.5,3.5c-1.3-0.1-2.5,0.2-3.7,0.7c-0.5,0.2-1,0.5-1.5,0.8l-17.2-7.1c0,0-0.4,6.5,1.3,11.4
+			l12.2,5c0.6,2.7,2.5,5.1,5.2,6.3c4.5,1.9,9.7-0.3,11.6-4.8c0.5-1.2,0.7-2.4,0.7-3.7l11.2-8l0.3,0c6.7,0,12.2-5.5,12.2-12.2
+			s-5.4-12.2-12.2-12.2C3.8-20.2-1.7-14.7-1.7-8L-1.7-8z M-3.5,15c-1.5,3.5-5.5,5.1-9,3.7c-1.5-0.7-2.8-1.8-3.5-3.4l4,1.6
+			c2.6,1.1,5.5-0.1,6.6-2.7c0,0,0,0,0,0c1.1-2.6-0.1-5.5-2.7-6.6L-12.3,6c1.6-0.6,3.4-0.6,5,0.1c1.7,0.7,3,2,3.7,3.7
+			S-2.9,13.3-3.5,15 M10.5,0.1C6,0.1,2.4-3.5,2.4-8c0-4.5,3.6-8.1,8.1-8.1c4.5,0,8.1,3.6,8.1,8.1C18.6-3.5,15,0.1,10.5,0.1 M4.4-8
+			c0-3.4,2.7-6.1,6.1-6.1c3.4,0,6.1,2.7,6.1,6.1c0,3.4-2.7,6.1-6.1,6.1C7.1-1.9,4.4-4.7,4.4-8L4.4-8z"/>
+	</g>
+</symbol>
+<g>
+	<use xlink:href="#B"  width="64" height="64" x="-32" y="-32" transform="matrix(8 0 0 8 256 256)" style="overflow:visible;"/>
+</g>
+</svg>

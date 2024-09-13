@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 27.7.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Livello_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#185C37;}
+	.st1{fill:#21A366;}
+	.st2{fill:#107C41;}
+	.st3{opacity:0.1;enable-background:new    ;}
+	.st4{opacity:0.2;enable-background:new    ;}
+	.st5{fill:url(#SVGID_1_);}
+	.st6{fill:#FFFFFF;}
+	.st7{fill:#33C481;}
+</style>
+<g>
+	<path class="st0" d="M321.5,244.1l-202.4-35.7v263.9c0,12.1,9.8,21.8,21.8,21.8l0,0h349.3c12.1,0,21.8-9.8,21.8-21.8l0,0v-97.2
+		L321.5,244.1z"/>
+	<path class="st1" d="M321.5,17.9H140.9c-12.1,0-21.8,9.8-21.8,21.8l0,0v97.2L321.5,256l107.2,35.7L512,256V136.9L321.5,17.9z"/>
+	<path class="st2" d="M119.1,136.9h202.4V256H119.1V136.9z"/>
+	<path class="st3" d="M263.9,113.1H119.1v297.7h144.9c12,0,21.8-9.8,21.8-21.8v-254C285.7,122.9,276,113.2,263.9,113.1z"/>
+	<path class="st4" d="M252,125h-133v297.7h133c12,0,21.8-9.8,21.8-21.8v-254C273.8,134.8,264.1,125.1,252,125z"/>
+	<path class="st4" d="M252,125h-133v273.9h133c12,0,21.8-9.8,21.8-21.8V146.8C273.8,134.8,264.1,125.1,252,125z"/>
+	<path class="st4" d="M240.1,125H119.1v273.9h121.1c12,0,21.8-9.8,21.8-21.8V146.8C261.9,134.8,252.2,125.1,240.1,125z"/>
+	
+		<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="45.5065" y1="-1232.0308" x2="216.4467" y2="-935.9695" gradientTransform="matrix(1 0 0 1 0 1340)">
+		<stop  offset="0" style="stop-color:#18884F"/>
+		<stop  offset="0.5" style="stop-color:#117E43"/>
+		<stop  offset="1" style="stop-color:#0B6631"/>
+	</linearGradient>
+	<path class="st5" d="M21.8,125h218.3c12.1,0,21.8,9.8,21.8,21.8v218.3c0,12.1-9.8,21.8-21.8,21.8H21.8C9.8,387,0,377.2,0,365.2
+		V146.8C0,134.8,9.8,125,21.8,125z"/>
+	<path class="st6" d="M67.6,326.9l45.9-71.1L71.4,185h33.8l23,45.2c2.1,4.3,3.6,7.5,4.4,9.6h0.3c1.5-3.4,3.1-6.8,4.8-10l24.5-44.8
+		h31.1l-43.1,70.3l44.2,71.5h-33.1l-26.5-49.7c-1.2-2.1-2.3-4.3-3.2-6.6h-0.4c-0.8,2.3-1.8,4.4-3.1,6.4l-27.3,49.9L67.6,326.9
+		L67.6,326.9z"/>
+	<path class="st7" d="M490.2,17.9H321.5v119.1H512V39.7C512,27.6,502.2,17.9,490.2,17.9L490.2,17.9z"/>
+	<path class="st2" d="M321.5,256H512v119.1H321.5V256z"/>
+</g>
+</svg>

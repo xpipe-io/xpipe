@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 27.7.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 867 867" style="enable-background:new 0 0 867 867;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#FFFFFF;filter:url(#Adobe_OpacityMaskFilter);}
+	.st1{mask:url(#small-triangle-mask_00000096025398863293775720000014094214526102219392_);fill:#D40000;}
+	.st2{stroke:#D40000;stroke-width:90;}
+</style>
+<g>
+	<defs>
+		<filter id="Adobe_OpacityMaskFilter" filterUnits="userSpaceOnUse" x="58.5" y="0.5" width="750" height="866">
+			<feColorMatrix  type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0"/>
+		</filter>
+	</defs>
+	
+		<mask maskUnits="userSpaceOnUse" x="58.5" y="0.5" width="750" height="866" id="small-triangle-mask_00000096025398863293775720000014094214526102219392_">
+		<rect x="0.5" y="0.5" class="st0" width="866" height="866"/>
+		<polygon points="508.5,433.5 208.5,260.3 208.5,606.7 		"/>
+	</mask>
+	<polygon class="st1" points="808.5,433.5 58.5,0.5 58.5,866.5 	"/>
+	<line class="st2" x1="481.7" y1="333.5" x2="135.3" y2="533.5"/>
+</g>
+</svg>

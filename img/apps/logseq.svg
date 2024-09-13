@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 27.7.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1"
+	 id="svg16" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:svg="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:dc="http://purl.org/dc/elements/1.1/" inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)" sodipodi:docname="logseq_icon_simple.svg"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
+	 style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#002B34;}
+	.st1{fill:#86C8C8;}
+</style>
+<sodipodi:namedview  bordercolor="#eeeeee" borderopacity="1" id="namedview18" inkscape:current-layer="svg16" inkscape:cx="63.918159" inkscape:cy="64" inkscape:pagecheckerboard="0" inkscape:pageopacity="0" inkscape:pageshadow="0" inkscape:window-height="1011" inkscape:window-maximized="1" inkscape:window-width="1920" inkscape:window-x="0" inkscape:window-y="0" inkscape:zoom="6.109375" pagecolor="#505050" showgrid="false">
+	</sodipodi:namedview>
+<g>
+	<path id="rect4" class="st0" d="M116.6,0h278.8C459.8,0,512,59.7,512,133.4v245.2c0,73.7-52.2,133.4-116.6,133.4H116.6
+		C52.2,512,0,452.3,0,378.6V133.4C0,59.7,52.2,0,116.6,0z"/>
+	<g id="g14" transform="translate(249.20942,50.168715)">
+		<path id="path8" class="st1" d="M-82.1,132.1c-24,27.4-68.3,27.9-98.9,1.1c-30.6-26.8-36.1-70.7-12.2-98.2
+			c23.9-27.5,68.1-28.2,98.9-1.5c30.7,26.7,36.3,70.6,12.5,98.2"/>
+		<ellipse id="ellipse10" class="st1" cx="55" cy="278.5" rx="166.7" ry="130.2"/>
+		
+			<ellipse id="ellipse12" transform="matrix(0.9779 -0.2093 0.2093 0.9779 -9.5411 9.484)" class="st1" cx="40.1" cy="49.8" rx="70.6" ry="45.5"/>
+	</g>
+</g>
+</svg>
