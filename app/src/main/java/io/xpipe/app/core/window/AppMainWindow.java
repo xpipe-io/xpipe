@@ -4,6 +4,7 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppTheme;
+import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
@@ -11,7 +12,6 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviourAlert;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Rectangle2D;
@@ -24,18 +24,17 @@ import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import javax.imageio.ImageIO;
 
 public class AppMainWindow {
 
@@ -167,14 +166,14 @@ public class AppMainWindow {
             // Close other windows
             Stage.getWindows().stream().filter(w -> !w.equals(stage)).toList().forEach(w -> w.fireEvent(e));
             stage.close();
-            AppPrefs.get().closeBehaviour().getValue().run();
+            OperationMode.onWindowClose();
             e.consume();
         });
 
         stage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             if (new KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN).match(event)) {
                 stage.close();
-                AppPrefs.get().closeBehaviour().getValue().run();
+                OperationMode.onWindowClose();
                 event.consume();
             }
         });
@@ -277,7 +276,7 @@ public class AppMainWindow {
         if (OsType.getLocal().equals(OsType.LINUX) || OsType.getLocal().equals(OsType.MACOS)) {
             stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
                 if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {
-                    AppPrefs.get().closeBehaviour().getValue().run();
+                    OperationMode.onWindowClose();
                     event.consume();
                 }
             });
