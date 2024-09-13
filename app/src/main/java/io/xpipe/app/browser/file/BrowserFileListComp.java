@@ -502,7 +502,8 @@ public final class BrowserFileListComp extends SimpleComp {
 
         updateHandler.run();
         fileList.getShown().addListener((observable, oldValue, newValue) -> {
-            updateHandler.run();
+            // Delay to prevent internal tableview exceptions when sorting
+            Platform.runLater(updateHandler);
         });
         fileList.getFileSystemModel().getCurrentPath().addListener((observable, oldValue, newValue) -> {
             if (oldValue == null) {
