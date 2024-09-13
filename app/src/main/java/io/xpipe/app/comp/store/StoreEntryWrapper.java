@@ -40,6 +40,7 @@ public class StoreEntryWrapper {
     private final Property<StoreCategoryWrapper> category = new SimpleObjectProperty<>();
     private final Property<String> summary = new SimpleObjectProperty<>();
     private final Property<StoreNotes> notes;
+    private final Property<String> icon = new SimpleObjectProperty<>();
 
     public StoreEntryWrapper(DataStoreEntry entry) {
         this.entry = entry;
@@ -137,6 +138,7 @@ public class StoreEntryWrapper {
         }
         color.setValue(entry.getColor());
         notes.setValue(new StoreNotes(entry.getNotes(), entry.getNotes()));
+        icon.setValue(entry.getIcon());
 
         busy.setValue(entry.getBusyCounter().get() != 0);
         deletable.setValue(entry.getConfiguration().isDeletable()

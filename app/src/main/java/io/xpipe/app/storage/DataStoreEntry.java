@@ -1,18 +1,17 @@
 package io.xpipe.app.storage;
 
-import io.xpipe.app.ext.DataStoreProvider;
-import io.xpipe.app.ext.DataStoreProviders;
-import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.util.FixedHierarchyStore;
-import io.xpipe.core.store.*;
-import io.xpipe.core.util.JacksonMapper;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.ext.DataStoreProviders;
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.util.FixedHierarchyStore;
+import io.xpipe.core.store.*;
+import io.xpipe.core.util.JacksonMapper;
 import lombok.*;
 import lombok.experimental.NonFinal;
 import org.apache.commons.io.FileUtils;
@@ -69,6 +68,8 @@ public class DataStoreEntry extends StorageElement {
     @NonFinal
     Order explicitOrder;
 
+    String icon;
+
     private DataStoreEntry(
             Path directory,
             UUID uuid,
@@ -85,7 +86,8 @@ public class DataStoreEntry extends StorageElement {
             boolean expanded,
             DataColor color,
             String notes,
-            Order explicitOrder) {
+            Order explicitOrder, String icon
+    ) {
         super(directory, uuid, name, lastUsed, lastModified, color, expanded, dirty);
         this.categoryUuid = categoryUuid;
         this.store = store;
@@ -96,6 +98,7 @@ public class DataStoreEntry extends StorageElement {
         this.provider = store != null ? DataStoreProviders.byStore(store) : null;
         this.storePersistentStateNode = storePersistentState;
         this.notes = notes;
+        this.icon = icon;
     }
 
     private DataStoreEntry(
@@ -106,11 +109,14 @@ public class DataStoreEntry extends StorageElement {
             Instant lastUsed,
             Instant lastModified,
             DataStore store,
-            Order explicitOrder) {
+            Order explicitOrder,
+            String icon
+    ) {
         super(directory, uuid, name, lastUsed, lastModified, null, false, false);
         this.categoryUuid = categoryUuid;
         this.store = store;
         this.explicitOrder = explicitOrder;
+        this.icon = icon;
         this.storeNode = null;
         this.validity = Validity.INCOMPLETE;
         this.configuration = Configuration.defaultConfiguration();
@@ -128,6 +134,7 @@ public class DataStoreEntry extends StorageElement {
                 Instant.now(),
                 Instant.now(),
                 store,
+                null,
                 null);
     }
 
@@ -158,6 +165,7 @@ public class DataStoreEntry extends StorageElement {
                 Configuration.defaultConfiguration(),
                 null,
                 false,
+                null,
                 null,
                 null,
                 null);
@@ -195,6 +203,8 @@ public class DataStoreEntry extends StorageElement {
                     }
                 })
                 .orElse(null);
+        var iconNode = json.get("icon");
+        String icon = iconNode != null ? iconNode.asText() : null;
 
         var persistentState = stateJson.get("persistentState");
         var lastUsed = Optional.ofNullable(stateJson.get("lastUsed"))
@@ -266,7 +276,8 @@ public class DataStoreEntry extends StorageElement {
                 expanded,
                 color,
                 notes,
-                order));
+                order,
+                icon));
     }
 
     public void setExplicitOrder(Order uuid) {
@@ -380,6 +391,7 @@ public class DataStoreEntry extends StorageElement {
         obj.put("name", name);
         obj.put("categoryUuid", categoryUuid.toString());
         obj.set("color", mapper.valueToTree(color));
+        obj.set("icons", mapper.valueToTree(icon));
         stateObj.put("lastUsed", lastUsed.toString());
         stateObj.put("lastModified", lastModified.toString());
         stateObj.set("persistentState", storePersistentStateNode);

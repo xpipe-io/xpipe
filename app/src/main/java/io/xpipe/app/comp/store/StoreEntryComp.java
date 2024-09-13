@@ -1,5 +1,7 @@
 package io.xpipe.app.comp.store;
 
+import atlantafx.base.layout.InputGroup;
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.*;
 import io.xpipe.app.ext.ActionProvider;
@@ -10,7 +12,6 @@ import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.LabelComp;
-import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.DerivedObservableList;
@@ -21,7 +22,6 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.*;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableDoubleValue;
@@ -33,10 +33,6 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-
-import atlantafx.base.layout.InputGroup;
-import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.nio.file.Files;
@@ -192,26 +188,7 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     protected Node createIcon(int w, int h) {
-        var img = getWrapper().disabledProperty().get()
-                ? "disabled_icon.png"
-                : getWrapper()
-                        .getEntry()
-                        .getProvider()
-                        .getDisplayIconFileName(getWrapper().getEntry().getStore());
-        var imageComp = PrettyImageHelper.ofFixedSize(img, w, h);
-        var storeIcon = imageComp.createRegion();
-        if (getWrapper().getValidity().getValue().isUsable()) {
-            new TooltipAugment<>(getWrapper().getEntry().getProvider().displayName(), null).augment(storeIcon);
-        }
-
-        var stack = new StackPane(storeIcon);
-        stack.setMinHeight(w + 7);
-        stack.setMinWidth(w + 7);
-        stack.setMaxHeight(w + 7);
-        stack.setMaxWidth(w + 7);
-        stack.getStyleClass().add("icon");
-        stack.setAlignment(Pos.CENTER);
-        return stack;
+        return new StoreIconComp(getWrapper(), w, h).createRegion();
     }
 
     protected Region createButtonBar() {
