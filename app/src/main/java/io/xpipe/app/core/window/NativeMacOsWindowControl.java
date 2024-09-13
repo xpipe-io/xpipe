@@ -1,14 +1,11 @@
 package io.xpipe.app.core.window;
 
+import com.sun.jna.NativeLong;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.NativeBridge;
-import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.util.ModuleHelper;
-
 import javafx.stage.Window;
-
-import com.sun.jna.NativeLong;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -45,9 +42,6 @@ public class NativeMacOsWindowControl {
 
         try {
             lib.get().setAppearance(new NativeLong(nsWindow), seamlessFrame, darkMode);
-            if (seamlessFrame) {
-                ThreadHelper.sleep(200);
-            }
         } catch (Throwable e) {
             ErrorEvent.fromThrowable(e).handle();
         }
