@@ -100,7 +100,7 @@ You can add custom script definitions [here](https://github.com/xpipe-io/xpipe/t
 
 ### Adding more file icons for specific types
 
-You can register file types [here](https://github.com/xpipe-io/xpipe/blob/master/app/src/main/resources/io/xpipe/app/resources/file_list.txt) and add the respective icons [here](https://github.com/xpipe-io/xpipe/tree/master/app/src/main/resources/io/xpipe/app/resources/browser_icons).
+You can register file types [here](https://github.com/xpipe-io/xpipe/blob/master/app/src/main/resources/io/xpipe/app/resources/file_list.txt) and add the respective icons [here](https://github.com/xpipe-io/xpipe/tree/master/app/src/main/resources/io/xpipe/app/resources/img/browser).
 
 The existing file list and icons are taken from the [vscode-icons](https://github.com/vscode-icons/vscode-icons) project. Due to limitations in the file definition list compatibility, some file types might not be listed by their proper extension and are therefore not being applied correctly even though the images and definitions exist already.
 

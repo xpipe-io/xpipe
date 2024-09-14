@@ -13,7 +13,7 @@ public class FileIconManager {
         if (!loaded) {
             BrowserIconFileType.loadDefinitions();
             BrowserIconDirectoryType.loadDefinitions();
-            AppImages.loadDirectory(AppResources.XPIPE_MODULE, "browser_icons", true, false);
+            AppImages.loadDirectory(AppResources.XPIPE_MODULE, "img/browser", true, false);
             loaded = true;
         }
     }

@@ -37,7 +37,6 @@ public class StoreIconChoiceDialogComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var filterText = new SimpleStringProperty();
-        var table = new StoreIconChoiceComp(selected, SystemIcons.getSystemIcons(), 5, filterText);
         var filter = new FilterComp(filterText).apply(struc -> {
             dialogStage.setOnShowing(event -> {
                 struc.get().requestFocus();
@@ -54,7 +53,9 @@ public class StoreIconChoiceDialogComp extends SimpleComp {
 
             @Override
             public Comp<?> content() {
-                return table;
+                return new StoreIconChoiceComp(selected, SystemIcons.getSystemIcons(), 5, filterText, () -> {
+                    finish();
+                });
             }
 
             @Override

@@ -25,12 +25,14 @@ public class StoreIconChoiceComp extends SimpleComp {
     private final List<SystemIcon> icons;
     private final int columns;
     private final SimpleStringProperty filter;
+    private final Runnable doubleClick;
 
-    public StoreIconChoiceComp(Property<SystemIcon> selected, List<SystemIcon> icons, int columns, SimpleStringProperty filter) {
+    public StoreIconChoiceComp(Property<SystemIcon> selected, List<SystemIcon> icons, int columns, SimpleStringProperty filter, Runnable doubleClick) {
         this.selected = selected;
         this.icons = icons;
         this.columns = columns;
         this.filter = filter;
+        this.doubleClick = doubleClick;
     }
 
     @Override
@@ -108,6 +110,10 @@ public class StoreIconChoiceComp extends SimpleComp {
             setOnMouseClicked(event -> {
                 if (event.getButton() == MouseButton.PRIMARY) {
                     selected.setValue(getItem());
+                }
+
+                if (event.getClickCount() > 1) {
+                    doubleClick.run();
                 }
             });
         }

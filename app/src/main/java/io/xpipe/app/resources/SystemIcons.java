@@ -7,6 +7,7 @@ import org.apache.commons.io.FilenameUtils;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,6 +43,7 @@ public class SystemIcons {
                 }
             }
         });
+        SYSTEM_ICONS.sort(Comparator.<SystemIcon, String>comparing(systemIcon -> systemIcon.getIconName()));
     }
 
     public static synchronized void load() {
