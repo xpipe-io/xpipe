@@ -22,6 +22,7 @@ import org.apache.commons.io.FileUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -169,7 +170,7 @@ public class BrowserTransferModel {
             if (Files.isDirectory(file)) {
                 FileUtils.moveDirectory(file.toFile(), target.toFile());
             } else {
-                FileUtils.moveFile(file.toFile(), target.toFile());
+                FileUtils.moveFile(file.toFile(), target.toFile(), StandardCopyOption.REPLACE_EXISTING);
             }
         }
         DesktopHelper.browseFileInDirectory(downloads.resolve(files.getFirst().getFileName()));
