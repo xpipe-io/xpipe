@@ -1,7 +1,7 @@
 package io.xpipe.app.core.window;
 
 import io.xpipe.app.core.AppCache;
-import io.xpipe.app.core.AppImages;
+import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppTheme;
 import io.xpipe.app.fxcomps.Comp;

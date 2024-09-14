@@ -4,6 +4,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 
+import io.xpipe.app.resources.AppResources;
 import javafx.scene.Scene;
 
 import java.io.IOException;

@@ -1,6 +1,6 @@
 package io.xpipe.app.fxcomps.impl;
 
-import io.xpipe.app.core.AppImages;
+import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;

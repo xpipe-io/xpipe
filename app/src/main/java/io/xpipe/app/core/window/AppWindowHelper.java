@@ -5,6 +5,8 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.resources.AppImages;
+import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;

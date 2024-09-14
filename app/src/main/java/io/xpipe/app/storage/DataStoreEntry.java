@@ -68,6 +68,7 @@ public class DataStoreEntry extends StorageElement {
     @NonFinal
     Order explicitOrder;
 
+    @NonFinal
     String icon;
 
     private DataStoreEntry(
@@ -349,6 +350,14 @@ public class DataStoreEntry extends StorageElement {
         return (T) storePersistentState;
     }
 
+    public void setIcon(String icon) {
+        var changed = !Objects.equals(this.icon, icon);
+        this.icon = icon;
+        if (changed) {
+            notifyUpdate(false, true);
+        }
+    }
+
     public void setStorePersistentState(DataStoreState value) {
         var changed = !Objects.equals(storePersistentState, value);
         this.storePersistentState = value;
@@ -391,7 +400,7 @@ public class DataStoreEntry extends StorageElement {
         obj.put("name", name);
         obj.put("categoryUuid", categoryUuid.toString());
         obj.set("color", mapper.valueToTree(color));
-        obj.set("icons", mapper.valueToTree(icon));
+        obj.set("icon", mapper.valueToTree(icon));
         stateObj.put("lastUsed", lastUsed.toString());
         stateObj.put("lastModified", lastModified.toString());
         stateObj.set("persistentState", storePersistentStateNode);

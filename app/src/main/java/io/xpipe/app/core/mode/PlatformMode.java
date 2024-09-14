@@ -5,6 +5,8 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppFontLoadingCheck;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.resources.AppImages;
+import io.xpipe.app.resources.SystemIcons;
 import io.xpipe.app.update.UpdateAvailableAlert;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.ThreadHelper;
@@ -33,6 +35,7 @@ public abstract class PlatformMode extends OperationMode {
         AppTheme.init();
         AppStyle.init();
         AppImages.init();
+        SystemIcons.init();
         AppLayoutModel.init();
         TrackEvent.info("Finished essential component initialization before platform");
 

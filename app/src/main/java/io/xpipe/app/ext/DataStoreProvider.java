@@ -7,7 +7,7 @@ import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.comp.store.StoreSectionComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppImages;
+import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStoreEntry;

@@ -1,3 +1,4 @@
+import com.fasterxml.jackson.databind.Module;
 import io.xpipe.app.beacon.impl.*;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.core.AppLogs;
@@ -7,15 +8,11 @@ import io.xpipe.app.issue.EventHandlerImpl;
 import io.xpipe.app.storage.DataStateProviderImpl;
 import io.xpipe.app.util.AppJacksonModule;
 import io.xpipe.app.util.LicenseProvider;
-import io.xpipe.app.util.ProxyManagerProviderImpl;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.beacon.BeaconInterface;
 import io.xpipe.core.util.DataStateProvider;
 import io.xpipe.core.util.ModuleLayerLoader;
 import io.xpipe.core.util.ProxyFunction;
-import io.xpipe.core.util.ProxyManagerProvider;
-
-import com.fasterxml.jackson.databind.Module;
 import org.slf4j.spi.SLF4JServiceProvider;
 
 open module io.xpipe.app {
@@ -45,6 +42,7 @@ open module io.xpipe.app {
     exports io.xpipe.app.browser.fs;
     exports io.xpipe.app.browser.file;
     exports io.xpipe.app.core.window;
+    exports io.xpipe.app.resources;
 
     requires com.sun.jna;
     requires com.sun.jna.platform;
@@ -124,8 +122,6 @@ open module io.xpipe.app {
             ScanProvider.Loader;
     provides DataStateProvider with
             DataStateProviderImpl;
-    provides ProxyManagerProvider with
-            ProxyManagerProviderImpl;
     provides SLF4JServiceProvider with
             AppLogs.Slf4jProvider;
     provides EventHandler with

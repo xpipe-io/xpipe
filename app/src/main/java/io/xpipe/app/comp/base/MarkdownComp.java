@@ -1,7 +1,7 @@
 package io.xpipe.app.comp.base;
 
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.AppResources;
+import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;

@@ -1,7 +1,7 @@
 package io.xpipe.app.browser.icon;
 
-import io.xpipe.app.core.AppImages;
-import io.xpipe.app.core.AppResources;
+import io.xpipe.app.resources.AppImages;
+import io.xpipe.app.resources.AppResources;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
 

@@ -1,7 +1,7 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.core.AppExtensionManager;
-import io.xpipe.app.core.AppResources;
+import io.xpipe.app.resources.AppResources;
 
 import org.apache.commons.io.FilenameUtils;
 

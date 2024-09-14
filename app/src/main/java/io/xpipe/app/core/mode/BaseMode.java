@@ -10,6 +10,7 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.update.XPipeDistributionType;

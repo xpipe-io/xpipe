@@ -1,18 +1,17 @@
 package io.xpipe.app.comp.store;
 
-import io.xpipe.app.core.AppImages;
-import io.xpipe.app.core.AppResources;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
+import io.xpipe.app.resources.SystemIcons;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import lombok.AllArgsConstructor;
 import org.kordamp.ikonli.javafx.FontIcon;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @AllArgsConstructor
 public class StoreIconComp extends SimpleComp {
@@ -20,8 +19,6 @@ public class StoreIconComp extends SimpleComp {
     private final StoreEntryWrapper wrapper;
     private final int w;
     private final int h;
-
-    private static final AtomicBoolean loaded = new AtomicBoolean();
     
     @Override
     protected Region createSimple() {
@@ -49,6 +46,13 @@ public class StoreIconComp extends SimpleComp {
         storeIcon.opacityProperty().bind(Bindings.createDoubleBinding(() -> {
             return stack.isHover() ? 0.5 : 1.0;
         }, stack.hoverProperty()));
+
+        stack.addEventFilter(MouseEvent.MOUSE_PRESSED,event -> {
+            if (event.getButton() == MouseButton.PRIMARY) {
+                StoreIconChoiceDialogComp.show(wrapper.getEntry());
+                event.consume();
+            }
+        });
         
         return stack;
     }
@@ -65,12 +69,7 @@ public class StoreIconComp extends SimpleComp {
                     .getDisplayIconFileName(wrapper.getEntry().getStore());
         }
 
-        synchronized (loaded) {
-            if (!loaded.get()) {
-                AppImages.loadDirectory(AppResources.XPIPE_MODULE, "img/apps", true, false);
-            }
-            loaded.set(true);
-            return "app:apps/" + wrapper.getIcon().getValue();
-        }
+        SystemIcons.load();
+        return "app:system/" + wrapper.getIcon().getValue() + ".svg";
     }
 }
