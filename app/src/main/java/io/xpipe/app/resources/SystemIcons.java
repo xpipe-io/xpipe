@@ -2,6 +2,9 @@ package io.xpipe.app.resources;
 
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
+import io.xpipe.core.process.ShellStoreState;
+import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.StatefulDataStore;
 import org.apache.commons.io.FilenameUtils;
 
 import java.nio.file.Files;
@@ -13,9 +16,25 @@ import java.util.Optional;
 
 public class SystemIcons {
 
-    private static final List<AutoSystemIcon> AUTO_SYSTEM_ICONS = List.of(new AutoSystemIcon("opnsense", "OpnSense",sc -> {
-        return sc.getOriginalShellDialect() == ShellDialects.OPNSENSE;
-    }));
+    private static final List<SystemIcon> AUTO_SYSTEM_ICONS = List.of(
+            new SystemIcon("opnsense", "OpnSense") {
+                @Override
+                public boolean isApplicable(DataStore store) {
+                    return store instanceof StatefulDataStore<?> statefulDataStore &&
+                            statefulDataStore.getState() instanceof ShellStoreState shellStoreState &&
+                            shellStoreState.getShellDialect() == ShellDialects.OPNSENSE;
+                }
+            },
+            new SystemIcon("pfsense", "PfSense")  {
+                @Override
+                public boolean isApplicable(DataStore store) {
+                    return store instanceof StatefulDataStore<?> statefulDataStore &&
+                            statefulDataStore.getState() instanceof ShellStoreState shellStoreState &&
+                            shellStoreState.getShellDialect() == ShellDialects.PFSENSE;
+                }
+            },
+            new ContainerAutoSystemIcon("file-browser", "File Browser", name -> name.contains("filebrowser"))
+    );
 
     private static final List<SystemIcon> SYSTEM_ICONS = new ArrayList<>();
     private static boolean loaded = false;
@@ -69,8 +88,21 @@ public class SystemIcons {
     }
 
     public static Optional<SystemIcon> detectForSystem(ShellControl sc) throws Exception {
-        for (AutoSystemIcon autoSystemIcon : AUTO_SYSTEM_ICONS) {
+        for (var autoSystemIcon : AUTO_SYSTEM_ICONS) {
             if (autoSystemIcon.isApplicable(sc)) {
+                return Optional.of(autoSystemIcon);
+            }
+        }
+        return Optional.empty();
+    }
+
+    public static Optional<SystemIcon> detectForStore(DataStore store) {
+        if (store == null) {
+            return Optional.empty();
+        }
+
+        for (var autoSystemIcon : AUTO_SYSTEM_ICONS) {
+            if (autoSystemIcon.isApplicable(store)) {
                 return Optional.of(autoSystemIcon);
             }
         }

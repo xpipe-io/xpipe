@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.resources.SystemIcons;
 import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.core.store.*;
 import io.xpipe.core.util.JacksonMapper;
@@ -87,7 +88,8 @@ public class DataStoreEntry extends StorageElement {
             boolean expanded,
             DataColor color,
             String notes,
-            Order explicitOrder, String icon
+            Order explicitOrder,
+            String icon
     ) {
         super(directory, uuid, name, lastUsed, lastModified, color, expanded, dirty);
         this.categoryUuid = categoryUuid;
@@ -152,6 +154,7 @@ public class DataStoreEntry extends StorageElement {
         var validity = storeFromNode == null
                 ? Validity.LOAD_FAILED
                 : store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE;
+        var icon = SystemIcons.detectForStore(store);
         var entry = new DataStoreEntry(
                 null,
                 uuid,
@@ -169,8 +172,19 @@ public class DataStoreEntry extends StorageElement {
                 null,
                 null,
                 null,
-                null);
+                icon.map(systemIcon -> systemIcon.getIconName()).orElse(null));
         return entry;
+    }
+
+    private void refreshIcon() {
+        if (icon != null) {
+            return;
+        }
+
+        var icon = SystemIcons.detectForStore(store);
+        if (icon.isPresent()) {
+            setIcon(icon.get().getIconName());
+        }
     }
 
     public static Optional<DataStoreEntry> fromDirectory(Path dir) throws Exception {
@@ -204,8 +218,12 @@ public class DataStoreEntry extends StorageElement {
                     }
                 })
                 .orElse(null);
+
         var iconNode = json.get("icon");
-        String icon = iconNode != null ? iconNode.asText() : null;
+        String icon = iconNode != null && !iconNode.isNull() ? iconNode.asText() : null;
+        if (icon != null && SystemIcons.getForId(icon).isEmpty()) {
+            icon = null;
+        }
 
         var persistentState = stateJson.get("persistentState");
         var lastUsed = Optional.ofNullable(stateJson.get("lastUsed"))
@@ -261,6 +279,9 @@ public class DataStoreEntry extends StorageElement {
         // Store loading is prone to errors.
         JsonNode storeNode = DataStorageEncryption.readPossiblyEncryptedNode(mapper.readTree(storeFile.toFile()));
         var store = JacksonMapper.getDefault().treeToValue(storeNode, DataStore.class);
+        if (icon == null) {
+            icon = SystemIcons.detectForStore(store).map(systemIcon -> systemIcon.getIconName()).orElse(null);
+        }
         return Optional.of(new DataStoreEntry(
                 dir,
                 uuid,
@@ -363,6 +384,7 @@ public class DataStoreEntry extends StorageElement {
         this.storePersistentState = value;
         this.storePersistentStateNode = JacksonMapper.getDefault().valueToTree(value);
         if (changed) {
+            refreshIcon();
             notifyUpdate(false, true);
         }
     }
@@ -447,6 +469,7 @@ public class DataStoreEntry extends StorageElement {
         validity = store == null ? Validity.LOAD_FAILED : store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE;
         storePersistentState = e.storePersistentState;
         storePersistentStateNode = e.storePersistentStateNode;
+        icon = e.icon;
         notifyUpdate(false, true);
     }
 

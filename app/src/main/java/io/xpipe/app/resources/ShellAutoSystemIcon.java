@@ -7,11 +7,11 @@ import lombok.Value;
 
 @Value
 @EqualsAndHashCode(callSuper=true)
-public class AutoSystemIcon extends SystemIcon {
+public class ShellAutoSystemIcon extends SystemIcon {
 
     FailableFunction<ShellControl, Boolean, Exception> applicable;
 
-    public AutoSystemIcon(String iconName, String displayName, FailableFunction<ShellControl, Boolean, Exception> applicable) {
+    public ShellAutoSystemIcon(String iconName, String displayName, FailableFunction<ShellControl, Boolean, Exception> applicable) {
         super(iconName, displayName);
         this.applicable = applicable;
     }
