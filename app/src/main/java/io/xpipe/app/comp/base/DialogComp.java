@@ -60,12 +60,16 @@ public abstract class DialogComp extends Comp<CompStructure<Region>> {
                 .addAll(customButtons().stream()
                         .map(buttonComp -> buttonComp.createRegion())
                         .toList());
-        var nextButton = new ButtonComp(AppI18n.observable(finishKey()), null, this::finish)
+        var nextButton = finishButton();
+        buttons.getChildren().add(nextButton.createRegion());
+        return buttons;
+    }
+
+    protected Comp<?> finishButton() {
+        return new ButtonComp(AppI18n.observable(finishKey()), null, this::finish)
                 .apply(struc -> struc.get().setDefaultButton(true))
                 .styleClass(Styles.ACCENT)
                 .styleClass("next");
-        buttons.getChildren().add(nextButton.createRegion());
-        return buttons;
     }
 
     protected String finishKey() {

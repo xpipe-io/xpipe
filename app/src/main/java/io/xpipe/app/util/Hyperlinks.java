@@ -12,6 +12,7 @@ public class Hyperlinks {
     public static final String SECURITY = "https://docs.xpipe.io/security";
     public static final String TRANSLATE = "https://github.com/xpipe-io/xpipe/tree/master/lang";
     public static final String DISCORD = "https://discord.gg/8y89vS8cRb";
+    public static final String SELFHST_ICONS = "https://github.com/selfhst/icons";
     public static final String SLACK =
             "https://join.slack.com/t/XPipe/shared_invite/zt-1awjq0t5j-5i4UjNJfNe1VN4b_auu6Cg";
 
