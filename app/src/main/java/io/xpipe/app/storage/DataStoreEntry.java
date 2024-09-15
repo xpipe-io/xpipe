@@ -176,7 +176,12 @@ public class DataStoreEntry extends StorageElement {
         return entry;
     }
 
-    private void refreshIcon() {
+    void refreshIcon() {
+        if (icon != null && SystemIcons.getForId(icon).isEmpty()) {
+            icon = null;
+            return;
+        }
+
         if (icon != null) {
             return;
         }
@@ -221,9 +226,6 @@ public class DataStoreEntry extends StorageElement {
 
         var iconNode = json.get("icon");
         String icon = iconNode != null && !iconNode.isNull() ? iconNode.asText() : null;
-        if (icon != null && SystemIcons.getForId(icon).isEmpty()) {
-            icon = null;
-        }
 
         var persistentState = stateJson.get("persistentState");
         var lastUsed = Optional.ofNullable(stateJson.get("lastUsed"))
@@ -279,9 +281,6 @@ public class DataStoreEntry extends StorageElement {
         // Store loading is prone to errors.
         JsonNode storeNode = DataStorageEncryption.readPossiblyEncryptedNode(mapper.readTree(storeFile.toFile()));
         var store = JacksonMapper.getDefault().treeToValue(storeNode, DataStore.class);
-        if (icon == null) {
-            icon = SystemIcons.detectForStore(store).map(systemIcon -> systemIcon.getIconName()).orElse(null);
-        }
         return Optional.of(new DataStoreEntry(
                 dir,
                 uuid,

@@ -11,6 +11,7 @@ import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.resources.AppResources;
+import io.xpipe.app.resources.SystemIcons;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.update.XPipeDistributionType;
@@ -57,6 +58,7 @@ public class BaseMode extends OperationMode {
         DataStorageSyncHandler.getInstance().retrieveSyncedData();
         AppPrefs.initSharedRemote();
         UnlockAlert.showIfNeeded();
+        SystemIcons.init();
         DataStorage.init();
         DataStoreProviders.init();
         AppFileWatcher.init();

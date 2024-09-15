@@ -174,17 +174,19 @@ public class StandardStorage extends DataStorage {
                     ErrorEvent.fromThrowable(exception.get()).expected().handle();
                 }
 
-                storeEntriesSet.forEach(dataStoreCategory -> {
-                    if (dataStoreCategory.getCategoryUuid() == null
-                            || getStoreCategoryIfPresent(dataStoreCategory.getCategoryUuid())
+                storeEntriesSet.forEach(e -> {
+                    if (e.getCategoryUuid() == null
+                            || getStoreCategoryIfPresent(e.getCategoryUuid())
                                     .isEmpty()) {
-                        dataStoreCategory.setCategoryUuid(DEFAULT_CATEGORY_UUID);
+                        e.setCategoryUuid(DEFAULT_CATEGORY_UUID);
                     }
 
-                    if (dataStoreCategory.getCategoryUuid() != null
-                            && dataStoreCategory.getCategoryUuid().equals(ALL_CONNECTIONS_CATEGORY_UUID)) {
-                        dataStoreCategory.setCategoryUuid(DEFAULT_CATEGORY_UUID);
+                    if (e.getCategoryUuid() != null
+                            && e.getCategoryUuid().equals(ALL_CONNECTIONS_CATEGORY_UUID)) {
+                        e.setCategoryUuid(DEFAULT_CATEGORY_UUID);
                     }
+
+                    e.refreshIcon();
                 });
             }
         } catch (IOException ex) {
