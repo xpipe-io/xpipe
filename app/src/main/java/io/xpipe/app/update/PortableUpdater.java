@@ -13,8 +13,8 @@ import java.time.Instant;
 
 public class PortableUpdater extends UpdateHandler {
 
-    public PortableUpdater() {
-        super(true);
+    public PortableUpdater(boolean thread) {
+        super(thread);
     }
 
     @Override

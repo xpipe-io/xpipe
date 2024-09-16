@@ -12,15 +12,18 @@ import io.xpipe.core.util.XPipeInstallation;
 
 import lombok.Getter;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
 public enum XPipeDistributionType {
     UNKNOWN("unknown", false, () -> new GitHubUpdater(false)),
     DEVELOPMENT("development", true, () -> new GitHubUpdater(false)),
-    PORTABLE("portable", false, () -> new PortableUpdater()),
+    PORTABLE("portable", false, () -> new PortableUpdater(true)),
     NATIVE_INSTALLATION("install", true, () -> new GitHubUpdater(true)),
     HOMEBREW("homebrew", true, () -> new HomebrewUpdater()),
+    WEBTOP("webtop", true, () -> new PortableUpdater(false)),
     CHOCO("choco", true, () -> new ChocoUpdater());
 
     private static XPipeDistributionType type;
@@ -93,6 +96,10 @@ public enum XPipeDistributionType {
 
         if (!LocalShell.isLocalShellInitialized()) {
             return UNKNOWN;
+        }
+
+        if (OsType.getLocal() == OsType.LINUX && "/config".equals(System.getProperty("user.home")) && Files.isDirectory(Path.of("/kclient"))) {
+            return WEBTOP;
         }
 
         try (var sc = LocalShell.getShell()) {
