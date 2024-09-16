@@ -2,6 +2,7 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.MultiContentComp;
+import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 
@@ -31,6 +32,12 @@ public class StoreEntryListComp extends SimpleComp {
         content.apply(struc -> {
             // Reset scroll
             StoreViewState.get().getActiveCategory().addListener((observable, oldValue, newValue) -> {
+                struc.get().setVvalue(0);
+            });
+        });
+        content.apply(struc -> {
+            // Reset scroll
+            AppLayoutModel.get().getSelected().addListener((observable, oldValue, newValue) -> {
                 struc.get().setVvalue(0);
             });
         });
