@@ -77,7 +77,8 @@ open module io.xpipe.ext.base {
             XPipeUrlAction,
             EditStoreAction,
             BrowseStoreAction,
-            ScanStoreAction;
+            ScanStoreAction,
+            ChangeStoreIconAction;
     provides DataStoreProvider with
             FixedServiceGroupStoreProvider,
             CustomServiceGroupStoreProvider,
