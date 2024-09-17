@@ -46,6 +46,7 @@ public class BaseMode extends OperationMode {
         AppCertutilCheck.check();
         AppBundledToolsCheck.check();
         AppAvCheck.check();
+        AppJavaOptionsCheck.check();
         AppSid.init();
         LocalShell.init();
         AppShellCheck.check();

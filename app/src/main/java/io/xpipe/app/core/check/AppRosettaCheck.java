@@ -26,7 +26,7 @@ public class AppRosettaCheck {
         if (ret.get().equals("1")) {
             ErrorEvent.fromMessage("You are running the Intel version of XPipe on an Apple Silicon system."
                     + " There is a native build available that comes with much better performance."
-                    + " Please install that one instead.");
+                    + " Please install that one instead.").expected().handle();
         }
     }
 }
