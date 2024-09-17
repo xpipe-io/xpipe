@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.core.process.ProcessOutputException;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
 
@@ -38,11 +39,15 @@ public class LocalShell {
         }
 
         if (localPowershell == null) {
-            localPowershell = ProcessControlProvider.get()
-                    .createLocalProcessControl(false)
-                    .subShell(ShellDialects.POWERSHELL)
-                    .withoutLicenseCheck()
-                    .start();
+            try {
+                localPowershell = ProcessControlProvider.get()
+                        .createLocalProcessControl(false)
+                        .subShell(ShellDialects.POWERSHELL)
+                        .withoutLicenseCheck()
+                        .start();
+            } catch (ProcessOutputException ex) {
+                throw ProcessOutputException.withPrefix("Failed to start local powershell process", ex);
+            }
         }
         return localPowershell.start();
     }

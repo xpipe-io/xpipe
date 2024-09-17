@@ -254,6 +254,17 @@ public abstract class OperationMode {
         Runtime.getRuntime().halt(code);
     }
 
+    public static void onWindowClose() {
+        if (AppPrefs.get() == null) {
+            return;
+        }
+
+        var action = AppPrefs.get().closeBehaviour().getValue();
+        ThreadHelper.runAsync(() -> {
+            action.run();
+        });
+    }
+
     public static void shutdown(boolean inShutdownHook, boolean hasError) {
         // We can receive shutdown events while we are still starting up
         // In that case ignore them until we are finished

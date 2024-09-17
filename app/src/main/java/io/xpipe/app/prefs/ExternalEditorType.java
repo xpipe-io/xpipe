@@ -76,7 +76,13 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
-    LinuxPathType VSCODE_LINUX = new LinuxPathType("app.vscode", "code");
+    LinuxPathType VSCODE_LINUX = new LinuxPathType("app.vscode", "code") {
+        @Override
+        public void launch(Path file) throws Exception {
+            var builder = CommandBuilder.of().fixedEnvrironment("DONT_PROMPT_WSL_INSTALL", "No_Prompt_please").addFile(executable).addFile(file.toString());
+            ExternalApplicationHelper.startAsync(builder);
+        }
+    };
 
     LinuxPathType ZED_LINUX = new LinuxPathType("app.zed", "zed");
 
