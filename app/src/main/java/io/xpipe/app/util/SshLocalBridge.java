@@ -182,7 +182,7 @@ public class SshLocalBridge {
             if (exec.isEmpty()) {
                 throw ErrorEvent.expected(new IllegalStateException("No sshd executable found in PATH. The SSH terminal bridge requires a local ssh server"));
             }
-            return exec.get();
+            return exec.get().lines().findFirst().orElseThrow();
         }
     }
 
