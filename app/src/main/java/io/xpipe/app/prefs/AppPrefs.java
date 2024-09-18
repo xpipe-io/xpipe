@@ -105,6 +105,8 @@ public class AppPrefs {
             map(new SimpleBooleanProperty(true), "openConnectionSearchWindowOnConnectionCreation", Boolean.class);
     final ObjectProperty<Path> storageDirectory =
             map(new SimpleObjectProperty<>(DEFAULT_STORAGE_DIR), "storageDirectory", Path.class);
+    final BooleanProperty confirmAllDeletions =
+            map(new SimpleBooleanProperty(false), "confirmAllDeletions", Boolean.class);
     final BooleanProperty developerMode = map(new SimpleBooleanProperty(false), "developerMode", Boolean.class);
     final BooleanProperty developerDisableUpdateVersionCheck =
             map(new SimpleBooleanProperty(false), "developerDisableUpdateVersionCheck", Boolean.class);

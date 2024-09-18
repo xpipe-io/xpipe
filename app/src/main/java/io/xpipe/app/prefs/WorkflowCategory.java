@@ -14,7 +14,7 @@ public class WorkflowCategory extends AppPrefsCategory {
     protected Comp<?> create() {
         var prefs = AppPrefs.get();
         return new OptionsBuilder()
-                .addTitle("workflow")
+                .addTitle("connections")
                 .sub(new OptionsBuilder()
                         .nameAndDescription("condenseConnectionDisplay")
                         .addToggle(prefs.condenseConnectionDisplay)
@@ -24,6 +24,10 @@ public class WorkflowCategory extends AppPrefsCategory {
                         .addToggle(prefs.openConnectionSearchWindowOnConnectionCreation)
                         .nameAndDescription("requireDoubleClickForConnections")
                         .addToggle(prefs.requireDoubleClickForConnections))
+                .addTitle("fileBrowser")
+                .sub(new OptionsBuilder()
+                        .nameAndDescription("confirmAllDeletions")
+                        .addToggle(prefs.confirmAllDeletions))
                 .buildComp();
     }
 }

@@ -2,6 +2,7 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppWindowHelper;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FilePath;
@@ -62,7 +63,7 @@ public class BrowserAlerts {
     }
 
     public static boolean showDeleteAlert(List<FileEntry> source) {
-        if (source.stream().noneMatch(entry -> entry.getKind() == FileKind.DIRECTORY)) {
+        if (!AppPrefs.get().confirmDeletions().get() && source.stream().noneMatch(entry -> entry.getKind() == FileKind.DIRECTORY)) {
             return true;
         }
 
