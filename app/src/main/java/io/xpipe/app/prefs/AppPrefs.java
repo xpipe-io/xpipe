@@ -76,6 +76,7 @@ public class AppPrefs {
             mapVaultSpecific(new SimpleBooleanProperty(false), "dontCachePasswords", Boolean.class);
     public final BooleanProperty denyTempScriptCreation =
             mapVaultSpecific(new SimpleBooleanProperty(false), "denyTempScriptCreation", Boolean.class);
+    final Property<ExternalPasswordManager> passwordManager = mapVaultSpecific(new SimpleObjectProperty<>(), "passwordManager", ExternalPasswordManager.class);
     final StringProperty passwordManagerCommand =
             map(new SimpleStringProperty(""), "passwordManagerCommand", String.class);
     final ObjectProperty<StartupBehaviour> startupBehaviour =
@@ -254,6 +255,10 @@ public class AppPrefs {
                 },
                 o,
                 developerMode());
+    }
+
+    public ObservableValue<ExternalPasswordManager> externalPasswordManager() {
+        return passwordManager;
     }
 
     public ObservableValue<SupportedLocale> language() {

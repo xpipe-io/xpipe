@@ -1,32 +1,40 @@
 package io.xpipe.app.prefs;
 
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.LocalStore;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.TextFieldComp;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.CommandControl;
-import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.ext.LocalStore;
-
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
-
-import atlantafx.base.theme.Styles;
+import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PasswordManagerCategory extends AppPrefsCategory {
+
+    @Value
+    private static class Choice {
+        String id;
+        String template;
+        ExternalPasswordManager passwordManager;
+    }
 
     @Override
     protected String getId() {
@@ -37,11 +45,11 @@ public class PasswordManagerCategory extends AppPrefsCategory {
         return Comp.of(() -> {
             var cb = new MenuButton();
             cb.textProperty().bind(AppI18n.observable("templates"));
-            ExternalPasswordManager.ALL.forEach(externalPasswordManager -> {
+            ExternalPasswordManagerTemplate.ALL.forEach(e -> {
                 var m = new MenuItem(
-                        externalPasswordManager.toTranslatedString().getValue());
+                        e.toTranslatedString().getValue());
                 m.setOnAction(event -> {
-                    AppPrefs.get().passwordManagerCommand.set(externalPasswordManager.getTemplate());
+                    AppPrefs.get().passwordManagerCommand.set(e.getTemplate());
                     event.consume();
                 });
                 cb.getItems().add(m);
@@ -52,6 +60,14 @@ public class PasswordManagerCategory extends AppPrefsCategory {
 
     @Override
     protected Comp<?> create() {
+        var choices = new ArrayList<Choice>();
+        ExternalPasswordManagerTemplate.ALL.forEach(externalPasswordManagerTemplate -> {
+            choices.add(new Choice(externalPasswordManagerTemplate.getId(), externalPasswordManagerTemplate.getTemplate(), null));
+        });
+        ExternalPasswordManager.ALL.stream().filter(externalPasswordManager -> externalPasswordManager != ExternalPasswordManager.COMMAND).forEach(externalPasswordManager -> {
+            choices.add(new Choice(externalPasswordManager.getId(), null, externalPasswordManager));
+        });
+
         var prefs = AppPrefs.get();
         var testPasswordManagerValue = new SimpleStringProperty();
         Runnable test = () -> {
@@ -72,20 +88,37 @@ public class PasswordManagerCategory extends AppPrefsCategory {
             });
         };
 
-        var c = new IntegratedTextAreaComp(
+        var command = new IntegratedTextAreaComp(
                         prefs.passwordManagerCommand,
-                        true,
-                        "pw",
+                        false,
+                        "command",
                         new SimpleStringProperty(ProcessControlProvider.get()
                                 .getEffectiveLocalDialect()
                                 .getScriptFileEnding()))
                 .apply(struc -> {
                     struc.getTextArea().setPromptText("mypassmgr get $KEY");
                 })
+                .disable(prefs.passwordManagerCommand.isNull())
                 .minWidth(350)
                 .minHeight(120);
-        var visit = createTemplateChoice();
-        var choice = new VerticalComp(List.of(c, visit)).apply(struc -> {
+        var templates = Comp.of(() -> {
+            var cb = new MenuButton();
+            cb.textProperty().bind(BindingsHelper.flatMap(prefs.passwordManager,externalPasswordManager -> {
+                return externalPasswordManager != null ? AppI18n.observable(externalPasswordManager.getId()) : AppI18n.observable("templates");
+            }));
+            choices.forEach(e -> {
+                var m = new MenuItem();
+                m.textProperty().bind(AppI18n.observable(e.getId()));
+                m.setOnAction(event -> {
+                    AppPrefs.get().passwordManagerCommand.set(e.getTemplate());
+                    AppPrefs.get().passwordManager.setValue(e.getPasswordManager());
+                    event.consume();
+                });
+                cb.getItems().add(m);
+            });
+            return cb;
+        });
+        var choice = new VerticalComp(List.of(templates, command)).apply(struc -> {
             struc.get().setAlignment(Pos.CENTER_LEFT);
             struc.get().setSpacing(10);
         });

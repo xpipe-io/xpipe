@@ -124,17 +124,13 @@ public interface SecretRetrievalStrategy {
             return new SecretQuery() {
                 @Override
                 public SecretQueryResult query(String prompt) {
-                    var cmd = AppPrefs.get().passwordManagerString(key);
-                    if (cmd == null) {
+                    var pm = AppPrefs.get().externalPasswordManager().getValue();
+                    if (pm == null) {
                         return new SecretQueryResult(null, SecretQueryState.RETRIEVAL_FAILURE);
                     }
 
-                    String r;
-                    try (var cc = new LocalStore().control().command(cmd).start()) {
-                        r = cc.readStdoutOrThrow();
-                    } catch (Exception ex) {
-                        ErrorEvent.fromThrowable("Unable to retrieve password with command " + cmd, ex)
-                                .handle();
+                    var r = pm.retrievePassword(key);
+                    if (r == null) {
                         return new SecretQueryResult(null, SecretQueryState.RETRIEVAL_FAILURE);
                     }
 
