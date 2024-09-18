@@ -62,3 +62,9 @@
     -fx-background-radius: 0;
     -fx-border-radius: 0;
 }
+
+.root:performance .context-menu {
+    -fx-effect: NONE;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
