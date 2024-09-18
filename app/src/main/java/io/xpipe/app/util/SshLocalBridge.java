@@ -178,8 +178,11 @@ public class SshLocalBridge {
                     .resolve("sshd")
                     .toString();
         } else {
-            var exec = sc.executeSimpleStringCommand(sc.getShellDialect().getWhichCommand("sshd"));
-            return exec;
+            var exec = sc.command(sc.getShellDialect().getWhichCommand("sshd")).readStdoutIfPossible();
+            if (exec.isEmpty()) {
+                throw ErrorEvent.expected(new IllegalStateException("No sshd executable found in PATH. The SSH terminal bridge requires a local ssh server"));
+            }
+            return exec.get();
         }
     }
 
