@@ -55,11 +55,17 @@ public class TerminalLauncherManager {
     public static CountDownLatch submitAsync(
             UUID request, ProcessControl processControl, TerminalInitScriptConfig config, String directory) {
         synchronized (entries) {
-            var entry = new Entry(request, processControl, config, directory, null);
-            entries.put(request, entry);
+            var entry = entries.get(request);
+            if (entry == null) {
+                entry = new Entry(request, processControl, config, directory, null, false);
+                entries.put(request, entry);
+            } else {
+                entry.setResult(null);
+            }
             var latch = new CountDownLatch(1);
+            Entry finalEntry = entry;
             ThreadHelper.runAsync(() -> {
-                prepare(processControl, config, directory, entry);
+                prepare(processControl, config, directory, finalEntry);
                 latch.countDown();
             });
             return latch;
@@ -67,16 +73,14 @@ public class TerminalLauncherManager {
     }
 
     public static Path waitForNextLaunch() throws BeaconClientException, BeaconServerException {
-        Map.Entry<UUID, Entry> first;
+        Entry first;
         synchronized (entries) {
-            if (entries.isEmpty()) {
+            first = entries.values().stream().filter(entry -> !entry.isLaunched()).findFirst().orElse(null);
+            if (first == null) {
                 throw new BeaconClientException("Unknown launch request");
             }
-
-            first = entries.firstEntry();
-            entries.remove(first.getKey());
         }
-        return waitForCompletion(first.getValue());
+        return waitForCompletion(first);
     }
 
     public static Path waitForCompletion(UUID request) throws BeaconClientException, BeaconServerException {
@@ -101,7 +105,6 @@ public class TerminalLauncherManager {
             synchronized (entries) {
                 var r = e.getResult();
                 if (r instanceof ResultFailure failure) {
-                    entries.remove(e.getRequest());
                     var t = failure.getThrowable();
                     throw new BeaconServerException(t);
                 }
@@ -113,7 +116,7 @@ public class TerminalLauncherManager {
 
     public static Path performLaunch(UUID request) throws BeaconClientException {
         synchronized (entries) {
-            var e = entries.remove(request);
+            var e = entries.values().stream().filter(entry -> entry.getRequest().equals(request)).findFirst().orElse(null);
             if (e == null) {
                 throw new BeaconClientException("Unknown launch request " + request);
             }
@@ -139,6 +142,10 @@ public class TerminalLauncherManager {
         @Setter
         @NonFinal
         Result result;
+
+        @Setter
+        @NonFinal
+        boolean launched;
     }
 
     @Value
