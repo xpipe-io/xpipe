@@ -1,5 +1,6 @@
 package io.xpipe.app.resources;
 
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.ShellStoreState;
@@ -33,7 +34,8 @@ public class SystemIcons {
                             shellStoreState.getShellDialect() == ShellDialects.PFSENSE;
                 }
             },
-            new ContainerAutoSystemIcon("file-browser", "File Browser", name -> name.contains("filebrowser"))
+            new ContainerAutoSystemIcon("file-browser", "File Browser", name -> name.contains("filebrowser")),
+            new FileAutoSystemIcon("syncthing", "Syncthing", OsType.LINUX, "~/.local/state/syncthing")
     );
 
     private static final List<SystemIcon> SYSTEM_ICONS = new ArrayList<>();

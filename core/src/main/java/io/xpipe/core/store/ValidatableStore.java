@@ -1,6 +1,6 @@
 package io.xpipe.core.store;
 
-public interface ValidatableStore extends DataStore {
+public interface ValidatableStore<T extends ValidationContext<?>> extends DataStore {
 
     /**
      * Performs a validation of this data store.
@@ -18,5 +18,9 @@ public interface ValidatableStore extends DataStore {
      *
      * @throws Exception if any part of the validation went wrong
      */
-    default void validate() throws Exception {}
+    default void validate(T context) throws Exception {}
+
+    default T createContext() throws Exception {
+        return null;
+    }
 }

@@ -55,7 +55,7 @@ public class StoreIconChoiceDialogComp extends SimpleComp {
         var dialog = new DialogComp() {
             @Override
             protected void finish() {
-                entry.setIcon(selected.get() != null ? selected.getValue().getIconName() : null);
+                entry.setIcon(selected.get() != null ? selected.getValue().getIconName() : null, true);
                 dialogStage.close();
             }
 

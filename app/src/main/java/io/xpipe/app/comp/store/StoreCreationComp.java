@@ -1,5 +1,6 @@
 package io.xpipe.app.comp.store;
 
+import atlantafx.base.controls.Spacer;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.DialogComp;
 import io.xpipe.app.comp.base.ErrorOverlayComp;
@@ -20,8 +21,8 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.ValidationContext;
 import io.xpipe.core.util.ValidationException;
-
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -33,8 +34,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
-import atlantafx.base.controls.Spacer;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import net.synedra.validatorfx.GraphicDecorationStackPane;
@@ -42,14 +41,13 @@ import net.synedra.validatorfx.GraphicDecorationStackPane;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class StoreCreationComp extends DialogComp {
 
     Stage window;
-    BiConsumer<DataStoreEntry, Boolean> consumer;
+    CreationConsumer consumer;
     Property<DataStoreProvider> provider;
     ObjectProperty<DataStore> store;
     Predicate<DataStoreProvider> filter;
@@ -67,7 +65,7 @@ public class StoreCreationComp extends DialogComp {
 
     public StoreCreationComp(
             Stage window,
-            BiConsumer<DataStoreEntry, Boolean> consumer,
+            CreationConsumer consumer,
             Property<DataStoreProvider> provider,
             ObjectProperty<DataStore> store,
             Predicate<DataStoreProvider> filter,
@@ -165,7 +163,7 @@ public class StoreCreationComp extends DialogComp {
                 e.getProvider(),
                 e.getStore(),
                 v -> true,
-                (newE, validated) -> {
+                (newE, context, validated) -> {
                     ThreadHelper.runAsync(() -> {
                         if (!DataStorage.get().getStoreEntries().contains(e)) {
                             DataStorage.get().addStoreEntryIfNotPresent(newE);
@@ -193,7 +191,7 @@ public class StoreCreationComp extends DialogComp {
                 base != null ? DataStoreProviders.byStore(base) : null,
                 base,
                 dataStoreProvider -> category.equals(dataStoreProvider.getCreationCategory()),
-                (e, validated) -> {
+                (e, context, validated) -> {
                     try {
                         DataStorage.get().addStoreEntryIfNotPresent(e);
                         if (validated
@@ -201,7 +199,7 @@ public class StoreCreationComp extends DialogComp {
                                 && AppPrefs.get()
                                         .openConnectionSearchWindowOnConnectionCreation()
                                         .get()) {
-                            ScanAlert.showAsync(e);
+                            ScanAlert.showAsync(e, context);
                         }
                     } catch (Exception ex) {
                         ErrorEvent.fromThrowable(ex).handle();
@@ -211,12 +209,17 @@ public class StoreCreationComp extends DialogComp {
                 null);
     }
 
+    private static interface CreationConsumer {
+
+        void consume(DataStoreEntry entry, ValidationContext<?> validationContext, boolean validated);
+    }
+
     private static void show(
             String initialName,
             DataStoreProvider provider,
             DataStore s,
             Predicate<DataStoreProvider> filter,
-            BiConsumer<DataStoreEntry, Boolean> con,
+            CreationConsumer con,
             boolean staticDisplay,
             DataStoreEntry existingEntry) {
         var prop = new SimpleObjectProperty<>(provider);
@@ -247,7 +250,7 @@ public class StoreCreationComp extends DialogComp {
         return List.of(
                 new ButtonComp(AppI18n.observable("skip"), null, () -> {
                             if (showInvalidConfirmAlert()) {
-                                commit(false);
+                                commit(null, false);
                             } else {
                                 finish();
                             }
@@ -287,7 +290,7 @@ public class StoreCreationComp extends DialogComp {
 
         // We didn't change anything
         if (existingEntry != null && existingEntry.getStore().equals(store.getValue())) {
-            commit(false);
+            commit(null, false);
             return;
         }
 
@@ -317,8 +320,8 @@ public class StoreCreationComp extends DialogComp {
 
             try (var b = new BooleanScope(busy).start()) {
                 DataStorage.get().addStoreEntryInProgress(entry.getValue());
-                entry.getValue().validateOrThrow();
-                commit(true);
+                var context = entry.getValue().validateOrThrow(false);
+                commit(context, true);
             } catch (Throwable ex) {
                 if (ex instanceof ValidationException) {
                     ErrorEvent.expected(ex);
@@ -403,14 +406,14 @@ public class StoreCreationComp extends DialogComp {
                 .createRegion();
     }
 
-    private void commit(boolean validated) {
+    private void commit(ValidationContext<?> validationContext, boolean validated) {
         if (finished.get()) {
             return;
         }
         finished.setValue(true);
 
         if (entry.getValue() != null) {
-            consumer.accept(entry.getValue(), validated);
+            consumer.consume(entry.getValue(), validationContext, validated);
         }
 
         PlatformThread.runLaterIfNeeded(() -> {

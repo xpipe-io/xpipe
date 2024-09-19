@@ -16,6 +16,8 @@ import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.process.ShellTtyState;
 import io.xpipe.core.store.ShellStore;
 
+import io.xpipe.core.store.ShellValidationContext;
+import io.xpipe.core.store.ValidationContext;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
@@ -34,7 +36,7 @@ import static javafx.scene.layout.Priority.ALWAYS;
 
 public class ScanAlert {
 
-    public static void showAsync(DataStoreEntry entry) {
+    public static void showAsync(DataStoreEntry entry, ValidationContext<?> context) {
         ThreadHelper.runAsync(() -> {
             var showForCon = entry == null
                     || (entry.getStore() instanceof ShellStore
@@ -42,12 +44,12 @@ public class ScanAlert {
                                     || shellStoreState.getTtyState() == null
                                     || shellStoreState.getTtyState() == ShellTtyState.NONE));
             if (showForCon) {
-                showForShellStore(entry);
+                showForShellStore(entry, (ShellValidationContext) context);
             }
         });
     }
 
-    public static void showForShellStore(DataStoreEntry initial) {
+    public static void showForShellStore(DataStoreEntry initial, ShellValidationContext context) {
         show(initial, (DataStoreEntry entry, ShellControl sc) -> {
             if (!sc.canHaveSubshells()) {
                 return null;
@@ -76,15 +78,16 @@ public class ScanAlert {
                 }
             }
             return applicable;
-        });
+        }, context);
     }
 
     private static void show(
             DataStoreEntry initialStore,
-            BiFunction<DataStoreEntry, ShellControl, List<ScanProvider.ScanOperation>> applicable) {
+            BiFunction<DataStoreEntry, ShellControl, List<ScanProvider.ScanOperation>> applicable,
+            ShellValidationContext shellValidationContext) {
         DialogComp.showWindow(
                 "scanAlertTitle",
-                stage -> new Dialog(stage, initialStore != null ? initialStore.ref() : null, applicable));
+                stage -> new Dialog(stage, initialStore != null ? initialStore.ref() : null, applicable, shellValidationContext));
     }
 
     private static class Dialog extends DialogComp {
@@ -96,16 +99,18 @@ public class ScanAlert {
         private final ListProperty<ScanProvider.ScanOperation> selected =
                 new SimpleListProperty<>(FXCollections.observableArrayList());
         private final BooleanProperty busy = new SimpleBooleanProperty();
-        private ShellControl shellControl;
+        private ShellValidationContext shellValidationContext;
 
         private Dialog(
                 Stage window,
                 DataStoreEntryRef<ShellStore> entry,
-                BiFunction<DataStoreEntry, ShellControl, List<ScanProvider.ScanOperation>> applicable) {
+                BiFunction<DataStoreEntry, ShellControl, List<ScanProvider.ScanOperation>> applicable, ShellValidationContext shellValidationContext
+        ) {
             this.window = window;
             this.initialStore = entry;
             this.entry = new SimpleObjectProperty<>(entry);
             this.applicable = applicable;
+            this.shellValidationContext = shellValidationContext;
         }
 
         @Override
@@ -138,7 +143,7 @@ public class ScanAlert {
                             }
 
                             // Previous scan operation could have exited the shell
-                            shellControl.start();
+                            shellValidationContext.get().start();
 
                             try {
                                 a.getScanner().run();
@@ -148,10 +153,8 @@ public class ScanAlert {
                         }
                     });
                 } finally {
-                    if (shellControl != null) {
-                        shellControl.close();
-                    }
-                    shellControl = null;
+                    shellValidationContext.close();
+                    shellValidationContext = null;
                 }
             });
         }
@@ -198,15 +201,13 @@ public class ScanAlert {
 
                 ThreadHelper.runFailableAsync(() -> {
                     BooleanScope.executeExclusive(busy, () -> {
-                        if (shellControl != null) {
-                            shellControl.close();
-                            shellControl = null;
+                        if (shellValidationContext != null) {
+                            shellValidationContext.close();
+                            shellValidationContext = null;
                         }
 
-                        shellControl = newValue.getStore().control();
-                        shellControl.withoutLicenseCheck();
-                        shellControl.start();
-                        var a = applicable.apply(entry.get().get(), shellControl);
+                        shellValidationContext = new ShellValidationContext(newValue.getStore().control().withoutLicenseCheck().start());
+                        var a = applicable.apply(entry.get().get(), shellValidationContext.get());
 
                         Platform.runLater(() -> {
                             if (a == null) {

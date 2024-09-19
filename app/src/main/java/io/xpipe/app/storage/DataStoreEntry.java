@@ -188,7 +188,7 @@ public class DataStoreEntry extends StorageElement {
 
         var icon = SystemIcons.detectForStore(store);
         if (icon.isPresent()) {
-            setIcon(icon.get().getIconName());
+            setIcon(icon.get().getIconName(), true);
         }
     }
 
@@ -370,7 +370,11 @@ public class DataStoreEntry extends StorageElement {
         return (T) storePersistentState;
     }
 
-    public void setIcon(String icon) {
+    public void setIcon(String icon, boolean force) {
+        if (this.icon != null && !force) {
+            return;
+        }
+
         var changed = !Objects.equals(this.icon, icon);
         this.icon = icon;
         if (changed) {
@@ -493,15 +497,24 @@ public class DataStoreEntry extends StorageElement {
         dirty = true;
     }
 
-    public void validate() {
+    public <T extends ValidationContext<?>> void validate() {
         try {
-            validateOrThrow();
+            validateOrThrow(true);
         } catch (Throwable ex) {
             ErrorEvent.fromThrowable(ex).handle();
         }
     }
 
-    public void validateOrThrow() throws Throwable {
+    public <T extends ValidationContext<?>> void validate(T context) {
+        try {
+            validateOrThrow(context);
+        } catch (Throwable ex) {
+            ErrorEvent.fromThrowable(ex).handle();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends ValidationContext<?>> void validateOrThrow(T context) throws Throwable {
         if (store == null) {
             return;
         }
@@ -509,12 +522,46 @@ public class DataStoreEntry extends StorageElement {
         try {
             store.checkComplete();
             incrementBusyCounter();
-            if (store instanceof ValidatableStore l) {
-                l.validate();
+            if (store instanceof ValidatableStore<?> l) {
+                ((ValidatableStore<T>) l).validate(context);
             } else if (store instanceof FixedHierarchyStore h) {
                 childrenCache = h.listChildren(this).stream()
                         .map(DataStoreEntryRef::get)
                         .collect(Collectors.toSet());
+            }
+        } finally {
+            decrementBusyCounter();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> ValidationContext<?> validateOrThrow(boolean close) throws Throwable {
+        if (store == null) {
+            return null;
+        }
+
+        try {
+            store.checkComplete();
+            incrementBusyCounter();
+            if (store instanceof ValidatableStore<?> l) {
+                ValidationContext<T> context = (ValidationContext<T>) l.createContext();
+                try {
+                    ((ValidatableStore<ValidationContext<T>>) l).validate(context);
+                } catch (Throwable t) {
+                    context.close();
+                    throw t;
+                }
+                if (close) {
+                    context.close();
+                }
+                return context;
+            } else if (store instanceof FixedHierarchyStore h) {
+                childrenCache = h.listChildren(this).stream()
+                        .map(DataStoreEntryRef::get)
+                        .collect(Collectors.toSet());
+                return null;
+            } else {
+                return null;
             }
         } finally {
             decrementBusyCounter();

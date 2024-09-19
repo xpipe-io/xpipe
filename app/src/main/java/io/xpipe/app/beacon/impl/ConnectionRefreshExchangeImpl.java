@@ -17,7 +17,7 @@ public class ConnectionRefreshExchangeImpl extends ConnectionRefreshExchange {
         if (e.getStore() instanceof FixedHierarchyStore) {
             DataStorage.get().refreshChildren(e, true);
         } else {
-            e.validateOrThrow();
+            e.validateOrThrow(true);
         }
         return Response.builder().build();
     }

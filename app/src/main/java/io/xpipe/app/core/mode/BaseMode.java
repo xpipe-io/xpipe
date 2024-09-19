@@ -87,7 +87,6 @@ public class BaseMode extends OperationMode {
         AppDataLock.unlock();
         BlobManager.reset();
         FileBridge.reset();
-        // Shut down server last to keep a non-daemon thread running
         AppBeaconServer.reset();
         TrackEvent.info("Background mode shutdown finished");
     }
