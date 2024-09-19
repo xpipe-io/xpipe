@@ -1,6 +1,5 @@
 package io.xpipe.core.store;
 
-import io.xpipe.core.process.ProcessControl;
 import io.xpipe.core.process.ShellControl;
 
 public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore<ShellValidationContext> {
@@ -10,15 +9,17 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
         return new ConnectionFileSystem(control());
     }
 
-    default ProcessControl prepareLaunchCommand() {
-        return control();
-    }
+    ShellControl parentControl();
 
-    ShellControl control();
+    ShellControl control(ShellControl parent);
+
+    default ShellControl control() {
+        return control(parentControl());
+    }
 
     @Override
     default void validate(ShellValidationContext context) throws Exception {
-        var c = context.get();
+        var c = control(context.get());
         if (!isInStorage()) {
             c.withoutLicenseCheck();
         }
