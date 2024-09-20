@@ -64,7 +64,6 @@ public class AppLayoutComp extends Comp<CompStructure<Pane>> {
                 if (shortcut != null && shortcut.match(event)) {
                     ((ButtonBase) ((Parent) node).getChildrenUnmodifiable().get(1)).fire();
                     event.consume();
-                    return;
                 }
             });
         });

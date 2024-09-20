@@ -121,7 +121,6 @@ public class SecretRetrievalStrategyHelper {
                                 case 2 -> passwordManager;
                                 case 3 -> customCommand;
                                 case 4 -> new SimpleObjectProperty<>(new SecretRetrievalStrategy.Prompt());
-                                case 5 -> new SimpleObjectProperty<>();
                                 default -> new SimpleObjectProperty<>();
                             };
                         },

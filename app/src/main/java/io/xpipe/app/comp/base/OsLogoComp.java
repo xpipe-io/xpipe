@@ -1,11 +1,11 @@
 package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.store.StoreEntryWrapper;
-import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageComp;
 import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.resources.AppResources;
 import io.xpipe.core.process.OsNameState;
 import io.xpipe.core.store.FileNames;
 

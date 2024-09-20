@@ -1,6 +1,7 @@
 package io.xpipe.core.store;
 
 import io.xpipe.core.process.ShellControl;
+
 import lombok.Value;
 
 @Value
@@ -17,6 +18,7 @@ public class ShellValidationContext implements ValidationContext<ShellControl> {
     public void close() {
         try {
             shellControl.close();
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 }

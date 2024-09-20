@@ -9,6 +9,7 @@ import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.update.UpdateAvailableAlert;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.application.Application;
 
 public abstract class PlatformMode extends OperationMode {

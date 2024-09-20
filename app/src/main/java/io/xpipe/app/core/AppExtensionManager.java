@@ -1,11 +1,11 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.ext.ExtensionException;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.resources.AppResources;
 import io.xpipe.core.process.OsType;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.ModuleLayerLoader;
 import io.xpipe.core.util.XPipeInstallation;

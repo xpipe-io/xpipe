@@ -4,8 +4,8 @@ import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.fxcomps.Comp;
-
 import io.xpipe.app.resources.AppResources;
+
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

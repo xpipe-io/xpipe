@@ -13,9 +13,11 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.FailableFunction;
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
+
 import lombok.Getter;
 import lombok.Value;
 import lombok.With;
@@ -275,10 +277,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 var rawCommand = command.buildSimple();
                 var script = ScriptHelper.getExecScriptFile(sc, "sh");
                 Files.writeString(Path.of(script.toString()), rawCommand);
-                var fixedFile = script
-                        .toString()
-                        .replaceAll("\\\\", "/")
-                        .replaceAll("\\s", "\\$0");
+                var fixedFile = script.toString().replaceAll("\\\\", "/").replaceAll("\\s", "\\$0");
                 sc.command(CommandBuilder.of()
                                 .addFile(file.toString())
                                 .add("-newtab")
@@ -1032,8 +1031,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             DEEPIN_TERMINAL,
             FOOT,
             Q_TERMINAL,
-            TERMIUS
-    );
+            TERMIUS);
     List<ExternalTerminalType> MACOS_TERMINALS = List.of(
             WARP,
             ITERM2,

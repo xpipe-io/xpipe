@@ -15,9 +15,9 @@ import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.process.ShellTtyState;
 import io.xpipe.core.store.ShellStore;
-
 import io.xpipe.core.store.ShellValidationContext;
 import io.xpipe.core.store.ValidationContext;
+
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
@@ -50,35 +50,38 @@ public class ScanAlert {
     }
 
     public static void showForShellStore(DataStoreEntry initial, ShellValidationContext context) {
-        show(initial, (DataStoreEntry entry, ShellControl sc) -> {
-            if (!sc.canHaveSubshells()) {
-                return null;
-            }
-
-            if (!sc.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
-                return null;
-            }
-
-            if (sc.getTtyState() != ShellTtyState.NONE) {
-                return null;
-            }
-
-            var providers = ScanProvider.getAll();
-            var applicable = new ArrayList<ScanProvider.ScanOperation>();
-            for (ScanProvider scanProvider : providers) {
-                try {
-                    // Previous scan operation could have exited the shell
-                    sc.start();
-                    ScanProvider.ScanOperation operation = scanProvider.create(entry, sc);
-                    if (operation != null) {
-                        applicable.add(operation);
+        show(
+                initial,
+                (DataStoreEntry entry, ShellControl sc) -> {
+                    if (!sc.canHaveSubshells()) {
+                        return null;
                     }
-                } catch (Exception ex) {
-                    ErrorEvent.fromThrowable(ex).handle();
-                }
-            }
-            return applicable;
-        }, context);
+
+                    if (!sc.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
+                        return null;
+                    }
+
+                    if (sc.getTtyState() != ShellTtyState.NONE) {
+                        return null;
+                    }
+
+                    var providers = ScanProvider.getAll();
+                    var applicable = new ArrayList<ScanProvider.ScanOperation>();
+                    for (ScanProvider scanProvider : providers) {
+                        try {
+                            // Previous scan operation could have exited the shell
+                            sc.start();
+                            ScanProvider.ScanOperation operation = scanProvider.create(entry, sc);
+                            if (operation != null) {
+                                applicable.add(operation);
+                            }
+                        } catch (Exception ex) {
+                            ErrorEvent.fromThrowable(ex).handle();
+                        }
+                    }
+                    return applicable;
+                },
+                context);
     }
 
     private static void show(
@@ -87,7 +90,8 @@ public class ScanAlert {
             ShellValidationContext shellValidationContext) {
         DialogComp.showWindow(
                 "scanAlertTitle",
-                stage -> new Dialog(stage, initialStore != null ? initialStore.ref() : null, applicable, shellValidationContext));
+                stage -> new Dialog(
+                        stage, initialStore != null ? initialStore.ref() : null, applicable, shellValidationContext));
     }
 
     private static class Dialog extends DialogComp {
@@ -104,8 +108,8 @@ public class ScanAlert {
         private Dialog(
                 Stage window,
                 DataStoreEntryRef<ShellStore> entry,
-                BiFunction<DataStoreEntry, ShellControl, List<ScanProvider.ScanOperation>> applicable, ShellValidationContext shellValidationContext
-        ) {
+                BiFunction<DataStoreEntry, ShellControl, List<ScanProvider.ScanOperation>> applicable,
+                ShellValidationContext shellValidationContext) {
             this.window = window;
             this.initialStore = entry;
             this.entry = new SimpleObjectProperty<>(entry);
@@ -206,7 +210,10 @@ public class ScanAlert {
                             shellValidationContext = null;
                         }
 
-                        shellValidationContext = new ShellValidationContext(newValue.getStore().control().withoutLicenseCheck().start());
+                        shellValidationContext = new ShellValidationContext(newValue.getStore()
+                                .control()
+                                .withoutLicenseCheck()
+                                .start());
                         var a = applicable.apply(entry.get().get(), shellValidationContext.get());
 
                         Platform.runLater(() -> {

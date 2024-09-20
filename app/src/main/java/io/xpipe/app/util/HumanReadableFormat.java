@@ -58,7 +58,9 @@ public final class HumanReadableFormat {
 
         // not this year
         if (x.getYear() != now.getYear()) {
-            return DAY_MONTH_YEAR.withLocale(AppI18n.get().getLoaded().getLocale()).format(x);
+            return DAY_MONTH_YEAR
+                    .withLocale(AppI18n.get().getLoaded().getLocale())
+                    .format(x);
         }
 
         // not this week

@@ -1,10 +1,11 @@
 package io.xpipe.app.beacon.impl;
 
-import com.sun.net.httpserver.HttpExchange;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.util.TerminalLauncherManager;
 import io.xpipe.beacon.api.SshLaunchExchange;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.core.process.ShellDialects;
+
+import com.sun.net.httpserver.HttpExchange;
 
 import java.util.List;
 

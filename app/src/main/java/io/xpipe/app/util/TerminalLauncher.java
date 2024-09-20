@@ -25,7 +25,8 @@ public class TerminalLauncher {
         openDirect(title, command, type);
     }
 
-    public static void openDirect(String title, FailableFunction<ShellControl, String, Exception> command, ExternalTerminalType type)
+    public static void openDirect(
+            String title, FailableFunction<ShellControl, String, Exception> command, ExternalTerminalType type)
             throws Exception {
         try (var sc = LocalShell.getShell().start()) {
             var script = ScriptHelper.constructTerminalInitFile(

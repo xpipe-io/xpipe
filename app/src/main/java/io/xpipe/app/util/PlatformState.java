@@ -137,26 +137,21 @@ public enum PlatformState {
             try {
                 latch.await();
                 PlatformState.setCurrent(PlatformState.RUNNING);
-                return;
             } catch (InterruptedException e) {
                 lastError = e;
-                return;
             }
         } catch (Throwable t) {
             // Check if we already exited
             if ("Platform.exit has been called".equals(t.getMessage())) {
                 PlatformState.setCurrent(PlatformState.EXITED);
                 lastError = t;
-                return;
             } else if ("Toolkit already initialized".equals(t.getMessage())) {
                 PlatformState.setCurrent(PlatformState.RUNNING);
-                return;
             } else {
                 // Platform initialization has failed in this case
                 PlatformState.setCurrent(PlatformState.EXITED);
                 TrackEvent.error(t.getMessage());
                 lastError = t;
-                return;
             }
         }
     }

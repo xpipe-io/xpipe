@@ -1,6 +1,5 @@
 package io.xpipe.app.prefs;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.core.AppI18n;
@@ -14,6 +13,7 @@ import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
@@ -21,6 +21,8 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.Region;
+
+import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -32,7 +34,6 @@ public class SyncCategory extends AppPrefsCategory {
     protected String getId() {
         return "sync";
     }
-
 
     private static void showHelpAlert() {
         AppWindowHelper.showAlert(
@@ -76,8 +77,7 @@ public class SyncCategory extends AppPrefsCategory {
         restartButton.visible(canRestart);
         restartButton.padding(new Insets(6, 10, 6, 6));
 
-        var testRow = new HorizontalComp(
-                List.of(testButton, restartButton))
+        var testRow = new HorizontalComp(List.of(testButton, restartButton))
                 .spacing(10)
                 .padding(new Insets(10, 0, 0, 0))
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));

@@ -4,6 +4,7 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.FileOpener;
 import io.xpipe.core.process.OsType;
+
 import lombok.Value;
 
 public class SimpleScriptQuickEditAction implements ActionProvider {
@@ -33,13 +34,9 @@ public class SimpleScriptQuickEditAction implements ActionProvider {
             var dialect = script.getMinimumDialect();
             var ext = dialect.getScriptFileEnding();
             var name = OsType.getLocal().makeFileSystemCompatible(ref.get().getName());
-            FileOpener.openString(
-                    name + "." + ext,
-                    this,
-                    script.getCommands(),
-                    (s) -> {
-                        ref.get().setStoreInternal(script.toBuilder().commands(s).build(), true);
-                    });
+            FileOpener.openString(name + "." + ext, this, script.getCommands(), (s) -> {
+                ref.get().setStoreInternal(script.toBuilder().commands(s).build(), true);
+            });
         }
     }
 }

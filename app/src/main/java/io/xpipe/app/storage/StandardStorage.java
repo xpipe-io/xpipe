@@ -1,11 +1,11 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.ext.DataStorageExtensionProvider;
+import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
-import io.xpipe.app.ext.LocalStore;
 import io.xpipe.core.util.JacksonMapper;
 
 import com.fasterxml.jackson.core.JacksonException;
@@ -176,13 +176,11 @@ public class StandardStorage extends DataStorage {
 
                 storeEntriesSet.forEach(e -> {
                     if (e.getCategoryUuid() == null
-                            || getStoreCategoryIfPresent(e.getCategoryUuid())
-                                    .isEmpty()) {
+                            || getStoreCategoryIfPresent(e.getCategoryUuid()).isEmpty()) {
                         e.setCategoryUuid(DEFAULT_CATEGORY_UUID);
                     }
 
-                    if (e.getCategoryUuid() != null
-                            && e.getCategoryUuid().equals(ALL_CONNECTIONS_CATEGORY_UUID)) {
+                    if (e.getCategoryUuid() != null && e.getCategoryUuid().equals(ALL_CONNECTIONS_CATEGORY_UUID)) {
                         e.setCategoryUuid(DEFAULT_CATEGORY_UUID);
                     }
 

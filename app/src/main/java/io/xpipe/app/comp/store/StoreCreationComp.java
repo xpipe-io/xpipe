@@ -1,6 +1,5 @@
 package io.xpipe.app.comp.store;
 
-import atlantafx.base.controls.Spacer;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.DialogComp;
 import io.xpipe.app.comp.base.ErrorOverlayComp;
@@ -23,6 +22,7 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.ValidationContext;
 import io.xpipe.core.util.ValidationException;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -34,6 +34,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import atlantafx.base.controls.Spacer;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import net.synedra.validatorfx.GraphicDecorationStackPane;
@@ -209,7 +211,7 @@ public class StoreCreationComp extends DialogComp {
                 null);
     }
 
-    private static interface CreationConsumer {
+    public interface CreationConsumer {
 
         void consume(DataStoreEntry entry, ValidationContext<?> validationContext, boolean validated);
     }
@@ -318,7 +320,7 @@ public class StoreCreationComp extends DialogComp {
                 return;
             }
 
-            try (var b = new BooleanScope(busy).start()) {
+            try (var ignored = new BooleanScope(busy).start()) {
                 DataStorage.get().addStoreEntryInProgress(entry.getValue());
                 var context = entry.getValue().validateOrThrow(false);
                 commit(context, true);

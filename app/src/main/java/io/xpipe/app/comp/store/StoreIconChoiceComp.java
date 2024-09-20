@@ -1,9 +1,9 @@
 package io.xpipe.app.comp.store;
 
-import atlantafx.base.theme.Tweaks;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.resources.SystemIcon;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -11,6 +11,8 @@ import javafx.beans.property.StringProperty;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
+
+import atlantafx.base.theme.Tweaks;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,7 +29,12 @@ public class StoreIconChoiceComp extends SimpleComp {
     private final SimpleStringProperty filter;
     private final Runnable doubleClick;
 
-    public StoreIconChoiceComp(Property<SystemIcon> selected, List<SystemIcon> icons, int columns, SimpleStringProperty filter, Runnable doubleClick) {
+    public StoreIconChoiceComp(
+            Property<SystemIcon> selected,
+            List<SystemIcon> icons,
+            int columns,
+            SimpleStringProperty filter,
+            Runnable doubleClick) {
         this.selected = selected;
         this.icons = icons;
         this.columns = columns;
@@ -43,7 +50,6 @@ public class StoreIconChoiceComp extends SimpleComp {
         filter.addListener((observable, oldValue, newValue) -> updateData(table, newValue));
         return table;
     }
-
 
     private void initTable(TableView<List<SystemIcon>> table) {
         for (int i = 0; i < columns; i++) {
@@ -65,8 +71,11 @@ public class StoreIconChoiceComp extends SimpleComp {
     }
 
     private void updateData(TableView<List<SystemIcon>> table, String filterString) {
-        var displayedIcons = filterString == null || filterString.isBlank() || filterString.length() < 2 ? icons : icons.stream().filter(
-                icon -> containsString(icon.getDisplayName(), filterString)).toList();
+        var displayedIcons = filterString == null || filterString.isBlank() || filterString.length() < 2
+                ? icons
+                : icons.stream()
+                        .filter(icon -> containsString(icon.getDisplayName(), filterString))
+                        .toList();
 
         var data = partitionList(displayedIcons, columns);
         table.getItems().setAll(data);
@@ -97,12 +106,12 @@ public class StoreIconChoiceComp extends SimpleComp {
 
         private final Label root = new Label();
         private final StringProperty image = new SimpleStringProperty();
-        private final Region imageView = PrettyImageHelper.ofFixedSize(image, 40, 40).createRegion();
 
         public IconCell() {
             super();
 
             root.setContentDisplay(ContentDisplay.TOP);
+            Region imageView = PrettyImageHelper.ofFixedSize(image, 40, 40).createRegion();
             root.setGraphic(imageView);
             root.setGraphicTextGap(10);
             root.getStyleClass().addAll("icon-label", TEXT_SMALL);

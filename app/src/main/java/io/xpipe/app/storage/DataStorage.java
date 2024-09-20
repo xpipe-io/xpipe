@@ -1,6 +1,7 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.comp.store.StoreSortMode;
+import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -8,7 +9,6 @@ import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FixedChildStore;
-import io.xpipe.app.ext.LocalStore;
 import io.xpipe.core.store.StorePath;
 import io.xpipe.core.util.UuidHelper;
 

@@ -72,7 +72,10 @@ public class DesktopHelper {
                 }
 
                 var file = new FilePath(path);
-                sc.command(CommandBuilder.of().add("xdg-open").addFile(kind == FileKind.DIRECTORY ? file : file.getParent())).execute();
+                sc.command(CommandBuilder.of()
+                                .add("xdg-open")
+                                .addFile(kind == FileKind.DIRECTORY ? file : file.getParent()))
+                        .execute();
             }
             case OsType.MacOs macOs -> {
                 sc.executeSimpleCommand("open " + (kind == FileKind.DIRECTORY ? "" : "-R ") + d.fileArgument(path));

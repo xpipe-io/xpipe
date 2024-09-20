@@ -8,6 +8,7 @@ import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.XPipeInstallation;
+
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.scene.control.ButtonType;

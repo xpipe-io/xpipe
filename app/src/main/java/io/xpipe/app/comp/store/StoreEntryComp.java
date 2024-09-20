@@ -1,7 +1,5 @@
 package io.xpipe.app.comp.store;
 
-import atlantafx.base.layout.InputGroup;
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.*;
 import io.xpipe.app.ext.ActionProvider;
@@ -23,6 +21,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.*;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableDoubleValue;
@@ -34,6 +33,9 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
+
+import atlantafx.base.layout.InputGroup;
+import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.nio.file.Files;

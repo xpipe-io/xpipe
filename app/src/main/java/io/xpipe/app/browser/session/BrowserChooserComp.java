@@ -96,7 +96,7 @@ public class BrowserChooserComp extends SimpleComp {
                     return;
                 }
 
-                if (entry.getStore() instanceof ShellStore fileSystem) {
+                if (entry.getStore() instanceof ShellStore) {
                     model.openFileSystemAsync(entry.ref(), null, busy);
                 }
             });

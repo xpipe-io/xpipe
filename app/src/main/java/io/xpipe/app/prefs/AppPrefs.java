@@ -45,8 +45,12 @@ public class AppPrefs {
             mapVaultSpecific(new SimpleBooleanProperty(false), "dontAutomaticallyStartVmSshServer", Boolean.class);
     final BooleanProperty dontAcceptNewHostKeys =
             mapVaultSpecific(new SimpleBooleanProperty(false), "dontAcceptNewHostKeys", Boolean.class);
-    final BooleanProperty performanceMode = map(new SimpleBooleanProperty(XPipeDistributionType.get() == XPipeDistributionType.WEBTOP), "performanceMode", Boolean.class);
-    public final BooleanProperty useBundledTools = map(new SimpleBooleanProperty(false), "useBundledTools", Boolean.class);
+    final BooleanProperty performanceMode = map(
+            new SimpleBooleanProperty(XPipeDistributionType.get() == XPipeDistributionType.WEBTOP),
+            "performanceMode",
+            Boolean.class);
+    public final BooleanProperty useBundledTools =
+            map(new SimpleBooleanProperty(false), "useBundledTools", Boolean.class);
     public final ObjectProperty<AppTheme.Theme> theme =
             map(new SimpleObjectProperty<>(), "theme", AppTheme.Theme.class);
     final BooleanProperty useSystemFont = map(new SimpleBooleanProperty(true), "useSystemFont", Boolean.class);
@@ -76,7 +80,8 @@ public class AppPrefs {
             mapVaultSpecific(new SimpleBooleanProperty(false), "dontCachePasswords", Boolean.class);
     public final BooleanProperty denyTempScriptCreation =
             mapVaultSpecific(new SimpleBooleanProperty(false), "denyTempScriptCreation", Boolean.class);
-    final Property<ExternalPasswordManager> passwordManager = mapVaultSpecific(new SimpleObjectProperty<>(), "passwordManager", ExternalPasswordManager.class);
+    final Property<ExternalPasswordManager> passwordManager =
+            mapVaultSpecific(new SimpleObjectProperty<>(), "passwordManager", ExternalPasswordManager.class);
     final StringProperty passwordManagerCommand =
             map(new SimpleStringProperty(""), "passwordManagerCommand", String.class);
     final ObjectProperty<StartupBehaviour> startupBehaviour =

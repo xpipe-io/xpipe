@@ -63,7 +63,8 @@ public class BrowserAlerts {
     }
 
     public static boolean showDeleteAlert(List<FileEntry> source) {
-        if (!AppPrefs.get().confirmDeletions().get() && source.stream().noneMatch(entry -> entry.getKind() == FileKind.DIRECTORY)) {
+        if (!AppPrefs.get().confirmDeletions().get()
+                && source.stream().noneMatch(entry -> entry.getKind() == FileKind.DIRECTORY)) {
             return true;
         }
 

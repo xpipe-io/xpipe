@@ -75,7 +75,10 @@ public class TerminalLauncherManager {
     public static Path waitForNextLaunch() throws BeaconClientException, BeaconServerException {
         Entry first;
         synchronized (entries) {
-            first = entries.values().stream().filter(entry -> !entry.isLaunched()).findFirst().orElse(null);
+            first = entries.values().stream()
+                    .filter(entry -> !entry.isLaunched())
+                    .findFirst()
+                    .orElse(null);
             if (first == null) {
                 throw new BeaconClientException("Unknown launch request");
             }
@@ -116,7 +119,10 @@ public class TerminalLauncherManager {
 
     public static Path performLaunch(UUID request) throws BeaconClientException {
         synchronized (entries) {
-            var e = entries.values().stream().filter(entry -> entry.getRequest().equals(request)).findFirst().orElse(null);
+            var e = entries.values().stream()
+                    .filter(entry -> entry.getRequest().equals(request))
+                    .findFirst()
+                    .orElse(null);
             if (e == null) {
                 throw new BeaconClientException("Unknown launch request " + request);
             }

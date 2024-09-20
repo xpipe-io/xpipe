@@ -18,6 +18,7 @@ import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.ext.base.script.ScriptStore;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ObservableValue;
 
@@ -32,7 +33,8 @@ public interface ShellStoreProvider extends DataStoreProvider {
                 ShellStore store = replacement.getStore().asNeeded();
                 var control = ScriptStore.controlWithDefaultScripts(store.control());
                 control.onInit(sc -> {
-                    if (entry.getStorePersistentState() instanceof ShellStoreState shellStoreState && shellStoreState.getShellDialect() == null) {
+                    if (entry.getStorePersistentState() instanceof ShellStoreState shellStoreState
+                            && shellStoreState.getShellDialect() == null) {
                         var found = SystemIcons.detectForSystem(sc);
                         if (found.isPresent()) {
                             entry.setIcon(found.get().getIconName(), false);
@@ -42,7 +44,8 @@ public interface ShellStoreProvider extends DataStoreProvider {
                 TerminalLauncher.open(
                         replacement.get(),
                         DataStorage.get().getStoreEntryDisplayName(replacement.get()),
-                        null, control);
+                        null,
+                        control);
             }
         };
     }

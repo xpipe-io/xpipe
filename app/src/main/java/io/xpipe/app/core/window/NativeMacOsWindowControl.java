@@ -1,11 +1,13 @@
 package io.xpipe.app.core.window;
 
-import com.sun.jna.NativeLong;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.NativeBridge;
 import io.xpipe.core.util.ModuleHelper;
+
 import javafx.stage.Window;
+
+import com.sun.jna.NativeLong;
 import lombok.Getter;
 import lombok.SneakyThrows;
 

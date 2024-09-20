@@ -21,6 +21,8 @@ public class ShellEnvironmentStoreState extends ShellStoreState {
         var n = (ShellEnvironmentStoreState) newer;
         var b = toBuilder();
         mergeBuilder(n, b);
-        return b.shellName(useNewer(shellName, n.shellName)).setDefault(useNewer(setDefault,n.setDefault)).build();
+        return b.shellName(useNewer(shellName, n.shellName))
+                .setDefault(useNewer(setDefault, n.setDefault))
+                .build();
     }
 }

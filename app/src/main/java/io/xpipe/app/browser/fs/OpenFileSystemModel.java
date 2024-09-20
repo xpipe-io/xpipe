@@ -11,6 +11,7 @@ import io.xpipe.app.browser.file.FileSystemHelper;
 import io.xpipe.app.browser.session.BrowserAbstractSessionModel;
 import io.xpipe.app.browser.session.BrowserSessionTab;
 import io.xpipe.app.comp.base.ModalOverlayComp;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
@@ -18,7 +19,6 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.ShellOpenFunction;
@@ -453,7 +453,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
         return fileSystem == null;
     }
 
-    public void initWithGivenDirectory(String dir) throws Exception {
+    public void initWithGivenDirectory(String dir) {
         cdSync(dir);
     }
 

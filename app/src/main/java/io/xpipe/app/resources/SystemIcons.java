@@ -6,6 +6,7 @@ import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.StatefulDataStore;
+
 import org.apache.commons.io.FilenameUtils;
 
 import java.nio.file.Files;
@@ -21,22 +22,21 @@ public class SystemIcons {
             new SystemIcon("opnsense", "opnsense") {
                 @Override
                 public boolean isApplicable(DataStore store) {
-                    return store instanceof StatefulDataStore<?> statefulDataStore &&
-                            statefulDataStore.getState() instanceof ShellStoreState shellStoreState &&
-                            shellStoreState.getShellDialect() == ShellDialects.OPNSENSE;
+                    return store instanceof StatefulDataStore<?> statefulDataStore
+                            && statefulDataStore.getState() instanceof ShellStoreState shellStoreState
+                            && shellStoreState.getShellDialect() == ShellDialects.OPNSENSE;
                 }
             },
-            new SystemIcon("pfsense", "pfsense")  {
+            new SystemIcon("pfsense", "pfsense") {
                 @Override
                 public boolean isApplicable(DataStore store) {
-                    return store instanceof StatefulDataStore<?> statefulDataStore &&
-                            statefulDataStore.getState() instanceof ShellStoreState shellStoreState &&
-                            shellStoreState.getShellDialect() == ShellDialects.PFSENSE;
+                    return store instanceof StatefulDataStore<?> statefulDataStore
+                            && statefulDataStore.getState() instanceof ShellStoreState shellStoreState
+                            && shellStoreState.getShellDialect() == ShellDialects.PFSENSE;
                 }
             },
             new ContainerAutoSystemIcon("file-browser", "file browser", name -> name.contains("filebrowser")),
-            new FileAutoSystemIcon("syncthing", "syncthing", OsType.LINUX, "~/.local/state/syncthing")
-    );
+            new FileAutoSystemIcon("syncthing", "syncthing", OsType.LINUX, "~/.local/state/syncthing"));
 
     private static final List<SystemIcon> SYSTEM_ICONS = new ArrayList<>();
     private static boolean loaded = false;
@@ -56,7 +56,9 @@ public class SystemIcons {
                         continue;
                     }
                     var base = name.replaceAll("-40", "");
-                    if (AUTO_SYSTEM_ICONS.stream().anyMatch(autoSystemIcon -> autoSystemIcon.getIconName().equals(base))) {
+                    if (AUTO_SYSTEM_ICONS.stream()
+                            .anyMatch(autoSystemIcon ->
+                                    autoSystemIcon.getIconName().equals(base))) {
                         continue;
                     }
                     var displayName = base.replaceAll("-", " ");
@@ -64,7 +66,7 @@ public class SystemIcons {
                 }
             }
         });
-        SYSTEM_ICONS.sort(Comparator.<SystemIcon, String>comparing(systemIcon -> systemIcon.getIconName()));
+        SYSTEM_ICONS.sort(Comparator.comparing(systemIcon -> systemIcon.getIconName()));
     }
 
     public static synchronized void load() {
@@ -72,7 +74,7 @@ public class SystemIcons {
             return;
         }
 
-        AppImages.loadDirectory(AppResources.XPIPE_MODULE,"img/system", true, false);
+        AppImages.loadDirectory(AppResources.XPIPE_MODULE, "img/system", true, false);
         loaded = true;
     }
 

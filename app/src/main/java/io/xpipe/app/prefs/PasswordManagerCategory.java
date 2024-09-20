@@ -1,6 +1,5 @@
 package io.xpipe.app.prefs;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.core.AppI18n;
@@ -13,6 +12,7 @@ import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
@@ -21,6 +21,8 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Region;
+
+import atlantafx.base.theme.Styles;
 import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -45,11 +47,16 @@ public class PasswordManagerCategory extends AppPrefsCategory {
     protected Comp<?> create() {
         var choices = new ArrayList<Choice>();
         ExternalPasswordManagerTemplate.ALL.forEach(externalPasswordManagerTemplate -> {
-            choices.add(new Choice(externalPasswordManagerTemplate.getId(), externalPasswordManagerTemplate.getTemplate(), ExternalPasswordManager.COMMAND));
+            choices.add(new Choice(
+                    externalPasswordManagerTemplate.getId(),
+                    externalPasswordManagerTemplate.getTemplate(),
+                    ExternalPasswordManager.COMMAND));
         });
-        ExternalPasswordManager.ALL.stream().filter(externalPasswordManager -> externalPasswordManager != ExternalPasswordManager.COMMAND).forEach(externalPasswordManager -> {
-            choices.add(new Choice(externalPasswordManager.getId(), null, externalPasswordManager));
-        });
+        ExternalPasswordManager.ALL.stream()
+                .filter(externalPasswordManager -> externalPasswordManager != ExternalPasswordManager.COMMAND)
+                .forEach(externalPasswordManager -> {
+                    choices.add(new Choice(externalPasswordManager.getId(), null, externalPasswordManager));
+                });
 
         var prefs = AppPrefs.get();
         var testPasswordManagerValue = new SimpleStringProperty();
@@ -89,8 +96,10 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                 .minHeight(120);
         var templates = Comp.of(() -> {
             var cb = new MenuButton();
-            cb.textProperty().bind(BindingsHelper.flatMap(prefs.passwordManager,externalPasswordManager -> {
-                return externalPasswordManager != null ? AppI18n.observable(externalPasswordManager.getId()) : AppI18n.observable("selectType");
+            cb.textProperty().bind(BindingsHelper.flatMap(prefs.passwordManager, externalPasswordManager -> {
+                return externalPasswordManager != null
+                        ? AppI18n.observable(externalPasswordManager.getId())
+                        : AppI18n.observable("selectType");
             }));
             choices.forEach(e -> {
                 var m = new MenuItem();
@@ -119,17 +128,16 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                                 event.consume();
                             }
                         })),
-                new ButtonComp(null, new FontIcon("mdi2p-play"), test)
-                        .styleClass(Styles.RIGHT_PILL)));
+                new ButtonComp(null, new FontIcon("mdi2p-play"), test).styleClass(Styles.RIGHT_PILL)));
         testInput.apply(struc -> {
             var first = ((Region) struc.get().getChildren().get(0));
             var second = ((Region) struc.get().getChildren().get(1));
             second.prefHeightProperty().bind(first.heightProperty());
         });
 
-        var testPasswordManager = new HorizontalComp(List.of(testInput,
-                        Comp.hspacer(25),
-                        new LabelComp(testPasswordManagerResult).apply(struc -> struc.get().setOpacity(0.5))))
+        var testPasswordManager = new HorizontalComp(List.of(
+                        testInput, Comp.hspacer(25), new LabelComp(testPasswordManagerResult).apply(struc -> struc.get()
+                                .setOpacity(0.5))))
                 .padding(new Insets(10, 0, 0, 0))
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
                 .apply(struc -> struc.get().setFillHeight(true));

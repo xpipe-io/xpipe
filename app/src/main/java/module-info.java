@@ -1,4 +1,3 @@
-import com.fasterxml.jackson.databind.Module;
 import io.xpipe.app.beacon.impl.*;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.core.AppLogs;
@@ -13,6 +12,8 @@ import io.xpipe.beacon.BeaconInterface;
 import io.xpipe.core.util.DataStateProvider;
 import io.xpipe.core.util.ModuleLayerLoader;
 import io.xpipe.core.util.ProxyFunction;
+
+import com.fasterxml.jackson.databind.Module;
 import org.slf4j.spi.SLF4JServiceProvider;
 
 open module io.xpipe.app {

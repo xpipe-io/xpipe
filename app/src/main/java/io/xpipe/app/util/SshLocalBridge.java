@@ -2,10 +2,10 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.util.XPipeInstallation;
 
@@ -180,7 +180,8 @@ public class SshLocalBridge {
         } else {
             var exec = sc.command(sc.getShellDialect().getWhichCommand("sshd")).readStdoutIfPossible();
             if (exec.isEmpty()) {
-                throw ErrorEvent.expected(new IllegalStateException("No sshd executable found in PATH. The SSH terminal bridge requires a local ssh server"));
+                throw ErrorEvent.expected(new IllegalStateException(
+                        "No sshd executable found in PATH. The SSH terminal bridge requires a local ssh server"));
             }
             return exec.get().lines().findFirst().orElseThrow();
         }

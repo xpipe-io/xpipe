@@ -124,12 +124,13 @@ public interface WezTerminalType extends ExternalTerminalType {
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
             try (var sc = LocalShell.getShell()) {
-                var path = sc.command(String.format(
+                var pathOut = sc.command(String.format(
                                 "mdfind -name '%s' -onlyin /Applications -onlyin ~/Applications -onlyin /System/Applications 2>/dev/null",
                                 applicationName))
                         .readStdoutOrThrow();
+                var path = Path.of(pathOut);
                 var spawn = sc.command(CommandBuilder.of()
-                                .addFile(Path.of(path)
+                                .addFile(path
                                         .resolve("Contents")
                                         .resolve("MacOS")
                                         .resolve("wezterm")
@@ -139,7 +140,7 @@ public interface WezTerminalType extends ExternalTerminalType {
                         .executeAndCheck();
                 if (!spawn) {
                     ExternalApplicationHelper.startAsync(CommandBuilder.of()
-                            .addFile(Path.of(path)
+                            .addFile(path
                                     .resolve("Contents")
                                     .resolve("MacOS")
                                     .resolve("wezterm-gui")

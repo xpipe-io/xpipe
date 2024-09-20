@@ -238,7 +238,6 @@ public class BrowserSessionTabsComp extends SimpleComp {
                         % tabs.getTabs().size();
                 tabs.getSelectionModel().select(previous);
                 keyEvent.consume();
-                return;
             }
         });
 

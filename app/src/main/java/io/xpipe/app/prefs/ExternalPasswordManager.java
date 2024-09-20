@@ -45,14 +45,15 @@ public interface ExternalPasswordManager extends PrefsChoiceValue {
         @Override
         public synchronized String retrievePassword(String key) {
             try {
-            if (!loaded) {
-                loaded = true;
-                var cmd = """
+                if (!loaded) {
+                    loaded = true;
+                    var cmd =
+                            """
                    $code = @"
                    using System.Text;
                    using System;
                    using System.Runtime.InteropServices;
-                   
+
                    namespace CredManager {
                      [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
                      public struct CredentialMem
@@ -70,16 +71,16 @@ public interface ExternalPasswordManager extends PrefsChoiceValue {
                        public string targetAlias;
                        public string userName;
                      }
-                   
+
                      public class Credential {
                        [DllImport("advapi32.dll", EntryPoint = "CredReadW", CharSet = CharSet.Unicode, SetLastError = true)]
                        private static extern bool CredRead(string target, int type, int reservedFlag, out IntPtr credentialPtr);
-                   
+
                        public static string GetUserPassword(string target)
                        {
                          CredentialMem credMem;
                          IntPtr credPtr;
-                   
+
                          if (CredRead(target, 1, 0, out credPtr))
                          {
                            credMem = Marshal.PtrToStructure<CredentialMem>(credPtr);
@@ -95,14 +96,14 @@ public interface ExternalPasswordManager extends PrefsChoiceValue {
                    "@
                    Add-Type -TypeDefinition $code -Language CSharp
                    """;
-                LocalShell.getLocalPowershell().command(cmd).execute();
-            }
+                    LocalShell.getLocalPowershell().command(cmd).execute();
+                }
 
-            return LocalShell.getLocalPowershell().command("[CredManager.Credential]::GetUserPassword(\"" + key.replaceAll("\"", "`\"") + "\")").readStdoutOrThrow();
+                return LocalShell.getLocalPowershell()
+                        .command("[CredManager.Credential]::GetUserPassword(\"" + key.replaceAll("\"", "`\"") + "\")")
+                        .readStdoutOrThrow();
             } catch (Exception ex) {
-                ErrorEvent.fromThrowable(ex)
-                        .expected()
-                        .handle();
+                ErrorEvent.fromThrowable(ex).expected().handle();
                 return null;
             }
         }

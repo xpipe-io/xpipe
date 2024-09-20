@@ -43,7 +43,6 @@ public class FsReadExchangeImpl extends FsReadExchange {
                     var out = exchange.getResponseBody()) {
                 fileIn.transferTo(out);
             }
-            return Response.builder().build();
         } else {
             byte[] bytes;
             try (var in = fs.openInput(msg.getPath().toString())) {
@@ -55,7 +54,7 @@ public class FsReadExchangeImpl extends FsReadExchange {
             try (var out = exchange.getResponseBody()) {
                 out.write(bytes);
             }
-            return Response.builder().build();
         }
+        return Response.builder().build();
     }
 }

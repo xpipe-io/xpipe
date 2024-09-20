@@ -12,12 +12,14 @@ import io.xpipe.app.resources.SystemIcon;
 import io.xpipe.app.resources.SystemIcons;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.Hyperlinks;
+
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -26,7 +28,8 @@ public class StoreIconChoiceDialogComp extends SimpleComp {
 
     public static void show(DataStoreEntry entry) {
         SystemIcons.load();
-        var window = AppWindowHelper.sideWindow(AppI18n.get("chooseCustomIcon"), stage -> new StoreIconChoiceDialogComp(entry,stage),false,null);
+        var window = AppWindowHelper.sideWindow(
+                AppI18n.get("chooseCustomIcon"), stage -> new StoreIconChoiceDialogComp(entry, stage), false, null);
         window.initModality(Modality.APPLICATION_MODAL);
         window.show();
     }
@@ -50,8 +53,9 @@ public class StoreIconChoiceDialogComp extends SimpleComp {
             });
         });
         var github = new ButtonComp(null, new FontIcon("mdi2g-github"), () -> {
-            Hyperlinks.open(Hyperlinks.SELFHST_ICONS);
-        }).grow(false, true);
+                    Hyperlinks.open(Hyperlinks.SELFHST_ICONS);
+                })
+                .grow(false, true);
         var dialog = new DialogComp() {
             @Override
             protected void finish() {
@@ -68,10 +72,11 @@ public class StoreIconChoiceDialogComp extends SimpleComp {
 
             @Override
             public Comp<?> bottom() {
-                var clear = new ButtonComp(AppI18n.observable("clear"),() -> {
-                    selected.setValue(null);
-                    finish();
-                }).grow(false, true);
+                var clear = new ButtonComp(AppI18n.observable("clear"), () -> {
+                            selected.setValue(null);
+                            finish();
+                        })
+                        .grow(false, true);
                 return new HorizontalComp(List.of(github, filter.hgrow(), clear)).spacing(10);
             }
 

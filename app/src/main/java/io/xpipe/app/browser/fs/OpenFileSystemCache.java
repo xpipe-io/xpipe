@@ -60,7 +60,8 @@ public class OpenFileSystemCache extends ShellControlCache {
             var split = s.split(":");
             try {
                 users.putIfAbsent(Integer.parseInt(split[2]), split[0]);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         });
 
         if (users.isEmpty()) {
@@ -81,7 +82,8 @@ public class OpenFileSystemCache extends ShellControlCache {
             var split = s.split(":");
             try {
                 groups.putIfAbsent(Integer.parseInt(split[2]), split[0]);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         });
 
         if (groups.isEmpty()) {

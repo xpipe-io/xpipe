@@ -2,11 +2,12 @@ package io.xpipe.app.resources;
 
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
+
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 @Value
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
 public class FileAutoSystemIcon extends SystemIcon {
 
     OsType.Any osType;
@@ -29,7 +30,7 @@ public class FileAutoSystemIcon extends SystemIcon {
             return false;
         }
 
-        return sc.getShellDialect().createFileExistsCommand(sc, abs.get()).executeAndCheck() ||
-                sc.getShellDialect().directoryExists(sc, abs.get()).executeAndCheck();
+        return sc.getShellDialect().createFileExistsCommand(sc, abs.get()).executeAndCheck()
+                || sc.getShellDialect().directoryExists(sc, abs.get()).executeAndCheck();
     }
 }

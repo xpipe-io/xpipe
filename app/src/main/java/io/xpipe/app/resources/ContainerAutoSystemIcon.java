@@ -3,13 +3,14 @@ package io.xpipe.app.resources;
 import io.xpipe.app.ext.ContainerImageStore;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.DataStore;
+
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 import java.util.function.Predicate;
 
 @Value
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
 public class ContainerAutoSystemIcon extends SystemIcon {
 
     Predicate<String> imageCheck;
@@ -20,7 +21,7 @@ public class ContainerAutoSystemIcon extends SystemIcon {
     }
 
     @Override
-    public boolean isApplicable(ShellControl sc) throws Exception {
+    public boolean isApplicable(ShellControl sc) {
         var source = sc.getSourceStore();
         if (source.isEmpty()) {
             return false;

@@ -21,8 +21,12 @@
     -fx-text-fill: #ee4829;
 }
 
-.store-entry-grid:incomplete .name {
-    -fx-text-fill: #ee4829;
+.root:dark .store-entry-grid:incomplete .name {
+    -fx-text-fill: #b2271a;
+}
+
+.root:light .store-entry-grid:incomplete .name {
+    -fx-text-fill: #981400;
 }
 
 .store-entry-grid:incomplete .icon {
