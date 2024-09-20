@@ -18,7 +18,7 @@ import java.util.Optional;
 public class SystemIcons {
 
     private static final List<SystemIcon> AUTO_SYSTEM_ICONS = List.of(
-            new SystemIcon("opnsense", "OpnSense") {
+            new SystemIcon("opnsense", "opnsense") {
                 @Override
                 public boolean isApplicable(DataStore store) {
                     return store instanceof StatefulDataStore<?> statefulDataStore &&
@@ -26,7 +26,7 @@ public class SystemIcons {
                             shellStoreState.getShellDialect() == ShellDialects.OPNSENSE;
                 }
             },
-            new SystemIcon("pfsense", "PfSense")  {
+            new SystemIcon("pfsense", "pfsense")  {
                 @Override
                 public boolean isApplicable(DataStore store) {
                     return store instanceof StatefulDataStore<?> statefulDataStore &&
@@ -34,8 +34,8 @@ public class SystemIcons {
                             shellStoreState.getShellDialect() == ShellDialects.PFSENSE;
                 }
             },
-            new ContainerAutoSystemIcon("file-browser", "File Browser", name -> name.contains("filebrowser")),
-            new FileAutoSystemIcon("syncthing", "Syncthing", OsType.LINUX, "~/.local/state/syncthing")
+            new ContainerAutoSystemIcon("file-browser", "file browser", name -> name.contains("filebrowser")),
+            new FileAutoSystemIcon("syncthing", "syncthing", OsType.LINUX, "~/.local/state/syncthing")
     );
 
     private static final List<SystemIcon> SYSTEM_ICONS = new ArrayList<>();
@@ -52,10 +52,10 @@ public class SystemIcons {
                 var all = stream.toList();
                 for (Path file : all) {
                     var name = FilenameUtils.getBaseName(file.getFileName().toString());
-                    if (name.contains("-dark") || name.contains("-40")) {
+                    if (name.contains("-dark") || name.contains("-16") || name.contains("-24")) {
                         continue;
                     }
-                    var base = name.replaceAll("-24", "");
+                    var base = name.replaceAll("-40", "");
                     if (AUTO_SYSTEM_ICONS.stream().anyMatch(autoSystemIcon -> autoSystemIcon.getIconName().equals(base))) {
                         continue;
                     }

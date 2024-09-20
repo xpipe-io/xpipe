@@ -631,6 +631,10 @@ public final class BrowserFileListComp extends SimpleComp {
                             () -> getTableRow().getItem(), fileList.getFileSystemModel())
                     .hide(Bindings.createBooleanBinding(
                             () -> {
+                                if (getTableRow() == null) {
+                                    return true;
+                                }
+
                                 var item = getTableRow().getItem();
                                 var notDir = item.getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY;
                                 var isParentLink = item.getRawFileEntry()

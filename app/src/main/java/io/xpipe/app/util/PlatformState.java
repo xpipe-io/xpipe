@@ -84,7 +84,7 @@ public enum PlatformState {
             // fails
         } catch (HeadlessException h) {
             var msg = (OsType.getLocal().equals(OsType.LINUX)
-                            ? "No X11 DISPLAY variable was set or no headful library support was found."
+                            ? "No DISPLAY variable was set or no headful library support was found."
                             : "The application does not have desktop access, but this program performed an operation which requires it.")
                     + "\n\n"
                     + "Please note that XPipe is a desktop application that should be run on your local workstation."

@@ -25,7 +25,7 @@ components from it when it is run in a development environment.
 Note that in case the current master branch is ahead of the latest release, it might happen that there are some incompatibilities when loading data from your local XPipe installation.
 You should therefore always check out the matching version tag for your local repository and local XPipe installation.
 You can find the available version tags at https://github.com/xpipe-io/xpipe/tags.
-So for example if you currently have XPipe `10.0` installed, you should run `git reset --hard 10.0` first to properly compile against it.
+So for example if you currently have XPipe `11.3` installed, you should run `git reset --hard 11.3` first to properly compile against it.
 
 You need to have JDK for Java 21 installed to compile the project.
 If you are on Linux or macOS, you can easily accomplish that by running
@@ -74,7 +74,7 @@ Especially when starting out, it might be a good idea to start with easy tasks f
 
 ### Interacting via the HTTP API
 
-You can create clients they communicate with the XPipe daemon via its HTTP API.
+You can create clients that communicate with the XPipe daemon via its HTTP API.
 To get started, see the [OpenAPI spec](/openapi.yaml).
 
 ### Implementing support for a new editor
@@ -98,6 +98,10 @@ All actions that you can perform for certain connections in the connection overv
 
 You can add custom script definitions [here](https://github.com/xpipe-io/xpipe/tree/master/ext/base/src/main/java/io/xpipe/ext/base/script/PredefinedScriptStore.java) and [here](https://github.com/xpipe-io/xpipe/tree/master/ext/base/src/main/resources/io/xpipe/ext/base/resources/scripts).
 
+### Adding more system icons for system autodetection
+
+You can register new system types [here](https://github.com/xpipe-io/xpipe/blob/master/app/src/main/java/io/xpipe/app/resources/SystemIcons.java) and add the respective icons [here](https://github.com/xpipe-io/xpipe/tree/master/app/src/main/resources/io/xpipe/app/resources/img/system).
+
 ### Adding more file icons for specific types
 
 You can register file types [here](https://github.com/xpipe-io/xpipe/blob/master/app/src/main/resources/io/xpipe/app/resources/file_list.txt) and add the respective icons [here](https://github.com/xpipe-io/xpipe/tree/master/app/src/main/resources/io/xpipe/app/resources/img/browser).
@@ -108,6 +112,6 @@ The existing file list and icons are taken from the [vscode-icons](https://githu
 
 if you want to work on something that was not listed here, you can still do so of course. You can reach out on the [Discord server](https://discord.gg/8y89vS8cRb) to discuss any development plans and get you started.
 
-### Translations
+### Adding translations
 
 See the [translation guide](/lang) for details.

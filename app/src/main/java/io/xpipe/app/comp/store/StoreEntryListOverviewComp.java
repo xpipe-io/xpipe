@@ -72,7 +72,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                             // But it is good enough.
                             var showProvider = true;
                             try {
-                                showProvider = storeEntryWrapper.getEntry().getProvider().shouldShow(storeEntryWrapper);
+                                showProvider = storeEntryWrapper.getEntry().getProvider() == null || storeEntryWrapper.getEntry().getProvider().shouldShow(storeEntryWrapper);
                             } catch (Exception ignored) {}
                             return inRootCategory && showProvider;
                         },

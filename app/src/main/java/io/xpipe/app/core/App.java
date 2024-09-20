@@ -10,6 +10,8 @@ import io.xpipe.app.util.LicenseProvider;
 
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ObservableDoubleValue;
 import javafx.stage.Stage;
 
 import lombok.Getter;
@@ -62,5 +64,13 @@ public class App extends Application {
         PlatformThread.runLaterIfNeeded(() -> {
             stage.requestFocus();
         });
+    }
+
+    public ObservableDoubleValue displayScale() {
+        if (getStage() == null) {
+            return new SimpleDoubleProperty(1.0);
+        }
+
+        return getStage().outputScaleXProperty();
     }
 }
