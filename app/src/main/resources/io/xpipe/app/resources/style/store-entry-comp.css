@@ -26,16 +26,17 @@
 }
 
 .root:light .store-entry-grid:incomplete .name {
-    -fx-text-fill: #981400;
+    -fx-text-fill: #851908;
 }
 
 .store-entry-grid:incomplete .icon {
     -fx-opacity: 0.5;
 }
 
-.store-entry-grid .icon {
-    -fx-background-color: -color-bg-overlay;
+.store-entry-grid .icon > .background {
     -fx-background-radius: 5px;
+    -fx-background-color: -color-bg-overlay;
+    -fx-opacity: 0.5;
 }
 
 .store-entry-grid .icon:hover {

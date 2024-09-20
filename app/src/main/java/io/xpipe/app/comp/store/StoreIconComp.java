@@ -35,10 +35,13 @@ public class StoreIconComp extends SimpleComp {
             new TooltipAugment<>(wrapper.getEntry().getProvider().displayName(), null).augment(storeIcon);
         }
 
+        var background = new Region();
+        background.getStyleClass().add("background");
+
         var dots = new FontIcon("mdi2d-dots-horizontal");
         dots.setIconSize((int) (h * 1.3));
 
-        var stack = new StackPane(storeIcon, dots);
+        var stack = new StackPane(background, storeIcon, dots);
         stack.setMinHeight(w + 7);
         stack.setMinWidth(w + 7);
         stack.setMaxHeight(w + 7);
