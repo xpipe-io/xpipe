@@ -22,7 +22,7 @@ import java.util.Map;
 public class OsLogoComp extends SimpleComp {
 
     private static final Map<String, String> ICONS = new HashMap<>();
-    private static final String LINUX_DEFAULT = "linux-24.png";
+    private static final String LINUX_DEFAULT_24 = "linux-24.png";
     private final StoreEntryWrapper wrapper;
     private final ObservableValue<SystemStateComp.State> state;
 
@@ -67,7 +67,7 @@ public class OsLogoComp extends SimpleComp {
             AppResources.with(AppResources.XPIPE_MODULE, "img/os", file -> {
                 try (var list = Files.list(file)) {
                     list.filter(path -> path.toString().endsWith(".png")
-                                    && !path.toString().endsWith(LINUX_DEFAULT))
+                                    && !path.toString().endsWith(LINUX_DEFAULT_24) && !path.toString().endsWith("-40.png"))
                             .map(path -> FileNames.getFileName(path.toString()))
                             .forEach(path -> {
                                 var base = path.replace("-dark", "");
@@ -81,6 +81,6 @@ public class OsLogoComp extends SimpleComp {
                 .filter(e -> name.toLowerCase().contains(e.getKey()))
                 .findAny()
                 .map(e -> e.getValue())
-                .orElse("os/" + LINUX_DEFAULT);
+                .orElse("os/linux");
     }
 }
