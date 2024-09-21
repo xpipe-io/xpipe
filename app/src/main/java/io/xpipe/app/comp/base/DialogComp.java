@@ -20,22 +20,30 @@ import javafx.stage.Stage;
 import atlantafx.base.theme.Styles;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 public abstract class DialogComp extends Comp<CompStructure<Region>> {
 
     public static void showWindow(String titleKey, Function<Stage, DialogComp> f) {
         var loading = new SimpleBooleanProperty();
+        var dialog = new AtomicReference<DialogComp>();
         Platform.runLater(() -> {
             var stage = AppWindowHelper.sideWindow(
                     AppI18n.get(titleKey),
                     window -> {
                         var c = f.apply(window);
+                        dialog.set(c);
                         loading.bind(c.busy());
                         return c;
                     },
                     false,
                     loading);
+            stage.setOnCloseRequest(event -> {
+                if (dialog.get() != null) {
+                    dialog.get().discard();
+                }
+            });
             stage.show();
         });
     }
@@ -96,6 +104,8 @@ public abstract class DialogComp extends Comp<CompStructure<Region>> {
     }
 
     protected abstract void finish();
+
+    protected abstract void discard();
 
     public abstract Comp<?> content();
 

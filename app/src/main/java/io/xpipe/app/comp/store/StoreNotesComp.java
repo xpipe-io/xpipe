@@ -97,6 +97,9 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
             }
 
             @Override
+            protected void discard() {}
+
+            @Override
             protected String finishKey() {
                 return "apply";
             }
@@ -130,8 +133,7 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
         popover.setTitle(wrapper.getName().getValue());
         popover.showingProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
-                n.setValue(
-                        new StoreNotes(n.getValue().getCommited(), n.getValue().getCommited()));
+                n.setValue(new StoreNotes(n.getValue().getCommited(), n.getValue().getCommited()));
                 DataStorage.get().saveAsync();
                 ref.set(null);
             }

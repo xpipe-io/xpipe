@@ -115,13 +115,14 @@ public class AppLayoutModel {
                         null,
                         () -> Hyperlinks.open(
                                 "http://localhost:" + AppBeaconServer.get().getPort()),
-                        null),
-                new Entry(
-                        AppI18n.observable("webtop"),
-                        "mdi2d-desktop-mac",
-                        null,
-                        () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
-                        null)));
+                        null)
+//                new Entry(
+//                        AppI18n.observable("webtop"),
+//                        "mdi2d-desktop-mac",
+//                        null,
+//                        () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
+//                        null)
+        ));
         return l;
     }
 

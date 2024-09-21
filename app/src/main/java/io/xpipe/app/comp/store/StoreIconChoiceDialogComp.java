@@ -64,6 +64,9 @@ public class StoreIconChoiceDialogComp extends SimpleComp {
             }
 
             @Override
+            protected void discard() {}
+
+            @Override
             public Comp<?> content() {
                 return new StoreIconChoiceComp(selected, SystemIcons.getSystemIcons(), 5, filterText, () -> {
                     finish();
