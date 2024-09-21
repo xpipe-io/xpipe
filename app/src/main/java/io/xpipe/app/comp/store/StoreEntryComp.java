@@ -328,7 +328,8 @@ public abstract class StoreEntryComp extends SimpleComp {
             });
             color.getItems().add(none);
             Arrays.stream(DataColor.values()).forEach(dataStoreColor -> {
-                MenuItem m = new MenuItem(DataStoreFormatter.capitalize(dataStoreColor.getId()));
+                MenuItem m = new MenuItem();
+                m.textProperty().bind(AppI18n.observable(dataStoreColor.getId()));
                 m.setOnAction(event -> {
                     getWrapper().getEntry().setColor(dataStoreColor);
                     event.consume();
