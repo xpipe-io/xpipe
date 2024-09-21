@@ -17,8 +17,10 @@ It currently supports:
 - [Docker](https://www.docker.com/), [Podman](https://podman.io/), and [LXD](https://linuxcontainers.org/lxd/introduction/) container instances located on any host
 - [Windows Subsystem for Linux](https://ubuntu.com/wsl), [Cygwin](https://www.cygwin.com/), and [MSYS2](https://www.msys2.org/) instances
 - [Proxmox PVE](https://www.proxmox.com/en/proxmox-virtual-environment/overview) virtual machines and containers
+- [Hyper-V](https://learn.microsoft.com/en-us/virtualization/hyper-v-on-windows/about/) and [VMware Player/Workstation/Fusion](https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion) virtual machines
 - [Kubernetes](https://kubernetes.io/) clusters, pods, and containers
 - [Powershell Remote Sessions](https://learn.microsoft.com/en-us/powershell/scripting/learn/remoting/running-remote-commands?view=powershell-7.3)
+- Built-in VNC connections and RDP launchers
 - Any other custom remote connection methods that work through the command-line
 
 ## Connection hub
@@ -49,6 +51,8 @@ It currently supports:
 - Supports opening custom terminal emulators as well via a custom command-line spec
 - Works with all command shells such as bash, zsh, cmd, PowerShell, and more, locally and remote
 - Connects to a system while the terminal is still starting up, allowing for faster connections than otherwise possible
+
+![Terminal](https://github.com/xpipe-io/.github/raw/main/img/terminal_shadow.png)
 
 <br>
 <p align="center">
