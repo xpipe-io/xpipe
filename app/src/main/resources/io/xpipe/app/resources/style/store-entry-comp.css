@@ -111,7 +111,7 @@
 }
 
 .store-entry-section-comp > .children-content {
-    -fx-padding: 5px 0 5px 25px;
+    -fx-padding: 5px 0 0 25px;
 }
 
 .store-entry-section-comp > .separator .line {
@@ -134,6 +134,20 @@
     -fx-border-radius: 4 0 0 4;
     -fx-border-width: 1 0 1 1;
     -fx-background-radius: 4 0 0 4;
+}
+
+.store-entry-section-comp:last:sub:expanded {
+    -fx-border-width: 1 0 0 1;
+    -fx-background-radius: 4 0 0 0;
+    -fx-border-radius: 4 0 0 0;
+}
+
+.store-entry-section-comp:last:sub {
+    -fx-padding: 0 0 3 0;
+}
+
+.store-entry-section-comp:last:sub:expanded {
+    -fx-padding: 0;
 }
 
 .root.nord .store-entry-section-comp {
