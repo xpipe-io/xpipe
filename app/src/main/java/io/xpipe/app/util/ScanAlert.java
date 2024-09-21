@@ -151,7 +151,7 @@ public class ScanAlert {
 
                             try {
                                 a.getScanner().run();
-                            } catch (Exception ex) {
+                            } catch (Throwable ex) {
                                 ErrorEvent.fromThrowable(ex).handle();
                             }
                         }

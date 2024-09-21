@@ -18,16 +18,16 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
     }
 
     @Override
-    default void validate(ShellValidationContext context) throws Exception {
+    default ShellValidationContext validate(ShellValidationContext context) throws Exception {
         var c = control(context.get());
         if (!isInStorage()) {
             c.withoutLicenseCheck();
         }
-        try (ShellControl pc = c.start()) {}
+        return new ShellValidationContext(c.start());
     }
 
     @Override
     default ShellValidationContext createContext() throws Exception {
-        return new ShellValidationContext(control().start());
+        return new ShellValidationContext(parentControl().start());
     }
 }

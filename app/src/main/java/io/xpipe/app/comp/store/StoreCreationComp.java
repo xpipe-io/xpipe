@@ -322,7 +322,10 @@ public class StoreCreationComp extends DialogComp {
 
             try (var ignored = new BooleanScope(busy).start()) {
                 DataStorage.get().addStoreEntryInProgress(entry.getValue());
-                var context = entry.getValue().validateOrThrow(false);
+                var context = entry.getValue().validateAndKeepOpenOrThrowAndClose(null);
+                if (context == null) {
+                    entry.getValue().validateRefreshChildrenOrThrow();
+                }
                 commit(context, true);
             } catch (Throwable ex) {
                 if (ex instanceof ValidationException) {

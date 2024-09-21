@@ -47,8 +47,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
     private final OpenFileSystemHistory history = new OpenFileSystemHistory();
     private final Property<ModalOverlayComp.OverlayContent> overlay = new SimpleObjectProperty<>();
     private final BooleanProperty inOverview = new SimpleBooleanProperty();
-    private final Property<BrowserTransferProgress> progress =
-            new SimpleObjectProperty<>(BrowserTransferProgress.empty());
+    private final Property<BrowserTransferProgress> progress = new SimpleObjectProperty<>();
     private FileSystem fileSystem;
     private OpenFileSystemSavedState savedState;
     private OpenFileSystemCache cache;
@@ -73,7 +72,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
 
     @Override
     public boolean canImmediatelyClose() {
-        return !progress.getValue().done()
+        return (progress.getValue() == null || progress.getValue().done())
                 || (fileSystem != null
                         && fileSystem.getShell().isPresent()
                         && fileSystem.getShell().get().getLock().isLocked());

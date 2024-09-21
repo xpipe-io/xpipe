@@ -1,5 +1,11 @@
 package io.xpipe.app.storage;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.ErrorEvent;
@@ -7,13 +13,6 @@ import io.xpipe.app.resources.SystemIcons;
 import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.core.store.*;
 import io.xpipe.core.util.JacksonMapper;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.*;
 import lombok.experimental.NonFinal;
 import org.apache.commons.io.FileUtils;
@@ -496,71 +495,71 @@ public class DataStoreEntry extends StorageElement {
         dirty = true;
     }
 
-    public <T extends ValidationContext<?>> void validate() {
+    public void validate() {
         try {
-            validateOrThrow(true);
+            validateOrThrow();
         } catch (Throwable ex) {
             ErrorEvent.fromThrowable(ex).handle();
         }
     }
 
-    public <T extends ValidationContext<?>> void validate(T context) {
-        try {
-            validateOrThrow(context);
-        } catch (Throwable ex) {
-            ErrorEvent.fromThrowable(ex).handle();
+    public void validateOrThrow() throws Throwable {
+        var r = validateOrThrowAndClose(null);
+        if (!r) {
+            validateRefreshChildrenOrThrow();
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends ValidationContext<?>> void validateOrThrow(T context) throws Throwable {
-        if (store == null) {
+    public void validateRefreshChildrenOrThrow() throws Throwable {
+        if (!(store instanceof FixedHierarchyStore h)) {
             return;
         }
 
         try {
             store.checkComplete();
             incrementBusyCounter();
-            if (store instanceof ValidatableStore<?> l) {
-                ((ValidatableStore<T>) l).validate(context);
-            } else if (store instanceof FixedHierarchyStore h) {
-                childrenCache = h.listChildren(this).stream()
-                        .map(DataStoreEntryRef::get)
-                        .collect(Collectors.toSet());
-            }
+            childrenCache = h.listChildren(this).stream()
+                    .map(DataStoreEntryRef::get)
+                    .collect(Collectors.toSet());
         } finally {
             decrementBusyCounter();
         }
     }
 
+    public boolean validateOrThrowAndClose(ValidationContext<?> existingContext) throws Throwable {
+        var subContext = validateAndKeepOpenOrThrowAndClose(existingContext);
+        if (subContext != null) {
+            subContext.close();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     @SuppressWarnings("unchecked")
-    public <T> ValidationContext<?> validateOrThrow(boolean close) throws Throwable {
+    public  <T> ValidationContext<?> validateAndKeepOpenOrThrowAndClose(ValidationContext<?> existingContext) throws Throwable {
         if (store == null) {
+            return null;
+        }
+
+        if (!(store instanceof ValidatableStore<?> l)) {
             return null;
         }
 
         try {
             store.checkComplete();
             incrementBusyCounter();
-            if (store instanceof ValidatableStore<?> l) {
-                ValidationContext<T> context = (ValidationContext<T>) l.createContext();
-                try {
-                    ((ValidatableStore<ValidationContext<T>>) l).validate(context);
-                } catch (Throwable t) {
-                    context.close();
-                    throw t;
-                }
-                if (close) {
-                    context.close();
-                }
-                return context;
-            } else if (store instanceof FixedHierarchyStore h) {
-                childrenCache = h.listChildren(this).stream()
-                        .map(DataStoreEntryRef::get)
-                        .collect(Collectors.toSet());
+            ValidationContext<T> context = existingContext != null ? (ValidationContext<T>) existingContext : (ValidationContext<T>) l.createContext();
+            if (context == null) {
                 return null;
-            } else {
-                return null;
+            }
+
+            try {
+                var r = ((ValidatableStore<ValidationContext<T>>) l).validate(context);
+                return r;
+            } catch (Throwable t) {
+                context.close();
+                throw t;
             }
         } finally {
             decrementBusyCounter();
