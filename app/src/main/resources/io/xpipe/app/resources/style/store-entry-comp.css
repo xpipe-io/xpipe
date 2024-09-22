@@ -41,6 +41,7 @@
 
 .store-entry-grid .icon:hover {
     -fx-background-color: -color-bg-inset;
+    -fx-background-radius: 5px;
 }
 
 .root.nord .store-entry-grid .icon {

@@ -153,8 +153,7 @@ public class StoreEntryWrapper {
             summary.setValue(null);
         } else {
             try {
-                summary.setValue(
-                        entry.getProvider() != null ? entry.getProvider().summaryString(this) : null);
+                summary.setValue(entry.getProvider() != null ? entry.getProvider().summaryString(this) : null);
             } catch (Exception ex) {
                 // Summary creation might fail or have a bug
                 ErrorEvent.fromThrowable(ex).handle();

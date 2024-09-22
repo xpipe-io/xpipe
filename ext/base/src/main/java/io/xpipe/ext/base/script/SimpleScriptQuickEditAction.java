@@ -1,11 +1,15 @@
 package io.xpipe.ext.base.script;
 
+import io.xpipe.app.comp.store.StoreCreationComp;
 import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.FileOpener;
 import io.xpipe.core.process.OsType;
 
 import lombok.Value;
+
+import java.util.Arrays;
 
 public class SimpleScriptQuickEditAction implements ActionProvider {
     @Override
@@ -30,6 +34,16 @@ public class SimpleScriptQuickEditAction implements ActionProvider {
 
         @Override
         public void execute() {
+            var predefined = DataStorage.get().getStoreCategoryIfPresent(ref.get().getCategoryUuid())
+                    .map(category -> category.getUuid().equals(DataStorage.PREDEFINED_SCRIPTS_CATEGORY_UUID))
+                    .orElse(false) &&
+                    Arrays.stream(PredefinedScriptStore.values())
+                            .anyMatch(predefinedScriptStore -> predefinedScriptStore.getName().equals(ref.get().getName()));
+            if (predefined) {
+                StoreCreationComp.showEdit(ref.get());
+                return;
+            }
+
             var script = ref.getStore();
             var dialect = script.getMinimumDialect();
             var ext = dialect.getScriptFileEnding();
