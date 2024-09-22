@@ -72,10 +72,11 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
 
     @Override
     public boolean canImmediatelyClose() {
-        return (progress.getValue() == null || progress.getValue().done())
-                || (fileSystem != null
-                        && fileSystem.getShell().isPresent()
-                        && fileSystem.getShell().get().getLock().isLocked());
+        if (fileSystem == null || fileSystem.getShell().isEmpty() || !fileSystem.getShell().get().getLock().isLocked()) {
+            return true;
+        }
+
+        return progress.getValue() == null || progress.getValue().done();
     }
 
     @Override

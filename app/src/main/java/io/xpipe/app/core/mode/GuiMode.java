@@ -63,4 +63,10 @@ public class GuiMode extends PlatformMode {
 
         UpdateChangelogAlert.showIfNeeded();
     }
+
+    @Override
+    public void finalTeardown() throws Throwable {
+        LocalFileSystem.reset();
+        super.finalTeardown();
+    }
 }

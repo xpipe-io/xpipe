@@ -19,6 +19,13 @@ public class LocalFileSystem {
         }
     }
 
+    public static void reset() throws Exception {
+        if (localFileSystem != null) {
+            localFileSystem.close();
+            localFileSystem = null;
+        }
+    }
+
     public static FileEntry getLocalFileEntry(Path file) throws Exception {
         if (localFileSystem == null) {
             throw new IllegalStateException();

@@ -23,6 +23,8 @@ public abstract class ProcessControlProvider {
         return INSTANCE;
     }
 
+    public abstract void reset();
+
     public abstract ShellControl withDefaultScripts(ShellControl pc);
 
     public abstract ShellControl sub(
