@@ -94,7 +94,9 @@ public class TerminalLauncherManager {
         if (e == null) {
             throw new BeaconClientException("Unknown launch request " + request);
         }
-
+        if (e.isLaunched()) {
+            submitAsync(e.getRequest(), e.getProcessControl(), e.getConfig(), e.getWorkingDirectory());
+        }
         return waitForCompletion(e);
     }
 
@@ -131,6 +133,7 @@ public class TerminalLauncherManager {
                 throw new BeaconClientException("Invalid launch request state " + request);
             }
 
+            e.setLaunched(true);
             return ((ResultSuccess) e.getResult()).getTargetScript();
         }
     }

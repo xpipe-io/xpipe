@@ -10,7 +10,6 @@ import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.resources.SystemIcons;
-import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.core.store.*;
 import io.xpipe.core.util.JacksonMapper;
 import lombok.*;
@@ -22,7 +21,6 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Value
@@ -504,26 +502,7 @@ public class DataStoreEntry extends StorageElement {
     }
 
     public void validateOrThrow() throws Throwable {
-        var r = validateOrThrowAndClose(null);
-        if (!r) {
-            validateRefreshChildrenOrThrow();
-        }
-    }
-
-    public void validateRefreshChildrenOrThrow() throws Throwable {
-        if (!(store instanceof FixedHierarchyStore h)) {
-            return;
-        }
-
-        try {
-            store.checkComplete();
-            incrementBusyCounter();
-            childrenCache = h.listChildren(this).stream()
-                    .map(DataStoreEntryRef::get)
-                    .collect(Collectors.toSet());
-        } finally {
-            decrementBusyCounter();
-        }
+        validateOrThrowAndClose(null);
     }
 
     public boolean validateOrThrowAndClose(ValidationContext<?> existingContext) throws Throwable {

@@ -281,6 +281,9 @@ public class StoreCreationComp extends DialogComp {
     }
 
     @Override
+    protected void discard() {}
+
+    @Override
     protected void finish() {
         if (finished.get()) {
             return;
@@ -350,9 +353,6 @@ public class StoreCreationComp extends DialogComp {
             }
         });
     }
-
-    @Override
-    protected void discard() {}
 
     @Override
     public Comp<?> content() {

@@ -34,12 +34,12 @@
 
 
 .root:pretty:light .color-box.blue {
-    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, rgb(130, 130, 250, 0.1) 40%, rgb(57, 57, 200, 0.1) 50%, rgb(137, 137, 250, 0.1) 100%);
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, rgb(130, 130, 250, 0.08) 40%, rgb(57, 57, 200, 0.08) 50%, rgb(137, 137, 250, 0.08) 100%);
     -fx-border-color: rgba(80, 100, 150, 0.6);
 }
 
 .root:performance:light .color-box.blue {
-    -fx-background-color: rgb(130, 130, 250, 0.1);
+    -fx-background-color: rgb(130, 130, 250, 0.08);
     -fx-border-color: rgba(80, 100, 150, 0.6);
 }
 

@@ -10,6 +10,7 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FixedChildStore;
 import io.xpipe.core.store.StorePath;
+import io.xpipe.core.store.ValidationContext;
 import io.xpipe.core.util.UuidHelper;
 
 import javafx.util.Pair;
@@ -356,15 +357,22 @@ public abstract class DataStorage {
         return refreshChildren(e, false);
     }
 
-    public boolean refreshChildren(DataStoreEntry e, boolean throwOnFail) throws Exception {
-        if (!(e.getStore() instanceof FixedHierarchyStore h)) {
+    @SuppressWarnings("unchecked")
+    public <T extends ValidationContext<?>> boolean refreshChildren(DataStoreEntry e, boolean throwOnFail) throws Exception {
+        if (!(e.getStore() instanceof FixedHierarchyStore<?> h)) {
             return false;
         }
 
         e.incrementBusyCounter();
         List<? extends DataStoreEntryRef<? extends FixedChildStore>> newChildren;
+        T context = null;
         try {
-            newChildren = h.listChildren(e).stream()
+            context = (T) h.createContext();
+            if (context == null) {
+                return false;
+            }
+
+            newChildren = ((FixedHierarchyStore<T>)h).listChildren(context).stream()
                     .filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null)
                     .toList();
         } catch (Exception ex) {
@@ -375,6 +383,9 @@ public abstract class DataStorage {
                 return false;
             }
         } finally {
+            if (context != null) {
+                context.close();
+            }
             e.decrementBusyCounter();
         }
 
