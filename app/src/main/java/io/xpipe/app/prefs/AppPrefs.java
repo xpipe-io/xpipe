@@ -1,9 +1,6 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.core.AppCache;
-import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.AppTheme;
+import io.xpipe.app.core.*;
 import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
 import io.xpipe.app.fxcomps.Comp;
@@ -46,7 +43,7 @@ public class AppPrefs {
     final BooleanProperty dontAcceptNewHostKeys =
             mapVaultSpecific(new SimpleBooleanProperty(false), "dontAcceptNewHostKeys", Boolean.class);
     final BooleanProperty performanceMode = map(
-            new SimpleBooleanProperty(XPipeDistributionType.get() == XPipeDistributionType.WEBTOP),
+            new SimpleBooleanProperty(),
             "performanceMode",
             Boolean.class);
     public final BooleanProperty useBundledTools =
@@ -488,6 +485,9 @@ public class AppPrefs {
         terminalType.set(ExternalTerminalType.determineDefault(terminalType.get()));
         if (rdpClientType.get() == null) {
             rdpClientType.setValue(ExternalRdpClientType.determineDefault());
+        }
+        if (AppState.get().isInitialLaunch()) {
+            performanceMode.setValue(XPipeDistributionType.get() == XPipeDistributionType.WEBTOP);
         }
     }
 
