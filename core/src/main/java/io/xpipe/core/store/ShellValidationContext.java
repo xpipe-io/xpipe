@@ -17,7 +17,7 @@ public class ShellValidationContext implements ValidationContext<ShellControl> {
     @Override
     public void close() {
         try {
-            shellControl.close();
+            shellControl.shutdown();
         } catch (Exception ignored) {
         }
     }

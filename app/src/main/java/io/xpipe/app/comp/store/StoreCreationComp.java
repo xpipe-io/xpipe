@@ -167,6 +167,9 @@ public class StoreCreationComp extends DialogComp {
                 v -> true,
                 (newE, context, validated) -> {
                     ThreadHelper.runAsync(() -> {
+                        if (context != null) {
+                            context.close();
+                        }
                         if (!DataStorage.get().getStoreEntries().contains(e)) {
                             DataStorage.get().addStoreEntryIfNotPresent(newE);
                         } else {
@@ -196,7 +199,7 @@ public class StoreCreationComp extends DialogComp {
                 (e, context, validated) -> {
                     try {
                         DataStorage.get().addStoreEntryIfNotPresent(e);
-                        if (validated
+                        if (context != null && validated
                                 && e.getProvider().shouldShowScan()
                                 && AppPrefs.get()
                                         .openConnectionSearchWindowOnConnectionCreation()
