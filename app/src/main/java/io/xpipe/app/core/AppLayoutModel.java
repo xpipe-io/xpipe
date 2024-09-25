@@ -11,6 +11,7 @@ import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LicenseProvider;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -131,7 +132,7 @@ public class AppLayoutModel {
         var phShow = now.isAfter(phStart) && now.isBefore(phEnd);
         if (phShow) {
             l.add(new Entry(
-                    AppI18n.observable("api"),
+                    new SimpleStringProperty("Product Hunt"),
                     new LabelGraphic.ImageGraphic("app:producthunt-color.png", 24),
                     null,
                     () -> Hyperlinks.open(Hyperlinks.PRODUCT_HUNT),
