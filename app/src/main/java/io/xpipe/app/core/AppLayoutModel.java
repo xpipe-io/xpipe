@@ -5,22 +5,22 @@ import io.xpipe.app.browser.session.BrowserSessionComp;
 import io.xpipe.app.browser.session.BrowserSessionModel;
 import io.xpipe.app.comp.store.StoreLayoutComp;
 import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.util.LabelGraphic;
 import io.xpipe.app.prefs.AppPrefsComp;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LicenseProvider;
-
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.extern.jackson.Jacksonized;
 
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,43 +75,43 @@ public class AppLayoutModel {
         var l = new ArrayList<>(List.of(
                 new Entry(
                         AppI18n.observable("browser"),
-                        "mdi2f-file-cabinet",
+                        new LabelGraphic.IconGraphic("mdi2f-file-cabinet"),
                         new BrowserSessionComp(BrowserSessionModel.DEFAULT),
                         null,
                         new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN)),
                 new Entry(
                         AppI18n.observable("connections"),
-                        "mdi2c-connection",
+                        new LabelGraphic.IconGraphic("mdi2c-connection"),
                         new StoreLayoutComp(),
                         null,
                         new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN)),
                 new Entry(
                         AppI18n.observable("settings"),
-                        "mdsmz-miscellaneous_services",
+                        new LabelGraphic.IconGraphic("mdsmz-miscellaneous_services"),
                         new AppPrefsComp(),
                         null,
                         new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.SHORTCUT_DOWN)),
                 new Entry(
                         AppI18n.observable("explorePlans"),
-                        "mdi2p-professional-hexagon",
+                        new LabelGraphic.IconGraphic("mdi2p-professional-hexagon"),
                         LicenseProvider.get().overviewPage(),
                         null,
                         null),
                 new Entry(
                         AppI18n.observable("visitGithubRepository"),
-                        "mdi2g-github",
+                        new LabelGraphic.IconGraphic("mdi2g-github"),
                         null,
                         () -> Hyperlinks.open(Hyperlinks.GITHUB),
                         null),
                 new Entry(
                         AppI18n.observable("discord"),
-                        "mdi2d-discord",
+                        new LabelGraphic.IconGraphic("mdi2d-discord"),
                         null,
                         () -> Hyperlinks.open(Hyperlinks.DISCORD),
                         null),
                 new Entry(
                         AppI18n.observable("api"),
-                        "mdi2c-code-json",
+                        new LabelGraphic.IconGraphic("mdi2c-code-json"),
                         null,
                         () -> Hyperlinks.open(
                                 "http://localhost:" + AppBeaconServer.get().getPort()),
@@ -123,6 +123,20 @@ public class AppLayoutModel {
 //                        () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
 //                        null)
         ));
+
+        var now = Instant.now();
+        var zone = ZoneId.of(ZoneId.SHORT_IDS.get("PST"));
+        var phStart = ZonedDateTime.of(2024,10,22,0,1, 0, 0, zone).toInstant();
+        var phEnd = ZonedDateTime.of(2024,10,22,23,59, 0, 0, zone).toInstant();
+        var phShow = now.isAfter(phStart) && now.isBefore(phEnd);
+        if (phShow) {
+            l.add(new Entry(
+                    AppI18n.observable("api"),
+                    new LabelGraphic.ImageGraphic("app:producthunt-color.png", 24),
+                    null,
+                    () -> Hyperlinks.open(Hyperlinks.PRODUCT_HUNT),
+                    null));
+        }
         return l;
     }
 
@@ -135,6 +149,5 @@ public class AppLayoutModel {
         double browserConnectionsWidth;
     }
 
-    public record Entry(
-            ObservableValue<String> name, String icon, Comp<?> comp, Runnable action, KeyCombination combination) {}
+    public record Entry(ObservableValue<String> name, LabelGraphic icon, Comp<?> comp, Runnable action, KeyCombination combination) {}
 }

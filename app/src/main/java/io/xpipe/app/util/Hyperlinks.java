@@ -14,8 +14,8 @@ public class Hyperlinks {
     public static final String DISCORD = "https://discord.gg/8y89vS8cRb";
     public static final String GITHUB_WEBTOP = "https://github.com/xpipe-io/xpipe-webtop";
     public static final String SELFHST_ICONS = "https://github.com/selfhst/icons";
-    public static final String SLACK =
-            "https://join.slack.com/t/XPipe/shared_invite/zt-1awjq0t5j-5i4UjNJfNe1VN4b_auu6Cg";
+    public static final String SLACK = "https://join.slack.com/t/XPipe/shared_invite/zt-1awjq0t5j-5i4UjNJfNe1VN4b_auu6Cg";
+    public static final String PRODUCT_HUNT = "https://www.producthunt.com/posts/xpipe?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-xpipe";
 
     static final String[] browsers = {
         "xdg-open", "google-chrome", "firefox", "opera", "konqueror", "mozilla", "gnome-open", "open"

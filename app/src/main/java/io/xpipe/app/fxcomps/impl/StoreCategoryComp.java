@@ -12,6 +12,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.util.DerivedObservableList;
+import io.xpipe.app.fxcomps.util.LabelGraphic;
 import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
@@ -57,11 +58,11 @@ public class StoreCategoryComp extends SimpleComp {
                 .createRegion();
         var showing = new SimpleBooleanProperty();
 
-        var expandIcon = Bindings.createStringBinding(
+        var expandIcon = Bindings.createObjectBinding(
                 () -> {
                     var exp = category.getExpanded().get()
                             && category.getChildren().size() > 0;
-                    return exp ? "mdal-keyboard_arrow_down" : "mdal-keyboard_arrow_right";
+                    return new LabelGraphic.IconGraphic(exp ? "mdal-keyboard_arrow_down" : "mdal-keyboard_arrow_right");
                 },
                 category.getExpanded(),
                 category.getChildren());
@@ -78,18 +79,18 @@ public class StoreCategoryComp extends SimpleComp {
                 .tooltipKey("expand", new KeyCodeCombination(KeyCode.SPACE));
 
         var hover = new SimpleBooleanProperty();
-        var statusIcon = Bindings.createStringBinding(
+        var statusIcon = Bindings.createObjectBinding(
                 () -> {
                     if (hover.get()) {
-                        return "mdomz-settings";
+                        return new LabelGraphic.IconGraphic("mdomz-settings");
                     }
 
                     if (!DataStorage.get().supportsSharing()
                             || !category.getCategory().canShare()) {
-                        return "mdi2g-git";
+                        return new LabelGraphic.IconGraphic("mdi2g-git");
                     }
 
-                    return category.getSync().getValue() ? "mdi2g-git" : "mdi2c-cancel";
+                    return new LabelGraphic.IconGraphic(category.getSync().getValue() ? "mdi2g-git" : "mdi2c-cancel");
                 },
                 category.getSync(),
                 hover);

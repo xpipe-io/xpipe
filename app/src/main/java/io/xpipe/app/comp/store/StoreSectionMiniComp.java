@@ -8,6 +8,7 @@ import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
+import io.xpipe.app.fxcomps.util.LabelGraphic;
 import io.xpipe.app.storage.DataColor;
 
 import javafx.beans.binding.Bindings;
@@ -81,8 +82,8 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                     new SimpleBooleanProperty(section.getWrapper().getExpanded().get()
                             && section.getShownChildren().getList().size() > 0);
             var button = new IconButtonComp(
-                            Bindings.createStringBinding(
-                                    () -> expanded.get() ? "mdal-keyboard_arrow_down" : "mdal-keyboard_arrow_right",
+                            Bindings.createObjectBinding(
+                                    () -> new LabelGraphic.IconGraphic(expanded.get() ? "mdal-keyboard_arrow_down" : "mdal-keyboard_arrow_right"),
                                     expanded),
                             () -> {
                                 expanded.set(!expanded.get());

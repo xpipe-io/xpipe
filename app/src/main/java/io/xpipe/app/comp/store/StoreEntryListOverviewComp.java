@@ -8,6 +8,7 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.FilterComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.fxcomps.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 
@@ -148,15 +149,15 @@ public class StoreEntryListOverviewComp extends SimpleComp {
     }
 
     private Comp<?> createAlphabeticalSortButton() {
-        var icon = Bindings.createStringBinding(
+        var icon = Bindings.createObjectBinding(
                 () -> {
                     if (sortMode.getValue() == StoreSortMode.ALPHABETICAL_ASC) {
-                        return "mdi2s-sort-alphabetical-descending";
+                        return new LabelGraphic.IconGraphic("mdi2s-sort-alphabetical-descending");
                     }
                     if (sortMode.getValue() == StoreSortMode.ALPHABETICAL_DESC) {
-                        return "mdi2s-sort-alphabetical-ascending";
+                        return new LabelGraphic.IconGraphic("mdi2s-sort-alphabetical-ascending");
                     }
-                    return "mdi2s-sort-alphabetical-descending";
+                    return new LabelGraphic.IconGraphic("mdi2s-sort-alphabetical-descending");
                 },
                 sortMode);
         var alphabetical = new IconButtonComp(icon, () -> {
@@ -189,15 +190,15 @@ public class StoreEntryListOverviewComp extends SimpleComp {
     }
 
     private Comp<?> createDateSortButton() {
-        var icon = Bindings.createStringBinding(
+        var icon = Bindings.createObjectBinding(
                 () -> {
                     if (sortMode.getValue() == StoreSortMode.DATE_ASC) {
-                        return "mdi2s-sort-clock-ascending-outline";
+                        return new LabelGraphic.IconGraphic("mdi2s-sort-clock-ascending-outline");
                     }
                     if (sortMode.getValue() == StoreSortMode.DATE_DESC) {
-                        return "mdi2s-sort-clock-descending-outline";
+                        return new LabelGraphic.IconGraphic("mdi2s-sort-clock-descending-outline");
                     }
-                    return "mdi2s-sort-clock-ascending-outline";
+                    return new LabelGraphic.IconGraphic("mdi2s-sort-clock-ascending-outline");
                 },
                 sortMode);
         var date = new IconButtonComp(icon, () -> {
