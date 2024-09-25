@@ -27,7 +27,7 @@ public interface ShellOpenFunction {
 
             @Override
             public CommandBuilder prepareWithInitCommand(@NonNull String command) {
-                return CommandBuilder.of().add(command);
+                return CommandBuilder.ofFunction(sc -> b + " " + command);
             }
         };
     }
@@ -41,7 +41,7 @@ public interface ShellOpenFunction {
 
             @Override
             public CommandBuilder prepareWithInitCommand(@NonNull String command) {
-                return CommandBuilder.ofString(command);
+                return CommandBuilder.ofFunction(sc -> b.buildFull(sc) + " " + command);
             }
         };
     }
