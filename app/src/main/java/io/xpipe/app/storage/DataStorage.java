@@ -130,6 +130,9 @@ public abstract class DataStorage {
     }
 
     private void dispose() {
+        getStoreEntries().forEach(entry -> {
+            entry.finalizeEntry();
+        });
         save(true);
     }
 

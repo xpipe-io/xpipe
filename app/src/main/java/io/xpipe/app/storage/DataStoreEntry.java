@@ -581,7 +581,6 @@ public class DataStoreEntry extends StorageElement {
         notifyUpdate(false, false);
     }
 
-    @SneakyThrows
     public void initializeEntry() {
         if (store instanceof ExpandedLifecycleStore lifecycleStore) {
             try {
@@ -597,7 +596,6 @@ public class DataStoreEntry extends StorageElement {
         }
     }
 
-    @SneakyThrows
     public void finalizeEntry() {
         if (store instanceof ExpandedLifecycleStore lifecycleStore) {
             try {
