@@ -18,21 +18,7 @@ public interface ShellOpenFunction {
         };
     }
 
-    static ShellOpenFunction of(String b) {
-        return new ShellOpenFunction() {
-            @Override
-            public CommandBuilder prepareWithoutInitCommand() {
-                return CommandBuilder.of().add(b);
-            }
-
-            @Override
-            public CommandBuilder prepareWithInitCommand(@NonNull String command) {
-                return CommandBuilder.ofFunction(sc -> b + " " + command);
-            }
-        };
-    }
-
-    static ShellOpenFunction of(CommandBuilder b) {
+    static ShellOpenFunction of(CommandBuilder b, boolean append) {
         return new ShellOpenFunction() {
             @Override
             public CommandBuilder prepareWithoutInitCommand() {
@@ -41,7 +27,7 @@ public interface ShellOpenFunction {
 
             @Override
             public CommandBuilder prepareWithInitCommand(@NonNull String command) {
-                return CommandBuilder.ofFunction(sc -> b.buildFull(sc) + " " + command);
+                return CommandBuilder.ofFunction(sc -> (append ? b.buildFull(sc) + " " : "") + command);
             }
         };
     }

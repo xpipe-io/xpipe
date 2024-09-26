@@ -19,6 +19,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.ShellOpenFunction;
@@ -250,7 +251,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
                             entry.getEntry(),
                             name,
                             directory,
-                            fileSystem.getShell().get().singularSubShell(ShellOpenFunction.of(adjustedPath)));
+                            fileSystem.getShell().get().singularSubShell(ShellOpenFunction.of(CommandBuilder.ofString(adjustedPath), false)));
                 } else {
                     TerminalLauncher.open(
                             entry.getEntry(),
