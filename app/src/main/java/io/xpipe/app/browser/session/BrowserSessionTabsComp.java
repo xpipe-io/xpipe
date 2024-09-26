@@ -9,6 +9,7 @@ import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.util.LabelGraphic;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ContextMenuHelper;
@@ -328,7 +329,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
         ring.setMaxSize(16, 16);
         ring.progressProperty()
                 .bind(Bindings.createDoubleBinding(
-                        () -> model.getBusy().get() ? -1d : 0, PlatformThread.sync(model.getBusy())));
+                        () -> model.getBusy().get() && !AppPrefs.get().performanceMode().get() ? -1d : 0, PlatformThread.sync(model.getBusy()), AppPrefs.get().performanceMode()));
 
         var image = model.getEntry()
                 .get()
