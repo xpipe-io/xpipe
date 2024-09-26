@@ -75,7 +75,7 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
 
         public boolean isAvailable() {
             try (ShellControl pc = LocalShell.getShell()) {
-                return pc.executeSimpleBooleanCommand(pc.getShellDialect().getWhichCommand(executable));
+                return CommandSupport.findProgram(pc, executable).isPresent();
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).omit().handle();
                 return false;
@@ -115,14 +115,9 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
         protected Optional<Path> determineFromPath() {
             // Try to locate if it is in the Path
             try (var sc = LocalShell.getShell().start()) {
-                var out = sc.command(CommandBuilder.ofFunction(
-                                var1 -> var1.getShellDialect().getWhichCommand(executable)))
-                        .readStdoutIfPossible();
+                var out = CommandSupport.findProgram(sc, executable);
                 if (out.isPresent()) {
-                    var first = out.get().lines().findFirst();
-                    if (first.isPresent()) {
-                        return first.map(String::trim).map(Path::of);
-                    }
+                    return out.map(Path::of);
                 }
             } catch (Exception ex) {
                 ErrorEvent.fromThrowable(ex).omit().handle();
