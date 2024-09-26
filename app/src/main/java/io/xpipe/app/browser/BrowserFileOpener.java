@@ -16,6 +16,7 @@ import io.xpipe.core.store.FileNames;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Objects;
 
 public class BrowserFileOpener {
 
@@ -32,7 +33,8 @@ public class BrowserFileOpener {
 
         var info = (FileInfo.Unix) file.getInfo();
         var zero = Integer.valueOf(0);
-        var requiresRoot = zero.equals(info.getUid()) && zero.equals(info.getGid());
+        var otherWrite = info.getPermissions().charAt(7) == 'w';
+        var requiresRoot = zero.equals(info.getUid()) && zero.equals(info.getGid()) && !otherWrite;
         if (!requiresRoot || model.getCache().isRoot()) {
             return fileSystem.openOutput(file.getPath(), totalBytes);
         }
@@ -58,10 +60,13 @@ public class BrowserFileOpener {
         }
     }
 
+    private static int calculateKey(FileEntry entry) {
+        return Objects.hash(entry.getPath(), entry.getFileSystem(), entry.getKind(), entry.getInfo());
+    }
 
     public static void openWithAnyApplication(OpenFileSystemModel model, FileEntry entry) {
         var file = entry.getPath();
-        var key = entry.getPath().hashCode() + entry.getFileSystem().hashCode();
+        var key = calculateKey(entry);
         FileBridge.get()
                 .openIO(
                         FileNames.getFileName(file),
@@ -82,7 +87,7 @@ public class BrowserFileOpener {
 
     public static void openInDefaultApplication(OpenFileSystemModel model, FileEntry entry) {
         var file = entry.getPath();
-        var key = entry.getPath().hashCode() + entry.getFileSystem().hashCode();
+        var key = calculateKey(entry);
         FileBridge.get()
                 .openIO(
                         FileNames.getFileName(file),
@@ -108,7 +113,7 @@ public class BrowserFileOpener {
         }
 
         var file = entry.getPath();
-        var key = entry.getPath().hashCode() + entry.getFileSystem().hashCode();
+        var key = calculateKey(entry);
         FileBridge.get()
                 .openIO(
                         FileNames.getFileName(file),
