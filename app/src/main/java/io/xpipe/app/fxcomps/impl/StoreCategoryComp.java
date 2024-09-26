@@ -17,8 +17,6 @@ import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.util.ContextMenuHelper;
-import io.xpipe.app.util.DataStoreFormatter;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.css.PseudoClass;
@@ -33,7 +31,6 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
-
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -197,14 +194,16 @@ public class StoreCategoryComp extends SimpleComp {
         contextMenu.getItems().add(new SeparatorMenuItem());
 
         var color = new Menu(AppI18n.get("color"), new FontIcon("mdi2f-format-color-fill"));
-        var none = new MenuItem("None");
+        var none = new MenuItem();
+        none.textProperty().bind(AppI18n.observable("none"));
         none.setOnAction(event -> {
             category.getCategory().setColor(null);
             event.consume();
         });
         color.getItems().add(none);
         Arrays.stream(DataColor.values()).forEach(dataStoreColor -> {
-            MenuItem m = new MenuItem(DataStoreFormatter.capitalize(dataStoreColor.getId()));
+            MenuItem m = new MenuItem();
+            m.textProperty().bind(AppI18n.observable(dataStoreColor.getId()));
             m.setOnAction(event -> {
                 category.getCategory().setColor(dataStoreColor);
                 event.consume();

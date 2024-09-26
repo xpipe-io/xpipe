@@ -321,7 +321,8 @@ public abstract class StoreEntryComp extends SimpleComp {
 
         if (DataStorage.get().isRootEntry(getWrapper().getEntry())) {
             var color = new Menu(AppI18n.get("color"), new FontIcon("mdi2f-format-color-fill"));
-            var none = new MenuItem("None");
+            var none = new MenuItem();
+            none.textProperty().bind(AppI18n.observable("none"));
             none.setOnAction(event -> {
                 getWrapper().getEntry().setColor(null);
                 event.consume();
