@@ -457,6 +457,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                     getWrapper()
                             .runAction(leaf.createAction(getWrapper().getEntry().ref()), leaf.showBusy());
                 });
+                event.consume();
             });
             menu.getItems().add(run);
 
@@ -475,6 +476,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                                             .getName(getWrapper().getEntry().ref())
                                             .getValue() + ")");
                 });
+                event.consume();
             });
             menu.getItems().add(sc);
 
@@ -486,6 +488,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                         AppActionLinkDetector.setLastDetectedAction(url);
                         ClipboardHelper.copyUrl(url);
                     });
+                    event.consume();
                 });
                 menu.getItems().add(l);
             }
@@ -500,10 +503,13 @@ public abstract class StoreEntryComp extends SimpleComp {
                 return;
             }
 
-            event.consume();
             ThreadHelper.runFailableAsync(() -> {
                 getWrapper().runAction(leaf.createAction(getWrapper().getEntry().ref()), leaf.showBusy());
             });
+            event.consume();
+            if (event.getTarget() instanceof Menu m) {
+                m.getParentPopup().hide();
+            }
         });
 
         return item;
