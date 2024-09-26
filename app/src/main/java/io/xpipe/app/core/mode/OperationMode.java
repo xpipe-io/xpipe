@@ -223,6 +223,8 @@ public abstract class OperationMode {
                     CURRENT.finalTeardown();
                 }
                 CURRENT = null;
+                // Restart local shell
+                LocalShell.init();
                 r.run();
             } catch (Throwable ex) {
                 ErrorEvent.fromThrowable(ex).handle();
