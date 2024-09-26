@@ -98,8 +98,10 @@ class ScanDialog extends DialogComp {
     @Override
     protected void discard() {
         ThreadHelper.runAsync(() -> {
-            shellValidationContext.close();
-            shellValidationContext = null;
+            if (shellValidationContext != null) {
+                shellValidationContext.close();
+                shellValidationContext = null;
+            }
         });
     }
 
