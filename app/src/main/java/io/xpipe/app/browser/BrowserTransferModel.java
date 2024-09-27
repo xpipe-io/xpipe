@@ -178,7 +178,7 @@ public class BrowserTransferModel {
             if (Files.isDirectory(file)) {
                 FileUtils.moveDirectory(file.toFile(), target.toFile());
             } else {
-                FileUtils.moveFile(file.toFile(), target.toFile(), StandardCopyOption.REPLACE_EXISTING);
+                Files.move(file, target, StandardCopyOption.REPLACE_EXISTING);
             }
         }
         DesktopHelper.browseFileInDirectory(downloads.resolve(files.getFirst().getFileName()));

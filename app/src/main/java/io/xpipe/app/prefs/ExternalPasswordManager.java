@@ -88,7 +88,7 @@ public interface ExternalPasswordManager extends PrefsChoiceValue {
                            Marshal.Copy(credMem.credentialBlob, passwordBytes, 0, credMem.credentialBlobSize);
                            return Encoding.Unicode.GetString(passwordBytes);
                          } else {
-                           throw new Exception("Failed to retrieve credentials for target: " + target);
+                           throw new Exception("No credentials found for target: " + target);
                          }
                        }
                      }

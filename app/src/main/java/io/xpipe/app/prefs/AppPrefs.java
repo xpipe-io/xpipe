@@ -42,7 +42,7 @@ public class AppPrefs {
             mapVaultSpecific(new SimpleBooleanProperty(false), "dontAutomaticallyStartVmSshServer", Boolean.class);
     final BooleanProperty dontAcceptNewHostKeys =
             mapVaultSpecific(new SimpleBooleanProperty(false), "dontAcceptNewHostKeys", Boolean.class);
-    final BooleanProperty performanceMode = map(
+    public final BooleanProperty performanceMode = map(
             new SimpleBooleanProperty(),
             "performanceMode",
             Boolean.class);

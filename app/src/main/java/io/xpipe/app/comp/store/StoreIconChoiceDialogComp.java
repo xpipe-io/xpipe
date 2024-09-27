@@ -73,6 +73,11 @@ public class StoreIconChoiceDialogComp extends SimpleComp {
             }
 
             @Override
+            protected Comp<?> pane(Comp<?> content) {
+                return content;
+            }
+
+            @Override
             public Comp<?> bottom() {
                 var clear = new ButtonComp(AppI18n.observable("clear"), () -> {
                             selected.setValue(null);
