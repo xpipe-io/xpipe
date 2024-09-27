@@ -135,6 +135,12 @@ public class BrowserTransferModel {
                     BrowserFileTransferMode.COPY,
                     false,
                     progress -> {
+                        // Don't update item progress to keep it as finished
+                        if (progress == null) {
+                            item.getOpenFileSystemModel().getProgress().setValue(null);
+                            return;
+                        }
+
                         synchronized (item.getProgress()) {
                             item.getProgress().setValue(progress);
                         }
