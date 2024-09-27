@@ -9,15 +9,15 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.ThreadHelper;
-
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
-
 import lombok.Getter;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 public class StoreEntryWrapper {
@@ -40,7 +40,8 @@ public class StoreEntryWrapper {
     private final Property<StoreCategoryWrapper> category = new SimpleObjectProperty<>();
     private final Property<String> summary = new SimpleObjectProperty<>();
     private final Property<StoreNotes> notes;
-    private final Property<String> icon = new SimpleObjectProperty<>();
+    private final Property<String> customIcon = new SimpleObjectProperty<>();
+    private final Property<String> iconFile = new SimpleObjectProperty<>();
 
     public StoreEntryWrapper(DataStoreEntry entry) {
         this.entry = entry;
@@ -138,7 +139,8 @@ public class StoreEntryWrapper {
         }
         color.setValue(entry.getColor());
         notes.setValue(new StoreNotes(entry.getNotes(), entry.getNotes()));
-        icon.setValue(entry.getIcon());
+        customIcon.setValue(entry.getIcon());
+        iconFile.setValue(getEffectiveIconFile());
 
         busy.setValue(entry.getBusyCounter().get() != 0);
         deletable.setValue(entry.getConfiguration().isDeletable()
@@ -190,6 +192,20 @@ public class StoreEntryWrapper {
                 ErrorEvent.fromThrowable(ex).handle();
             }
         }
+    }
+
+    private String getEffectiveIconFile() {
+        if (disabledProperty().get()) {
+            return "disabled_icon.png";
+        }
+
+        if (getCustomIcon().getValue() == null) {
+            return getEntry()
+                    .getProvider()
+                    .getDisplayIconFileName(getEntry().getStore());
+        }
+
+        return "app:system/" + getCustomIcon().getValue() + ".svg";
     }
 
     private boolean showActionProvider(ActionProvider p) {

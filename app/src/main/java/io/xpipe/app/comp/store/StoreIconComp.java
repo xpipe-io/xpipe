@@ -3,15 +3,12 @@ package io.xpipe.app.comp.store;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
-import io.xpipe.app.resources.SystemIcons;
-
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-
 import lombok.AllArgsConstructor;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -24,12 +21,7 @@ public class StoreIconComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var icon = Bindings.createStringBinding(
-                () -> {
-                    return getImage();
-                },
-                wrapper.getIcon());
-        var imageComp = PrettyImageHelper.ofFixedSize(icon, w, h);
+        var imageComp = PrettyImageHelper.ofFixedSize(wrapper.getIconFile(), w, h);
         var storeIcon = imageComp.createRegion();
         if (wrapper.getValidity().getValue().isUsable()) {
             new TooltipAugment<>(wrapper.getEntry().getProvider().displayName(), null).augment(storeIcon);
@@ -66,20 +58,5 @@ public class StoreIconComp extends SimpleComp {
         });
 
         return stack;
-    }
-
-    private String getImage() {
-        if (wrapper.disabledProperty().get()) {
-            return "disabled_icon.png";
-        }
-
-        if (wrapper.getIcon().getValue() == null) {
-            return wrapper.getEntry()
-                    .getProvider()
-                    .getDisplayIconFileName(wrapper.getEntry().getStore());
-        }
-
-        SystemIcons.load();
-        return "app:system/" + wrapper.getIcon().getValue() + ".svg";
     }
 }

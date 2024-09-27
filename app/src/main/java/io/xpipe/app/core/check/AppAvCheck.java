@@ -1,20 +1,20 @@
 package io.xpipe.app.core.check;
 
 import io.xpipe.app.comp.base.MarkdownComp;
-import io.xpipe.app.core.*;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.AppState;
+import io.xpipe.app.core.AppStyle;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppWindowHelper;
-import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.process.OsType;
-
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
-
 import lombok.Getter;
 
 import java.nio.file.Files;
@@ -44,7 +44,6 @@ public class AppAvCheck {
 
         PlatformState.initPlatformOrThrow();
         AppStyle.init();
-        AppImages.init();
 
         var a = AppWindowHelper.showBlockingAlert(alert -> {
             alert.setTitle(AppI18n.get("antivirusNoticeTitle"));

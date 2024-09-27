@@ -216,7 +216,6 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                                                             selected.getValue().getStore());
                                         }
 
-                                        SystemIcons.load();
                                         return "app:system/"
                                                 + selected.getValue().get().getIcon() + ".svg";
                                     },

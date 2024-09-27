@@ -137,7 +137,7 @@ public class StoreIconChoiceComp extends SimpleComp {
             }
 
             root.setText(icon.getDisplayName());
-            image.set(icon.getIconName() + ".svg");
+            image.set("app:system/" + icon.getIconName() + ".svg");
             setGraphic(root);
         }
     }

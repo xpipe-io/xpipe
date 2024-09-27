@@ -3,10 +3,8 @@ package io.xpipe.app.resources;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
-
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
-
 import org.apache.commons.io.FilenameUtils;
 
 import java.awt.image.BufferedImage;
@@ -16,6 +14,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,6 +37,7 @@ public class AppImages {
     }
 
     public static void loadDirectory(String module, String dir, boolean loadImages, boolean loadSvgs) {
+        var start = Instant.now();
         AppResources.with(module, dir, basePath -> {
             if (!Files.exists(basePath)) {
                 return;
@@ -49,12 +50,17 @@ public class AppImages {
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                     var relativeFileName = FilenameUtils.separatorsToUnix(
                             basePath.relativize(file).toString());
+                    var key = defaultPrefix + relativeFileName;
+                    if (images.containsKey(key) || svgImages.containsKey(key)) {
+                        return FileVisitResult.CONTINUE;
+                    }
+
                     try {
                         if (FilenameUtils.getExtension(file.toString()).equals("svg") && loadSvgs) {
                             var s = Files.readString(file);
-                            svgImages.put(defaultPrefix + relativeFileName, s);
+                            svgImages.put(key, s);
                         } else if (loadImages) {
-                            images.put(defaultPrefix + relativeFileName, loadImage(file));
+                            images.put(key, loadImage(file));
                         }
                     } catch (IOException ex) {
                         ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
@@ -63,6 +69,8 @@ public class AppImages {
                 }
             });
         });
+        var elapsed = Duration.between(start, Instant.now());
+        TrackEvent.trace("Loaded images in " + module + ":" + dir + " in " + elapsed.toMillis() + " ms");
     }
 
     public static String svgImage(String file) {

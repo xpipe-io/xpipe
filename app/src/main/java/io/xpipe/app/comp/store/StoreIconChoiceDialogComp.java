@@ -27,7 +27,6 @@ import java.util.List;
 public class StoreIconChoiceDialogComp extends SimpleComp {
 
     public static void show(DataStoreEntry entry) {
-        SystemIcons.load();
         var window = AppWindowHelper.sideWindow(
                 AppI18n.get("chooseCustomIcon"), stage -> new StoreIconChoiceDialogComp(entry, stage), false, null);
         window.initModality(Modality.APPLICATION_MODAL);

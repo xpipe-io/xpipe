@@ -172,6 +172,20 @@ public class DataStoreEntry extends StorageElement {
         return entry;
     }
 
+
+    public String getEffectiveIconFile() {
+        if (getValidity() == Validity.LOAD_FAILED) {
+            return "disabled_icon.png";
+        }
+
+        if (icon == null) {
+            return getProvider()
+                    .getDisplayIconFileName(getStore());
+        }
+
+        return "app:system/" + icon + ".svg";
+    }
+
     void refreshIcon() {
         if (icon != null && SystemIcons.getForId(icon).isEmpty()) {
             icon = null;
