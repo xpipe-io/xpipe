@@ -194,7 +194,7 @@ public class StoreEntryWrapper {
         }
     }
 
-    private boolean showActionProvider(ActionProvider p) {
+    public boolean showActionProvider(ActionProvider p) {
         var leaf = p.getLeafDataStoreCallSite();
         if (leaf != null) {
             return (entry.getValidity().isUsable() || (!leaf.requiresValidStore() && entry.getProvider() != null))

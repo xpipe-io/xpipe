@@ -63,12 +63,12 @@
 
 
 .root:pretty:light .color-box.red {
-    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, rgb(220, 100, 100, 0.1) 40%, rgb(205, 50, 50, 0.1) 50%, rgb(200, 90, 90, 0.1) 100%);
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, rgb(250, 100, 100, 0.06) 40%, rgb(245, 50, 50, 0.06) 50%, rgb(240, 90, 90, 0.06) 100%);
     -fx-border-color: rgba(150, 100, 80, 0.6);
 }
 
 .root:performance:light .color-box.red {
-    -fx-background-color: rgb(220, 100, 100, 0.1);
+    -fx-background-color: rgb(250, 100, 100, 0.06);
     -fx-border-color: rgba(150, 100, 80, 0.6);
 }
 

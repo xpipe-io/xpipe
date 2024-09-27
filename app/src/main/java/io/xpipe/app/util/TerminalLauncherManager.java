@@ -109,6 +109,7 @@ public class TerminalLauncherManager {
 
             synchronized (entries) {
                 var r = e.getResult();
+                e.setLaunched(true);
                 if (r instanceof ResultFailure failure) {
                     var t = failure.getThrowable();
                     throw new BeaconServerException(t);
@@ -133,7 +134,6 @@ public class TerminalLauncherManager {
                 throw new BeaconClientException("Invalid launch request state " + request);
             }
 
-            e.setLaunched(true);
             return ((ResultSuccess) e.getResult()).getTargetScript();
         }
     }
