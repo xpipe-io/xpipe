@@ -41,8 +41,7 @@ public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
     private MenuItem recurse(ContextMenu contextMenu, StoreSection section) {
         var c = section.getShownChildren();
         var w = section.getWrapper();
-        var graphic =
-                w.getEntry().getProvider().getDisplayIconFileName(w.getEntry().getStore());
+        var graphic = w.getEntry().getEffectiveIconFile();
         if (c.getList().isEmpty()) {
             var item = ContextMenuHelper.item(
                     new LabelGraphic.ImageGraphic(graphic, 16), w.getName().getValue());

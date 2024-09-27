@@ -333,8 +333,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
 
         var image = model.getEntry()
                 .get()
-                .getProvider()
-                .getDisplayIconFileName(model.getEntry().getStore());
+                .getEffectiveIconFile();
         var logo = PrettyImageHelper.ofFixedSizeSquare(image, 16).createRegion();
 
         tab.graphicProperty()

@@ -53,14 +53,10 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
         if (section.getWrapper() != null) {
             var root = new ButtonComp(section.getWrapper().nameProperty(), () -> {})
                     .apply(struc -> {
-                        var provider = section.getWrapper().getEntry().getProvider();
                         struc.get()
-                                .setGraphic(PrettyImageHelper.ofFixedSizeSquare(
-                                                provider != null
-                                                        ? provider.getDisplayIconFileName(section.getWrapper()
-                                                                .getEntry()
-                                                                .getStore())
-                                                        : null,
+                                .setGraphic(PrettyImageHelper.ofFixedSize(
+                                                section.getWrapper().getIconFile(),
+                                                16,
                                                 16)
                                         .createRegion());
                     })

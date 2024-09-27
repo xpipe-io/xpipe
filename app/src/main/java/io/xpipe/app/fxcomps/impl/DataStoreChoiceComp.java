@@ -1,5 +1,7 @@
 package io.xpipe.app.fxcomps.impl;
 
+import atlantafx.base.controls.Popover;
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.store.*;
 import io.xpipe.app.core.AppFont;
@@ -7,14 +9,12 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.resources.SystemIcons;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.DataStoreCategoryChoiceComp;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.ShellStore;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -26,9 +26,6 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-
-import atlantafx.base.controls.Popover;
-import atlantafx.base.theme.Styles;
 import lombok.RequiredArgsConstructor;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -204,20 +201,7 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                     Comp<?> graphic = PrettyImageHelper.ofFixedSize(
                             Bindings.createStringBinding(
                                     () -> {
-                                        if (selected.getValue() == null) {
-                                            return null;
-                                        }
-
-                                        if (selected.getValue().get().getIcon() == null) {
-                                            return selected.getValue()
-                                                    .get()
-                                                    .getProvider()
-                                                    .getDisplayIconFileName(
-                                                            selected.getValue().getStore());
-                                        }
-
-                                        return "app:system/"
-                                                + selected.getValue().get().getIcon() + ".svg";
+                                        return selected.getValue().get().getEffectiveIconFile();
                                     },
                                     selected),
                             16,

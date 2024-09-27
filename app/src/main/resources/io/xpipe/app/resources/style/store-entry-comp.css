@@ -53,7 +53,7 @@
 }
 
 .store-entry-grid.dense {
-    -fx-padding: 1px 6px 1px 6px;
+    -fx-padding: 0px 6px 0px 6px;
 }
 
 /* Entry */

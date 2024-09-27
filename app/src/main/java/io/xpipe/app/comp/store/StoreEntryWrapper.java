@@ -140,7 +140,7 @@ public class StoreEntryWrapper {
         color.setValue(entry.getColor());
         notes.setValue(new StoreNotes(entry.getNotes(), entry.getNotes()));
         customIcon.setValue(entry.getIcon());
-        iconFile.setValue(getEffectiveIconFile());
+        iconFile.setValue(entry.getEffectiveIconFile());
 
         busy.setValue(entry.getBusyCounter().get() != 0);
         deletable.setValue(entry.getConfiguration().isDeletable()
@@ -192,20 +192,6 @@ public class StoreEntryWrapper {
                 ErrorEvent.fromThrowable(ex).handle();
             }
         }
-    }
-
-    private String getEffectiveIconFile() {
-        if (disabledProperty().get()) {
-            return "disabled_icon.png";
-        }
-
-        if (getCustomIcon().getValue() == null) {
-            return getEntry()
-                    .getProvider()
-                    .getDisplayIconFileName(getEntry().getStore());
-        }
-
-        return "app:system/" + getCustomIcon().getValue() + ".svg";
     }
 
     private boolean showActionProvider(ActionProvider p) {
