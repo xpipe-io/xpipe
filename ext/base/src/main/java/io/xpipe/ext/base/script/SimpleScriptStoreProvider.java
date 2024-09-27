@@ -22,11 +22,13 @@ import io.xpipe.app.util.Validator;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.Identifiers;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
+
 import lombok.SneakyThrows;
 
 import java.util.ArrayList;
@@ -218,8 +220,12 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
         var file = st.isRunnableScript() ? AppI18n.get("file") : null;
         var shell = st.isRunnableScript() ? AppI18n.get("shell") : null;
         var runnable = st.isRunnableScript() ? AppI18n.get("hub") : null;
-        var type = st.getMinimumDialect() != null ? st.getMinimumDialect().getDisplayName() + " " + AppI18n.get("script") : null;
-        var suffix = String.join(" / ", Stream.of(init, shell, file, runnable).filter(s -> s != null).toList());
+        var type = st.getMinimumDialect() != null
+                ? st.getMinimumDialect().getDisplayName() + " " + AppI18n.get("script")
+                : null;
+        var suffix = String.join(
+                " / ",
+                Stream.of(init, shell, file, runnable).filter(s -> s != null).toList());
         if (!suffix.isEmpty()) {
             suffix = "(" + suffix + ")";
         } else {

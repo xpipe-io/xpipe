@@ -63,10 +63,7 @@ public abstract class BrowserIconDirectoryType {
                     var closedIcon = "browser/" + split[2].trim();
                     var lightClosedIcon = split.length > 4 ? "browser/" + split[4].trim() : closedIcon;
 
-                    ALL.add(new Simple(
-                            id,
-                            new IconVariant(lightClosedIcon, closedIcon),
-                            filter));
+                    ALL.add(new Simple(id, new IconVariant(lightClosedIcon, closedIcon), filter));
                 }
             }
         });

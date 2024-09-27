@@ -5,6 +5,7 @@ import io.xpipe.app.core.AppStyle;
 import io.xpipe.app.core.AppTheme;
 import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.fxcomps.impl.TextFieldComp;
+
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;

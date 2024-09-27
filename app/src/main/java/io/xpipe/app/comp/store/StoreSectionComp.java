@@ -70,10 +70,14 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
     private Comp<CompStructure<Button>> createExpandButton() {
         var expandButton = new IconButtonComp(
                 Bindings.createObjectBinding(
-                        () -> new LabelGraphic.IconGraphic(section.getWrapper().getExpanded().get()
-                                        && section.getShownChildren().getList().size() > 0
-                                ? "mdal-keyboard_arrow_down"
-                                : "mdal-keyboard_arrow_right"),
+                        () -> new LabelGraphic.IconGraphic(
+                                section.getWrapper().getExpanded().get()
+                                                && section.getShownChildren()
+                                                                .getList()
+                                                                .size()
+                                                        > 0
+                                        ? "mdal-keyboard_arrow_down"
+                                        : "mdal-keyboard_arrow_right"),
                         section.getWrapper().getExpanded(),
                         section.getShownChildren().getList()),
                 () -> {

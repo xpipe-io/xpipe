@@ -361,7 +361,8 @@ public abstract class DataStorage {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends ValidationContext<?>> boolean refreshChildren(DataStoreEntry e, T context, boolean throwOnFail) throws Exception {
+    public <T extends ValidationContext<?>> boolean refreshChildren(DataStoreEntry e, T context, boolean throwOnFail)
+            throws Exception {
         if (!(e.getStore() instanceof FixedHierarchyStore<?> h)) {
             return false;
         }
@@ -377,9 +378,10 @@ public abstract class DataStorage {
                 }
             }
 
-            newChildren = ((FixedHierarchyStore<T>)h).listChildren(context).stream()
-                    .filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null)
-                    .toList();
+            newChildren = ((FixedHierarchyStore<T>) h)
+                    .listChildren(context).stream()
+                            .filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null)
+                            .toList();
         } catch (Exception ex) {
             if (throwOnFail) {
                 throw ex;

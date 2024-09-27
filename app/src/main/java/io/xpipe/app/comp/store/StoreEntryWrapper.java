@@ -9,8 +9,10 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
+
 import lombok.Getter;
 
 import java.time.Duration;
@@ -155,7 +157,8 @@ public class StoreEntryWrapper {
             summary.setValue(null);
         } else {
             try {
-                summary.setValue(entry.getProvider() != null ? entry.getProvider().summaryString(this) : null);
+                summary.setValue(
+                        entry.getProvider() != null ? entry.getProvider().summaryString(this) : null);
             } catch (Exception ex) {
                 // Summary creation might fail or have a bug
                 ErrorEvent.fromThrowable(ex).handle();

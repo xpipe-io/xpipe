@@ -20,6 +20,7 @@ import io.xpipe.app.util.FileReference;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FileSystemStore;
 import io.xpipe.core.store.ShellStore;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Pos;
@@ -63,10 +64,6 @@ public class BrowserChooserComp extends DialogComp {
             });
         });
     }
-
-
-
-
 
     @Override
     protected String finishKey() {

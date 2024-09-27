@@ -2,6 +2,7 @@ package io.xpipe.app.core.check;
 
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.PlatformState;
+
 import javafx.application.ConditionalFeature;
 import javafx.application.Platform;
 

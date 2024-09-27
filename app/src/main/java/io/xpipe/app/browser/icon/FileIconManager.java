@@ -35,8 +35,6 @@ public class FileIconManager {
             }
         }
 
-        return "browser/" + (r.getKind() == FileKind.DIRECTORY
-                ? "default_folder.svg"
-                : "default_file.svg");
+        return "browser/" + (r.getKind() == FileKind.DIRECTORY ? "default_folder.svg" : "default_file.svg");
     }
 }

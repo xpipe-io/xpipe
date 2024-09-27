@@ -1,17 +1,18 @@
 package io.xpipe.app.storage;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.resources.SystemIcons;
 import io.xpipe.core.store.*;
 import io.xpipe.core.util.JacksonMapper;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.*;
 import lombok.experimental.NonFinal;
 import org.apache.commons.io.FileUtils;
@@ -172,15 +173,13 @@ public class DataStoreEntry extends StorageElement {
         return entry;
     }
 
-
     public String getEffectiveIconFile() {
         if (getValidity() == Validity.LOAD_FAILED) {
             return "disabled_icon.png";
         }
 
         if (icon == null) {
-            return getProvider()
-                    .getDisplayIconFileName(getStore());
+            return getProvider().getDisplayIconFileName(getStore());
         }
 
         return "app:system/" + icon + ".svg";
@@ -530,7 +529,8 @@ public class DataStoreEntry extends StorageElement {
     }
 
     @SuppressWarnings("unchecked")
-    public  <T> ValidationContext<?> validateAndKeepOpenOrThrowAndClose(ValidationContext<?> existingContext) throws Throwable {
+    public <T> ValidationContext<?> validateAndKeepOpenOrThrowAndClose(ValidationContext<?> existingContext)
+            throws Throwable {
         if (store == null) {
             return null;
         }
@@ -542,7 +542,9 @@ public class DataStoreEntry extends StorageElement {
         try {
             store.checkComplete();
             incrementBusyCounter();
-            ValidationContext<T> context = existingContext != null ? (ValidationContext<T>) existingContext : (ValidationContext<T>) l.createContext();
+            ValidationContext<T> context = existingContext != null
+                    ? (ValidationContext<T>) existingContext
+                    : (ValidationContext<T>) l.createContext();
             if (context == null) {
                 return null;
             }

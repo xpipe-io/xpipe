@@ -55,9 +55,7 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                     .apply(struc -> {
                         struc.get()
                                 .setGraphic(PrettyImageHelper.ofFixedSize(
-                                                section.getWrapper().getIconFile(),
-                                                16,
-                                                16)
+                                                section.getWrapper().getIconFile(), 16, 16)
                                         .createRegion());
                     })
                     .apply(struc -> {
@@ -79,7 +77,8 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                             && section.getShownChildren().getList().size() > 0);
             var button = new IconButtonComp(
                             Bindings.createObjectBinding(
-                                    () -> new LabelGraphic.IconGraphic(expanded.get() ? "mdal-keyboard_arrow_down" : "mdal-keyboard_arrow_right"),
+                                    () -> new LabelGraphic.IconGraphic(
+                                            expanded.get() ? "mdal-keyboard_arrow_down" : "mdal-keyboard_arrow_right"),
                                     expanded),
                             () -> {
                                 expanded.set(!expanded.get());

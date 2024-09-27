@@ -97,7 +97,8 @@ public class StoreCreationMenu {
 
             var item = new MenuItem();
             item.textProperty().bind(dataStoreProvider.displayName());
-            item.setGraphic(PrettyImageHelper.ofFixedSizeSquare(dataStoreProvider.getDisplayIconFileName(null), 16).createRegion());
+            item.setGraphic(PrettyImageHelper.ofFixedSizeSquare(dataStoreProvider.getDisplayIconFileName(null), 16)
+                    .createRegion());
             item.setOnAction(event -> {
                 StoreCreationComp.showCreation(dataStoreProvider, category);
                 event.consume();

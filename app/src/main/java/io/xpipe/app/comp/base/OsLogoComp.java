@@ -8,6 +8,7 @@ import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.resources.AppResources;
 import io.xpipe.core.process.OsNameState;
 import io.xpipe.core.store.FileNames;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -52,8 +53,9 @@ public class OsLogoComp extends SimpleComp {
                 wrapper.getPersistentState(),
                 state);
         var hide = BindingsHelper.map(img, s -> s != null);
-        return new StackComp(
-                        List.of(new SystemStateComp(state).hide(hide), PrettyImageHelper.ofFixedSize(img, 24, 24).visible(hide)))
+        return new StackComp(List.of(
+                        new SystemStateComp(state).hide(hide),
+                        PrettyImageHelper.ofFixedSize(img, 24, 24).visible(hide)))
                 .createRegion();
     }
 
@@ -66,7 +68,8 @@ public class OsLogoComp extends SimpleComp {
             AppResources.with(AppResources.XPIPE_MODULE, "img/os", file -> {
                 try (var list = Files.list(file)) {
                     list.filter(path -> path.toString().endsWith(".png")
-                                    && !path.toString().endsWith(LINUX_DEFAULT_24) && !path.toString().endsWith("-40.png"))
+                                    && !path.toString().endsWith(LINUX_DEFAULT_24)
+                                    && !path.toString().endsWith("-40.png"))
                             .map(path -> FileNames.getFileName(path.toString()))
                             .forEach(path -> {
                                 var base = path.replace("-dark", "").replace("-24.png", ".svg");

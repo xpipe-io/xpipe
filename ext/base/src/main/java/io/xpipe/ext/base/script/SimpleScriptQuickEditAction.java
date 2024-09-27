@@ -34,11 +34,14 @@ public class SimpleScriptQuickEditAction implements ActionProvider {
 
         @Override
         public void execute() {
-            var predefined = DataStorage.get().getStoreCategoryIfPresent(ref.get().getCategoryUuid())
-                    .map(category -> category.getUuid().equals(DataStorage.PREDEFINED_SCRIPTS_CATEGORY_UUID))
-                    .orElse(false) &&
-                    Arrays.stream(PredefinedScriptStore.values())
-                            .anyMatch(predefinedScriptStore -> predefinedScriptStore.getName().equals(ref.get().getName()));
+            var predefined = DataStorage.get()
+                            .getStoreCategoryIfPresent(ref.get().getCategoryUuid())
+                            .map(category -> category.getUuid().equals(DataStorage.PREDEFINED_SCRIPTS_CATEGORY_UUID))
+                            .orElse(false)
+                    && Arrays.stream(PredefinedScriptStore.values())
+                            .anyMatch(predefinedScriptStore -> predefinedScriptStore
+                                    .getName()
+                                    .equals(ref.get().getName()));
             if (predefined) {
                 StoreCreationComp.showEdit(ref.get());
                 return;

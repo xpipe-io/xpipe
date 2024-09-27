@@ -14,6 +14,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.store.ShellValidationContext;
+
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
@@ -36,14 +37,16 @@ class ScanDialog extends DialogComp {
     private final BiFunction<DataStoreEntry, ShellControl, List<ScanProvider.ScanOperation>> applicable;
     private final Stage window;
     private final ObjectProperty<DataStoreEntryRef<ShellStore>> entry;
-    private final ListProperty<ScanProvider.ScanOperation> selected = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private final ListProperty<ScanProvider.ScanOperation> selected =
+            new SimpleListProperty<>(FXCollections.observableArrayList());
     private final BooleanProperty busy = new SimpleBooleanProperty();
     private ShellValidationContext shellValidationContext;
 
     ScanDialog(
-            Stage window, DataStoreEntryRef<ShellStore> entry, BiFunction<DataStoreEntry, ShellControl, List<ScanProvider.ScanOperation>> applicable,
-            ShellValidationContext shellValidationContext
-    ) {
+            Stage window,
+            DataStoreEntryRef<ShellStore> entry,
+            BiFunction<DataStoreEntry, ShellControl, List<ScanProvider.ScanOperation>> applicable,
+            ShellValidationContext shellValidationContext) {
         this.window = window;
         this.initialStore = entry;
         this.entry = new SimpleObjectProperty<>(entry);
@@ -74,7 +77,9 @@ class ScanDialog extends DialogComp {
                     for (var a : copy) {
                         // If the user decided to remove the selected entry
                         // while the scan is running, just return instantly
-                        if (!DataStorage.get().getStoreEntriesSet().contains(entry.get().get())) {
+                        if (!DataStorage.get()
+                                .getStoreEntriesSet()
+                                .contains(entry.get().get())) {
                             return;
                         }
 
@@ -115,10 +120,17 @@ class ScanDialog extends DialogComp {
         StackPane stackPane = new StackPane();
         stackPane.getStyleClass().add("scan-list");
 
-        var b = new OptionsBuilder().name("scanAlertChoiceHeader")
+        var b = new OptionsBuilder()
+                .name("scanAlertChoiceHeader")
                 .description("scanAlertChoiceHeaderDescription")
-                .addComp(new DataStoreChoiceComp<>(DataStoreChoiceComp.Mode.OTHER, null, entry, ShellStore.class, store1 -> true,
-                        StoreViewState.get().getAllConnectionsCategory()).disable(new SimpleBooleanProperty(initialStore != null)))
+                .addComp(new DataStoreChoiceComp<>(
+                                DataStoreChoiceComp.Mode.OTHER,
+                                null,
+                                entry,
+                                ShellStore.class,
+                                store1 -> true,
+                                StoreViewState.get().getAllConnectionsCategory())
+                        .disable(new SimpleBooleanProperty(initialStore != null)))
                 .name("scanAlertHeader")
                 .description("scanAlertHeaderDescription")
                 .addComp(Comp.of(() -> stackPane).vgrow())
@@ -152,7 +164,8 @@ class ScanDialog extends DialogComp {
                     shellValidationContext = null;
                 }
 
-                shellValidationContext = new ShellValidationContext(newValue.getStore().control().withoutLicenseCheck().start());
+                shellValidationContext = new ShellValidationContext(
+                        newValue.getStore().control().withoutLicenseCheck().start());
                 var a = applicable.apply(entry.get().get(), shellValidationContext.get());
 
                 Platform.runLater(() -> {
@@ -161,8 +174,9 @@ class ScanDialog extends DialogComp {
                         return;
                     }
 
-                    selected.setAll(
-                            a.stream().filter(scanOperation -> scanOperation.isDefaultSelected() && !scanOperation.isDisabled()).toList());
+                    selected.setAll(a.stream()
+                            .filter(scanOperation -> scanOperation.isDefaultSelected() && !scanOperation.isDisabled())
+                            .toList());
                     Function<ScanProvider.ScanOperation, String> nameFunc = (ScanProvider.ScanOperation s) -> {
                         var n = AppI18n.get(s.getNameKey());
                         if (s.getLicensedFeatureId() == null) {
@@ -170,10 +184,14 @@ class ScanDialog extends DialogComp {
                         }
 
                         var suffix = LicenseProvider.get().getFeature(s.getLicensedFeatureId());
-                        return n + suffix.getDescriptionSuffix().map(d -> " (" + d + ")").orElse("");
+                        return n
+                                + suffix.getDescriptionSuffix()
+                                        .map(d -> " (" + d + ")")
+                                        .orElse("");
                     };
-                    var r = new ListSelectorComp<>(a, nameFunc, selected, scanOperation -> scanOperation.isDisabled(),
-                            a.size() > 3).createRegion();
+                    var r = new ListSelectorComp<>(
+                                    a, nameFunc, selected, scanOperation -> scanOperation.isDisabled(), a.size() > 3)
+                            .createRegion();
                     stackPane.getChildren().add(r);
                 });
             });

@@ -20,7 +20,8 @@ import java.util.Objects;
 
 public class BrowserFileOpener {
 
-    private static OutputStream openFileOutput(OpenFileSystemModel model, FileEntry file, long totalBytes) throws Exception {
+    private static OutputStream openFileOutput(OpenFileSystemModel model, FileEntry file, long totalBytes)
+            throws Exception {
         var fileSystem = model.getFileSystem();
         if (model.isClosed() || fileSystem.getShell().isEmpty()) {
             return OutputStream.nullOutputStream();
@@ -39,12 +40,15 @@ public class BrowserFileOpener {
             return fileSystem.openOutput(file.getPath(), totalBytes);
         }
 
-        var elevate = AppWindowHelper.showConfirmationAlert("app.fileWriteSudoTitle", "app.fileWriteSudoHeader", "app.fileWriteSudoContent");
+        var elevate = AppWindowHelper.showConfirmationAlert(
+                "app.fileWriteSudoTitle", "app.fileWriteSudoHeader", "app.fileWriteSudoContent");
         if (!elevate) {
             return fileSystem.openOutput(file.getPath(), totalBytes);
         }
 
-        var rootSc = sc.identicalSubShell().elevated(ElevationFunction.elevated("sudo")).start();
+        var rootSc = sc.identicalSubShell()
+                .elevated(ElevationFunction.elevated("sudo"))
+                .start();
         var rootFs = new ConnectionFileSystem(rootSc);
         try {
             return new FilterOutputStream(rootFs.openOutput(file.getPath(), totalBytes)) {
@@ -123,7 +127,7 @@ public class BrowserFileOpener {
                             return entry.getFileSystem().openInput(file);
                         },
                         (size) -> {
-                            return openFileOutput(model,entry, size);
+                            return openFileOutput(model, entry, size);
                         },
                         FileOpener::openInTextEditor);
     }

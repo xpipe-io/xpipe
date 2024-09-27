@@ -130,8 +130,7 @@ public interface WezTerminalType extends ExternalTerminalType {
                         .readStdoutOrThrow();
                 var path = Path.of(pathOut);
                 var spawn = sc.command(CommandBuilder.of()
-                                .addFile(path
-                                        .resolve("Contents")
+                                .addFile(path.resolve("Contents")
                                         .resolve("MacOS")
                                         .resolve("wezterm")
                                         .toString())
@@ -140,8 +139,7 @@ public interface WezTerminalType extends ExternalTerminalType {
                         .executeAndCheck();
                 if (!spawn) {
                     ExternalApplicationHelper.startAsync(CommandBuilder.of()
-                            .addFile(path
-                                    .resolve("Contents")
+                            .addFile(path.resolve("Contents")
                                     .resolve("MacOS")
                                     .resolve("wezterm-gui")
                                     .toString())

@@ -13,6 +13,7 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.update.UpdateChangelogAlert;
 import io.xpipe.app.util.NativeBridge;
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.stage.Stage;
 
 public class GuiMode extends PlatformMode {

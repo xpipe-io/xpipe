@@ -74,5 +74,4 @@ public class ScanAlert {
                 stage -> new ScanDialog(
                         stage, initialStore != null ? initialStore.ref() : null, applicable, shellValidationContext));
     }
-
 }
