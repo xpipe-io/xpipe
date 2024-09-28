@@ -166,6 +166,13 @@ class ScanDialog extends DialogComp {
 
                 shellValidationContext = new ShellValidationContext(
                         newValue.getStore().control().withoutLicenseCheck().start());
+
+                // Handle window close while connection is established
+                if (!window.isShowing()) {
+                    discard();
+                    return;
+                }
+
                 var a = applicable.apply(entry.get().get(), shellValidationContext.get());
 
                 Platform.runLater(() -> {

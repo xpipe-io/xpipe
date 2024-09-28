@@ -68,6 +68,7 @@ public class StoreIconChoiceComp extends SimpleComp {
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         table.getSelectionModel().setCellSelectionEnabled(true);
         table.getStyleClass().add("icon-browser");
+        table.setPlaceholder(new Region());
     }
 
     private void updateData(TableView<List<SystemIcon>> table, String filterString) {
