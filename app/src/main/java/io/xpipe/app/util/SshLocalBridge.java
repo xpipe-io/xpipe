@@ -15,6 +15,7 @@ import lombok.Setter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.regex.Pattern;
 
 @Getter
 public class SshLocalBridge {
@@ -109,8 +110,7 @@ public class SshLocalBridge {
             }
 
             var config = INSTANCE.getConfig();
-            var command = "\"" + XPipeInstallation.getLocalDefaultCliExecutable() + "\" ssh-launch "
-                    + sc.getShellDialect().environmentVariable("SSH_ORIGINAL_COMMAND");
+            var command = get().getRemoteCommand(sc);
             var pidFile = bridgeDir.resolve("sshd.pid");
             var content =
                     """
@@ -145,6 +145,18 @@ public class SshLocalBridge {
                     ProcessControlProvider.get().createLocalProcessControl(true).start();
             control.writeLine(launchCommand.buildFull(control));
             INSTANCE.setRunningShell(control);
+        }
+    }
+
+    private String getRemoteCommand(ShellControl sc) {
+        var command = "\"" + XPipeInstallation.getLocalDefaultCliExecutable() + "\" ssh-launch "
+                + sc.getShellDialect().environmentVariable("SSH_ORIGINAL_COMMAND");
+        var p = Pattern.compile("\".+?\\\\Users\\\\([^\\\\]+)\\\\(.+)\"");
+        var matcher = p.matcher(command);
+        if (matcher.find() && matcher.group(1).contains(" ")) {
+            return matcher.replaceFirst("\"$2\"");
+        } else {
+            return command;
         }
     }
 

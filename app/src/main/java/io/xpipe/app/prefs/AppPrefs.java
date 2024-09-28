@@ -36,6 +36,8 @@ public class AppPrefs {
     private static AppPrefs INSTANCE;
     private final List<Mapping<?>> mapping = new ArrayList<>();
 
+    final BooleanProperty dontAllowTerminalRestart =
+            mapVaultSpecific(new SimpleBooleanProperty(false), "dontAllowTerminalRestart", Boolean.class);
     final BooleanProperty enableHttpApi =
             mapVaultSpecific(new SimpleBooleanProperty(false), "enableHttpApi", Boolean.class);
     final BooleanProperty dontAutomaticallyStartVmSshServer =
@@ -151,6 +153,10 @@ public class AppPrefs {
 
     public ObservableBooleanValue enableHttpApi() {
         return enableHttpApi;
+    }
+
+    public ObservableBooleanValue dontAllowTerminalRestart() {
+        return dontAllowTerminalRestart;
     }
 
     private final IntegerProperty editorReloadTimeout =

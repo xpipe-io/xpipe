@@ -115,6 +115,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
+        public String getWebsite() {
+            return "https://www.netsarang.com/en/xshell/";
+        }
+
+        @Override
         public boolean supportsTabs() {
             return true;
         }
@@ -214,6 +219,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
+        public String getWebsite() {
+            return "https://www.vandyke.com/products/securecrt/";
+        }
+
+        @Override
         protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
             try (var sc = LocalShell.getShell()) {
                 SshLocalBridge.init();
@@ -259,6 +269,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         @Override
         public boolean supportsColoredTitle() {
             return true;
+        }
+
+        @Override
+        public String getWebsite() {
+            return "https://mobaxterm.mobatek.net/";
         }
 
         @Override
@@ -314,6 +329,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 ErrorEvent.fromThrowable(e).omit().handle();
                 return false;
             }
+        }
+
+        @Override
+        public String getWebsite() {
+            return "https://termius.com/";
         }
 
         @Override

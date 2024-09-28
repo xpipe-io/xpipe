@@ -130,7 +130,7 @@ public class AppLayoutModel {
         var now = Instant.now();
         var zone = ZoneId.of(ZoneId.SHORT_IDS.get("PST"));
         var phStart = ZonedDateTime.of(2024, 10, 22, 0, 1, 0, 0, zone).toInstant();
-        var phEnd = ZonedDateTime.of(2024, 10, 22, 23, 59, 0, 0, zone).toInstant();
+        var phEnd = ZonedDateTime.of(2024, 10, 29, 23, 59, 0, 0, zone).toInstant();
         var phShow = now.isAfter(phStart) && now.isBefore(phEnd);
         if (phShow) {
             l.add(new Entry(

@@ -28,7 +28,7 @@ public class SshLaunchExchangeImpl extends SshLaunchExchange {
 
         // There are sometimes multiple requests by a terminal client (e.g. Termius)
         // This might fail sometimes, but it is expected
-        var r = TerminalLauncherManager.waitForNextLaunch();
+        var r = TerminalLauncherManager.sshLaunchExchange();
         var c = ProcessControlProvider.get()
                 .getEffectiveLocalDialect()
                 .getOpenScriptCommand(r.toString())
