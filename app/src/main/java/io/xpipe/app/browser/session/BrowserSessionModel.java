@@ -55,7 +55,8 @@ public class BrowserSessionModel extends BrowserAbstractSessionModel<BrowserSess
                     continue;
                 }
 
-                closeSync(o);
+                // Prevent blocking of shutdown
+                closeAsync(o);
             }
             BrowserSavedStateImpl.get().save();
         }

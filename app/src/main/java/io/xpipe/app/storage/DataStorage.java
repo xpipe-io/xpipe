@@ -130,10 +130,17 @@ public abstract class DataStorage {
     }
 
     private void dispose() {
-        getStoreEntries().forEach(entry -> {
-            entry.finalizeEntry();
-        });
         save(true);
+        var finalizing = false;
+        for (DataStoreEntry entry : getStoreEntries()) {
+            // Prevent blocking of shutdown
+            if (entry.finalizeEntryAsync()) {
+                finalizing = true;
+            }
+        }
+        if (finalizing) {
+            ThreadHelper.sleep(1000);
+        }
     }
 
     protected void setupBuiltinCategories() {
