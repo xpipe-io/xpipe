@@ -1,7 +1,7 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.ext.PrefsChoiceValue;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.OsType;
@@ -22,8 +22,16 @@ public interface ExternalPasswordManager extends PrefsChoiceValue {
                 return null;
             }
 
-            try (var cc = new LocalStore().control().command(cmd).start()) {
-                return cc.readStdoutOrThrow();
+            try (var cc = ProcessControlProvider.get().createLocalProcessControl(true).command(cmd).start()) {
+                var out = cc.readStdoutOrThrow();
+
+                // Dashlane fixes
+                var rawCmd = AppPrefs.get().passwordManagerCommand.get();
+                if (rawCmd.contains("dcli")) {
+                    out = out.lines().findFirst().map(s -> s.trim().replaceAll("\\s+$", "")).orElse(null);
+                }
+
+                return out;
             } catch (Exception ex) {
                 ErrorEvent.fromThrowable("Unable to retrieve password with command " + cmd, ex)
                         .expected()
