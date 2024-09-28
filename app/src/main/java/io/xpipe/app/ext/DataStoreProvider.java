@@ -57,12 +57,12 @@ public interface DataStoreProvider {
     default void validate() {
         for (Class<?> storeClass : getStoreClasses()) {
             if (!JacksonizedValue.class.isAssignableFrom(storeClass)) {
-                throw new ExtensionException(
+                throw ExtensionException.corrupt(
                         String.format("Store class %s is not a Jacksonized value", storeClass.getSimpleName()));
             }
 
             if (getUsageCategory() == null) {
-                throw new ExtensionException("Provider %s does not have the usage category".formatted(getId()));
+                throw ExtensionException.corrupt("Provider %s does not have the usage category".formatted(getId()));
             }
         }
     }
