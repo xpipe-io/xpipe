@@ -102,7 +102,7 @@ public class DesktopHelper {
             try {
                 Desktop.getDesktop().open(file.toFile());
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).omit().handle();
+                ErrorEvent.fromThrowable(e).expected().handle();
             }
         });
     }
@@ -110,6 +110,7 @@ public class DesktopHelper {
     public static void browseFileInDirectory(Path file) {
         if (!Desktop.getDesktop().isSupported(Desktop.Action.BROWSE_FILE_DIR)) {
             if (!Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
+                ErrorEvent.fromMessage("Desktop integration unable to open file " + file).expected().handle();
                 return;
             }
 
@@ -117,7 +118,7 @@ public class DesktopHelper {
                 try {
                     Desktop.getDesktop().open(file.getParent().toFile());
                 } catch (Exception e) {
-                    ErrorEvent.fromThrowable(e).omit().handle();
+                    ErrorEvent.fromThrowable(e).expected().handle();
                 }
             });
             return;
@@ -127,7 +128,7 @@ public class DesktopHelper {
             try {
                 Desktop.getDesktop().browseFileDirectory(file.toFile());
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).omit().handle();
+                ErrorEvent.fromThrowable(e).expected().handle();
             }
         });
     }

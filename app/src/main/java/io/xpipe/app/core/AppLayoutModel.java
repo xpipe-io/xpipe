@@ -131,7 +131,7 @@ public class AppLayoutModel {
         var zone = ZoneId.of(ZoneId.SHORT_IDS.get("PST"));
         var phStart = ZonedDateTime.of(2024, 10, 22, 0, 1, 0, 0, zone).toInstant();
         var clicked = AppCache.get("phClicked",Boolean.class,() -> false);
-        var phShow = now.isAfter(phStart) && clicked;
+        var phShow = now.isAfter(phStart) && !clicked;
         if (phShow) {
             l.add(new Entry(
                     new SimpleStringProperty("Product Hunt"),
