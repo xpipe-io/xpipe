@@ -86,7 +86,6 @@ open module io.xpipe.app {
     // Required runtime modules
     requires jdk.charsets;
     requires jdk.crypto.cryptoki;
-    requires jdk.crypto.ec;
     requires jdk.localedata;
     requires jdk.accessibility;
     requires org.kordamp.ikonli.material2;

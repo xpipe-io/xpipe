@@ -105,10 +105,6 @@
     -fx-font-smoothing-type: lcd;
 }
 
-.root:macos .text {
-    -fx-font-smoothing-type: lcd;
-}
-
 .radio-button {
     -fx-background-color: transparent;
 }
