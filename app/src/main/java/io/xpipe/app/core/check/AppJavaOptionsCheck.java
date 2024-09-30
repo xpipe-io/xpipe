@@ -1,10 +1,15 @@
 package io.xpipe.app.core.check;
 
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.issue.ErrorEvent;
 
 public class AppJavaOptionsCheck {
 
     public static void check() {
+        if (AppCache.get("javaOptionsWarningShown", Boolean.class,() -> false)) {
+            return;
+        }
+
         var env = System.getenv("_JAVA_OPTIONS");
         if (env == null) {
             return;
@@ -18,5 +23,6 @@ public class AppJavaOptionsCheck {
                 .noDefaultActions()
                 .expected()
                 .handle();
+        AppCache.update("javaOptionsWarningShown", true);
     }
 }
