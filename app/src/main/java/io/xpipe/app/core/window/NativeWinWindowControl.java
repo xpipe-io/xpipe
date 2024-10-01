@@ -72,7 +72,7 @@ public class NativeWinWindowControl {
     }
 
     public void close() {
-        User32.INSTANCE.CloseWindow(windowHandle);
+        User32.INSTANCE.PostMessage(windowHandle, User32.WM_CLOSE, null, null);
     }
 
     public void minimize() {
@@ -81,6 +81,12 @@ public class NativeWinWindowControl {
 
     public void move(Rect bounds) {
         User32.INSTANCE.SetWindowPos(windowHandle, null, bounds.getX(), bounds.getY(), bounds.getW(), bounds.getH(), User32.SWP_NOACTIVATE);
+    }
+
+    public Rect getBounds() {
+        var rect = new WinDef.RECT();
+        User32.INSTANCE.GetWindowRect(windowHandle, rect);
+        return new Rect(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
     }
 
     public boolean setWindowAttribute(int attribute, boolean attributeValue) {

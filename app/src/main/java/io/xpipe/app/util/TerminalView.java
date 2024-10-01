@@ -98,7 +98,7 @@ public class TerminalView {
 
         @Override
         public Rect queryBounds() {
-            return null;
+            return control.getBounds();
         }
     }
 
@@ -151,10 +151,6 @@ public class TerminalView {
                 TrackEvent.withTrace("Terminal session is dead").tag("pid", terminalInstance.getTerminal().pid()).handle();
             }
         }
-
-        terminalInstances.forEach(terminalInstance -> {
-            terminalInstance.updateBoundsState();
-        });
     }
 
     public synchronized void toggleView(boolean active) {
@@ -178,15 +174,37 @@ public class TerminalView {
     }
 
     public synchronized void onMinimize() {
-        terminalInstances.forEach(terminalInstance -> terminalInstance.minimize());
+        terminalInstances.forEach(terminalInstance -> {
+            terminalInstance.updateBoundsState();
+            if (terminalInstance.isCustomBounds()) {
+                return;
+            }
+
+
+            terminalInstance.minimize();
+        });
     }
 
     public synchronized void onClose() {
-        terminalInstances.forEach(terminalInstance -> terminalInstance.close());
+        terminalInstances.forEach(terminalInstance -> {
+            terminalInstance.updateBoundsState();
+            if (terminalInstance.isCustomBounds()) {
+                return;
+            }
+
+            terminalInstance.close();
+        });
     }
 
     private void updatePositions() {
-        terminalInstances.forEach(terminalInstance -> terminalInstance.updatePosition(viewBounds));
+        terminalInstances.forEach(terminalInstance -> {
+            terminalInstance.updateBoundsState();
+            if (terminalInstance.isCustomBounds()) {
+                return;
+            }
+
+            terminalInstance.updatePosition(viewBounds);
+        });
     }
 
     public void resizeView(int x, int y, int w, int h) {
@@ -197,7 +215,7 @@ public class TerminalView {
     }
 
     public void clickView() {
-        updatePositions();
+        terminalInstances.forEach(terminalInstance -> terminalInstance.updatePosition(viewBounds));
     }
 
     private static TerminalView INSTANCE;
