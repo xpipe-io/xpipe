@@ -24,7 +24,7 @@ dependencies {
 
     compileOnly 'org.hamcrest:hamcrest:3.0'
     compileOnly 'org.junit.jupiter:junit-jupiter-api:5.11.0'
-    compileOnly 'org.junit.jupiter:junit-jupiter-params:5.11.0'
+    compileOnly 'org.junit.jupiter:junit-jupiter-params:5.11.1'
 
     api 'com.vladsch.flexmark:flexmark:0.64.8'
     api 'com.vladsch.flexmark:flexmark-util:0.64.8'
