@@ -9,7 +9,7 @@ See below on how to do this.
 By default, no categories are set to shared so that you have explicit control on what connections to commit.
 
 To have your connections of a category put inside your git repository,
-you need to click on the `⚙️` icon (when hovering over the category)
+you either need to right-click the category or click on the `⚙️` icon when hovering over the category
 in your `Connections` tab under the category overview on the left side.
 Then click on `Add to git repository` to sync the category and connections to your git repository.
 This will add all shareable connections to the git repository.

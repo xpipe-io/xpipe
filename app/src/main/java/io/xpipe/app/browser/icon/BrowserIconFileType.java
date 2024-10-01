@@ -1,6 +1,6 @@
 package io.xpipe.app.browser.icon;
 
-import io.xpipe.app.core.AppResources;
+import io.xpipe.app.resources.AppResources;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileNames;
@@ -47,8 +47,8 @@ public abstract class BrowserIconFileType {
                                 return "." + r;
                             })
                             .collect(Collectors.toSet());
-                    var darkIcon = split[2].trim();
-                    var lightIcon = split.length > 3 ? split[3].trim() : darkIcon;
+                    var darkIcon = "browser/" + split[2].trim();
+                    var lightIcon = (split.length > 3 ? "browser/" + split[3].trim() : darkIcon);
                     ALL.add(new BrowserIconFileType.Simple(id, lightIcon, darkIcon, filter));
                 }
             }

@@ -15,9 +15,9 @@ public class ConnectionRefreshExchangeImpl extends ConnectionRefreshExchange {
                 .getStoreEntryIfPresent(msg.getConnection())
                 .orElseThrow(() -> new BeaconClientException("Unknown connection: " + msg.getConnection()));
         if (e.getStore() instanceof FixedHierarchyStore) {
-            DataStorage.get().refreshChildren(e, true);
+            DataStorage.get().refreshChildren(e, null, true);
         } else {
-            e.validateOrThrow();
+            e.validateOrThrowAndClose(null);
         }
         return Response.builder().build();
     }

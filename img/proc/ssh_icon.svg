@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   id="Layer_1"
+   data-name="Layer 1"
+   viewBox="0 0 204.59 204.59"
+   version="1.1"
+   sodipodi:docname="ssh_icon.svg"
+   inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
+   inkscape:export-filename="C:\Projects\xpipe\xpipex\ext\proc\src\main\resources\io\xpipe\ext\proc\resources\img\ssh_icon-16.png"
+   inkscape:export-xdpi="7.5076985"
+   inkscape:export-ydpi="7.5076985"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <sodipodi:namedview
+     id="namedview873"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="false"
+     showgrid="false"
+     inkscape:zoom="2.0944327"
+     inkscape:cx="165.91605"
+     inkscape:cy="130.82301"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="Layer_1" />
+  <defs
+     id="defs856">
+    <style
+       id="style854">.cls-1{fill:#ac55ff;}</style>
+  </defs>
+  <title
+     id="title858">ssh draft</title>
+  <path
+     class="cls-1"
+     d="M332.32,153.7H179.68a26,26,0,0,0-26,26V332.32a26,26,0,0,0,26,26H332.32a26,26,0,0,0,26-26V179.68A26,26,0,0,0,332.32,153.7Zm14,178.62a14,14,0,0,1-14,14H179.68a14,14,0,0,1-14-14V179.68a14,14,0,0,1,14-14H332.32a14,14,0,0,1,14,14Z"
+     id="path860"
+     style="fill:#2e2eff;fill-opacity:1"
+     transform="translate(-153.7 -153.7)" />
+  <path
+     class="cls-1"
+     d="M311.35,290.12H295.74v-22h-12v57.54h12V302.11h15.61v23.55h12V268.12h-12Z"
+     transform="translate(-153.7 -153.7)"
+     id="path862"
+     style="fill:#2e2eff;fill-opacity:1" />
+  <path
+     class="cls-1"
+     d="M214.25,291.47c-1.71-.49-3.21-.9-4.53-1.25-4.29-1.15-6.11-1.67-8.09-3.15a3.33,3.33,0,0,1-1.38-3.23c.24-1.49,1.44-2.67,3.38-3.32,4.74-1.59,9.78,1.34,11.21,2.27l6.55-10c-3.29-2.15-12-6.8-21.56-3.6-6.2,2.07-10.47,6.86-11.42,12.8a15.34,15.34,0,0,0,6.06,14.74c3.9,2.9,7.54,3.88,12.15,5.11,1.26.34,2.7.72,4.28,1.18,4.88,1.42,4,5.36,4,5.52-.28,1.22-1.66,5.17-7.55,5.17a15.69,15.69,0,0,1-10.9-4.23l-8.36,8.6a27.82,27.82,0,0,0,19.26,7.62c9.49,0,17.22-5.8,19.23-14.44a16.53,16.53,0,0,0-1.5-11.23,17.17,17.17,0,0,0-10.82-8.52Z"
+     transform="translate(-153.7 -153.7)"
+     id="path864"
+     style="fill:#2e2eff;fill-opacity:1" />
+  <path
+     class="cls-1"
+     d="M261.14,291.47c-1.71-.49-3.21-.9-4.54-1.25-4.29-1.15-6.11-1.67-8.09-3.15a3.32,3.32,0,0,1-1.37-3.23c.23-1.49,1.44-2.67,3.38-3.32,4.74-1.59,9.77,1.34,11.2,2.27l6.56-10c-3.3-2.15-12-6.8-21.57-3.6-6.19,2.07-10.46,6.86-11.41,12.8a15.34,15.34,0,0,0,6,14.74c3.9,2.9,7.54,3.88,12.15,5.11,1.27.34,2.7.72,4.29,1.18,4.88,1.42,4,5.36,4,5.52-.29,1.22-1.66,5.18-7.55,5.18a15.67,15.67,0,0,1-10.9-4.24L235,318a27.78,27.78,0,0,0,19.26,7.62c9.49,0,17.22-5.8,19.22-14.44A16.53,16.53,0,0,0,272,300a17.17,17.17,0,0,0-10.82-8.52Z"
+     transform="translate(-153.7 -153.7)"
+     id="path866"
+     style="fill:#2e2eff;fill-opacity:1" />
+  <path
+     class="cls-1"
+     d="M243.88,230.76h63.93v12H243.88Z"
+     transform="translate(-153.7 -153.7)"
+     id="path868"
+     style="fill:#2e2eff;fill-opacity:1" />
+  <path
+     class="cls-1"
+     d="M204.32,201l24.51,13.89-24.51,13.89v13.78l39.62-22.46V209.67l-39.62-22.45Z"
+     transform="translate(-153.7 -153.7)"
+     id="path870"
+     style="fill:#2e2eff;fill-opacity:1" />
+  <metadata
+     id="metadata932">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title>ssh draft</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+</svg>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 27.7.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
+	 style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#FFFFFF;}
+	.st1{fill:#0087FF;fill-opacity:0.3961;}
+	.st2{fill:none;stroke:#0087FF;stroke-width:20.0019;stroke-miterlimit:15.118;}
+	.st3{fill:none;stroke:#0087FF;stroke-width:20;stroke-miterlimit:15.118;}
+	.st4{fill:#0087FF;}
+</style>
+<g>
+	<g transform="translate(-640.42 -172.99)">
+		<g>
+			<path class="st0" d="M704.2,188.9h254.9l128.7,119.6v143c0,150.3-123,185.1-190.2,220.6c-73.6-33.9-188.4-70.8-190.2-220.6
+				L704.2,188.9z"/>
+		</g>
+		<g>
+			<path class="st0" d="M704.2,188.9h254.9l128.7,119.6v143c0,150.3-123,185.1-190.2,220.6c-73.6-33.9-188.4-70.8-190.2-220.6
+				L704.2,188.9z"/>
+		</g>
+	</g>
+	<g transform="translate(-125.38 -26.449)">
+		<path class="st1" d="M189.2,42.4l3.2,227.7h190.4l0-227.7H189.2z"/>
+		<path class="st1" d="M382.8,270.1l0,252.4c73.7-33.8,188.2-98.1,190.3-247.9l0.1-4.5L382.8,270.1z"/>
+		<path class="st2" d="M189.2,42.4h254.9L572.9,162v143c0,150.3-123,185.1-190.2,220.6c-73.6-33.9-188.4-70.8-190.2-220.6
+			L189.2,42.4z"/>
+		<path class="st3" d="M432.4,39.2v132.3h141.2"/>
+		<g transform="matrix(1.1107 0 0 1.1107 18.926 21.932)">
+			<path class="st4" d="M372.4,220.2c0,25.8-20.9,46.6-46.6,46.6c-25.8,0-46.6-20.9-46.6-46.6s20.9-46.6,46.6-46.6
+				C351.5,173.6,372.4,194.5,372.4,220.2z"/>
+			<path class="st4" d="M313.6,219.8h24.3l24.3,128.4h-72.9L313.6,219.8z"/>
+		</g>
+	</g>
+</g>
+</svg>

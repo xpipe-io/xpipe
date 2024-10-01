@@ -2,6 +2,7 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.ChoiceComp;
@@ -13,7 +14,6 @@ import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.app.ext.LocalStore;
 
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;

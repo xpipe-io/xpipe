@@ -29,6 +29,12 @@ public class ProcessOutputException extends Exception {
         return new ProcessOutputException(message, ex.getExitCode(), ex.getOutput());
     }
 
+    public static ProcessOutputException withSuffix(String customSuffix, ProcessOutputException ex) {
+        var messagePrefix = ex.getOutput() != null && !ex.getOutput().isBlank() ? ex.getOutput() + "\n" : "";
+        var message = messagePrefix + customSuffix;
+        return new ProcessOutputException(message, ex.getExitCode(), ex.getOutput());
+    }
+
     public static ProcessOutputException of(long exitCode, String... messages) {
         var combinedError = Arrays.stream(messages)
                 .filter(s -> s != null && !s.isBlank())

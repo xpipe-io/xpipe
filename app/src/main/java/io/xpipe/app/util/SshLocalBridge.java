@@ -2,10 +2,10 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.util.XPipeInstallation;
 
@@ -15,6 +15,7 @@ import lombok.Setter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.regex.Pattern;
 
 @Getter
 public class SshLocalBridge {
@@ -109,8 +110,7 @@ public class SshLocalBridge {
             }
 
             var config = INSTANCE.getConfig();
-            var command = "\"" + XPipeInstallation.getLocalDefaultCliExecutable() + "\" ssh-launch "
-                    + sc.getShellDialect().environmentVariable("SSH_ORIGINAL_COMMAND");
+            var command = get().getRemoteCommand(sc);
             var pidFile = bridgeDir.resolve("sshd.pid");
             var content =
                     """
@@ -148,6 +148,18 @@ public class SshLocalBridge {
         }
     }
 
+    private String getRemoteCommand(ShellControl sc) {
+        var command = "\"" + XPipeInstallation.getLocalDefaultCliExecutable() + "\" ssh-launch "
+                + sc.getShellDialect().environmentVariable("SSH_ORIGINAL_COMMAND");
+        var p = Pattern.compile("\".+?\\\\Users\\\\([^\\\\]+)\\\\(.+)\"");
+        var matcher = p.matcher(command);
+        if (matcher.find() && matcher.group(1).contains(" ")) {
+            return matcher.replaceFirst("\"$2\"");
+        } else {
+            return command;
+        }
+    }
+
     private void updateConfig() throws IOException {
         var file = Path.of(System.getProperty("user.home"), ".ssh", "config");
         if (!Files.exists(file)) {
@@ -178,8 +190,12 @@ public class SshLocalBridge {
                     .resolve("sshd")
                     .toString();
         } else {
-            var exec = sc.executeSimpleStringCommand(sc.getShellDialect().getWhichCommand("sshd"));
-            return exec;
+            var exec = CommandSupport.findProgram(sc, "sshd");
+            if (exec.isEmpty()) {
+                throw ErrorEvent.expected(new IllegalStateException(
+                        "No sshd executable found in PATH. The SSH terminal bridge requires a local ssh server"));
+            }
+            return exec.get();
         }
     }
 

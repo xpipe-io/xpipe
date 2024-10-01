@@ -254,14 +254,19 @@ public class ErrorHandlerComp extends SimpleComp {
             actionBox.getChildren().add(ac);
         }
 
-        if (!event.isDisableDefaultActions() || event.getCustomActions().isEmpty()) {
+        if (!event.isDisableDefaultActions()) {
             for (var action :
                     List.of(ErrorAction.automaticallyReport(), ErrorAction.reportOnGithub(), ErrorAction.ignore())) {
                 var ac = createActionComp(action);
                 actionBox.getChildren().add(ac);
             }
-            actionBox.getChildren().get(1).getStyleClass().addAll(BUTTON_OUTLINED, ACCENT);
+        } else if (event.getCustomActions().isEmpty()) {
+            for (var action : List.of(ErrorAction.ignore())) {
+                var ac = createActionComp(action);
+                actionBox.getChildren().add(ac);
+            }
         }
+        actionBox.getChildren().get(1).getStyleClass().addAll(BUTTON_OUTLINED, ACCENT);
 
         content.getChildren().addAll(actionBox);
         content.getStyleClass().add("top");

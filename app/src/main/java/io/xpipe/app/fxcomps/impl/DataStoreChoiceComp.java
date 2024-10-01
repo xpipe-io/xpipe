@@ -4,6 +4,7 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.store.*;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.storage.DataStorage;
@@ -11,7 +12,6 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.DataStoreCategoryChoiceComp;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.app.ext.LocalStore;
 import io.xpipe.core.store.ShellStore;
 
 import javafx.beans.binding.Bindings;
@@ -200,18 +200,10 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
         button.apply(struc -> {
                     struc.get().setMaxWidth(2000);
                     struc.get().setAlignment(Pos.CENTER_LEFT);
-                    Comp<?> graphic = new PrettySvgComp(
+                    Comp<?> graphic = PrettyImageHelper.ofFixedSize(
                             Bindings.createStringBinding(
                                     () -> {
-                                        if (selected.getValue() == null) {
-                                            return null;
-                                        }
-
-                                        return selected.getValue()
-                                                .get()
-                                                .getProvider()
-                                                .getDisplayIconFileName(
-                                                        selected.getValue().getStore());
+                                        return selected.getValue().get().getEffectiveIconFile();
                                     },
                                     selected),
                             16,

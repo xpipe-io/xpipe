@@ -63,7 +63,8 @@ public class ShellTemp {
         var systemTemp = proc.getSystemTemporaryDirectory();
         if (!d.directoryExists(proc, systemTemp.toString()).executeAndCheck()
                 || !checkDirectoryPermissions(proc, systemTemp.toString())) {
-            throw ErrorEvent.expected(new IOException("No permissions to access system temporary directory %s".formatted(systemTemp)));
+            throw ErrorEvent.expected(
+                    new IOException("No permissions to access system temporary directory %s".formatted(systemTemp)));
         }
 
         // We don't do this anymore, we hope that all the legacy directories have been cleared now

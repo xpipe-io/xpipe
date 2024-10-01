@@ -10,8 +10,8 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileNames;
-
 import io.xpipe.core.store.FilePath;
+
 import javafx.beans.value.ObservableValue;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -59,7 +59,13 @@ public class OpenNativeFileDetailsAction implements LeafAction {
                     }
 
                     var file = new FilePath(e);
-                    sc.command(CommandBuilder.of().add("xdg-open").addFile(entry.getRawFileEntry().getKind() == FileKind.DIRECTORY ? file : file.getParent())).execute();
+                    sc.command(CommandBuilder.of()
+                                    .add("xdg-open")
+                                    .addFile(
+                                            entry.getRawFileEntry().getKind() == FileKind.DIRECTORY
+                                                    ? file
+                                                    : file.getParent()))
+                            .execute();
                 }
                 case OsType.MacOs macOs -> {
                     sc.osascriptCommand(String.format(

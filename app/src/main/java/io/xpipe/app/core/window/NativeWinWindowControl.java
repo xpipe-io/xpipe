@@ -1,5 +1,7 @@
 package io.xpipe.app.core.window;
 
+import com.sun.jna.ptr.IntByReference;
+import io.xpipe.app.util.Rect;
 import javafx.stage.Window;
 
 import com.sun.jna.Library;
@@ -13,9 +15,28 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Method;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Getter
 public class NativeWinWindowControl {
+
+    public static Optional<NativeWinWindowControl> byPid(long pid) {
+        var ref = new AtomicReference<NativeWinWindowControl>();
+        User32.INSTANCE.EnumWindows((hWnd, data) -> {
+            var wpid = new IntByReference();
+            User32.INSTANCE.GetWindowThreadProcessId(hWnd, wpid);
+            if (wpid.getValue() == pid) {
+                ref.set(new NativeWinWindowControl(hWnd));
+                return false;
+            } else {
+                return true;
+            }
+        }, null);
+        return Optional.ofNullable(ref.get());
+    }
+
+    public static NativeWinWindowControl MAIN_WINDOW;
 
     private final WinDef.HWND windowHandle;
 
@@ -38,8 +59,28 @@ public class NativeWinWindowControl {
         this.windowHandle = windowHandle;
     }
 
-    public void move(int x, int y, int w, int h) {
-        User32.INSTANCE.SetWindowPos(windowHandle, new WinDef.HWND(), x, y, w, h, 0);
+    public void alwaysInFront() {
+        orderRelative(new WinDef.HWND(new Pointer( 0xFFFFFFFFFFFFFFFFL)));
+    }
+
+    public void orderRelative(WinDef.HWND predecessor) {
+        User32.INSTANCE.SetWindowPos(windowHandle, predecessor, 0, 0, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOMOVE | User32.SWP_NOSIZE);
+    }
+
+    public void show() {
+        User32.INSTANCE.ShowWindow(windowHandle,User32.SW_RESTORE);
+    }
+
+    public void close() {
+        User32.INSTANCE.CloseWindow(windowHandle);
+    }
+
+    public void minimize() {
+        User32.INSTANCE.ShowWindow(windowHandle,User32.SW_MINIMIZE);
+    }
+
+    public void move(Rect bounds) {
+        User32.INSTANCE.SetWindowPos(windowHandle, null, bounds.getX(), bounds.getY(), bounds.getW(), bounds.getH(), User32.SWP_NOACTIVATE);
     }
 
     public boolean setWindowAttribute(int attribute, boolean attributeValue) {

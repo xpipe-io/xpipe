@@ -7,11 +7,11 @@ import io.xpipe.core.store.FileEntry;
 public class BrowserIcons {
 
     public static Comp<?> createDefaultFileIcon() {
-        return PrettyImageHelper.ofFixedSizeSquare("default_file.svg", 24);
+        return PrettyImageHelper.ofFixedSizeSquare("browser/default_file.svg", 24);
     }
 
     public static Comp<?> createDefaultDirectoryIcon() {
-        return PrettyImageHelper.ofFixedSizeSquare("default_folder.svg", 24);
+        return PrettyImageHelper.ofFixedSizeSquare("browser/default_folder.svg", 24);
     }
 
     public static Comp<?> createIcon(BrowserIconFileType type) {
@@ -19,6 +19,6 @@ public class BrowserIcons {
     }
 
     public static Comp<?> createIcon(FileEntry entry) {
-        return PrettyImageHelper.ofFixedSizeSquare(FileIconManager.getFileIcon(entry, false), 24);
+        return PrettyImageHelper.ofFixedSizeSquare(FileIconManager.getFileIcon(entry), 24);
     }
 }

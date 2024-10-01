@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 27.7.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1"
+	 id="svg905" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" inkscape:export-filename="/Users/nkanaev/Desktop/icon.png" inkscape:export-xdpi="2048" inkscape:export-ydpi="2048" inkscape:version="1.0.1 (c497b03c, 2020-09-10)"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 48 48"
+	 style="enable-background:new 0 0 48 48;" xml:space="preserve">
+<style type="text/css">
+	.st0{clip-path:url(#SVGID_00000024002853008469432580000000837915572293060022_);}
+	.st1{fill:#FFFFFF;}
+	.st2{fill:none;stroke:#212529;stroke-width:2.9091;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:5.8182;}
+</style>
+<defs>
+	
+		<inkscape:perspective  id="perspective842" inkscape:persp3d-origin="24 : 16 : 1" inkscape:vp_x="0 : 24 : 1" inkscape:vp_y="0 : 1000 : 0" inkscape:vp_z="48 : 24 : 1" sodipodi:type="inkscape:persp3d">
+		</inkscape:perspective>
+</defs>
+<sodipodi:namedview  bordercolor="#666666" borderopacity="1" gridtolerance="10" guidetolerance="10" id="namedview907" inkscape:current-layer="svg905" inkscape:cx="30.960444" inkscape:cy="52.71331" inkscape:document-rotation="0" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-height="900" inkscape:window-maximized="0" inkscape:window-width="1440" inkscape:window-x="0" inkscape:window-y="0" inkscape:zoom="4.9128436" objecttolerance="10" pagecolor="#ffffff" showgrid="false">
+	</sodipodi:namedview>
+<g>
+	<defs>
+		<path id="SVGID_1_" d="M37.1,48H10.9C4.9,48,0,43.1,0,37.1V10.9C0,4.9,4.9,0,10.9,0h26.1C43.1,0,48,4.9,48,10.9v26.1
+			C48,43.1,43.1,48,37.1,48z"/>
+	</defs>
+	<clipPath id="SVGID_00000057121616961931241820000011000792683046627497_">
+		<use xlink:href="#SVGID_1_"  style="overflow:visible;"/>
+	</clipPath>
+	<g style="clip-path:url(#SVGID_00000057121616961931241820000011000792683046627497_);">
+		<rect id="rect913" class="st1" width="48" height="48"/>
+		<g id="g940" transform="matrix(1.4545455,0,0,1.4545455,6.545454,6.545454)">
+			<circle id="circle899" class="st2" cx="12" cy="5" r="3"/>
+			<line id="line901" class="st2" x1="12" y1="22" x2="12" y2="8"/>
+			<path id="path903" class="st2" d="M5,12H2c0,5.5,4.5,10,10,10s10-4.5,10-10h-3"/>
+		</g>
+	</g>
+</g>
+</svg>

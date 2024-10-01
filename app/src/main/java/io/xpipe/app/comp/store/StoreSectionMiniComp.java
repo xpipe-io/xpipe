@@ -8,6 +8,7 @@ import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
+import io.xpipe.app.fxcomps.util.LabelGraphic;
 import io.xpipe.app.storage.DataColor;
 
 import javafx.beans.binding.Bindings;
@@ -52,15 +53,9 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
         if (section.getWrapper() != null) {
             var root = new ButtonComp(section.getWrapper().nameProperty(), () -> {})
                     .apply(struc -> {
-                        var provider = section.getWrapper().getEntry().getProvider();
                         struc.get()
-                                .setGraphic(PrettyImageHelper.ofFixedSizeSquare(
-                                                provider != null
-                                                        ? provider.getDisplayIconFileName(section.getWrapper()
-                                                                .getEntry()
-                                                                .getStore())
-                                                        : null,
-                                                16)
+                                .setGraphic(PrettyImageHelper.ofFixedSize(
+                                                section.getWrapper().getIconFile(), 16, 16)
                                         .createRegion());
                     })
                     .apply(struc -> {
@@ -81,8 +76,9 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                     new SimpleBooleanProperty(section.getWrapper().getExpanded().get()
                             && section.getShownChildren().getList().size() > 0);
             var button = new IconButtonComp(
-                            Bindings.createStringBinding(
-                                    () -> expanded.get() ? "mdal-keyboard_arrow_down" : "mdal-keyboard_arrow_right",
+                            Bindings.createObjectBinding(
+                                    () -> new LabelGraphic.IconGraphic(
+                                            expanded.get() ? "mdal-keyboard_arrow_down" : "mdal-keyboard_arrow_right"),
                                     expanded),
                             () -> {
                                 expanded.set(!expanded.get());

@@ -39,7 +39,8 @@ public class BeaconRequestHandler<T> implements HttpHandler {
             }
         }
 
-        if (beaconInterface.requiresEnabledApi() && !AppPrefs.get().enableHttpApi().get()) {
+        if (beaconInterface.requiresEnabledApi()
+                && !AppPrefs.get().enableHttpApi().get()) {
             var ex = new BeaconServerException("HTTP API is not enabled in the settings menu");
             writeError(exchange, ex, 403);
             return;

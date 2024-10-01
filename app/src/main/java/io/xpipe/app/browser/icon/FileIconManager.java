@@ -1,7 +1,5 @@
 package io.xpipe.app.browser.icon;
 
-import io.xpipe.app.core.AppImages;
-import io.xpipe.app.core.AppResources;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
 
@@ -13,12 +11,11 @@ public class FileIconManager {
         if (!loaded) {
             BrowserIconFileType.loadDefinitions();
             BrowserIconDirectoryType.loadDefinitions();
-            AppImages.loadDirectory(AppResources.XPIPE_MODULE, "browser_icons", true, false);
             loaded = true;
         }
     }
 
-    public static synchronized String getFileIcon(FileEntry entry, boolean open) {
+    public static synchronized String getFileIcon(FileEntry entry) {
         if (entry == null) {
             return null;
         }
@@ -33,13 +30,11 @@ public class FileIconManager {
         } else {
             for (var f : BrowserIconDirectoryType.getAll()) {
                 if (f.matches(r)) {
-                    return f.getIcon(r, open);
+                    return f.getIcon(r);
                 }
             }
         }
 
-        return r.getKind() == FileKind.DIRECTORY
-                ? (open ? "default_folder_opened.svg" : "default_folder.svg")
-                : "default_file.svg";
+        return "browser/" + (r.getKind() == FileKind.DIRECTORY ? "default_folder.svg" : "default_file.svg");
     }
 }

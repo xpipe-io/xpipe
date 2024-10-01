@@ -130,7 +130,6 @@ public abstract class StorageElement {
         notifyUpdate(false, false);
     }
 
-
     public void setLastUsed(Instant lastUsed) {
         if (lastUsed.equals(this.lastUsed)) {
             return;

@@ -19,6 +19,8 @@ public interface ShellDumbMode {
         return function.prepareWithoutInitCommand();
     }
 
+    default void prepareInlineShellSwitch(ShellControl shellControl) throws Exception {}
+
     default void prepareDumbInit(ShellControl shellControl) throws Exception {}
 
     default void prepareDumbExit(ShellControl shellControl) throws IOException {

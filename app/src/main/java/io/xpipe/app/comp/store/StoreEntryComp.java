@@ -10,12 +10,12 @@ import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.LabelComp;
-import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.DerivedObservableList;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -33,7 +33,6 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 
 import atlantafx.base.layout.InputGroup;
 import atlantafx.base.theme.Styles;
@@ -192,26 +191,7 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     protected Node createIcon(int w, int h) {
-        var img = getWrapper().disabledProperty().get()
-                ? "disabled_icon.png"
-                : getWrapper()
-                        .getEntry()
-                        .getProvider()
-                        .getDisplayIconFileName(getWrapper().getEntry().getStore());
-        var imageComp = PrettyImageHelper.ofFixedSize(img, w, h);
-        var storeIcon = imageComp.createRegion();
-        if (getWrapper().getValidity().getValue().isUsable()) {
-            new TooltipAugment<>(getWrapper().getEntry().getProvider().displayName(), null).augment(storeIcon);
-        }
-
-        var stack = new StackPane(storeIcon);
-        stack.setMinHeight(w + 7);
-        stack.setMinWidth(w + 7);
-        stack.setMaxHeight(w + 7);
-        stack.setMaxWidth(w + 7);
-        stack.getStyleClass().add("icon");
-        stack.setAlignment(Pos.CENTER);
-        return stack;
+        return new StoreIconComp(getWrapper(), w, h).createRegion();
     }
 
     protected Region createButtonBar() {
@@ -265,12 +245,14 @@ public abstract class StoreEntryComp extends SimpleComp {
             button.apply(new ContextMenuAugment<>(
                     mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, keyEvent -> false, () -> {
                         var cm = ContextMenuHelper.create();
-                        branch.getChildren(getWrapper().getEntry().ref()).forEach(childProvider -> {
-                            var menu = buildMenuItemForAction(childProvider);
-                            if (menu != null) {
-                                cm.getItems().add(menu);
-                            }
-                        });
+                        branch.getChildren(getWrapper().getEntry().ref()).stream()
+                                .filter(actionProvider -> getWrapper().showActionProvider(actionProvider))
+                                .forEach(childProvider -> {
+                                    var menu = buildMenuItemForAction(childProvider);
+                                    if (menu != null) {
+                                        cm.getItems().add(menu);
+                                    }
+                                });
                         return cm;
                     }));
         }
@@ -341,14 +323,16 @@ public abstract class StoreEntryComp extends SimpleComp {
 
         if (DataStorage.get().isRootEntry(getWrapper().getEntry())) {
             var color = new Menu(AppI18n.get("color"), new FontIcon("mdi2f-format-color-fill"));
-            var none = new MenuItem("None");
+            var none = new MenuItem();
+            none.textProperty().bind(AppI18n.observable("none"));
             none.setOnAction(event -> {
                 getWrapper().getEntry().setColor(null);
                 event.consume();
             });
             color.getItems().add(none);
             Arrays.stream(DataColor.values()).forEach(dataStoreColor -> {
-                MenuItem m = new MenuItem(DataStoreFormatter.capitalize(dataStoreColor.getId()));
+                MenuItem m = new MenuItem();
+                m.textProperty().bind(AppI18n.observable(dataStoreColor.getId()));
                 m.setOnAction(event -> {
                     getWrapper().getEntry().setColor(dataStoreColor);
                     event.consume();
@@ -463,6 +447,7 @@ public abstract class StoreEntryComp extends SimpleComp {
 
         if (branch != null) {
             var items = branch.getChildren(getWrapper().getEntry().ref()).stream()
+                    .filter(actionProvider -> getWrapper().showActionProvider(actionProvider))
                     .map(c -> buildMenuItemForAction(c))
                     .toList();
             menu.getItems().addAll(items);
@@ -475,6 +460,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                     getWrapper()
                             .runAction(leaf.createAction(getWrapper().getEntry().ref()), leaf.showBusy());
                 });
+                event.consume();
             });
             menu.getItems().add(run);
 
@@ -493,6 +479,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                                             .getName(getWrapper().getEntry().ref())
                                             .getValue() + ")");
                 });
+                event.consume();
             });
             menu.getItems().add(sc);
 
@@ -504,6 +491,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                         AppActionLinkDetector.setLastDetectedAction(url);
                         ClipboardHelper.copyUrl(url);
                     });
+                    event.consume();
                 });
                 menu.getItems().add(l);
             }
@@ -518,10 +506,13 @@ public abstract class StoreEntryComp extends SimpleComp {
                 return;
             }
 
-            event.consume();
             ThreadHelper.runFailableAsync(() -> {
                 getWrapper().runAction(leaf.createAction(getWrapper().getEntry().ref()), leaf.showBusy());
             });
+            event.consume();
+            if (event.getTarget() instanceof Menu m) {
+                m.getParentPopup().hide();
+            }
         });
 
         return item;

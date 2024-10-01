@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   id="Layer_1"
+   data-name="Layer 1"
+   viewBox="0 0 219.6481 223.2565"
+   version="1.1"
+   sodipodi:docname="sshConfig_icon.svg"
+   inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
+   width="219.6481"
+   height="223.2565"
+   inkscape:export-filename="C:\Projects\xpipe\xpipex\ext\proc\src\main\resources\io\xpipe\ext\proc\resources\img\sshConfig_icon-16.png"
+   inkscape:export-xdpi="6.8799787"
+   inkscape:export-ydpi="6.8799787"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <sodipodi:namedview
+     id="namedview873"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="false"
+     showgrid="false"
+     inkscape:zoom="2.0944328"
+     inkscape:cx="9.3103966"
+     inkscape:cy="95.491247"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="Layer_1" />
+  <defs
+     id="defs856">
+    <style
+       id="style854">.cls-1{fill:#ac55ff;}</style>
+  </defs>
+  <title
+     id="title858">ssh draft</title>
+  <path
+     class="cls-1"
+     d="M 178.64,18.636496 H 26 a 26,26 0 0 0 -26,26 V 197.2565 a 26,26 0 0 0 26,26 h 152.64 a 26,26 0 0 0 26,-26 V 44.616496 a 26,26 0 0 0 -26,-25.98 z m 14,178.620004 a 14,14 0 0 1 -14,14 H 26 a 14,14 0 0 1 -14,-14 V 44.616496 a 14,14 0 0 1 14,-14 h 152.64 a 14,14 0 0 1 14,14 z"
+     id="path860"
+     style="fill:#2e2eff;fill-opacity:1" />
+  <path
+     class="cls-1"
+     d="m 157.67,155.0565 h -15.61 v -22 h -12 v 57.54 h 12 v -23.55 h 15.61 v 23.55 h 12 v -57.54 h -12 z"
+     id="path862"
+     style="fill:#2e2eff;fill-opacity:1" />
+  <path
+     class="cls-1"
+     d="m 60.57,156.4065 c -1.71,-0.49 -3.21,-0.9 -4.53,-1.25 -4.29,-1.15 -6.11,-1.67 -8.09,-3.15 a 3.33,3.33 0 0 1 -1.38,-3.23 c 0.24,-1.49 1.44,-2.67 3.38,-3.32 4.74,-1.59 9.78,1.34 11.21,2.27 l 6.55,-10 c -3.29,-2.15 -12,-6.8 -21.56,-3.6 -6.2,2.07 -10.47,6.86 -11.42,12.8 a 15.34,15.34 0 0 0 6.06,14.74 c 3.9,2.9 7.54,3.88 12.15,5.11 1.26,0.34 2.7,0.72 4.28,1.18 4.88,1.42 4,5.36 4,5.52 -0.28,1.22 -1.66,5.17 -7.55,5.17 a 15.69,15.69 0 0 1 -10.9,-4.23 l -8.36,8.6 a 27.82,27.82 0 0 0 19.26,7.62 c 9.49,0 17.22,-5.8 19.230001,-14.44 a 16.53,16.53 0 0 0 -1.5,-11.23 17.17,17.17 0 0 0 -10.820001,-8.52 z"
+     id="path864"
+     style="fill:#2e2eff;fill-opacity:1" />
+  <path
+     class="cls-1"
+     d="m 107.46,156.4065 c -1.71,-0.49 -3.21,-0.9 -4.54,-1.25 -4.289997,-1.15 -6.109997,-1.67 -8.089997,-3.15 a 3.32,3.32 0 0 1 -1.37,-3.23 c 0.23,-1.49 1.44,-2.67 3.38,-3.32 4.739997,-1.59 9.769997,1.34 11.199997,2.27 l 6.56,-10 c -3.3,-2.15 -12,-6.8 -21.569997,-3.6 -6.190002,2.07 -10.460002,6.86 -11.410002,12.8 a 15.34,15.34 0 0 0 6,14.74 c 3.900002,2.9 7.540002,3.88 12.150002,5.11 1.269997,0.34 2.699997,0.72 4.289997,1.18 4.88,1.42 4,5.36 4,5.52 -0.29,1.22 -1.66,5.18 -7.55,5.18 a 15.67,15.67 0 0 1 -10.899999,-4.24 l -8.29,8.52 a 27.78,27.78 0 0 0 19.259999,7.62 c 9.49,0 17.22,-5.8 19.22,-14.44 a 16.53,16.53 0 0 0 -1.48,-11.18 17.17,17.17 0 0 0 -10.82,-8.52 z"
+     id="path866"
+     style="fill:#2e2eff;fill-opacity:1" />
+  <path
+     class="cls-1"
+     d="M 90.200001,95.696495 H 154.13 V 107.6965 H 90.200001 Z"
+     id="path868"
+     style="fill:#2e2eff;fill-opacity:1" />
+  <path
+     class="cls-1"
+     d="M 50.64,65.936496 75.150001,79.826495 50.64,93.716495 V 107.4965 L 90.260001,85.036495 v -10.43 L 50.64,52.156496 Z"
+     id="path870"
+     style="fill:#2e2eff;fill-opacity:1" />
+  <metadata
+     id="metadata932">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title>ssh draft</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <circle
+     style="fill:#2e2eff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.21292;stroke-linecap:round"
+     id="path851"
+     cx="177.72386"
+     cy="41.92424"
+     r="41.92424" />
+  <path
+     style="line-height:normal;-inkscape-font-specification:'Bitstream Vera Sans';text-indent:0;text-align:start;text-transform:none;fill:#f6f6f6;fill-opacity:1;stroke:#f6f6f6;stroke-width:1.9231;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="m 160.31963,15.390235 v 1.04961 46.182822 1.04961 h 1.0496 35.68674 1.0496 V 62.622667 29.03516 28.608756 l -0.2952,-0.328003 -12.59531,-12.595315 -0.32801,-0.295203 h -0.4264 -23.09142 z m 2.09922,2.099219 h 20.99219 v 11.545706 1.04961 h 1.04961 11.5457 v 31.488288 h -33.5875 z m 23.09141,1.508814 8.98728,8.987283 h -8.98728 z"
+     overflow="visible"
+     enable-background="accumulate"
+     font-family="'Bitstream Vera Sans'"
+     id="path975" />
+</svg>

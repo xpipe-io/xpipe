@@ -1,9 +1,9 @@
 package io.xpipe.app.core.check;
 
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.OsType;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.core.process.ProcessOutputException;
 
 import lombok.Value;

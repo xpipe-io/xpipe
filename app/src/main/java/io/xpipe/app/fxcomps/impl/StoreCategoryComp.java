@@ -12,11 +12,11 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.util.DerivedObservableList;
+import io.xpipe.app.fxcomps.util.LabelGraphic;
 import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.util.ContextMenuHelper;
-import io.xpipe.app.util.DataStoreFormatter;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -57,11 +57,11 @@ public class StoreCategoryComp extends SimpleComp {
                 .createRegion();
         var showing = new SimpleBooleanProperty();
 
-        var expandIcon = Bindings.createStringBinding(
+        var expandIcon = Bindings.createObjectBinding(
                 () -> {
                     var exp = category.getExpanded().get()
                             && category.getChildren().size() > 0;
-                    return exp ? "mdal-keyboard_arrow_down" : "mdal-keyboard_arrow_right";
+                    return new LabelGraphic.IconGraphic(exp ? "mdal-keyboard_arrow_down" : "mdal-keyboard_arrow_right");
                 },
                 category.getExpanded(),
                 category.getChildren());
@@ -78,18 +78,18 @@ public class StoreCategoryComp extends SimpleComp {
                 .tooltipKey("expand", new KeyCodeCombination(KeyCode.SPACE));
 
         var hover = new SimpleBooleanProperty();
-        var statusIcon = Bindings.createStringBinding(
+        var statusIcon = Bindings.createObjectBinding(
                 () -> {
                     if (hover.get()) {
-                        return "mdomz-settings";
+                        return new LabelGraphic.IconGraphic("mdomz-settings");
                     }
 
                     if (!DataStorage.get().supportsSharing()
                             || !category.getCategory().canShare()) {
-                        return "mdi2g-git";
+                        return new LabelGraphic.IconGraphic("mdi2g-git");
                     }
 
-                    return category.getSync().getValue() ? "mdi2g-git" : "mdi2c-cancel";
+                    return new LabelGraphic.IconGraphic(category.getSync().getValue() ? "mdi2g-git" : "mdi2c-cancel");
                 },
                 category.getSync(),
                 hover);
@@ -196,14 +196,16 @@ public class StoreCategoryComp extends SimpleComp {
         contextMenu.getItems().add(new SeparatorMenuItem());
 
         var color = new Menu(AppI18n.get("color"), new FontIcon("mdi2f-format-color-fill"));
-        var none = new MenuItem("None");
+        var none = new MenuItem();
+        none.textProperty().bind(AppI18n.observable("none"));
         none.setOnAction(event -> {
             category.getCategory().setColor(null);
             event.consume();
         });
         color.getItems().add(none);
         Arrays.stream(DataColor.values()).forEach(dataStoreColor -> {
-            MenuItem m = new MenuItem(DataStoreFormatter.capitalize(dataStoreColor.getId()));
+            MenuItem m = new MenuItem();
+            m.textProperty().bind(AppI18n.observable(dataStoreColor.getId()));
             m.setOnAction(event -> {
                 category.getCategory().setColor(dataStoreColor);
                 event.consume();

@@ -34,6 +34,8 @@ public interface ProcessControl extends AutoCloseable {
     @Override
     void close() throws Exception;
 
+    void shutdown() throws Exception;
+
     void kill();
 
     ProcessControl start() throws Exception;

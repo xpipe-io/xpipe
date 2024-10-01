@@ -8,8 +8,11 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.*;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataStoreProviders;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.resources.AppResources;
+import io.xpipe.app.resources.SystemIcons;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.update.XPipeDistributionType;
@@ -44,6 +47,7 @@ public class BaseMode extends OperationMode {
         AppCertutilCheck.check();
         AppBundledToolsCheck.check();
         AppAvCheck.check();
+        AppJavaOptionsCheck.check();
         AppSid.init();
         LocalShell.init();
         AppShellCheck.check();
@@ -56,12 +60,14 @@ public class BaseMode extends OperationMode {
         DataStorageSyncHandler.getInstance().retrieveSyncedData();
         AppPrefs.initSharedRemote();
         UnlockAlert.showIfNeeded();
+        SystemIcons.init();
         DataStorage.init();
         DataStoreProviders.init();
         AppFileWatcher.init();
         FileBridge.init();
         BlobManager.init();
         ActionProvider.initProviders();
+        TerminalView.init();
         TrackEvent.info("Finished base components initialization");
         initialized = true;
     }
@@ -70,7 +76,7 @@ public class BaseMode extends OperationMode {
     public void onSwitchFrom() {}
 
     @Override
-    public void finalTeardown() {
+    public void finalTeardown() throws Exception {
         TrackEvent.info("Background mode shutdown started");
         BrowserSessionModel.DEFAULT.reset();
         SshLocalBridge.reset();
@@ -78,12 +84,14 @@ public class BaseMode extends OperationMode {
         DataStoreProviders.reset();
         DataStorage.reset();
         AppPrefs.reset();
+        DataStorageSyncHandler.getInstance().reset();
+        LocalShell.reset();
+        ProcessControlProvider.get().reset();
         AppResources.reset();
         AppExtensionManager.reset();
         AppDataLock.unlock();
         BlobManager.reset();
         FileBridge.reset();
-        // Shut down server last to keep a non-daemon thread running
         AppBeaconServer.reset();
         TrackEvent.info("Background mode shutdown finished");
     }

@@ -9,7 +9,7 @@ import com.sun.net.httpserver.HttpExchange;
 public class TerminalLaunchExchangeImpl extends TerminalLaunchExchange {
     @Override
     public Object handle(HttpExchange exchange, Request msg) throws BeaconClientException {
-        var r = TerminalLauncherManager.performLaunch(msg.getRequest());
+        var r = TerminalLauncherManager.launchExchange(msg.getRequest());
         return Response.builder().targetFile(r).build();
     }
 

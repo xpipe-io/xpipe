@@ -3,8 +3,10 @@ package io.xpipe.app.core.mode;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppFontLoadingCheck;
+import io.xpipe.app.core.check.AppGpuCheck;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.update.UpdateAvailableAlert;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.ThreadHelper;
@@ -29,11 +31,14 @@ public abstract class PlatformMode extends OperationMode {
         PlatformState.initPlatformOrThrow();
         // Check if we can load system fonts or fail
         AppFontLoadingCheck.check();
+        // Can be loaded async
+        var imageThread = ThreadHelper.runFailableAsync(() -> {
+            AppImages.init();
+        });
+        AppGpuCheck.check();
         AppFont.init();
         AppTheme.init();
         AppStyle.init();
-        AppImages.init();
-        AppLayoutModel.init();
         TrackEvent.info("Finished essential component initialization before platform");
 
         TrackEvent.info("Launching application ...");
@@ -56,6 +61,7 @@ public abstract class PlatformMode extends OperationMode {
         }
 
         StoreViewState.init();
+        imageThread.join();
     }
 
     @Override

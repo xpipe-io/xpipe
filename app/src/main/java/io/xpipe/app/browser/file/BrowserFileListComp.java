@@ -194,9 +194,9 @@ public final class BrowserFileListComp extends SimpleComp {
                 ? unix.getGroup()
                 : m.getCache().getGroups().getOrDefault(unix.getGid(), "?");
         var uid = String.valueOf(
-                        unix.getUid() != null ? unix.getUid() : m.getCache().getUidForUser(user));
+                unix.getUid() != null ? unix.getUid() : m.getCache().getUidForUser(user));
         var gid = String.valueOf(
-                        unix.getGid() != null ? unix.getGid() : m.getCache().getGidForGroup(group));
+                unix.getGid() != null ? unix.getGid() : m.getCache().getGidForGroup(group));
         if (uid.equals(gid) && user.equals(group)) {
             return user + " [" + uid + "]";
         }
@@ -248,7 +248,6 @@ public final class BrowserFileListComp extends SimpleComp {
             if (inCooldown) {
                 lastType.set(Instant.now());
                 event.consume();
-                return;
             } else {
                 lastType.set(null);
                 typedSelection.set("");
@@ -256,8 +255,8 @@ public final class BrowserFileListComp extends SimpleComp {
                 if (!recursive) {
                     updateTypedSelection(table, lastType, event, true);
                 }
-                return;
             }
+            return;
         }
 
         lastType.set(Instant.now());
@@ -631,6 +630,10 @@ public final class BrowserFileListComp extends SimpleComp {
                             () -> getTableRow().getItem(), fileList.getFileSystemModel())
                     .hide(Bindings.createBooleanBinding(
                             () -> {
+                                if (getTableRow() == null) {
+                                    return true;
+                                }
+
                                 var item = getTableRow().getItem();
                                 var notDir = item.getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY;
                                 var isParentLink = item.getRawFileEntry()

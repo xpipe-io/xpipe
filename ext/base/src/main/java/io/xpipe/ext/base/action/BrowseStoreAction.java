@@ -55,7 +55,8 @@ public class BrowseStoreAction implements ActionProvider {
 
         @Override
         public void execute() {
-            DataStoreEntryRef<FileSystemStore> replacement = ProcessControlProvider.get().replace(entry.ref());
+            DataStoreEntryRef<FileSystemStore> replacement =
+                    ProcessControlProvider.get().replace(entry.ref());
             BrowserSessionModel.DEFAULT.openFileSystemAsync(replacement, null, new SimpleBooleanProperty());
             AppLayoutModel.get().selectBrowser();
         }

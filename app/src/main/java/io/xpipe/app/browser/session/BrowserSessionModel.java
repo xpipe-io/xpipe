@@ -51,11 +51,12 @@ public class BrowserSessionModel extends BrowserAbstractSessionModel<BrowserSess
             for (var o : new ArrayList<>(sessionEntries)) {
                 // Don't close busy connections gracefully
                 // as we otherwise might lock up
-                if (o.canImmediatelyClose()) {
+                if (!o.canImmediatelyClose()) {
                     continue;
                 }
 
-                closeSync(o);
+                // Prevent blocking of shutdown
+                closeAsync(o);
             }
             BrowserSavedStateImpl.get().save();
         }

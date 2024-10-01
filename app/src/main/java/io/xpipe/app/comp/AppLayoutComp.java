@@ -11,6 +11,7 @@ import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 
+import io.xpipe.app.util.TerminalView;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Parent;
@@ -49,14 +50,16 @@ public class AppLayoutComp extends Comp<CompStructure<Pane>> {
         var sidebarR = sidebar.createRegion();
         pane.setRight(sidebarR);
         model.getSelected().addListener((c, o, n) -> {
-            if (o != null && o.equals(model.getEntries().get(2))) {
+            if (o != null && o.equals(model.getEntries().get(3))) {
                 AppPrefs.get().save();
                 DataStorage.get().saveAsync();
             }
 
-            if (o != null && o.equals(model.getEntries().get(1))) {
+            if (o != null && o.equals(model.getEntries().get(0))) {
                 StoreViewState.get().updateDisplay();
             }
+
+            TerminalView.get().toggleView(model.getEntries().get(2).equals(n));
         });
         pane.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             sidebarR.getChildrenUnmodifiable().forEach(node -> {
@@ -64,7 +67,6 @@ public class AppLayoutComp extends Comp<CompStructure<Pane>> {
                 if (shortcut != null && shortcut.match(event)) {
                     ((ButtonBase) ((Parent) node).getChildrenUnmodifiable().get(1)).fire();
                     event.consume();
-                    return;
                 }
             });
         });

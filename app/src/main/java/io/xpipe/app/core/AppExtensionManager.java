@@ -1,10 +1,11 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.ext.ExtensionException;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.resources.AppResources;
 import io.xpipe.core.process.OsType;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.ModuleLayerLoader;
 import io.xpipe.core.util.XPipeInstallation;
@@ -55,8 +56,8 @@ public class AppExtensionManager {
                     ErrorEvent.fromThrowable(t).handle();
                 });
             } catch (Throwable t) {
-                throw new ExtensionException(
-                        "Service provider initialization failed. Is the installation data corrupt?", t);
+                throw ExtensionException.corrupt(
+                        "Service provider initialization failed", t);
             }
         }
     }
@@ -72,7 +73,7 @@ public class AppExtensionManager {
     private void loadBaseExtension() {
         var baseModule = findAndParseExtension("base", ModuleLayer.boot());
         if (baseModule.isEmpty()) {
-            throw new ExtensionException("Missing base module. Is the installation data corrupt?");
+            throw ExtensionException.corrupt("Missing base module");
         }
 
         baseLayer = baseModule.get().getModule().getLayer();
@@ -205,8 +206,8 @@ public class AppExtensionManager {
                 var ext = getExtensionFromDir(layer, dir);
                 if (ext.isEmpty()) {
                     if (AppProperties.get().isFullVersion()) {
-                        throw new ExtensionException(
-                                "Unable to load extension from directory " + dir + ". Is the installation corrupted?");
+                        throw ExtensionException.corrupt(
+                                "Unable to load extension from directory " + dir);
                     }
                 } else {
                     if (loadedExtensions.stream()

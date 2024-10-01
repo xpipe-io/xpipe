@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 27.7.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
+	 style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill-rule:evenodd;clip-rule:evenodd;}
+	.st1{fill-rule:evenodd;clip-rule:evenodd;fill:#FFFFFF;}
+	.st2{fill-rule:evenodd;clip-rule:evenodd;fill:#00F2E6;}
+	.st3{fill-rule:evenodd;clip-rule:evenodd;fill:#00B9F1;}
+	.st4{fill-rule:evenodd;clip-rule:evenodd;fill:#D63AFF;}
+	.st5{fill-rule:evenodd;clip-rule:evenodd;fill:#FB015B;}
+</style>
+<g id="Page-1" sketch:type="MSPage">
+	<g id="jwt_logo" transform="translate(-250.000000, 0.000000)" sketch:type="MSLayerGroup">
+		<g id="Group" sketch:type="MSShapeGroup">
+			<g transform="translate(250.000000, 0.000000)">
+				<path class="st0" d="M406.8,512H105.2C47.1,512,0,464.9,0,406.8V105.2C0,47.1,47.1,0,105.2,0h301.6C464.9,0,512,47.1,512,105.2
+					v301.6C512,464.9,464.9,512,406.8,512z"/>
+				<g id="Shape" transform="translate(50.000000, 50.000000)">
+					<path class="st1" d="M225.2,146.9V78h-38.4v68.9l19.2,26.4L225.2,146.9z"/>
+					<path class="st1" d="M186.8,265.1V334h38.4v-68.9L206,238.8L186.8,265.1z"/>
+					<path class="st2" d="M225.2,265.1l40.4,55.8l31.2-22.8l-40.7-55.6l-31-10.2V265.1z"/>
+					<path class="st2" d="M186.8,146.9l-40.4-55.8l-31.2,22.8l40.7,55.6l31,10.2V146.9z"/>
+					<path class="st3" d="M155.8,169.4l-65.5-21.2l-12,36.6l65.5,21.2l31.2-10L155.8,169.4z"/>
+					<path class="st3" d="M237,216l19.2,26.6l65.5,21.2l12-36.6L268.2,206L237,216z"/>
+					<path class="st4" d="M268.2,206l65.5-21.2l-12-36.6l-65.5,21.2L237,196L268.2,206z"/>
+					<path class="st4" d="M143.8,206l-65.5,21.2l12,36.6l65.5-21.2L175,216L143.8,206z"/>
+					<path class="st5" d="M155.8,242.6l-40.7,55.6l31.2,22.8l40.4-55.8v-32.8L155.8,242.6z"/>
+					<path class="st5" d="M256.2,169.4l40.7-55.6l-31.2-22.8l-40.4,55.8v32.8L256.2,169.4z"/>
+				</g>
+			</g>
+		</g>
+	</g>
+</g>
+</svg>

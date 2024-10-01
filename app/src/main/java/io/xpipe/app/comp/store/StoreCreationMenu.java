@@ -22,7 +22,7 @@ public class StoreCreationMenu {
         automatically.setGraphic(new FontIcon("mdi2e-eye-plus-outline"));
         automatically.textProperty().bind(AppI18n.observable("addAutomatically"));
         automatically.setOnAction(event -> {
-            ScanAlert.showAsync(null);
+            ScanAlert.showAsync(null, null);
             event.consume();
         });
         menu.getItems().add(automatically);
@@ -32,17 +32,21 @@ public class StoreCreationMenu {
 
         menu.getItems().add(category("addDesktop", "mdi2c-camera-plus", DataStoreCreationCategory.DESKTOP, null));
 
-        menu.getItems().add(category("addShell", "mdi2t-text-box-multiple", DataStoreCreationCategory.SHELL, "shellEnvironment"));
+        menu.getItems()
+                .add(category(
+                        "addShell", "mdi2t-text-box-multiple", DataStoreCreationCategory.SHELL, "shellEnvironment"));
 
         menu.getItems()
                 .add(category("addScript", "mdi2s-script-text-outline", DataStoreCreationCategory.SCRIPT, "script"));
 
         menu.getItems()
-                .add(category("addTunnel", "mdi2v-vector-polyline-plus", DataStoreCreationCategory.TUNNEL, "customService"));
+                .add(category(
+                        "addTunnel", "mdi2v-vector-polyline-plus", DataStoreCreationCategory.TUNNEL, "customService"));
 
         menu.getItems().add(category("addSerial", "mdi2s-serial-port", DataStoreCreationCategory.SERIAL, "serial"));
 
-        // menu.getItems().add(category("addDatabase", "mdi2d-database-plus", DataStoreCreationCategory.DATABASE, null));
+        // menu.getItems().add(category("addDatabase", "mdi2d-database-plus", DataStoreCreationCategory.DATABASE,
+        // null));
     }
 
     private static MenuItem category(
@@ -85,8 +89,7 @@ public class StoreCreationMenu {
                 .sorted(Comparator.comparingInt(dataStoreProvider -> dataStoreProvider.getOrderPriority()))
                 .toList();
         int lastOrder = providers.getFirst().getOrderPriority();
-        for (int i = 0; i < providers.size(); i++) {
-            var dataStoreProvider = providers.get(i);
+        for (io.xpipe.app.ext.DataStoreProvider dataStoreProvider : providers) {
             if (dataStoreProvider.getOrderPriority() != lastOrder) {
                 menu.getItems().add(new SeparatorMenuItem());
                 lastOrder = dataStoreProvider.getOrderPriority();

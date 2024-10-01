@@ -176,7 +176,8 @@ public class StoreSection {
                     var showProvider = true;
                     try {
                         showProvider = other.getEntry().getProvider().shouldShow(other);
-                    } catch (Exception ignored) {}
+                    } catch (Exception ignored) {
+                    }
                     return showProvider;
                 },
                 e.getPersistentState(),

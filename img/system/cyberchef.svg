@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 27.7.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1"
+	 id="svg4819" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" inkscape:export-xdpi="337.5" sodipodi:docname="cyberchef_hat.svg"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
+	 style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<style type="text/css">
+	.st0{filter:url(#filter4682);}
+	.st1{fill:#808080;}
+	.st2{fill:#B3B3B3;}
+	.st3{fill:#CCCCCC;}
+	.st4{fill:#E6E6E6;}
+</style>
+<filter  id="filter4682" inkscape:label="Drop Shadow" style="color-interpolation-filters:sRGB">
+	<feFlood  flood-color="rgb(0,0,0)" flood-opacity="0.498039" id="feFlood4684" result="flood"></feFlood>
+	<feComposite  id="feComposite4686" in="flood" in2="SourceGraphic" operator="in" result="composite1"></feComposite>
+	<feGaussianBlur  id="feGaussianBlur4688" in="composite1" result="blur" stdDeviation="5"></feGaussianBlur>
+	<feOffset  dx="1.34615e-014" dy="0.7" id="feOffset4690" result="offset"></feOffset>
+	<feComposite  id="feComposite4692" in="SourceGraphic" in2="offset" operator="over" result="composite2"></feComposite>
+</filter>
+<sodipodi:namedview  bordercolor="#666666" borderopacity="1.0" fit-margin-bottom="0" fit-margin-left="0" fit-margin-right="0" fit-margin-top="0" id="base" inkscape:current-layer="layer1" inkscape:cx="40.62369" inkscape:cy="206.8588" inkscape:document-units="px" inkscape:pageopacity="0.0" inkscape:pageshadow="2" inkscape:snap-page="false" inkscape:window-height="1138" inkscape:window-maximized="1" inkscape:window-width="1920" inkscape:window-x="-8" inkscape:window-y="-8" inkscape:zoom="1.979899" pagecolor="#ffffff" showgrid="false" showguides="false" units="px">
+	</sodipodi:namedview>
+<g id="layer1" transform="translate(-61.812519,-579.37011)" inkscape:groupmode="layer" inkscape:label="Layer 1">
+	<rect id="path5494-5-0" x="230.8" y="934.3" width="0" height="0"/>
+	<g id="g4673" transform="translate(5.1770318,2.0203049)" class="st0">
+		<path id="rect5513_00000009577296160720408050000012299069017901198774_" inkscape:connector-curvature="0" class="st1" d="
+			M287.7,989v49.9h152.8V989L287.7,989L287.7,989z"/>
+		<path id="path5516_00000023993831347713664670000016381420833678626202_" inkscape:connector-curvature="0" class="st2" d="
+			M287.7,989H134.9v49.9h152.8L287.7,989L287.7,989z"/>
+		
+			<path id="path5432_00000111875906202437826970000014422903456263522711_" inkscape:connector-curvature="0" sodipodi:nodetypes="cccccccccccscccscccscccccsscccccssscccc" class="st3" d="
+			M301.3,610.1c-4.6,0-9.1,0.4-13.7,0.9c0,144.3,0,236.7,0,385.1H448v-80.5c0.5-3.4,1-6.9,1.3-9.6l1.2-11l10-4l10-4l14.6,11.8
+			c8,6.5,16.1,11.8,18,11.8c4.8,0,38.8-35.1,38.8-40c0-2.1-5.2-10.4-11.5-18.6l-11.5-14.8l3.6-8.5c2-4.7,4.2-9.1,4.8-9.8
+			c0.6-0.7,10.1-2.8,20.9-4.6l19.8-3.3l0.5-27.2c0.3-16.3-0.2-28-1.3-29c-1-1-10.4-3.1-20.8-4.7l-19.1-2.9l-4.2-10.5l-4.2-10.5
+			l11.5-14.9c6.3-8.2,11.5-16.1,11.5-17.6c0-3.2-35.7-40.5-38.8-40.5c-1.1,0-9.1,5.4-17.8,12l-15.7,12l-9.6-4l-9.3-3.9
+			c-0.1,0-0.2-0.1-0.3-0.1l-3-19.2c-1.6-10.6-3.8-20.3-4.9-21.6c-1.5-1.8-14.2-2.7-26.8-2.6c-12.7,0.1-25.3,1.1-26.9,2.9
+			c-1.1,1.3-3,9.2-4.4,18.2C363.1,623.6,332.9,610.2,301.3,610.1L301.3,610.1z"/>
+		<path id="path5490_00000018199263273366371360000013499692473267959976_" inkscape:connector-curvature="0" class="st3" d="
+			M287.7,1030.2v26.4H448v-26.4H287.7z"/>
+		<path id="path5488_00000023255143700853136200000008369493140482104482_" inkscape:connector-curvature="0" class="st4" d="
+			M287.7,611.1c-31.4,3.9-59.7,20.7-78.4,46.6c-12.4-4.6-25.5-7-38.7-7c-63,0-114,51.7-114,115.6c0,46.6,27.6,88.6,70,106.6v123.3
+			h161L287.7,611.1L287.7,611.1z"/>
+		<path id="path5492_00000107564739733608024550000002597578398940449720_" inkscape:connector-curvature="0" class="st4" d="
+			M287.7,1030.2h-161v26.4h161L287.7,1030.2L287.7,1030.2z"/>
+	</g>
+</g>
+</svg>

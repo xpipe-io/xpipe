@@ -31,11 +31,11 @@ public abstract class ScanProvider {
         String nameKey;
         boolean disabled;
         boolean defaultSelected;
-        FailableRunnable<Exception> scanner;
+        FailableRunnable<Throwable> scanner;
         String licenseFeatureId;
 
         public ScanOperation(
-                String nameKey, boolean disabled, boolean defaultSelected, FailableRunnable<Exception> scanner) {
+                String nameKey, boolean disabled, boolean defaultSelected, FailableRunnable<Throwable> scanner) {
             this.nameKey = nameKey;
             this.disabled = disabled;
             this.defaultSelected = defaultSelected;

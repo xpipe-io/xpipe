@@ -26,6 +26,8 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
 
     private static final PseudoClass ODD = PseudoClass.getPseudoClass("odd");
     private static final PseudoClass EVEN = PseudoClass.getPseudoClass("even");
+    private static final PseudoClass FIRST = PseudoClass.getPseudoClass("first");
+    private static final PseudoClass LAST = PseudoClass.getPseudoClass("last");
 
     private final ObservableList<T> shown;
     private final ObservableList<T> all;
@@ -114,9 +116,10 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
 
             for (int i = 0; i < newShown.size(); i++) {
                 var r = newShown.get(i);
-                r.pseudoClassStateChanged(ODD, false);
-                r.pseudoClassStateChanged(EVEN, false);
-                r.pseudoClassStateChanged(i % 2 == 0 ? EVEN : ODD, true);
+                r.pseudoClassStateChanged(ODD, i % 2 != 0);
+                r.pseudoClassStateChanged(EVEN, i % 2 == 0);
+                r.pseudoClassStateChanged(FIRST, i == 0);
+                r.pseudoClassStateChanged(LAST, i == newShown.size() - 1);
             }
 
             var d = new DerivedObservableList<>(listView.getChildren(), true);

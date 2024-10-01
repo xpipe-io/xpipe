@@ -104,6 +104,22 @@ public abstract class WindowsRegistry {
 
     public static class Remote extends WindowsRegistry {
 
+        public static Optional<String> readOutputValue(String original) {
+            // Output has the following format:
+            // \n<Version information>\n\n<key>\t<registry type>\t<value>
+            if (original.contains("\t")) {
+                String[] parsed = original.split("\t");
+                return Optional.of(parsed[parsed.length - 1]);
+            }
+
+            if (original.contains("    ")) {
+                String[] parsed = original.split("    ");
+                return Optional.of(parsed[parsed.length - 1]);
+            }
+
+            return Optional.empty();
+        }
+
         private final ShellControl shellControl;
 
         public Remote(ShellControl shellControl) {
@@ -150,19 +166,7 @@ public abstract class WindowsRegistry {
                 return Optional.empty();
             }
 
-            // Output has the following format:
-            // \n<Version information>\n\n<key>\t<registry type>\t<value>
-            if (output.get().contains("\t")) {
-                String[] parsed = output.get().split("\t");
-                return Optional.of(parsed[parsed.length - 1]);
-            }
-
-            if (output.get().contains("    ")) {
-                String[] parsed = output.get().split("    ");
-                return Optional.of(parsed[parsed.length - 1]);
-            }
-
-            return Optional.empty();
+            return readOutputValue(output.get());
         }
 
         @Override

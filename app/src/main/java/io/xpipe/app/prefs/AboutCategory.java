@@ -115,7 +115,7 @@ public class AboutCategory extends AppPrefsCategory {
                     AppI18n.observable("xPipeClient"),
                     new SimpleStringProperty("Version " + AppProperties.get().getVersion() + " ("
                             + AppProperties.get().getArch() + ")"),
-                    "logo.png");
+                    "logo/logo.png");
         });
 
         if (OsType.getLocal() != OsType.MACOS) {
