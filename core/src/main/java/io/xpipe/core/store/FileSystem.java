@@ -56,7 +56,7 @@ public interface FileSystem extends Closeable, AutoCloseable {
                     try {
                         var list = new ArrayList<FileEntry>();
                         list.add(fileEntry);
-                        list.addAll(listFilesRecursively(fileEntry.getPath().toString()));
+                        list.addAll(listFilesRecursively(fileEntry.getPath()));
                         return list.stream();
                     } catch (Exception e) {
                         throw new RuntimeException(e);

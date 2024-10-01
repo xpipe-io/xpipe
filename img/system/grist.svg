@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 27.7.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1"
+	 id="svg2" xmlns:cc="http://creativecommons.org/ns#" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:svg="http://www.w3.org/2000/svg" inkscape:version="0.91 r13725" sodipodi:docname="grist_icon.svg"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 268 268"
+	 style="enable-background:new 0 0 268 268;" xml:space="preserve">
+<style type="text/css">
+	
+		.st0{fill-rule:evenodd;clip-rule:evenodd;fill:#42494B;stroke:#42494B;stroke-width:59.7656;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st1{fill-rule:evenodd;clip-rule:evenodd;fill:#2CB0AF;}
+	.st2{fill-rule:evenodd;clip-rule:evenodd;fill:#F9AE41;}
+	.st3{fill-rule:evenodd;clip-rule:evenodd;fill:#D2D2D2;}
+</style>
+<g>
+	
+		<sodipodi:namedview  bordercolor="#666666" borderopacity="1" gridtolerance="10" guidetolerance="10" id="namedview44" inkscape:current-layer="svg2" inkscape:cx="622.31506" inkscape:cy="672.72667" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-height="711" inkscape:window-maximized="0" inkscape:window-width="1063" inkscape:window-x="65" inkscape:window-y="0" inkscape:zoom="0.41984465" objecttolerance="10" pagecolor="#ffffff" showgrid="false">
+		</sodipodi:namedview>
+	
+		<rect id="rect4" x="31.5" y="31.4" inkscape:export-filename="/Users/dmitry/Desktop/Grist/Logo/grist.iconset/icon_16x16.png" inkscape:export-xdpi="3.24" inkscape:export-ydpi="3.24" class="st0" width="205.9" height="205.9">
+	</rect>
+	<g id="g10" transform="matrix(2.2207784,0,0,2.2207784,176.539,6.0918981)">
+		<g id="g4348">
+			<g id="g12" transform="matrix(1.22035,0,0,1.18387,65.308,-105.803)">
+				<path id="path14" inkscape:connector-curvature="0" class="st1" d="M-26.3,97.5h-13.2c-6.1,0-11,5.1-11,11.4v11.3h13.3
+					c6,0,10.9-5.1,10.9-11.3V97.5z"/>
+			</g>
+			<g id="g16" transform="matrix(-1.22035,0,0,1.18387,299.993,-105.803)">
+				<path id="path18" inkscape:connector-curvature="0" class="st1" d="M273.5,97.5h-13.2c-6.1,0-11,5.1-11,11.4v11.3h13.3
+					c6,0,10.9-5.1,10.9-11.3V97.5z"/>
+			</g>
+			<g id="g20" transform="matrix(-1.22035,0,0,1.18387,237.493,-47.8026)">
+				<path id="path22" inkscape:connector-curvature="0" class="st2" d="M252.9,77.8h-13.2c-6.1,0-11,5.1-11,11.4v11.3h13.3
+					c6,0,10.9-5.1,10.9-11.3V77.8z"/>
+			</g>
+			<g id="g24" transform="matrix(-1.22035,0,0,1.18387,237.493,10.1974)">
+				<path id="path26" inkscape:connector-curvature="0" class="st2" d="M252.9,58.1h-13.2c-6.1,0-11,5.1-11,11.4v11.3h13.3
+					c6,0,10.9-5.1,10.9-11.3V58.1z"/>
+			</g>
+			<g id="g28" transform="matrix(-1.22035,0,0,1.18387,299.993,-47.8026)">
+				<path id="path30" inkscape:connector-curvature="0" class="st3" d="M273.5,77.8h-13.2c-6.1,0-11,5.1-11,11.4v11.3h13.3
+					c6,0,10.9-5.1,10.9-11.3V77.8z"/>
+			</g>
+			<g id="g32" transform="matrix(1.22035,0,0,1.18387,65.308,-47.8026)">
+				<path id="path34" inkscape:connector-curvature="0" class="st3" d="M-26.3,77.8h-13.2c-6.1,0-11,5.1-11,11.4v11.3h13.3
+					c6,0,10.9-5.1,10.9-11.3V77.8z"/>
+			</g>
+			<g id="g36" transform="matrix(-1.22035,0,0,1.18387,299.993,10.1974)">
+				<path id="path38" inkscape:connector-curvature="0" class="st3" d="M273.5,58.1h-13.2c-6.1,0-11,5.1-11,11.4v11.3h13.3
+					c6,0,10.9-5.1,10.9-11.3V58.1z"/>
+			</g>
+			<g id="g40" transform="matrix(1.22035,0,0,1.18387,65.308,10.1974)">
+				<path id="path42" inkscape:connector-curvature="0" class="st3" d="M-26.3,58.1h-13.2c-6.1,0-11,5.1-11,11.4v11.3h13.3
+					c6,0,10.9-5.1,10.9-11.3V58.1z"/>
+			</g>
+		</g>
+	</g>
+</g>
+</svg>

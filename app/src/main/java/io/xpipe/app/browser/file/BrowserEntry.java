@@ -65,11 +65,11 @@ public class BrowserEntry {
         if (fileType != null) {
             return fileType.getIcon();
         } else if (directoryType != null) {
-            return directoryType.getIcon(rawFileEntry, false);
+            return directoryType.getIcon(rawFileEntry);
         } else {
             return rawFileEntry != null && rawFileEntry.resolved().getKind() == FileKind.DIRECTORY
-                    ? "default_folder.svg"
-                    : "default_file.svg";
+                    ? "browser/default_folder.svg"
+                    : "browser/default_file.svg";
         }
     }
 

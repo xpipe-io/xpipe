@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   id="Layer_1"
+   data-name="Layer 1"
+   viewBox="0 0 188.16 188.16"
+   version="1.1"
+   sodipodi:docname="sh_icon-dark.svg"
+   inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <sodipodi:namedview
+     id="namedview19"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:zoom="3.2206128"
+     inkscape:cx="55.424235"
+     inkscape:cy="92.218475"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="Layer_1" />
+  <defs
+     id="defs4">
+    <style
+       id="style2">.cls-1,.cls-2{fill:#ac55ff;}.cls-2{font-size:70.92px;font-family:HelveticaRounded-Bold, Helvetica Rounded;font-weight:700;}.cls-3{letter-spacing:0.16em;}</style>
+  </defs>
+  <title
+     id="title6">sh draft</title>
+  <path
+     class="cls-1"
+     d="M326.28,162.29H185.72a23.43,23.43,0,0,0-23.43,23.43V326.28a23.43,23.43,0,0,0,23.43,23.43H326.28a23.43,23.43,0,0,0,23.43-23.43V185.72A23.43,23.43,0,0,0,326.28,162.29ZM185.72,170.1H326.28a15.63,15.63,0,0,1,15.62,15.62v15.62H170.1V185.72A15.63,15.63,0,0,1,185.72,170.1ZM326.28,341.9H185.72a15.63,15.63,0,0,1-15.62-15.62V209.15H341.9V326.28A15.63,15.63,0,0,1,326.28,341.9Z"
+     transform="translate(-161.92 -161.92)"
+     id="path8"
+     style="fill:#f6f6f6;fill-opacity:1" />
+  <path
+     class="cls-1"
+     d="M326.28,350.08H185.72a23.83,23.83,0,0,1-23.8-23.8V185.72a23.83,23.83,0,0,1,23.8-23.8H326.28a23.83,23.83,0,0,1,23.8,23.8V326.28A23.83,23.83,0,0,1,326.28,350.08ZM185.72,162.67a23.08,23.08,0,0,0-23.05,23.05V326.28a23.08,23.08,0,0,0,23.05,23.05H326.28a23.08,23.08,0,0,0,23.05-23.05V185.72a23.08,23.08,0,0,0-23.05-23.05Zm140.56,179.6H185.72a16,16,0,0,1-16-16V208.77H342.27V326.28A16,16,0,0,1,326.28,342.27ZM170.48,209.52V326.28a15.26,15.26,0,0,0,15.24,15.24H326.28a15.26,15.26,0,0,0,15.24-15.24V209.52Zm171.79-7.81H169.73v-16a16,16,0,0,1,16-16H326.28a16,16,0,0,1,16,16ZM170.48,201h171V185.72a15.26,15.26,0,0,0-15.24-15.24H185.72a15.26,15.26,0,0,0-15.24,15.24Z"
+     transform="translate(-161.92 -161.92)"
+     id="path10"
+     style="fill:#f6f6f6;fill-opacity:1" />
+  <text
+     class="cls-2"
+     transform="translate(28.34 147.71)"
+     id="text16"
+     style="fill:#f6f6f6;fill-opacity:1"><tspan
+       class="cls-3"
+       id="tspan12"
+       style="fill:#f6f6f6;fill-opacity:1">$</tspan><tspan
+       x="54.75"
+       y="0"
+       id="tspan14"
+       style="fill:#f6f6f6;fill-opacity:1">&gt;</tspan></text>
+  <metadata
+     id="metadata836">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title>sh draft</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+</svg>

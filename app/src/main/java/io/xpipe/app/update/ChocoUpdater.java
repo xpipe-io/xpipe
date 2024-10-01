@@ -1,9 +1,9 @@
 package io.xpipe.app.update;
 
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.fxcomps.impl.CodeSnippet;
 import io.xpipe.app.fxcomps.impl.CodeSnippetComp;
-import io.xpipe.app.ext.LocalStore;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.layout.Region;

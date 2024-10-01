@@ -254,12 +254,7 @@ public class CommandBuilder {
         return list;
     }
 
-    public String buildFull(ShellControl sc) throws Exception {
-        if (sc == null) {
-            return buildSimple();
-        }
-
-        var s = buildBase(sc);
+    public Map<String, String> buildEnvironmentVariables(ShellControl sc) throws Exception {
         LinkedHashMap<String, String> map = new LinkedHashMap<>();
         for (var e : environmentVariables.entrySet()) {
             var v = e.getValue().evaluate(sc);
@@ -267,6 +262,16 @@ public class CommandBuilder {
                 map.put(e.getKey(), v);
             }
         }
+        return map;
+    }
+
+    public String buildFull(ShellControl sc) throws Exception {
+        if (sc == null) {
+            return buildSimple();
+        }
+
+        var s = buildBase(sc);
+        Map<String, String> map = buildEnvironmentVariables(sc);
         return sc.getShellDialect().assembleCommand(s, map);
     }
 

@@ -142,8 +142,7 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
             this.menu = new Menu(
                     // Use original name, not the link target
                     browserEntry.getRawFileEntry().getName(),
-                    PrettyImageHelper.ofFixedRasterized(
-                                    FileIconManager.getFileIcon(browserEntry.getRawFileEntry(), false), 24, 24)
+                    PrettyImageHelper.ofFixedSize(FileIconManager.getFileIcon(browserEntry.getRawFileEntry()), 24, 24)
                             .createRegion());
             createMenu();
             addInputListeners();

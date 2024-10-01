@@ -10,6 +10,8 @@ public interface DataStorageSyncHandler {
         return (DataStorageSyncHandler) ProcessControlProvider.get().getGitStorageHandler();
     }
 
+    void reset() throws Exception;
+
     boolean validateConnection();
 
     boolean supportsSync();
@@ -29,4 +31,6 @@ public interface DataStorageSyncHandler {
     void handleCategory(DataStoreCategory category, boolean exists, boolean dirty);
 
     void handleDeletion(Path target, String name);
+
+    Path getDirectory();
 }

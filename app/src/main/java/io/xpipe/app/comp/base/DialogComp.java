@@ -20,22 +20,30 @@ import javafx.stage.Stage;
 import atlantafx.base.theme.Styles;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 public abstract class DialogComp extends Comp<CompStructure<Region>> {
 
     public static void showWindow(String titleKey, Function<Stage, DialogComp> f) {
         var loading = new SimpleBooleanProperty();
+        var dialog = new AtomicReference<DialogComp>();
         Platform.runLater(() -> {
             var stage = AppWindowHelper.sideWindow(
                     AppI18n.get(titleKey),
                     window -> {
                         var c = f.apply(window);
+                        dialog.set(c);
                         loading.bind(c.busy());
                         return c;
                     },
                     false,
                     loading);
+            stage.setOnCloseRequest(event -> {
+                if (dialog.get() != null) {
+                    dialog.get().discard();
+                }
+            });
             stage.show();
         });
     }
@@ -60,12 +68,16 @@ public abstract class DialogComp extends Comp<CompStructure<Region>> {
                 .addAll(customButtons().stream()
                         .map(buttonComp -> buttonComp.createRegion())
                         .toList());
-        var nextButton = new ButtonComp(AppI18n.observable(finishKey()), null, this::finish)
+        var nextButton = finishButton();
+        buttons.getChildren().add(nextButton.createRegion());
+        return buttons;
+    }
+
+    protected Comp<?> finishButton() {
+        return new ButtonComp(AppI18n.observable(finishKey()), null, this::finish)
                 .apply(struc -> struc.get().setDefaultButton(true))
                 .styleClass(Styles.ACCENT)
                 .styleClass("next");
-        buttons.getChildren().add(nextButton.createRegion());
-        return buttons;
     }
 
     protected String finishKey() {
@@ -92,6 +104,8 @@ public abstract class DialogComp extends Comp<CompStructure<Region>> {
     }
 
     protected abstract void finish();
+
+    protected abstract void discard();
 
     public abstract Comp<?> content();
 

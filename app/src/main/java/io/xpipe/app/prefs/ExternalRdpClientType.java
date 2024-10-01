@@ -50,6 +50,10 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
                 return input;
             }
 
+            if (input.get("username").isEmpty()) {
+                return input;
+            }
+
             var pass = configuration.getPassword();
             if (pass == null) {
                 return input;

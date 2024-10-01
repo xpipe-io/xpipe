@@ -4,7 +4,6 @@ import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.comp.base.SystemStateComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
-import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppI18n;
@@ -16,6 +15,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.DataStoreChoiceComp;
 import io.xpipe.app.fxcomps.impl.DataStoreListChoiceComp;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.MarkdownBuilder;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.Validator;
@@ -27,8 +27,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 
 import lombok.SneakyThrows;
@@ -37,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, DataStoreProvider {
 
@@ -210,13 +209,29 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
     }
 
     @Override
-    public ObservableValue<String> informationString(StoreSection section) {
-        SimpleScriptStore scriptStore =
-                section.getWrapper().getEntry().getStore().asNeeded();
-        return new SimpleStringProperty((scriptStore.getMinimumDialect() != null
-                        ? scriptStore.getMinimumDialect().getDisplayName() + " "
-                        : "")
-                + " snippet");
+    public boolean alwaysShowSummary() {
+        return true;
+    }
+
+    @Override
+    public String summaryString(StoreEntryWrapper wrapper) {
+        SimpleScriptStore st = wrapper.getEntry().getStore().asNeeded();
+        var init = st.isInitScript() ? AppI18n.get("init") : null;
+        var file = st.isRunnableScript() ? AppI18n.get("file") : null;
+        var shell = st.isRunnableScript() ? AppI18n.get("shell") : null;
+        var runnable = st.isRunnableScript() ? AppI18n.get("hub") : null;
+        var type = st.getMinimumDialect() != null
+                ? st.getMinimumDialect().getDisplayName() + " " + AppI18n.get("script")
+                : null;
+        var suffix = String.join(
+                " / ",
+                Stream.of(init, shell, file, runnable).filter(s -> s != null).toList());
+        if (!suffix.isEmpty()) {
+            suffix = "(" + suffix + ")";
+        } else {
+            suffix = null;
+        }
+        return DataStoreFormatter.join(type, suffix);
     }
 
     @SneakyThrows

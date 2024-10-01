@@ -1,10 +1,11 @@
 package io.xpipe.app.beacon.impl;
 
-import com.sun.net.httpserver.HttpExchange;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.util.TerminalLauncherManager;
 import io.xpipe.beacon.api.SshLaunchExchange;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.core.process.ShellDialects;
+
+import com.sun.net.httpserver.HttpExchange;
 
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class SshLaunchExchangeImpl extends SshLaunchExchange {
 
         // There are sometimes multiple requests by a terminal client (e.g. Termius)
         // This might fail sometimes, but it is expected
-        var r = TerminalLauncherManager.waitForNextLaunch();
+        var r = TerminalLauncherManager.sshLaunchExchange();
         var c = ProcessControlProvider.get()
                 .getEffectiveLocalDialect()
                 .getOpenScriptCommand(r.toString())

@@ -39,12 +39,12 @@ public class StoreIntroComp extends SimpleComp {
 
         var scanButton = new Button(null, new FontIcon("mdi2m-magnify"));
         scanButton.textProperty().bind(AppI18n.observable("detectConnections"));
-        scanButton.setOnAction(event -> ScanAlert.showAsync(DataStorage.get().local()));
+        scanButton.setOnAction(event -> ScanAlert.showAsync(DataStorage.get().local(), null));
         scanButton.setDefaultButton(true);
         var scanPane = new StackPane(scanButton);
         scanPane.setAlignment(Pos.CENTER);
 
-        var img = new PrettySvgComp(new SimpleStringProperty("Wave.svg"), 80, 150).createRegion();
+        var img = new PrettySvgComp(new SimpleStringProperty("graphics/Wave.svg"), 80, 150).createRegion();
         var text = new VBox(title, introDesc);
         text.setSpacing(5);
         text.setAlignment(Pos.CENTER_LEFT);

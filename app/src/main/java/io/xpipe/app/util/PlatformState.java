@@ -84,7 +84,7 @@ public enum PlatformState {
             // fails
         } catch (HeadlessException h) {
             var msg = (OsType.getLocal().equals(OsType.LINUX)
-                            ? "No X11 DISPLAY variable was set or no headful library support was found."
+                            ? "No DISPLAY variable was set or no headful library support was found."
                             : "The application does not have desktop access, but this program performed an operation which requires it.")
                     + "\n\n"
                     + "Please note that XPipe is a desktop application that should be run on your local workstation."
@@ -137,26 +137,21 @@ public enum PlatformState {
             try {
                 latch.await();
                 PlatformState.setCurrent(PlatformState.RUNNING);
-                return;
             } catch (InterruptedException e) {
                 lastError = e;
-                return;
             }
         } catch (Throwable t) {
             // Check if we already exited
             if ("Platform.exit has been called".equals(t.getMessage())) {
                 PlatformState.setCurrent(PlatformState.EXITED);
                 lastError = t;
-                return;
             } else if ("Toolkit already initialized".equals(t.getMessage())) {
                 PlatformState.setCurrent(PlatformState.RUNNING);
-                return;
             } else {
                 // Platform initialization has failed in this case
                 PlatformState.setCurrent(PlatformState.EXITED);
                 TrackEvent.error(t.getMessage());
                 lastError = t;
-                return;
             }
         }
     }

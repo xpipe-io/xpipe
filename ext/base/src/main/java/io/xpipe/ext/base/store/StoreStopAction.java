@@ -33,6 +33,11 @@ public class StoreStopAction implements ActionProvider {
             public String getIcon(DataStoreEntryRef<StoppableStore> store) {
                 return "mdi2s-stop";
             }
+
+            @Override
+            public boolean requiresValidStore() {
+                return false;
+            }
         };
     }
 

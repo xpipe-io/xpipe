@@ -1,9 +1,9 @@
 package io.xpipe.app.browser.file;
 
+import io.xpipe.app.ext.LocalStore;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileSystem;
-import io.xpipe.app.ext.LocalStore;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,6 +16,13 @@ public class LocalFileSystem {
         if (localFileSystem == null) {
             localFileSystem = new LocalStore().createFileSystem();
             localFileSystem.open();
+        }
+    }
+
+    public static void reset() throws Exception {
+        if (localFileSystem != null) {
+            localFileSystem.close();
+            localFileSystem = null;
         }
     }
 

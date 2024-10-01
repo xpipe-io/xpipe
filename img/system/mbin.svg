@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 27.7.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:url(#path5_00000101800231415936118640000005289820185928725650_);}
+	.st1{fill:#241734;}
+	.st2{fill:url(#path6_00000133488754398745558680000002925401314011330691_);}
+</style>
+<g id="g1" transform="matrix(1 0 0 1 31.439997 29.999998)">
+	<g id="layer1" transform="matrix(2 0 0 2 -58.669823 15.933004)">
+		<g transform="matrix(1 0 0 1 6.3878407 20.000004)">
+			
+				<linearGradient id="path5_00000162353088892263064640000016337576459021743038_" gradientUnits="userSpaceOnUse" x1="25.0329" y1="219.1906" x2="107.1095" y2="77.0297" gradientTransform="matrix(2 0 0 -2 10.5459 497.567)">
+				<stop  offset="0" style="stop-color:#2DE2E6"/>
+				<stop  offset="1" style="stop-color:#3399FF"/>
+			</linearGradient>
+			<path id="path5" style="fill:url(#path5_00000162353088892263064640000016337576459021743038_);" d="M127.8-22.7L8.4,184.1
+				c-1.5,2.7-1.5,6,0,8.6s4.4,4.3,7.5,4.3h238.8c3.1,0,5.9-1.6,7.5-4.3c1.5-2.7,1.5-6,0-8.6L142.7-22.7c-1.5-2.7-4.4-4.3-7.5-4.3
+				C132.1-27,129.3-25.3,127.8-22.7z"/>
+		</g>
+		<path id="path1" class="st1" d="M141.6,53.3L67,182.6h29.8l22.4-38.8l22.4,38.8l22.4-38.8l22.4,38.8h29.8L141.6,53.3z M141.6,79.2
+			l18.7,32.3c2.3,4,2.3,8.9,0,12.9l-18.7,32.3L123,124.4c-2.3-4-2.3-8.9,0-12.9L141.6,79.2z"/>
+		<g transform="matrix(1 0 0 1 6.3878407 20.000004)">
+			
+				<linearGradient id="path6_00000145755552288216551450000001582517628033552316_" gradientUnits="userSpaceOnUse" x1="62.3406" y1="167.4956" x2="62.3406" y2="124.4165" gradientTransform="matrix(2 0 0 -2 10.5459 497.567)">
+				<stop  offset="0" style="stop-color:#F623AC"/>
+				<stop  offset="1" style="stop-color:#F706CF"/>
+			</linearGradient>
+			<path id="path6" style="fill:url(#path6_00000145755552288216551450000001582517628033552316_);" d="M15.8,197h238.8
+				c3.1,0,5.9-1.6,7.5-4.3c1.5-2.7,1.5-6,0-8.6l-12.4-21.5H180l-22.4-38.8l-22.4,38.8l-22.4-38.8l-22.4,38.8H20.8L8.4,184.1
+				c-1.5,2.7-1.5,6,0,8.6S12.8,197,15.8,197z"/>
+		</g>
+	</g>
+</g>
+</svg>

@@ -3,6 +3,7 @@ package io.xpipe.app.ext;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.DataStore;
+
 import lombok.NonNull;
 
 import java.util.ServiceLoader;
@@ -21,6 +22,8 @@ public abstract class ProcessControlProvider {
     public static ProcessControlProvider get() {
         return INSTANCE;
     }
+
+    public abstract void reset();
 
     public abstract ShellControl withDefaultScripts(ShellControl pc);
 

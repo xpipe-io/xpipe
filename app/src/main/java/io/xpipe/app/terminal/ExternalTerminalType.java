@@ -13,9 +13,11 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.FailableFunction;
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
+
 import lombok.Getter;
 import lombok.Value;
 import lombok.With;
@@ -110,6 +112,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 ErrorEvent.fromThrowable(e).omit().handle();
                 return Optional.empty();
             }
+        }
+
+        @Override
+        public String getWebsite() {
+            return "https://www.netsarang.com/en/xshell/";
         }
 
         @Override
@@ -212,6 +219,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
+        public String getWebsite() {
+            return "https://www.vandyke.com/products/securecrt/";
+        }
+
+        @Override
         protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
             try (var sc = LocalShell.getShell()) {
                 SshLocalBridge.init();
@@ -260,6 +272,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
+        public String getWebsite() {
+            return "https://mobaxterm.mobatek.net/";
+        }
+
+        @Override
         protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
             try (var sc = LocalShell.getShell()) {
                 SshLocalBridge.init();
@@ -275,10 +292,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 var rawCommand = command.buildSimple();
                 var script = ScriptHelper.getExecScriptFile(sc, "sh");
                 Files.writeString(Path.of(script.toString()), rawCommand);
-                var fixedFile = script
-                        .toString()
-                        .replaceAll("\\\\", "/")
-                        .replaceAll("\\s", "\\$0");
+                var fixedFile = script.toString().replaceAll("\\\\", "/").replaceAll("\\s", "\\$0");
                 sc.command(CommandBuilder.of()
                                 .addFile(file.toString())
                                 .add("-newtab")
@@ -315,6 +329,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 ErrorEvent.fromThrowable(e).omit().handle();
                 return false;
             }
+        }
+
+        @Override
+        public String getWebsite() {
+            return "https://termius.com/";
         }
 
         @Override
@@ -1032,8 +1051,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             DEEPIN_TERMINAL,
             FOOT,
             Q_TERMINAL,
-            TERMIUS
-    );
+            TERMIUS);
     List<ExternalTerminalType> MACOS_TERMINALS = List.of(
             WARP,
             ITERM2,

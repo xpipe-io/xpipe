@@ -84,7 +84,7 @@ public class BrowserNavBar extends Comp<BrowserNavBar.Structure> {
         var graphic = Bindings.createStringBinding(
                 () -> {
                     return model.getCurrentDirectory() != null
-                            ? FileIconManager.getFileIcon(model.getCurrentDirectory(), false)
+                            ? FileIconManager.getFileIcon(model.getCurrentDirectory())
                             : null;
                 },
                 model.getCurrentPath());

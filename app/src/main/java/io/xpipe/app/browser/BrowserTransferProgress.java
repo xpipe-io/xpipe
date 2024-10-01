@@ -14,14 +14,6 @@ public class BrowserTransferProgress {
     long total;
     Instant start;
 
-    public static BrowserTransferProgress empty() {
-        return new BrowserTransferProgress(null, 0, 0, Instant.now());
-    }
-
-    static BrowserTransferProgress empty(String name, long size) {
-        return new BrowserTransferProgress(name, 0, size, Instant.now());
-    }
-
     public static BrowserTransferProgress finished(String name, long size) {
         return new BrowserTransferProgress(name, size, size, Instant.now());
     }

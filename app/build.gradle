@@ -52,10 +52,10 @@ dependencies {
     api files("$rootDir/gradle/gradle_scripts/vernacular-1.16.jar")
     api 'org.bouncycastle:bcprov-jdk18on:1.78.1'
     api 'info.picocli:picocli:4.7.6'
-    api ('org.kohsuke:github-api:1.324') {
+    api ('org.kohsuke:github-api:1.326') {
         exclude group: 'org.apache.commons', module: 'commons-lang3'
     }
-    api 'org.apache.commons:commons-lang3:3.16.0'
+    api 'org.apache.commons:commons-lang3:3.17.0'
     api 'io.sentry:sentry:7.14.0'
     api 'commons-io:commons-io:2.16.1'
     api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.17.2"

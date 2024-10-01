@@ -20,12 +20,17 @@ public class LocalStore extends JacksonizedValue
     }
 
     @Override
-    public ShellControl control() {
+    public ShellControl parentControl() {
         var pc = ProcessControlProvider.get().createLocalProcessControl(true);
         pc.withSourceStore(this);
         pc.withShellStateInit(this);
         pc.withShellStateFail(this);
         return pc;
+    }
+
+    @Override
+    public ShellControl control(ShellControl parent) {
+        return parent;
     }
 
     @Override

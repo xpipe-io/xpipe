@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   id="Layer_1"
+   data-name="Layer 1"
+   viewBox="0 0 204.59 204.59"
+   version="1.1"
+   sodipodi:docname="serial_icon-dark.svg"
+   inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
+   inkscape:export-filename="C:\Projects\xpipe\xpipex\ext\proc\src\main\resources\io\xpipe\ext\proc\resources\img\ssh_icon-16.png"
+   inkscape:export-xdpi="7.5076985"
+   inkscape:export-ydpi="7.5076985"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <sodipodi:namedview
+     id="namedview873"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="false"
+     showgrid="false"
+     inkscape:zoom="1.0472164"
+     inkscape:cx="-14.801144"
+     inkscape:cy="296.02288"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="Layer_1" />
+  <defs
+     id="defs856">
+    <style
+       id="style854">.cls-1{fill:#ac55ff;}</style>
+  </defs>
+  <title
+     id="title858">ssh draft</title>
+  <metadata
+     id="metadata932">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title>ssh draft</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     style="overflow:hidden;fill:currentColor"
+     id="g838"
+     transform="matrix(0.21313953,0,0,0.21313953,-7.0523126,-5.7693029)">
+    <path
+       d="m 298.66667,128 h 426.66666 v 85.33333 h 85.33334 v 128 h -128 v 256 H 341.33333 v -256 h -128 v -128 h 85.33334 V 128 m 426.66666,256 h 85.33334 V 597.33333 H 725.33333 V 384 m -256,256 h 85.33334 V 938.66667 H 469.33333 V 640 m -256,-256 h 85.33334 v 213.33333 h -85.33334 z"
+       fill=""
+       id="path829" />
+  </g>
+</svg>

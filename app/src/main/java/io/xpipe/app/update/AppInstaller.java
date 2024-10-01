@@ -3,6 +3,7 @@ package io.xpipe.app.update;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.util.LocalShell;
@@ -12,7 +13,6 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileNames;
-import io.xpipe.app.ext.LocalStore;
 import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.core.util.XPipeInstallation;
 
@@ -165,7 +165,8 @@ public class AppInstaller {
 
                 runAndClose(() -> {
                     // We can't use the SSH bridge
-                    var type = ExternalTerminalType.determineNonSshBridgeFallback(AppPrefs.get().terminalType().getValue());
+                    var type = ExternalTerminalType.determineNonSshBridgeFallback(
+                            AppPrefs.get().terminalType().getValue());
                     TerminalLauncher.openDirect("XPipe Updater", sc -> command, type);
                 });
             }
@@ -205,7 +206,8 @@ public class AppInstaller {
 
                 runAndClose(() -> {
                     // We can't use the SSH bridge
-                    var type = ExternalTerminalType.determineNonSshBridgeFallback(AppPrefs.get().terminalType().getValue());
+                    var type = ExternalTerminalType.determineNonSshBridgeFallback(
+                            AppPrefs.get().terminalType().getValue());
                     TerminalLauncher.openDirect("XPipe Updater", sc -> command, type);
                 });
             }
@@ -245,7 +247,8 @@ public class AppInstaller {
 
                 runAndClose(() -> {
                     // We can't use the SSH bridge
-                    var type = ExternalTerminalType.determineNonSshBridgeFallback(AppPrefs.get().terminalType().getValue());
+                    var type = ExternalTerminalType.determineNonSshBridgeFallback(
+                            AppPrefs.get().terminalType().getValue());
                     TerminalLauncher.openDirect("XPipe Updater", sc -> command, type);
                 });
             }

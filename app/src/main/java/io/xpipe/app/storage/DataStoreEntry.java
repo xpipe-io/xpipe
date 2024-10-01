@@ -3,7 +3,8 @@ package io.xpipe.app.storage;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.util.FixedHierarchyStore;
+import io.xpipe.app.resources.SystemIcons;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.*;
 import io.xpipe.core.util.JacksonMapper;
 
@@ -22,7 +23,6 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Value
@@ -69,6 +69,9 @@ public class DataStoreEntry extends StorageElement {
     @NonFinal
     Order explicitOrder;
 
+    @NonFinal
+    String icon;
+
     private DataStoreEntry(
             Path directory,
             UUID uuid,
@@ -85,7 +88,8 @@ public class DataStoreEntry extends StorageElement {
             boolean expanded,
             DataColor color,
             String notes,
-            Order explicitOrder) {
+            Order explicitOrder,
+            String icon) {
         super(directory, uuid, name, lastUsed, lastModified, color, expanded, dirty);
         this.categoryUuid = categoryUuid;
         this.store = store;
@@ -96,6 +100,7 @@ public class DataStoreEntry extends StorageElement {
         this.provider = store != null ? DataStoreProviders.byStore(store) : null;
         this.storePersistentStateNode = storePersistentState;
         this.notes = notes;
+        this.icon = icon;
     }
 
     private DataStoreEntry(
@@ -106,11 +111,13 @@ public class DataStoreEntry extends StorageElement {
             Instant lastUsed,
             Instant lastModified,
             DataStore store,
-            Order explicitOrder) {
+            Order explicitOrder,
+            String icon) {
         super(directory, uuid, name, lastUsed, lastModified, null, false, false);
         this.categoryUuid = categoryUuid;
         this.store = store;
         this.explicitOrder = explicitOrder;
+        this.icon = icon;
         this.storeNode = null;
         this.validity = Validity.INCOMPLETE;
         this.configuration = Configuration.defaultConfiguration();
@@ -128,6 +135,7 @@ public class DataStoreEntry extends StorageElement {
                 Instant.now(),
                 Instant.now(),
                 store,
+                null,
                 null);
     }
 
@@ -144,6 +152,7 @@ public class DataStoreEntry extends StorageElement {
         var validity = storeFromNode == null
                 ? Validity.LOAD_FAILED
                 : store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE;
+        var icon = SystemIcons.detectForStore(store);
         var entry = new DataStoreEntry(
                 null,
                 uuid,
@@ -160,8 +169,37 @@ public class DataStoreEntry extends StorageElement {
                 false,
                 null,
                 null,
-                null);
+                null,
+                icon.map(systemIcon -> systemIcon.getIconName()).orElse(null));
         return entry;
+    }
+
+    public String getEffectiveIconFile() {
+        if (getValidity() == Validity.LOAD_FAILED) {
+            return "disabled_icon.png";
+        }
+
+        if (icon == null) {
+            return getProvider().getDisplayIconFileName(getStore());
+        }
+
+        return "app:system/" + icon + ".svg";
+    }
+
+    void refreshIcon() {
+        if (icon != null && SystemIcons.getForId(icon).isEmpty()) {
+            icon = null;
+            return;
+        }
+
+        if (icon != null) {
+            return;
+        }
+
+        var icon = SystemIcons.detectForStore(store);
+        if (icon.isPresent()) {
+            setIcon(icon.get().getIconName(), true);
+        }
     }
 
     public static Optional<DataStoreEntry> fromDirectory(Path dir) throws Exception {
@@ -195,6 +233,9 @@ public class DataStoreEntry extends StorageElement {
                     }
                 })
                 .orElse(null);
+
+        var iconNode = json.get("icon");
+        String icon = iconNode != null && !iconNode.isNull() ? iconNode.asText() : null;
 
         var persistentState = stateJson.get("persistentState");
         var lastUsed = Optional.ofNullable(stateJson.get("lastUsed"))
@@ -266,7 +307,8 @@ public class DataStoreEntry extends StorageElement {
                 expanded,
                 color,
                 notes,
-                order));
+                order,
+                icon));
     }
 
     public void setExplicitOrder(Order uuid) {
@@ -338,11 +380,24 @@ public class DataStoreEntry extends StorageElement {
         return (T) storePersistentState;
     }
 
+    public void setIcon(String icon, boolean force) {
+        if (this.icon != null && !force) {
+            return;
+        }
+
+        var changed = !Objects.equals(this.icon, icon);
+        this.icon = icon;
+        if (changed) {
+            notifyUpdate(false, true);
+        }
+    }
+
     public void setStorePersistentState(DataStoreState value) {
         var changed = !Objects.equals(storePersistentState, value);
         this.storePersistentState = value;
         this.storePersistentStateNode = JacksonMapper.getDefault().valueToTree(value);
         if (changed) {
+            refreshIcon();
             notifyUpdate(false, true);
         }
     }
@@ -380,6 +435,7 @@ public class DataStoreEntry extends StorageElement {
         obj.put("name", name);
         obj.put("categoryUuid", categoryUuid.toString());
         obj.set("color", mapper.valueToTree(color));
+        obj.set("icon", mapper.valueToTree(icon));
         stateObj.put("lastUsed", lastUsed.toString());
         stateObj.put("lastModified", lastModified.toString());
         stateObj.set("persistentState", storePersistentStateNode);
@@ -426,6 +482,7 @@ public class DataStoreEntry extends StorageElement {
         validity = store == null ? Validity.LOAD_FAILED : store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE;
         storePersistentState = e.storePersistentState;
         storePersistentStateNode = e.storePersistentStateNode;
+        icon = e.icon;
         notifyUpdate(false, true);
     }
 
@@ -459,19 +516,46 @@ public class DataStoreEntry extends StorageElement {
     }
 
     public void validateOrThrow() throws Throwable {
+        validateOrThrowAndClose(null);
+    }
+
+    public boolean validateOrThrowAndClose(ValidationContext<?> existingContext) throws Throwable {
+        var subContext = validateAndKeepOpenOrThrowAndClose(existingContext);
+        if (subContext != null) {
+            subContext.close();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> ValidationContext<?> validateAndKeepOpenOrThrowAndClose(ValidationContext<?> existingContext)
+            throws Throwable {
         if (store == null) {
-            return;
+            return null;
+        }
+
+        if (!(store instanceof ValidatableStore<?> l)) {
+            return null;
         }
 
         try {
             store.checkComplete();
             incrementBusyCounter();
-            if (store instanceof ValidatableStore l) {
-                l.validate();
-            } else if (store instanceof FixedHierarchyStore h) {
-                childrenCache = h.listChildren(this).stream()
-                        .map(DataStoreEntryRef::get)
-                        .collect(Collectors.toSet());
+            ValidationContext<T> context = existingContext != null
+                    ? (ValidationContext<T>) existingContext
+                    : (ValidationContext<T>) l.createContext();
+            if (context == null) {
+                return null;
+            }
+
+            try {
+                var r = ((ValidatableStore<ValidationContext<T>>) l).validate(context);
+                return r;
+            } catch (Throwable t) {
+                context.close();
+                throw t;
             }
         } finally {
             decrementBusyCounter();
@@ -514,7 +598,6 @@ public class DataStoreEntry extends StorageElement {
         notifyUpdate(false, false);
     }
 
-    @SneakyThrows
     public void initializeEntry() {
         if (store instanceof ExpandedLifecycleStore lifecycleStore) {
             try {
@@ -530,7 +613,6 @@ public class DataStoreEntry extends StorageElement {
         }
     }
 
-    @SneakyThrows
     public void finalizeEntry() {
         if (store instanceof ExpandedLifecycleStore lifecycleStore) {
             try {
@@ -543,6 +625,17 @@ public class DataStoreEntry extends StorageElement {
                 decrementBusyCounter();
                 notifyUpdate(false, false);
             }
+        }
+    }
+
+    public boolean finalizeEntryAsync() {
+        if (store instanceof ExpandedLifecycleStore) {
+            ThreadHelper.runAsync(() -> {
+                finalizeEntry();
+            });
+            return true;
+        } else {
+            return false;
         }
     }
 

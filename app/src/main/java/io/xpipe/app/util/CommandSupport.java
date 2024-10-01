@@ -6,8 +6,17 @@ import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.util.FailableSupplier;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public class CommandSupport {
+
+    public static Optional<String> findProgram(ShellControl processControl, String name) throws Exception {
+        var out = processControl
+                .command(processControl.getShellDialect().getWhichCommand(name))
+                .readStdoutIfPossible();
+        return out.flatMap(s -> s.lines().findFirst()).map(String::trim);
+    }
+
     public static boolean isInPath(ShellControl processControl, String executable) throws Exception {
         return processControl.executeSimpleBooleanCommand(
                 processControl.getShellDialect().getWhichCommand(executable));

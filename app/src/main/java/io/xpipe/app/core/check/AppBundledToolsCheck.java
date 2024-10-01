@@ -8,7 +8,9 @@ import java.util.concurrent.TimeUnit;
 public class AppBundledToolsCheck {
 
     private static boolean getResult() {
-        var fc = new ProcessBuilder("where", "ssh").redirectErrorStream(true).redirectOutput(ProcessBuilder.Redirect.DISCARD);
+        var fc = new ProcessBuilder("where", "ssh")
+                .redirectErrorStream(true)
+                .redirectOutput(ProcessBuilder.Redirect.DISCARD);
         try {
             var proc = fc.start();
             proc.waitFor(2, TimeUnit.SECONDS);

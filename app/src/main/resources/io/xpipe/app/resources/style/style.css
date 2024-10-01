@@ -97,8 +97,12 @@
     -fx-padding: 0.7em 1px 1em 1em;
 }
 
-* {
+.root:windows .text {
     -fx-font-smoothing-type: gray;
+}
+
+.root:linux .text {
+    -fx-font-smoothing-type: lcd;
 }
 
 .radio-button {
@@ -123,4 +127,24 @@
 
 .root:dark .loading-comp {
     -fx-background-color: rgba(0, 0, 0, 0.5);
+}
+
+.icon-browser {
+    -fx-border-color: transparent;
+    -color-cell-border: transparent;
+}
+
+.icon-browser .column-header-background {
+    -fx-max-height: 0;
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+}
+
+.icon-browser .table-row-cell {
+    -fx-cell-size: 80px;
+}
+
+.icon-browser .table-row-cell .icon-label {
+    -fx-padding: 15 0;
+    -fx-cursor: hand;
 }

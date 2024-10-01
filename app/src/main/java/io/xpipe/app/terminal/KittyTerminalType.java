@@ -96,7 +96,7 @@ public interface KittyTerminalType extends ExternalTerminalType {
 
         public boolean isAvailable() {
             try (ShellControl pc = LocalShell.getShell()) {
-                return pc.executeSimpleBooleanCommand(pc.getShellDialect().getWhichCommand("kitty"));
+                return CommandSupport.findProgram(pc, "kitty").isPresent();
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).omit().handle();
                 return false;

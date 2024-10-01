@@ -11,6 +11,7 @@ import io.xpipe.app.browser.file.FileSystemHelper;
 import io.xpipe.app.browser.session.BrowserAbstractSessionModel;
 import io.xpipe.app.browser.session.BrowserSessionTab;
 import io.xpipe.app.comp.base.ModalOverlayComp;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
@@ -18,7 +19,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.ShellOpenFunction;
@@ -47,8 +48,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
     private final OpenFileSystemHistory history = new OpenFileSystemHistory();
     private final Property<ModalOverlayComp.OverlayContent> overlay = new SimpleObjectProperty<>();
     private final BooleanProperty inOverview = new SimpleBooleanProperty();
-    private final Property<BrowserTransferProgress> progress =
-            new SimpleObjectProperty<>(BrowserTransferProgress.empty());
+    private final Property<BrowserTransferProgress> progress = new SimpleObjectProperty<>();
     private FileSystem fileSystem;
     private OpenFileSystemSavedState savedState;
     private OpenFileSystemCache cache;
@@ -73,10 +73,13 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
 
     @Override
     public boolean canImmediatelyClose() {
-        return !progress.getValue().done()
-                || (fileSystem != null
-                        && fileSystem.getShell().isPresent()
-                        && fileSystem.getShell().get().getLock().isLocked());
+        if (fileSystem == null
+                || fileSystem.getShell().isEmpty()
+                || !fileSystem.getShell().get().getLock().isLocked()) {
+            return true;
+        }
+
+        return progress.getValue() == null || progress.getValue().done();
     }
 
     @Override
@@ -252,7 +255,11 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
                             entry.getEntry(),
                             name,
                             directory,
-                            fileSystem.getShell().get().singularSubShell(ShellOpenFunction.of(adjustedPath)));
+                            fileSystem
+                                    .getShell()
+                                    .get()
+                                    .singularSubShell(
+                                            ShellOpenFunction.of(CommandBuilder.ofString(adjustedPath), false)));
                 } else {
                     TerminalLauncher.open(
                             entry.getEntry(),
@@ -453,7 +460,7 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
         return fileSystem == null;
     }
 
-    public void initWithGivenDirectory(String dir) throws Exception {
+    public void initWithGivenDirectory(String dir) {
         cdSync(dir);
     }
 

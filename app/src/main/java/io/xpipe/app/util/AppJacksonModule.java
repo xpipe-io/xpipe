@@ -1,8 +1,8 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.terminal.ExternalTerminalType;
-import io.xpipe.app.ext.LocalStore;
 import io.xpipe.core.util.EncryptedSecretValue;
 import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.core.util.SecretValue;

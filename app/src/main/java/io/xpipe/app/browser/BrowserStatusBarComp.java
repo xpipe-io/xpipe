@@ -55,7 +55,7 @@ public class BrowserStatusBarComp extends SimpleComp {
 
     private Comp<?> createProgressEstimateStatus() {
         var text = BindingsHelper.map(model.getProgress(), p -> {
-            if (p == null || p.done()) {
+            if (p == null) {
                 return null;
             } else {
                 var expected = p.expectedTimeRemaining();
@@ -74,7 +74,7 @@ public class BrowserStatusBarComp extends SimpleComp {
 
     private Comp<?> createProgressStatus() {
         var text = BindingsHelper.map(model.getProgress(), p -> {
-            if (p == null || p.done()) {
+            if (p == null) {
                 return null;
             } else {
                 var transferred = HumanReadableFormat.progressByteCount(p.getTransferred());
@@ -91,7 +91,7 @@ public class BrowserStatusBarComp extends SimpleComp {
 
     private Comp<?> createProgressNameStatus() {
         var text = BindingsHelper.map(model.getProgress(), p -> {
-            if (p == null || p.done()) {
+            if (p == null) {
                 return null;
             } else {
                 return p.getName();

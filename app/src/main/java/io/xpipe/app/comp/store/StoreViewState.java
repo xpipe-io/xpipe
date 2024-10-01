@@ -98,10 +98,11 @@ public class StoreViewState {
     private void initFilterJump() {
         var all = getAllConnectionsCategory();
         filter.addListener((observable, oldValue, newValue) -> {
-            var matchingCats = categories.getList().stream().filter(storeCategoryWrapper -> storeCategoryWrapper.getRoot().equals(all))
-                    .filter(storeCategoryWrapper -> storeCategoryWrapper.getDirectContainedEntries()
-                    .stream()
-                    .anyMatch(wrapper -> wrapper.matchesFilter(newValue)))
+            var matchingCats = categories.getList().stream()
+                    .filter(storeCategoryWrapper ->
+                            storeCategoryWrapper.getRoot().equals(all))
+                    .filter(storeCategoryWrapper -> storeCategoryWrapper.getDirectContainedEntries().stream()
+                            .anyMatch(wrapper -> wrapper.matchesFilter(newValue)))
                     .toList();
             if (matchingCats.size() == 1) {
                 activeCategory.setValue(matchingCats.getFirst());

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 27.7.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1"
+	 id="svg18759" xmlns:svg="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
+	 style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#800000;}
+	.st1{fill:#550000;}
+	.st2{fill:url(#path19177_00000122699706931865868570000011235415395659139996_);}
+	.st3{fill:url(#path19215_00000028282609085588772090000003258953184258345357_);}
+	.st4{fill:#FFDD55;}
+	.st5{fill:#D4AA00;}
+	.st6{fill:#FFCC00;}
+	.st7{fill:#2B0000;}
+</style>
+<sodipodi:namedview  bordercolor="#000000" borderopacity="0.25" id="namedview18761" inkscape:current-layer="layer1" inkscape:cx="53.563339" inkscape:cy="21.38998" inkscape:deskcolor="#d1d1d1" inkscape:document-units="mm" inkscape:pagecheckerboard="0" inkscape:pageopacity="0.0" inkscape:showpageshadow="2" inkscape:window-height="1030" inkscape:window-maximized="0" inkscape:window-width="1276" inkscape:window-x="0" inkscape:window-y="0" inkscape:zoom="5.6568542" pagecolor="#ffffff" showgrid="false">
+	
+		<inkscape:grid  empspacing="4" id="grid18763" originx="0" originy="0" spacingx="0.066145831" spacingy="0.066145831" type="xygrid">
+		</inkscape:grid>
+</sodipodi:namedview>
+<g id="layer1" inkscape:groupmode="layer" inkscape:label="Layer 1">
+	<path id="path18985" sodipodi:nodetypes="cccccccccccccccc" class="st0" d="M0,368.6l218.5,109.2l279.9-139.9l-34.1-17.1v6.8
+		L218.5,450.6L27.3,355V191.1l191.1,95.6l273.1-136.5L341.3,75.1L314,88.7V61.4l-41-20.5L0,177.5V368.6z"/>
+	<path id="path18989" sodipodi:nodetypes="ccccc" class="st1" d="M27.3,191.1l-13.7-6.8v177.5l13.7-6.8V191.1z"/>
+	
+		<linearGradient id="path19177_00000083776662028762316580000015356417200628202391_" gradientUnits="userSpaceOnUse" x1="-8.5808" y1="521.2156" x2="-12.1933" y2="513.9907" gradientTransform="matrix(3.7795 0 0 -3.7795 136.1969 2329.0315)">
+		<stop  offset="0" style="stop-color:#FFEEAA"/>
+		<stop  offset="1" style="stop-color:#FFF6D5"/>
+	</linearGradient>
+	
+		<path id="path19177" sodipodi:nodetypes="ccccc" style="fill:url(#path19177_00000083776662028762316580000015356417200628202391_);" d="
+		M218.5,450.6V286.7L27.3,191.1V355L218.5,450.6z"/>
+	
+		<linearGradient id="path19215_00000014631756907018746220000017781283977920492702_" gradientUnits="userSpaceOnUse" x1="59.3331" y1="524.8281" x2="62.9456" y2="517.6032" gradientTransform="matrix(3.7795 0 0 -3.7795 136.1969 2329.0315)">
+		<stop  offset="0" style="stop-color:#FFEEAA"/>
+		<stop  offset="1" style="stop-color:#FFF6D5"/>
+	</linearGradient>
+	
+		<path id="path19215" sodipodi:nodetypes="ccccc" style="fill:url(#path19215_00000014631756907018746220000017781283977920492702_);" d="
+		M218.5,450.6l245.8-122.9V163.8L218.5,286.7V450.6z"/>
+	<path id="path19285" class="st4" d="M382.3,252.6c-15.1,0-27.3,6.1-27.3,13.7c0,0,0,0,0,0c0,3.6,2.9,7.1,8,9.7l38.6-19.3
+		C396.5,254,389.5,252.6,382.3,252.6z"/>
+	<path id="path19290" class="st4" d="M286.7,368.6c-15.1,0-27.3,6.1-27.3,13.7l0,0c0,3.6,2.9,7.1,8,9.7l38.6-19.3
+		C300.9,370.1,294,368.6,286.7,368.6z"/>
+	<path id="path21320" class="st4" d="M327.7,314c-15.1,0-27.3,6.1-27.3,13.7c0,0,0,0,0,0c0,3.6,2.9,7.1,8,9.7L347,318
+		C341.9,315.5,334.9,314,327.7,314z"/>
+	<path id="path21322" class="st4" d="M409.6,204.8c-15.1,0-27.3,6.1-27.3,13.7c0,3.6,2.9,7.1,8,9.7l38.6-19.3
+		C423.8,206.2,416.8,204.8,409.6,204.8z"/>
+	<path id="path917" class="st5" d="M457.4,41c-30.2,0-54.6,12.2-54.6,27.3c0,0,0,0,0,0c0,15.1,24.5,27.3,54.6,27.3h0
+		c30.2,0,54.6-12.2,54.6-27.3S487.5,41,457.4,41z M471,54.6c7.5,0,13.7,3.1,13.7,6.8c0,3.8-6.1,6.8-13.7,6.8
+		c-7.5,0-13.7-3.1-13.7-6.8C457.4,57.7,463.5,54.6,471,54.6z"/>
+	<path id="path580" sodipodi:nodetypes="ccccc" class="st6" d="M368.6,88.7l41-20.5l27.3,13.7l-41,20.5L368.6,88.7z"/>
+	<path id="path1049" class="st5" d="M402.8,61.4v6.8h6.8v-6.8H402.8z"/>
+	<path id="path1051" class="st5" d="M512,61.4v6.8h-6.8v-6.8H512z"/>
+	<path id="path582" class="st6" d="M457.4,34.1c-30.2,0-54.6,12.2-54.6,27.3c0,0,0,0,0,0c0,15.1,24.5,27.3,54.6,27.3h0
+		c30.2,0,54.6-12.2,54.6-27.3S487.5,34.1,457.4,34.1z M471,47.8c7.5,0,13.7,3.1,13.7,6.8c0,3.8-6.1,6.8-13.7,6.8
+		c-7.5,0-13.7-3.1-13.7-6.8C457.4,50.8,463.5,47.8,471,47.8z"/>
+	<path id="path584" sodipodi:nodetypes="ccccccccccccccccc" class="st7" d="M314,61.4L122.9,157l27.3,13.7l13.7-6.8l27.3,13.7
+		l27.3-13.7l-27.3-13.7l13.7-6.8l41,20.5l13.7-6.8l-41-20.5l13.7-6.8l27.3,13.7l27.3-13.7l-27.3-13.7L314,88.7V61.4z"/>
+	<path id="path802" sodipodi:nodetypes="cccc" class="st1" d="M259.4,116.1v27.3l27.3-13.7L259.4,116.1z"/>
+	<path id="path804" sodipodi:nodetypes="ccccc" class="st1" d="M218.5,136.5v13.7l27.3,13.7l13.7-6.8L218.5,136.5z"/>
+	<path id="path915" sodipodi:nodetypes="cccc" class="st1" d="M191.1,150.2v27.3l27.3-13.7L191.1,150.2z"/>
+	<path id="path973" sodipodi:nodetypes="ccccc" class="st5" d="M395.9,102.4l6.8,3.4l34.1-17.1l-6.8-3.4L395.9,102.4z"/>
+</g>
+</svg>

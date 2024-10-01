@@ -1,6 +1,6 @@
 package io.xpipe.app.browser.icon;
 
-import io.xpipe.app.core.AppResources;
+import io.xpipe.app.resources.AppResources;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileNames;
@@ -42,8 +42,8 @@ public abstract class BrowserIconDirectoryType {
             }
 
             @Override
-            public String getIcon(FileEntry entry, boolean open) {
-                return open ? "default_root_folder_opened.svg" : "default_root_folder.svg";
+            public String getIcon(FileEntry entry) {
+                return "browser/default_root_folder.svg";
             }
         });
 
@@ -60,17 +60,10 @@ public abstract class BrowserIconDirectoryType {
                             })
                             .collect(Collectors.toSet());
 
-                    var closedIcon = split[2].trim();
-                    var openIcon = split[3].trim();
+                    var closedIcon = "browser/" + split[2].trim();
+                    var lightClosedIcon = split.length > 4 ? "browser/" + split[4].trim() : closedIcon;
 
-                    var lightClosedIcon = split.length > 4 ? split[4].trim() : closedIcon;
-                    var lightOpenIcon = split.length > 4 ? split[5].trim() : openIcon;
-
-                    ALL.add(new Simple(
-                            id,
-                            new IconVariant(lightClosedIcon, closedIcon),
-                            new IconVariant(lightOpenIcon, openIcon),
-                            filter));
+                    ALL.add(new Simple(id, new IconVariant(lightClosedIcon, closedIcon), filter));
                 }
             }
         });
@@ -84,7 +77,7 @@ public abstract class BrowserIconDirectoryType {
 
     public abstract boolean matches(FileEntry entry);
 
-    public abstract String getIcon(FileEntry entry, boolean open);
+    public abstract String getIcon(FileEntry entry);
 
     public static class Simple extends BrowserIconDirectoryType {
 
@@ -92,13 +85,11 @@ public abstract class BrowserIconDirectoryType {
         private final String id;
 
         private final IconVariant closed;
-        private final IconVariant open;
         private final Set<String> names;
 
-        public Simple(String id, IconVariant closed, IconVariant open, Set<String> names) {
+        public Simple(String id, IconVariant closed, Set<String> names) {
             this.id = id;
             this.closed = closed;
-            this.open = open;
             this.names = names;
         }
 
@@ -113,8 +104,8 @@ public abstract class BrowserIconDirectoryType {
         }
 
         @Override
-        public String getIcon(FileEntry entry, boolean open) {
-            return open ? this.open.getIcon() : this.closed.getIcon();
+        public String getIcon(FileEntry entry) {
+            return this.closed.getIcon();
         }
     }
 }

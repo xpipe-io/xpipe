@@ -1,153 +1,85 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.BeaconServerException;
 import io.xpipe.core.process.ProcessControl;
-import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.TerminalInitScriptConfig;
-import io.xpipe.core.process.WorkingDirectoryFunction;
-import io.xpipe.core.store.FilePath;
-
-import lombok.Setter;
-import lombok.Value;
-import lombok.experimental.NonFinal;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.SequencedMap;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
 public class TerminalLauncherManager {
 
-    private static final SequencedMap<UUID, Entry> entries = new LinkedHashMap<>();
-
-    private static void prepare(
-            ProcessControl processControl, TerminalInitScriptConfig config, String directory, Entry entry) {
-        var workingDirectory = new WorkingDirectoryFunction() {
-
-            @Override
-            public boolean isFixed() {
-                return true;
-            }
-
-            @Override
-            public boolean isSpecified() {
-                return directory != null;
-            }
-
-            @Override
-            public FilePath apply(ShellControl shellControl) {
-                if (directory == null) {
-                    return null;
-                }
-
-                return new FilePath(directory);
-            }
-        };
-
-        try {
-            var file = ScriptHelper.createLocalExecScript(processControl.prepareTerminalOpen(config, workingDirectory));
-            entry.setResult(new ResultSuccess(Path.of(file.toString())));
-        } catch (Exception e) {
-            entry.setResult(new ResultFailure(e));
-        }
-    }
+    private static final SequencedMap<UUID, TerminalLaunchRequest> entries = new LinkedHashMap<>();
 
     public static CountDownLatch submitAsync(
-            UUID request, ProcessControl processControl, TerminalInitScriptConfig config, String directory) {
+            UUID request, ProcessControl processControl, TerminalInitScriptConfig config, String directory) throws
+            BeaconClientException {
         synchronized (entries) {
-            var entry = new Entry(request, processControl, config, directory, null);
-            entries.put(request, entry);
-            var latch = new CountDownLatch(1);
-            ThreadHelper.runAsync(() -> {
-                prepare(processControl, config, directory, entry);
-                latch.countDown();
-            });
-            return latch;
+            var req = entries.get(request);
+            if (req == null) {
+                req = new TerminalLaunchRequest(request, processControl, config, directory, null, false);
+                entries.put(request, req);
+            } else {
+                req.setResult(null);
+            }
+
+            return req.setupRequestAsync();
         }
     }
 
-    public static Path waitForNextLaunch() throws BeaconClientException, BeaconServerException {
-        Map.Entry<UUID, Entry> first;
+    public static Path sshLaunchExchange() throws BeaconClientException, BeaconServerException {
+        TerminalLaunchRequest last;
         synchronized (entries) {
-            if (entries.isEmpty()) {
+            var all = entries.values().stream().toList();
+            last = !all.isEmpty() ? all.getLast() : null;
+            if (last == null) {
                 throw new BeaconClientException("Unknown launch request");
             }
-
-            first = entries.firstEntry();
-            entries.remove(first.getKey());
         }
-        return waitForCompletion(first.getValue());
+        return last.waitForCompletion();
     }
 
-    public static Path waitForCompletion(UUID request) throws BeaconClientException, BeaconServerException {
-        Entry e;
+    public static Path waitExchange(UUID request) throws BeaconClientException, BeaconServerException {
+        TerminalLaunchRequest req;
         synchronized (entries) {
-            e = entries.get(request);
+            req = entries.get(request);
         }
-        if (e == null) {
+        if (req == null) {
             throw new BeaconClientException("Unknown launch request " + request);
         }
-
-        return waitForCompletion(e);
-    }
-
-    public static Path waitForCompletion(Entry e) throws BeaconServerException {
-        while (true) {
-            if (e.result == null) {
-                ThreadHelper.sleep(10);
-                continue;
-            }
-
-            synchronized (entries) {
-                var r = e.getResult();
-                if (r instanceof ResultFailure failure) {
-                    entries.remove(e.getRequest());
-                    var t = failure.getThrowable();
-                    throw new BeaconServerException(t);
-                }
-
-                return ((ResultSuccess) r).getTargetScript();
-            }
+        if (req.isSetupCompleted() && AppPrefs.get().dontAllowTerminalRestart().get()) {
+            throw new BeaconClientException("Terminal session restarts have been disabled in the security settings");
+        }
+        if (req.isSetupCompleted()) {
+            submitAsync(req.getRequest(), req.getProcessControl(), req.getConfig(), req.getWorkingDirectory());
+        }
+        try {
+            return req.waitForCompletion();
+        } finally {
+            req.setSetupCompleted(true);
         }
     }
 
-    public static Path performLaunch(UUID request) throws BeaconClientException {
+    public static Path launchExchange(UUID request) throws BeaconClientException {
         synchronized (entries) {
-            var e = entries.remove(request);
+            var e = entries.values().stream()
+                    .filter(entry -> entry.getRequest().equals(request))
+                    .findFirst()
+                    .orElse(null);
             if (e == null) {
                 throw new BeaconClientException("Unknown launch request " + request);
             }
 
-            if (!(e.result instanceof ResultSuccess)) {
+            if (!(e.getResult() instanceof TerminalLaunchResult.ResultSuccess)) {
                 throw new BeaconClientException("Invalid launch request state " + request);
             }
 
-            return ((ResultSuccess) e.getResult()).getTargetScript();
+            return ((TerminalLaunchResult.ResultSuccess) e.getResult()).getTargetScript();
         }
-    }
-
-    public interface Result {}
-
-    @Value
-    public static class Entry {
-
-        UUID request;
-        ProcessControl processControl;
-        TerminalInitScriptConfig config;
-        String workingDirectory;
-
-        @Setter
-        @NonFinal
-        Result result;
-    }
-
-    @Value
-    public static class ResultSuccess implements Result {
-        Path targetScript;
-    }
-
-    @Value
-    public static class ResultFailure implements Result {
-        Throwable throwable;
     }
 }

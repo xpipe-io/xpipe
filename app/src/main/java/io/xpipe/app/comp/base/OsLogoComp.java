@@ -1,11 +1,11 @@
 package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.store.StoreEntryWrapper;
-import io.xpipe.app.core.AppResources;
 import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.impl.PrettyImageComp;
+import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.resources.AppResources;
 import io.xpipe.core.process.OsNameState;
 import io.xpipe.core.store.FileNames;
 
@@ -22,8 +22,7 @@ import java.util.Map;
 public class OsLogoComp extends SimpleComp {
 
     private static final Map<String, String> ICONS = new HashMap<>();
-    private static final String LINUX_DEFAULT = "linux-24.png";
-    private static final String LINUX_DEFAULT_SVG = "linux.svg";
+    private static final String LINUX_DEFAULT_24 = "linux-24.png";
     private final StoreEntryWrapper wrapper;
     private final ObservableValue<SystemStateComp.State> state;
 
@@ -54,8 +53,9 @@ public class OsLogoComp extends SimpleComp {
                 wrapper.getPersistentState(),
                 state);
         var hide = BindingsHelper.map(img, s -> s != null);
-        return new StackComp(
-                        List.of(new SystemStateComp(state).hide(hide), new PrettyImageComp(img, 24, 24).visible(hide)))
+        return new StackComp(List.of(
+                        new SystemStateComp(state).hide(hide),
+                        PrettyImageHelper.ofFixedSize(img, 24, 24).visible(hide)))
                 .createRegion();
     }
 
@@ -67,11 +67,12 @@ public class OsLogoComp extends SimpleComp {
         if (ICONS.isEmpty()) {
             AppResources.with(AppResources.XPIPE_MODULE, "img/os", file -> {
                 try (var list = Files.list(file)) {
-                    list.filter(path -> path.toString().endsWith(".svg")
-                                    && !path.toString().endsWith(LINUX_DEFAULT_SVG))
+                    list.filter(path -> path.toString().endsWith(".png")
+                                    && !path.toString().endsWith(LINUX_DEFAULT_24)
+                                    && !path.toString().endsWith("-40.png"))
                             .map(path -> FileNames.getFileName(path.toString()))
                             .forEach(path -> {
-                                var base = FileNames.getBaseName(path).replace("-dark", "") + "-24.png";
+                                var base = path.replace("-dark", "").replace("-24.png", ".svg");
                                 ICONS.put(FileNames.getBaseName(base).split("-")[0], "os/" + base);
                             });
                 }
@@ -82,6 +83,6 @@ public class OsLogoComp extends SimpleComp {
                 .filter(e -> name.toLowerCase().contains(e.getKey()))
                 .findAny()
                 .map(e -> e.getValue())
-                .orElse("os/" + LINUX_DEFAULT);
+                .orElse("os/linux.svg");
     }
 }

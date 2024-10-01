@@ -1,6 +1,7 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.comp.store.StoreSortMode;
+import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -8,8 +9,8 @@ import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FixedChildStore;
-import io.xpipe.app.ext.LocalStore;
 import io.xpipe.core.store.StorePath;
+import io.xpipe.core.store.ValidationContext;
 import io.xpipe.core.util.UuidHelper;
 
 import javafx.util.Pair;
@@ -130,6 +131,16 @@ public abstract class DataStorage {
 
     private void dispose() {
         save(true);
+        var finalizing = false;
+        for (DataStoreEntry entry : getStoreEntries()) {
+            // Prevent blocking of shutdown
+            if (entry.finalizeEntryAsync()) {
+                finalizing = true;
+            }
+        }
+        if (finalizing) {
+            ThreadHelper.sleep(1000);
+        }
     }
 
     protected void setupBuiltinCategories() {
@@ -352,21 +363,32 @@ public abstract class DataStorage {
     }
 
     @SneakyThrows
-    public boolean refreshChildren(DataStoreEntry e) {
-        return refreshChildren(e, false);
+    public boolean refreshChildren(DataStoreEntry e, ValidationContext<?> context) {
+        return refreshChildren(e, context, false);
     }
 
-    public boolean refreshChildren(DataStoreEntry e, boolean throwOnFail) throws Exception {
-        if (!(e.getStore() instanceof FixedHierarchyStore h)) {
+    @SuppressWarnings("unchecked")
+    public <T extends ValidationContext<?>> boolean refreshChildren(DataStoreEntry e, T context, boolean throwOnFail)
+            throws Exception {
+        if (!(e.getStore() instanceof FixedHierarchyStore<?> h)) {
             return false;
         }
 
         e.incrementBusyCounter();
         List<? extends DataStoreEntryRef<? extends FixedChildStore>> newChildren;
+        var hadContext = context != null;
         try {
-            newChildren = h.listChildren(e).stream()
-                    .filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null)
-                    .toList();
+            if (context == null) {
+                context = (T) h.createContext();
+                if (context == null) {
+                    return false;
+                }
+            }
+
+            newChildren = ((FixedHierarchyStore<T>) h)
+                    .listChildren(context).stream()
+                            .filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null)
+                            .toList();
         } catch (Exception ex) {
             if (throwOnFail) {
                 throw ex;
@@ -375,6 +397,9 @@ public abstract class DataStorage {
                 return false;
             }
         } finally {
+            if (context != null && !hadContext) {
+                context.close();
+            }
             e.decrementBusyCounter();
         }
 

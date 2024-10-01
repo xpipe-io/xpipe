@@ -102,7 +102,7 @@ public class BrowserFileTransferOperation {
 
     public void execute() throws Exception {
         if (files.isEmpty()) {
-            updateProgress(BrowserTransferProgress.empty());
+            updateProgress(null);
             return;
         }
 
@@ -115,18 +115,22 @@ public class BrowserFileTransferOperation {
             }
         }
 
-        for (var file : files) {
-            if (same) {
-                handleSingleOnSameFileSystem(file);
-            } else {
-                handleSingleAcrossFileSystems(file);
-            }
-        }
-
-        if (!same && doesMove) {
+        try {
             for (var file : files) {
-                deleteSingle(file);
+                if (same) {
+                    handleSingleOnSameFileSystem(file);
+                } else {
+                    handleSingleAcrossFileSystems(file);
+                }
             }
+
+            if (!same && doesMove) {
+                for (var file : files) {
+                    deleteSingle(file);
+                }
+            }
+        } finally {
+            updateProgress(null);
         }
     }
 

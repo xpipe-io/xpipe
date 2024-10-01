@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   id="Layer_1"
+   data-name="Layer 1"
+   viewBox="0 0 204.59 204.59"
+   version="1.1"
+   sodipodi:docname="rdpFile_icon-dark.svg"
+   inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
+   inkscape:export-filename="C:\Projects\xpipe\xpipex\ext\proc\src\main\resources\io\xpipe\ext\proc\resources\img\ssh_icon-16.png"
+   inkscape:export-xdpi="7.5076985"
+   inkscape:export-ydpi="7.5076985"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <sodipodi:namedview
+     id="namedview873"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="false"
+     showgrid="false"
+     inkscape:zoom="2.9619752"
+     inkscape:cx="72.080279"
+     inkscape:cy="73.599536"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="Layer_1" />
+  <defs
+     id="defs856">
+    <style
+       id="style854">.cls-1{fill:#ac55ff;}</style>
+  </defs>
+  <title
+     id="title858">ssh draft</title>
+  <metadata
+     id="metadata932">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title>ssh draft</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <circle
+     style="fill:none;fill-rule:evenodd;stroke:#0095e3;stroke-width:12;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
+     id="path848"
+     cx="102.4654"
+     cy="102.29661"
+     r="94.123512" />
+  <path
+     class="cls-1"
+     d="m 165.20331,118.54708 -34.82477,-30.500056 35.0253,-35.157002 -12.96942,-14.183478 -43.98836,41.77806 v 15.139354 l 43.47202,38.474302 z"
+     id="path870-3"
+     style="fill:#47c943;fill-opacity:1;stroke-width:1.45152"
+     sodipodi:nodetypes="cccccccc" />
+  <path
+     class="cls-1"
+     d="m 58.835483,92.948177 34.824761,30.500043 -35.02529,35.157 12.96941,14.18348 43.988366,-41.77807 V 115.87128 L 72.120712,77.397005 Z"
+     id="path870-3-2"
+     style="fill:#47c943;fill-opacity:1;stroke-width:1.45152"
+     sodipodi:nodetypes="cccccccc" />
+  <circle
+     style="fill:#0095e3;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.21292;stroke-linecap:round"
+     id="path851"
+     cx="42.488632"
+     cy="42.464645"
+     r="41.92424" />
+  <path
+     style="line-height:normal;-inkscape-font-specification:'Bitstream Vera Sans';text-indent:0;text-align:start;text-transform:none;fill:#f6f6f6;fill-opacity:1;stroke:#f6f6f6;stroke-width:1.9231;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="m 25.084404,15.930638 v 1.04961 46.182822 1.04961 h 1.0496 35.68674 1.0496 V 63.16307 29.575563 29.149159 l -0.2952,-0.328003 -12.59531,-12.595315 -0.32801,-0.295203 h -0.4264 -23.09142 z m 2.09922,2.099219 h 20.99219 v 11.545706 1.04961 h 1.04961 11.5457 v 31.488288 h -33.5875 z m 23.09141,1.508814 8.98728,8.987283 h -8.98728 z"
+     overflow="visible"
+     enable-background="accumulate"
+     font-family="'Bitstream Vera Sans'"
+     id="path975" />
+</svg>

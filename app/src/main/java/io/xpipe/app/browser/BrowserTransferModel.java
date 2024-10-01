@@ -10,12 +10,14 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.ShellTemp;
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
 import lombok.Value;
 import org.apache.commons.io.FileUtils;
 
@@ -133,6 +135,12 @@ public class BrowserTransferModel {
                     BrowserFileTransferMode.COPY,
                     false,
                     progress -> {
+                        // Don't update item progress to keep it as finished
+                        if (progress == null) {
+                            item.getOpenFileSystemModel().getProgress().setValue(null);
+                            return;
+                        }
+
                         synchronized (item.getProgress()) {
                             item.getProgress().setValue(progress);
                         }
@@ -170,7 +178,7 @@ public class BrowserTransferModel {
             if (Files.isDirectory(file)) {
                 FileUtils.moveDirectory(file.toFile(), target.toFile());
             } else {
-                FileUtils.moveFile(file.toFile(), target.toFile(), StandardCopyOption.REPLACE_EXISTING);
+                Files.move(file, target, StandardCopyOption.REPLACE_EXISTING);
             }
         }
         DesktopHelper.browseFileInDirectory(downloads.resolve(files.getFirst().getFileName()));

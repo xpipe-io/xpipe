@@ -52,7 +52,7 @@ public class BrowserWelcomeComp extends SimpleComp {
         var vbox = new VBox(welcome, new Spacer(4, Orientation.VERTICAL));
         vbox.setAlignment(Pos.CENTER_LEFT);
 
-        var img = new PrettySvgComp(new SimpleStringProperty("Hips.svg"), 50, 75)
+        var img = new PrettySvgComp(new SimpleStringProperty("graphics/Hips.svg"), 50, 75)
                 .padding(new Insets(5, 0, 0, 0))
                 .createRegion();
 
@@ -145,8 +145,7 @@ public class BrowserWelcomeComp extends SimpleComp {
 
     private Comp<?> entryButton(BrowserSavedState.Entry e, BooleanProperty disable) {
         var entry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
-        var graphic =
-                entry.get().getProvider().getDisplayIconFileName(entry.get().getStore());
+        var graphic = entry.get().getEffectiveIconFile();
         var view = PrettyImageHelper.ofFixedSize(graphic, 30, 24);
         return new ButtonComp(
                         new SimpleStringProperty(DataStorage.get().getStoreEntryDisplayName(entry.get())),

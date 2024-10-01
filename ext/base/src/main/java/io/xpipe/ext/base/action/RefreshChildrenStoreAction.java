@@ -72,7 +72,7 @@ public class RefreshChildrenStoreAction implements ActionProvider {
 
         @Override
         public void execute() {
-            DataStorage.get().refreshChildren(store);
+            DataStorage.get().refreshChildren(store, null);
         }
     }
 }

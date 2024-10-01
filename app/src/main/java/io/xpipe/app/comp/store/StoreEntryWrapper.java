@@ -17,7 +17,9 @@ import lombok.Getter;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 public class StoreEntryWrapper {
@@ -40,6 +42,8 @@ public class StoreEntryWrapper {
     private final Property<StoreCategoryWrapper> category = new SimpleObjectProperty<>();
     private final Property<String> summary = new SimpleObjectProperty<>();
     private final Property<StoreNotes> notes;
+    private final Property<String> customIcon = new SimpleObjectProperty<>();
+    private final Property<String> iconFile = new SimpleObjectProperty<>();
 
     public StoreEntryWrapper(DataStoreEntry entry) {
         this.entry = entry;
@@ -137,6 +141,8 @@ public class StoreEntryWrapper {
         }
         color.setValue(entry.getColor());
         notes.setValue(new StoreNotes(entry.getNotes(), entry.getNotes()));
+        customIcon.setValue(entry.getIcon());
+        iconFile.setValue(entry.getEffectiveIconFile());
 
         busy.setValue(entry.getBusyCounter().get() != 0);
         deletable.setValue(entry.getConfiguration().isDeletable()
@@ -191,7 +197,7 @@ public class StoreEntryWrapper {
         }
     }
 
-    private boolean showActionProvider(ActionProvider p) {
+    public boolean showActionProvider(ActionProvider p) {
         var leaf = p.getLeafDataStoreCallSite();
         if (leaf != null) {
             return (entry.getValidity().isUsable() || (!leaf.requiresValidStore() && entry.getProvider() != null))
@@ -214,7 +220,7 @@ public class StoreEntryWrapper {
     }
 
     public void refreshChildren() {
-        var hasChildren = DataStorage.get().refreshChildren(entry);
+        var hasChildren = DataStorage.get().refreshChildren(entry, null);
         PlatformThread.runLaterIfNeeded(() -> {
             expanded.set(hasChildren);
         });

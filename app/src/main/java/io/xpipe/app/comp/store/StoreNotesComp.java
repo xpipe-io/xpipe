@@ -97,6 +97,9 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
             }
 
             @Override
+            protected void discard() {}
+
+            @Override
             protected String finishKey() {
                 return "apply";
             }

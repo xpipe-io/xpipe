@@ -1,5 +1,7 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.core.AppI18n;
+
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.time.Duration;
@@ -7,7 +9,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
-import java.util.Locale;
 import java.util.Objects;
 
 public final class HumanReadableFormat {
@@ -57,29 +58,31 @@ public final class HumanReadableFormat {
 
         // not this year
         if (x.getYear() != now.getYear()) {
-            return DAY_MONTH_YEAR.format(x);
+            return DAY_MONTH_YEAR
+                    .withLocale(AppI18n.get().getLoaded().getLocale())
+                    .format(x);
         }
 
         // not this week
         if (getWeekNumber(x) != getWeekNumber(now)) {
-            return DAY_MONTH.format(x);
+            return DAY_MONTH.withLocale(AppI18n.get().getLoaded().getLocale()).format(x);
         }
 
         // not today
         int xDay = x.getDayOfWeek().getValue();
         int nowDay = now.getDayOfWeek().getValue();
         if (xDay == nowDay - 1) {
-            return "Yesterday";
+            return AppI18n.get("yesterday");
         }
         if (xDay != nowDay) {
-            return DAY_OF_WEEK.format(x);
+            return DAY_OF_WEEK.withLocale(AppI18n.get().getLoaded().getLocale()).format(x);
         }
 
-        return HOUR_MINUTE.format(x);
+        return HOUR_MINUTE.withLocale(AppI18n.get().getLoaded().getLocale()).format(x);
     }
 
     private static int getWeekNumber(LocalDateTime date) {
-        return date.get(WeekFields.of(Locale.getDefault()).weekOfYear());
+        return date.get(WeekFields.of(AppI18n.get().getLoaded().getLocale()).weekOfYear());
     }
 
     public static String duration(Duration duration) {

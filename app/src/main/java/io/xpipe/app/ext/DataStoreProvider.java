@@ -7,9 +7,9 @@ import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.comp.store.StoreSectionComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppImages;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.JacksonizedValue;
@@ -57,12 +57,12 @@ public interface DataStoreProvider {
     default void validate() {
         for (Class<?> storeClass : getStoreClasses()) {
             if (!JacksonizedValue.class.isAssignableFrom(storeClass)) {
-                throw new ExtensionException(
+                throw ExtensionException.corrupt(
                         String.format("Store class %s is not a Jacksonized value", storeClass.getSimpleName()));
             }
 
             if (getUsageCategory() == null) {
-                throw new ExtensionException("Provider %s does not have the usage category".formatted(getId()));
+                throw ExtensionException.corrupt("Provider %s does not have the usage category".formatted(getId()));
             }
         }
     }

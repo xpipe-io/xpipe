@@ -5,6 +5,26 @@ import io.xpipe.app.util.Hyperlinks;
 
 public interface ErrorAction {
 
+    static ErrorAction openDocumentation(String link) {
+        return new ErrorAction() {
+            @Override
+            public String getName() {
+                return AppI18n.get("openDocumentation");
+            }
+
+            @Override
+            public String getDescription() {
+                return AppI18n.get("openDocumentationDescription");
+            }
+
+            @Override
+            public boolean handle(ErrorEvent event) {
+                Hyperlinks.open(link);
+                return false;
+            }
+        };
+    }
+
     static ErrorAction reportOnGithub() {
         return new ErrorAction() {
             @Override

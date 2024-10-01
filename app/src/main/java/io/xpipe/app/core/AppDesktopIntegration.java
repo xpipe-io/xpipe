@@ -9,10 +9,10 @@ import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.desktop.*;
 import java.util.List;
+import javax.imageio.ImageIO;
 
 public class AppDesktopIntegration {
 
@@ -36,7 +36,8 @@ public class AppDesktopIntegration {
                                 ThreadHelper.sleep(1000);
                                 OperationMode.close();
                             });
-                        }}
+                        }
+                    }
                 });
             }
 

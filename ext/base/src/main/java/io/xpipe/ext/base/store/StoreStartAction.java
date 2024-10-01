@@ -33,6 +33,11 @@ public class StoreStartAction implements ActionProvider {
             public String getIcon(DataStoreEntryRef<StartableStore> store) {
                 return "mdi2p-play";
             }
+
+            @Override
+            public boolean requiresValidStore() {
+                return false;
+            }
         };
     }
 

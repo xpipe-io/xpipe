@@ -4,6 +4,7 @@ import io.xpipe.app.browser.file.LocalFileSystem;
 import io.xpipe.app.browser.icon.FileIconManager;
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppGreetings;
+import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.check.AppPtbCheck;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.fxcomps.util.PlatformThread;
@@ -39,6 +40,7 @@ public class GuiMode extends PlatformMode {
         AppGreetings.showIfNeeded();
         AppPtbCheck.check();
         NativeBridge.init();
+        AppLayoutModel.init();
 
         TrackEvent.info("Waiting for window setup completion ...");
         PlatformThread.runLaterIfNeededBlocking(() -> {
@@ -62,5 +64,11 @@ public class GuiMode extends PlatformMode {
         });
 
         UpdateChangelogAlert.showIfNeeded();
+    }
+
+    @Override
+    public void finalTeardown() throws Throwable {
+        LocalFileSystem.reset();
+        super.finalTeardown();
     }
 }

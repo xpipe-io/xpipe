@@ -33,6 +33,11 @@ public class StorePauseAction implements ActionProvider {
             public String getIcon(DataStoreEntryRef<PauseableStore> store) {
                 return "mdi2p-pause";
             }
+
+            @Override
+            public boolean requiresValidStore() {
+                return false;
+            }
         };
     }
 

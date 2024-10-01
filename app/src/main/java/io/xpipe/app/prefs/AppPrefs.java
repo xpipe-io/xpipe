@@ -1,9 +1,6 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.core.AppCache;
-import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.AppTheme;
+import io.xpipe.app.core.*;
 import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
 import io.xpipe.app.fxcomps.Comp;
@@ -11,6 +8,7 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.ExternalTerminalType;
+import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.PasswordLockSecretValue;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.ModuleHelper;
@@ -38,14 +36,17 @@ public class AppPrefs {
     private static AppPrefs INSTANCE;
     private final List<Mapping<?>> mapping = new ArrayList<>();
 
+    final BooleanProperty dontAllowTerminalRestart =
+            mapVaultSpecific(new SimpleBooleanProperty(false), "dontAllowTerminalRestart", Boolean.class);
     final BooleanProperty enableHttpApi =
             mapVaultSpecific(new SimpleBooleanProperty(false), "enableHttpApi", Boolean.class);
     final BooleanProperty dontAutomaticallyStartVmSshServer =
             mapVaultSpecific(new SimpleBooleanProperty(false), "dontAutomaticallyStartVmSshServer", Boolean.class);
     final BooleanProperty dontAcceptNewHostKeys =
             mapVaultSpecific(new SimpleBooleanProperty(false), "dontAcceptNewHostKeys", Boolean.class);
-    final BooleanProperty performanceMode = map(new SimpleBooleanProperty(false), "performanceMode", Boolean.class);
-    public final BooleanProperty useBundledTools = map(new SimpleBooleanProperty(false), "useBundledTools", Boolean.class);
+    public final BooleanProperty performanceMode = map(new SimpleBooleanProperty(), "performanceMode", Boolean.class);
+    public final BooleanProperty useBundledTools =
+            map(new SimpleBooleanProperty(false), "useBundledTools", Boolean.class);
     public final ObjectProperty<AppTheme.Theme> theme =
             map(new SimpleObjectProperty<>(), "theme", AppTheme.Theme.class);
     final BooleanProperty useSystemFont = map(new SimpleBooleanProperty(true), "useSystemFont", Boolean.class);
@@ -75,6 +76,8 @@ public class AppPrefs {
             mapVaultSpecific(new SimpleBooleanProperty(false), "dontCachePasswords", Boolean.class);
     public final BooleanProperty denyTempScriptCreation =
             mapVaultSpecific(new SimpleBooleanProperty(false), "denyTempScriptCreation", Boolean.class);
+    final Property<ExternalPasswordManager> passwordManager =
+            mapVaultSpecific(new SimpleObjectProperty<>(), "passwordManager", ExternalPasswordManager.class);
     final StringProperty passwordManagerCommand =
             map(new SimpleStringProperty(""), "passwordManagerCommand", String.class);
     final ObjectProperty<StartupBehaviour> startupBehaviour =
@@ -104,6 +107,8 @@ public class AppPrefs {
             map(new SimpleBooleanProperty(true), "openConnectionSearchWindowOnConnectionCreation", Boolean.class);
     final ObjectProperty<Path> storageDirectory =
             map(new SimpleObjectProperty<>(DEFAULT_STORAGE_DIR), "storageDirectory", Path.class);
+    final BooleanProperty confirmAllDeletions =
+            map(new SimpleBooleanProperty(false), "confirmAllDeletions", Boolean.class);
     final BooleanProperty developerMode = map(new SimpleBooleanProperty(false), "developerMode", Boolean.class);
     final BooleanProperty developerDisableUpdateVersionCheck =
             map(new SimpleBooleanProperty(false), "developerDisableUpdateVersionCheck", Boolean.class);
@@ -148,6 +153,10 @@ public class AppPrefs {
 
     public ObservableBooleanValue enableHttpApi() {
         return enableHttpApi;
+    }
+
+    public ObservableBooleanValue dontAllowTerminalRestart() {
+        return dontAllowTerminalRestart;
     }
 
     private final IntegerProperty editorReloadTimeout =
@@ -251,6 +260,10 @@ public class AppPrefs {
                 },
                 o,
                 developerMode());
+    }
+
+    public ObservableValue<ExternalPasswordManager> externalPasswordManager() {
+        return passwordManager;
     }
 
     public ObservableValue<SupportedLocale> language() {
@@ -475,6 +488,9 @@ public class AppPrefs {
         terminalType.set(ExternalTerminalType.determineDefault(terminalType.get()));
         if (rdpClientType.get() == null) {
             rdpClientType.setValue(ExternalRdpClientType.determineDefault());
+        }
+        if (AppState.get().isInitialLaunch()) {
+            performanceMode.setValue(XPipeDistributionType.get() == XPipeDistributionType.WEBTOP);
         }
     }
 

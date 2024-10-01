@@ -225,6 +225,8 @@ public abstract class OperationMode {
                     CURRENT.finalTeardown();
                 }
                 CURRENT = null;
+                // Restart local shell
+                LocalShell.init();
                 r.run();
             } catch (Throwable ex) {
                 ErrorEvent.fromThrowable(ex).handle();
@@ -293,17 +295,27 @@ public abstract class OperationMode {
 
         inShutdown = true;
         OperationMode.inShutdownHook = inShutdownHook;
-        try {
-            if (CURRENT != null) {
-                CURRENT.finalTeardown();
+        // Keep a non-daemon thread running
+        var thread = ThreadHelper.createPlatformThread("shutdown", false, () -> {
+            try {
+                if (CURRENT != null) {
+                    CURRENT.finalTeardown();
+                }
+                CURRENT = null;
+            } catch (Throwable t) {
+                ErrorEvent.fromThrowable(t).term().handle();
+                OperationMode.halt(1);
             }
-            CURRENT = null;
-        } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t).term().handle();
+
+            OperationMode.halt(hasError ? 1 : 0);
+        });
+        thread.start();
+
+        try {
+            thread.join();
+        } catch (InterruptedException ignored) {
             OperationMode.halt(1);
         }
-
-        OperationMode.halt(hasError ? 1 : 0);
     }
 
     //    public static synchronized void reload() {
