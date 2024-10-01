@@ -94,8 +94,10 @@ class ScanDialog extends DialogComp {
                     }
                 });
             } finally {
-                shellValidationContext.close();
-                shellValidationContext = null;
+                if (shellValidationContext != null) {
+                    shellValidationContext.close();
+                    shellValidationContext = null;
+                }
             }
         });
     }
