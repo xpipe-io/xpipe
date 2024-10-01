@@ -300,6 +300,11 @@ public final class BrowserFileListComp extends SimpleComp {
 
     private void prepareTableShortcuts(TableView<BrowserEntry> table) {
         table.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            // Prevent post close events
+            if (fileList.getFileSystemModel().isClosed()) {
+                return;
+            }
+
             var selected = fileList.getSelection();
             var action = BrowserAction.getFlattened(fileList.getFileSystemModel(), selected).stream()
                     .filter(browserAction -> browserAction.isApplicable(fileList.getFileSystemModel(), selected)
