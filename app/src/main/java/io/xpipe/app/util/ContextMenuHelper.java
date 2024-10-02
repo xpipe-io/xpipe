@@ -43,6 +43,10 @@ public class ContextMenuHelper {
 
     public static void toggleShow(ContextMenu contextMenu, Node ref, Side side) {
         if (!contextMenu.isShowing()) {
+            // Prevent NPE in show()
+            if (contextMenu.getScene() == null || ref == null || ref.getScene() == null) {
+                return;
+            }
             contextMenu.show(ref, side, 0, 0);
         } else {
             contextMenu.hide();
