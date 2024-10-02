@@ -23,9 +23,6 @@ public class TerminalViewDockComp extends SimpleComp {
         stack.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
             update(stack);
         });
-        stack.sceneProperty().addListener((observable, oldValue, newValue) -> {
-            update(stack);
-        });
         var s = AppMainWindow.getInstance().getStage();
         s.xProperty().addListener((observable, oldValue, newValue) -> {
             update(stack);
@@ -41,16 +38,14 @@ public class TerminalViewDockComp extends SimpleComp {
         });
         s.iconifiedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                TerminalView.get().onMinimize();
+                TerminalView.get().onWindowMinimize();
             } else {
-                TerminalView.get().onFocusGain();
+                TerminalView.get().onWindowActivate();
             }
         });
         s.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 TerminalView.get().onFocusGain();
-            } else {
-                TerminalView.get().onFocusLost();
             }
         });
         s.addEventFilter(WindowEvent.WINDOW_SHOWN,event -> {

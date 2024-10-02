@@ -10,12 +10,10 @@ import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.fxcomps.impl.TextFieldComp;
 import io.xpipe.app.terminal.ExternalTerminalType;
-import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.TerminalLauncher;
-import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.util.*;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ListCell;
@@ -58,7 +56,11 @@ public class TerminalCategory extends AppPrefsCategory {
                                 .hide(prefs.terminalType.isNotEqualTo(ExternalTerminalType.CUSTOM)))
                         .addComp(terminalTest)
                         .nameAndDescription("clearTerminalOnInit")
-                        .addToggle(prefs.clearTerminalOnInit))
+                        .addToggle(prefs.clearTerminalOnInit)
+                        .nameAndDescription("enableTerminalDocking")
+                        .addToggle(prefs.enableTerminalDocking)
+                        .hide(new SimpleBooleanProperty(!TerminalView.isSupported()))
+                )
                 .buildComp();
     }
 

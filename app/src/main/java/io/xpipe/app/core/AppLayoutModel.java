@@ -11,6 +11,7 @@ import io.xpipe.app.prefs.AppPrefsComp;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LicenseProvider;
 
+import io.xpipe.app.util.TerminalView;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -64,15 +65,19 @@ public class AppLayoutModel {
     }
 
     public void selectTerminal() {
+        if (!TerminalView.isSupported()) {
+            return;
+        }
+
         selected.setValue(entries.get(2));
     }
 
     public void selectSettings() {
-        selected.setValue(entries.get(3));
+        selected.setValue(entries.get(TerminalView.isSupported() ? 3 : 2));
     }
 
     public void selectLicense() {
-        selected.setValue(entries.get(4));
+        selected.setValue(entries.get(TerminalView.isSupported() ? 4 : 3));
     }
 
     public void selectConnections() {
@@ -137,6 +142,10 @@ public class AppLayoutModel {
                 //                        () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
                 //                        null)
                 ));
+
+        if (!TerminalView.isSupported()) {
+            l.remove(2);
+        }
 
         var now = Instant.now();
         var zone = ZoneId.of(ZoneId.SHORT_IDS.get("PST"));

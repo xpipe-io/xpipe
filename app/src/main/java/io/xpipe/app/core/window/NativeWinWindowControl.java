@@ -1,6 +1,7 @@
 package io.xpipe.app.core.window;
 
 import com.sun.jna.ptr.IntByReference;
+import io.sentry.protocol.User;
 import io.xpipe.app.util.Rect;
 import javafx.stage.Window;
 
@@ -24,6 +25,11 @@ public class NativeWinWindowControl {
     public static Optional<NativeWinWindowControl> byPid(long pid) {
         var ref = new AtomicReference<NativeWinWindowControl>();
         User32.INSTANCE.EnumWindows((hWnd, data) -> {
+            var visible = User32.INSTANCE.IsWindowVisible(hWnd);
+            if (!visible) {
+                return true;
+            }
+
             var wpid = new IntByReference();
             User32.INSTANCE.GetWindowThreadProcessId(hWnd, wpid);
             if (wpid.getValue() == pid) {
@@ -59,8 +65,16 @@ public class NativeWinWindowControl {
         this.windowHandle = windowHandle;
     }
 
+    public boolean isIconified() {
+        return (User32.INSTANCE.GetWindowLong(windowHandle,User32.GWL_STYLE) & User32.WS_MINIMIZE) != 0;
+    }
+
     public void alwaysInFront() {
         orderRelative(new WinDef.HWND(new Pointer( 0xFFFFFFFFFFFFFFFFL)));
+    }
+
+    public void defaultOrder() {
+        orderRelative(new WinDef.HWND(new Pointer( 1)));
     }
 
     public void orderRelative(WinDef.HWND predecessor) {
@@ -68,7 +82,7 @@ public class NativeWinWindowControl {
     }
 
     public void show() {
-        User32.INSTANCE.ShowWindow(windowHandle,User32.SW_RESTORE);
+        User32.INSTANCE.ShowWindow(windowHandle, User32.SW_RESTORE);
     }
 
     public void close() {

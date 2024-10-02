@@ -3,6 +3,8 @@ package io.xpipe.app.util;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.NativeWinWindowControl;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.core.process.OsType;
 import javafx.application.Platform;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -13,6 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TerminalView {
+
+    public static boolean isSupported() {
+        return OsType.getLocal() == OsType.WINDOWS;
+    }
 
     @Value
     public static class Session {
@@ -42,9 +48,15 @@ public class TerminalView {
 
         public abstract void close();
 
+        public abstract boolean isActive();
+
         public abstract Rect queryBounds();
 
         public final void updateBoundsState() {
+            if (!isActive()) {
+                return;
+            }
+
             var bounds = queryBounds();
             if (lastBounds != null && !lastBounds.equals(bounds)) {
                 customBounds = true;
@@ -81,7 +93,8 @@ public class TerminalView {
 
         @Override
         public void back() {
-            NativeWinWindowControl.MAIN_WINDOW.orderRelative(control.getWindowHandle());
+            control.defaultOrder();
+            // NativeWinWindowControl.MAIN_WINDOW.orderRelative(control.getWindowHandle());
         }
 
         @Override
@@ -97,6 +110,11 @@ public class TerminalView {
         }
 
         @Override
+        public boolean isActive() {
+            return !control.isIconified();
+        }
+
+        @Override
         public Rect queryBounds() {
             return control.getBounds();
         }
@@ -107,6 +125,10 @@ public class TerminalView {
 
     private Rect viewBounds;
     private boolean viewActive;
+
+    public boolean isEnabled() {
+        return isSupported() && AppPrefs.get().enableTerminalDocking().get();
+    }
 
     public synchronized void open(long pid) {
         var processHandle = ProcessHandle.of(pid);
@@ -137,6 +159,16 @@ public class TerminalView {
             return;
         }
         terminalInstances.add(new WindowsTerminalInstance(terminal.get(), control.get()));
+
+        TrackEvent.withTrace("Terminal instance opened")
+                .tag("terminalPid", terminal.get().pid())
+                .tag("viewEnabled", isEnabled())
+                .handle();
+
+        if (!isEnabled()) {
+            return;
+        }
+
         Platform.runLater(() -> {
             AppLayoutModel.get().selectTerminal();
         });
@@ -154,6 +186,9 @@ public class TerminalView {
     }
 
     public synchronized void toggleView(boolean active) {
+        TrackEvent.withTrace("Terminal view toggled")
+                .tag("active", active)
+                .handle();
         if (viewActive == active) {
             return;
         }
@@ -162,30 +197,59 @@ public class TerminalView {
         if (active) {
             terminalInstances.forEach(terminalInstance -> terminalInstance.front());
             updatePositions();
+        } else {
+            terminalInstances.forEach(terminalInstance -> terminalInstance.back());
         }
     }
 
-    public synchronized void onFocusLost() {
-        terminalInstances.forEach(terminalInstance -> terminalInstance.back());
-    }
-
     public synchronized void onFocusGain() {
-        terminalInstances.forEach(terminalInstance -> terminalInstance.show());
+        TrackEvent.withTrace("Terminal view focus gained")
+                .handle();
+        terminalInstances.forEach(terminalInstance -> {
+            if (!terminalInstance.isActive()) {
+                return;
+            }
+
+            terminalInstance.updateBoundsState();
+            if (terminalInstance.isCustomBounds()) {
+                return;
+            }
+
+            terminalInstance.show();
+        });
     }
 
-    public synchronized void onMinimize() {
+    public synchronized void onWindowActivate() {
+        TrackEvent.withTrace("Terminal view focus gained")
+                .handle();
         terminalInstances.forEach(terminalInstance -> {
             terminalInstance.updateBoundsState();
             if (terminalInstance.isCustomBounds()) {
                 return;
             }
 
+            terminalInstance.show();
+        });
+    }
+
+    public synchronized void onWindowMinimize() {
+        TrackEvent.withTrace("Terminal view minimized")
+                .handle();
+
+        terminalInstances.forEach(terminalInstance -> {
+            terminalInstance.updateBoundsState();
+            if (terminalInstance.isCustomBounds()) {
+                return;
+            }
 
             terminalInstance.minimize();
         });
     }
 
     public synchronized void onClose() {
+        TrackEvent.withTrace("Terminal view closed")
+                .handle();
+
         terminalInstances.forEach(terminalInstance -> {
             terminalInstance.updateBoundsState();
             if (terminalInstance.isCustomBounds()) {
@@ -197,6 +261,10 @@ public class TerminalView {
     }
 
     private void updatePositions() {
+        if (viewBounds == null) {
+            return;
+        }
+
         terminalInstances.forEach(terminalInstance -> {
             terminalInstance.updateBoundsState();
             if (terminalInstance.isCustomBounds()) {
@@ -208,14 +276,27 @@ public class TerminalView {
     }
 
     public void resizeView(int x, int y, int w, int h) {
+        if (w < 100 || h < 100) {
+            return;
+        }
+
         this.viewBounds = new Rect(x,y,w,h);
+        TrackEvent.withTrace("Terminal view resized")
+                .tag("rect", viewBounds)
+                .handle();
         if (viewActive) {
             updatePositions();
         }
     }
 
     public void clickView() {
-        terminalInstances.forEach(terminalInstance -> terminalInstance.updatePosition(viewBounds));
+        TrackEvent.withTrace("Terminal view clicked")
+                .handle();
+
+        terminalInstances.forEach(terminalInstance -> {
+            terminalInstance.show();
+            terminalInstance.updatePosition(viewBounds);
+        });
     }
 
     private static TerminalView INSTANCE;
