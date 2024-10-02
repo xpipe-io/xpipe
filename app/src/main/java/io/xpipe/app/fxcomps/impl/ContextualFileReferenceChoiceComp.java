@@ -8,6 +8,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
+import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.ContextualFileReference;
@@ -144,10 +145,8 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
     }
 
     private Comp<?> createComboBox() {
-        var combo = new ComboBox<String>();
-        combo.setEditable(true);
-        combo.setMaxWidth(2000);
-        combo.setCellFactory(param -> {
+        var items = previousFileReferences.stream().map(previousFileReference -> previousFileReference.getPath().toString()).toList();
+        var combo = new ComboTextFieldComp(filePath, items, param -> {
             return new ListCell<>() {
                 @Override
                 protected void updateItem(String item, boolean empty) {
@@ -165,13 +164,10 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                 }
             };
         });
-        previousFileReferences.forEach(previousFileReference -> {
-            combo.getItems().add(previousFileReference.getPath().toString());
-        });
-        HBox.setHgrow(combo, Priority.ALWAYS);
-        combo.getStyleClass().add(Styles.LEFT_PILL);
-        GrowAugment.create(false, true).augment(combo);
-        return Comp.of(() -> combo);
+        combo.hgrow();
+        combo.styleClass(Styles.LEFT_PILL);
+        combo.grow(false, true);
+        return combo;
     }
 
     private Comp<?> createTextField() {

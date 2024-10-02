@@ -29,6 +29,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
 
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -38,9 +39,11 @@ import java.util.function.Supplier;
 
 public class BrowserChooserComp extends DialogComp {
 
+    private final Stage stage;
     private final BrowserFileChooserModel model;
 
-    public BrowserChooserComp(BrowserFileChooserModel model) {
+    public BrowserChooserComp(Stage stage, BrowserFileChooserModel model) {
+        this.stage = stage;
         this.model = model;
     }
 
@@ -49,7 +52,7 @@ public class BrowserChooserComp extends DialogComp {
         PlatformThread.runLaterIfNeeded(() -> {
             var model = new BrowserFileChooserModel(OpenFileSystemModel.SelectionMode.SINGLE_FILE);
             DialogComp.showWindow(save ? "saveFileTitle" : "openFileTitle", stage -> {
-                var comp = new BrowserChooserComp(model);
+                var comp = new BrowserChooserComp(stage, model);
                 comp.apply(struc -> struc.get().setPrefSize(1200, 700))
                         .apply(struc -> AppFont.normal(struc.get()))
                         .styleClass("browser")
@@ -77,6 +80,7 @@ public class BrowserChooserComp extends DialogComp {
 
     @Override
     protected void finish() {
+        stage.close();
         model.finishChooser();
     }
 
