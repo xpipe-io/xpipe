@@ -41,10 +41,18 @@ public final class BrowserContextMenu extends ContextMenu {
             selected.add(source);
         }
 
+        if (model.isClosed()) {
+            return;
+        }
+
         for (BrowserAction.Category cat : BrowserAction.Category.values()) {
             var all = BrowserAction.ALL.stream()
                     .filter(browserAction -> browserAction.getCategory() == cat)
                     .filter(browserAction -> {
+                        if (model.isClosed()) {
+                            return false;
+                        }
+
                         var used = browserAction.resolveFilesIfNeeded(selected);
                         if (!browserAction.isApplicable(model, used)) {
                             return false;
@@ -66,6 +74,10 @@ public final class BrowserContextMenu extends ContextMenu {
             }
 
             for (BrowserAction a : all) {
+                if (model.isClosed()) {
+                    return;
+                }
+
                 var used = a.resolveFilesIfNeeded(selected);
                 getItems().add(a.toMenuItem(model, used));
             }

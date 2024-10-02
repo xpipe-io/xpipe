@@ -3,6 +3,7 @@ package io.xpipe.app.storage;
 import io.xpipe.app.ext.ProcessControlProvider;
 
 import java.nio.file.Path;
+import java.util.List;
 
 public interface DataStorageSyncHandler {
 
@@ -33,4 +34,6 @@ public interface DataStorageSyncHandler {
     void handleDeletion(Path target, String name);
 
     Path getDirectory();
+
+    List<Path> getSavedDataFiles();
 }

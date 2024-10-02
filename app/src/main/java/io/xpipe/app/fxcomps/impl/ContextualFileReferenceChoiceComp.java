@@ -7,37 +7,56 @@ import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
+import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystemStore;
 
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.control.Cell;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
 import atlantafx.base.theme.Styles;
+import javafx.scene.paint.Color;
+import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>> {
+
+    @Value
+    public static class PreviousFileReference {
+
+        String displayName;
+        Path path;
+    }
 
     private final Property<DataStoreEntryRef<? extends FileSystemStore>> fileSystem;
     private final Property<String> filePath;
     private final boolean allowSync;
+    private final List<PreviousFileReference> previousFileReferences;
 
     public <T extends FileSystemStore> ContextualFileReferenceChoiceComp(
-            Property<DataStoreEntryRef<T>> fileSystem, Property<String> filePath, boolean allowSync) {
+            Property<DataStoreEntryRef<T>> fileSystem, Property<String> filePath, boolean allowSync,
+            List<PreviousFileReference> previousFileReferences
+    ) {
         this.allowSync = allowSync;
+        this.previousFileReferences = previousFileReferences;
         this.fileSystem = new SimpleObjectProperty<>();
         fileSystem.subscribe(val -> {
             this.fileSystem.setValue(val);
@@ -50,11 +69,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
 
     @Override
     public CompStructure<HBox> createBase() {
-        var fileNameComp = new TextFieldComp(filePath)
-                .apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS))
-                .styleClass(Styles.LEFT_PILL)
-                .grow(false, true);
-
+        var path = previousFileReferences.isEmpty() ? createTextField() : createComboBox();
         var fileBrowseButton = new ButtonComp(null, new FontIcon("mdi2f-folder-open-outline"), () -> {
                     BrowserChooserComp.openSingleFile(
                             () -> fileSystem.getValue(),
@@ -112,7 +127,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
         gitShareButton.styleClass(Styles.RIGHT_PILL).grow(false, true);
 
         var nodes = new ArrayList<Comp<?>>();
-        nodes.add(fileNameComp);
+        nodes.add(path);
         nodes.add(fileBrowseButton);
         if (allowSync) {
             nodes.add(gitShareButton);
@@ -126,5 +141,44 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
         });
 
         return new SimpleCompStructure<>(layout.createStructure().get());
+    }
+
+    private Comp<?> createComboBox() {
+        var combo = new ComboBox<String>();
+        combo.setEditable(true);
+        combo.setMaxWidth(2000);
+        combo.setCellFactory(param -> {
+            return new ListCell<>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        return;
+                    }
+
+                    var display = previousFileReferences.stream()
+                            .filter(ref -> ref.path.toString().equals(item))
+                            .findFirst()
+                            .map(previousFileReference -> previousFileReference.getDisplayName())
+                            .orElse(item);
+                    setText(display);
+                }
+            };
+        });
+        previousFileReferences.forEach(previousFileReference -> {
+            combo.getItems().add(previousFileReference.getPath().toString());
+        });
+        HBox.setHgrow(combo, Priority.ALWAYS);
+        combo.getStyleClass().add(Styles.LEFT_PILL);
+        GrowAugment.create(false, true).augment(combo);
+        return Comp.of(() -> combo);
+    }
+
+    private Comp<?> createTextField() {
+        var fileNameComp = new TextFieldComp(filePath)
+                .apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS))
+                .styleClass(Styles.LEFT_PILL)
+                .grow(false, true);
+        return fileNameComp;
     }
 }
