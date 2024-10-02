@@ -143,7 +143,8 @@ project.ext {
             "-Dio.xpipe.app.languages=${String.join(",", languages)}",
             "-Dfile.encoding=UTF-8",
             "-Dvisualvm.display.name=XPipe",
-            "-Djavafx.preloader=io.xpipe.app.core.AppPreloader"
+            "-Djavafx.preloader=io.xpipe.app.core.AppPreloader",
+            "-Djdk.virtualThreadScheduler.parallelism=8"
     ]
     // Disable this on Windows for now as it requires Windows 10+
     if (org.gradle.internal.os.OperatingSystem.current().isLinux() || org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
