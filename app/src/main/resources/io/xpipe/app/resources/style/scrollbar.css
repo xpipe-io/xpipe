@@ -22,6 +22,7 @@
     -fx-background-insets: 0;
     -fx-padding: 0;
     -fx-background-color: transparent;
+    -fx-border-insets: 0;
 }
 
 .scroll-pane:focused {

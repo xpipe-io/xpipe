@@ -118,6 +118,7 @@ public class StoreCategoryComp extends SimpleComp {
                         StoreViewState.get().getFilterString())
                 .getList();
         var count = new CountComp<>(shownList, category.getAllContainedEntries(), string -> "(" + string + ")");
+        count.visible(Bindings.isNotEmpty(shownList));
 
         var showStatus = hover.or(new SimpleBooleanProperty(DataStorage.get().supportsSharing()))
                 .or(showing);
