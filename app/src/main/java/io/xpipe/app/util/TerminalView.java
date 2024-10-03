@@ -318,6 +318,7 @@ public class TerminalView {
 
         terminalInstances.forEach(terminalInstance -> {
             terminalInstance.show();
+            terminalInstance.front();
             terminalInstance.updatePosition(viewBounds);
         });
     }

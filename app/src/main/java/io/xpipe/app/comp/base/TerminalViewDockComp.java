@@ -63,6 +63,8 @@ public class TerminalViewDockComp extends SimpleComp {
 
     private void update(Region region) {
         var bounds = region.localToScreen(region.getBoundsInLocal());
-        TerminalView.get().resizeView((int) bounds.getMinX(), (int) bounds.getMinY(),(int) bounds.getWidth(), (int) bounds.getHeight());
+        var sx = region.getScene().getWindow().getOutputScaleX();
+        var sy = region.getScene().getWindow().getOutputScaleY();
+        TerminalView.get().resizeView((int) Math.ceil(bounds.getMinX() * sx), (int) Math.ceil(bounds.getMinY() * sy),(int) Math.floor(bounds.getWidth() * sx), (int) Math.floor(bounds.getHeight() * sy));
     }
 }
