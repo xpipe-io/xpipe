@@ -4,6 +4,7 @@ import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.NativeWinWindowControl;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.terminal.DockableTerminalType;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.core.process.OsType;
 import javafx.application.Platform;
@@ -14,6 +15,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class TerminalView {
 
@@ -79,7 +81,6 @@ public class TerminalView {
         @Override
         public void show() {
             this.control.show();
-            front();
         }
 
         @Override
@@ -90,6 +91,7 @@ public class TerminalView {
         @Override
         public void front() {
             this.control.alwaysInFront();
+            this.control.removeBorders();
         }
 
         @Override
@@ -143,7 +145,7 @@ public class TerminalView {
             return;
         }
 
-        var terminal = isTerminalShell() ? shell : shell.get().parent();
+        var terminal = getTerminalProcess(shell.get());
         if (terminal.isEmpty()) {
             return;
         }
@@ -152,15 +154,13 @@ public class TerminalView {
         sessions.add(session);
 
         var instance = terminalInstances.stream().filter(i -> i.terminal.equals(terminal.get())).findFirst();
-        if (instance.isPresent()) {
-            return;
+        if (instance.isEmpty()) {
+            var control = NativeWinWindowControl.byPid(terminal.get().pid());
+            if (control.isEmpty()) {
+                return;
+            }
+            terminalInstances.add(new WindowsTerminalInstance(terminal.get(), control.get()));
         }
-
-        var control = NativeWinWindowControl.byPid(terminal.get().pid());
-        if (control.isEmpty()) {
-            return;
-        }
-        terminalInstances.add(new WindowsTerminalInstance(terminal.get(), control.get()));
 
         TrackEvent.withTrace("Terminal instance opened")
                 .tag("terminalPid", terminal.get().pid())
@@ -176,13 +176,18 @@ public class TerminalView {
         });
     }
 
-    private boolean isTerminalShell() {
+    private Optional<ProcessHandle> getTerminalProcess(ProcessHandle shell) {
         var t = AppPrefs.get().terminalType().getValue();
-        if (t.equals(ExternalTerminalType.CMD) || t.equals(ExternalTerminalType.POWERSHELL) || t.equals(ExternalTerminalType.PWSH)) {
-            return true;
-        } else {
-            return false;
+        if (!(t instanceof DockableTerminalType dockableTerminalType)) {
+            return Optional.empty();
         }
+
+        var off = dockableTerminalType.getProcessHierarchyOffset();
+        var current = Optional.of(shell);
+        for (int i = 0; i < 1 + off; i++) {
+            current = current.flatMap(processHandle -> processHandle.parent());
+        }
+        return current;
     }
 
     public synchronized void tick() {
@@ -235,10 +240,6 @@ public class TerminalView {
     }
 
     public synchronized void onWindowActivate() {
-        if (!viewActive) {
-            return;
-        }
-
         TrackEvent.withTrace("Terminal view focus gained")
                 .handle();
         terminalInstances.forEach(terminalInstance -> {
@@ -248,14 +249,15 @@ public class TerminalView {
             }
 
             terminalInstance.show();
+            if (viewActive) {
+                terminalInstance.front();
+            } else {
+                terminalInstance.back();
+            }
         });
     }
 
     public synchronized void onWindowMinimize() {
-        if (!viewActive) {
-            return;
-        }
-
         TrackEvent.withTrace("Terminal view minimized")
                 .handle();
 
@@ -307,9 +309,7 @@ public class TerminalView {
         TrackEvent.withTrace("Terminal view resized")
                 .tag("rect", viewBounds)
                 .handle();
-        if (viewActive) {
-            updatePositions();
-        }
+        updatePositions();
     }
 
     public void clickView() {

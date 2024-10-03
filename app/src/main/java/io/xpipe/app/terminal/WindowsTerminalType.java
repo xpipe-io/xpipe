@@ -8,7 +8,7 @@ import io.xpipe.core.store.FileNames;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public interface WindowsTerminalType extends ExternalTerminalType {
+public interface WindowsTerminalType extends ExternalTerminalType, DockableTerminalType {
 
     ExternalTerminalType WINDOWS_TERMINAL = new Standard();
     ExternalTerminalType WINDOWS_TERMINAL_PREVIEW = new Preview();
