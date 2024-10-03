@@ -65,6 +65,12 @@ public class NativeWinWindowControl {
         this.windowHandle = windowHandle;
     }
 
+    public void removeBorders() {
+        var style = User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_STYLE);
+        var mod = style & ~(User32.WS_CAPTION | User32.WS_THICKFRAME | User32.WS_MAXIMIZEBOX);
+        User32.INSTANCE.SetWindowLong(windowHandle,User32.GWL_STYLE,mod);
+    }
+
     public boolean isIconified() {
         return (User32.INSTANCE.GetWindowLong(windowHandle,User32.GWL_STYLE) & User32.WS_MINIMIZE) != 0;
     }
@@ -74,7 +80,7 @@ public class NativeWinWindowControl {
     }
 
     public void defaultOrder() {
-        orderRelative(new WinDef.HWND(new Pointer( 1)));
+        orderRelative(new WinDef.HWND(new Pointer( -2)));
     }
 
     public void orderRelative(WinDef.HWND predecessor) {

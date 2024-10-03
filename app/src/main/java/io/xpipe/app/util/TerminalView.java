@@ -4,6 +4,7 @@ import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.NativeWinWindowControl;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.core.process.OsType;
 import javafx.application.Platform;
 import lombok.AccessLevel;
@@ -94,7 +95,8 @@ public class TerminalView {
         @Override
         public void back() {
             control.defaultOrder();
-            // NativeWinWindowControl.MAIN_WINDOW.orderRelative(control.getWindowHandle());
+            NativeWinWindowControl.MAIN_WINDOW.alwaysInFront();
+            NativeWinWindowControl.MAIN_WINDOW.defaultOrder();
         }
 
         @Override
@@ -141,7 +143,7 @@ public class TerminalView {
             return;
         }
 
-        var terminal = shell.get().parent();
+        var terminal = isTerminalShell() ? shell : shell.get().parent();
         if (terminal.isEmpty()) {
             return;
         }
@@ -174,6 +176,15 @@ public class TerminalView {
         });
     }
 
+    private boolean isTerminalShell() {
+        var t = AppPrefs.get().terminalType().getValue();
+        if (t.equals(ExternalTerminalType.CMD) || t.equals(ExternalTerminalType.POWERSHELL) || t.equals(ExternalTerminalType.PWSH)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public synchronized void tick() {
         sessions.removeIf(session -> !session.shell.isAlive() || !session.terminal.isAlive());
         for (TerminalInstance terminalInstance : new ArrayList<>(terminalInstances)) {
@@ -203,6 +214,10 @@ public class TerminalView {
     }
 
     public synchronized void onFocusGain() {
+        if (!viewActive) {
+            return;
+        }
+
         TrackEvent.withTrace("Terminal view focus gained")
                 .handle();
         terminalInstances.forEach(terminalInstance -> {
@@ -220,6 +235,10 @@ public class TerminalView {
     }
 
     public synchronized void onWindowActivate() {
+        if (!viewActive) {
+            return;
+        }
+
         TrackEvent.withTrace("Terminal view focus gained")
                 .handle();
         terminalInstances.forEach(terminalInstance -> {
@@ -233,6 +252,10 @@ public class TerminalView {
     }
 
     public synchronized void onWindowMinimize() {
+        if (!viewActive) {
+            return;
+        }
+
         TrackEvent.withTrace("Terminal view minimized")
                 .handle();
 
