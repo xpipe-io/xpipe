@@ -281,6 +281,13 @@ public class StoreViewState {
                     }
                 });
             }
+
+            @Override
+            public void onEntryCategoryChange(DataStoreCategory from, DataStoreCategory to) {
+                synchronized (this) {
+                    categories.getList().forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
+                }
+            }
         });
     }
 

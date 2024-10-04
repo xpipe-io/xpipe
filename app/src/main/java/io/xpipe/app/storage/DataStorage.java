@@ -350,9 +350,11 @@ public abstract class DataStorage {
             return;
         }
 
+        var oldCat = getStoreCategoryIfPresent(entry.getCategoryUuid()).orElse(getDefaultConnectionsCategory());
         entry.setCategoryUuid(newCategory.getUuid());
         var children = getDeepStoreChildren(entry);
         children.forEach(child -> child.setCategoryUuid(newCategory.getUuid()));
+        listeners.forEach(storageListener -> storageListener.onEntryCategoryChange(oldCat, newCategory));
         listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
         saveAsync();
     }
