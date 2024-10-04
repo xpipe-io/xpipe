@@ -126,25 +126,6 @@ public class AppLayoutModel {
                 //                        () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
                 //                        null)
                 ));
-
-
-        var zone = ZoneId.of(ZoneId.SHORT_IDS.get("PST"));
-        var now = Instant.now();
-        var phStart = ZonedDateTime.of(2024, 10, 22, 0, 1, 0, 0, zone).toInstant();
-        var phEnd = ZonedDateTime.of(2024, 10, 29, 0, 1, 0, 0, zone).toInstant();
-        var clicked = AppCache.get("phClicked",Boolean.class,() -> false);
-        var phShow = now.isAfter(phStart) && now.isBefore(phEnd) && !clicked;
-        if (phShow) {
-            l.add(new Entry(
-                    new SimpleStringProperty("Product Hunt"),
-                    new LabelGraphic.ImageGraphic("app:producthunt-color.png", 24),
-                    null,
-                    () -> {
-                        AppCache.update("phClicked", true);
-                        Hyperlinks.open(Hyperlinks.PRODUCT_HUNT);
-                    },
-                    null));
-        }
         return l;
     }
 

@@ -1,5 +1,6 @@
 package io.xpipe.app.comp.base;
 
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.fxcomps.Comp;
@@ -8,13 +9,17 @@ import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
+import io.xpipe.app.fxcomps.util.LabelGraphic;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.update.UpdateAvailableAlert;
 import io.xpipe.app.update.XPipeDistributionType;
 
+import io.xpipe.app.util.Hyperlinks;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -22,6 +27,9 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
@@ -131,6 +139,28 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                     },
                     XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate())));
             vbox.getChildren().add(b.createRegion());
+        }
+
+        {
+            var zone = ZoneId.of(ZoneId.SHORT_IDS.get("PST"));
+            var now = Instant.now();
+            var phStart = ZonedDateTime.of(2024, 10, 22, 0, 1, 0, 0, zone).toInstant();
+            var phEnd = ZonedDateTime.of(2024, 10, 23, 0, 1, 0, 0, zone).toInstant();
+            var clicked = AppCache.get("phClicked",Boolean.class,() -> false);
+            var phShow = now.isAfter(phStart) && now.isBefore(phEnd) && !clicked;
+            if (phShow) {
+                var hide = new SimpleBooleanProperty(false);
+                var b = new IconButtonComp(new LabelGraphic.ImageGraphic("app:producthunt-color.png", 24), () -> {
+                    AppCache.update("phClicked", true);
+                    Hyperlinks.open(Hyperlinks.PRODUCT_HUNT);
+                    hide.set(true);
+                }).tooltip(new SimpleStringProperty("Product Hunt"));
+                b.apply(struc -> {
+                    AppFont.setSize(struc.get(), 1);
+                });
+                b.hide(hide);
+                vbox.getChildren().add(b.createRegion());
+            }
         }
 
         var filler = new Button();
