@@ -46,6 +46,8 @@ public class TerminalViewDockComp extends SimpleComp {
         s.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 TerminalView.get().onFocusGain();
+            } else {
+                TerminalView.get().onFocusLost();
             }
         });
         s.addEventFilter(WindowEvent.WINDOW_SHOWN,event -> {

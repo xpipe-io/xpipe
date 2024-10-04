@@ -5,7 +5,6 @@ import io.xpipe.app.core.window.NativeWinWindowControl;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.terminal.DockableTerminalType;
-import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.core.process.OsType;
 import javafx.application.Platform;
 import lombok.AccessLevel;
@@ -43,9 +42,11 @@ public class TerminalView {
 
         public abstract void minimize();
 
-        public abstract void front();
+        public abstract void alwaysInFront();
 
         public abstract void back();
+
+        public abstract void frontOfMainWindow();
 
         public abstract void updatePosition(Rect bounds);
 
@@ -89,7 +90,7 @@ public class TerminalView {
         }
 
         @Override
-        public void front() {
+        public void alwaysInFront() {
             this.control.alwaysInFront();
             this.control.removeBorders();
         }
@@ -99,6 +100,12 @@ public class TerminalView {
             control.defaultOrder();
             NativeWinWindowControl.MAIN_WINDOW.alwaysInFront();
             NativeWinWindowControl.MAIN_WINDOW.defaultOrder();
+        }
+
+        @Override
+        public void frontOfMainWindow() {
+            this.control.alwaysInFront();
+            this.control.defaultOrder();
         }
 
         @Override
@@ -211,7 +218,7 @@ public class TerminalView {
 
         this.viewActive = active;
         if (active) {
-            terminalInstances.forEach(terminalInstance -> terminalInstance.front());
+            terminalInstances.forEach(terminalInstance -> terminalInstance.alwaysInFront());
             updatePositions();
         } else {
             terminalInstances.forEach(terminalInstance -> terminalInstance.back());
@@ -236,6 +243,28 @@ public class TerminalView {
             }
 
             terminalInstance.show();
+            terminalInstance.alwaysInFront();
+        });
+    }
+
+    public synchronized void onFocusLost() {
+        if (!viewActive) {
+            return;
+        }
+
+        TrackEvent.withTrace("Terminal view focus lost")
+                .handle();
+        terminalInstances.forEach(terminalInstance -> {
+            if (!terminalInstance.isActive()) {
+                return;
+            }
+
+            terminalInstance.updateBoundsState();
+            if (terminalInstance.isCustomBounds()) {
+                return;
+            }
+
+            terminalInstance.frontOfMainWindow();
         });
     }
 
@@ -250,7 +279,7 @@ public class TerminalView {
 
             terminalInstance.show();
             if (viewActive) {
-                terminalInstance.front();
+                terminalInstance.alwaysInFront();
             } else {
                 terminalInstance.back();
             }
@@ -318,7 +347,7 @@ public class TerminalView {
 
         terminalInstances.forEach(terminalInstance -> {
             terminalInstance.show();
-            terminalInstance.front();
+            terminalInstance.alwaysInFront();
             terminalInstance.updatePosition(viewBounds);
         });
     }
