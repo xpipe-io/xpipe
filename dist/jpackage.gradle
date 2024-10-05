@@ -20,6 +20,10 @@ if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
     releaseArguments += '-Xdock:name=XPipe'
 }
 
+if (isFullRelease || isStage) {
+    releaseArguments.add("-XX:+DisableAttachMechanism")
+}
+
 // To remove warnings, the plugin probably does not expect the JPackage tasks to be in a separate project
 application {
     mainModule = 'io.xpipe.app'

@@ -15,6 +15,8 @@ task licenses(type: DefaultTask) {
     }
 }
 
+def debugArguments = file("$projectDir/debug/debug_arguments.txt").text.lines().map(s -> '"' + s + '"').collect(Collectors.joining(' '))
+
 if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
     task baseDist(type: DefaultTask) {
         doLast {
@@ -35,23 +37,12 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                 into "$distDir/base/app/lang"
             }
 
-            def debugArguments = file("$projectDir/debug/debug_arguments.txt").text.lines().map(s -> '"' + s + '"').collect(Collectors.joining(
-                    ' '))
-            def debugAttachArguments = file("$projectDir/debug/windows/debug_attach_arguments.txt").text.lines().map(s -> '"' + s + '"').collect(
-                    Collectors.joining(' '))
             file("$distDir/base/app/scripts").mkdirs()
-
             def debug = file("$distDir/base/app/scripts/xpiped_debug.bat")
             debug.text = file("$projectDir/debug/windows/xpiped_debug.bat").text.replace(
                     'JVM-ARGS',
                     debugArguments)
             debug.setExecutable(true)
-
-            def debugAttach = file("$distDir/base/app/scripts/xpiped_debug_attach.bat")
-            debugAttach.text = file("$projectDir/debug/windows/xpiped_debug.bat").text.replace(
-                    'JVM-ARGS',
-                    debugAttachArguments + ' ' + debugArguments)
-            debugAttach.setExecutable(true)
 
             copy {
                 from "$distDir/licenses"
@@ -85,24 +76,12 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                 into "$distDir/base/app"
             }
 
-            def debugArguments = file("$projectDir/debug/debug_arguments.txt").text.lines().map(s -> '"' + s + '"').collect(Collectors.joining(
-                    ' '))
-            def debugAttachArguments = file("$projectDir/debug/linux/debug_attach_arguments.txt").text.lines().map(s -> '"' + s + '"').collect(
-                    Collectors.joining(' '))
             file("$distDir/base/app/scripts").mkdirs()
-
-
             def debug = file("$distDir/base/app/scripts/xpiped_debug.sh")
             debug.text = file("$projectDir/debug/linux/xpiped_debug.sh").text.replace(
                     'JVM-ARGS',
                     debugArguments)
             debug.setExecutable(true, false)
-
-            def debugAttach = file("$distDir/base/app/scripts/xpiped_debug_attach.sh")
-            debugAttach.text = file("$projectDir/debug/linux/xpiped_debug.sh").text.replace(
-                    'JVM-ARGS',
-                    debugAttachArguments + ' ' + debugArguments)
-            debugAttach.setExecutable(true, false)
 
             copy {
                 from "$distDir/licenses"
@@ -135,23 +114,12 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                 into "$distDir/$app/Contents/Resources/lang"
             }
 
-            def debugArguments = file("$projectDir/debug/debug_arguments.txt").text.lines().map(s -> '"' + s + '"').collect(Collectors.joining(
-                    ' '))
-            def debugAttachArguments = file("$projectDir/debug/mac/debug_attach_arguments.txt").text.lines().map(s -> '"' + s + '"').collect(
-                    Collectors.joining(' '))
             file("$distDir/$app/Contents/Resources/scripts").mkdirs()
-
             def debug = file("$distDir/$app/Contents/Resources/scripts/xpiped_debug.sh")
             debug.text = file("$projectDir/debug/mac/xpiped_debug.sh").text.replace(
                     'JVM-ARGS',
                     debugArguments)
             debug.setExecutable(true, false)
-
-            def debugAttach = file("$distDir/$app/Contents/Resources/scripts/xpiped_debug_attach.sh")
-            debugAttach.text = file("$projectDir/debug/mac/xpiped_debug.sh").text.replace(
-                    'JVM-ARGS',
-                    debugAttachArguments + ' ' + debugArguments)
-            debugAttach.setExecutable(true, false)
         }
     }
 }
