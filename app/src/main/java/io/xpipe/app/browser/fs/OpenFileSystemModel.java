@@ -3,6 +3,7 @@ package io.xpipe.app.browser.fs;
 import io.xpipe.app.browser.BrowserSavedState;
 import io.xpipe.app.browser.BrowserSavedStateImpl;
 import io.xpipe.app.browser.BrowserTransferProgress;
+import io.xpipe.app.browser.action.BranchAction;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.file.BrowserFileListModel;
 import io.xpipe.app.browser.file.BrowserFileTransferMode;
@@ -26,6 +27,7 @@ import io.xpipe.core.process.ShellOpenFunction;
 import io.xpipe.core.store.*;
 import io.xpipe.core.util.FailableConsumer;
 
+import io.xpipe.core.util.FailableRunnable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 
@@ -430,6 +432,53 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
                 var abs = FileNames.join(getCurrentDirectory().getPath(), linkName);
                 fileSystem.symbolicLink(abs, targetFile);
                 refreshSync();
+            });
+        });
+    }
+
+    public void runCommandAsync(CommandBuilder command, boolean refresh) {
+        if (name == null || name.isBlank()) {
+            return;
+        }
+
+        ThreadHelper.runFailableAsync(() -> {
+            BooleanScope.executeExclusive(busy, () -> {
+                if (fileSystem == null) {
+                    return;
+                }
+
+                if (getCurrentDirectory() == null) {
+                    return;
+                }
+
+                fileSystem.getShell().orElseThrow().command(command).withWorkingDirectory(getCurrentDirectory().getPath()).execute();
+                if (refresh) {
+                    refreshSync();
+                }
+            });
+        });
+    }
+
+
+    public void runAsync(FailableRunnable<Exception> r, boolean refresh) {
+        if (name == null || name.isBlank()) {
+            return;
+        }
+
+        ThreadHelper.runFailableAsync(() -> {
+            BooleanScope.executeExclusive(busy, () -> {
+                if (fileSystem == null) {
+                    return;
+                }
+
+                if (getCurrentDirectory() == null) {
+                    return;
+                }
+
+                r.run();
+                if (refresh) {
+                    refreshSync();
+                }
             });
         });
     }

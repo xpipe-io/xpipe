@@ -55,6 +55,7 @@ open module io.xpipe.ext.base {
             CopyPathAction,
             PasteAction,
             NewItemAction,
+            CompressAction,
             RenameAction,
             DeleteAction,
             DeleteLinkAction,
