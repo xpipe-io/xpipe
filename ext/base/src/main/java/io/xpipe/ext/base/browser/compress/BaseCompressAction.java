@@ -272,9 +272,11 @@ public abstract class BaseCompressAction implements BrowserAction, BranchAction 
             var base = new FilePath(model.getCurrentDirectory().getPath());
 
             if (directory) {
-                var dir = new FilePath(entries.getFirst().getRawFileEntry().getPath()).toDirectory().toUnix();
-                var command = CommandBuilder.of().add("find").addFile(dir).add("|", "sed", "s,^" + dir + ",,", "|");
-                command.add(tar).add("-C").addFile(dir).add("-T", "-");
+                var dir = new FilePath(entries.getFirst().getRawFileEntry().getPath());
+                // Fix for bsd find, remove /
+                var command = CommandBuilder.of().add("find").addFile(dir.removeTrailingSlash().toUnix())
+                        .add("|", "sed").addLiteral("s,^" + dir.toDirectory().toUnix() + "*,,").add("|");
+                command.add(tar).add("-C").addFile(dir.toDirectory().toUnix()).add("-T", "-");
                 model.runCommandAsync(command, true);
             } else {
                 var command = CommandBuilder.of().add(tar);
