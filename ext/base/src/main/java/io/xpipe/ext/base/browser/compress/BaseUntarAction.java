@@ -49,7 +49,7 @@ public class BaseUntarAction implements ApplicationPathAction, LeafAction {
                 if (toDirectory) {
                     model.getFileSystem().mkdirs(target);
                 }
-                sc.command(c).execute();
+                sc.command(c).withWorkingDirectory(model.getCurrentDirectory().getPath()).execute();
             }
         }, true);
     }
