@@ -12,6 +12,7 @@ import io.xpipe.ext.base.service.*;
 import io.xpipe.ext.base.store.StorePauseAction;
 import io.xpipe.ext.base.store.StoreStartAction;
 import io.xpipe.ext.base.store.StoreStopAction;
+import io.xpipe.ext.base.browser.compress.*;
 
 open module io.xpipe.ext.base {
     exports io.xpipe.ext.base;
@@ -54,12 +55,15 @@ open module io.xpipe.ext.base {
             CopyAction,
             CopyPathAction,
             PasteAction,
-            NewItemAction,
-            CompressAction,
+            NewItemAction, FileCompressAction, DirectoryCompressAction,
             RenameAction,
             DeleteAction,
             DeleteLinkAction,
-            UnzipAction,
+            UnzipHereUnixAction,
+            UnzipDirectoryUnixAction,
+            UnzipHereWindowsAction,
+            UnzipDirectoryWindowsAction,
+            UntarHereAction, UntarGzHereAction, UntarDirectoryAction, UntarGzDirectoryAction,
             JavapAction,
             JarAction;
     provides ActionProvider with
