@@ -44,7 +44,7 @@ public class BaseUntarAction implements ApplicationPathAction, LeafAction {
                 if (toDirectory) {
                     c.add("-C").addFile(target);
                 }
-                c.add("-xv").addIf(gz, "-z").add("-f");
+                c.add("-x").addIf(gz, "-z").add("-f");
                 c.addFile(entry.getRawFileEntry().getPath());
                 if (toDirectory) {
                     model.getFileSystem().mkdirs(target);

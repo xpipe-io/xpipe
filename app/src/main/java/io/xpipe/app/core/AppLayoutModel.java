@@ -54,6 +54,10 @@ public class AppLayoutModel {
     }
 
     public static void reset() {
+        if (INSTANCE == null) {
+            return;
+        }
+
         AppCache.update("layoutState", INSTANCE.savedState);
         INSTANCE = null;
     }

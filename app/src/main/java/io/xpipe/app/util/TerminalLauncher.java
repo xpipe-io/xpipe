@@ -76,9 +76,8 @@ public class TerminalLauncher {
             type.launch(config);
             latch.await();
         } catch (Exception ex) {
-            var modMsg = ex.getMessage() != null && ex.getMessage().contains("Unable to find application named") ? ex.getMessage() + " in installed Applications on this system" : ex;
-            throw ErrorEvent.expected(new IOException(
-                    "Unable to launch terminal " + type.toTranslatedString().getValue() + ": "  + modMsg, ex));
+            var modMsg = ex.getMessage() != null && ex.getMessage().contains("Unable to find application named") ? ex.getMessage() + " in installed Applications on this system" : ex.getMessage();
+            throw ErrorEvent.expected(new IOException("Unable to launch terminal " + type.toTranslatedString().getValue() + ": "  + modMsg, ex));
         }
     }
 }
