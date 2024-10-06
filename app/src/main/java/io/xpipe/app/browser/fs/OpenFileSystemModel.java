@@ -539,11 +539,11 @@ public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore
     }
 
     public void backSync(int i) throws Exception {
-        cdSyncWithoutCheck(history.back(i));
+        cdSync(history.back(i));
     }
 
     public void forthSync(int i) throws Exception {
-        cdSyncWithoutCheck(history.forth(i));
+        cdSync(history.forth(i));
     }
 
     @Getter

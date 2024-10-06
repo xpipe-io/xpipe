@@ -85,7 +85,6 @@ public class FileSystemHelper {
         var resolved = shell.get()
                 .getShellDialect()
                 .resolveDirectory(shell.get(), path)
-                .withWorkingDirectory(model.getCurrentPath().get())
                 .readStdoutOrThrow();
 
         if (!FileNames.isAbsolute(resolved)) {

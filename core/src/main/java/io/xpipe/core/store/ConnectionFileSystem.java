@@ -148,7 +148,9 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public void directoryAccessible(String file) throws Exception {
-        shellControl.executeSimpleCommand(shellControl.getShellDialect().getCdCommand(file));
+        var current = shellControl.executeSimpleStringCommand(shellControl.getShellDialect().getPrintWorkingDirectoryCommand());
+        shellControl.command(shellControl.getShellDialect().getCdCommand(file));
+        shellControl.command(shellControl.getShellDialect().getCdCommand(current));
     }
 
     @Override

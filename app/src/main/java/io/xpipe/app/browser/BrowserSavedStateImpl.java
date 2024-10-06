@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.SneakyThrows;
 import lombok.Value;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Value
@@ -54,7 +55,7 @@ public class BrowserSavedStateImpl implements BrowserSavedState {
     }
 
     @Override
-    public void save() {
+    public synchronized void save() {
         AppCache.update("browser-state", this);
     }
 
