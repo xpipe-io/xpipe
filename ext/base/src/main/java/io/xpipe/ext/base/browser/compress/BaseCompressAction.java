@@ -268,7 +268,7 @@ public abstract class BaseCompressAction implements BrowserAction, BranchAction 
 
         @Override
         protected void create(String fileName, OpenFileSystemModel model, List<BrowserEntry> entries) {
-            var tar = CommandBuilder.of().add("tar", "-c", "-f").addIf(gz, "-z").addFile(fileName);
+            var tar = CommandBuilder.of().add("tar", "-c", "-v").addIf(gz, "-z").add("-f").addFile(fileName);
             var base = new FilePath(model.getCurrentDirectory().getPath());
 
             if (directory) {
