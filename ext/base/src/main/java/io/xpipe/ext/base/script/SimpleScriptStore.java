@@ -34,6 +34,10 @@ public class SimpleScriptStore extends ScriptStore implements ShellInitCommand.T
     private final boolean fileScript;
     private final boolean runnableScript;
 
+    public String getCommands() {
+        return commands != null ? commands : "";
+    }
+
     public boolean isCompatible(ShellControl shellControl) {
         var targetType = shellControl.getOriginalShellDialect();
         return minimumDialect.isCompatibleTo(targetType);
@@ -45,9 +49,9 @@ public class SimpleScriptStore extends ScriptStore implements ShellInitCommand.T
 
     private String assembleScript(ShellControl shellControl) {
         if (isCompatible(shellControl)) {
-            var shebang = commands.startsWith("#");
+            var shebang = getCommands().startsWith("#");
             // Fix new lines and shebang
-            var fixedCommands = commands.lines()
+            var fixedCommands = getCommands().lines()
                     .skip(shebang ? 1 : 0)
                     .collect(Collectors.joining(
                             shellControl.getShellDialect().getNewLine().getNewLineString()));
@@ -77,7 +81,7 @@ public class SimpleScriptStore extends ScriptStore implements ShellInitCommand.T
         Validators.nonNull(group);
         super.checkComplete();
         Validators.nonNull(minimumDialect);
-        if (!initScript && !shellScript && !fileScript && !isRunnableScript()) {
+        if (!initScript && !shellScript && !fileScript && !runnableScript) {
             throw new ValidationException(AppI18n.get("app.valueMustNotBeEmpty"));
         }
     }
