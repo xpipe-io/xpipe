@@ -514,7 +514,7 @@ public class AppPrefs {
 
     private void fixInvalidLocalValues() {
         // You can set the directory to empty in the settings
-        if (storageDirectory.get() == null) {
+        if (storageDirectory.get() == null || storageDirectory.get().toString().isBlank()) {
             storageDirectory.setValue(DEFAULT_STORAGE_DIR);
         }
 
