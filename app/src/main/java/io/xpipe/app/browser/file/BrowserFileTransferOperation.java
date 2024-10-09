@@ -179,6 +179,12 @@ public class BrowserFileTransferOperation {
 
         AtomicLong totalSize = new AtomicLong();
         if (source.getKind() == FileKind.DIRECTORY) {
+            // Source might have been deleted meanwhile
+            var exists = source.getFileSystem().directoryExists(source.getPath());
+            if (!exists) {
+                return;
+            }
+
             var directoryName = FileNames.getFileName(source.getPath());
             flatFiles.put(source, directoryName);
 
@@ -193,6 +199,12 @@ public class BrowserFileTransferOperation {
                 }
             }
         } else {
+            // Source might have been deleted meanwhile
+            var exists = source.getFileSystem().fileExists(source.getPath());
+            if (!exists) {
+                return;
+            }
+
             flatFiles.put(source, FileNames.getFileName(source.getPath()));
             // Recalculate as it could have been changed meanwhile
             totalSize.addAndGet(source.getFileSystem().getFileSize(source.getPath()));
