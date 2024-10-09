@@ -1,3 +1,9 @@
 .fancy-tooltip {
     -fx-opacity: 1;
 }
+
+.root:performance .fancy-tooltip {
+    -fx-effect: NONE;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
