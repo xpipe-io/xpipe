@@ -30,15 +30,22 @@ public class BrowserAlerts {
                     new ButtonType(AppI18n.get("replaceAll"), ButtonBar.ButtonData.OTHER),
                     FileConflictChoice.REPLACE_ALL);
         }
+        map.put(new ButtonType(AppI18n.get("rename"), ButtonBar.ButtonData.OTHER), FileConflictChoice.RENAME);
+        if (multiple) {
+            map.put(
+                    new ButtonType(AppI18n.get("renameAll"), ButtonBar.ButtonData.OTHER),
+                    FileConflictChoice.RENAME_ALL);
+        }
         return AppWindowHelper.showBlockingAlert(alert -> {
                     alert.setTitle(AppI18n.get("fileConflictAlertTitle"));
                     alert.setHeaderText(AppI18n.get("fileConflictAlertHeader"));
-                    AppWindowHelper.setContent(
-                            alert,
-                            AppI18n.get(
-                                    multiple ? "fileConflictAlertContentMultiple" : "fileConflictAlertContent", file));
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
                     alert.getButtonTypes().clear();
+                    alert.getDialogPane().setContent(AppWindowHelper.alertContentText(AppI18n.get(
+                            multiple ? "fileConflictAlertContentMultiple" : "fileConflictAlertContent", file), 655));
+                    alert.getDialogPane().setMinWidth(705);
+                    alert.getDialogPane().setPrefWidth(705);
+                    alert.getDialogPane().setMaxWidth(705);
                     map.sequencedKeySet()
                             .forEach(buttonType -> alert.getButtonTypes().add(buttonType));
                 })
@@ -97,6 +104,8 @@ public class BrowserAlerts {
         SKIP,
         SKIP_ALL,
         REPLACE,
-        REPLACE_ALL
+        REPLACE_ALL,
+        RENAME,
+        RENAME_ALL
     }
 }

@@ -12,6 +12,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BrowserFileTransferOperation {
 
@@ -63,41 +65,52 @@ public class BrowserFileTransferOperation {
         this.progress.accept(progress);
     }
 
-    private boolean handleChoice(FileSystem fileSystem, String target, boolean multiple) throws Exception {
+    private BrowserAlerts.FileConflictChoice handleChoice(FileSystem fileSystem, String target, boolean multiple) throws Exception {
         if (lastConflictChoice == BrowserAlerts.FileConflictChoice.CANCEL) {
-            return false;
+            return BrowserAlerts.FileConflictChoice.CANCEL;
         }
 
         if (lastConflictChoice == BrowserAlerts.FileConflictChoice.REPLACE_ALL) {
-            return true;
+            return BrowserAlerts.FileConflictChoice.REPLACE;
+        }
+
+        if (lastConflictChoice == BrowserAlerts.FileConflictChoice.RENAME_ALL) {
+            return BrowserAlerts.FileConflictChoice.RENAME;
         }
 
         if (fileSystem.fileExists(target)) {
             if (lastConflictChoice == BrowserAlerts.FileConflictChoice.SKIP_ALL) {
-                return false;
+                return BrowserAlerts.FileConflictChoice.SKIP;
             }
 
             var choice = BrowserAlerts.showFileConflictAlert(target, multiple);
             if (choice == BrowserAlerts.FileConflictChoice.CANCEL) {
                 lastConflictChoice = BrowserAlerts.FileConflictChoice.CANCEL;
-                return false;
+                return BrowserAlerts.FileConflictChoice.CANCEL;
             }
 
             if (choice == BrowserAlerts.FileConflictChoice.SKIP) {
-                return false;
+                return BrowserAlerts.FileConflictChoice.SKIP;
             }
 
             if (choice == BrowserAlerts.FileConflictChoice.SKIP_ALL) {
                 lastConflictChoice = BrowserAlerts.FileConflictChoice.SKIP_ALL;
-                return false;
+                return BrowserAlerts.FileConflictChoice.SKIP;
             }
 
             if (choice == BrowserAlerts.FileConflictChoice.REPLACE_ALL) {
                 lastConflictChoice = BrowserAlerts.FileConflictChoice.REPLACE_ALL;
-                return true;
+                return BrowserAlerts.FileConflictChoice.REPLACE;
             }
+
+            if (choice == BrowserAlerts.FileConflictChoice.RENAME_ALL) {
+                lastConflictChoice = BrowserAlerts.FileConflictChoice.RENAME_ALL;
+                return BrowserAlerts.FileConflictChoice.RENAME;
+            }
+
+            return choice;
         }
-        return true;
+        return BrowserAlerts.FileConflictChoice.REPLACE;
     }
 
     public void execute() throws Exception {
@@ -152,8 +165,15 @@ public class BrowserFileTransferOperation {
                     new IllegalArgumentException("Target directory " + targetFile + " does already exist"));
         }
 
-        if (checkConflicts && !handleChoice(target.getFileSystem(), targetFile, files.size() > 1)) {
-            return;
+        if (checkConflicts) {
+            var fileConflictChoice = handleChoice(target.getFileSystem(), targetFile, files.size() > 1);
+            if (fileConflictChoice == BrowserAlerts.FileConflictChoice.SKIP || fileConflictChoice == BrowserAlerts.FileConflictChoice.CANCEL) {
+                return;
+            }
+
+            if (fileConflictChoice == BrowserAlerts.FileConflictChoice.RENAME) {
+                targetFile = renameFileLoop(target.getFileSystem(), targetFile, source.getKind() == FileKind.DIRECTORY);
+            }
         }
 
         var doesMove = transferMode == BrowserFileTransferMode.MOVE || transferMode == BrowserFileTransferMode.NORMAL;
@@ -162,6 +182,33 @@ public class BrowserFileTransferOperation {
         } else {
             target.getFileSystem().copy(sourceFile, targetFile);
         }
+    }
+
+    private String renameFileLoop(FileSystem fileSystem, String target, boolean dir) throws Exception {
+        // Who has more than 10 copies?
+        for (int i = 0; i < 10; i++) {
+            target = renameFile(target);
+            if ((dir && !fileSystem.directoryExists(target)) || (!dir && !fileSystem.fileExists(target))) {
+                return target;
+            }
+        }
+        return target;
+    }
+
+    private String renameFile(String target) {
+        var targetFile = new FilePath(target);
+        var name = targetFile.getFileName();
+        var pattern = Pattern.compile("(.+?) \\((\\d+)\\)\\.(.+)");
+        var matcher = pattern.matcher(name);
+        if (matcher.matches()) {
+            try {
+                var number = Integer.parseInt(matcher.group(2));
+                var newFile = targetFile.getParent().join(matcher.group(1) + " (" + (number + 1) + ")." + matcher.group(3));
+                return newFile.toString();
+            } catch (NumberFormatException e) {}
+        }
+
+        return targetFile.getBaseName() + " (" + 1 + ")." + targetFile.getExtension();
     }
 
     private void handleSingleAcrossFileSystems(FileEntry source) throws Exception {
@@ -225,10 +272,15 @@ public class BrowserFileTransferOperation {
             if (sourceFile.getKind() == FileKind.DIRECTORY) {
                 target.getFileSystem().mkdirs(targetFile);
             } else if (sourceFile.getKind() == FileKind.FILE) {
-                if (checkConflicts
-                        && !handleChoice(
-                                target.getFileSystem(), targetFile, files.size() > 1 || flatFiles.size() > 1)) {
-                    continue;
+                if (checkConflicts) {
+                    var fileConflictChoice = handleChoice(target.getFileSystem(), targetFile, files.size() > 1 || flatFiles.size() > 1);
+                    if (fileConflictChoice == BrowserAlerts.FileConflictChoice.SKIP || fileConflictChoice == BrowserAlerts.FileConflictChoice.CANCEL) {
+                        continue;
+                    }
+
+                    if (fileConflictChoice == BrowserAlerts.FileConflictChoice.RENAME) {
+                        targetFile = renameFileLoop(target.getFileSystem(), targetFile, false);
+                    }
                 }
 
                 transfer(sourceFile, targetFile, transferred, totalSize, start);

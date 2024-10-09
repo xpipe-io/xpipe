@@ -41,8 +41,12 @@ import java.util.function.Supplier;
 public class AppWindowHelper {
 
     public static Node alertContentText(String s) {
+        return alertContentText(s, 450);
+    }
+
+    public static Node alertContentText(String s, int width) {
         var text = new Text(s);
-        text.setWrappingWidth(450);
+        text.setWrappingWidth(width);
         AppFont.medium(text);
         var sp = new StackPane(text);
         sp.setPadding(new Insets(5));
