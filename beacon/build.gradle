@@ -17,7 +17,7 @@ repositories {
 
 dependencies {
     compileOnly 'org.hamcrest:hamcrest:3.0'
-    compileOnly 'org.junit.jupiter:junit-jupiter-api:5.11.0'
+    compileOnly 'org.junit.jupiter:junit-jupiter-api:5.11.2'
     compileOnly 'org.junit.jupiter:junit-jupiter-params:5.11.0'
     api project(':core')
 }
