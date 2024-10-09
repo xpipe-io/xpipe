@@ -4,6 +4,7 @@ import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.LocalStore;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.util.LocalShell;
@@ -159,7 +160,7 @@ public class AppInstaller {
                                              }
 
                                              cd ~
-                                             runinstaller || read -rsp "Update failed ..."$'\\n' -n 1 key
+                                             runinstaller || echo "Update failed ..." && read key
                                              """,
                         file, file, name);
 
