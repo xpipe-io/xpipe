@@ -10,6 +10,8 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.PasswordLockSecretValue;
+import io.xpipe.app.util.XPipeSession;
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.ModuleHelper;
 
@@ -516,6 +518,11 @@ public class AppPrefs {
         // You can set the directory to empty in the settings
         if (storageDirectory.get() == null || storageDirectory.get().toString().isBlank()) {
             storageDirectory.setValue(DEFAULT_STORAGE_DIR);
+        }
+
+        // Fix erroneous fallback shell set on macOS
+        if (OsType.getLocal() == OsType.MACOS && AppProperties.get().getVersion().equals("12.1.1") && XPipeSession.get().isNewBuildSession()) {
+            useLocalFallbackShell.setValue(false);
         }
 
         try {
