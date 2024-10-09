@@ -253,7 +253,7 @@ public class BrowserFileTransferOperation {
             var streamStartLength = inputStream.read(streamStart, 0, 1024);
             if (streamStartLength < 1024) {
                 inputStream.close();
-                inputStream = new ByteArrayInputStream(streamStart);
+                inputStream = new ByteArrayInputStream(streamStart, 0, streamStartLength);
             } else {
                 inputStream.reset();
             }
