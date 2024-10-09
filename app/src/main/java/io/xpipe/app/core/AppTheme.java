@@ -114,7 +114,7 @@ public class AppTheme {
                     }
                 });
             });
-        } catch (UnsupportedOperationException ex) {
+        } catch (IllegalStateException ex) {
             // The platform preferences are sometimes not initialized yet
             ErrorEvent.fromThrowable(ex).expected().omit().handle();
         } catch (Throwable t) {
@@ -140,7 +140,7 @@ public class AppTheme {
             } else {
                 AppPrefs.get().theme.setValue(Theme.getDefaultLightTheme());
             }
-        } catch (UnsupportedOperationException ex) {
+        } catch (IllegalStateException ex) {
             // The platform preferences are sometimes not initialized yet
             ErrorEvent.fromThrowable(ex).expected().omit().handle();
         } catch (Exception ex) {
