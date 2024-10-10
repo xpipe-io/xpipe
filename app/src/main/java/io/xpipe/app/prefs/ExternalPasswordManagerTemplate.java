@@ -75,7 +75,21 @@ public interface ExternalPasswordManagerTemplate extends PrefsChoiceValue {
         }
     };
 
-    List<ExternalPasswordManagerTemplate> ALL = Stream.of(ONEPASSWORD, BITWARDEN, DASHLANE, LASTPASS, MACOS_KEYCHAIN)
+
+    ExternalPasswordManagerTemplate KEEPER = new ExternalPasswordManagerTemplate() {
+        @Override
+        public String getTemplate() {
+            var exec = OsType.getLocal() == OsType.WINDOWS ? "@keeper" : "keeper";
+            return exec + " get $KEY --format password --unmask";
+        }
+
+        @Override
+        public String getId() {
+            return "keeper";
+        }
+    };
+
+    List<ExternalPasswordManagerTemplate> ALL = Stream.of(ONEPASSWORD, BITWARDEN, DASHLANE, LASTPASS, KEEPER, MACOS_KEYCHAIN)
             .filter(externalPasswordManager -> externalPasswordManager.isSelectable())
             .toList();
 }
