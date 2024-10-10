@@ -157,7 +157,8 @@ public class BrowserFileTransferOperation {
         var targetFile = FileNames.join(target.getPath(), FileNames.getFileName(sourceFile));
 
         if (sourceFile.equals(targetFile)) {
-            return;
+            // Duplicate file by renaming it
+            targetFile = renameFileLoop(target.getFileSystem(), targetFile, source.getKind() == FileKind.DIRECTORY);
         }
 
         if (source.getKind() == FileKind.DIRECTORY && target.getFileSystem().directoryExists(targetFile)) {
