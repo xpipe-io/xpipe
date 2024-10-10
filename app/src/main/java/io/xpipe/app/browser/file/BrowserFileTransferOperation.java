@@ -199,7 +199,7 @@ public class BrowserFileTransferOperation {
     private String renameFile(String target) {
         var targetFile = new FilePath(target);
         var name = targetFile.getFileName();
-        var pattern = Pattern.compile("(.+?) \\((\\d+)\\)\\.(.+)");
+        var pattern = Pattern.compile("(.+) \\((\\d+)\\)\\.(.+?)");
         var matcher = pattern.matcher(name);
         if (matcher.matches()) {
             try {
@@ -209,7 +209,8 @@ public class BrowserFileTransferOperation {
             } catch (NumberFormatException e) {}
         }
 
-        return targetFile.getBaseName() + " (" + 1 + ")." + targetFile.getExtension();
+        var noExt = targetFile.getFileName().equals(targetFile.getExtension());
+        return targetFile.getBaseName() + " (" + 1 + ")" + (noExt ? "" : "." + targetFile.getExtension());
     }
 
     private void handleSingleAcrossFileSystems(FileEntry source) throws Exception {

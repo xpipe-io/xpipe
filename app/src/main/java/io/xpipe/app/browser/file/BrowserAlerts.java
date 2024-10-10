@@ -36,16 +36,17 @@ public class BrowserAlerts {
                     new ButtonType(AppI18n.get("renameAll"), ButtonBar.ButtonData.OTHER),
                     FileConflictChoice.RENAME_ALL);
         }
+        var w = multiple ? 700 : 400;
         return AppWindowHelper.showBlockingAlert(alert -> {
                     alert.setTitle(AppI18n.get("fileConflictAlertTitle"));
                     alert.setHeaderText(AppI18n.get("fileConflictAlertHeader"));
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
                     alert.getButtonTypes().clear();
                     alert.getDialogPane().setContent(AppWindowHelper.alertContentText(AppI18n.get(
-                            multiple ? "fileConflictAlertContentMultiple" : "fileConflictAlertContent", file), 655));
-                    alert.getDialogPane().setMinWidth(705);
-                    alert.getDialogPane().setPrefWidth(705);
-                    alert.getDialogPane().setMaxWidth(705);
+                            multiple ? "fileConflictAlertContentMultiple" : "fileConflictAlertContent", file), w - 50));
+                    alert.getDialogPane().setMinWidth(w);
+                    alert.getDialogPane().setPrefWidth(w);
+                    alert.getDialogPane().setMaxWidth(w);
                     map.sequencedKeySet()
                             .forEach(buttonType -> alert.getButtonTypes().add(buttonType));
                 })
