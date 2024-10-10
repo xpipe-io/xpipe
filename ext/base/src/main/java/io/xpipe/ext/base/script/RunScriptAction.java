@@ -2,10 +2,13 @@ package io.xpipe.ext.base.script;
 
 import io.xpipe.app.browser.action.BranchAction;
 import io.xpipe.app.browser.action.BrowserAction;
+import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.browser.session.BrowserSessionModel;
+import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.process.CommandBuilder;
@@ -39,13 +42,26 @@ public class RunScriptAction implements BrowserAction, BranchAction {
 
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return model.getBrowserModel() instanceof BrowserSessionModel
-                && !createActionForScriptHierarchy(model, entries).isEmpty();
+        return model.getBrowserModel() instanceof BrowserSessionModel;
     }
 
     @Override
     public List<? extends BrowserAction> getBranchingActions(OpenFileSystemModel model, List<BrowserEntry> entries) {
         var actions = createActionForScriptHierarchy(model, entries);
+        if (actions.isEmpty()) {
+            actions = List.of(new LeafAction() {
+                @Override
+                public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
+                    StoreViewState.get().getAllScriptsCategory().select();
+                    AppLayoutModel.get().selectConnections();
+                }
+
+                @Override
+                public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                    return AppI18n.observable("noScriptsAvailable");
+                }
+            });
+        }
         return actions;
     }
 

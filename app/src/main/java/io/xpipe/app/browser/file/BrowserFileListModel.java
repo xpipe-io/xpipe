@@ -11,7 +11,6 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 import lombok.Getter;
@@ -35,7 +34,6 @@ public final class BrowserFileListModel {
             new SimpleObjectProperty<>(FILE_TYPE_COMPARATOR);
     private final Property<List<BrowserEntry>> all = new SimpleObjectProperty<>(new ArrayList<>());
     private final Property<List<BrowserEntry>> shown = new SimpleObjectProperty<>(new ArrayList<>());
-    private final ObservableList<BrowserEntry> previousSelection = FXCollections.observableArrayList();
     private final ObservableList<BrowserEntry> selection = FXCollections.observableArrayList();
 
     private final Property<BrowserEntry> draggedOverDirectory = new SimpleObjectProperty<>();
@@ -48,10 +46,6 @@ public final class BrowserFileListModel {
 
         fileSystemModel.getFilter().addListener((observable, oldValue, newValue) -> {
             refreshShown();
-        });
-
-        selection.addListener((ListChangeListener<? super BrowserEntry>) c -> {
-            previousSelection.setAll(c.getList());
         });
     }
 
