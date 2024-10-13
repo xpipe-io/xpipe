@@ -66,9 +66,10 @@ public class TerminalLauncher {
         var prefix = entry != null && color != null && type.supportsColoredTitle() ? color.getEmoji() + " " : "";
         var cleanTitle = (title != null ? title : entry != null ? entry.getName() : "?");
         var adjustedTitle = prefix + cleanTitle;
+        var log = AppPrefs.get().enableTerminalLogging().get();
         var terminalConfig = new TerminalInitScriptConfig(
                 adjustedTitle,
-                type.shouldClear() && AppPrefs.get().clearTerminalOnInit().get(),
+                !log && type.shouldClear() && AppPrefs.get().clearTerminalOnInit().get(),
                 cc instanceof ShellControl ? type.additionalInitCommands() : TerminalInitFunction.none());
         var request = UUID.randomUUID();
         var config = createConfig(request, entry, cleanTitle, adjustedTitle);
@@ -129,7 +130,7 @@ public class TerminalLauncher {
             } else {
                 var content =
                         """
-                              script --command "%s" "%s"
+                              script --quiet --command "%s" "%s"
                               """
                                 .formatted(preparationScript, logFile);
                 var ps = ScriptHelper.createExecScript(sc.getShellDialect(), sc, content);
