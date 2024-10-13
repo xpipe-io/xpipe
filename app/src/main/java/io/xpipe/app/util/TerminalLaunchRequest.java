@@ -3,6 +3,7 @@ package io.xpipe.app.util;
 import io.xpipe.beacon.BeaconServerException;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.FilePath;
+
 import lombok.Setter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
@@ -26,7 +27,6 @@ public class TerminalLaunchRequest {
     @Setter
     @NonFinal
     boolean setupCompleted;
-
 
     public Path waitForCompletion() throws BeaconServerException {
         while (true) {

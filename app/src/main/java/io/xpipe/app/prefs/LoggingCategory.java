@@ -5,7 +5,6 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.OptionsBuilder;
 
@@ -29,14 +28,15 @@ public class LoggingCategory extends AppPrefsCategory {
                         .addToggle(prefs.enableTerminalLogging)
                         .nameAndDescription("terminalLoggingDirectory")
                         .addComp(new ButtonComp(AppI18n.observable("openSessionLogs"), () -> {
-                            var dir = AppProperties.get().getDataDir().resolve("sessions");
-                            try {
-                                Files.createDirectories(dir);
-                                DesktopHelper.browsePathLocal(dir);
-                            } catch (IOException e) {
-                                ErrorEvent.fromThrowable(e).handle();
-                            }
-                        }).disable(prefs.enableTerminalLogging.not())))
+                                    var dir = AppProperties.get().getDataDir().resolve("sessions");
+                                    try {
+                                        Files.createDirectories(dir);
+                                        DesktopHelper.browsePathLocal(dir);
+                                    } catch (IOException e) {
+                                        ErrorEvent.fromThrowable(e).handle();
+                                    }
+                                })
+                                .disable(prefs.enableTerminalLogging.not())))
                 .buildComp();
     }
 }

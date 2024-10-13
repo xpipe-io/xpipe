@@ -5,7 +5,6 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.resources.FileAutoSystemIcon;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.terminal.ExternalTerminalType;
@@ -34,8 +33,8 @@ public class TerminalLauncher {
 
     public static void openDirect(
             String title, FailableFunction<ShellControl, String, Exception> command, ExternalTerminalType type)
-        throws Exception {
-            try (var sc = LocalShell.getShell().start()) {
+            throws Exception {
+        try (var sc = LocalShell.getShell().start()) {
             var script = ScriptHelper.constructTerminalInitFile(
                     sc.getShellDialect(),
                     sc,
@@ -78,49 +77,61 @@ public class TerminalLauncher {
             type.launch(config);
             latch.await();
         } catch (Exception ex) {
-            var modMsg = ex.getMessage() != null && ex.getMessage().contains("Unable to find application named") ? ex.getMessage() + " in installed /Applications on this system" : ex.getMessage();
-            throw ErrorEvent.expected(new IOException("Unable to launch terminal " + type.toTranslatedString().getValue() + ": "  + modMsg, ex));
+            var modMsg = ex.getMessage() != null && ex.getMessage().contains("Unable to find application named")
+                    ? ex.getMessage() + " in installed /Applications on this system"
+                    : ex.getMessage();
+            throw ErrorEvent.expected(new IOException(
+                    "Unable to launch terminal " + type.toTranslatedString().getValue() + ": " + modMsg, ex));
         }
     }
-
 
     private static final DateTimeFormatter DATE_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").withZone(ZoneId.systemDefault());
 
-    private static ExternalTerminalType.LaunchConfiguration createConfig(UUID request, DataStoreEntry entry, String cleanTitle, String adjustedTitle) throws
-            Exception {
+    private static ExternalTerminalType.LaunchConfiguration createConfig(
+            UUID request, DataStoreEntry entry, String cleanTitle, String adjustedTitle) throws Exception {
         var color = entry != null ? DataStorage.get().getEffectiveColor(entry) : null;
         var d = ProcessControlProvider.get().getEffectiveLocalDialect();
         var launcherScript = d.terminalLauncherScript(request, adjustedTitle);
         var preparationScript = ScriptHelper.createLocalExecScript(launcherScript);
 
-            if (!AppPrefs.get().enableTerminalLogging().get()) {
-                var config = new ExternalTerminalType.LaunchConfiguration(
-                        entry != null ? color : null, adjustedTitle, cleanTitle, preparationScript, d);
-                return config;
-            }
+        if (!AppPrefs.get().enableTerminalLogging().get()) {
+            var config = new ExternalTerminalType.LaunchConfiguration(
+                    entry != null ? color : null, adjustedTitle, cleanTitle, preparationScript, d);
+            return config;
+        }
 
-            var logDir = AppProperties.get().getDataDir().resolve("sessions");
+        var logDir = AppProperties.get().getDataDir().resolve("sessions");
         Files.createDirectories(logDir);
-        var logFile = logDir.resolve(new FilePath(DataStorage.get().getStoreEntryDisplayName(entry) + " (" +
-                DATE_FORMATTER.format(Instant.now()) + ").log").fileSystemCompatible(OsType.getLocal()).toString());
+        var logFile = logDir.resolve(new FilePath(DataStorage.get().getStoreEntryDisplayName(entry) + " ("
+                        + DATE_FORMATTER.format(Instant.now()) + ").log")
+                .fileSystemCompatible(OsType.getLocal())
+                .toString());
         try (var sc = LocalShell.getShell().start()) {
             if (OsType.getLocal() == OsType.WINDOWS) {
-                var content = """
+                var content =
+                        """
                               echo 'Transcript started, output file is "sessions\\%s"'
                               Start-Transcript -Force -LiteralPath "%s" > $Out-Null
                               & %s
                               Stop-Transcript > $Out-Null
                               echo 'Transcript stopped, output file is "sessions\\%s"'
-                              """.formatted(logFile.getFileName().toString(), logFile, preparationScript, logFile.getFileName().toString());
-                var ps = ScriptHelper.createExecScript(ShellDialects.POWERSHELL,sc, content);
+                              """
+                                .formatted(
+                                        logFile.getFileName().toString(),
+                                        logFile,
+                                        preparationScript,
+                                        logFile.getFileName().toString());
+                var ps = ScriptHelper.createExecScript(ShellDialects.POWERSHELL, sc, content);
                 var config = new ExternalTerminalType.LaunchConfiguration(
                         entry != null ? color : null, adjustedTitle, cleanTitle, ps, ShellDialects.POWERSHELL);
                 return config;
             } else {
-                var content = """
+                var content =
+                        """
                               script -Command "%s" "%s"
-                              """.formatted(preparationScript, logFile);
+                              """
+                                .formatted(preparationScript, logFile);
                 var ps = ScriptHelper.createExecScript(sc.getShellDialect(), sc, content);
                 var config = new ExternalTerminalType.LaunchConfiguration(
                         entry != null ? color : null, adjustedTitle, cleanTitle, ps, sc.getShellDialect());

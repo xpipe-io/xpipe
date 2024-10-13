@@ -2,7 +2,6 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileNames;
 
 import java.nio.file.Files;

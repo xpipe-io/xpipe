@@ -75,7 +75,9 @@ public class LauncherCommand implements Callable<Integer> {
             cmd.execute(args);
         } catch (Throwable t) {
             // Fix serialization issues with exception class
-            var converted = t instanceof CommandLine.UnmatchedArgumentException u ? new IllegalArgumentException(u.getMessage()) : t;
+            var converted = t instanceof CommandLine.UnmatchedArgumentException u
+                    ? new IllegalArgumentException(u.getMessage())
+                    : t;
             var e = ErrorEvent.fromThrowable(converted).term().build();
             // Print error in case we launched from the command-line
             new LogErrorHandler().handle(e);

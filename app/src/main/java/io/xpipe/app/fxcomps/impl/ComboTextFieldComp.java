@@ -4,12 +4,12 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+
 import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.util.Callback;
 
@@ -22,7 +22,10 @@ public class ComboTextFieldComp extends Comp<CompStructure<ComboBox<String>>> {
     private final List<String> predefinedValues;
     private final Callback<ListView<String>, ListCell<String>> customCellFactory;
 
-    public ComboTextFieldComp(Property<String> value, List<String> predefinedValues, Callback<ListView<String>, ListCell<String>> customCellFactory) {
+    public ComboTextFieldComp(
+            Property<String> value,
+            List<String> predefinedValues,
+            Callback<ListView<String>, ListCell<String>> customCellFactory) {
         this.value = value;
         this.predefinedValues = predefinedValues;
         this.customCellFactory = customCellFactory;
@@ -40,7 +43,8 @@ public class ComboTextFieldComp extends Comp<CompStructure<ComboBox<String>>> {
         value.addListener((c, o, n) -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 // Check if control value is the same. Then don't set it as that might cause bugs
-                if (Objects.equals(text.getValue(), n) || (n == null && text.getValue().isEmpty())) {
+                if (Objects.equals(text.getValue(), n)
+                        || (n == null && text.getValue().isEmpty())) {
                     return;
                 }
 

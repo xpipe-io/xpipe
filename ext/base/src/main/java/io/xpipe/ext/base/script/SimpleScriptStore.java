@@ -51,7 +51,8 @@ public class SimpleScriptStore extends ScriptStore implements ShellInitCommand.T
         if (isCompatible(shellControl)) {
             var shebang = getCommands().startsWith("#");
             // Fix new lines and shebang
-            var fixedCommands = getCommands().lines()
+            var fixedCommands = getCommands()
+                    .lines()
                     .skip(shebang ? 1 : 0)
                     .collect(Collectors.joining(
                             shellControl.getShellDialect().getNewLine().getNewLineString()));
@@ -91,8 +92,9 @@ public class SimpleScriptStore extends ScriptStore implements ShellInitCommand.T
         var added = all.add(ref);
         // Prevent loop
         if (added) {
-            getEffectiveScripts().stream().filter(scriptStoreDataStoreEntryRef -> !all.contains(scriptStoreDataStoreEntryRef)).forEach(
-                    scriptStoreDataStoreEntryRef -> {
+            getEffectiveScripts().stream()
+                    .filter(scriptStoreDataStoreEntryRef -> !all.contains(scriptStoreDataStoreEntryRef))
+                    .forEach(scriptStoreDataStoreEntryRef -> {
                         scriptStoreDataStoreEntryRef.getStore().queryFlattenedScripts(all);
                     });
             all.remove(ref);

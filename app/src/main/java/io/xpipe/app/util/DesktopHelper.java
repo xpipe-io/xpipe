@@ -110,7 +110,9 @@ public class DesktopHelper {
     public static void browseFileInDirectory(Path file) {
         if (!Desktop.getDesktop().isSupported(Desktop.Action.BROWSE_FILE_DIR)) {
             if (!Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
-                ErrorEvent.fromMessage("Desktop integration unable to open file " + file).expected().handle();
+                ErrorEvent.fromMessage("Desktop integration unable to open file " + file)
+                        .expected()
+                        .handle();
                 return;
             }
 

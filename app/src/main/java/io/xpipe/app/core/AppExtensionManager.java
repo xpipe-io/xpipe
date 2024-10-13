@@ -56,8 +56,7 @@ public class AppExtensionManager {
                     ErrorEvent.fromThrowable(t).handle();
                 });
             } catch (Throwable t) {
-                throw ExtensionException.corrupt(
-                        "Service provider initialization failed", t);
+                throw ExtensionException.corrupt("Service provider initialization failed", t);
             }
         }
     }
@@ -206,8 +205,7 @@ public class AppExtensionManager {
                 var ext = getExtensionFromDir(layer, dir);
                 if (ext.isEmpty()) {
                     if (AppProperties.get().isFullVersion()) {
-                        throw ExtensionException.corrupt(
-                                "Unable to load extension from directory " + dir);
+                        throw ExtensionException.corrupt("Unable to load extension from directory " + dir);
                     }
                 } else {
                     if (loadedExtensions.stream()

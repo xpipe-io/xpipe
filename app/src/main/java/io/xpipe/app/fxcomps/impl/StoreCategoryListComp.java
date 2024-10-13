@@ -20,10 +20,14 @@ public class StoreCategoryListComp extends SimpleComp {
         sp.styleClass("store-category-bar");
         sp.apply(struc -> {
             Region content = (Region) struc.get().getContent();
-            struc.get().minHeightProperty().bind(Bindings.createDoubleBinding(() -> {
-                var h = content.getHeight();
-                return Math.min(200, h + 2);
-            }, content.heightProperty()));
+            struc.get()
+                    .minHeightProperty()
+                    .bind(Bindings.createDoubleBinding(
+                            () -> {
+                                var h = content.getHeight();
+                                return Math.min(200, h + 2);
+                            },
+                            content.heightProperty()));
         });
         return sp.createRegion();
     }

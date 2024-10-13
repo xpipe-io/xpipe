@@ -17,8 +17,8 @@ public class TerminalLauncherManager {
     private static final SequencedMap<UUID, TerminalLaunchRequest> entries = new LinkedHashMap<>();
 
     public static CountDownLatch submitAsync(
-            UUID request, ProcessControl processControl, TerminalInitScriptConfig config, String directory) throws
-            BeaconClientException {
+            UUID request, ProcessControl processControl, TerminalInitScriptConfig config, String directory)
+            throws BeaconClientException {
         synchronized (entries) {
             var req = entries.get(request);
             if (req == null) {

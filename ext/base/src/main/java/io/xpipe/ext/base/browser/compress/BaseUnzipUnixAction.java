@@ -7,9 +7,8 @@ import io.xpipe.app.browser.icon.BrowserIcons;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.store.FileNames;
-
 import io.xpipe.ext.base.browser.ExecuteApplicationAction;
+
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 
@@ -19,7 +18,9 @@ public abstract class BaseUnzipUnixAction extends ExecuteApplicationAction {
 
     private final boolean toDirectory;
 
-    public BaseUnzipUnixAction(boolean toDirectory) {this.toDirectory = toDirectory;}
+    public BaseUnzipUnixAction(boolean toDirectory) {
+        this.toDirectory = toDirectory;
+    }
 
     @Override
     public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
@@ -38,7 +39,9 @@ public abstract class BaseUnzipUnixAction extends ExecuteApplicationAction {
 
     @Override
     protected CommandBuilder createCommand(OpenFileSystemModel model, BrowserEntry entry) {
-        var command = CommandBuilder.of().add("unzip", "-o").addFile(entry.getRawFileEntry().getPath());
+        var command = CommandBuilder.of()
+                .add("unzip", "-o")
+                .addFile(entry.getRawFileEntry().getPath());
         if (toDirectory) {
             command.add("-d").addFile(getTarget(entry.getRawFileEntry().getPath()));
         }
@@ -63,7 +66,8 @@ public abstract class BaseUnzipUnixAction extends ExecuteApplicationAction {
 
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return entries.stream().allMatch(entry -> entry.getRawFileEntry().getPath().endsWith(".zip"))
+        return entries.stream()
+                        .allMatch(entry -> entry.getRawFileEntry().getPath().endsWith(".zip"))
                 && !model.getFileSystem().getShell().orElseThrow().getOsType().equals(OsType.WINDOWS);
     }
 }

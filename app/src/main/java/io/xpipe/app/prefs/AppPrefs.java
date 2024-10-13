@@ -528,7 +528,12 @@ public class AppPrefs {
         }
 
         // Fix erroneous fallback shell set on macOS
-        if (OsType.getLocal() == OsType.MACOS && AppProperties.get().getCanonicalVersion().map(v -> v.getMajor() == 12 && v.getMinor() == 2).orElse(false) && XPipeSession.get().isNewBuildSession()) {
+        if (OsType.getLocal() == OsType.MACOS
+                && AppProperties.get()
+                        .getCanonicalVersion()
+                        .map(v -> v.getMajor() == 12 && v.getMinor() == 2)
+                        .orElse(false)
+                && XPipeSession.get().isNewBuildSession()) {
             useLocalFallbackShell.setValue(false);
         }
 

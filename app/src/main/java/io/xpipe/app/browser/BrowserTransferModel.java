@@ -158,7 +158,8 @@ public class BrowserTransferModel {
     public void transferToDownloads() throws Exception {
         List<Item> toMove;
         synchronized (items) {
-            toMove = items.stream().filter(item -> item.downloadFinished().get()).toList();
+            toMove =
+                    items.stream().filter(item -> item.downloadFinished().get()).toList();
             if (toMove.isEmpty()) {
                 return;
             }

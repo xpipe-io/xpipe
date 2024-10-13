@@ -7,28 +7,22 @@ import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
-import io.xpipe.app.fxcomps.augment.GrowAugment;
-import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystemStore;
 
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.control.Cell;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
 import atlantafx.base.theme.Styles;
-import javafx.scene.paint.Color;
 import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -53,9 +47,10 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
     private final List<PreviousFileReference> previousFileReferences;
 
     public <T extends FileSystemStore> ContextualFileReferenceChoiceComp(
-            Property<DataStoreEntryRef<T>> fileSystem, Property<String> filePath, boolean allowSync,
-            List<PreviousFileReference> previousFileReferences
-    ) {
+            Property<DataStoreEntryRef<T>> fileSystem,
+            Property<String> filePath,
+            boolean allowSync,
+            List<PreviousFileReference> previousFileReferences) {
         this.allowSync = allowSync;
         this.previousFileReferences = previousFileReferences;
         this.fileSystem = new SimpleObjectProperty<>();
@@ -145,7 +140,9 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
     }
 
     private Comp<?> createComboBox() {
-        var items = previousFileReferences.stream().map(previousFileReference -> previousFileReference.getPath().toString()).toList();
+        var items = previousFileReferences.stream()
+                .map(previousFileReference -> previousFileReference.getPath().toString())
+                .toList();
         var combo = new ComboTextFieldComp(filePath, items, param -> {
             return new ListCell<>() {
                 @Override

@@ -22,13 +22,19 @@ public interface ExternalPasswordManager extends PrefsChoiceValue {
                 return null;
             }
 
-            try (var cc = ProcessControlProvider.get().createLocalProcessControl(true).command(cmd).start()) {
+            try (var cc = ProcessControlProvider.get()
+                    .createLocalProcessControl(true)
+                    .command(cmd)
+                    .start()) {
                 var out = cc.readStdoutOrThrow();
 
                 // Dashlane fixes
                 var rawCmd = AppPrefs.get().passwordManagerCommand.get();
                 if (rawCmd.contains("dcli")) {
-                    out = out.lines().findFirst().map(s -> s.trim().replaceAll("\\s+$", "")).orElse(null);
+                    out = out.lines()
+                            .findFirst()
+                            .map(s -> s.trim().replaceAll("\\s+$", ""))
+                            .orElse(null);
                 }
 
                 return out;

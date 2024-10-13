@@ -4,7 +4,6 @@ import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppState;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.LicenseProvider;
@@ -164,7 +163,11 @@ public class SentryErrorHandler implements ErrorHandler {
 
         s.setTag("diagnostics", Boolean.toString(ee.isShouldSendDiagnostics()));
         s.setTag("licenseRequired", Boolean.toString(ee.isLicenseRequired()));
-        s.setTag("fallbackShell", AppPrefs.get() != null ? String.valueOf(AppPrefs.get().useLocalFallbackShell().get()) : "unknown");
+        s.setTag(
+                "fallbackShell",
+                AppPrefs.get() != null
+                        ? String.valueOf(AppPrefs.get().useLocalFallbackShell().get())
+                        : "unknown");
 
         var exMessage = ee.getThrowable() != null ? ee.getThrowable().getMessage() : null;
         if (ee.getDescription() != null

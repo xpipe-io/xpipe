@@ -17,9 +17,9 @@ public class AppShellCheck {
 
         // We don't want to fall back on macOS as occasional zsh spawn issues would cause many users to use sh
         var canFallback = !ProcessControlProvider.get()
-                .getEffectiveLocalDialect()
-                .equals(ProcessControlProvider.get().getFallbackDialect()) &&
-                OsType.getLocal() != OsType.MACOS;
+                        .getEffectiveLocalDialect()
+                        .equals(ProcessControlProvider.get().getFallbackDialect())
+                && OsType.getLocal() != OsType.MACOS;
         if (err.isPresent() && canFallback) {
             var msg = formatMessage(err.get().getMessage());
             ErrorEvent.fromThrowable(new IllegalStateException(msg)).handle();

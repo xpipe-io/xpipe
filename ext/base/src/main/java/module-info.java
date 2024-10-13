@@ -4,6 +4,7 @@ import io.xpipe.app.ext.DataStorageExtensionProvider;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.ext.base.action.*;
 import io.xpipe.ext.base.browser.*;
+import io.xpipe.ext.base.browser.compress.*;
 import io.xpipe.ext.base.desktop.DesktopApplicationStoreProvider;
 import io.xpipe.ext.base.desktop.DesktopCommandStoreProvider;
 import io.xpipe.ext.base.desktop.DesktopEnvironmentStoreProvider;
@@ -12,7 +13,6 @@ import io.xpipe.ext.base.service.*;
 import io.xpipe.ext.base.store.StorePauseAction;
 import io.xpipe.ext.base.store.StoreStartAction;
 import io.xpipe.ext.base.store.StoreStopAction;
-import io.xpipe.ext.base.browser.compress.*;
 
 open module io.xpipe.ext.base {
     exports io.xpipe.ext.base;
@@ -55,7 +55,9 @@ open module io.xpipe.ext.base {
             CopyAction,
             CopyPathAction,
             PasteAction,
-            NewItemAction, FileCompressAction, DirectoryCompressAction,
+            NewItemAction,
+            FileCompressAction,
+            DirectoryCompressAction,
             RenameAction,
             DeleteAction,
             DeleteLinkAction,
@@ -63,7 +65,10 @@ open module io.xpipe.ext.base {
             UnzipDirectoryUnixAction,
             UnzipHereWindowsAction,
             UnzipDirectoryWindowsAction,
-            UntarHereAction, UntarGzHereAction, UntarDirectoryAction, UntarGzDirectoryAction,
+            UntarHereAction,
+            UntarGzHereAction,
+            UntarDirectoryAction,
+            UntarGzDirectoryAction,
             JavapAction,
             JarAction;
     provides ActionProvider with

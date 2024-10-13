@@ -9,6 +9,7 @@ import io.xpipe.app.browser.icon.BrowserIcons;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
+
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 
@@ -36,22 +37,27 @@ public class BaseUntarAction implements ApplicationPathAction, LeafAction {
 
     @Override
     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
-        model.runAsync(() -> {
-            ShellControl sc = model.getFileSystem().getShell().orElseThrow();
-            for (BrowserEntry entry : entries) {
-                var target = getTarget(entry.getRawFileEntry().getPath());
-                var c = CommandBuilder.of().add("tar");
-                if (toDirectory) {
-                    c.add("-C").addFile(target);
-                }
-                c.add("-x").addIf(gz, "-z").add("-f");
-                c.addFile(entry.getRawFileEntry().getPath());
-                if (toDirectory) {
-                    model.getFileSystem().mkdirs(target);
-                }
-                sc.command(c).withWorkingDirectory(model.getCurrentDirectory().getPath()).execute();
-            }
-        }, true);
+        model.runAsync(
+                () -> {
+                    ShellControl sc = model.getFileSystem().getShell().orElseThrow();
+                    for (BrowserEntry entry : entries) {
+                        var target = getTarget(entry.getRawFileEntry().getPath());
+                        var c = CommandBuilder.of().add("tar");
+                        if (toDirectory) {
+                            c.add("-C").addFile(target);
+                        }
+                        c.add("-x").addIf(gz, "-z").add("-f");
+                        c.addFile(entry.getRawFileEntry().getPath());
+                        if (toDirectory) {
+                            model.getFileSystem().mkdirs(target);
+                        }
+                        sc.command(c)
+                                .withWorkingDirectory(
+                                        model.getCurrentDirectory().getPath())
+                                .execute();
+                    }
+                },
+                true);
     }
 
     @Override
@@ -73,9 +79,12 @@ public class BaseUntarAction implements ApplicationPathAction, LeafAction {
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
         if (gz) {
-            return entries.stream().allMatch(entry -> entry.getRawFileEntry().getPath().endsWith(".tar.gz") || entry.getRawFileEntry().getPath().endsWith(".tgz"));
+            return entries.stream()
+                    .allMatch(entry -> entry.getRawFileEntry().getPath().endsWith(".tar.gz")
+                            || entry.getRawFileEntry().getPath().endsWith(".tgz"));
         }
 
-        return entries.stream().allMatch(entry -> entry.getRawFileEntry().getPath().endsWith(".tar"));
+        return entries.stream()
+                .allMatch(entry -> entry.getRawFileEntry().getPath().endsWith(".tar"));
     }
 }

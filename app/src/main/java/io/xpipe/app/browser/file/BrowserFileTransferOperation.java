@@ -12,7 +12,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class BrowserFileTransferOperation {
@@ -65,7 +64,8 @@ public class BrowserFileTransferOperation {
         this.progress.accept(progress);
     }
 
-    private BrowserAlerts.FileConflictChoice handleChoice(FileSystem fileSystem, String target, boolean multiple) throws Exception {
+    private BrowserAlerts.FileConflictChoice handleChoice(FileSystem fileSystem, String target, boolean multiple)
+            throws Exception {
         if (lastConflictChoice == BrowserAlerts.FileConflictChoice.CANCEL) {
             return BrowserAlerts.FileConflictChoice.CANCEL;
         }
@@ -168,7 +168,8 @@ public class BrowserFileTransferOperation {
 
         if (checkConflicts) {
             var fileConflictChoice = handleChoice(target.getFileSystem(), targetFile, files.size() > 1);
-            if (fileConflictChoice == BrowserAlerts.FileConflictChoice.SKIP || fileConflictChoice == BrowserAlerts.FileConflictChoice.CANCEL) {
+            if (fileConflictChoice == BrowserAlerts.FileConflictChoice.SKIP
+                    || fileConflictChoice == BrowserAlerts.FileConflictChoice.CANCEL) {
                 return;
             }
 
@@ -204,9 +205,11 @@ public class BrowserFileTransferOperation {
         if (matcher.matches()) {
             try {
                 var number = Integer.parseInt(matcher.group(2));
-                var newFile = targetFile.getParent().join(matcher.group(1) + " (" + (number + 1) + ")." + matcher.group(3));
+                var newFile =
+                        targetFile.getParent().join(matcher.group(1) + " (" + (number + 1) + ")." + matcher.group(3));
                 return newFile.toString();
-            } catch (NumberFormatException e) {}
+            } catch (NumberFormatException e) {
+            }
         }
 
         var noExt = targetFile.getFileName().equals(targetFile.getExtension());
@@ -275,8 +278,10 @@ public class BrowserFileTransferOperation {
                 target.getFileSystem().mkdirs(targetFile);
             } else if (sourceFile.getKind() == FileKind.FILE) {
                 if (checkConflicts) {
-                    var fileConflictChoice = handleChoice(target.getFileSystem(), targetFile, files.size() > 1 || flatFiles.size() > 1);
-                    if (fileConflictChoice == BrowserAlerts.FileConflictChoice.SKIP || fileConflictChoice == BrowserAlerts.FileConflictChoice.CANCEL) {
+                    var fileConflictChoice =
+                            handleChoice(target.getFileSystem(), targetFile, files.size() > 1 || flatFiles.size() > 1);
+                    if (fileConflictChoice == BrowserAlerts.FileConflictChoice.SKIP
+                            || fileConflictChoice == BrowserAlerts.FileConflictChoice.CANCEL) {
                         continue;
                     }
 

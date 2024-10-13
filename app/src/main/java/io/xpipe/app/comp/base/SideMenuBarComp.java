@@ -13,8 +13,8 @@ import io.xpipe.app.fxcomps.util.LabelGraphic;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.update.UpdateAvailableAlert;
 import io.xpipe.app.update.XPipeDistributionType;
-
 import io.xpipe.app.util.Hyperlinks;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -146,15 +146,16 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
             var now = Instant.now();
             var phStart = ZonedDateTime.of(2024, 10, 22, 0, 1, 0, 0, zone).toInstant();
             var phEnd = ZonedDateTime.of(2024, 10, 23, 0, 1, 0, 0, zone).toInstant();
-            var clicked = AppCache.get("phClicked",Boolean.class,() -> false);
+            var clicked = AppCache.get("phClicked", Boolean.class, () -> false);
             var phShow = now.isAfter(phStart) && now.isBefore(phEnd) && !clicked;
             if (phShow) {
                 var hide = new SimpleBooleanProperty(false);
                 var b = new IconButtonComp(new LabelGraphic.ImageGraphic("app:producthunt-color.png", 24), () -> {
-                    AppCache.update("phClicked", true);
-                    Hyperlinks.open(Hyperlinks.PRODUCT_HUNT);
-                    hide.set(true);
-                }).tooltip(new SimpleStringProperty("Product Hunt"));
+                            AppCache.update("phClicked", true);
+                            Hyperlinks.open(Hyperlinks.PRODUCT_HUNT);
+                            hide.set(true);
+                        })
+                        .tooltip(new SimpleStringProperty("Product Hunt"));
                 b.apply(struc -> {
                     AppFont.setSize(struc.get(), 1);
                 });

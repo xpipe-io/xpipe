@@ -46,7 +46,8 @@ public interface BrowserAction {
     default List<BrowserEntry> resolveFilesIfNeeded(List<BrowserEntry> selected) {
         return automaticallyResolveLinks()
                 ? selected.stream()
-                        .map(browserEntry -> new BrowserEntry(browserEntry.getRawFileEntry().resolved(), browserEntry.getModel()))
+                        .map(browserEntry ->
+                                new BrowserEntry(browserEntry.getRawFileEntry().resolved(), browserEntry.getModel()))
                         .toList()
                 : selected;
     }
