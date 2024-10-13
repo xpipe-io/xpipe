@@ -129,7 +129,7 @@ public class TerminalLauncher {
             } else {
                 var content =
                         """
-                              script -Command "%s" "%s"
+                              script --command "%s" "%s"
                               """
                                 .formatted(preparationScript, logFile);
                 var ps = ScriptHelper.createExecScript(sc.getShellDialect(), sc, content);
