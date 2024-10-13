@@ -17,6 +17,12 @@ import javax.imageio.ImageIO;
 public class AppDesktopIntegration {
 
     public static void setupDesktopIntegrations() {
+        // Check if we were/are able to initialize the platform
+        // If not, we don't have to attempt the awt setup as well
+        if (!PlatformState.initPlatformIfNeeded()) {
+            return;
+        }
+
         try {
             if (Desktop.isDesktopSupported()) {
                 Desktop.getDesktop().addAppEventListener(new SystemSleepListener() {
