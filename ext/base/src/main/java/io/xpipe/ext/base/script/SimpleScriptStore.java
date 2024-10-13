@@ -87,16 +87,17 @@ public class SimpleScriptStore extends ScriptStore implements ShellInitCommand.T
     }
 
     public void queryFlattenedScripts(LinkedHashSet<DataStoreEntryRef<SimpleScriptStore>> all) {
-        // Prevent loop
         DataStoreEntryRef<SimpleScriptStore> ref = getSelfEntry().ref();
-        all.add(ref);
-        getEffectiveScripts().stream()
-                .filter(scriptStoreDataStoreEntryRef -> !all.contains(scriptStoreDataStoreEntryRef))
-                .forEach(scriptStoreDataStoreEntryRef -> {
-                    scriptStoreDataStoreEntryRef.getStore().queryFlattenedScripts(all);
-                });
-        all.remove(ref);
-        all.add(ref);
+        var added = all.add(ref);
+        // Prevent loop
+        if (added) {
+            getEffectiveScripts().stream().filter(scriptStoreDataStoreEntryRef -> !all.contains(scriptStoreDataStoreEntryRef)).forEach(
+                    scriptStoreDataStoreEntryRef -> {
+                        scriptStoreDataStoreEntryRef.getStore().queryFlattenedScripts(all);
+                    });
+            all.remove(ref);
+            all.add(ref);
+        }
     }
 
     @Override

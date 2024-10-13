@@ -788,11 +788,18 @@ public abstract class DataStorage {
 
     public Set<DataStoreEntry> getDeepStoreChildren(DataStoreEntry entry) {
         var set = new HashSet<DataStoreEntry>();
-        getStoreChildren(entry).forEach(c -> {
-            set.add(c);
-            set.addAll(getDeepStoreChildren(c));
-        });
+        getDeepStoreChildren(entry, set);
         return set;
+    }
+
+    private void getDeepStoreChildren(DataStoreEntry entry, Set<DataStoreEntry> current) {
+        getStoreChildren(entry).forEach(c -> {
+            var added = current.add(c);
+            // Guard against loop
+            if (added) {
+                getDeepStoreChildren(c, current);
+            }
+        });
     }
 
     public Set<DataStoreEntry> getStoreChildren(DataStoreEntry entry) {
