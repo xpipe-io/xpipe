@@ -20,17 +20,11 @@ public interface WindowsTerminalType extends ExternalTerminalType {
         // So just remove that slash
         var fixedName = FileNames.removeTrailingSlash(configuration.getColoredTitle());
 
-        var toExec = !ShellDialects.isPowershell(LocalShell.getShell())
-                ? CommandBuilder.of().addFile(configuration.getScriptFile())
-                : CommandBuilder.of()
-                        .add("powershell", "-ExecutionPolicy", "Bypass", "-File")
-                        .addFile(configuration.getScriptFile());
         var cmd = CommandBuilder.of().add("-w", "1", "nt");
-
         if (configuration.getColor() != null) {
             cmd.add("--tabColor").addQuoted(configuration.getColor().toHexString());
         }
-        return cmd.add("--title").addQuoted(fixedName).add(toExec);
+        return cmd.add("--title").addQuoted(fixedName).add(configuration.getDialectLaunchCommand());
     }
 
     @Override

@@ -97,6 +97,8 @@ public class AppPrefs {
             map(new SimpleBooleanProperty(true), "automaticallyCheckForUpdates", Boolean.class);
     final BooleanProperty encryptAllVaultData =
             mapVaultSpecific(new SimpleBooleanProperty(false), "encryptAllVaultData", Boolean.class);
+    final BooleanProperty enableTerminalLogging =
+            map(new SimpleBooleanProperty(false), "enableTerminalLogging", Boolean.class);
     final BooleanProperty enforceWindowModality =
             map(new SimpleBooleanProperty(false), "enforceWindowModality", Boolean.class);
     final BooleanProperty condenseConnectionDisplay =
@@ -145,6 +147,10 @@ public class AppPrefs {
     final BooleanProperty disableApiAuthentication =
             map(new SimpleBooleanProperty(false), "disableApiAuthentication", Boolean.class);
 
+    public ObservableBooleanValue enableTerminalLogging() {
+        return enableTerminalLogging;
+    }
+
     public ObservableStringValue apiKey() {
         return apiKey;
     }
@@ -192,6 +198,7 @@ public class AppPrefs {
                         new RdpCategory(),
                         new SshCategory(),
                         new LocalShellCategory(),
+                        new LoggingCategory(),
                         new SecurityCategory(),
                         new HttpApiCategory(),
                         new WorkflowCategory(),
