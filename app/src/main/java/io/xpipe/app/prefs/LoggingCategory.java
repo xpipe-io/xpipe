@@ -6,6 +6,7 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.DesktopHelper;
+import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.OptionsBuilder;
 
 import java.io.IOException;
@@ -21,11 +22,19 @@ public class LoggingCategory extends AppPrefsCategory {
     @Override
     protected Comp<?> create() {
         var prefs = AppPrefs.get();
+        var supported = LicenseProvider.get()
+                .getFeature("logging")
+                .isSupported();
+        var title = AppI18n.observable("sessionLogging")
+                .map(s -> s + (supported
+                        ? ""
+                        : " (Pro)"));
         return new OptionsBuilder()
-                .addTitle("sessionLogging")
+                .addTitle(title)
                 .sub(new OptionsBuilder()
                         .nameAndDescription("enableTerminalLogging")
                         .addToggle(prefs.enableTerminalLogging)
+                        .disable(!supported)
                         .nameAndDescription("terminalLoggingDirectory")
                         .addComp(new ButtonComp(AppI18n.observable("openSessionLogs"), () -> {
                                     var dir = AppProperties.get().getDataDir().resolve("sessions");

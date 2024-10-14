@@ -96,7 +96,10 @@ public class TerminalLauncher {
         var launcherScript = d.terminalLauncherScript(request, adjustedTitle);
         var preparationScript = ScriptHelper.createLocalExecScript(launcherScript);
 
-        if (!AppPrefs.get().enableTerminalLogging().get()) {
+        var supported = LicenseProvider.get()
+                .getFeature("logging")
+                .isSupported();
+        if (!AppPrefs.get().enableTerminalLogging().get() || !supported) {
             var config = new ExternalTerminalType.LaunchConfiguration(
                     entry != null ? color : null, adjustedTitle, cleanTitle, preparationScript, d);
             return config;
