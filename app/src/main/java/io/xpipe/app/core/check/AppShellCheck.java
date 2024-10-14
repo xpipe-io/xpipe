@@ -22,7 +22,7 @@ public class AppShellCheck {
                 && OsType.getLocal() != OsType.MACOS;
         if (err.isPresent() && canFallback) {
             var msg = formatMessage(err.get().getMessage());
-            ErrorEvent.fromThrowable(new IllegalStateException(msg)).handle();
+            ErrorEvent.fromThrowable(new IllegalStateException(msg)).expected().handle();
             enableFallback();
             err = selfTestErrorCheck();
         }
