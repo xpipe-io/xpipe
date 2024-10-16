@@ -1,5 +1,6 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.store.FileNames;
@@ -67,6 +68,10 @@ public interface WindowsTerminalType extends ExternalTerminalType {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
+            if (!isAvailable()) {
+                throw ErrorEvent.expected(new IllegalArgumentException("Windows Terminal Preview is not installed"));
+            }
+
             LocalShell.getShell()
                     .executeSimpleCommand(
                             CommandBuilder.of().addFile(getPath().toString()).add(toCommand(configuration)));
@@ -98,6 +103,10 @@ public interface WindowsTerminalType extends ExternalTerminalType {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
+            if (!isAvailable()) {
+                throw ErrorEvent.expected(new IllegalArgumentException("Windows Terminal Canary is not installed"));
+            }
+
             LocalShell.getShell()
                     .executeSimpleCommand(
                             CommandBuilder.of().addFile(getPath().toString()).add(toCommand(configuration)));
