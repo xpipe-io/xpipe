@@ -131,9 +131,23 @@ public class TerminalLauncher {
                         entry != null ? color : null, adjustedTitle, cleanTitle, ps, ShellDialects.POWERSHELL);
                 return config;
             } else {
+                var found = sc.command(sc.getShellDialect().getWhichCommand("script")).executeAndCheck();
+                if (!found) {
+                    var suffix = sc.getOsType() == OsType.MACOS ? "This command is available in the util-linux package which can be installed via homebrew." : "This command is available in the util-linux package.";
+                    throw ErrorEvent.expected(new IllegalStateException("Logging requires the script command to be installed. " + suffix));
+                }
+                
                 var content = sc.getOsType() == OsType.MACOS || sc.getOsType() == OsType.BSD ?
-                        "script -q \"%s\" \"%s\"".formatted(logFile, preparationScript) :
-                        "script --quiet --command \"%s\" \"%s\"".formatted(preparationScript, logFile);
+                       """
+                       echo "Transcript started, output file is sessions/%s"
+                       script -e -q "%s" "%s"
+                       echo "Transcript stopped, output file is sessions/%s"
+                       """.formatted(logFile.getFileName(), logFile, preparationScript, logFile.getFileName()) :
+                        """
+                       echo "Transcript started, output file is sessions/%s"
+                       script --quiet --command "%s" "%s"
+                       echo "Transcript stopped, output file is sessions/%s"
+                       """.formatted(logFile.getFileName(), preparationScript, logFile, logFile.getFileName());
                 var ps = ScriptHelper.createExecScript(sc.getShellDialect(), sc, content);
                 var config = new ExternalTerminalType.LaunchConfiguration(
                         entry != null ? color : null, adjustedTitle, cleanTitle, ps, sc.getShellDialect());
