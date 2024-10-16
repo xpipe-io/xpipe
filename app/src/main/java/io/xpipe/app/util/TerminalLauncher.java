@@ -131,11 +131,9 @@ public class TerminalLauncher {
                         entry != null ? color : null, adjustedTitle, cleanTitle, ps, ShellDialects.POWERSHELL);
                 return config;
             } else {
-                var content =
-                        """
-                              script --quiet --command "%s" "%s"
-                              """
-                                .formatted(preparationScript, logFile);
+                var content = sc.getOsType() == OsType.MACOS || sc.getOsType() == OsType.BSD ?
+                        "script -q \"%s\" \"%s\"".formatted(logFile, preparationScript) :
+                        "script --quiet --command \"%s\" \"%s\"".formatted(preparationScript, logFile);
                 var ps = ScriptHelper.createExecScript(sc.getShellDialect(), sc, content);
                 var config = new ExternalTerminalType.LaunchConfiguration(
                         entry != null ? color : null, adjustedTitle, cleanTitle, ps, sc.getShellDialect());
