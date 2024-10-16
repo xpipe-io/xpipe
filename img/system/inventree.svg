@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 27.7.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1"
+	 id="svg2" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" inkscape:export-ydpi="499.92001" inkscape:version="0.92.4 (5da689c313, 2019-01-14)" sodipodi:docname="inventree.svg"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
+	 style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#DDBC91;stroke:#000000;stroke-width:2.6766;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:6.8531;}
+	.st1{fill:#D9B383;stroke:#000000;stroke-width:2.6766;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:6.8531;}
+	.st2{fill:#F3F4E4;stroke:#000000;stroke-width:2.6766;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1177;}
+	.st3{fill:#F3F4E4;stroke:#000000;stroke-width:2.6766;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10.1162;}
+	.st4{fill:#D9DBBC;stroke:#000000;stroke-width:2.6766;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:6.8531;}
+	.st5{fill:#EAECCF;stroke:#000000;stroke-width:2.6766;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:6.8531;}
+	.st6{fill:#90A8D8;stroke:#000000;stroke-width:2.6766;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:6.7441;}
+</style>
+<g id="g5713">
+	<path id="path4896" inkscape:connector-curvature="0" sodipodi:nodetypes="ccccc" class="st0" d="M256,255.9v253.6l218.3-126V128.9
+		L256,255.9z"/>
+	<path id="path4898" inkscape:connector-curvature="0" sodipodi:nodetypes="ccccc" class="st1" d="M256,255.9v253.6l-218.3-126
+		V128.9L256,255.9z"/>
+	<path id="path4900" inkscape:connector-curvature="0" sodipodi:nodetypes="ccccc" class="st0" d="M474.3,128.9L256,255.9
+		l-218.3-127L256,2.6L474.3,128.9z"/>
+	<g id="g4916" transform="matrix(1.4761476,0,0,1.4761476,-218.87903,128.54472)">
+		<path id="path4910" inkscape:connector-curvature="0" class="st2" d="M210.8,21.5v129.3l110.9,64l110.9-64V21.5L321.7,86.1
+			L210.8,21.5z"/>
+		<path id="path4914" inkscape:connector-curvature="0" sodipodi:nodetypes="ccccc" class="st3" d="M432.6,21.5L321.7,86.1
+			L210.8,21.5l110.9-64.2L432.6,21.5z"/>
+	</g>
+	<path id="path4918" inkscape:connector-curvature="0" class="st4" d="M256,65.6v190L92.3,351.2V160.3L256,65.6z"/>
+	<path id="path4920" inkscape:connector-curvature="0" class="st5" d="M256,65.6v190l163.7,95.7V160.3L256,65.6z"/>
+	<g id="g4928" transform="matrix(0.9840984,0,0,0.9840984,-196.5146,205.65597)">
+		<path id="path4922" inkscape:connector-curvature="0" sodipodi:nodetypes="ccccc" class="st6" d="M459.8,51v128.8l110.9-64V-13.5
+			L459.8,51z"/>
+		<path id="path4924" inkscape:connector-curvature="0" sodipodi:nodetypes="ccccc" class="st6" d="M459.8,51v128.8l-110.9-64V-13.5
+			L459.8,51z"/>
+		<path id="path4926" inkscape:connector-curvature="0" sodipodi:nodetypes="ccccc" class="st6" d="M570.7-13.5L459.8,51L348.9-13.5
+			l110.9-64.2L570.7-13.5z"/>
+	</g>
+</g>
+</svg>

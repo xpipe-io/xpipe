@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 27.7.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1"
+	 id="svg2" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:svg="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" inkscape:export-filename="C:\Projects\xpipe\xpipex\app\src\main\resources\io\xpipe\app\resources\img\logo\full\logo_32x32.png" sodipodi:docname="logo_app_full.svg"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
+	 style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill-rule:evenodd;clip-rule:evenodd;fill:#FFFFFF;}
+</style>
+<path class="st0" d="M399,2H113C51.7,2,2,51.7,2,113v286c0,61.3,49.7,111,111,111h286c61.3,0,111-49.7,111-111V113
+	C510,51.7,460.3,2,399,2z M141.4,49.2c7-4.5,15.4-6.7,24.6-6.7c47.8,0.4,121.3,56.1,189.6,142.2h-0.4
+	C277.7,104.2,225.9,83.2,207.6,78.3c-5.9-1.9-11-2.6-15.4-2.6c-5.9,0-10.7,1.5-14.3,4.5c-4.4,4.1-7.3,12-7.3,23.6
+	c0,31.8,20.2,88.3,57,149.7l-33.1,44.2c-46.7-76.3-73.5-149.3-73.5-197.6C120.9,76.9,127.1,58.5,141.4,49.2z M179,448.5h-54h-25
+	L187.8,334l37.1,47.5L179,448.5z M407.6,445.5c-7,4.5-24.6,6.7-24.6,6.7c-54.4-0.4-104.4-25.1-180-134.7l89.7-123.9l0.7-1.1h70.9
+	l-93.7,132.1c51.4,62.1,91.9,83.1,124.6,82.7c1.8,0,3.3,0,5.1-0.4c0.7-0.4,2.2-0.7,3.7-1.1c0,0,0.4-0.4,0.7-0.4
+	c0.7-0.4,1.8-0.7,2.9-1.5c0.4,0,1.1-0.4,1.5-0.7c0.4-0.4,1.1-0.7,1.5-1.1c0.4-0.4,1.1-0.7,1.5-1.1c1.5-1.5,2.9-3,4-4.5
+	c4.8-5.2,9.6-11.6,11.8-16.8h0.4c0.4,4.5,0.7,9,0.7,13.1C428.9,417,422.3,435.7,407.6,445.5z"/>
+</svg>
