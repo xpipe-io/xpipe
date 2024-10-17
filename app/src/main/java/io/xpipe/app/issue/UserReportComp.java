@@ -91,7 +91,7 @@ public class UserReportComp extends SimpleComp {
         var tf = new TextArea();
         text.bind(tf.textProperty());
         VBox.setVgrow(tf, Priority.ALWAYS);
-        var reportSection = new VBox(emailHeader, email, new Spacer(8, Orientation.VERTICAL), header, tf);
+        var reportSection = new VBox(header, tf, new Spacer(8, Orientation.VERTICAL));
         reportSection.setSpacing(5);
         reportSection.getStyleClass().add("report");
 
@@ -102,6 +102,8 @@ public class UserReportComp extends SimpleComp {
         if (event.getAttachments().size() > 0) {
             reportSection.getChildren().add(at);
         }
+
+        reportSection.getChildren().addAll(new Spacer(8, Orientation.VERTICAL), emailHeader, email);
 
         var layout = new BorderPane();
         layout.setCenter(reportSection);
