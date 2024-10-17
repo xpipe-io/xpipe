@@ -98,15 +98,16 @@ public class TerminalLauncher {
         var launcherScript = d.terminalLauncherScript(request, adjustedTitle);
         var preparationScript = ScriptHelper.createLocalExecScript(launcherScript);
 
-        var feature = LicenseProvider.get().getFeature("logging");
-        var supported = feature.isSupported();
-        if (!supported) {
-            throw new LicenseRequiredException(feature);
-        }
         if (!AppPrefs.get().enableTerminalLogging().get()) {
             var config = new ExternalTerminalType.LaunchConfiguration(
                     entry != null ? color : null, adjustedTitle, cleanTitle, preparationScript, d);
             return config;
+        }
+
+        var feature = LicenseProvider.get().getFeature("logging");
+        var supported = feature.isSupported();
+        if (!supported) {
+            throw new LicenseRequiredException(feature);
         }
 
         var logDir = AppProperties.get().getDataDir().resolve("sessions");
