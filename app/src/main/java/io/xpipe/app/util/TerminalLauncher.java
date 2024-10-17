@@ -96,10 +96,13 @@ public class TerminalLauncher {
         var launcherScript = d.terminalLauncherScript(request, adjustedTitle);
         var preparationScript = ScriptHelper.createLocalExecScript(launcherScript);
 
-        var supported = LicenseProvider.get()
-                .getFeature("logging")
+        var feature = LicenseProvider.get().getFeature("logging");
+        var supported = feature
                 .isSupported();
-        if (!AppPrefs.get().enableTerminalLogging().get() || !supported) {
+        if (!supported) {
+            throw new LicenseRequiredException(feature);
+        }
+        if (!AppPrefs.get().enableTerminalLogging().get()) {
             var config = new ExternalTerminalType.LaunchConfiguration(
                     entry != null ? color : null, adjustedTitle, cleanTitle, preparationScript, d);
             return config;
@@ -136,7 +139,7 @@ public class TerminalLauncher {
                     var suffix = sc.getOsType() == OsType.MACOS ? "This command is available in the util-linux package which can be installed via homebrew." : "This command is available in the util-linux package.";
                     throw ErrorEvent.expected(new IllegalStateException("Logging requires the script command to be installed. " + suffix));
                 }
-                
+
                 var content = sc.getOsType() == OsType.MACOS || sc.getOsType() == OsType.BSD ?
                        """
                        echo "Transcript started, output file is sessions/%s"
