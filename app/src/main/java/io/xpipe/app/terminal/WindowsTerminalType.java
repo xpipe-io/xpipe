@@ -3,6 +3,7 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileNames;
 
 import java.nio.file.Files;
@@ -24,7 +25,14 @@ public interface WindowsTerminalType extends ExternalTerminalType {
         if (configuration.getColor() != null) {
             cmd.add("--tabColor").addQuoted(configuration.getColor().toHexString());
         }
-        return cmd.add("--title").addQuoted(fixedName).add(configuration.getDialectLaunchCommand());
+        // This is a fix for rare wt startup issues when using the full cmd launch command instead of just passing the .bat script
+        // This must be a bug on wt's side, so work around it by just passing the script file
+        var toExec = !ShellDialects.isPowershell(configuration.getScriptDialect())
+                ? CommandBuilder.of().addFile(configuration.getScriptFile())
+                : CommandBuilder.of()
+                .add("powershell", "-ExecutionPolicy", "Bypass", "-File")
+                .addFile(configuration.getScriptFile());
+        return cmd.add("--title").addQuoted(fixedName).add(toExec);
     }
 
     @Override

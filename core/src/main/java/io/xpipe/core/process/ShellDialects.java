@@ -48,7 +48,11 @@ public class ShellDialects {
             return false;
         }
 
-        return sc.getShellDialect().equals(POWERSHELL) || sc.getShellDialect().equals(POWERSHELL_CORE);
+        return isPowershell(sc.getShellDialect());
+    }
+
+    public static boolean isPowershell(ShellDialect d) {
+        return d == POWERSHELL || d == POWERSHELL_CORE;
     }
 
     public static Optional<ShellDialect> byNameIfPresent(String name) {
