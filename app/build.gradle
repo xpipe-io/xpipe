@@ -165,3 +165,7 @@ distTar {
 distZip {
     enabled = false;
 }
+
+assembleDist {
+    enabled = false;
+}

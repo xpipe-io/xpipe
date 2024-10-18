@@ -111,3 +111,16 @@ if (rootProject.fullVersion) {
         sign(checksums)
     }
 }
+
+distTar {
+    enabled = false;
+}
+
+distZip {
+    enabled = false;
+}
+
+assembleDist {
+    enabled = false;
+    dependsOn.clear()
+}
