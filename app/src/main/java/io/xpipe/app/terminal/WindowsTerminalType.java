@@ -1,7 +1,9 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileNames;
@@ -16,23 +18,38 @@ public interface WindowsTerminalType extends ExternalTerminalType {
     ExternalTerminalType WINDOWS_TERMINAL_CANARY = new Canary();
 
     private static CommandBuilder toCommand(ExternalTerminalType.LaunchConfiguration configuration) throws Exception {
+        var cmd = CommandBuilder.of().add("-w", "1", "nt");
+
+        if (configuration.getColor() != null) {
+            cmd.add("--tabColor").addQuoted(configuration.getColor().toHexString());
+        }
+
         // A weird behavior in Windows Terminal causes the trailing
         // backslash of a filepath to escape the closing quote in the title argument
         // So just remove that slash
         var fixedName = FileNames.removeTrailingSlash(configuration.getColoredTitle());
+        cmd.add("--title").addQuoted(fixedName);
 
-        var cmd = CommandBuilder.of().add("-w", "1", "nt");
-        if (configuration.getColor() != null) {
-            cmd.add("--tabColor").addQuoted(configuration.getColor().toHexString());
+        // wt can't elevate a command consisting out of multiple parts if wt is configured to elevate by default
+        // So work around it by just passing a script file if possible
+        if (ShellDialects.isPowershell(configuration.getScriptDialect())) {
+            var usesPowershell = ShellDialects.isPowershell(ProcessControlProvider.get().getEffectiveLocalDialect());
+            if (usesPowershell) {
+                // We can't work around it in this case, so let's just hope that there's no elevation configured
+                cmd.add(configuration.getDialectLaunchCommand());
+            } else {
+                // There might be a mismatch if we are for example using logging
+                // In this case we can actually work around the problem
+                cmd.addFile(shellControl -> {
+                    var script = ScriptHelper.createExecScript(shellControl, configuration.getDialectLaunchCommand().buildFull(shellControl));
+                    return script.toString();
+                });
+            }
+        } else {
+            cmd.addFile(configuration.getScriptFile());
         }
-        // This is a fix for rare wt startup issues when using the full cmd launch command instead of just passing the .bat script
-        // This must be a bug on wt's side, so work around it by just passing the script file
-        var toExec = !ShellDialects.isPowershell(configuration.getScriptDialect())
-                ? CommandBuilder.of().addFile(configuration.getScriptFile())
-                : CommandBuilder.of()
-                .add("powershell", "-ExecutionPolicy", "Bypass", "-File")
-                .addFile(configuration.getScriptFile());
-        return cmd.add("--title").addQuoted(fixedName).add(toExec);
+
+        return cmd;
     }
 
     @Override

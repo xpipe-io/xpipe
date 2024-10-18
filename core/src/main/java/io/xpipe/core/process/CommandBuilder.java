@@ -176,7 +176,7 @@ public class CommandBuilder {
         return prepend("\"" + s + "\"");
     }
 
-    public CommandBuilder addFile(Function<ShellControl, String> f) {
+    public CommandBuilder addFile(FailableFunction<ShellControl, String, Exception> f) {
         elements.add(sc -> {
             if (f == null) {
                 return null;
