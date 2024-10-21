@@ -9,7 +9,7 @@ import io.xpipe.core.process.CommandControl;
 import io.xpipe.core.process.ElevationFunction;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.store.ShellStore;
+import io.xpipe.app.ext.ShellStore;
 
 import javafx.beans.value.ObservableValue;
 

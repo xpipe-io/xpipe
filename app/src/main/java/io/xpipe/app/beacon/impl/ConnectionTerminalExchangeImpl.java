@@ -4,7 +4,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.ConnectionTerminalExchange;
-import io.xpipe.core.store.ShellStore;
+import io.xpipe.app.ext.ShellStore;
 
 import com.sun.net.httpserver.HttpExchange;
 

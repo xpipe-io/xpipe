@@ -15,7 +15,7 @@ import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.ShellStore;
+import io.xpipe.app.ext.ShellStore;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;

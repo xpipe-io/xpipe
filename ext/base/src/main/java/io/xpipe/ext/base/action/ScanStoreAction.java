@@ -7,7 +7,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ScanAlert;
 import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.process.ShellTtyState;
-import io.xpipe.core.store.ShellStore;
+import io.xpipe.app.ext.ShellStore;
 
 import javafx.beans.value.ObservableValue;
 

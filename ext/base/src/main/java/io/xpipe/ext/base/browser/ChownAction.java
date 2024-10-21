@@ -44,7 +44,7 @@ public class ChownAction implements BranchAction {
         return model.getCache().getUsers().entrySet().stream()
                 .filter(e -> !e.getValue().equals("nohome")
                         && !e.getValue().equals("nobody")
-                        && (e.getKey().equals(0) || e.getKey() >= 1000))
+                        && (e.getKey().equals(0) || e.getKey() >= 900))
                 .map(e -> e.getValue())
                 .map(s -> (LeafAction) new Chown(s))
                 .toList();

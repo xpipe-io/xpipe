@@ -5,7 +5,7 @@ import io.xpipe.app.beacon.BeaconShellSession;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.ShellStartExchange;
-import io.xpipe.core.store.ShellStore;
+import io.xpipe.app.ext.ShellStore;
 
 import com.sun.net.httpserver.HttpExchange;
 import lombok.SneakyThrows;

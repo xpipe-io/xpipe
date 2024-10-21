@@ -35,7 +35,7 @@ public abstract class AbstractServiceStore extends JacksonizedValue
     public NetworkTunnelSession newSession() throws Exception {
         LicenseProvider.get().getFeature("services").throwIfUnsupported();
         var l = localPort != null ? localPort : HostHelper.findRandomOpenPortOnAllLocalInterfaces();
-        return getHost().getStore().sessionChain(l, remotePort);
+        return getHost().getStore().sessionChain(l, remotePort, "localhost");
     }
 
     @Override

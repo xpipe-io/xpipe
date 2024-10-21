@@ -12,7 +12,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.store.ShellStore;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.core.store.ShellValidationContext;
 
 import javafx.application.Platform;

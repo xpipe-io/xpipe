@@ -1,7 +1,7 @@
 package io.xpipe.core.process;
 
+import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FilePath;
-import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.store.StatefulDataStore;
 import io.xpipe.core.util.FailableConsumer;
 import io.xpipe.core.util.FailableFunction;
@@ -18,6 +18,8 @@ import java.util.function.Function;
 
 public interface ShellControl extends ProcessControl {
 
+    Optional<ShellControl> getParentControl();
+
     ShellTtyState getTtyState();
 
     void setNonInteractive();
@@ -32,9 +34,9 @@ public interface ShellControl extends ProcessControl {
 
     void setWorkingDirectory(WorkingDirectoryFunction workingDirectory);
 
-    Optional<ShellStore> getSourceStore();
+    Optional<DataStore> getSourceStore();
 
-    ShellControl withSourceStore(ShellStore store);
+    ShellControl withSourceStore(DataStore store);
 
     List<ShellInitCommand> getInitCommands();
 

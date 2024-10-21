@@ -45,7 +45,7 @@ public class ChgrpAction implements BranchAction {
                 .filter(e -> !e.getValue().equals("nohome")
                         && !e.getValue().equals("nogroup")
                         && !e.getValue().equals("nobody")
-                        && (e.getKey().equals(0) || e.getKey() >= 1000))
+                        && (e.getKey().equals(0) || e.getKey() >= 900))
                 .map(e -> e.getValue())
                 .map(s -> (LeafAction) new Chgrp(s))
                 .toList();

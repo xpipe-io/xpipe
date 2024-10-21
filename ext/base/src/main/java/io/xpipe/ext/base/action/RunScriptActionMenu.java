@@ -9,7 +9,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.process.ShellTtyState;
-import io.xpipe.core.store.ShellStore;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.ext.base.script.ScriptHierarchy;
 
 import javafx.beans.property.SimpleStringProperty;
