@@ -138,6 +138,9 @@ public class ErrorHandlerComp extends SimpleComp {
                 } catch (Throwable t) {
                     t.printStackTrace();
                 }
+            } else {
+                showLatch.countDown();
+                finishLatch.countDown();
             }
         });
 
