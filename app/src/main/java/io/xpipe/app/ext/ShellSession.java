@@ -4,6 +4,7 @@ import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.Session;
 import io.xpipe.core.store.SessionListener;
 
+import io.xpipe.core.util.FailableSupplier;
 import lombok.Getter;
 
 import java.util.function.Supplier;
@@ -11,10 +12,10 @@ import java.util.function.Supplier;
 @Getter
 public class ShellSession extends Session {
 
-    private final Supplier<ShellControl> supplier;
+    private final FailableSupplier<ShellControl> supplier;
     private final ShellControl shellControl;
 
-    public ShellSession(SessionListener listener, Supplier<ShellControl> supplier) {
+    public ShellSession(SessionListener listener, FailableSupplier<ShellControl> supplier) throws Exception {
         super(listener);
         this.supplier = supplier;
         this.shellControl = createControl();
@@ -35,7 +36,7 @@ public class ShellSession extends Session {
         }
     }
 
-    private ShellControl createControl() {
+    private ShellControl createControl() throws Exception {
         var pc = supplier.get();
         pc.onStartupFail(shellControl -> {
             listener.onStateChange(false);

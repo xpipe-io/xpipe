@@ -9,8 +9,6 @@ import io.xpipe.core.util.JacksonizedValue;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
-import java.util.Optional;
-
 @JsonTypeName("local")
 public class LocalStore extends JacksonizedValue
         implements NetworkTunnelStore, ShellStore, StatefulDataStore<ShellStoreState> {
@@ -20,18 +18,22 @@ public class LocalStore extends JacksonizedValue
         return ShellStoreState.class;
     }
 
-    @Override
-    public ShellControl parentControl() {
-        var pc = ProcessControlProvider.get().createLocalProcessControl(true);
-        pc.withSourceStore(this);
-        pc.withShellStateInit(this);
-        pc.withShellStateFail(this);
-        return pc;
+    public ShellControl control(ShellControl parent) {
+        return parent;
     }
 
     @Override
-    public ShellControl control(ShellControl parent) {
-        return parent;
+    public ShellControlFunction shellFunction() {
+        return new ShellControlFunction() {
+            @Override
+            public ShellControl control() throws Exception {
+                var pc = ProcessControlProvider.get().createLocalProcessControl(true);
+                pc.withSourceStore(LocalStore.this);
+                pc.withShellStateInit(LocalStore.this);
+                pc.withShellStateFail(LocalStore.this);
+                return pc;
+            }
+        };
     }
 
     @Override

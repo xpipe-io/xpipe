@@ -66,7 +66,7 @@ public class SampleStoreAction implements ActionProvider {
         public void execute() throws Exception {
             var docker = new LocalStore();
             // Start a shell control from the docker connection store
-            try (ShellControl sc = docker.control().start()) {
+            try (ShellControl sc = docker.shellFunction().control().start()) {
                 // Once we are here, the shell connection is initialized and we can query all kinds of information
 
                 // Query the detected shell dialect, e.g. cmd, powershell, sh, bash, etc.

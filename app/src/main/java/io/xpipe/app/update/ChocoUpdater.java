@@ -31,7 +31,7 @@ public class ChocoUpdater extends UpdateHandler {
     }
 
     public AvailableRelease refreshUpdateCheckImpl() throws Exception {
-        try (var sc = new LocalStore().control().start()) {
+        try (var sc = new LocalStore().shellFunction().control().start()) {
             var latest = sc.executeSimpleStringCommand("choco outdated -r --nocolor")
                     .lines()
                     .filter(s -> s.startsWith("xpipe"))

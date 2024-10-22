@@ -41,7 +41,7 @@ public class TerminalCategory extends AppPrefsCategory {
                                 var term = AppPrefs.get().terminalType().getValue();
                                 if (term != null) {
                                     TerminalLauncher.open(
-                                            "Test", new LocalStore().control().command("echo Test"));
+                                            "Test", new LocalStore().shellFunction().control().command("echo Test"));
                                 }
                             });
                         })))

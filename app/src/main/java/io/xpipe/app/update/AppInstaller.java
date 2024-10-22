@@ -79,7 +79,7 @@ public class AppInstaller {
 
             @Override
             public void installLocal(Path file) throws Exception {
-                var shellProcessControl = new LocalStore().control().start();
+                var shellProcessControl = new LocalStore().shellFunction().control().start();
                 var exec = (AppProperties.get().isDevelopmentEnvironment()
                                 ? Path.of(XPipeInstallation.getLocalDefaultInstallationBasePath())
                                 : XPipeInstallation.getCurrentInstallationBasePath())

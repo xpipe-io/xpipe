@@ -17,12 +17,13 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
         }
 
         startSessionIfNeeded();
-        return getSession().getShellControl();
+        return new StubShellControl(getSession().getShellControl());
     }
 
     @Override
-    default ShellSession newSession() {
-        return new ShellSession(this, () -> control());
+    default ShellSession newSession() throws Exception {
+        var func = shellFunction();
+        return new ShellSession(this, () -> func.control());
     }
 
     @Override
@@ -31,21 +32,18 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
     }
 
     @Override
-    default FileSystem createFileSystem() {
-        return new ConnectionFileSystem(control());
+    default FileSystem createFileSystem() throws Exception {
+        var func = shellFunction();
+        return new ConnectionFileSystem(func.control());
     }
 
-    ShellControl parentControl();
-
-    ShellControl control(ShellControl parent);
-
-    default ShellControl control() {
-        return control(parentControl());
-    }
+    ShellControlFunction shellFunction();
 
     @Override
     default ShellValidationContext validate(ShellValidationContext context) throws Exception {
-        var c = control(context.get());
+        var func = shellFunction();
+        var c = func instanceof ShellControlParentStoreFunction s ? s.control(s.getParentStore().getOrStartSession()) :
+                func instanceof ShellControlParentFunction p ? p.control(p.parentControl()) : func.control();
         if (!isInStorage()) {
             c.withoutLicenseCheck();
         }
@@ -54,6 +52,8 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
 
     @Override
     default ShellValidationContext createContext() throws Exception {
-        return new ShellValidationContext(parentControl().start());
+        var func = shellFunction();
+        return func instanceof ShellControlParentStoreFunction s ? new ShellValidationContext(s.getParentStore().getOrStartSession()) :
+                func instanceof ShellControlParentFunction p ? new ShellValidationContext(p.parentControl()) : null;
     }
 }

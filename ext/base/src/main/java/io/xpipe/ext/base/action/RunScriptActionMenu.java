@@ -33,7 +33,7 @@ public class RunScriptActionMenu implements ActionProvider {
 
             @Override
             public void execute() throws Exception {
-                try (var sc = shellStore.getStore().control().start()) {
+                try (var sc = shellStore.getStore().shellFunction().control().start()) {
                     var script = hierarchy.getLeafBase().getStore().assembleScriptChain(sc);
                     TerminalLauncher.open(
                             shellStore.getEntry(),
@@ -86,7 +86,7 @@ public class RunScriptActionMenu implements ActionProvider {
 
             @Override
             public void execute() throws Exception {
-                try (var sc = shellStore.getStore().control().start()) {
+                try (var sc = shellStore.getStore().shellFunction().control().start()) {
                     var script = hierarchy.getLeafBase().getStore().assembleScriptChain(sc);
                     sc.command(script).execute();
                 }

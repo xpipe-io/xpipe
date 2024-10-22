@@ -25,7 +25,7 @@ public class ShellStartExchangeImpl extends ShellStartExchange {
         var existing = AppBeaconServer.get().getCache().getShellSessions().stream()
                 .filter(beaconShellSession -> beaconShellSession.getEntry().equals(e))
                 .findFirst();
-        var control = (existing.isPresent() ? existing.get().getControl() : s.control());
+        var control = (existing.isPresent() ? existing.get().getControl() : s.shellFunction().control().start());
         control.setNonInteractive();
         control.start();
 
