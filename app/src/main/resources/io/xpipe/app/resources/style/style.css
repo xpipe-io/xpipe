@@ -148,3 +148,19 @@
     -fx-padding: 15 0;
     -fx-cursor: hand;
 }
+
+.root:pretty:light .store-active-comp .dot {
+    -fx-fill: radial-gradient(radius 180%, rgb(30, 180, 30, 0.6), rgb(20, 120, 20, 0.65), rgb(37, 200, 37, 0.6));
+}
+
+.root:performance:light .store-active-comp .dot {
+    -fx-fill: rgb(30, 180, 30, 0.6);
+}
+
+.root:pretty:dark .store-active-comp .dot {
+    -fx-fill: radial-gradient(radius 180%, rgb(30, 180, 30, 0.8), rgb(20, 120, 20, 0.85), rgb(37, 200, 37, 0.8));
+}
+
+.root:performance:dark .store-active-comp .dot {
+    -fx-fill: rgb(30, 180, 30, 0.7);
+}

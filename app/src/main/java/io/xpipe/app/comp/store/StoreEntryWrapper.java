@@ -10,6 +10,7 @@ import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.ThreadHelper;
 
+import io.xpipe.core.store.SingletonSessionStore;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 
@@ -44,6 +45,7 @@ public class StoreEntryWrapper {
     private final Property<StoreNotes> notes;
     private final Property<String> customIcon = new SimpleObjectProperty<>();
     private final Property<String> iconFile = new SimpleObjectProperty<>();
+    private final BooleanProperty sessionActive = new SimpleBooleanProperty();
 
     public StoreEntryWrapper(DataStoreEntry entry) {
         this.entry = entry;
@@ -118,7 +120,15 @@ public class StoreEntryWrapper {
         });
     }
 
-    public void update() {
+    public void stopSession() {
+        ThreadHelper.runFailableAsync(() -> {
+            if (entry.getStore() instanceof SingletonSessionStore<?> singletonSessionStore) {
+                singletonSessionStore.stopSessionIfNeeded();
+            }
+        });
+    }
+
+    public synchronized void update() {
         // We are probably in shutdown then
         if (StoreViewState.get() == null) {
             return;
@@ -147,6 +157,7 @@ public class StoreEntryWrapper {
         busy.setValue(entry.getBusyCounter().get() != 0);
         deletable.setValue(entry.getConfiguration().isDeletable()
                 || AppPrefs.get().developerDisableGuiRestrictions().getValue());
+        sessionActive.setValue(entry.getStore() instanceof SingletonSessionStore<?> ss && ss.isSessionRunning());
 
         category.setValue(StoreViewState.get()
                 .getCategoryWrapper(DataStorage.get()

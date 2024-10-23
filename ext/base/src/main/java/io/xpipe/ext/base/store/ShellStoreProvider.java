@@ -19,7 +19,10 @@ import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.ext.base.script.ScriptStore;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 
 public interface ShellStoreProvider extends DataStoreProvider {
