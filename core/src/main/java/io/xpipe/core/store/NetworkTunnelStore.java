@@ -17,7 +17,7 @@ public interface NetworkTunnelStore extends DataStore {
 
     interface TunnelFunction {
 
-        NetworkTunnelSession create(int localPort, int remotePort, String address);
+        NetworkTunnelSession create(int localPort, int remotePort, String address) throws Exception;
     }
 
     DataStore getNetworkParent();
