@@ -8,17 +8,11 @@ import io.xpipe.core.store.ValidationContext;
 
 import java.util.List;
 
-public interface FixedHierarchyStore<T extends ValidationContext<?>> extends ValidatableStore<T>, DataStore {
+public interface FixedHierarchyStore extends DataStore {
 
     default boolean removeLeftovers() {
         return true;
     }
 
-    @Override
-    default T validate(T context) throws Exception {
-        listChildren(context);
-        return null;
-    }
-
-    List<? extends DataStoreEntryRef<? extends FixedChildStore>> listChildren(T context) throws Exception;
+    List<? extends DataStoreEntryRef<? extends FixedChildStore>> listChildren() throws Exception;
 }

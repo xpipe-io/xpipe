@@ -365,30 +365,21 @@ public abstract class DataStorage {
     }
 
     @SneakyThrows
-    public boolean refreshChildren(DataStoreEntry e, ValidationContext<?> context) {
-        return refreshChildren(e, context, false);
+    public boolean refreshChildren(DataStoreEntry e) {
+        return refreshChildren(e, false);
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends ValidationContext<?>> boolean refreshChildren(DataStoreEntry e, T context, boolean throwOnFail)
+    public <T extends ValidationContext<?>> boolean refreshChildren(DataStoreEntry e, boolean throwOnFail)
             throws Exception {
-        if (!(e.getStore() instanceof FixedHierarchyStore<?> h)) {
+        if (!(e.getStore() instanceof FixedHierarchyStore h)) {
             return false;
         }
 
         e.incrementBusyCounter();
         List<? extends DataStoreEntryRef<? extends FixedChildStore>> newChildren;
-        var hadContext = context != null;
         try {
-            if (context == null) {
-                context = (T) h.createContext();
-                if (context == null) {
-                    return false;
-                }
-            }
-
-            newChildren = ((FixedHierarchyStore<T>) h)
-                    .listChildren(context).stream()
+            newChildren = ((FixedHierarchyStore) h)
+                    .listChildren().stream()
                             .filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null)
                             .toList();
         } catch (Exception ex) {
@@ -399,9 +390,6 @@ public abstract class DataStorage {
                 return false;
             }
         } finally {
-            if (context != null && !hadContext) {
-                context.close();
-            }
             e.decrementBusyCounter();
         }
 

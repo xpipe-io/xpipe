@@ -231,7 +231,7 @@ public class StoreEntryWrapper {
     }
 
     public void refreshChildren() {
-        var hasChildren = DataStorage.get().refreshChildren(entry, null);
+        var hasChildren = DataStorage.get().refreshChildren(entry);
         PlatformThread.runLaterIfNeeded(() -> {
             expanded.set(hasChildren);
         });
