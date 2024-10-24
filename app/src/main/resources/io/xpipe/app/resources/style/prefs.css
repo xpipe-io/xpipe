@@ -41,13 +41,14 @@
 
 .prefs .sidebar .button {
     -fx-background-color: transparent;
-    -fx-padding: 0.6em 1em 0.6em 1em;
+    -fx-padding: 0.5em 1em 0.5em 1.5em;
     -fx-background-radius: 0, 4, 4;
-    -fx-background-insets: 0, 2 4 2 4, 3 5 3 5;
+    -fx-background-insets: 0, 1 8 1 8;
 }
 
 .prefs .sidebar .button:selected {
     -fx-background-color: transparent, -color-border-default, -color-bg-default;
+    -fx-font-weight: BOLD;
 }
 
 .prefs .sidebar .button:armed {

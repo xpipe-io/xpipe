@@ -20,6 +20,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.ValidatableStore;
 import io.xpipe.core.store.ValidationContext;
 import io.xpipe.core.util.ValidationException;
 
@@ -157,6 +158,14 @@ public class StoreCreationComp extends DialogComp {
                 },
                 name,
                 store);
+
+        skippable.bind(Bindings.createBooleanBinding(() -> {
+            if (name.get() != null && store.get().isComplete() && store.get() instanceof ValidatableStore<?>) {
+                return true;
+            } else {
+                return false;
+            }
+        }, store, name));
     }
 
     public static void showEdit(DataStoreEntry e) {
@@ -254,7 +263,7 @@ public class StoreCreationComp extends DialogComp {
     @Override
     protected List<Comp<?>> customButtons() {
         return List.of(
-                new ButtonComp(AppI18n.observable("skip"), null, () -> {
+                new ButtonComp(AppI18n.observable("skipValidation"), null, () -> {
                             if (showInvalidConfirmAlert()) {
                                 commit(null, false);
                             } else {
@@ -334,13 +343,9 @@ public class StoreCreationComp extends DialogComp {
             } catch (Throwable ex) {
                 if (ex instanceof ValidationException) {
                     ErrorEvent.expected(ex);
-                    skippable.set(false);
                 } else if (ex instanceof StackOverflowError) {
                     // Cycles in connection graphs can fail hard but are expected
                     ErrorEvent.expected(ex);
-                    skippable.set(false);
-                } else {
-                    skippable.set(true);
                 }
 
                 var newMessage = ExceptionConverter.convertMessage(ex);

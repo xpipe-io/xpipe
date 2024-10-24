@@ -1,5 +1,6 @@
 package io.xpipe.app.ext;
 
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.*;
 
@@ -15,6 +16,7 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
                     session.getShellControl().command("echo hi").execute();
                     return session.getShellControl();
                 } catch (Exception e) {
+                    ErrorEvent.fromThrowable(e).expected().omit().handle();
                     stopSessionIfNeeded();
                 }
             }
