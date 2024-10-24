@@ -24,7 +24,7 @@ public class LoggingCategory extends AppPrefsCategory {
         var prefs = AppPrefs.get();
         var feature = LicenseProvider.get().getFeature("logging");
         var supported = feature.isSupported() || feature.isPreviewSupported();
-        var title = AppI18n.observable("sessionLogging").map(s -> s + (supported ? "" : " (Pro)"));
+        var title = feature.suffixObservable("sessionLogging");
         return new OptionsBuilder()
                 .addTitle(title)
                 .sub(new OptionsBuilder()

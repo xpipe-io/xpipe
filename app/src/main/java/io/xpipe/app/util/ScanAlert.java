@@ -8,8 +8,6 @@ import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.process.ShellTtyState;
 import io.xpipe.app.ext.ShellStore;
-import io.xpipe.core.store.ShellValidationContext;
-import io.xpipe.core.store.ValidationContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,12 +45,12 @@ public class ScanAlert {
                     }
 
                     var providers = ScanProvider.getAll();
-                    var applicable = new ArrayList<ScanProvider.ScanOperation>();
+                    var applicable = new ArrayList<ScanProvider.ScanOpportunity>();
                     for (ScanProvider scanProvider : providers) {
                         try {
                             // Previous scan operation could have exited the shell
                             sc.start();
-                            ScanProvider.ScanOperation operation = scanProvider.create(entry, sc);
+                            ScanProvider.ScanOpportunity operation = scanProvider.create(entry, sc);
                             if (operation != null) {
                                 applicable.add(operation);
                             }
@@ -66,7 +64,7 @@ public class ScanAlert {
 
     private static void show(
             DataStoreEntry initialStore,
-            BiFunction<DataStoreEntry, ShellControl, List<ScanProvider.ScanOperation>> applicable) {
+            BiFunction<DataStoreEntry, ShellControl, List<ScanProvider.ScanOpportunity>> applicable) {
         DialogComp.showWindow(
                 "scanAlertTitle",
                 stage -> new ScanDialog(

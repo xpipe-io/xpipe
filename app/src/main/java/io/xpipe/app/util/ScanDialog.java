@@ -13,7 +13,6 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.app.ext.ShellStore;
-import io.xpipe.core.store.ShellValidationContext;
 
 import javafx.application.Platform;
 import javafx.beans.property.*;
@@ -25,6 +24,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -34,17 +34,17 @@ import static javafx.scene.layout.Priority.ALWAYS;
 class ScanDialog extends DialogComp {
 
     private final DataStoreEntryRef<ShellStore> initialStore;
-    private final BiFunction<DataStoreEntry, ShellControl, List<ScanProvider.ScanOperation>> applicable;
+    private final BiFunction<DataStoreEntry, ShellControl, List<ScanProvider.ScanOpportunity>> applicable;
     private final Stage window;
     private final ObjectProperty<DataStoreEntryRef<ShellStore>> entry;
-    private final ListProperty<ScanProvider.ScanOperation> selected =
+    private final ListProperty<ScanProvider.ScanOpportunity> selected =
             new SimpleListProperty<>(FXCollections.observableArrayList());
     private final BooleanProperty busy = new SimpleBooleanProperty();
 
     ScanDialog(
             Stage window,
             DataStoreEntryRef<ShellStore> entry,
-            BiFunction<DataStoreEntry, ShellControl, List<ScanProvider.ScanOperation>> applicable) {
+            BiFunction<DataStoreEntry, ShellControl, List<ScanProvider.ScanOpportunity>> applicable) {
         this.window = window;
         this.initialStore = entry;
         this.entry = new SimpleObjectProperty<>(entry);
@@ -80,10 +80,10 @@ class ScanDialog extends DialogComp {
                         }
 
                         // Previous scan operation could have exited the shell
-                        initialStore.getStore().getOrStartSession();
+                        var sc = initialStore.getStore().getOrStartSession();
 
                         try {
-                            a.getScanner().run();
+                            a.getProvider().scan(entry.get().getEntry(), sc);
                         } catch (Throwable ex) {
                             ErrorEvent.fromThrowable(ex).handle();
                         }
@@ -155,7 +155,7 @@ class ScanDialog extends DialogComp {
                     selected.setAll(a.stream()
                             .filter(scanOperation -> scanOperation.isDefaultSelected() && !scanOperation.isDisabled())
                             .toList());
-                    Function<ScanProvider.ScanOperation, String> nameFunc = (ScanProvider.ScanOperation s) -> {
+                    Function<ScanProvider.ScanOpportunity, String> nameFunc = (ScanProvider.ScanOpportunity s) -> {
                         var n = AppI18n.get(s.getNameKey());
                         if (s.getLicensedFeatureId() == null) {
                             return n;
