@@ -17,7 +17,7 @@ import java.util.function.BiFunction;
 
 public class ScanAlert {
 
-    public static void showAsync(DataStoreEntry entry, ValidationContext<?> context) {
+    public static void showAsync(DataStoreEntry entry) {
         ThreadHelper.runAsync(() -> {
             var showForCon = entry == null
                     || (entry.getStore() instanceof ShellStore
@@ -25,12 +25,12 @@ public class ScanAlert {
                                     || shellStoreState.getTtyState() == null
                                     || shellStoreState.getTtyState() == ShellTtyState.NONE));
             if (showForCon) {
-                showForShellStore(entry, (ShellValidationContext) context);
+                showForShellStore(entry);
             }
         });
     }
 
-    public static void showForShellStore(DataStoreEntry initial, ShellValidationContext context) {
+    public static void showForShellStore(DataStoreEntry initial) {
         show(
                 initial,
                 (DataStoreEntry entry, ShellControl sc) -> {
@@ -61,17 +61,15 @@ public class ScanAlert {
                         }
                     }
                     return applicable;
-                },
-                context);
+                });
     }
 
     private static void show(
             DataStoreEntry initialStore,
-            BiFunction<DataStoreEntry, ShellControl, List<ScanProvider.ScanOperation>> applicable,
-            ShellValidationContext shellValidationContext) {
+            BiFunction<DataStoreEntry, ShellControl, List<ScanProvider.ScanOperation>> applicable) {
         DialogComp.showWindow(
                 "scanAlertTitle",
                 stage -> new ScanDialog(
-                        stage, initialStore != null ? initialStore.ref() : null, applicable, shellValidationContext));
+                        stage, initialStore != null ? initialStore.ref() : null, applicable));
     }
 }

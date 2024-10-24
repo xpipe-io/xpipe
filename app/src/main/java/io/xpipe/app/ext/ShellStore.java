@@ -46,7 +46,7 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
     ShellControlFunction shellFunction();
 
     @Override
-    default ShellValidationContext validate(ShellValidationContext context) throws Exception {
+    default ShellValidationContext validate() throws Exception {
         var func = shellFunction();
         var c = func instanceof ShellControlParentStoreFunction s ? s.control(s.getParentStore().getOrStartSession()) :
                 func instanceof ShellControlParentFunction p ? p.control(p.parentControl()) : func.control();

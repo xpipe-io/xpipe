@@ -70,7 +70,7 @@ public class ScanStoreAction implements ActionProvider {
         @Override
         public void execute() {
             if (entry == null || entry.getStore() instanceof ShellStore) {
-                ScanAlert.showForShellStore(entry, null);
+                ScanAlert.showForShellStore(entry);
             }
         }
     }

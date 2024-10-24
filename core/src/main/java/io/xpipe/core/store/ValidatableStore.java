@@ -18,7 +18,7 @@ public interface ValidatableStore<T extends ValidationContext<?>> extends DataSt
      *
      * @throws Exception if any part of the validation went wrong
      */
-    T validate(T context) throws Exception;
+    T validate() throws Exception;
 
     T createContext() throws Exception;
 }

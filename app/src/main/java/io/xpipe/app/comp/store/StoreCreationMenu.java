@@ -22,7 +22,7 @@ public class StoreCreationMenu {
         automatically.setGraphic(new FontIcon("mdi2e-eye-plus-outline"));
         automatically.textProperty().bind(AppI18n.observable("addAutomatically"));
         automatically.setOnAction(event -> {
-            ScanAlert.showAsync(null, null);
+            ScanAlert.showAsync(null);
             event.consume();
         });
         menu.getItems().add(automatically);

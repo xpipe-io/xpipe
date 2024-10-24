@@ -40,18 +40,15 @@ class ScanDialog extends DialogComp {
     private final ListProperty<ScanProvider.ScanOperation> selected =
             new SimpleListProperty<>(FXCollections.observableArrayList());
     private final BooleanProperty busy = new SimpleBooleanProperty();
-    private ShellValidationContext shellValidationContext;
 
     ScanDialog(
             Stage window,
             DataStoreEntryRef<ShellStore> entry,
-            BiFunction<DataStoreEntry, ShellControl, List<ScanProvider.ScanOperation>> applicable,
-            ShellValidationContext shellValidationContext) {
+            BiFunction<DataStoreEntry, ShellControl, List<ScanProvider.ScanOperation>> applicable) {
         this.window = window;
         this.initialStore = entry;
         this.entry = new SimpleObjectProperty<>(entry);
         this.applicable = applicable;
-        this.shellValidationContext = shellValidationContext;
     }
 
     @Override
@@ -62,7 +59,6 @@ class ScanDialog extends DialogComp {
     @Override
     protected void finish() {
         ThreadHelper.runFailableAsync(() -> {
-            try {
                 if (entry.get() == null) {
                     return;
                 }
@@ -84,7 +80,7 @@ class ScanDialog extends DialogComp {
                         }
 
                         // Previous scan operation could have exited the shell
-                        shellValidationContext.get().start();
+                        initialStore.getStore().getOrStartSession();
 
                         try {
                             a.getScanner().run();
@@ -93,24 +89,11 @@ class ScanDialog extends DialogComp {
                         }
                     }
                 });
-            } finally {
-                if (shellValidationContext != null) {
-                    shellValidationContext.close();
-                    shellValidationContext = null;
-                }
-            }
         });
     }
 
     @Override
-    protected void discard() {
-        ThreadHelper.runAsync(() -> {
-            if (shellValidationContext != null) {
-                shellValidationContext.close();
-                shellValidationContext = null;
-            }
-        });
-    }
+    protected void discard() {}
 
     @Override
     protected Comp<?> pane(Comp<?> content) {
@@ -161,22 +144,8 @@ class ScanDialog extends DialogComp {
 
         ThreadHelper.runFailableAsync(() -> {
             BooleanScope.executeExclusive(busy, () -> {
-                if (shellValidationContext != null) {
-                    shellValidationContext.close();
-                    shellValidationContext = null;
-                }
-
-                shellValidationContext = new ShellValidationContext(
-                        newValue.getStore().getOrStartSession().withoutLicenseCheck().start());
-
-                // Handle window close while connection is established
-                if (!window.isShowing()) {
-                    discard();
-                    return;
-                }
-
-                var a = applicable.apply(entry.get().get(), shellValidationContext.get());
-
+                var sc = initialStore.getStore().getOrStartSession().withoutLicenseCheck();
+                var a = applicable.apply(entry.get().get(), sc);
                 Platform.runLater(() -> {
                     if (a == null) {
                         window.close();

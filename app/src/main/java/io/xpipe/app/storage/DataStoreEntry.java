@@ -516,47 +516,18 @@ public class DataStoreEntry extends StorageElement {
     }
 
     public void validateOrThrow() throws Throwable {
-        validateOrThrowAndClose(null);
-    }
-
-    public boolean validateOrThrowAndClose(ValidationContext<?> existingContext) throws Throwable {
-        var subContext = validateAndKeepOpenOrThrowAndClose(existingContext);
-        if (subContext != null) {
-            subContext.close();
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> ValidationContext<?> validateAndKeepOpenOrThrowAndClose(ValidationContext<?> existingContext)
-            throws Throwable {
         if (store == null) {
-            return null;
+            return;
         }
 
         if (!(store instanceof ValidatableStore<?> l)) {
-            return null;
+            return;
         }
 
         try {
             store.checkComplete();
             incrementBusyCounter();
-            ValidationContext<T> context = existingContext != null
-                    ? (ValidationContext<T>) existingContext
-                    : (ValidationContext<T>) l.createContext();
-            if (context == null) {
-                return null;
-            }
-
-            try {
-                var r = ((ValidatableStore<ValidationContext<T>>) l).validate(context);
-                return r;
-            } catch (Throwable t) {
-                context.close();
-                throw t;
-            }
+            l.validate();
         } finally {
             decrementBusyCounter();
         }
