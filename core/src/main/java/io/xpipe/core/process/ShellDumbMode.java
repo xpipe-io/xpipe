@@ -24,7 +24,7 @@ public interface ShellDumbMode {
     default void prepareDumbInit(ShellControl shellControl) throws Exception {}
 
     default void prepareDumbExit(ShellControl shellControl) throws IOException {
-        shellControl.writeLine("exit");
+        shellControl.writeLine(" exit");
     }
 
     class Unsupported implements ShellDumbMode {
