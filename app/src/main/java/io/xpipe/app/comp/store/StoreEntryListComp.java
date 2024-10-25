@@ -2,11 +2,13 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.MultiContentComp;
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.Region;
 
@@ -46,6 +48,7 @@ public class StoreEntryListComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
+        var scriptsIntroShowing = new SimpleBooleanProperty(!AppCache.get("scriptsIntroCompleted", Boolean.class,() -> false));
         var initialCount = 1;
         var showIntro = Bindings.createBooleanBinding(
                 () -> {
@@ -63,6 +66,20 @@ public class StoreEntryListComp extends SimpleComp {
                 },
                 StoreViewState.get().getAllEntries().getList(),
                 StoreViewState.get().getActiveCategory());
+        var showList = Bindings.createBooleanBinding(() -> {
+            if (StoreViewState.get().getActiveCategory().getValue().getRoot().equals(StoreViewState.get().getAllScriptsCategory())) {
+                return !scriptsIntroShowing.get();
+            }
+
+            if (StoreViewState.get()
+                    .getCurrentTopLevelSection()
+                    .getShownChildren()
+                    .getList().isEmpty()) {
+                return false;
+            }
+
+            return true;
+        }, StoreViewState.get().getActiveCategory(), scriptsIntroShowing, StoreViewState.get().getCurrentTopLevelSection().getShownChildren().getList());
         var map = new LinkedHashMap<Comp<?>, ObservableValue<Boolean>>();
         map.put(
                 new StoreNotFoundComp(),
@@ -75,11 +92,9 @@ public class StoreEntryListComp extends SimpleComp {
                                 .getList())));
         map.put(
                 createList(),
-                Bindings.not(Bindings.isEmpty(StoreViewState.get()
-                        .getCurrentTopLevelSection()
-                        .getShownChildren()
-                        .getList())));
+                showList);
         map.put(new StoreIntroComp(), showIntro);
+        map.put(new StoreScriptsIntroComp(scriptsIntroShowing), scriptsIntroShowing);
 
         return new MultiContentComp(map).createRegion();
     }

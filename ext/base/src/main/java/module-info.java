@@ -86,6 +86,7 @@ open module io.xpipe.ext.base {
             LaunchStoreAction,
             XPipeUrlAction,
             EditStoreAction,
+            EditScriptStoreAction,
             BrowseStoreAction,
             ScanStoreAction,
             ChangeStoreIconAction;
