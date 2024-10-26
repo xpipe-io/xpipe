@@ -13,6 +13,7 @@ import io.xpipe.ext.base.service.*;
 import io.xpipe.ext.base.store.StorePauseAction;
 import io.xpipe.ext.base.store.StoreStartAction;
 import io.xpipe.ext.base.store.StoreStopAction;
+import io.xpipe.ext.base.store.StoreRestartAction;
 
 open module io.xpipe.ext.base {
     exports io.xpipe.ext.base;
@@ -76,6 +77,7 @@ open module io.xpipe.ext.base {
             StoreStopAction,
             StoreStartAction,
             StorePauseAction,
+            StoreRestartAction,
             ServiceOpenAction,
             ServiceOpenHttpAction,
             ServiceOpenHttpsAction,
