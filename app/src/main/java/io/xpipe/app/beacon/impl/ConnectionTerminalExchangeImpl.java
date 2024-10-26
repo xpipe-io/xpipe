@@ -18,9 +18,8 @@ public class ConnectionTerminalExchangeImpl extends ConnectionTerminalExchange {
         if (!(e.getStore() instanceof ShellStore shellStore)) {
             throw new BeaconClientException("Not a shell connection");
         }
-        try (var sc = shellStore.shellFunction().tempControl().start()) {
-            TerminalLauncher.open(e, e.getName(), msg.getDirectory(), sc);
-        }
+        var sc = shellStore.getOrStartSession();
+        TerminalLauncher.open(e, e.getName(), msg.getDirectory(), sc);
         return Response.builder().build();
     }
 }

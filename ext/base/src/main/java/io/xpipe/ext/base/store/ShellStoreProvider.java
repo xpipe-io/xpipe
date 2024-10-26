@@ -31,8 +31,7 @@ public interface ShellStoreProvider extends DataStoreProvider {
             public void execute() throws Exception {
                 var replacement = ProcessControlProvider.get().replace(entry.ref());
                 ShellStore store = replacement.getStore().asNeeded();
-                var control = ScriptStore.controlWithDefaultScripts(
-                        store.shellFunction().standaloneControl());
+                var control = ScriptStore.controlWithDefaultScripts(store.tempControl());
                 control.onInit(sc -> {
                     if (entry.getStorePersistentState() instanceof ShellStoreState shellStoreState
                             && shellStoreState.getShellDialect() == null) {

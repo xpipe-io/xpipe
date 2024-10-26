@@ -27,7 +27,7 @@ public class ShellStartExchangeImpl extends ShellStartExchange {
                 .findFirst();
         var control = (existing.isPresent()
                 ? existing.get().getControl()
-                : s.shellFunction().standaloneControl().start());
+                : s.standaloneControl().start());
         control.setNonInteractive();
         control.start();
 

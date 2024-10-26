@@ -4,7 +4,5 @@ import io.xpipe.core.process.ShellControl;
 
 public interface ShellControlFunction {
 
-    ShellControl standaloneControl() throws Exception;
-
-    ShellControl tempControl() throws Exception;
+    ShellControl control() throws Exception;
 }

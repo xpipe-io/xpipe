@@ -33,15 +33,14 @@ public class RunScriptActionMenu implements ActionProvider {
 
             @Override
             public void execute() throws Exception {
-                try (var sc = shellStore.getStore().shellFunction().standaloneControl().start()) {
-                    var script = hierarchy.getLeafBase().getStore().assembleScriptChain(sc);
-                    TerminalLauncher.open(
-                            shellStore.getEntry(),
-                            hierarchy.getLeafBase().get().getName() + " - "
-                                    + shellStore.get().getName(),
-                            null,
-                            sc.command(script));
-                }
+                var sc = shellStore.getStore().getOrStartSession();
+                var script = hierarchy.getLeafBase().getStore().assembleScriptChain(sc);
+                TerminalLauncher.open(
+                        shellStore.getEntry(),
+                        hierarchy.getLeafBase().get().getName() + " - "
+                                + shellStore.get().getName(),
+                        null,
+                        sc.command(script));
             }
         }
 
@@ -86,10 +85,9 @@ public class RunScriptActionMenu implements ActionProvider {
 
             @Override
             public void execute() throws Exception {
-                try (var sc = shellStore.getStore().shellFunction().standaloneControl().start()) {
-                    var script = hierarchy.getLeafBase().getStore().assembleScriptChain(sc);
-                    sc.command(script).execute();
-                }
+                var sc = shellStore.getStore().getOrStartSession();
+                var script = hierarchy.getLeafBase().getStore().assembleScriptChain(sc);
+                sc.command(script).execute();
             }
         }
 

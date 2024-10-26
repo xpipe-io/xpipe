@@ -4,13 +4,8 @@ import io.xpipe.core.process.ShellControl;
 
 public interface ShellControlParentStoreFunction extends ShellControlFunction {
 
-    default ShellControl standaloneControl() throws Exception {
-        return control(getParentStore().shellFunction().standaloneControl());
-    }
-
-    @Override
-    default ShellControl tempControl() throws Exception {
-        return control(getParentStore().getOrStartSession());
+    default ShellControl control() throws Exception {
+        return control(getParentStore().standaloneControl());
     }
 
     ShellControl control(ShellControl parent) throws Exception;

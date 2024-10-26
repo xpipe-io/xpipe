@@ -27,17 +27,12 @@ public class LocalStore extends JacksonizedValue
     public ShellControlFunction shellFunction() {
         return new ShellControlFunction() {
             @Override
-            public ShellControl standaloneControl() throws Exception {
+            public ShellControl control() throws Exception {
                 var pc = ProcessControlProvider.get().createLocalProcessControl(true);
                 pc.withSourceStore(LocalStore.this);
                 pc.withShellStateInit(LocalStore.this);
                 pc.withShellStateFail(LocalStore.this);
                 return pc;
-            }
-
-            @Override
-            public ShellControl tempControl() throws Exception {
-                return getOrStartSession();
             }
         };
     }

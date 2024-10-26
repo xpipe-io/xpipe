@@ -13,7 +13,7 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
                 stopSessionIfNeeded();
             } else {
                 try {
-                    session.getShellControl().command("echo hi").execute();
+                    session.getShellControl().command(" echo xpipetest").execute();
                     return session.getShellControl();
                 } catch (Exception e) {
                     ErrorEvent.fromThrowable(e).expected().omit().handle();
@@ -29,7 +29,7 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
     @Override
     default ShellSession newSession() throws Exception {
         var func = shellFunction();
-        var c = func.standaloneControl();
+        var c = func.control();
         if (!isInStorage()) {
             c.withoutLicenseCheck();
         }
@@ -44,13 +44,30 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
     @Override
     default FileSystem createFileSystem() throws Exception {
         var func = shellFunction();
-        return new ConnectionFileSystem(func.standaloneControl());
+        return new ConnectionFileSystem(func.control());
     }
 
     ShellControlFunction shellFunction();
 
     @Override
     default void validate() throws Exception {
-        getOrStartSession();
+        try (var sc = tempControl().start()) {}
+    }
+
+    default ShellControl standaloneControl() throws Exception {
+        return shellFunction().control();
+    }
+
+    default ShellControl tempControl() throws Exception {
+        if (isSessionRunning()) {
+            return getOrStartSession();
+        }
+
+        var func = shellFunction();
+        if (!(func instanceof ShellControlParentStoreFunction p)) {
+            return func.control();
+        }
+
+        return p.control(p.getParentStore().getOrStartSession());
     }
 }
