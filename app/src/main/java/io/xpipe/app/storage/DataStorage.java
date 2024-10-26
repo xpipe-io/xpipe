@@ -10,7 +10,6 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FixedChildStore;
 import io.xpipe.core.store.StorePath;
-import io.xpipe.core.store.ValidationContext;
 import io.xpipe.core.util.UuidHelper;
 
 import javafx.util.Pair;
@@ -373,7 +372,7 @@ public abstract class DataStorage {
         return refreshChildren(e, true);
     }
 
-    public <T extends ValidationContext<?>> boolean refreshChildren(DataStoreEntry e, boolean throwOnFail)
+    public boolean refreshChildren(DataStoreEntry e, boolean throwOnFail)
             throws Exception {
         if (!(e.getStore() instanceof FixedHierarchyStore h)) {
             return false;

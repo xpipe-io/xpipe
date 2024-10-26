@@ -29,9 +29,7 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
     @Override
     default ShellSession newSession() throws Exception {
         var func = shellFunction();
-        var c = func instanceof ShellControlParentStoreFunction s
-                ? s.control(s.getParentStore().getOrStartSession())
-                : func instanceof ShellControlParentFunction p ? p.control(p.parentControl()) : func.control();
+        var c = func.standaloneControl();
         if (!isInStorage()) {
             c.withoutLicenseCheck();
         }
@@ -46,7 +44,7 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
     @Override
     default FileSystem createFileSystem() throws Exception {
         var func = shellFunction();
-        return new ConnectionFileSystem(func.control());
+        return new ConnectionFileSystem(func.standaloneControl());
     }
 
     ShellControlFunction shellFunction();
