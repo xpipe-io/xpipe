@@ -114,3 +114,8 @@
     -fx-background-insets: inherit;
     -fx-padding: inherit;
 }
+
+.root .table-view {
+    -color-cell-bg-odd: derive(-color-bg-subtle, -35%);
+    -color-cell-bg: derive(-color-bg-subtle, -30%);
+}

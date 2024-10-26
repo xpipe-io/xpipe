@@ -1,1 +1,6 @@
 .root { -color-bg-default-transparent: #2E3440d2; }
+
+.root .table-view {
+    -color-cell-bg-odd: derive(-color-bg-subtle, -15%);
+    -color-cell-bg: derive(-color-bg-subtle, -10%);
+}

@@ -1,1 +1,5 @@
 .root { -color-bg-default-transparent: #fafafcCC; }
+
+.root .table-view {
+    -color-cell-bg-odd: derive(-color-bg-subtle, 20%);
+}

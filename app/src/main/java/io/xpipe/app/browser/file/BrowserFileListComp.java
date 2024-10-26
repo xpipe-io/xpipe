@@ -130,7 +130,7 @@ public final class BrowserFileListComp extends SimpleComp {
         table.setAccessibleText("Directory contents");
         table.setPlaceholder(new Region());
         table.getStyleClass().add(Styles.STRIPED);
-        table.getColumns().setAll(filenameCol, sizeCol, modeCol, ownerCol, mtimeCol);
+        table.getColumns().setAll(filenameCol, mtimeCol, modeCol, ownerCol, sizeCol);
         table.getSortOrder().add(filenameCol);
         table.setFocusTraversable(true);
         table.setSortPolicy(param -> {

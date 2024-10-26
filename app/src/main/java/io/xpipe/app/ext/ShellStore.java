@@ -4,7 +4,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.*;
 
-public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore<ShellValidationContext>, SingletonSessionStore<ShellSession> {
+public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore, SingletonSessionStore<ShellSession> {
 
     default ShellControl getOrStartSession() throws Exception {
         var session = getSession();
@@ -29,7 +29,12 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
     @Override
     default ShellSession newSession() throws Exception {
         var func = shellFunction();
-        return new ShellSession(this, () -> func.control());
+        var c = func instanceof ShellControlParentStoreFunction s ? s.control(s.getParentStore().getOrStartSession()) :
+                func instanceof ShellControlParentFunction p ? p.control(p.parentControl()) : func.control();
+        if (!isInStorage()) {
+            c.withoutLicenseCheck();
+        }
+        return new ShellSession(this, () -> c);
     }
 
     @Override
@@ -46,20 +51,7 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
     ShellControlFunction shellFunction();
 
     @Override
-    default ShellValidationContext validate() throws Exception {
-        var func = shellFunction();
-        var c = func instanceof ShellControlParentStoreFunction s ? s.control(s.getParentStore().getOrStartSession()) :
-                func instanceof ShellControlParentFunction p ? p.control(p.parentControl()) : func.control();
-        if (!isInStorage()) {
-            c.withoutLicenseCheck();
-        }
-        return new ShellValidationContext(c.start());
-    }
-
-    @Override
-    default ShellValidationContext createContext() throws Exception {
-        var func = shellFunction();
-        return func instanceof ShellControlParentStoreFunction s ? new ShellValidationContext(s.getParentStore().getOrStartSession()) :
-                func instanceof ShellControlParentFunction p ? new ShellValidationContext(p.parentControl()) : null;
+    default void validate() throws Exception {
+        getOrStartSession();
     }
 }

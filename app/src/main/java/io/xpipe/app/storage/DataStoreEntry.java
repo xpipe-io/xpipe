@@ -520,7 +520,7 @@ public class DataStoreEntry extends StorageElement {
             return;
         }
 
-        if (!(store instanceof ValidatableStore<?> l)) {
+        if (!(store instanceof ValidatableStore l)) {
             return;
         }
 

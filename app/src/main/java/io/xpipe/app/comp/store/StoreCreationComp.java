@@ -160,7 +160,7 @@ public class StoreCreationComp extends DialogComp {
                 store);
 
         skippable.bind(Bindings.createBooleanBinding(() -> {
-            if (name.get() != null && store.get().isComplete() && store.get() instanceof ValidatableStore<?>) {
+            if (name.get() != null && store.get().isComplete() && store.get() instanceof ValidatableStore) {
                 return true;
             } else {
                 return false;

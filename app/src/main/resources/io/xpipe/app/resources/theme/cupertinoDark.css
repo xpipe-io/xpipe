@@ -1,5 +1,11 @@
 .root { -color-bg-default-transparent: #1C1C1ED2; }
 
-.root.cupertino .button {
+.root .button {
     -fx-effect: NONE;
 }
+
+.root .table-view {
+    -color-cell-bg-odd: derive(-color-bg-subtle, -45%);
+    -color-cell-bg: derive(-color-bg-subtle, -30%);
+}
+
