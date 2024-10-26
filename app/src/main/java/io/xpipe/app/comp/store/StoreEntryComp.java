@@ -439,7 +439,8 @@ public abstract class StoreEntryComp extends SimpleComp {
                 && !LicenseProvider.get().getFeature(p.getProFeatureId()).isSupported();
         if (proRequired) {
             item.setDisable(true);
-            item.textProperty().bind(LicenseProvider.get().getFeature(p.getProFeatureId()).suffixObservable(name.getValue()));
+            item.textProperty()
+                    .bind(LicenseProvider.get().getFeature(p.getProFeatureId()).suffixObservable(name.getValue()));
         } else {
             item.textProperty().bind(name);
         }

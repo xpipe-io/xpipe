@@ -4,7 +4,9 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.DataStore;
+
 import javafx.beans.value.ObservableValue;
+
 import lombok.Value;
 
 public class StoreRestartAction implements ActionProvider {

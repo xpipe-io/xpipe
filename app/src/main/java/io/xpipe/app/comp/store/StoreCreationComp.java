@@ -21,7 +21,6 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.ValidatableStore;
-import io.xpipe.core.store.ValidationContext;
 import io.xpipe.core.util.ValidationException;
 
 import javafx.application.Platform;
@@ -159,13 +158,16 @@ public class StoreCreationComp extends DialogComp {
                 name,
                 store);
 
-        skippable.bind(Bindings.createBooleanBinding(() -> {
-            if (name.get() != null && store.get().isComplete() && store.get() instanceof ValidatableStore) {
-                return true;
-            } else {
-                return false;
-            }
-        }, store, name));
+        skippable.bind(Bindings.createBooleanBinding(
+                () -> {
+                    if (name.get() != null && store.get().isComplete() && store.get() instanceof ValidatableStore) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                },
+                store,
+                name));
     }
 
     public static void showEdit(DataStoreEntry e) {

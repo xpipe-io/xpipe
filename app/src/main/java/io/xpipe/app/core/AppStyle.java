@@ -86,8 +86,7 @@ public class AppStyle {
             for (AppTheme.Theme theme : AppTheme.Theme.ALL) {
                 var file = path.resolve(theme.getId() + ".css");
                 var bytes = Files.readAllBytes(file);
-                var s = "data:text/css;base64,"
-                        + Base64.getEncoder().encodeToString(bytes);
+                var s = "data:text/css;base64," + Base64.getEncoder().encodeToString(bytes);
                 THEME_SPECIFIC_STYLESHEET_CONTENTS.put(theme, s);
             }
         });

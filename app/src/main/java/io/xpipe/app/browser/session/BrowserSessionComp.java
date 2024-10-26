@@ -7,6 +7,7 @@ import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.comp.base.SideSplitPaneComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.AnchorComp;
@@ -15,7 +16,6 @@ import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.app.ext.ShellStore;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;

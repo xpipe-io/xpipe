@@ -2,7 +2,7 @@ package io.xpipe.app.ext;
 
 import io.xpipe.core.process.ShellControl;
 
-public interface ShellControlParentFunction extends ShellControlFunction{
+public interface ShellControlParentFunction extends ShellControlFunction {
 
     default ShellControl control() throws Exception {
         return control(parentControl());

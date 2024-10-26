@@ -34,9 +34,7 @@ public abstract class ScanProvider {
         boolean defaultSelected;
         String licenseFeatureId;
 
-        public ScanOpportunity(
-                String nameKey, boolean disabled, boolean defaultSelected
-        ) {
+        public ScanOpportunity(String nameKey, boolean disabled, boolean defaultSelected) {
             this.nameKey = nameKey;
             this.disabled = disabled;
             this.defaultSelected = defaultSelected;

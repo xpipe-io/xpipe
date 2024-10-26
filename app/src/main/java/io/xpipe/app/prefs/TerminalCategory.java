@@ -2,7 +2,6 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.fxcomps.Comp;
@@ -42,7 +41,10 @@ public class TerminalCategory extends AppPrefsCategory {
                                 var term = AppPrefs.get().terminalType().getValue();
                                 if (term != null) {
                                     TerminalLauncher.open(
-                                            "Test", ProcessControlProvider.get().createLocalProcessControl(true).command("echo Test"));
+                                            "Test",
+                                            ProcessControlProvider.get()
+                                                    .createLocalProcessControl(true)
+                                                    .command("echo Test"));
                                 }
                             });
                         })))

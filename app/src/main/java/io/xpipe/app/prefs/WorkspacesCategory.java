@@ -16,8 +16,7 @@ public class WorkspacesCategory extends AppPrefsCategory {
     @Override
     protected Comp<?> create() {
         return new OptionsBuilder()
-                .addTitle(LicenseProvider.get()
-                        .getFeature("workspaces").suffixObservable("manageWorkspaces"))
+                .addTitle(LicenseProvider.get().getFeature("workspaces").suffixObservable("manageWorkspaces"))
                 .sub(new OptionsBuilder()
                         .nameAndDescription("workspaceAdd")
                         .addComp(new ButtonComp(AppI18n.observable("addWorkspace"), WorkspaceCreationAlert::showAsync)))

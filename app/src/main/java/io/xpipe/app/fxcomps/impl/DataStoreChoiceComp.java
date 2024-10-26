@@ -5,6 +5,7 @@ import io.xpipe.app.comp.store.*;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.LocalStore;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.storage.DataStorage;
@@ -12,7 +13,6 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.DataStoreCategoryChoiceComp;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.app.ext.ShellStore;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;

@@ -3,11 +3,9 @@ package io.xpipe.app.ext;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.Session;
 import io.xpipe.core.store.SessionListener;
-
 import io.xpipe.core.util.FailableSupplier;
-import lombok.Getter;
 
-import java.util.function.Supplier;
+import lombok.Getter;
 
 @Getter
 public class ShellSession extends Session {

@@ -97,7 +97,7 @@ public class AppTheme {
         }
 
         try {
-            var lastSystemDark = AppCache.get("lastTheme", Boolean.class,() -> false);
+            var lastSystemDark = AppCache.get("lastTheme", Boolean.class, () -> false);
             var nowDark = Platform.getPreferences().getColorScheme() == ColorScheme.DARK;
             AppCache.update("lastTheme", nowDark);
             if (AppPrefs.get().theme.getValue() == null || lastSystemDark != nowDark) {

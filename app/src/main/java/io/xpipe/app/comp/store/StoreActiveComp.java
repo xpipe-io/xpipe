@@ -2,7 +2,7 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
-import javafx.beans.value.ObservableBooleanValue;
+
 import javafx.geometry.Pos;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -14,7 +14,9 @@ public class StoreActiveComp extends SimpleComp {
 
     private final StoreEntryWrapper wrapper;
 
-    public StoreActiveComp(StoreEntryWrapper wrapper) {this.wrapper = wrapper;}
+    public StoreActiveComp(StoreEntryWrapper wrapper) {
+        this.wrapper = wrapper;
+    }
 
     @Override
     protected Region createSimple() {

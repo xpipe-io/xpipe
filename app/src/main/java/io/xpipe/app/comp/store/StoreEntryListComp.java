@@ -48,7 +48,8 @@ public class StoreEntryListComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var scriptsIntroShowing = new SimpleBooleanProperty(!AppCache.get("scriptsIntroCompleted", Boolean.class,() -> false));
+        var scriptsIntroShowing =
+                new SimpleBooleanProperty(!AppCache.get("scriptsIntroCompleted", Boolean.class, () -> false));
         var initialCount = 1;
         var showIntro = Bindings.createBooleanBinding(
                 () -> {
@@ -66,20 +67,32 @@ public class StoreEntryListComp extends SimpleComp {
                 },
                 StoreViewState.get().getAllEntries().getList(),
                 StoreViewState.get().getActiveCategory());
-        var showList = Bindings.createBooleanBinding(() -> {
-            if (StoreViewState.get().getActiveCategory().getValue().getRoot().equals(StoreViewState.get().getAllScriptsCategory())) {
-                return !scriptsIntroShowing.get();
-            }
+        var showList = Bindings.createBooleanBinding(
+                () -> {
+                    if (StoreViewState.get()
+                            .getActiveCategory()
+                            .getValue()
+                            .getRoot()
+                            .equals(StoreViewState.get().getAllScriptsCategory())) {
+                        return !scriptsIntroShowing.get();
+                    }
 
-            if (StoreViewState.get()
-                    .getCurrentTopLevelSection()
-                    .getShownChildren()
-                    .getList().isEmpty()) {
-                return false;
-            }
+                    if (StoreViewState.get()
+                            .getCurrentTopLevelSection()
+                            .getShownChildren()
+                            .getList()
+                            .isEmpty()) {
+                        return false;
+                    }
 
-            return true;
-        }, StoreViewState.get().getActiveCategory(), scriptsIntroShowing, StoreViewState.get().getCurrentTopLevelSection().getShownChildren().getList());
+                    return true;
+                },
+                StoreViewState.get().getActiveCategory(),
+                scriptsIntroShowing,
+                StoreViewState.get()
+                        .getCurrentTopLevelSection()
+                        .getShownChildren()
+                        .getList());
         var map = new LinkedHashMap<Comp<?>, ObservableValue<Boolean>>();
         map.put(
                 new StoreNotFoundComp(),
@@ -90,9 +103,7 @@ public class StoreEntryListComp extends SimpleComp {
                                 .getCurrentTopLevelSection()
                                 .getShownChildren()
                                 .getList())));
-        map.put(
-                createList(),
-                showList);
+        map.put(createList(), showList);
         map.put(new StoreIntroComp(), showIntro);
         map.put(new StoreScriptsIntroComp(scriptsIntroShowing), scriptsIntroShowing);
 

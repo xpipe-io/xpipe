@@ -9,8 +9,8 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.ThreadHelper;
-
 import io.xpipe.core.store.SingletonSessionStore;
+
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 

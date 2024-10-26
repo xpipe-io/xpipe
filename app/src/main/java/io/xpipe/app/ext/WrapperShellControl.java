@@ -4,6 +4,7 @@ import io.xpipe.core.process.*;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.FailableConsumer;
+
 import lombok.Getter;
 
 import java.io.IOException;
@@ -22,8 +23,7 @@ public class WrapperShellControl implements ShellControl {
     @Getter
     protected final ShellControl parent;
 
-    public WrapperShellControl(
-            ShellControl parent) {
+    public WrapperShellControl(ShellControl parent) {
         this.parent = parent;
     }
 
@@ -173,7 +173,8 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public String prepareTerminalOpen(TerminalInitScriptConfig config, WorkingDirectoryFunction workingDirectory) throws Exception {
+    public String prepareTerminalOpen(TerminalInitScriptConfig config, WorkingDirectoryFunction workingDirectory)
+            throws Exception {
         return parent.prepareTerminalOpen(config, workingDirectory);
     }
 
@@ -259,8 +260,8 @@ public class WrapperShellControl implements ShellControl {
 
     @Override
     public String prepareIntermediateTerminalOpen(
-            TerminalInitFunction content, TerminalInitScriptConfig config, WorkingDirectoryFunction workingDirectory
-    ) throws Exception {
+            TerminalInitFunction content, TerminalInitScriptConfig config, WorkingDirectoryFunction workingDirectory)
+            throws Exception {
         return parent.prepareIntermediateTerminalOpen(content, config, workingDirectory);
     }
 
@@ -280,7 +281,8 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public String buildElevatedCommand(CommandConfiguration input, String prefix, UUID requestId, CountDown countDown) throws Exception {
+    public String buildElevatedCommand(CommandConfiguration input, String prefix, UUID requestId, CountDown countDown)
+            throws Exception {
         return parent.buildElevatedCommand(input, prefix, requestId, countDown);
     }
 

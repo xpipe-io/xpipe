@@ -5,6 +5,7 @@ import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ScanProvider;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.DataStoreChoiceComp;
 import io.xpipe.app.issue.ErrorEvent;
@@ -12,7 +13,6 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.app.ext.ShellStore;
 
 import javafx.application.Platform;
 import javafx.beans.property.*;
@@ -24,7 +24,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -59,36 +58,36 @@ class ScanDialog extends DialogComp {
     @Override
     protected void finish() {
         ThreadHelper.runFailableAsync(() -> {
-                if (entry.get() == null) {
-                    return;
-                }
+            if (entry.get() == null) {
+                return;
+            }
 
-                Platform.runLater(() -> {
-                    window.close();
-                });
+            Platform.runLater(() -> {
+                window.close();
+            });
 
-                BooleanScope.executeExclusive(busy, () -> {
-                    entry.get().get().setExpanded(true);
-                    var copy = new ArrayList<>(selected);
-                    for (var a : copy) {
-                        // If the user decided to remove the selected entry
-                        // while the scan is running, just return instantly
-                        if (!DataStorage.get()
-                                .getStoreEntriesSet()
-                                .contains(entry.get().get())) {
-                            return;
-                        }
-
-                        // Previous scan operation could have exited the shell
-                        var sc = initialStore.getStore().getOrStartSession();
-
-                        try {
-                            a.getProvider().scan(entry.get().getEntry(), sc);
-                        } catch (Throwable ex) {
-                            ErrorEvent.fromThrowable(ex).handle();
-                        }
+            BooleanScope.executeExclusive(busy, () -> {
+                entry.get().get().setExpanded(true);
+                var copy = new ArrayList<>(selected);
+                for (var a : copy) {
+                    // If the user decided to remove the selected entry
+                    // while the scan is running, just return instantly
+                    if (!DataStorage.get()
+                            .getStoreEntriesSet()
+                            .contains(entry.get().get())) {
+                        return;
                     }
-                });
+
+                    // Previous scan operation could have exited the shell
+                    var sc = initialStore.getStore().getOrStartSession();
+
+                    try {
+                        a.getProvider().scan(entry.get().getEntry(), sc);
+                    } catch (Throwable ex) {
+                        ErrorEvent.fromThrowable(ex).handle();
+                    }
+                }
+            });
         });
     }
 
