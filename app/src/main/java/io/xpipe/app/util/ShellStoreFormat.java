@@ -25,7 +25,7 @@ public class ShellStoreFormat {
                     var s = (ShellEnvironmentStoreState)
                             section.getWrapper().getPersistentState().getValue();
                     var def = Boolean.TRUE.equals(s.getSetDefault()) ? AppI18n.get("default") : null;
-                    var name = DataStoreFormatter.join((includeOsName ? s.getOsName() : null), s.getShellName());
+                    var name = DataStoreFormatter.join((includeOsName ? formattedOsName(s.getOsName()) : null), s.getShellName());
                     return new ShellStoreFormat(null,name, new String[]{def}).format();
                 },
                 AppPrefs.get().language(),
@@ -40,7 +40,7 @@ public class ShellStoreFormat {
             if (s.getShellDialect() != null
                     && !s.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
                 if (s.getOsName() != null) {
-                    return new ShellStoreFormat(LicenseProvider.get().checkOsName(s.getOsName()), s.getOsName(), new String[]{info}).format();
+                    return new ShellStoreFormat(LicenseProvider.get().checkOsName(s.getOsName()), formattedOsName(s.getOsName()), new String[]{info}).format();
                 }
 
                 if (s.getShellDialect().equals(ShellDialects.NO_INTERACTION)) {
@@ -50,7 +50,7 @@ public class ShellStoreFormat {
                 return new ShellStoreFormat(LicenseProvider.get().getFeature(s.getShellDialect().getLicenseFeatureId()), s.getShellDialect().getDisplayName(), new String[]{info}).format();
             }
 
-            return new ShellStoreFormat(LicenseProvider.get().checkOsName(s.getOsName()), s.getOsName(),
+            return new ShellStoreFormat(LicenseProvider.get().checkOsName(s.getOsName()), formattedOsName(s.getOsName()),
                     new String[]{s.getTtyState() != null && s.getTtyState() != ShellTtyState.NONE ? "TTY" : null, info}).format();
         });
     }
@@ -60,7 +60,7 @@ public class ShellStoreFormat {
     String[] states;
 
     public String format() {
-        var lic = licensedFeature != null ? "[" + licensedFeature.getDescriptionSuffix().orElse(null) + "]" : null;
+        var lic = licensedFeature != null ? "[" + licensedFeature.getDescriptionSuffix().orElse(null) + "+]" : null;
         var name = this.name;
         var state = getStates() != null ? Arrays.stream(getStates()).filter(s -> s != null).map(s -> "[" + s + "]").collect(Collectors.joining(" ")) : null;
         if (state != null && state.isEmpty()) {
@@ -71,6 +71,7 @@ public class ShellStoreFormat {
 
     public static String formattedOsName(String osName) {
         osName = osName.replaceAll("^Microsoft ", "");
+        osName = osName.replaceAll("Enterprise Evaluation", "Enterprise");
         return osName;
     }
 }
