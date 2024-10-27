@@ -17,45 +17,6 @@ public class DataStoreFormatter {
         return String.join(" ", Arrays.stream(elements).filter(s -> s != null).toList());
     }
 
-    public static String formattedOsName(String osName) {
-        osName = osName.replaceAll("^Microsoft ", "");
-
-        var proRequired = !LicenseProvider.get().checkOsName(osName);
-        if (!proRequired) {
-            return osName;
-        }
-
-        return "[Pro] " + osName;
-    }
-
-    public static ObservableValue<String> shellInformation(StoreEntryWrapper w) {
-        return BindingsHelper.map(w.getPersistentState(), o -> {
-            if (o instanceof ShellStoreState s) {
-                if (s.getRunning() == null) {
-                    return null;
-                }
-
-                if (s.getShellDialect() != null
-                        && !s.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
-                    if (s.getOsName() != null) {
-                        return formattedOsName(s.getOsName());
-                    }
-
-                    if (s.getShellDialect().equals(ShellDialects.NO_INTERACTION)) {
-                        return null;
-                    }
-
-                    return s.getShellDialect().getDisplayName();
-                }
-
-                var prefix = s.getTtyState() != null && s.getTtyState() != ShellTtyState.NONE ? "[PTY] " : "";
-                return s.isRunning() ? prefix + formattedOsName(s.getOsName()) : "Connection failed";
-            }
-
-            return "?";
-        });
-    }
-
     public static String capitalize(String name) {
         if (name == null) {
             return null;
