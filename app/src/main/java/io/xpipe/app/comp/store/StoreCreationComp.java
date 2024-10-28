@@ -199,11 +199,12 @@ public class StoreCreationComp extends DialogComp {
     }
 
     public static void showCreation(DataStore base, DataStoreCreationCategory category) {
+        var prov = base != null ? DataStoreProviders.byStore(base) : null;
         show(
                 null,
-                base != null ? DataStoreProviders.byStore(base) : null,
+                prov,
                 base,
-                dataStoreProvider -> category.equals(dataStoreProvider.getCreationCategory()),
+                dataStoreProvider -> (category != null && category.equals(dataStoreProvider.getCreationCategory())) || dataStoreProvider.equals(prov),
                 (e, validated) -> {
                     try {
                         DataStorage.get().addStoreEntryIfNotPresent(e);
@@ -436,7 +437,7 @@ public class StoreCreationComp extends DialogComp {
     private Region createLayout() {
         var layout = new BorderPane();
         layout.getStyleClass().add("store-creator");
-        var providerChoice = new StoreProviderChoiceComp(filter, provider, staticDisplay);
+        var providerChoice = new StoreProviderChoiceComp(filter, provider);
         var showProviders = (!staticDisplay
                         && (providerChoice.getProviders().size() > 1
                                 || providerChoice.getProviders().getFirst().showProviderChoice()))

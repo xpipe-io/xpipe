@@ -36,10 +36,14 @@ public class StoreEntryListComp extends SimpleComp {
             StoreViewState.get().getActiveCategory().addListener((observable, oldValue, newValue) -> {
                 struc.get().setVvalue(0);
             });
-        });
-        content.apply(struc -> {
+
             // Reset scroll
             AppLayoutModel.get().getSelected().addListener((observable, oldValue, newValue) -> {
+                struc.get().setVvalue(0);
+            });
+
+            // Reset scroll
+            StoreViewState.get().getFilterString().addListener((observable, oldValue, newValue) -> {
                 struc.get().setVvalue(0);
             });
         });
