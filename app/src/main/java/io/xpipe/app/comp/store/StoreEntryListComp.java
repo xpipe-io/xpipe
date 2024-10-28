@@ -49,7 +49,7 @@ public class StoreEntryListComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var scriptsIntroShowing =
-                new SimpleBooleanProperty(!AppCache.get("scriptsIntroCompleted", Boolean.class, () -> false));
+                new SimpleBooleanProperty(!AppCache.getBoolean("scriptsIntroCompleted", false));
         var initialCount = 1;
         var showIntro = Bindings.createBooleanBinding(
                 () -> {

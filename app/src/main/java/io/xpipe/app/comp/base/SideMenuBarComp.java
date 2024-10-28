@@ -141,29 +141,6 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
             vbox.getChildren().add(b.createRegion());
         }
 
-        {
-            var zone = ZoneId.of(ZoneId.SHORT_IDS.get("PST"));
-            var now = Instant.now();
-            var phStart = ZonedDateTime.of(2024, 10, 22, 0, 1, 0, 0, zone).toInstant();
-            var phEnd = ZonedDateTime.of(2024, 10, 23, 0, 1, 0, 0, zone).toInstant();
-            var clicked = AppCache.get("phClicked", Boolean.class, () -> false);
-            var phShow = now.isAfter(phStart) && now.isBefore(phEnd) && !clicked;
-            if (phShow) {
-                var hide = new SimpleBooleanProperty(false);
-                var b = new IconButtonComp(new LabelGraphic.ImageGraphic("app:producthunt-color.png", 24), () -> {
-                            AppCache.update("phClicked", true);
-                            Hyperlinks.open(Hyperlinks.PRODUCT_HUNT);
-                            hide.set(true);
-                        })
-                        .tooltip(new SimpleStringProperty("Product Hunt"));
-                b.apply(struc -> {
-                    AppFont.setSize(struc.get(), 1);
-                });
-                b.hide(hide);
-                vbox.getChildren().add(b.createRegion());
-            }
-        }
-
         var filler = new Button();
         filler.setDisable(true);
         filler.setMaxHeight(3000);

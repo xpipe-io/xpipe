@@ -207,7 +207,7 @@ public class AppPrefs {
                         new DeveloperCategory())
                 .filter(appPrefsCategory -> appPrefsCategory.show())
                 .toList();
-        var selected = AppCache.get("selectedPrefsCategory", Integer.class, () -> 0);
+        var selected = AppCache.getNonNull("selectedPrefsCategory", Integer.class, () -> 0);
         if (selected == null) {
             selected = 0;
         }

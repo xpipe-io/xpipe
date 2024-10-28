@@ -57,7 +57,7 @@ public class OpenFileSystemSavedState {
     }
 
     static OpenFileSystemSavedState loadForStore(OpenFileSystemModel model) {
-        var state = AppCache.get("fs-state-" + model.getEntry().get().getUuid(), OpenFileSystemSavedState.class, () -> {
+        var state = AppCache.getNonNull("fs-state-" + model.getEntry().get().getUuid(), OpenFileSystemSavedState.class, () -> {
             return new OpenFileSystemSavedState();
         });
         state.setModel(model);

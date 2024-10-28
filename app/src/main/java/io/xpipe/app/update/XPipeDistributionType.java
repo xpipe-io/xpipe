@@ -54,7 +54,7 @@ public enum XPipeDistributionType {
         }
 
         if (!XPipeSession.get().isNewBuildSession()) {
-            var cached = AppCache.get("dist", String.class, () -> null);
+            var cached = AppCache.getNonNull("dist", String.class, () -> null);
             var cachedType = Arrays.stream(values())
                     .filter(xPipeDistributionType ->
                             xPipeDistributionType.getId().equals(cached))

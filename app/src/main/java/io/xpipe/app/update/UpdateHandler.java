@@ -36,7 +36,7 @@ public abstract class UpdateHandler {
     protected final boolean updateSucceeded;
 
     protected UpdateHandler(boolean startBackgroundThread) {
-        performedUpdate = AppCache.get("performedUpdate", PerformedUpdate.class, () -> null);
+        performedUpdate = AppCache.getNonNull("performedUpdate", PerformedUpdate.class, () -> null);
         var hasUpdated = performedUpdate != null;
         event("Was updated is " + hasUpdated);
         if (hasUpdated) {
@@ -48,7 +48,7 @@ public abstract class UpdateHandler {
             updateSucceeded = false;
         }
 
-        preparedUpdate.setValue(AppCache.get("preparedUpdate", PreparedUpdate.class, () -> null));
+        preparedUpdate.setValue(AppCache.getNonNull("preparedUpdate", PreparedUpdate.class, () -> null));
 
         // Check if the original version this was downloaded from is still the same
         if (preparedUpdate.getValue() != null

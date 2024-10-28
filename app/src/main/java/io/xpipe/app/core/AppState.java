@@ -23,9 +23,9 @@ public class AppState {
     String userEmail;
 
     public AppState() {
-        UUID id = AppCache.get("userId", UUID.class, null);
+        UUID id = AppCache.getNonNull("userId", UUID.class, null);
         if (id == null) {
-            initialLaunch = AppCache.getIfPresent("lastBuild", String.class).isEmpty();
+            initialLaunch = AppCache.getNonNull("lastBuild", String.class, () -> null) == null;
             userId = UUID.randomUUID();
             AppCache.update("userId", userId);
         } else {
