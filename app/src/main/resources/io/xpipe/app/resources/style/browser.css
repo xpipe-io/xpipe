@@ -93,10 +93,10 @@
 }
 
 .browser .top-bar {
-    -fx-min-height: 3.3em;
-    -fx-pref-height: 3.3em;
-    -fx-max-height: 3.3em;
-    -fx-padding: 9px 6px;
+    -fx-min-height: 3.1em;
+    -fx-pref-height: 3.1em;
+    -fx-max-height: 3.1em;
+    -fx-padding: 5 6 9px 6px;
 }
 
 .browser .top-bar > .button {
