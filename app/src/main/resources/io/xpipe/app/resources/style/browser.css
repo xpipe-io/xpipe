@@ -48,9 +48,7 @@
 }
 
 .browser .top-spacer {
-    -fx-background-color: -color-bg-inset;
-    -fx-border-width: 0 0 0.05em 0;
-    -fx-border-color: -color-border-default;
+    -fx-background-color:  transparent;
     -fx-pref-height: 2.65em;
     -fx-max-height: 2.65em;
 }
@@ -218,13 +216,8 @@
     -fx-background-color: transparent;
 }
 
-.browser .tab-pane.floating > .tab-header-area {
-    -fx-border-width: 0 0 0.05em 0;
-    -fx-border-color: -color-border-default;
-}
-
 .browser .left {
-    -fx-border-color: -color-border-default, -color-bg-inset;
+    -fx-border-color:  transparent,  transparent;
     -fx-border-width: 2.7em 0 0 0, 2.65em 0 0 0;
     -fx-background-color: transparent;
 }
@@ -234,7 +227,7 @@
 }
 
 .browser .tab-header-area {
-    -fx-background-color: -color-bg-inset;
+    -fx-background-color:  transparent;
 }
 
 .root:seamless-frame .browser .tab-header-area {
@@ -270,7 +263,7 @@
 }
 
 .browser .split-pane-divider {
-    -fx-border-color: -color-border-default, -color-bg-inset;
+    -fx-border-color: transparent, transparent;
     -fx-padding: 0 2 0 3;
     -fx-border-width: 2.7em 0 0 0, 2.65em 0 0 0;
     -fx-opacity: 1.0;
