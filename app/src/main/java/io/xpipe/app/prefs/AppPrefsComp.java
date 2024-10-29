@@ -46,6 +46,7 @@ public class AppPrefsComp extends SimpleComp {
         sidebar.setMaxWidth(280);
 
         var split = new HBox(sidebar, pfxLimit);
+        HBox.setMargin(sidebar, new Insets(6));
         HBox.setHgrow(pfxLimit, Priority.ALWAYS);
         split.setFillHeight(true);
         split.getStyleClass().add("prefs");

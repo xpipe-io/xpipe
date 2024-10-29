@@ -20,7 +20,7 @@
     -fx-background-radius: 4;
     -fx-border-color: -color-border-default;
     -fx-border-width: 1;
-    -fx-background-color: -color-bg-subtle;
+    -fx-background-color: -fx-foreground-base;
 }
 
 .transfer:highlighted > .download-background {
@@ -130,7 +130,7 @@
     -fx-background-radius: 0 0 4 4;
     -fx-border-width: 1 0 0 0;
     -fx-border-color: -color-border-default;
-    -fx-background-color: -color-bg-subtle;
+    -fx-background-color: -fx-foreground-base;
     -fx-padding: 5 8;
 }
 
@@ -238,18 +238,14 @@
     -fx-padding: 6 0 0 0;
     -fx-border-radius: 4;
     -fx-background-radius: 4;
-    -fx-background-color: -color-bg-subtle, -color-bg-default;
     -fx-background-insets: 0, 7 0 0 0;
     -fx-border-width: 1;
     -fx-border-color: -color-border-default;
+    -fx-background-color: -fx-foreground-base, -fx-foreground-base;
 }
 
 .browser .browser-content-container {
     -fx-padding: 0 10 7 0;
-}
-
-.root.cupertino .browser .browser-content {
-    -fx-background-color: -color-bg-default, -color-bg-default;
 }
 
 .root.nord .browser .browser-content {
@@ -276,6 +272,11 @@
 
 .table-view .column-header {
     -fx-pref-height: 2em;
+    -fx-background-color: -fx-foreground-base;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: -fx-foreground-base;
 }
 
 .table-view .column-header-background .label {

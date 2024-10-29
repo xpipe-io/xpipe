@@ -33,10 +33,12 @@
 
 .prefs .sidebar {
     -fx-spacing: 0;
-    -fx-background-color: -color-bg-subtle;
-    -fx-border-width: 0 1 0 0;
+    -fx-background-color: -fx-foreground-base;
     -fx-border-color: -color-border-default;
     -fx-padding: 0.2em 0 0 0;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
 }
 
 .prefs .sidebar .button {

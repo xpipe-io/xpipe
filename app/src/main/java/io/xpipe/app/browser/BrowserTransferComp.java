@@ -44,7 +44,8 @@ public class BrowserTransferComp extends SimpleComp {
                 .apply(struc -> struc.get().setWrapText(true))
                 .visible(model.getEmpty());
         var backgroundStack =
-                new StackComp(List.of(background)).grow(true, true).styleClass("download-background");
+                new StackComp(List.of(background)).grow(true, true)
+                        .styleClass("color-box").styleClass("gray").styleClass("download-background");
 
         var binding = new DerivedObservableList<>(model.getItems(), true)
                 .mapped(item -> item.getBrowserEntry())

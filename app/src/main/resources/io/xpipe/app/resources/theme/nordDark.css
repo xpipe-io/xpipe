@@ -4,3 +4,11 @@
     -color-cell-bg-odd: derive(-color-bg-subtle, -15%);
     -color-cell-bg: derive(-color-bg-subtle, -10%);
 }
+
+.root:dark * {
+    -fx-foreground-base: derive(-color-bg-default, 13%);
+}
+
+.root:light * {
+    -fx-foreground-base: derive(-color-bg-default, -3%);
+}
