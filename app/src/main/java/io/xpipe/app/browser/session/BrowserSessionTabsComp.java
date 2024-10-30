@@ -16,7 +16,9 @@ import io.xpipe.app.util.ContextMenuHelper;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableValue;
@@ -24,12 +26,14 @@ import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.control.skin.TabPaneSkin;
 import javafx.scene.input.*;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
 import atlantafx.base.controls.RingProgressIndicator;
 import atlantafx.base.theme.Styles;
+import lombok.Getter;
 
 import java.util.*;
 
@@ -41,16 +45,18 @@ public class BrowserSessionTabsComp extends SimpleComp {
 
     private final BrowserSessionModel model;
     private final ObservableDoubleValue leftPadding;
+    @Getter
+    private final DoubleProperty headerHeight;
 
     public BrowserSessionTabsComp(BrowserSessionModel model, ObservableDoubleValue leftPadding) {
         this.model = model;
         this.leftPadding = leftPadding;
+        this.headerHeight = new SimpleDoubleProperty();
     }
 
     public Region createSimple() {
         var map = new LinkedHashMap<Comp<?>, ObservableValue<Boolean>>();
-        map.put(Comp.hspacer().styleClass("top-spacer"), new SimpleBooleanProperty(true));
-        map.put(Comp.of(() -> createTabPane()), Bindings.isNotEmpty(model.getSessionEntries()));
+        map.put(Comp.of(() -> createTabPane()), new SimpleBooleanProperty(true));
         map.put(
                 new BrowserWelcomeComp(model).apply(struc -> StackPane.setAlignment(struc.get(), Pos.CENTER_LEFT)),
                 Bindings.createBooleanBinding(
@@ -69,6 +75,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
         tabs.setTabMinWidth(Region.USE_PREF_SIZE);
         tabs.setTabMaxWidth(400);
         tabs.setTabClosingPolicy(ALL_TABS);
+        tabs.setSkin(new TabPaneSkin(tabs));
         Styles.toggleStyleClass(tabs, TabPane.STYLE_CLASS_FLOATING);
         toggleStyleClass(tabs, DENSE);
 
@@ -91,6 +98,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
                             .paddingProperty()
                             .bind(Bindings.createObjectBinding(
                                     () -> new Insets(0, 0, 0, -leftPadding.get() + 2), leftPadding));
+                    headerHeight.bind(headerArea.heightProperty());
                 });
             }
         });

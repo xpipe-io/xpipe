@@ -20,7 +20,7 @@
     -fx-background-radius: 4;
     -fx-border-color: -color-border-default;
     -fx-border-width: 1;
-    -fx-background-color: -fx-foreground-base;
+    -fx-background-color: -color-foreground-base;
 }
 
 .transfer:highlighted > .download-background {
@@ -48,9 +48,7 @@
 }
 
 .browser .top-spacer {
-    -fx-background-color:  transparent;
-    -fx-pref-height: 2.65em;
-    -fx-max-height: 2.65em;
+    -fx-background-color: -color-bg-inset;
 }
 
 .root:seamless-frame .browser .top-spacer {
@@ -130,7 +128,7 @@
     -fx-background-radius: 0 0 4 4;
     -fx-border-width: 1 0 0 0;
     -fx-border-color: -color-border-default;
-    -fx-background-color: -fx-foreground-base;
+    -fx-background-color: -color-foreground-base;
     -fx-padding: 5 8;
 }
 
@@ -196,9 +194,6 @@
 }
 
 .browser .tab-header-area, .browser .headers-region {
-    -fx-min-height: 2.65em;
-    -fx-pref-height: 2.65em;
-    -fx-max-height: 2.65em;
 
 }
 
@@ -213,12 +208,6 @@
     -fx-min-height: 2.5em;
     -fx-pref-height: 2.5em;
     -fx-max-height: 2.5em;
-    -fx-background-color: transparent;
-}
-
-.browser .left {
-    -fx-border-color:  transparent,  transparent;
-    -fx-border-width: 2.7em 0 0 0, 2.65em 0 0 0;
     -fx-background-color: transparent;
 }
 
@@ -241,7 +230,7 @@
     -fx-background-insets: 0, 7 0 0 0;
     -fx-border-width: 1;
     -fx-border-color: -color-border-default;
-    -fx-background-color: -fx-foreground-base, -fx-foreground-base;
+    -fx-background-color: -color-foreground-base, -color-foreground-base;
 }
 
 .browser .browser-content-container {
@@ -259,9 +248,7 @@
 }
 
 .browser .split-pane-divider {
-    -fx-border-color: transparent, transparent;
     -fx-padding: 0 2 0 3;
-    -fx-border-width: 2.7em 0 0 0, 2.65em 0 0 0;
     -fx-opacity: 1.0;
     -fx-background-color: transparent;
 }
@@ -272,11 +259,11 @@
 
 .table-view .column-header {
     -fx-pref-height: 2em;
-    -fx-background-color: -fx-foreground-base;
+    -fx-background-color: -color-foreground-base;
 }
 
 .table-view .column-header-background {
-    -fx-background-color: -fx-foreground-base;
+    -fx-background-color: -color-foreground-base;
 }
 
 .table-view .column-header-background .label {

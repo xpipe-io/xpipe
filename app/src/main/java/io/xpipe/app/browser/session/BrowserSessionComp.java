@@ -20,7 +20,10 @@ import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
@@ -100,13 +103,18 @@ public class BrowserSessionComp extends SimpleComp {
                 new VerticalComp(List.of(bookmarkTopBar, bookmarksContainer, localDownloadStage)).styleClass("left");
 
         var split = new SimpleDoubleProperty();
-        var tabs = new BrowserSessionTabsComp(model, split).apply(struc -> {
+        var tabs = new BrowserSessionTabsComp(model, split);
+        tabs.apply(struc -> {
             struc.get().setViewOrder(1);
             struc.get().setPickOnBounds(false);
             AnchorPane.setTopAnchor(struc.get(), 0.0);
             AnchorPane.setBottomAnchor(struc.get(), 0.0);
             AnchorPane.setLeftAnchor(struc.get(), 0.0);
             AnchorPane.setRightAnchor(struc.get(), 0.0);
+        });
+        vertical.apply(struc -> {
+            struc.get().paddingProperty().bind(Bindings.createObjectBinding(
+                    () -> new Insets(tabs.getHeaderHeight().get(), 0, 0, 0), tabs.getHeaderHeight()));
         });
         var loadingIndicator = LoadingOverlayComp.noProgress(Comp.empty(), model.getBusy())
                 .apply(struc -> {
@@ -141,7 +149,16 @@ public class BrowserSessionComp extends SimpleComp {
             });
         });
 
-        var r = splitPane.createRegion();
+        var topBackground = Comp.hspacer().styleClass("top-spacer");
+        var stack = new StackComp(List.of(topBackground, splitPane));
+        stack.apply(struc -> {
+            struc.get().setAlignment(Pos.TOP_CENTER);
+            var spacer = (Region) struc.get().lookup(".top-spacer");
+            spacer.prefHeightProperty().bind(tabs.getHeaderHeight());
+            spacer.minHeightProperty().bind(spacer.prefHeightProperty());
+            spacer.maxHeightProperty().bind(spacer.prefHeightProperty());
+        });
+        var r = stack.createRegion();
         r.getStyleClass().add("browser");
         return r;
     }

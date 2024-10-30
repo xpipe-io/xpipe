@@ -5,9 +5,9 @@
 }
 
 .root:dark * {
-    -fx-foreground-base: derive(-color-bg-default, 13%);
+    -color-foreground-base: derive(-color-bg-default, 13%);
 }
 
 .root:light * {
-    -fx-foreground-base: derive(-color-bg-default, -3%);
+    -color-foreground-base: derive(-color-bg-default, -3%);
 }

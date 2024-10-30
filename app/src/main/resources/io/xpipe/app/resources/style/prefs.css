@@ -33,7 +33,7 @@
 
 .prefs .sidebar {
     -fx-spacing: 0;
-    -fx-background-color: -fx-foreground-base;
+    -fx-background-color: -color-foreground-base;
     -fx-border-color: -color-border-default;
     -fx-padding: 0.2em 0 0 0;
     -fx-border-width: 1;

@@ -115,15 +115,17 @@
     -fx-padding: inherit;
 }
 
+.root { -color-bg-default-transparent: #0d1117d2; }
+
 .root .table-view {
     -color-cell-bg-odd: derive(-color-bg-subtle, -35%);
     -color-cell-bg: derive(-color-bg-subtle, -30%);
 }
 
 .root:dark * {
-    -fx-foreground-base: derive(-color-bg-default, 13%);
+    -color-foreground-base: derive(-color-bg-default, 9%);
 }
 
 .root:light * {
-    -fx-foreground-base: derive(-color-bg-default, -3%);
+    -color-foreground-base: derive(-color-bg-default, -3%);
 }

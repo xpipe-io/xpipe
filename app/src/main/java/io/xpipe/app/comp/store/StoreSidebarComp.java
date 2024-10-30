@@ -31,6 +31,7 @@ public class StoreSidebarComp extends SimpleComp {
                         .styleClass("gray")
                         .styleClass("bar")
                         .styleClass("filler-bar")
+                        .minHeight(10)
                         .vgrow()));
         sideBar.apply(struc -> struc.get().setFillWidth(true));
         sideBar.styleClass("sidebar");
