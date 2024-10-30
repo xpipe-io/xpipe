@@ -83,13 +83,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                             return inRootCategory && showProvider;
                         },
                         StoreViewState.get().getActiveCategory());
-        var shownList = all.filtered(
-                storeEntryWrapper -> {
-                    return storeEntryWrapper.matchesFilter(
-                            StoreViewState.get().getFilterString().getValue());
-                },
-                StoreViewState.get().getFilterString());
-        var count = new CountComp<>(shownList.getList(), all.getList());
+        var count = new CountComp<>(all.getList(), all.getList());
 
         var c = count.createRegion();
         var topBar = new HBox(

@@ -43,9 +43,9 @@
 
 .prefs .sidebar .button {
     -fx-background-color: transparent;
-    -fx-padding: 0.5em 1em 0.5em 1.5em;
+    -fx-padding: 0.5em 1em 0.5em 1.0em;
     -fx-background-radius: 0, 4, 4;
-    -fx-background-insets: 0, 1 8 1 8;
+    -fx-background-insets: 0, 1 4 1 4;
 }
 
 .prefs .sidebar .button:selected {
