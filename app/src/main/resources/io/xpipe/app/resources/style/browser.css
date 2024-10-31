@@ -49,6 +49,8 @@
 
 .browser .top-spacer {
     -fx-background-color: -color-bg-inset;
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: -color-border-default;
 }
 
 .root:seamless-frame .browser .top-spacer {
@@ -91,10 +93,10 @@
 }
 
 .browser .top-bar {
-    -fx-min-height: 3.1em;
-    -fx-pref-height: 3.1em;
-    -fx-max-height: 3.1em;
-    -fx-padding: 5 6 9px 6px;
+    -fx-min-height: 3.4em;
+    -fx-pref-height: 3.4em;
+    -fx-max-height: 3.4em;
+    -fx-padding: 11 6 9px 6px;
 }
 
 .browser .top-bar > .button {
@@ -314,6 +316,10 @@
 .browser .tab-container {
     -fx-border-radius: 4;
     -fx-background-radius: 4;
+}
+
+.browser .tab-label:static {
+    -fx-padding: 0.4em 0.9em 0.4em 0.7em;
 }
 
 .browser .tab {

@@ -10,6 +10,7 @@ import io.xpipe.app.browser.file.BrowserFileTransferOperation;
 import io.xpipe.app.browser.file.FileSystemHelper;
 import io.xpipe.app.browser.session.BrowserAbstractSessionModel;
 import io.xpipe.app.browser.session.BrowserSessionTab;
+import io.xpipe.app.browser.session.BrowserStoreSessionTab;
 import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
@@ -42,7 +43,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Getter
-public final class OpenFileSystemModel extends BrowserSessionTab<FileSystemStore> {
+public final class OpenFileSystemModel extends BrowserStoreSessionTab<FileSystemStore> {
 
     private final Property<String> filter = new SimpleStringProperty();
     private final BrowserFileListModel fileList;

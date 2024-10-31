@@ -13,13 +13,13 @@ import javafx.collections.ObservableList;
 import lombok.Getter;
 
 @Getter
-public class BrowserAbstractSessionModel<T extends BrowserSessionTab<?>> {
+public class BrowserAbstractSessionModel<T extends BrowserSessionTab> {
 
     protected final ObservableList<T> sessionEntries = FXCollections.observableArrayList();
     protected final Property<T> selectedEntry = new SimpleObjectProperty<>();
     protected final BooleanProperty busy = new SimpleBooleanProperty();
 
-    public void closeAsync(BrowserSessionTab<?> e) {
+    public void closeAsync(BrowserSessionTab e) {
         ThreadHelper.runAsync(() -> {
             closeSync(e);
         });
@@ -37,7 +37,7 @@ public class BrowserAbstractSessionModel<T extends BrowserSessionTab<?>> {
         }
     }
 
-    public void closeSync(BrowserSessionTab<?> e) {
+    public void closeSync(BrowserSessionTab e) {
         e.close();
         synchronized (BrowserAbstractSessionModel.this) {
             this.sessionEntries.remove(e);

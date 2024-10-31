@@ -1,5 +1,6 @@
 package io.xpipe.app.browser.session;
 
+import io.xpipe.app.browser.BrowserHomeModel;
 import io.xpipe.app.browser.BrowserSavedState;
 import io.xpipe.app.browser.BrowserSavedStateImpl;
 import io.xpipe.app.browser.BrowserTransferModel;
@@ -21,9 +22,13 @@ import lombok.Getter;
 import java.util.ArrayList;
 
 @Getter
-public class BrowserSessionModel extends BrowserAbstractSessionModel<BrowserSessionTab<?>> {
+public class BrowserSessionModel extends BrowserAbstractSessionModel<BrowserSessionTab> {
 
     public static final BrowserSessionModel DEFAULT = new BrowserSessionModel();
+
+    static {
+        DEFAULT.getSessionEntries().add(new BrowserHomeModel(DEFAULT));
+    }
 
     private final BrowserTransferModel localTransfersStage = new BrowserTransferModel(this);
     private final Property<Boolean> draggingFiles = new SimpleBooleanProperty();

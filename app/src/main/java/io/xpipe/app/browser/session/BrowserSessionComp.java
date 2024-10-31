@@ -70,7 +70,7 @@ public class BrowserSessionComp extends SimpleComp {
 
         var bookmarkTopBar = new BrowserBookmarkHeaderComp();
         var bookmarksList = new BrowserBookmarkComp(
-                BindingsHelper.map(model.getSelectedEntry(), v -> v.getEntry().get()),
+                BindingsHelper.map(model.getSelectedEntry(), v -> v instanceof BrowserStoreSessionTab<?> st ? st.getEntry().get() : null),
                 applicable,
                 action,
                 bookmarkTopBar.getCategory(),
