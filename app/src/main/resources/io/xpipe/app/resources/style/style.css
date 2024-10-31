@@ -97,11 +97,11 @@
     -fx-padding: 0.7em 1px 1em 1em;
 }
 
-.root:windows .text {
+.root:windows * {
     -fx-font-smoothing-type: gray;
 }
 
-.root:linux .text {
+.root:linux * {
     -fx-font-smoothing-type: lcd;
 }
 
@@ -165,6 +165,6 @@
     -fx-fill: rgb(30, 180, 30, 0.7);
 }
 
-.custom-text-field .font-icon, .custom-text-field .ikonli-font-icon {
+.custom-text-field .font-icon, .custom-text-field .ikonli-font-icon, .label .ikonli-font-icon {
     -fx-icon-color: -color-fg-default;
 }
