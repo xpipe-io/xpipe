@@ -127,7 +127,7 @@ public interface KittyTerminalType extends ExternalTerminalType {
             var socket = getSocket();
             try (var sc = LocalShell.getShell().start()) {
                 if (sc.executeSimpleBooleanCommand(
-                        "test -w " + sc.getShellDialect().fileArgument(socket))) {
+                        "/usr/bin/test -w " + sc.getShellDialect().fileArgument(socket))) {
                     return false;
                 }
 
@@ -174,7 +174,7 @@ public interface KittyTerminalType extends ExternalTerminalType {
             var socket = getSocket();
             try (var sc = LocalShell.getShell().start()) {
                 if (sc.executeSimpleBooleanCommand(
-                        "test -w " + sc.getShellDialect().fileArgument(socket))) {
+                        "/usr/bin/test -w " + sc.getShellDialect().fileArgument(socket))) {
                     return false;
                 }
 
