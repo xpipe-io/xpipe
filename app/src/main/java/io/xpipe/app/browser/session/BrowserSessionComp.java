@@ -122,7 +122,7 @@ public class BrowserSessionComp extends SimpleComp {
                     AnchorPane.setRightAnchor(struc.get(), 0.0);
                 })
                 .styleClass("tab-loading-indicator");
-        var loadingStack = new AnchorComp(List.of(tabs, loadingIndicator));
+        var loadingStack = new AnchorComp(List.of(tabs));
         var splitPane = new SideSplitPaneComp(vertical, loadingStack)
                 .withInitialWidth(AppLayoutModel.get().getSavedState().getBrowserConnectionsWidth())
                 .withOnDividerChange(d -> {
@@ -148,18 +148,7 @@ public class BrowserSessionComp extends SimpleComp {
                 }
             });
         });
-
-        var topBackground = Comp.hspacer().styleClass("top-spacer");
-        var stack = new StackComp(List.of(topBackground, splitPane));
-        stack.apply(struc -> {
-            struc.get().setAlignment(Pos.TOP_CENTER);
-            var spacer = (Region) struc.get().lookup(".top-spacer");
-            spacer.prefHeightProperty().bind(tabs.getHeaderHeight());
-            spacer.minHeightProperty().bind(spacer.prefHeightProperty());
-            spacer.maxHeightProperty().bind(spacer.prefHeightProperty());
-        });
-        var r = stack.createRegion();
-        r.getStyleClass().add("browser");
-        return r;
+        splitPane.styleClass("browser");
+        return splitPane.createRegion();
     }
 }

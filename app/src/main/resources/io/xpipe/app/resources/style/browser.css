@@ -232,7 +232,7 @@
     -fx-background-insets: 0, 7 0 0 0;
     -fx-border-width: 1;
     -fx-border-color: -color-border-default;
-    -fx-background-color: -color-foreground-base, -color-foreground-base;
+    -fx-background-color: -color-foreground-base, -color-bg-default;
 }
 
 .browser .browser-content-container {

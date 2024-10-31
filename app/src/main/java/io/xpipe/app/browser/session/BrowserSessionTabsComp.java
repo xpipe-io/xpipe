@@ -6,6 +6,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
+import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.util.LabelGraphic;
 import io.xpipe.app.fxcomps.util.PlatformThread;
@@ -56,7 +57,18 @@ public class BrowserSessionTabsComp extends SimpleComp {
     }
 
     public Region createSimple() {
-        return createTabPane();
+        var tabs = createTabPane();
+        var topBackground = Comp.hspacer().styleClass("top-spacer").createRegion();
+        leftPadding.subscribe(number -> {
+            StackPane.setMargin(topBackground, new Insets(0, 0, 0, -number.doubleValue()));
+        });
+        var stack = new StackPane(topBackground, tabs);
+        stack.setAlignment(Pos.TOP_CENTER);
+        topBackground.prefHeightProperty().bind(headerHeight);
+        topBackground.minHeightProperty().bind(topBackground.prefHeightProperty());
+        topBackground.maxHeightProperty().bind(topBackground.prefHeightProperty());
+        topBackground.prefWidthProperty().bind(tabs.widthProperty());
+        return stack;
     }
 
     private TabPane createTabPane() {
@@ -68,9 +80,6 @@ public class BrowserSessionTabsComp extends SimpleComp {
         tabs.setSkin(new TabPaneSkin(tabs));
         Styles.toggleStyleClass(tabs, TabPane.STYLE_CLASS_FLOATING);
         toggleStyleClass(tabs, DENSE);
-
-        var dummy = new Tab();
-        tabs.getTabs().add(dummy);
 
         tabs.skinProperty().subscribe(newValue -> {
             if (newValue != null) {
@@ -100,8 +109,6 @@ public class BrowserSessionTabsComp extends SimpleComp {
                             .bind(Bindings.createObjectBinding(
                                     () -> new Insets(2, 0, 4, -leftPadding.get() + 2), leftPadding));
                     headerHeight.bind(headerArea.heightProperty());
-
-                    tabs.getTabs().remove(dummy);
                 });
             }
         });

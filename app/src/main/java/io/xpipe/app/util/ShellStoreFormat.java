@@ -60,7 +60,8 @@ public class ShellStoreFormat {
     String[] states;
 
     public String format() {
-        var lic = licensedFeature != null ? "[" + licensedFeature.getDescriptionSuffix().orElse(null) + "+]" : null;
+        var licenseReq = licensedFeature != null ? licensedFeature.getDescriptionSuffix().orElse(null) : null;
+        var lic = licenseReq != null ? "[" + licenseReq + "+]" : null;
         var name = this.name;
         var state = getStates() != null ? Arrays.stream(getStates()).filter(s -> s != null).map(s -> "[" + s + "]").collect(Collectors.joining(" ")) : null;
         if (state != null && state.isEmpty()) {
