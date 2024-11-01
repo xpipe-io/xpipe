@@ -37,6 +37,10 @@
     -fx-padding: 0.1em 0.2em;
 }
 
+.browser .transfer .label .ikonli-font-icon {
+    -fx-icon-color: -color-fg-default;
+}
+
 .root.nord .transfer > * {
     -fx-background-radius: 0;
     -fx-border-radius: 0;

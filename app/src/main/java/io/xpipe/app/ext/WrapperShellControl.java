@@ -179,6 +179,11 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
+    public void refreshRunningState() {
+        parent.refreshRunningState();
+    }
+
+    @Override
     public void closeStdin() throws IOException {
         parent.closeStdin();
     }

@@ -17,6 +17,8 @@ public interface ProcessControl extends AutoCloseable {
     String prepareTerminalOpen(TerminalInitScriptConfig config, WorkingDirectoryFunction workingDirectory)
             throws Exception;
 
+    void refreshRunningState();
+
     void closeStdin() throws IOException;
 
     boolean isStdinClosed();

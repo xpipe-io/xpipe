@@ -9,6 +9,7 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
     default ShellControl getOrStartSession() throws Exception {
         var session = getSession();
         if (session != null) {
+            session.getShellControl().refreshRunningState();
             if (!session.isRunning()) {
                 stopSessionIfNeeded();
             } else {
