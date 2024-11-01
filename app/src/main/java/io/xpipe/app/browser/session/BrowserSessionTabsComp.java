@@ -1,17 +1,13 @@
 package io.xpipe.app.browser.session;
 
-import io.xpipe.app.browser.BrowserWelcomeComp;
-import io.xpipe.app.comp.base.MultiContentComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
-import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.util.LabelGraphic;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ContextMenuHelper;
 
@@ -22,7 +18,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableDoubleValue;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
@@ -47,6 +42,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
 
     private final BrowserSessionModel model;
     private final ObservableDoubleValue leftPadding;
+
     @Getter
     private final DoubleProperty headerHeight;
 
@@ -300,7 +296,9 @@ public class BrowserSessionTabsComp extends SimpleComp {
         var closeOthers = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("closeOtherTabs"));
         closeOthers.setOnAction(event -> {
             tabs.getTabs()
-                    .removeAll(tabs.getTabs().stream().filter(t -> t != tab && t.isClosable()).toList());
+                    .removeAll(tabs.getTabs().stream()
+                            .filter(t -> t != tab && t.isClosable())
+                            .toList());
             event.consume();
         });
         cm.getItems().add(closeOthers);
@@ -332,9 +330,8 @@ public class BrowserSessionTabsComp extends SimpleComp {
                 new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
         closeAll.setOnAction(event -> {
             tabs.getTabs()
-                    .removeAll(tabs.getTabs().stream()
-                            .filter(t -> t.isClosable())
-                            .toList());
+                    .removeAll(
+                            tabs.getTabs().stream().filter(t -> t.isClosable()).toList());
             event.consume();
         });
         cm.getItems().add(closeAll);
@@ -365,9 +362,12 @@ public class BrowserSessionTabsComp extends SimpleComp {
             var image = tabModel.getIcon();
             var logo = PrettyImageHelper.ofFixedSizeSquare(image, 16).createRegion();
 
-            tab.graphicProperty().bind(Bindings.createObjectBinding(() -> {
-                return tabModel.getBusy().get() ? ring : logo;
-            }, PlatformThread.sync(tabModel.getBusy())));
+            tab.graphicProperty()
+                    .bind(Bindings.createObjectBinding(
+                            () -> {
+                                return tabModel.getBusy().get() ? ring : logo;
+                            },
+                            PlatformThread.sync(tabModel.getBusy())));
         }
         tab.setText(tabModel.getName());
 

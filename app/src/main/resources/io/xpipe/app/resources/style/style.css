@@ -97,11 +97,11 @@
     -fx-padding: 0.7em 1px 1em 1em;
 }
 
-.root:windows * {
+.root:windows .text {
     -fx-font-smoothing-type: gray;
 }
 
-.root:linux * {
+.root:linux .text {
     -fx-font-smoothing-type: lcd;
 }
 

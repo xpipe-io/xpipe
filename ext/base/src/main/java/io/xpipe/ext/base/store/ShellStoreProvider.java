@@ -14,7 +14,6 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.resources.SystemIcons;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.ShellStoreFormat;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.process.ShellStoreState;
@@ -73,6 +72,6 @@ public interface ShellStoreProvider extends DataStoreProvider {
 
     @Override
     default ObservableValue<String> informationString(StoreSection section) {
-        return ShellStoreFormat.shellStore(section,state -> null);
+        return ShellStoreFormat.shellStore(section, state -> null);
     }
 }

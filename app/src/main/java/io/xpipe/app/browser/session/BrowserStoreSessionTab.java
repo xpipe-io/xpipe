@@ -5,8 +5,7 @@ import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.DataStore;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+
 import lombok.Getter;
 
 @Getter
@@ -15,7 +14,10 @@ public abstract class BrowserStoreSessionTab<T extends DataStore> extends Browse
     protected final DataStoreEntryRef<? extends T> entry;
 
     public BrowserStoreSessionTab(BrowserAbstractSessionModel<?> browserModel, DataStoreEntryRef<? extends T> entry) {
-        super(browserModel, DataStorage.get().getStoreEntryDisplayName(entry.get()), DataStorage.get().getStorePath(entry.getEntry()).toString());
+        super(
+                browserModel,
+                DataStorage.get().getStoreEntryDisplayName(entry.get()),
+                DataStorage.get().getStorePath(entry.getEntry()).toString());
         this.entry = entry;
     }
 

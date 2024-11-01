@@ -204,7 +204,8 @@ public class StoreCreationComp extends DialogComp {
                 null,
                 prov,
                 base,
-                dataStoreProvider -> (category != null && category.equals(dataStoreProvider.getCreationCategory())) || dataStoreProvider.equals(prov),
+                dataStoreProvider -> (category != null && category.equals(dataStoreProvider.getCreationCategory()))
+                        || dataStoreProvider.equals(prov),
                 (e, validated) -> {
                     try {
                         DataStorage.get().addStoreEntryIfNotPresent(e);

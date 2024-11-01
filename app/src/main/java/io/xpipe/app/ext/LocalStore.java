@@ -1,6 +1,5 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.store.DataStore;

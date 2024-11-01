@@ -2,11 +2,10 @@ package io.xpipe.app.browser.session;
 
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.storage.DataColor;
-import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.core.store.DataStore;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+
 import lombok.Getter;
 
 @Getter

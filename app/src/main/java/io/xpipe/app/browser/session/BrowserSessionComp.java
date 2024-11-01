@@ -20,10 +20,8 @@ import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
@@ -70,7 +68,11 @@ public class BrowserSessionComp extends SimpleComp {
 
         var bookmarkTopBar = new BrowserBookmarkHeaderComp();
         var bookmarksList = new BrowserBookmarkComp(
-                BindingsHelper.map(model.getSelectedEntry(), v -> v instanceof BrowserStoreSessionTab<?> st ? st.getEntry().get() : null),
+                BindingsHelper.map(
+                        model.getSelectedEntry(),
+                        v -> v instanceof BrowserStoreSessionTab<?> st
+                                ? st.getEntry().get()
+                                : null),
                 applicable,
                 action,
                 bookmarkTopBar.getCategory(),
@@ -113,8 +115,10 @@ public class BrowserSessionComp extends SimpleComp {
             AnchorPane.setRightAnchor(struc.get(), 0.0);
         });
         vertical.apply(struc -> {
-            struc.get().paddingProperty().bind(Bindings.createObjectBinding(
-                    () -> new Insets(tabs.getHeaderHeight().get(), 0, 0, 0), tabs.getHeaderHeight()));
+            struc.get()
+                    .paddingProperty()
+                    .bind(Bindings.createObjectBinding(
+                            () -> new Insets(tabs.getHeaderHeight().get(), 0, 0, 0), tabs.getHeaderHeight()));
         });
         var loadingIndicator = LoadingOverlayComp.noProgress(Comp.empty(), model.getBusy())
                 .apply(struc -> {

@@ -3,6 +3,7 @@ package io.xpipe.app.core;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.JsonConfigHelper;
 import io.xpipe.core.util.JacksonMapper;
+
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;

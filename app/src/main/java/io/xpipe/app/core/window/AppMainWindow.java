@@ -12,6 +12,7 @@ import io.xpipe.app.prefs.CloseBehaviourAlert;
 import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Rectangle2D;
@@ -24,17 +25,18 @@ import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import javax.imageio.ImageIO;
 
 public class AppMainWindow {
 

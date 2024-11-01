@@ -3,7 +3,6 @@ package io.xpipe.app.update;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.util.LocalShell;

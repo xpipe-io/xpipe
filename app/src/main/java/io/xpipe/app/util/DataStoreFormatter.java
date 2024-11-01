@@ -1,13 +1,6 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.comp.store.StoreEntryWrapper;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.process.ShellStoreState;
-import io.xpipe.core.process.ShellTtyState;
-
-import javafx.beans.value.ObservableValue;
 
 import java.util.Arrays;
 

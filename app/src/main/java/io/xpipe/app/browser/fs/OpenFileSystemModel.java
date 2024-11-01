@@ -9,7 +9,6 @@ import io.xpipe.app.browser.file.BrowserFileTransferMode;
 import io.xpipe.app.browser.file.BrowserFileTransferOperation;
 import io.xpipe.app.browser.file.FileSystemHelper;
 import io.xpipe.app.browser.session.BrowserAbstractSessionModel;
-import io.xpipe.app.browser.session.BrowserSessionTab;
 import io.xpipe.app.browser.session.BrowserStoreSessionTab;
 import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.ext.ProcessControlProvider;

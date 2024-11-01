@@ -8,8 +8,10 @@ import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.ShellEnvironmentStoreState;
 import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.process.ShellTtyState;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
+
 import lombok.Value;
 
 import java.util.Arrays;
@@ -25,33 +27,49 @@ public class ShellStoreFormat {
                     var s = (ShellEnvironmentStoreState)
                             section.getWrapper().getPersistentState().getValue();
                     var def = Boolean.TRUE.equals(s.getSetDefault()) ? AppI18n.get("default") : null;
-                    var name = DataStoreFormatter.join((includeOsName ? formattedOsName(s.getOsName()) : null), s.getShellName());
-                    return new ShellStoreFormat(null,name, new String[]{def}).format();
+                    var name = DataStoreFormatter.join(
+                            (includeOsName ? formattedOsName(s.getOsName()) : null), s.getShellName());
+                    return new ShellStoreFormat(null, name, new String[] {def}).format();
                 },
                 AppPrefs.get().language(),
                 section.getWrapper().getPersistentState());
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends ShellStoreState>ObservableValue<String> shellStore(StoreSection section, Function<T, String> f) {
+    public static <T extends ShellStoreState> ObservableValue<String> shellStore(
+            StoreSection section, Function<T, String> f) {
         return BindingsHelper.map(section.getWrapper().getPersistentState(), o -> {
             var s = (T) o;
             var info = f.apply(s);
             if (s.getShellDialect() != null
                     && !s.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
                 if (s.getOsName() != null) {
-                    return new ShellStoreFormat(LicenseProvider.get().checkOsName(s.getOsName()), formattedOsName(s.getOsName()), new String[]{info}).format();
+                    return new ShellStoreFormat(
+                                    LicenseProvider.get().checkOsName(s.getOsName()),
+                                    formattedOsName(s.getOsName()),
+                                    new String[] {info})
+                            .format();
                 }
 
                 if (s.getShellDialect().equals(ShellDialects.NO_INTERACTION)) {
-                    return new ShellStoreFormat(null, null, new String[]{info}).format();
+                    return new ShellStoreFormat(null, null, new String[] {info}).format();
                 }
 
-                return new ShellStoreFormat(LicenseProvider.get().getFeature(s.getShellDialect().getLicenseFeatureId()), s.getShellDialect().getDisplayName(), new String[]{info}).format();
+                return new ShellStoreFormat(
+                                LicenseProvider.get()
+                                        .getFeature(s.getShellDialect().getLicenseFeatureId()),
+                                s.getShellDialect().getDisplayName(),
+                                new String[] {info})
+                        .format();
             }
 
-            return new ShellStoreFormat(LicenseProvider.get().checkOsName(s.getOsName()), formattedOsName(s.getOsName()),
-                    new String[]{s.getTtyState() != null && s.getTtyState() != ShellTtyState.NONE ? "TTY" : null, info}).format();
+            return new ShellStoreFormat(
+                            LicenseProvider.get().checkOsName(s.getOsName()),
+                            formattedOsName(s.getOsName()),
+                            new String[] {
+                                s.getTtyState() != null && s.getTtyState() != ShellTtyState.NONE ? "TTY" : null, info
+                            })
+                    .format();
         });
     }
 
@@ -60,10 +78,16 @@ public class ShellStoreFormat {
     String[] states;
 
     public String format() {
-        var licenseReq = licensedFeature != null ? licensedFeature.getDescriptionSuffix().orElse(null) : null;
+        var licenseReq =
+                licensedFeature != null ? licensedFeature.getDescriptionSuffix().orElse(null) : null;
         var lic = licenseReq != null ? "[" + licenseReq + "+]" : null;
         var name = this.name;
-        var state = getStates() != null ? Arrays.stream(getStates()).filter(s -> s != null).map(s -> "[" + s + "]").collect(Collectors.joining(" ")) : null;
+        var state = getStates() != null
+                ? Arrays.stream(getStates())
+                        .filter(s -> s != null)
+                        .map(s -> "[" + s + "]")
+                        .collect(Collectors.joining(" "))
+                : null;
         if (state != null && state.isEmpty()) {
             state = null;
         }

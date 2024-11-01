@@ -372,8 +372,7 @@ public abstract class DataStorage {
         return refreshChildren(e, true);
     }
 
-    public boolean refreshChildren(DataStoreEntry e, boolean throwOnFail)
-            throws Exception {
+    public boolean refreshChildren(DataStoreEntry e, boolean throwOnFail) throws Exception {
         if (!(e.getStore() instanceof FixedHierarchyStore h)) {
             return false;
         }
