@@ -102,7 +102,7 @@ public abstract class UpdateHandler {
                     ThreadHelper.sleep(Duration.ofMinutes(5).toMillis());
                     event("Starting background updater thread");
                     while (true) {
-                        if (AppPrefs.get().automaticallyUpdate().get()) {
+                        if (AppPrefs.get().automaticallyUpdate().get() || AppPrefs.get().checkForSecurityUpdates().get()) {
                             event("Performing background update");
                             refreshUpdateCheckSilent();
                             prepareUpdate();

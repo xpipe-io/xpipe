@@ -1,9 +1,12 @@
 package io.xpipe.app.update;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.HttpHelper;
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.JacksonMapper;
 
 import org.apache.commons.io.FileUtils;
@@ -15,6 +18,9 @@ import org.kohsuke.github.authorization.AuthorizationProvider;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -112,30 +118,42 @@ public class AppDownloads {
         }
     }
 
-    public static Optional<GHRelease> getTopReleaseIncludingPreRelease() throws IOException {
-        var repo = getRepository();
-        return Optional.ofNullable(repo.listReleases().iterator().next());
+    private static String queryLatestVersion() throws Exception {
+        var req = JsonNodeFactory.instance.objectNode();
+        req.put("securityOnly", !AppPrefs.get().automaticallyUpdate().get());
+        req.put("ptb", AppProperties.get().isStaging());
+        req.put("os", OsType.getLocal().getId());
+        req.put("arch", AppProperties.get().getArch());
+        req.put("uuid", AppProperties.get().getUuid().toString());
+        req.put("version", AppProperties.get().getVersion());
+        var url = URI.create("https://api.xpipe.io/version");
+
+        var builder = HttpRequest.newBuilder();
+        var httpRequest = builder.uri(url)
+                .POST(HttpRequest.BodyPublishers.ofString(req.toPrettyString()))
+                .build();
+        var client = HttpClient.newHttpClient();
+        var response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() != 200) {
+            throw new IOException(response.body());
+        }
+
+        var json = JacksonMapper.getDefault().readTree(response.body());
+        var ver = json.required("version").asText();
+        return ver;
     }
 
-    public static Optional<GHRelease> getMarkedLatestRelease() throws IOException {
+    public static Optional<GHRelease> getLatestRelease() throws Exception {
+        var ver = queryLatestVersion();
         var repo = getRepository();
-        return Optional.ofNullable(repo.getLatestRelease());
+        var rel = repo.getReleaseByTagName(ver);
+        return Optional.ofNullable(rel);
     }
 
-    public static Optional<GHRelease> getLatestSuitableRelease() throws IOException {
+    public static Optional<GHRelease> getLatestSuitableRelease() throws Exception {
         try {
-            var preIncluding = getTopReleaseIncludingPreRelease();
-            // If we are currently running a prerelease, always return this as the suitable release!
-            if (preIncluding.isPresent()
-                    && preIncluding.get().isPrerelease()
-                    && AppProperties.get()
-                            .getVersion()
-                            .equals(preIncluding.get().getTagName())) {
-                return preIncluding;
-            }
-
-            return getMarkedLatestRelease();
-        } catch (IOException e) {
+            return getLatestRelease();
+        } catch (Exception e) {
             throw ErrorEvent.expected(e);
         }
     }

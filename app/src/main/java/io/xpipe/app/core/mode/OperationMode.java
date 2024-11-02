@@ -105,12 +105,17 @@ public abstract class OperationMode {
                     return;
                 }
 
+                // Handle any startup uncaught errors
+                if (OperationMode.isInStartup() && thread.threadId() == 1) {
+                    ex.printStackTrace();
+                    OperationMode.halt(1);
+                }
+
                 ErrorEvent.fromThrowable(ex).unhandled(true).build().handle();
             });
 
             TrackEvent.info("Initial setup");
             AppProperties.init();
-            AppState.init();
             XPipeSession.init(AppProperties.get().getBuildUuid());
             AppUserDirectoryCheck.check();
             AppTempCheck.check();

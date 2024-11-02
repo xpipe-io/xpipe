@@ -4,6 +4,8 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.JsonConfigHelper;
 import io.xpipe.core.util.JacksonMapper;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
@@ -13,9 +15,9 @@ import java.util.function.Supplier;
 
 public class AppCache {
 
-    private static Path getBasePath() {
-        return AppProperties.get().getDataDir().resolve("cache");
-    }
+    @Getter
+    @Setter
+    private static Path basePath;
 
     private static Path getPath(String key) {
         var name = key + ".cache";

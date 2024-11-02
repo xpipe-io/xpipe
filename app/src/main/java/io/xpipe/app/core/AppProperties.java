@@ -44,6 +44,8 @@ public class AppProperties {
     boolean locatorVersionCheck;
     boolean isTest;
     boolean autoAcceptEula;
+    UUID uuid;
+    boolean initialLaunch;
 
     public AppProperties() {
         var appDir = Path.of(System.getProperty("user.dir")).resolve("app");
@@ -113,6 +115,15 @@ public class AppProperties {
         autoAcceptEula = Optional.ofNullable(System.getProperty("io.xpipe.app.acceptEula"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
+        AppCache.setBasePath(dataDir.resolve("cache"));
+       UUID id = AppCache.getNonNull("uuid", UUID.class, null);
+       if (id == null) {
+           uuid = UUID.randomUUID();
+           AppCache.update("uuid", uuid);
+       } else {
+           uuid = id;
+       }
+        initialLaunch = AppCache.getNonNull("lastBuild", String.class, () -> null) == null;
     }
 
     private static boolean isJUnitTest() {

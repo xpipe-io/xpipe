@@ -3,7 +3,6 @@ package io.xpipe.app.core.check;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.AppState;
 import io.xpipe.app.core.AppStyle;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppWindowHelper;
@@ -35,7 +34,7 @@ public class AppAvCheck {
 
     public static void check() throws Throwable {
         // Only show this on first launch on windows
-        if (OsType.getLocal() != OsType.WINDOWS || !AppState.get().isInitialLaunch()) {
+        if (OsType.getLocal() != OsType.WINDOWS || !AppProperties.get().isInitialLaunch()) {
             return;
         }
 

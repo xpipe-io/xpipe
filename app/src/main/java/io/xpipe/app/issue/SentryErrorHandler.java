@@ -2,7 +2,6 @@ package io.xpipe.app.issue;
 
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.AppState;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.XPipeDistributionType;
@@ -145,6 +144,11 @@ public class SentryErrorHandler implements ErrorHandler {
                 AppPrefs.get() != null
                         ? AppPrefs.get().automaticallyUpdate().getValue().toString()
                         : "unknown");
+        s.setTag(
+                "securityUpdatesEnabled",
+                AppPrefs.get() != null
+                        ? AppPrefs.get().checkForSecurityUpdates().getValue().toString()
+                        : "unknown");
         s.setTag("initError", String.valueOf(OperationMode.isInStartup()));
         s.setTag(
                 "developerMode",
@@ -177,11 +181,7 @@ public class SentryErrorHandler implements ErrorHandler {
         }
 
         var user = new User();
-        user.setId(AppState.get().getUserId().toString());
-        if (ee.isShouldSendDiagnostics()) {
-            user.setEmail(AppState.get().getUserEmail());
-            user.setUsername(AppState.get().getUserName());
-        }
+        user.setId(AppProperties.get().getUuid().toString());
         s.setUser(user);
     }
 
@@ -189,7 +189,6 @@ public class SentryErrorHandler implements ErrorHandler {
         // Assume that this object is wrapped by a synchronous error handler
         if (!init) {
             AppProperties.init();
-            AppState.init();
             if (AppProperties.get().getSentryUrl() != null) {
                 Sentry.init(options -> {
                     options.setDsn(AppProperties.get().getSentryUrl());

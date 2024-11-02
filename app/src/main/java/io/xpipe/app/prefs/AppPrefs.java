@@ -107,6 +107,8 @@ public class AppPrefs {
             .property(new SimpleBooleanProperty(false)).key("enableTerminalLogging").valueClass(Boolean.class).licenseFeatureId("logging").build());
     final BooleanProperty enforceWindowModality =
             mapLocal(new SimpleBooleanProperty(false), "enforceWindowModality", Boolean.class, false);
+    final BooleanProperty checkForSecurityUpdates =
+            mapLocal(new SimpleBooleanProperty(true), "checkForSecurityUpdates", Boolean.class, false);
     final BooleanProperty condenseConnectionDisplay =
             mapLocal(new SimpleBooleanProperty(false), "condenseConnectionDisplay", Boolean.class, false);
     final BooleanProperty showChildCategoriesInParentCategory =
@@ -152,6 +154,10 @@ public class AppPrefs {
             mapVaultShared(new SimpleStringProperty(UUID.randomUUID().toString()), "apiKey", String.class ,true);
     final BooleanProperty disableApiAuthentication =
             mapLocal(new SimpleBooleanProperty(false), "disableApiAuthentication", Boolean.class, false);
+
+    public ObservableBooleanValue checkForSecurityUpdates() {
+        return checkForSecurityUpdates;
+    }
 
     public ObservableBooleanValue enableTerminalLogging() {
         return enableTerminalLogging;
@@ -510,7 +516,7 @@ public class AppPrefs {
         if (rdpClientType.get() == null) {
             rdpClientType.setValue(ExternalRdpClientType.determineDefault());
         }
-        if (AppState.get().isInitialLaunch()) {
+        if (AppProperties.get().isInitialLaunch()) {
             performanceMode.setValue(XPipeDistributionType.get() == XPipeDistributionType.WEBTOP);
         }
     }

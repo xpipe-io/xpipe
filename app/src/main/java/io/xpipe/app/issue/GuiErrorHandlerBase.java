@@ -11,7 +11,6 @@ public class GuiErrorHandlerBase {
         try {
             PlatformState.initPlatformOrThrow();
             AppProperties.init();
-            AppState.init();
             AppExtensionManager.init(false);
             AppI18n.init();
             AppStyle.init();
