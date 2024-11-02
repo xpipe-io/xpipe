@@ -42,14 +42,14 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         var selectedBorder = Bindings.createObjectBinding(
                 () -> {
                     var c = Platform.getPreferences().getAccentColor().desaturate();
-                    return new Background(new BackgroundFill(c, new CornerRadii(8), new Insets(10, 1, 10, 2)));
+                    return new Background(new BackgroundFill(c, new CornerRadii(8), new Insets(12, 1, 12, 2)));
                 },
                 Platform.getPreferences().accentColorProperty());
 
         var hoverBorder = Bindings.createObjectBinding(
                 () -> {
                     var c = Platform.getPreferences().getAccentColor().darker().desaturate();
-                    return new Background(new BackgroundFill(c, new CornerRadii(8), new Insets(10, 1, 10, 2)));
+                    return new Background(new BackgroundFill(c, new CornerRadii(8), new Insets(12, 1, 12, 2)));
                 },
                 Platform.getPreferences().accentColorProperty());
 

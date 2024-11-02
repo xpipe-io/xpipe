@@ -49,9 +49,7 @@ public class EditorCategory extends AppPrefsCategory {
                         .addComp(new TextFieldComp(prefs.customEditorCommand, true)
                                 .apply(struc -> struc.get().setPromptText("myeditor $FILE"))
                                 .hide(prefs.externalEditor.isNotEqualTo(ExternalEditorType.CUSTOM)))
-                        .addComp(terminalTest)
-                        .nameAndDescription("preferEditorTabs")
-                        .addToggle(prefs.preferEditorTabs))
+                        .addComp(terminalTest))
                 .buildComp();
     }
 }

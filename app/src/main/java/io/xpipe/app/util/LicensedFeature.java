@@ -12,17 +12,17 @@ public interface LicensedFeature {
 
     public default ObservableValue<String> suffixObservable(ObservableValue<String> s) {
         return s.map(s2 ->
-                getDescriptionSuffix().map(suffix -> s2 + " (" + suffix + ")").orElse(""));
+                getDescriptionSuffix().map(suffix -> s2 + " (" + suffix + "+)").orElse(s2));
     }
 
     public default ObservableValue<String> suffixObservable(String key) {
         return AppI18n.observable(key).map(s -> getDescriptionSuffix()
-                .map(suffix -> s + " (" + suffix + ")")
-                .orElse(""));
+                .map(suffix -> s + " (" + suffix + "+)")
+                .orElse(s));
     }
 
     public default String suffix(String s) {
-        return getDescriptionSuffix().map(suffix -> s + " (" + suffix + ")").orElse(s);
+        return getDescriptionSuffix().map(suffix -> s + " (" + suffix + "+)").orElse(s);
     }
 
     String getId();

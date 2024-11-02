@@ -5,6 +5,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.*;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.util.InPlaceSecretValue;
 
 import javafx.beans.property.*;
@@ -144,6 +145,28 @@ public class OptionsBuilder {
                 null,
                 null,
                 Comp.of(() -> new Label(title.getValue())).styleClass("title-header")));
+        return this;
+    }
+
+    public OptionsBuilder pref(Object property) {
+        var mapping = AppPrefs.get().getMapping(property);
+        var name = mapping.getKey();
+        name(name);
+        if (mapping.isRequiresRestart()) {
+            description(AppI18n.observable(name + "Description").map(s -> s + "\n\n" + AppI18n.get("requiresRestart")));
+        } else {
+            description(AppI18n.observable(name + "Description"));
+        }
+        if (mapping.getLicenseFeatureId() != null) {
+            licenseRequirement(mapping.getLicenseFeatureId());
+        }
+        return this;
+    }
+
+    public OptionsBuilder licenseRequirement(String featureId) {
+        var f = LicenseProvider.get().getFeature(featureId);
+        name = f.suffixObservable(name);
+        lastNameReference = name;
         return this;
     }
 
