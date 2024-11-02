@@ -30,7 +30,6 @@ public class LoggingCategory extends AppPrefsCategory {
                 .sub(new OptionsBuilder()
                         .nameAndDescription("enableTerminalLogging")
                         .addToggle(prefs.enableTerminalLogging)
-                        .disable(!supported)
                         .nameAndDescription("terminalLoggingDirectory")
                         .addComp(new ButtonComp(AppI18n.observable("openSessionLogs"), () -> {
                                     var dir = AppProperties.get().getDataDir().resolve("sessions");
