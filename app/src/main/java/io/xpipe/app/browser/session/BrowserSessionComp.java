@@ -126,7 +126,7 @@ public class BrowserSessionComp extends SimpleComp {
                     AnchorPane.setRightAnchor(struc.get(), 0.0);
                 })
                 .styleClass("tab-loading-indicator");
-        var loadingStack = new AnchorComp(List.of(tabs));
+        var loadingStack = new AnchorComp(List.of(tabs, loadingIndicator));
         var splitPane = new SideSplitPaneComp(vertical, loadingStack)
                 .withInitialWidth(AppLayoutModel.get().getSavedState().getBrowserConnectionsWidth())
                 .withOnDividerChange(d -> {

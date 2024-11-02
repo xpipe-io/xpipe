@@ -124,7 +124,7 @@ project.ext {
     website = 'https://xpipe.io'
     sourceWebsite = isStage ? 'https://github.com/xpipe-io/xpipe-ptb' : 'https://github.com/xpipe-io/xpipe'
     authors = 'Christopher Schnick'
-    javafxVersion = '24-ea+5'
+    javafxVersion = '24-ea+15'
     platformName = getPlatformName()
     languages = ["en", "nl", "es", "fr", "de", "it", "pt", "ru", "ja", "zh", "tr", "da"]
     jvmRunArgs = [

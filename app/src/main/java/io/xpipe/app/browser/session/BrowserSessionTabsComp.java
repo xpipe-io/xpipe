@@ -61,7 +61,6 @@ public class BrowserSessionTabsComp extends SimpleComp {
         var stack = new StackPane(topBackground, tabs);
         stack.setAlignment(Pos.TOP_CENTER);
         topBackground.prefHeightProperty().bind(headerHeight);
-        topBackground.minHeightProperty().bind(topBackground.prefHeightProperty());
         topBackground.maxHeightProperty().bind(topBackground.prefHeightProperty());
         topBackground.prefWidthProperty().bind(tabs.widthProperty());
         return stack;
