@@ -29,8 +29,8 @@ public class PortableUpdater extends UpdateHandler {
                 .createRegion();
     }
 
-    public synchronized AvailableRelease refreshUpdateCheckImpl() throws Exception {
-        var rel = AppDownloads.getLatestSuitableRelease();
+    public synchronized AvailableRelease refreshUpdateCheckImpl(boolean first, boolean securityOnly) throws Exception {
+        var rel = AppDownloads.queryLatestRelease(first, securityOnly);
         event("Determined latest suitable release "
                 + rel.map(GHRelease::getName).orElse(null));
 

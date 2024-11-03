@@ -29,13 +29,13 @@ public class UpdateCheckComp extends SimpleComp {
     }
 
     private void performUpdateAndRestart() {
-        XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheckSilent();
+        XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheckSilent(false, false);
         UpdateAvailableAlert.showIfNeeded();
     }
 
     private void refresh() {
         ThreadHelper.runFailableAsync(() -> {
-            XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheck();
+            XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheck(false, false);
             XPipeDistributionType.get().getUpdateHandler().prepareUpdate();
         });
     }

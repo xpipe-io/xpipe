@@ -99,12 +99,14 @@ public abstract class UpdateHandler {
 
     private void startBackgroundUpdater() {
         ThreadHelper.createPlatformThread("updater", true, () -> {
+            var checked = false;
                     ThreadHelper.sleep(Duration.ofMinutes(5).toMillis());
                     event("Starting background updater thread");
                     while (true) {
                         if (AppPrefs.get().automaticallyUpdate().get() || AppPrefs.get().checkForSecurityUpdates().get()) {
                             event("Performing background update");
-                            refreshUpdateCheckSilent();
+                            refreshUpdateCheckSilent(!checked, !AppPrefs.get().automaticallyUpdate().get());
+                            checked = true;
                             prepareUpdate();
                         }
 
@@ -134,17 +136,9 @@ public abstract class UpdateHandler {
         return false;
     }
 
-    public final void prepareUpdateAsync() {
-        ThreadHelper.runAsync(() -> prepareUpdate());
-    }
-
-    public final void refreshUpdateCheckAsync() {
-        ThreadHelper.runAsync(() -> refreshUpdateCheckSilent());
-    }
-
-    public final AvailableRelease refreshUpdateCheckSilent() {
+    public final AvailableRelease refreshUpdateCheckSilent(boolean first, boolean securityOnly) {
         try {
-            return refreshUpdateCheck();
+            return refreshUpdateCheck(first, securityOnly);
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).discard().handle();
             return null;
@@ -214,7 +208,7 @@ public abstract class UpdateHandler {
 
         // Check if prepared update is still the latest.
         // We only do that here to minimize the sent requests by only executing when it's really necessary
-        var available = XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheckSilent();
+        var available = XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheckSilent(false, !AppPrefs.get().automaticallyUpdate().get());
         if (preparedUpdate.getValue() == null) {
             return;
         }
@@ -233,17 +227,17 @@ public abstract class UpdateHandler {
         throw new UnsupportedOperationException();
     }
 
-    public final AvailableRelease refreshUpdateCheck() throws Exception {
+    public final AvailableRelease refreshUpdateCheck(boolean first, boolean securityOnly) throws Exception {
         if (busy.getValue()) {
             return lastUpdateCheckResult.getValue();
         }
 
         try (var ignored = new BooleanScope(busy).start()) {
-            return refreshUpdateCheckImpl();
+            return refreshUpdateCheckImpl(first, securityOnly);
         }
     }
 
-    public abstract AvailableRelease refreshUpdateCheckImpl() throws Exception;
+    public abstract AvailableRelease refreshUpdateCheckImpl(boolean first, boolean securityOnly) throws Exception;
 
     @Value
     @Builder

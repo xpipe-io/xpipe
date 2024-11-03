@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.HttpHelper;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.JacksonMapper;
@@ -118,14 +117,15 @@ public class AppDownloads {
         }
     }
 
-    private static String queryLatestVersion() throws Exception {
+    private static String queryLatestVersion(boolean first, boolean securityOnly) throws Exception {
         var req = JsonNodeFactory.instance.objectNode();
-        req.put("securityOnly", !AppPrefs.get().automaticallyUpdate().get());
+        req.put("securityOnly", securityOnly);
         req.put("ptb", AppProperties.get().isStaging());
         req.put("os", OsType.getLocal().getId());
         req.put("arch", AppProperties.get().getArch());
         req.put("uuid", AppProperties.get().getUuid().toString());
         req.put("version", AppProperties.get().getVersion());
+        req.put("first", first);
         var url = URI.create("https://api.xpipe.io/version");
 
         var builder = HttpRequest.newBuilder();
@@ -143,16 +143,12 @@ public class AppDownloads {
         return ver;
     }
 
-    public static Optional<GHRelease> getLatestRelease() throws Exception {
-        var ver = queryLatestVersion();
-        var repo = getRepository();
-        var rel = repo.getReleaseByTagName(ver);
-        return Optional.ofNullable(rel);
-    }
-
-    public static Optional<GHRelease> getLatestSuitableRelease() throws Exception {
+    public static Optional<GHRelease> queryLatestRelease(boolean first, boolean securityOnly) throws Exception {
         try {
-            return getLatestRelease();
+            var ver = queryLatestVersion(first, securityOnly);
+            var repo = getRepository();
+            var rel = repo.getReleaseByTagName(ver);
+            return Optional.ofNullable(rel);
         } catch (Exception e) {
             throw ErrorEvent.expected(e);
         }

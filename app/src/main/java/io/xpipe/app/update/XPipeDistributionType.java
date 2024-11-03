@@ -24,7 +24,7 @@ public enum XPipeDistributionType {
     NATIVE_INSTALLATION("install", true, () -> new GitHubUpdater(true)),
     HOMEBREW("homebrew", true, () -> new HomebrewUpdater()),
     WEBTOP("webtop", true, () -> new PortableUpdater(false)),
-    CHOCO("choco", true, () -> new ChocoUpdater());
+    CHOCO("choco", true, () -> new PortableUpdater(true));
 
     private static XPipeDistributionType type;
 

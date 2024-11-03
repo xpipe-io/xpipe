@@ -3,6 +3,7 @@ package io.xpipe.app.issue;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppWindowHelper;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.ThreadHelper;
@@ -73,7 +74,7 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
         }
 
         try {
-            var rel = XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheck();
+            var rel = XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheck(false, !AppPrefs.get().automaticallyUpdate().get());
             if (rel != null && rel.isUpdate()) {
                 var update = AppWindowHelper.showBlockingAlert(alert -> {
                             alert.setAlertType(Alert.AlertType.INFORMATION);
