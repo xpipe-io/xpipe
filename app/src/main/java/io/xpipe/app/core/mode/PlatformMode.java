@@ -56,7 +56,7 @@ public abstract class PlatformMode extends OperationMode {
 
         // If we downloaded an update, and decided to no longer automatically update, don't remind us!
         // You can still update manually in the about tab
-        if (AppPrefs.get().automaticallyUpdate().get()) {
+        if (AppPrefs.get().automaticallyUpdate().get() || AppPrefs.get().checkForSecurityUpdates().get()) {
             UpdateAvailableAlert.showIfNeeded();
         }
 

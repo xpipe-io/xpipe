@@ -24,7 +24,7 @@ public enum XPipeDistributionType {
     NATIVE_INSTALLATION("install", true, () -> new GitHubUpdater(true)),
     HOMEBREW("homebrew", true, () -> new HomebrewUpdater()),
     WEBTOP("webtop", true, () -> new PortableUpdater(false)),
-    CHOCO("choco", true, () -> new ChocoUpdater());
+    CHOCO("choco", true, () -> new PortableUpdater(true));
 
     private static XPipeDistributionType type;
 
@@ -54,7 +54,7 @@ public enum XPipeDistributionType {
         }
 
         if (!XPipeSession.get().isNewBuildSession()) {
-            var cached = AppCache.get("dist", String.class, () -> null);
+            var cached = AppCache.getNonNull("dist", String.class, () -> null);
             var cachedType = Arrays.stream(values())
                     .filter(xPipeDistributionType ->
                             xPipeDistributionType.getId().equals(cached))

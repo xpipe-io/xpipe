@@ -4,23 +4,20 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.JsonConfigHelper;
 import io.xpipe.core.util.JacksonMapper;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 public class AppCache {
 
-    public static <T> Optional<T> getIfPresent(String key, Class<T> type) {
-        return Optional.ofNullable(get(key, type, () -> null));
-    }
-
-    private static Path getBasePath() {
-        return AppProperties.get().getDataDir().resolve("cache");
-    }
+    @Getter
+    @Setter
+    private static Path basePath;
 
     private static Path getPath(String key) {
         var name = key + ".cache";
@@ -47,7 +44,33 @@ public class AppCache {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T get(String key, Class<?> type, Supplier<T> notPresent) {
+    public static <T> T getNonNull(String key, Class<?> type, Supplier<T> notPresent) {
+        var path = getPath(key);
+        if (Files.exists(path)) {
+            try {
+                var tree = JsonConfigHelper.readRaw(path);
+                if (tree.isMissingNode() || tree.isNull()) {
+                    FileUtils.deleteQuietly(path.toFile());
+                    return notPresent.get();
+                }
+
+                var r = (T) JacksonMapper.getDefault().treeToValue(tree, type);
+                if (r == null || !type.isAssignableFrom(r.getClass())) {
+                    FileUtils.deleteQuietly(path.toFile());
+                    return notPresent.get();
+                } else {
+                    return r;
+                }
+            } catch (Exception ex) {
+                ErrorEvent.fromThrowable(ex).omit().handle();
+                FileUtils.deleteQuietly(path.toFile());
+            }
+        }
+        return notPresent != null ? notPresent.get() : null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T getNullable(String key, Class<?> type, Supplier<T> notPresent) {
         var path = getPath(key);
         if (Files.exists(path)) {
             try {
@@ -65,6 +88,25 @@ public class AppCache {
         return notPresent != null ? notPresent.get() : null;
     }
 
+    public static boolean getBoolean(String key, boolean notPresent) {
+        var path = getPath(key);
+        if (Files.exists(path)) {
+            try {
+                var tree = JsonConfigHelper.readRaw(path);
+                if (!tree.isBoolean()) {
+                    FileUtils.deleteQuietly(path.toFile());
+                    return notPresent;
+                }
+
+                return tree.asBoolean();
+            } catch (Exception ex) {
+                ErrorEvent.fromThrowable(ex).omit().handle();
+                FileUtils.deleteQuietly(path.toFile());
+            }
+        }
+        return notPresent;
+    }
+
     public static <T> void update(String key, T val) {
         var path = getPath(key);
 
@@ -78,13 +120,5 @@ public class AppCache {
                     .build()
                     .handle();
         }
-    }
-
-    public <T> T getValue(String key, Class<?> type, Supplier<T> notPresent) {
-        return get(key, type, notPresent);
-    }
-
-    public <T> void updateValue(String key, T val) {
-        update(key, val);
     }
 }

@@ -1,16 +1,16 @@
 .root {
-    -color-dark: rgb(255, 255, 255);
-    -color-light: rgb(0, 0, 0);
-    -color-base-0: #f2f2f7;
-    -color-base-1: #e5e5ea;
-    -color-base-2: #d1d1d6;
-    -color-base-3: #aeaeb2;
-    -color-base-4: rgb(142, 142, 147);
-    -color-base-5: rgb(99, 99, 102);
-    -color-base-6: rgb(72, 72, 74);
-    -color-base-7: rgb(58, 58, 60);
-    -color-base-8: rgb(44, 44, 46);
-    -color-base-9: rgb(28, 28, 30);
+    -color-dark: #010409;
+    -color-light: #ffffff;
+    -color-base-0: #f0f6fc;
+    -color-base-1: #c9d1d9;
+    -color-base-2: #b1bac4;
+    -color-base-3: #8b949e;
+    -color-base-4: #6e7681;
+    -color-base-5: #484f58;
+    -color-base-6: #30363d;
+    -color-base-7: #21262d;
+    -color-base-8: #161b22;
+    -color-base-9: #0d1117;
     -color-accent-0: #c2e0ff;
     -color-accent-1: #9dceff;
     -color-accent-2: #78bbff;
@@ -110,7 +110,19 @@
     -color-chart-8-alpha20: rgba(136, 136, 136, 0.2);
     -fx-background-color: -color-bg-default;
     -fx-font-size: 14px;
-    -fx-background-radius: inherit;
-    -fx-background-insets: inherit;
-    -fx-padding: inherit;
+}
+
+.root { -color-bg-default-transparent: #0d1117d2; }
+
+.root .table-view {
+    -color-cell-bg-odd: derive(-color-bg-subtle, -35%);
+    -color-cell-bg: derive(-color-bg-subtle, -30%);
+}
+
+.root:dark * {
+    -color-foreground-base: derive(-color-bg-default, 9%);
+}
+
+.root:light * {
+    -color-foreground-base: derive(-color-bg-default, -3%);
 }

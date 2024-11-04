@@ -14,9 +14,11 @@ public class HostHelper {
         return p;
     }
 
-    public static int findRandomOpenPortOnAllLocalInterfaces() throws IOException {
+    public static int findRandomOpenPortOnAllLocalInterfaces() {
         try (ServerSocket socket = new ServerSocket(0)) {
             return socket.getLocalPort();
+        } catch (IOException e) {
+            return randomPort();
         }
     }
 

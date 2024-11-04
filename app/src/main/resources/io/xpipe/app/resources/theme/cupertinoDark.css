@@ -1,5 +1,20 @@
-.root { -color-bg-default-transparent: #1C1C1ED2; }
+.root:windows { -color-bg-default-transparent: #1C1C1ED2; }
 
-.root.cupertino .button {
+.root:macos { -color-bg-default-transparent: #0d0d10D3; }
+
+.root .button {
     -fx-effect: NONE;
+}
+
+.root .table-view {
+    -color-cell-bg-odd: derive(-color-bg-subtle, -45%);
+    -color-cell-bg: derive(-color-bg-subtle, -30%);
+}
+
+.root:dark * {
+    -color-foreground-base: derive(-color-bg-default, 9%);
+}
+
+.root:light * {
+    -color-foreground-base: derive(-color-bg-default, -3%);
 }

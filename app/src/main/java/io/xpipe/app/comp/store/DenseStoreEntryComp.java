@@ -95,7 +95,16 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         nameCC.setMinWidth(100);
         nameCC.setHgrow(Priority.ALWAYS);
         grid.getColumnConstraints().addAll(nameCC);
+
+        var active = new StoreActiveComp(getWrapper()).createRegion();
         var nameBox = new HBox(name, notes);
+        getWrapper().getSessionActive().subscribe(aBoolean -> {
+            if (!aBoolean) {
+                nameBox.getChildren().remove(active);
+            } else {
+                nameBox.getChildren().add(1, active);
+            }
+        });
         nameBox.setSpacing(6);
         nameBox.setAlignment(Pos.CENTER_LEFT);
         grid.addRow(0, nameBox);

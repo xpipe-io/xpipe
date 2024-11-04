@@ -17,7 +17,7 @@ public interface NetworkTunnelStore extends DataStore {
 
     interface TunnelFunction {
 
-        NetworkTunnelSession create(int localPort, int remotePort);
+        NetworkTunnelSession create(int localPort, int remotePort, String address) throws Exception;
     }
 
     DataStore getNetworkParent();
@@ -57,7 +57,7 @@ public interface NetworkTunnelStore extends DataStore {
         }
     }
 
-    default NetworkTunnelSession sessionChain(int local, int remotePort) throws Exception {
+    default NetworkTunnelSession sessionChain(int local, int remotePort, String address) throws Exception {
         if (!isLocallyTunneable()) {
             throw new IllegalStateException(
                     "Unable to create tunnel chain as one intermediate system does not support tunneling");
@@ -75,7 +75,7 @@ public interface NetworkTunnelStore extends DataStore {
             var currentLocalPort = isLast(current) ? local : randomPort();
             var currentRemotePort =
                     sessions.isEmpty() ? remotePort : sessions.getLast().getLocalPort();
-            var t = func.create(currentLocalPort, currentRemotePort);
+            var t = func.create(currentLocalPort, currentRemotePort, current == this ? address : "localhost");
             t.start();
             sessions.add(t);
             counter.incrementAndGet();

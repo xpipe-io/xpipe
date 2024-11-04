@@ -7,7 +7,7 @@ public class Hyperlinks {
     public static final String DOUBLE_PROMPT = "https://docs.xpipe.io/two-step-connections";
     public static final String AGENT_SETUP = "https://docs.xpipe.io/ssh-agent-socket";
     public static final String GITHUB = "https://github.com/xpipe-io/xpipe";
-    public static final String GITHUB_PTB = "https://github.com/xpipe-io/xpipe";
+    public static final String GITHUB_PTB = "https://github.com/xpipe-io/xpipe-ptb";
     public static final String PRIVACY = "https://docs.xpipe.io/privacy-policy";
     public static final String EULA = "https://docs.xpipe.io/end-user-license-agreement";
     public static final String SECURITY = "https://docs.xpipe.io/security";

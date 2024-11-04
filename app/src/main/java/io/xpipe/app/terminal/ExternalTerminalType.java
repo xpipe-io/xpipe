@@ -154,7 +154,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         private boolean showInfo() {
-            boolean set = AppCache.get("xshellSetup", Boolean.class, () -> false);
+            boolean set = AppCache.getBoolean("xshellSetup", false);
             if (set) {
                 return true;
             }
@@ -368,7 +368,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         private boolean showInfo() throws IOException {
-            boolean set = AppCache.get("termiusSetup", Boolean.class, () -> false);
+            boolean set = AppCache.getBoolean("termiusSetup", false);
             if (set) {
                 return true;
             }

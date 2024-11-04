@@ -20,7 +20,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.ValidationContext;
+import io.xpipe.core.store.ValidatableStore;
 import io.xpipe.core.util.ValidationException;
 
 import javafx.application.Platform;
@@ -157,6 +157,17 @@ public class StoreCreationComp extends DialogComp {
                 },
                 name,
                 store);
+
+        skippable.bind(Bindings.createBooleanBinding(
+                () -> {
+                    if (name.get() != null && store.get().isComplete() && store.get() instanceof ValidatableStore) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                },
+                store,
+                name));
     }
 
     public static void showEdit(DataStoreEntry e) {
@@ -165,11 +176,8 @@ public class StoreCreationComp extends DialogComp {
                 e.getProvider(),
                 e.getStore(),
                 v -> true,
-                (newE, context, validated) -> {
+                (newE, validated) -> {
                     ThreadHelper.runAsync(() -> {
-                        if (context != null) {
-                            context.close();
-                        }
                         if (!DataStorage.get().getStoreEntries().contains(e)) {
                             DataStorage.get().addStoreEntryIfNotPresent(newE);
                         } else {
@@ -191,21 +199,22 @@ public class StoreCreationComp extends DialogComp {
     }
 
     public static void showCreation(DataStore base, DataStoreCreationCategory category) {
+        var prov = base != null ? DataStoreProviders.byStore(base) : null;
         show(
                 null,
-                base != null ? DataStoreProviders.byStore(base) : null,
+                prov,
                 base,
-                dataStoreProvider -> category.equals(dataStoreProvider.getCreationCategory()),
-                (e, context, validated) -> {
+                dataStoreProvider -> (category != null && category.equals(dataStoreProvider.getCreationCategory()))
+                        || dataStoreProvider.equals(prov),
+                (e, validated) -> {
                     try {
                         DataStorage.get().addStoreEntryIfNotPresent(e);
-                        if (context != null
-                                && validated
+                        if (validated
                                 && e.getProvider().shouldShowScan()
                                 && AppPrefs.get()
                                         .openConnectionSearchWindowOnConnectionCreation()
                                         .get()) {
-                            ScanAlert.showAsync(e, context);
+                            ScanAlert.showAsync(e);
                         }
                     } catch (Exception ex) {
                         ErrorEvent.fromThrowable(ex).handle();
@@ -217,7 +226,7 @@ public class StoreCreationComp extends DialogComp {
 
     public interface CreationConsumer {
 
-        void consume(DataStoreEntry entry, ValidationContext<?> validationContext, boolean validated);
+        void consume(DataStoreEntry entry, boolean validated);
     }
 
     private static void show(
@@ -254,9 +263,9 @@ public class StoreCreationComp extends DialogComp {
     @Override
     protected List<Comp<?>> customButtons() {
         return List.of(
-                new ButtonComp(AppI18n.observable("skip"), null, () -> {
+                new ButtonComp(AppI18n.observable("skipValidation"), null, () -> {
                             if (showInvalidConfirmAlert()) {
-                                commit(null, false);
+                                commit(false);
                             } else {
                                 finish();
                             }
@@ -299,7 +308,7 @@ public class StoreCreationComp extends DialogComp {
 
         // We didn't change anything
         if (existingEntry != null && existingEntry.getStore().equals(store.getValue())) {
-            commit(null, false);
+            commit(false);
             return;
         }
 
@@ -329,18 +338,14 @@ public class StoreCreationComp extends DialogComp {
 
             try (var ignored = new BooleanScope(busy).start()) {
                 DataStorage.get().addStoreEntryInProgress(entry.getValue());
-                var context = entry.getValue().validateAndKeepOpenOrThrowAndClose(null);
-                commit(context, true);
+                entry.getValue().validateOrThrow();
+                commit(true);
             } catch (Throwable ex) {
                 if (ex instanceof ValidationException) {
                     ErrorEvent.expected(ex);
-                    skippable.set(false);
                 } else if (ex instanceof StackOverflowError) {
                     // Cycles in connection graphs can fail hard but are expected
                     ErrorEvent.expected(ex);
-                    skippable.set(false);
-                } else {
-                    skippable.set(true);
                 }
 
                 var newMessage = ExceptionConverter.convertMessage(ex);
@@ -415,14 +420,14 @@ public class StoreCreationComp extends DialogComp {
                 .createRegion();
     }
 
-    private void commit(ValidationContext<?> validationContext, boolean validated) {
+    private void commit(boolean validated) {
         if (finished.get()) {
             return;
         }
         finished.setValue(true);
 
         if (entry.getValue() != null) {
-            consumer.consume(entry.getValue(), validationContext, validated);
+            consumer.consume(entry.getValue(), validated);
         }
 
         PlatformThread.runLaterIfNeeded(() -> {
@@ -433,7 +438,7 @@ public class StoreCreationComp extends DialogComp {
     private Region createLayout() {
         var layout = new BorderPane();
         layout.getStyleClass().add("store-creator");
-        var providerChoice = new StoreProviderChoiceComp(filter, provider, staticDisplay);
+        var providerChoice = new StoreProviderChoiceComp(filter, provider);
         var showProviders = (!staticDisplay
                         && (providerChoice.getProviders().size() > 1
                                 || providerChoice.getProviders().getFirst().showProviderChoice()))

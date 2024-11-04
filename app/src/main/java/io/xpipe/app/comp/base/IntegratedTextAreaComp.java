@@ -68,7 +68,14 @@ public class IntegratedTextAreaComp extends Comp<IntegratedTextAreaComp.Structur
                         return new TextAreaStructure(c, textArea.getTextArea());
                     }
                 },
-                paths -> value.setValue(Files.readString(paths.getFirst())));
+                paths -> {
+                    var first = paths.getFirst();
+                    if (Files.size(first) > 1_000_000) {
+                        return;
+                    }
+
+                    value.setValue(Files.readString(first));
+                });
         var struc = fileDrop.createStructure();
         return new Structure(struc.get(), struc.getCompStructure().getTextArea());
     }

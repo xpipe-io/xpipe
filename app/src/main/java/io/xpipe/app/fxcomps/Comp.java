@@ -97,8 +97,8 @@ public abstract class Comp<S extends CompStructure<?>> {
         return apply(struc -> struc.get().setMinWidth(width));
     }
 
-    public Comp<S> minHeight(double width) {
-        return apply(struc -> struc.get().setMinHeight(width));
+    public Comp<S> minHeight(double height) {
+        return apply(struc -> struc.get().setMinHeight(height));
     }
 
     public Comp<S> maxWidth(int width) {

@@ -3,6 +3,7 @@ package io.xpipe.app.update;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppWindowHelper;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.Hyperlinks;
 
 import javafx.event.ActionEvent;
@@ -22,7 +23,7 @@ public class UpdateAvailableAlert {
         }
 
         // Check whether we still have the latest version prepared
-        uh.refreshUpdateCheckSilent();
+        uh.refreshUpdateCheckSilent(false, !AppPrefs.get().automaticallyUpdate().get());
         if (uh.getPreparedUpdate().getValue() == null) {
             return;
         }

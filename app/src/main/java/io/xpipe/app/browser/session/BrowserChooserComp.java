@@ -6,10 +6,11 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemComp;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.comp.base.DialogComp;
-import io.xpipe.app.comp.base.SideSplitPaneComp;
+import io.xpipe.app.comp.base.LeftSplitPaneComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
@@ -19,7 +20,6 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.FileReference;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FileSystemStore;
-import io.xpipe.core.store.ShellStore;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.collections.ListChangeListener;
@@ -148,7 +148,7 @@ public class BrowserChooserComp extends DialogComp {
         });
 
         var vertical = new VerticalComp(List.of(bookmarkTopBar, bookmarksContainer)).styleClass("left");
-        var splitPane = new SideSplitPaneComp(vertical, stack)
+        var splitPane = new LeftSplitPaneComp(vertical, stack)
                 .withInitialWidth(AppLayoutModel.get().getSavedState().getBrowserConnectionsWidth())
                 .withOnDividerChange(AppLayoutModel.get().getSavedState()::setBrowserConnectionsWidth)
                 .styleClass("background")

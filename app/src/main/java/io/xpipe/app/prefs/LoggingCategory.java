@@ -22,13 +22,10 @@ public class LoggingCategory extends AppPrefsCategory {
     @Override
     protected Comp<?> create() {
         var prefs = AppPrefs.get();
-        var feature = LicenseProvider.get().getFeature("logging");
-        var supported = feature.isSupported() || feature.isPreviewSupported();
-        var title = AppI18n.observable("sessionLogging").map(s -> s + (supported ? "" : " (Pro)"));
         return new OptionsBuilder()
-                .addTitle(title)
+                .addTitle("sessionLogging")
                 .sub(new OptionsBuilder()
-                        .nameAndDescription("enableTerminalLogging")
+                        .pref(prefs.enableTerminalLogging)
                         .addToggle(prefs.enableTerminalLogging)
                         .nameAndDescription("terminalLoggingDirectory")
                         .addComp(new ButtonComp(AppI18n.observable("openSessionLogs"), () -> {

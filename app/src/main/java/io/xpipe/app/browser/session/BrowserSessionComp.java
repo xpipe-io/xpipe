@@ -4,23 +4,25 @@ import io.xpipe.app.browser.BrowserBookmarkComp;
 import io.xpipe.app.browser.BrowserBookmarkHeaderComp;
 import io.xpipe.app.browser.BrowserTransferComp;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
-import io.xpipe.app.comp.base.SideSplitPaneComp;
+import io.xpipe.app.comp.base.LeftSplitPaneComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.AnchorComp;
+import io.xpipe.app.fxcomps.impl.LabelComp;
 import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.ShellStore;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.geometry.Insets;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
@@ -67,7 +69,11 @@ public class BrowserSessionComp extends SimpleComp {
 
         var bookmarkTopBar = new BrowserBookmarkHeaderComp();
         var bookmarksList = new BrowserBookmarkComp(
-                BindingsHelper.map(model.getSelectedEntry(), v -> v.getEntry().get()),
+                BindingsHelper.map(
+                        model.getSelectedEntry(),
+                        v -> v instanceof BrowserStoreSessionTab<?> st
+                                ? st.getEntry().get()
+                                : null),
                 applicable,
                 action,
                 bookmarkTopBar.getCategory(),
@@ -99,8 +105,10 @@ public class BrowserSessionComp extends SimpleComp {
         var vertical =
                 new VerticalComp(List.of(bookmarkTopBar, bookmarksContainer, localDownloadStage)).styleClass("left");
 
-        var split = new SimpleDoubleProperty();
-        var tabs = new BrowserSessionTabsComp(model, split).apply(struc -> {
+        var leftSplit = new SimpleDoubleProperty();
+        var rightSplit = new SimpleDoubleProperty();
+        var tabs = new BrowserSessionTabsComp(model, leftSplit, rightSplit);
+        tabs.apply(struc -> {
             struc.get().setViewOrder(1);
             struc.get().setPickOnBounds(false);
             AnchorPane.setTopAnchor(struc.get(), 0.0);
@@ -108,20 +116,54 @@ public class BrowserSessionComp extends SimpleComp {
             AnchorPane.setLeftAnchor(struc.get(), 0.0);
             AnchorPane.setRightAnchor(struc.get(), 0.0);
         });
+
+        vertical.apply(struc -> {
+            struc.get()
+                    .paddingProperty()
+                    .bind(Bindings.createObjectBinding(
+                            () -> new Insets(tabs.getHeaderHeight().get(), 0, 0, 0), tabs.getHeaderHeight()));
+        });
         var loadingIndicator = LoadingOverlayComp.noProgress(Comp.empty(), model.getBusy())
                 .apply(struc -> {
                     AnchorPane.setTopAnchor(struc.get(), 0.0);
                     AnchorPane.setRightAnchor(struc.get(), 0.0);
                 })
                 .styleClass("tab-loading-indicator");
-        var loadingStack = new AnchorComp(List.of(tabs, loadingIndicator));
-        var splitPane = new SideSplitPaneComp(vertical, loadingStack)
+
+        var pinnedStack = new StackComp(List.of(new LabelComp("a")));
+        pinnedStack.apply(struc -> {
+            model.getEffectiveRightTab().subscribe( (newValue) -> {
+                PlatformThread.runLaterIfNeeded(() -> {
+                    if (newValue != null) {
+                        var r = newValue.comp().createRegion();
+                        struc.get().getChildren().add(r);
+                    } else {
+                        struc.get().getChildren().clear();
+                    }
+                });
+            });
+
+            rightSplit.addListener((observable, oldValue, newValue) -> {
+                struc.get().setMinWidth(newValue.doubleValue());
+                struc.get().setMaxWidth(newValue.doubleValue());
+                struc.get().setPrefWidth(newValue.doubleValue());
+            });
+
+            AnchorPane.setBottomAnchor(struc.get(), 0.0);
+            AnchorPane.setRightAnchor(struc.get(), 0.0);
+            tabs.getHeaderHeight().subscribe(number -> {
+                AnchorPane.setTopAnchor(struc.get(), number.doubleValue());
+            });
+        });
+
+        var loadingStack = new AnchorComp(List.of(tabs, pinnedStack, loadingIndicator));
+        var splitPane = new LeftSplitPaneComp(vertical, loadingStack)
                 .withInitialWidth(AppLayoutModel.get().getSavedState().getBrowserConnectionsWidth())
                 .withOnDividerChange(d -> {
                     AppLayoutModel.get().getSavedState().setBrowserConnectionsWidth(d);
-                    split.set(d);
-                })
-                .apply(struc -> {
+                    leftSplit.set(d);
+                });
+        splitPane.apply(struc -> {
                     struc.getLeft().setMinWidth(200);
                     struc.getLeft().setMaxWidth(500);
                     struc.get().setPickOnBounds(false);
@@ -140,9 +182,7 @@ public class BrowserSessionComp extends SimpleComp {
                 }
             });
         });
-
-        var r = splitPane.createRegion();
-        r.getStyleClass().add("browser");
-        return r;
+        splitPane.styleClass("browser");
+        return splitPane.createRegion();
     }
 }

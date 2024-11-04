@@ -20,7 +20,7 @@ public class ConnectionBrowseExchangeImpl extends ConnectionBrowseExchange {
             throw new BeaconClientException("Not a file system connection");
         }
         BrowserSessionModel.DEFAULT.openFileSystemSync(
-                e.ref(), msg.getDirectory() != null ? ignored -> msg.getDirectory() : null, null);
+                e.ref(), msg.getDirectory() != null ? ignored -> msg.getDirectory() : null, null, true);
         AppLayoutModel.get().selectBrowser();
         return Response.builder().build();
     }

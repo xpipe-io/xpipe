@@ -33,7 +33,8 @@ public interface WindowsTerminalType extends ExternalTerminalType {
         // wt can't elevate a command consisting out of multiple parts if wt is configured to elevate by default
         // So work around it by just passing a script file if possible
         if (ShellDialects.isPowershell(configuration.getScriptDialect())) {
-            var usesPowershell = ShellDialects.isPowershell(ProcessControlProvider.get().getEffectiveLocalDialect());
+            var usesPowershell =
+                    ShellDialects.isPowershell(ProcessControlProvider.get().getEffectiveLocalDialect());
             if (usesPowershell) {
                 // We can't work around it in this case, so let's just hope that there's no elevation configured
                 cmd.add(configuration.getDialectLaunchCommand());
@@ -41,7 +42,9 @@ public interface WindowsTerminalType extends ExternalTerminalType {
                 // There might be a mismatch if we are for example using logging
                 // In this case we can actually work around the problem
                 cmd.addFile(shellControl -> {
-                    var script = ScriptHelper.createExecScript(shellControl, configuration.getDialectLaunchCommand().buildFull(shellControl));
+                    var script = ScriptHelper.createExecScript(
+                            shellControl,
+                            configuration.getDialectLaunchCommand().buildFull(shellControl));
                     return script.toString();
                 });
             }

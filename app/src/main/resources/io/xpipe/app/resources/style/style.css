@@ -14,7 +14,7 @@
 }
 
 .root:dark:separate-frame .background {
-    -fx-background-color: derive(-color-bg-default, 1%);
+    -fx-background-color: derive(-color-bg-default, -3%);
 }
 
 .root:light:separate-frame .background {
@@ -22,7 +22,7 @@
 }
 
 .root:dark:separate-frame.background {
-    -fx-background-color: derive(-color-bg-default, 1%);
+    -fx-background-color: derive(-color-bg-default, -3%);
 }
 
 .root:light:separate-frame.background {
@@ -147,4 +147,24 @@
 .icon-browser .table-row-cell .icon-label {
     -fx-padding: 15 0;
     -fx-cursor: hand;
+}
+
+.root:pretty:light .store-active-comp .dot {
+    -fx-fill: radial-gradient(radius 180%, rgb(30, 180, 30, 0.6), rgb(20, 120, 20, 0.65), rgb(37, 200, 37, 0.6));
+}
+
+.root:performance:light .store-active-comp .dot {
+    -fx-fill: rgb(30, 180, 30, 0.6);
+}
+
+.root:pretty:dark .store-active-comp .dot {
+    -fx-fill: radial-gradient(radius 180%, rgb(30, 180, 30, 0.8), rgb(20, 120, 20, 0.85), rgb(37, 200, 37, 0.8));
+}
+
+.root:performance:dark .store-active-comp .dot {
+    -fx-fill: rgb(30, 180, 30, 0.7);
+}
+
+.custom-text-field .font-icon, .custom-text-field .ikonli-font-icon {
+    -fx-icon-color: -color-fg-default;
 }

@@ -231,7 +231,7 @@ public class AppMainWindow {
             return null;
         }
 
-        WindowState state = AppCache.get("windowState", WindowState.class, () -> null);
+        WindowState state = AppCache.getNonNull("windowState", WindowState.class, () -> null);
         if (state == null) {
             return null;
         }

@@ -9,14 +9,14 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.resources.SystemIcons;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.DataStoreFormatter;
+import io.xpipe.app.util.ShellStoreFormat;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.process.ShellStoreState;
-import io.xpipe.core.store.ShellStore;
 import io.xpipe.ext.base.script.ScriptStore;
 
 import javafx.beans.property.BooleanProperty;
@@ -31,7 +31,7 @@ public interface ShellStoreProvider extends DataStoreProvider {
             public void execute() throws Exception {
                 var replacement = ProcessControlProvider.get().replace(entry.ref());
                 ShellStore store = replacement.getStore().asNeeded();
-                var control = ScriptStore.controlWithDefaultScripts(store.control());
+                var control = ScriptStore.controlWithDefaultScripts(store.tempControl());
                 control.onInit(sc -> {
                     if (entry.getStorePersistentState() instanceof ShellStoreState shellStoreState
                             && shellStoreState.getShellDialect() == null) {
@@ -72,6 +72,6 @@ public interface ShellStoreProvider extends DataStoreProvider {
 
     @Override
     default ObservableValue<String> informationString(StoreSection section) {
-        return DataStoreFormatter.shellInformation(section.getWrapper());
+        return ShellStoreFormat.shellStore(section, state -> null);
     }
 }

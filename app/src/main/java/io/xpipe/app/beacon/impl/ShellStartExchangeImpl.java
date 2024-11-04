@@ -2,10 +2,10 @@ package io.xpipe.app.beacon.impl;
 
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.beacon.BeaconShellSession;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.ShellStartExchange;
-import io.xpipe.core.store.ShellStore;
 
 import com.sun.net.httpserver.HttpExchange;
 import lombok.SneakyThrows;
@@ -25,7 +25,9 @@ public class ShellStartExchangeImpl extends ShellStartExchange {
         var existing = AppBeaconServer.get().getCache().getShellSessions().stream()
                 .filter(beaconShellSession -> beaconShellSession.getEntry().equals(e))
                 .findFirst();
-        var control = (existing.isPresent() ? existing.get().getControl() : s.control());
+        var control = (existing.isPresent()
+                ? existing.get().getControl()
+                : s.standaloneControl().start());
         control.setNonInteractive();
         control.start();
 

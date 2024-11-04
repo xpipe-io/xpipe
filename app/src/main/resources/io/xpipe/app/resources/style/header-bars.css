@@ -3,10 +3,15 @@
     -fx-padding: 0.8em 1.0em 0.8em 1.0em;
 }
 
+.bar {
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-border-width: 1;
+    -fx-border-color: -color-border-default;
+    -fx-background-color: -color-bg-subtle;
+}
+
 .store-header-bar {
-    -fx-background-radius: 0 0 4px 0;
-    -fx-border-radius: 0 0 4px 0;
-    -fx-border-width: 0 0.05em 0.05em 0;
     -fx-spacing: 0.8em;
 }
 
@@ -69,9 +74,6 @@
 }
 
 .store-creation-bar, .store-sort-bar, .store-category-bar {
-    -fx-background-radius: 0 4px 4px 0;
-    -fx-border-radius: 0 4px 4px 0;
-    -fx-border-width: 0.05em 0.05em 0.05em 0;
     -fx-spacing: 0.2em;
 }
 
@@ -85,19 +87,14 @@
 }
 
 .store-sort-bar {
-    -fx-background-radius: 0 4px 4px 0;
-    -fx-border-radius: 0 4px 4px 0;
-    -fx-border-width: 0.05em 0.05em 0.05em 0;
     -fx-spacing: 0.2em;
 }
 
 .filler-bar {
-    -fx-background-radius: 0 4px 0 0;
-    -fx-border-radius: 0 4px 0 0;
-    -fx-border-width: 0.05em 0.05em 0 0;
 }
 
 .sidebar {
+    -fx-padding: 7 0 7 7;
     -fx-spacing: 0.4em;
     -fx-background-color: transparent;
 }

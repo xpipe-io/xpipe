@@ -39,7 +39,7 @@ public class BrowserSavedStateImpl implements BrowserSavedState {
     }
 
     private static BrowserSavedStateImpl load() {
-        return AppCache.get("browser-state", BrowserSavedStateImpl.class, () -> {
+        return AppCache.getNonNull("browser-state", BrowserSavedStateImpl.class, () -> {
             return new BrowserSavedStateImpl(FXCollections.observableArrayList());
         });
     }

@@ -6,7 +6,7 @@ import io.xpipe.app.issue.ErrorEvent;
 public class AppJavaOptionsCheck {
 
     public static void check() {
-        if (AppCache.get("javaOptionsWarningShown", Boolean.class, () -> false)) {
+        if (AppCache.getBoolean("javaOptionsWarningShown", false)) {
             return;
         }
 

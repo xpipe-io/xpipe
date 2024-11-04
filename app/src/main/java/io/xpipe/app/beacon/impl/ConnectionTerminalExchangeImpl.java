@@ -1,10 +1,10 @@
 package io.xpipe.app.beacon.impl;
 
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.ConnectionTerminalExchange;
-import io.xpipe.core.store.ShellStore;
 
 import com.sun.net.httpserver.HttpExchange;
 
@@ -18,9 +18,8 @@ public class ConnectionTerminalExchangeImpl extends ConnectionTerminalExchange {
         if (!(e.getStore() instanceof ShellStore shellStore)) {
             throw new BeaconClientException("Not a shell connection");
         }
-        try (var sc = shellStore.control().start()) {
-            TerminalLauncher.open(e, e.getName(), msg.getDirectory(), sc);
-        }
+        var sc = shellStore.getOrStartSession();
+        TerminalLauncher.open(e, e.getName(), msg.getDirectory(), sc);
         return Response.builder().build();
     }
 }

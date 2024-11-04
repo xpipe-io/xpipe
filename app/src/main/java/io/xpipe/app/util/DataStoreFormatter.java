@@ -1,13 +1,6 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.comp.store.StoreEntryWrapper;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.process.ShellStoreState;
-import io.xpipe.core.process.ShellTtyState;
-
-import javafx.beans.value.ObservableValue;
 
 import java.util.Arrays;
 
@@ -15,45 +8,6 @@ public class DataStoreFormatter {
 
     public static String join(String... elements) {
         return String.join(" ", Arrays.stream(elements).filter(s -> s != null).toList());
-    }
-
-    public static String formattedOsName(String osName) {
-        osName = osName.replaceAll("^Microsoft ", "");
-
-        var proRequired = !LicenseProvider.get().checkOsName(osName);
-        if (!proRequired) {
-            return osName;
-        }
-
-        return "[Pro] " + osName;
-    }
-
-    public static ObservableValue<String> shellInformation(StoreEntryWrapper w) {
-        return BindingsHelper.map(w.getPersistentState(), o -> {
-            if (o instanceof ShellStoreState s) {
-                if (s.getRunning() == null) {
-                    return null;
-                }
-
-                if (s.getShellDialect() != null
-                        && !s.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
-                    if (s.getOsName() != null) {
-                        return formattedOsName(s.getOsName());
-                    }
-
-                    if (s.getShellDialect().equals(ShellDialects.NO_INTERACTION)) {
-                        return null;
-                    }
-
-                    return s.getShellDialect().getDisplayName();
-                }
-
-                var prefix = s.getTtyState() != null && s.getTtyState() != ShellTtyState.NONE ? "[PTY] " : "";
-                return s.isRunning() ? prefix + formattedOsName(s.getOsName()) : "Connection failed";
-            }
-
-            return "?";
-        });
     }
 
     public static String capitalize(String name) {

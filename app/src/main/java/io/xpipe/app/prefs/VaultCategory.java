@@ -27,15 +27,6 @@ public class VaultCategory extends AppPrefsCategory {
     public Comp<?> create() {
         var prefs = AppPrefs.get();
         var builder = new OptionsBuilder();
-        if (!STORAGE_DIR_FIXED) {
-            var sub =
-                    new OptionsBuilder().nameAndDescription("storageDirectory").addPath(prefs.storageDirectory);
-            sub.withValidator(val -> {
-                sub.check(Validator.absolutePath(val, prefs.storageDirectory));
-                sub.check(Validator.directory(val, prefs.storageDirectory));
-            });
-            builder.addTitle("storage").sub(sub);
-        }
 
         var encryptVault = new SimpleBooleanProperty(prefs.encryptAllVaultData().get());
         encryptVault.addListener((observable, oldValue, newValue) -> {

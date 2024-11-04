@@ -25,7 +25,7 @@ public class XPipeSession {
             return;
         }
 
-        var s = AppCache.get("lastBuildId", String.class, () -> null);
+        var s = AppCache.getNonNull("lastBuildId", String.class, () -> null);
         var isBuildChanged = !buildSessionId.toString().equals(s);
         AppCache.update("lastBuildId", buildSessionId.toString());
         INSTANCE = new XPipeSession(isBuildChanged, UUID.randomUUID(), buildSessionId);

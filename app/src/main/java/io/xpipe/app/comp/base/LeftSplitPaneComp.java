@@ -11,14 +11,14 @@ import lombok.Value;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
-public class SideSplitPaneComp extends Comp<SideSplitPaneComp.Structure> {
+public class LeftSplitPaneComp extends Comp<LeftSplitPaneComp.Structure> {
 
     private final Comp<?> left;
     private final Comp<?> center;
     private Double initialWidth;
     private Consumer<Double> onDividerChange;
 
-    public SideSplitPaneComp(Comp<?> left, Comp<?> center) {
+    public LeftSplitPaneComp(Comp<?> left, Comp<?> center) {
         this.left = left;
         this.center = center;
     }
@@ -58,12 +58,12 @@ public class SideSplitPaneComp extends Comp<SideSplitPaneComp.Structure> {
         return new Structure(sidebar, c, r, r.getDividers().getFirst());
     }
 
-    public SideSplitPaneComp withInitialWidth(double val) {
+    public LeftSplitPaneComp withInitialWidth(double val) {
         this.initialWidth = val;
         return this;
     }
 
-    public SideSplitPaneComp withOnDividerChange(Consumer<Double> onDividerChange) {
+    public LeftSplitPaneComp withOnDividerChange(Consumer<Double> onDividerChange) {
         this.onDividerChange = onDividerChange;
         return this;
     }

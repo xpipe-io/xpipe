@@ -1,7 +1,5 @@
 package io.xpipe.app.browser.session;
 
-import io.xpipe.app.browser.BrowserWelcomeComp;
-import io.xpipe.app.comp.base.MultiContentComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
@@ -10,28 +8,33 @@ import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.fxcomps.util.LabelGraphic;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ContextMenuHelper;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
+import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.control.skin.TabPaneSkin;
 import javafx.scene.input.*;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
 import atlantafx.base.controls.RingProgressIndicator;
 import atlantafx.base.theme.Styles;
+import lombok.Getter;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static atlantafx.base.theme.Styles.DENSE;
 import static atlantafx.base.theme.Styles.toggleStyleClass;
@@ -41,26 +44,30 @@ public class BrowserSessionTabsComp extends SimpleComp {
 
     private final BrowserSessionModel model;
     private final ObservableDoubleValue leftPadding;
+    private final DoubleProperty rightPadding;
 
-    public BrowserSessionTabsComp(BrowserSessionModel model, ObservableDoubleValue leftPadding) {
+    @Getter
+    private final DoubleProperty headerHeight;
+
+    public BrowserSessionTabsComp(BrowserSessionModel model, ObservableDoubleValue leftPadding, DoubleProperty rightPadding) {
         this.model = model;
         this.leftPadding = leftPadding;
+        this.rightPadding = rightPadding;
+        this.headerHeight = new SimpleDoubleProperty();
     }
 
     public Region createSimple() {
-        var map = new LinkedHashMap<Comp<?>, ObservableValue<Boolean>>();
-        map.put(Comp.hspacer().styleClass("top-spacer"), new SimpleBooleanProperty(true));
-        map.put(Comp.of(() -> createTabPane()), Bindings.isNotEmpty(model.getSessionEntries()));
-        map.put(
-                new BrowserWelcomeComp(model).apply(struc -> StackPane.setAlignment(struc.get(), Pos.CENTER_LEFT)),
-                Bindings.createBooleanBinding(
-                        () -> {
-                            return model.getSessionEntries().size() == 0;
-                        },
-                        model.getSessionEntries()));
-        var multi = new MultiContentComp(map);
-        multi.apply(struc -> ((StackPane) struc.get()).setAlignment(Pos.TOP_CENTER));
-        return multi.createRegion();
+        var tabs = createTabPane();
+        var topBackground = Comp.hspacer().styleClass("top-spacer").createRegion();
+        leftPadding.subscribe(number -> {
+            StackPane.setMargin(topBackground, new Insets(0, 0, 0, -number.doubleValue()));
+        });
+        var stack = new StackPane(topBackground, tabs);
+        stack.setAlignment(Pos.TOP_CENTER);
+        topBackground.prefHeightProperty().bind(headerHeight);
+        topBackground.maxHeightProperty().bind(topBackground.prefHeightProperty());
+        topBackground.prefWidthProperty().bind(tabs.widthProperty());
+        return stack;
     }
 
     private TabPane createTabPane() {
@@ -69,6 +76,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
         tabs.setTabMinWidth(Region.USE_PREF_SIZE);
         tabs.setTabMaxWidth(400);
         tabs.setTabClosingPolicy(ALL_TABS);
+        tabs.setSkin(new TabPaneSkin(tabs));
         Styles.toggleStyleClass(tabs, TabPane.STYLE_CLASS_FLOATING);
         toggleStyleClass(tabs, DENSE);
 
@@ -80,22 +88,31 @@ public class BrowserSessionTabsComp extends SimpleComp {
                     tabs.lookupAll(".tab-header-area").forEach(node -> {
                         node.setClip(null);
                         node.setPickOnBounds(false);
+
+                        var r = (Region) node;
+                        r.prefHeightProperty().bind(r.maxHeightProperty());
+                        r.setMinHeight(Region.USE_PREF_SIZE);
                     });
                     tabs.lookupAll(".headers-region").forEach(node -> {
                         node.setClip(null);
                         node.setPickOnBounds(false);
+
+                        var r = (Region) node;
+                        r.prefHeightProperty().bind(r.maxHeightProperty());
+                        r.setMinHeight(Region.USE_PREF_SIZE);
                     });
 
                     Region headerArea = (Region) tabs.lookup(".tab-header-area");
                     headerArea
                             .paddingProperty()
                             .bind(Bindings.createObjectBinding(
-                                    () -> new Insets(0, 0, 0, -leftPadding.get() + 2), leftPadding));
+                                    () -> new Insets(2, 0, 4, -leftPadding.get() + 2), leftPadding));
+                    headerHeight.bind(headerArea.heightProperty());
                 });
             }
         });
 
-        var map = new HashMap<BrowserSessionTab<?>, Tab>();
+        var map = new HashMap<BrowserSessionTab, Tab>();
 
         // Restore state
         model.getSessionEntries().forEach(v -> {
@@ -156,7 +173,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
             });
         });
 
-        model.getSessionEntries().addListener((ListChangeListener<? super BrowserSessionTab<?>>) c -> {
+        model.getSessionEntries().addListener((ListChangeListener<? super BrowserSessionTab>) c -> {
             while (c.next()) {
                 for (var r : c.getRemoved()) {
                     PlatformThread.runLaterIfNeeded(() -> {
@@ -245,8 +262,27 @@ public class BrowserSessionTabsComp extends SimpleComp {
         return tabs;
     }
 
-    private ContextMenu createContextMenu(TabPane tabs, Tab tab) {
+    private ContextMenu createContextMenu(TabPane tabs, Tab tab, BrowserSessionTab tabModel) {
         var cm = ContextMenuHelper.create();
+
+        if (tabModel.isCloseable()) {
+            var unsplit = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("unpinTab"));
+            unsplit.visibleProperty().bind(PlatformThread.sync(Bindings.createBooleanBinding(() -> {
+                return model.getGlobalPinnedTab().getValue() != null && model.getGlobalPinnedTab().getValue().equals(tabModel);
+            }, model.getGlobalPinnedTab())));
+            unsplit.setOnAction(event -> {
+                model.unpinTab(tabModel);
+                event.consume();
+            });
+            cm.getItems().add(unsplit);
+
+            var split = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("pinTab"));
+            split.setOnAction(event -> {
+                model.pinTab(tabModel);
+                event.consume();
+            });
+            cm.getItems().add(split);
+        }
 
         var select = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("selectTab"));
         select.acceleratorProperty()
@@ -272,7 +308,9 @@ public class BrowserSessionTabsComp extends SimpleComp {
         var close = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("closeTab"));
         close.setAccelerator(new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN));
         close.setOnAction(event -> {
-            tabs.getTabs().remove(tab);
+            if (tab.isClosable()) {
+                tabs.getTabs().remove(tab);
+            }
             event.consume();
         });
         cm.getItems().add(close);
@@ -280,7 +318,9 @@ public class BrowserSessionTabsComp extends SimpleComp {
         var closeOthers = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("closeOtherTabs"));
         closeOthers.setOnAction(event -> {
             tabs.getTabs()
-                    .removeAll(tabs.getTabs().stream().filter(t -> t != tab).toList());
+                    .removeAll(tabs.getTabs().stream()
+                            .filter(t -> t != tab && t.isClosable())
+                            .toList());
             event.consume();
         });
         cm.getItems().add(closeOthers);
@@ -290,7 +330,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
             var index = tabs.getTabs().indexOf(tab);
             tabs.getTabs()
                     .removeAll(tabs.getTabs().stream()
-                            .filter(t -> tabs.getTabs().indexOf(t) < index)
+                            .filter(t -> tabs.getTabs().indexOf(t) < index && t.isClosable())
                             .toList());
             event.consume();
         });
@@ -301,7 +341,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
             var index = tabs.getTabs().indexOf(tab);
             tabs.getTabs()
                     .removeAll(tabs.getTabs().stream()
-                            .filter(t -> tabs.getTabs().indexOf(t) > index)
+                            .filter(t -> tabs.getTabs().indexOf(t) > index && t.isClosable())
                             .toList());
             event.consume();
         });
@@ -311,7 +351,9 @@ public class BrowserSessionTabsComp extends SimpleComp {
         closeAll.setAccelerator(
                 new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
         closeAll.setOnAction(event -> {
-            tabs.getTabs().clear();
+            tabs.getTabs()
+                    .removeAll(
+                            tabs.getTabs().stream().filter(t -> t.isClosable()).toList());
             event.consume();
         });
         cm.getItems().add(closeAll);
@@ -319,36 +361,92 @@ public class BrowserSessionTabsComp extends SimpleComp {
         return cm;
     }
 
-    private Tab createTab(TabPane tabs, BrowserSessionTab<?> model) {
+    private Tab createTab(TabPane tabs, BrowserSessionTab tabModel) {
         var tab = new Tab();
-        tab.setContextMenu(createContextMenu(tabs, tab));
+        tab.setContextMenu(createContextMenu(tabs, tab, tabModel));
 
-        var ring = new RingProgressIndicator(0, false);
-        ring.setMinSize(16, 16);
-        ring.setPrefSize(16, 16);
-        ring.setMaxSize(16, 16);
-        ring.progressProperty()
-                .bind(Bindings.createDoubleBinding(
-                        () -> model.getBusy().get()
-                                        && !AppPrefs.get().performanceMode().get()
-                                ? -1d
-                                : 0,
-                        PlatformThread.sync(model.getBusy()),
-                        AppPrefs.get().performanceMode()));
+        tab.setClosable(tabModel.isCloseable());
 
-        var image = model.getEntry().get().getEffectiveIconFile();
-        var logo = PrettyImageHelper.ofFixedSizeSquare(image, 16).createRegion();
+        if (tabModel.getIcon() != null) {
+            var ring = new RingProgressIndicator(0, false);
+            ring.setMinSize(16, 16);
+            ring.setPrefSize(16, 16);
+            ring.setMaxSize(16, 16);
+            ring.progressProperty()
+                    .bind(Bindings.createDoubleBinding(
+                            () -> tabModel.getBusy().get()
+                                            && !AppPrefs.get().performanceMode().get()
+                                    ? -1d
+                                    : 0,
+                            PlatformThread.sync(tabModel.getBusy()),
+                            AppPrefs.get().performanceMode()));
 
-        tab.graphicProperty()
-                .bind(Bindings.createObjectBinding(
-                        () -> {
-                            return model.getBusy().get() ? ring : logo;
-                        },
-                        PlatformThread.sync(model.getBusy())));
-        tab.setText(model.getName());
+            var image = tabModel.getIcon();
+            var logo = PrettyImageHelper.ofFixedSizeSquare(image, 16).createRegion();
 
-        Comp<?> comp = model.comp();
-        tab.setContent(comp.createRegion());
+            tab.graphicProperty()
+                    .bind(Bindings.createObjectBinding(
+                            () -> {
+                                return tabModel.getBusy().get() ? ring : logo;
+                            },
+                            PlatformThread.sync(tabModel.getBusy())));
+        }
+
+        if (tabModel.getBrowserModel() instanceof BrowserSessionModel sessionModel) {
+            var global = PlatformThread.sync(sessionModel.getGlobalPinnedTab());
+            tab.textProperty().bind(Bindings.createStringBinding(() -> {
+                return tabModel.getName() + (global.getValue() == tabModel ? " (" + AppI18n.get("pinned") + ")" : "");
+            }, global, AppPrefs.get().language()));
+        } else {
+            tab.setText(tabModel.getName());
+        }
+
+        Comp<?> comp = tabModel.comp();
+        var compRegion = comp.createRegion();
+        var empty = new StackPane();
+        empty.widthProperty().addListener((observable, oldValue, newValue) -> {
+            if (tabModel.isCloseable() && tabs.getSelectionModel().getSelectedItem() == tab) {
+                rightPadding.setValue(newValue.doubleValue());
+            }
+        });
+        var split = new SplitPane(compRegion);
+        if (tabModel.isCloseable()) {
+            split.getItems().add(empty);
+        }
+        model.getEffectiveRightTab().subscribe(browserSessionTab -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                if (browserSessionTab != null && split.getItems().size() > 1) {
+                    split.getItems().set(1, empty);
+                } else if (browserSessionTab != null && split.getItems().size() == 1) {
+                    split.getItems().add(empty);
+                } else if (browserSessionTab == null && split.getItems().size() > 1) {
+                    split.getItems().remove(1);
+                }
+            });
+        });
+        tab.setContent(split);
+
+//        var lastSplitRegion = new AtomicReference<Region>();
+//        model.getGlobalPinnedTab().subscribe( (newValue) -> {
+//            PlatformThread.runLaterIfNeeded(() -> {
+//                if (newValue != null) {
+//                    var r = newValue.comp().createRegion();
+//                    split.getItems().add(r);
+//                    lastSplitRegion.set(r);
+//                } else if (split.getItems().size() > 1) {
+//                    split.getItems().removeLast();
+//                }
+//            });
+//        });
+//        model.getSelectedEntry().addListener((observable, oldValue, newValue) -> {
+//            PlatformThread.runLaterIfNeeded(() -> {
+//                if (newValue != null && newValue.equals(model.getGlobalPinnedTab().getValue()) && split.getItems().size() > 1) {
+//                    split.getItems().remove(lastSplitRegion.get());
+//                } else if (split.getItems().size() > 1 && !split.getItems().contains(lastSplitRegion.get())) {
+//                    split.getItems().add(lastSplitRegion.get());
+//                }
+//            });
+//        });
 
         var id = UUID.randomUUID().toString();
         tab.setId(id);
@@ -360,18 +458,20 @@ public class BrowserSessionTabsComp extends SimpleComp {
                     var w = l.maxWidthProperty();
                     l.minWidthProperty().bind(w);
                     l.prefWidthProperty().bind(w);
+                    if (!tabModel.isCloseable()) {
+                        l.pseudoClassStateChanged(PseudoClass.getPseudoClass("static"), true);
+                    }
 
                     var close = (StackPane) tabs.lookup("#" + id + " .tab-close-button");
                     close.setPrefWidth(30);
 
                     StackPane c = (StackPane) tabs.lookup("#" + id + " .tab-container");
                     c.getStyleClass().add("color-box");
-                    var color =
-                            DataStorage.get().getEffectiveColor(model.getEntry().get());
+                    var color = tabModel.getColor();
                     if (color != null) {
                         c.getStyleClass().add(color.getId());
                     }
-                    new TooltipAugment<>(new SimpleStringProperty(model.getTooltip()), null).augment(c);
+                    new TooltipAugment<>(new SimpleStringProperty(tabModel.getTooltip()), null).augment(c);
                     c.addEventHandler(
                             DragEvent.DRAG_ENTERED,
                             mouseEvent -> Platform.runLater(

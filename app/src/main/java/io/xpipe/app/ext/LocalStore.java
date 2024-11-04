@@ -4,7 +4,6 @@ import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.NetworkTunnelStore;
-import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.store.StatefulDataStore;
 import io.xpipe.core.util.JacksonizedValue;
 
@@ -19,18 +18,22 @@ public class LocalStore extends JacksonizedValue
         return ShellStoreState.class;
     }
 
-    @Override
-    public ShellControl parentControl() {
-        var pc = ProcessControlProvider.get().createLocalProcessControl(true);
-        pc.withSourceStore(this);
-        pc.withShellStateInit(this);
-        pc.withShellStateFail(this);
-        return pc;
+    public ShellControl control(ShellControl parent) {
+        return parent;
     }
 
     @Override
-    public ShellControl control(ShellControl parent) {
-        return parent;
+    public ShellControlFunction shellFunction() {
+        return new ShellControlFunction() {
+            @Override
+            public ShellControl control() throws Exception {
+                var pc = ProcessControlProvider.get().createLocalProcessControl(true);
+                pc.withSourceStore(LocalStore.this);
+                pc.withShellStateInit(LocalStore.this);
+                pc.withShellStateFail(LocalStore.this);
+                return pc;
+            }
+        };
     }
 
     @Override

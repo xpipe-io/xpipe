@@ -52,7 +52,7 @@ public class AppGreetings {
     }
 
     public static void showIfNeeded() {
-        boolean set = AppCache.get("legalAccepted", Boolean.class, () -> false);
+        boolean set = AppCache.getBoolean("legalAccepted", false);
         if (set || AppProperties.get().isDevelopmentEnvironment()) {
             return;
         }

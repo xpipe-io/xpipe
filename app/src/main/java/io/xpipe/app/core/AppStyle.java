@@ -18,6 +18,7 @@ import java.util.*;
 public class AppStyle {
 
     private static final Map<Path, String> STYLESHEET_CONTENTS = new LinkedHashMap<>();
+    private static final Map<AppTheme.Theme, String> THEME_SPECIFIC_STYLESHEET_CONTENTS = new LinkedHashMap<>();
     private static final List<Scene> scenes = new ArrayList<>();
     private static String FONT_CONTENTS = "";
 
@@ -32,6 +33,9 @@ public class AppStyle {
         if (AppPrefs.get() != null) {
             AppPrefs.get().useSystemFont().addListener((c, o, n) -> {
                 changeFontUsage(n);
+            });
+            AppPrefs.get().theme.addListener((c, o, n) -> {
+                changeTheme(n);
             });
         }
     }
@@ -73,6 +77,19 @@ public class AppStyle {
                 });
             });
         }
+
+        AppResources.with(AppResources.XPIPE_MODULE, "theme", path -> {
+            if (!Files.exists(path)) {
+                return;
+            }
+
+            for (AppTheme.Theme theme : AppTheme.Theme.ALL) {
+                var file = path.resolve(theme.getId() + ".css");
+                var bytes = Files.readAllBytes(file);
+                var s = "data:text/css;base64," + Base64.getEncoder().encodeToString(bytes);
+                THEME_SPECIFIC_STYLESHEET_CONTENTS.put(theme, s);
+            }
+        });
     }
 
     private static void changeFontUsage(boolean use) {
@@ -87,8 +104,16 @@ public class AppStyle {
         }
     }
 
+    private static void changeTheme(AppTheme.Theme theme) {
+        scenes.forEach(scene -> {
+            scene.getStylesheets().removeAll(THEME_SPECIFIC_STYLESHEET_CONTENTS.values());
+            scene.getStylesheets().add(THEME_SPECIFIC_STYLESHEET_CONTENTS.get(theme));
+        });
+    }
+
     public static void reloadStylesheets(Scene scene) {
         STYLESHEET_CONTENTS.clear();
+        THEME_SPECIFIC_STYLESHEET_CONTENTS.clear();
         FONT_CONTENTS = "";
 
         init();
@@ -107,7 +132,7 @@ public class AppStyle {
         if (AppPrefs.get() != null) {
             var t = AppPrefs.get().theme.get();
             if (t != null) {
-                scene.getStylesheets().addAll(t.getAdditionalStylesheets());
+                scene.getStylesheets().add(THEME_SPECIFIC_STYLESHEET_CONTENTS.get(t));
             }
         }
         TrackEvent.debug("Added stylesheets for scene");

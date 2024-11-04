@@ -1,6 +1,7 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.core.*;
+import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
 import io.xpipe.app.fxcomps.Comp;
@@ -22,8 +23,11 @@ import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableStringValue;
 import javafx.beans.value.ObservableValue;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
+import lombok.experimental.NonFinal;
 import org.apache.commons.io.FileUtils;
 
 import java.nio.file.Path;
@@ -36,100 +40,104 @@ public class AppPrefs {
             AppProperties.get() != null ? AppProperties.get().getDataDir().resolve("storage") : null;
     private static final String DEVELOPER_MODE_PROP = "io.xpipe.app.developerMode";
     private static AppPrefs INSTANCE;
-    private final List<Mapping<?>> mapping = new ArrayList<>();
+    private final List<Mapping> mapping = new ArrayList<>();
+
+    @Getter
+    private final BooleanProperty requiresRestart = new SimpleBooleanProperty(false);
 
     final BooleanProperty dontAllowTerminalRestart =
-            mapVaultSpecific(new SimpleBooleanProperty(false), "dontAllowTerminalRestart", Boolean.class);
+            mapVaultShared(new SimpleBooleanProperty(false), "dontAllowTerminalRestart", Boolean.class, false);
     final BooleanProperty enableHttpApi =
-            mapVaultSpecific(new SimpleBooleanProperty(false), "enableHttpApi", Boolean.class);
+            mapVaultShared(new SimpleBooleanProperty(false), "enableHttpApi", Boolean.class, false);
     final BooleanProperty dontAutomaticallyStartVmSshServer =
-            mapVaultSpecific(new SimpleBooleanProperty(false), "dontAutomaticallyStartVmSshServer", Boolean.class);
+            mapVaultShared(new SimpleBooleanProperty(false), "dontAutomaticallyStartVmSshServer", Boolean.class, false);
     final BooleanProperty dontAcceptNewHostKeys =
-            mapVaultSpecific(new SimpleBooleanProperty(false), "dontAcceptNewHostKeys", Boolean.class);
-    public final BooleanProperty performanceMode = map(new SimpleBooleanProperty(), "performanceMode", Boolean.class);
+            mapVaultShared(new SimpleBooleanProperty(false), "dontAcceptNewHostKeys", Boolean.class, false);
+    public final BooleanProperty performanceMode = mapLocal(new SimpleBooleanProperty(), "performanceMode", Boolean.class, false);
     public final BooleanProperty useBundledTools =
-            map(new SimpleBooleanProperty(false), "useBundledTools", Boolean.class);
+            mapLocal(new SimpleBooleanProperty(false), "useBundledTools", Boolean.class, true);
     public final ObjectProperty<AppTheme.Theme> theme =
-            map(new SimpleObjectProperty<>(), "theme", AppTheme.Theme.class);
-    final BooleanProperty useSystemFont = map(new SimpleBooleanProperty(true), "useSystemFont", Boolean.class);
-    final Property<Integer> uiScale = map(new SimpleObjectProperty<>(null), "uiScale", Integer.class);
+            mapLocal(new SimpleObjectProperty<>(), "theme", AppTheme.Theme.class, false);
+    final BooleanProperty useSystemFont = mapLocal(new SimpleBooleanProperty(true), "useSystemFont", Boolean.class, false);
+    final Property<Integer> uiScale = mapLocal(new SimpleObjectProperty<>(null), "uiScale", Integer.class, true);
     final BooleanProperty saveWindowLocation =
-            map(new SimpleBooleanProperty(true), "saveWindowLocation", Boolean.class);
+            mapLocal(new SimpleBooleanProperty(true), "saveWindowLocation", Boolean.class, false);
     final ObjectProperty<ExternalTerminalType> terminalType =
-            map(new SimpleObjectProperty<>(), "terminalType", ExternalTerminalType.class);
+            mapLocal(new SimpleObjectProperty<>(), "terminalType", ExternalTerminalType.class, false);
     final ObjectProperty<ExternalRdpClientType> rdpClientType =
-            map(new SimpleObjectProperty<>(), "rdpClientType", ExternalRdpClientType.class);
-    final DoubleProperty windowOpacity = map(new SimpleDoubleProperty(1.0), "windowOpacity", Double.class);
+            mapLocal(new SimpleObjectProperty<>(), "rdpClientType", ExternalRdpClientType.class, false);
+    final DoubleProperty windowOpacity = mapLocal(new SimpleDoubleProperty(1.0), "windowOpacity", Double.class, false);
     final StringProperty customRdpClientCommand =
-            map(new SimpleStringProperty(null), "customRdpClientCommand", String.class);
+            mapLocal(new SimpleStringProperty(null), "customRdpClientCommand", String.class, false);
     final StringProperty customTerminalCommand =
-            map(new SimpleStringProperty(null), "customTerminalCommand", String.class);
+            mapLocal(new SimpleStringProperty(null), "customTerminalCommand", String.class, false);
     final BooleanProperty clearTerminalOnInit =
-            map(new SimpleBooleanProperty(true), "clearTerminalOnInit", Boolean.class);
+            mapLocal(new SimpleBooleanProperty(true), "clearTerminalOnInit", Boolean.class, false);
     public final BooleanProperty disableCertutilUse =
-            map(new SimpleBooleanProperty(false), "disableCertutilUse", Boolean.class);
+            mapLocal(new SimpleBooleanProperty(false), "disableCertutilUse", Boolean.class, false);
     public final BooleanProperty useLocalFallbackShell =
-            map(new SimpleBooleanProperty(false), "useLocalFallbackShell", Boolean.class);
-    public final BooleanProperty disableTerminalRemotePasswordPreparation = mapVaultSpecific(
-            new SimpleBooleanProperty(false), "disableTerminalRemotePasswordPreparation", Boolean.class);
+            mapLocal(new SimpleBooleanProperty(false), "useLocalFallbackShell", Boolean.class, true);
+    public final BooleanProperty disableTerminalRemotePasswordPreparation = mapVaultShared(
+            new SimpleBooleanProperty(false), "disableTerminalRemotePasswordPreparation", Boolean.class, false);
     public final Property<Boolean> alwaysConfirmElevation =
-            mapVaultSpecific(new SimpleObjectProperty<>(false), "alwaysConfirmElevation", Boolean.class);
+            mapVaultShared(new SimpleObjectProperty<>(false), "alwaysConfirmElevation", Boolean.class, false);
     public final BooleanProperty dontCachePasswords =
-            mapVaultSpecific(new SimpleBooleanProperty(false), "dontCachePasswords", Boolean.class);
+            mapVaultShared(new SimpleBooleanProperty(false), "dontCachePasswords", Boolean.class, false);
     public final BooleanProperty denyTempScriptCreation =
-            mapVaultSpecific(new SimpleBooleanProperty(false), "denyTempScriptCreation", Boolean.class);
+            mapVaultShared(new SimpleBooleanProperty(false), "denyTempScriptCreation", Boolean.class, false);
     final Property<ExternalPasswordManager> passwordManager =
-            mapVaultSpecific(new SimpleObjectProperty<>(), "passwordManager", ExternalPasswordManager.class);
+            mapVaultShared(new SimpleObjectProperty<>(), "passwordManager", ExternalPasswordManager.class, false);
     final StringProperty passwordManagerCommand =
-            map(new SimpleStringProperty(""), "passwordManagerCommand", String.class);
+            mapLocal(new SimpleStringProperty(""), "passwordManagerCommand", String.class, false);
     final ObjectProperty<StartupBehaviour> startupBehaviour =
-            map(new SimpleObjectProperty<>(StartupBehaviour.GUI), "startupBehaviour", StartupBehaviour.class);
+            mapLocal(new SimpleObjectProperty<>(StartupBehaviour.GUI), "startupBehaviour", StartupBehaviour.class, true);
     public final BooleanProperty enableGitStorage =
-            map(new SimpleBooleanProperty(false), "enableGitStorage", Boolean.class);
-    final StringProperty storageGitRemote = map(new SimpleStringProperty(""), "storageGitRemote", String.class);
+            mapLocal(new SimpleBooleanProperty(false), "enableGitStorage", Boolean.class, true);
+    final StringProperty storageGitRemote = mapLocal(new SimpleStringProperty(""), "storageGitRemote", String.class, true);
     final ObjectProperty<CloseBehaviour> closeBehaviour =
-            map(new SimpleObjectProperty<>(CloseBehaviour.QUIT), "closeBehaviour", CloseBehaviour.class);
+            mapLocal(new SimpleObjectProperty<>(CloseBehaviour.QUIT), "closeBehaviour", CloseBehaviour.class, false);
     final ObjectProperty<ExternalEditorType> externalEditor =
-            map(new SimpleObjectProperty<>(), "externalEditor", ExternalEditorType.class);
-    final StringProperty customEditorCommand = map(new SimpleStringProperty(""), "customEditorCommand", String.class);
-    final BooleanProperty preferEditorTabs = map(new SimpleBooleanProperty(true), "preferEditorTabs", Boolean.class);
+            mapLocal(new SimpleObjectProperty<>(), "externalEditor", ExternalEditorType.class, false);
+    final StringProperty customEditorCommand = mapLocal(new SimpleStringProperty(""), "customEditorCommand", String.class, false);
     final BooleanProperty automaticallyCheckForUpdates =
-            map(new SimpleBooleanProperty(true), "automaticallyCheckForUpdates", Boolean.class);
+            mapLocal(new SimpleBooleanProperty(true), "automaticallyCheckForUpdates", Boolean.class, false);
     final BooleanProperty encryptAllVaultData =
-            mapVaultSpecific(new SimpleBooleanProperty(false), "encryptAllVaultData", Boolean.class);
-    final BooleanProperty enableTerminalLogging =
-            map(new SimpleBooleanProperty(false), "enableTerminalLogging", Boolean.class);
+            mapVaultShared(new SimpleBooleanProperty(false), "encryptAllVaultData", Boolean.class, true);
+    final BooleanProperty enableTerminalLogging = map(Mapping.builder()
+            .property(new SimpleBooleanProperty(false)).key("enableTerminalLogging").valueClass(Boolean.class).licenseFeatureId("logging").build());
     final BooleanProperty enforceWindowModality =
-            map(new SimpleBooleanProperty(false), "enforceWindowModality", Boolean.class);
+            mapLocal(new SimpleBooleanProperty(false), "enforceWindowModality", Boolean.class, false);
+    final BooleanProperty checkForSecurityUpdates =
+            mapLocal(new SimpleBooleanProperty(true), "checkForSecurityUpdates", Boolean.class, false);
     final BooleanProperty condenseConnectionDisplay =
-            map(new SimpleBooleanProperty(false), "condenseConnectionDisplay", Boolean.class);
+            mapLocal(new SimpleBooleanProperty(false), "condenseConnectionDisplay", Boolean.class, false);
     final BooleanProperty showChildCategoriesInParentCategory =
-            map(new SimpleBooleanProperty(true), "showChildrenConnectionsInParentCategory", Boolean.class);
+            mapLocal(new SimpleBooleanProperty(true), "showChildrenConnectionsInParentCategory", Boolean.class, false);
     final BooleanProperty lockVaultOnHibernation =
-            map(new SimpleBooleanProperty(false), "lockVaultOnHibernation", Boolean.class);
+            mapLocal(new SimpleBooleanProperty(false), "lockVaultOnHibernation", Boolean.class, false);
     final BooleanProperty openConnectionSearchWindowOnConnectionCreation =
-            map(new SimpleBooleanProperty(true), "openConnectionSearchWindowOnConnectionCreation", Boolean.class);
+            mapLocal(new SimpleBooleanProperty(true), "openConnectionSearchWindowOnConnectionCreation", Boolean.class, false);
     final ObjectProperty<Path> storageDirectory =
-            map(new SimpleObjectProperty<>(DEFAULT_STORAGE_DIR), "storageDirectory", Path.class);
+            mapLocal(new SimpleObjectProperty<>(DEFAULT_STORAGE_DIR), "storageDirectory", Path.class, true);
     final BooleanProperty confirmAllDeletions =
-            map(new SimpleBooleanProperty(false), "confirmAllDeletions", Boolean.class);
-    final BooleanProperty developerMode = map(new SimpleBooleanProperty(false), "developerMode", Boolean.class);
+            mapLocal(new SimpleBooleanProperty(false), "confirmAllDeletions", Boolean.class, false);
+    final BooleanProperty developerMode = mapLocal(new SimpleBooleanProperty(false), "developerMode", Boolean.class, true);
     final BooleanProperty developerDisableUpdateVersionCheck =
-            map(new SimpleBooleanProperty(false), "developerDisableUpdateVersionCheck", Boolean.class);
+            mapLocal(new SimpleBooleanProperty(false), "developerDisableUpdateVersionCheck", Boolean.class, false);
     private final ObservableBooleanValue developerDisableUpdateVersionCheckEffective =
             bindDeveloperTrue(developerDisableUpdateVersionCheck);
     final BooleanProperty developerDisableGuiRestrictions =
-            map(new SimpleBooleanProperty(false), "developerDisableGuiRestrictions", Boolean.class);
+            mapLocal(new SimpleBooleanProperty(false), "developerDisableGuiRestrictions", Boolean.class, false);
     private final ObservableBooleanValue developerDisableGuiRestrictionsEffective =
             bindDeveloperTrue(developerDisableGuiRestrictions);
     final BooleanProperty developerForceSshTty =
-            map(new SimpleBooleanProperty(false), "developerForceSshTty", Boolean.class);
+            mapLocal(new SimpleBooleanProperty(false), "developerForceSshTty", Boolean.class, false);
 
     final ObjectProperty<SupportedLocale> language =
-            map(new SimpleObjectProperty<>(SupportedLocale.getEnglish()), "language", SupportedLocale.class);
+            mapLocal(new SimpleObjectProperty<>(SupportedLocale.getEnglish()), "language", SupportedLocale.class, false);
 
     final BooleanProperty requireDoubleClickForConnections =
-            map(new SimpleBooleanProperty(false), "requireDoubleClickForConnections", Boolean.class);
+            mapLocal(new SimpleBooleanProperty(false), "requireDoubleClickForConnections", Boolean.class, false);
 
     public ObservableBooleanValue requireDoubleClickForConnections() {
         return requireDoubleClickForConnections;
@@ -140,12 +148,16 @@ public class AppPrefs {
 
     @Getter
     private final StringProperty lockCrypt =
-            mapVaultSpecific(new SimpleStringProperty(), "workspaceLock", String.class);
+            mapVaultShared(new SimpleStringProperty(), "workspaceLock", String.class, true);
 
     final StringProperty apiKey =
-            mapVaultSpecific(new SimpleStringProperty(UUID.randomUUID().toString()), "apiKey", String.class);
+            mapVaultShared(new SimpleStringProperty(UUID.randomUUID().toString()), "apiKey", String.class ,true);
     final BooleanProperty disableApiAuthentication =
-            map(new SimpleBooleanProperty(false), "disableApiAuthentication", Boolean.class);
+            mapLocal(new SimpleBooleanProperty(false), "disableApiAuthentication", Boolean.class, false);
+
+    public ObservableBooleanValue checkForSecurityUpdates() {
+        return checkForSecurityUpdates;
+    }
 
     public ObservableBooleanValue enableTerminalLogging() {
         return enableTerminalLogging;
@@ -168,16 +180,16 @@ public class AppPrefs {
     }
 
     private final IntegerProperty editorReloadTimeout =
-            map(new SimpleIntegerProperty(1000), "editorReloadTimeout", Integer.class);
+            mapLocal(new SimpleIntegerProperty(1000), "editorReloadTimeout", Integer.class, false);
     private final BooleanProperty confirmDeletions =
-            map(new SimpleBooleanProperty(true), "confirmDeletions", Boolean.class);
+            mapLocal(new SimpleBooleanProperty(true), "confirmDeletions", Boolean.class, false);
 
     @Getter
     private final List<AppPrefsCategory> categories;
 
     private final AppPrefsStorageHandler globalStorageHandler = new AppPrefsStorageHandler(
             AppProperties.get().getDataDir().resolve("settings").resolve("preferences.json"));
-    private final Map<Mapping<?>, Comp<?>> customEntries = new LinkedHashMap<>();
+    private final Map<Mapping, Comp<?>> customEntries = new LinkedHashMap<>();
 
     @Getter
     private final Property<AppPrefsCategory> selectedCategory;
@@ -207,7 +219,7 @@ public class AppPrefs {
                         new DeveloperCategory())
                 .filter(appPrefsCategory -> appPrefsCategory.show())
                 .toList();
-        var selected = AppCache.get("selectedPrefsCategory", Integer.class, () -> 0);
+        var selected = AppCache.getNonNull("selectedPrefsCategory", Integer.class, () -> 0);
         if (selected == null) {
             selected = 0;
         }
@@ -473,14 +485,20 @@ public class AppPrefs {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T map(T o, String name, Class<?> clazz) {
-        mapping.add(new Mapping<>(name, (Property<T>) o, (Class<T>) clazz));
-        return o;
+    private <T> T map(Mapping m) {
+        mapping.add(m);
+        return (T) m.getProperty();
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T mapVaultSpecific(T o, String name, Class<?> clazz) {
-        mapping.add(new Mapping<>(name, (Property<T>) o, (Class<T>) clazz, true));
+    private <T> T mapLocal(Property<?> o, String name, Class<?> clazz, boolean requiresRestart) {
+        mapping.add(new Mapping(name, o, clazz, false, requiresRestart));
+        return (T) o;
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T mapVaultShared(T o, String name, Class<?> clazz, boolean requiresRestart) {
+        mapping.add(new Mapping(name, (Property<T>) o, (Class<T>) clazz, true, requiresRestart));
         return o;
     }
 
@@ -498,7 +516,7 @@ public class AppPrefs {
         if (rdpClientType.get() == null) {
             rdpClientType.setValue(ExternalRdpClientType.determineDefault());
         }
-        if (AppState.get().isInitialLaunch()) {
+        if (AppProperties.get().isInitialLaunch()) {
             performanceMode.setValue(XPipeDistributionType.get() == XPipeDistributionType.WEBTOP);
         }
     }
@@ -512,7 +530,7 @@ public class AppPrefs {
     }
 
     private void loadLocal() {
-        for (Mapping<?> value : mapping) {
+        for (Mapping value : mapping) {
             if (value.isVaultSpecific()) {
                 continue;
             }
@@ -546,7 +564,7 @@ public class AppPrefs {
     }
 
     private void loadSharedRemote() {
-        for (Mapping<?> value : mapping) {
+        for (Mapping value : mapping) {
             if (!value.isVaultSpecific()) {
                 continue;
             }
@@ -562,15 +580,19 @@ public class AppPrefs {
         }
     }
 
-    private <T> T loadValue(AppPrefsStorageHandler handler, Mapping<T> value) {
+    @SuppressWarnings("unchecked")
+    private <T> T loadValue(AppPrefsStorageHandler handler, Mapping value) {
+        T def = (T) value.getProperty().getValue();
+        Property<T> property = (Property<T>) value.getProperty();
+        Class<T> clazz = (Class<T>) value.getValueClass();
         var val = handler.loadObject(
-                value.getKey(), value.getValueClass(), value.getProperty().getValue());
-        value.getProperty().setValue(val);
+                value.getKey(), clazz, def);
+        property.setValue(val);
         return val;
     }
 
     public void save() {
-        for (Mapping<?> m : mapping) {
+        for (Mapping m : mapping) {
             AppPrefsStorageHandler handler = m.isVaultSpecific() ? vaultStorageHandler : globalStorageHandler;
             // It might be possible that we save while the vault handler is not initialized yet / has no file or
             // directory
@@ -608,26 +630,36 @@ public class AppPrefs {
         return ExternalApplicationHelper.replaceFileArgument(passwordManagerCommand.get(), "KEY", key);
     }
 
+    public Mapping getMapping(Object property) {
+        return mapping.stream().filter(m -> m.property == property).findFirst().orElseThrow();
+    }
+
     @Value
-    public static class Mapping<T> {
+    @Builder
+    @AllArgsConstructor
+    public static class Mapping {
 
         String key;
-        Property<T> property;
-        Class<T> valueClass;
+        Property<?> property;
+        Class<?> valueClass;
         boolean vaultSpecific;
+        boolean requiresRestart;
+        String licenseFeatureId;
 
-        public Mapping(String key, Property<T> property, Class<T> valueClass) {
-            this.key = key;
-            this.property = property;
-            this.valueClass = valueClass;
-            this.vaultSpecific = false;
-        }
-
-        public Mapping(String key, Property<T> property, Class<T> valueClass, boolean vaultSpecific) {
+        public Mapping(String key, Property<?> property, Class<?> valueClass, boolean vaultSpecific, boolean requiresRestart) {
             this.key = key;
             this.property = property;
             this.valueClass = valueClass;
             this.vaultSpecific = vaultSpecific;
+            this.requiresRestart = requiresRestart;
+            this.licenseFeatureId = null;
+
+            this.property.addListener((observable, oldValue, newValue) -> {
+                var running = OperationMode.get() == OperationMode.GUI;
+                if (running && requiresRestart) {
+                    AppPrefs.get().requiresRestart.set(true);
+                }
+            });
         }
     }
 
@@ -635,8 +667,8 @@ public class AppPrefs {
     private class PrefsHandlerImpl implements PrefsHandler {
 
         @Override
-        public <T> void addSetting(String id, Class<T> c, Property<T> property, Comp<?> comp) {
-            var m = new Mapping<>(id, property, c);
+        public <T> void addSetting(String id, Class<T> c, Property<T> property, Comp<?> comp, boolean requiresRestart) {
+            var m = new Mapping(id, property, c, false, requiresRestart);
             customEntries.put(m, comp);
             mapping.add(m);
         }

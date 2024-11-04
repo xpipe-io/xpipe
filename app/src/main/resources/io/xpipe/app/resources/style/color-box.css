@@ -19,12 +19,12 @@
 }
 
 .root:dark .color-box.gray {
-    -fx-background-color: derive(-color-bg-default, 13%);
+    -fx-background-color: -color-foreground-base;
     -fx-border-color: -color-border-default;
 }
 
 .root:light .color-box.gray {
-    -fx-background-color: derive(-color-bg-default, -3%);
+    -fx-background-color: -color-foreground-base;
     -fx-border-color: derive(-color-border-default, -10%);
 }
 

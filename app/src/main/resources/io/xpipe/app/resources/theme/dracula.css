@@ -1,1 +1,16 @@
-.root { -color-bg-default-transparent: #282a36D2; }
+.root:windows { -color-bg-default-transparent: #282a36D2; }
+
+.root:macos { -color-bg-default-transparent: #20212cD3; }
+
+.root .table-view {
+    -color-cell-bg-odd: derive(-color-bg-subtle, -35%);
+    -color-cell-bg: derive(-color-bg-subtle, -28%);
+}
+
+.root:dark * {
+    -color-foreground-base: derive(-color-bg-default, 9%);
+}
+
+.root:light * {
+    -color-foreground-base: derive(-color-bg-default, -3%);
+}

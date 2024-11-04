@@ -130,7 +130,7 @@ public final class BrowserFileListComp extends SimpleComp {
         table.setAccessibleText("Directory contents");
         table.setPlaceholder(new Region());
         table.getStyleClass().add(Styles.STRIPED);
-        table.getColumns().setAll(filenameCol, sizeCol, modeCol, ownerCol, mtimeCol);
+        table.getColumns().setAll(filenameCol, mtimeCol, modeCol, ownerCol, sizeCol);
         table.getSortOrder().add(filenameCol);
         table.setFocusTraversable(true);
         table.setSortPolicy(param -> {
@@ -313,8 +313,10 @@ public final class BrowserFileListComp extends SimpleComp {
                     .filter(browserAction -> browserAction.getShortcut().match(event))
                     .findAny();
             action.ifPresent(browserAction -> {
+                // Prevent concurrent modification by creating copy on platform thread
+                var selectionCopy = new ArrayList<>(selected);
                 ThreadHelper.runFailableAsync(() -> {
-                    browserAction.execute(fileList.getFileSystemModel(), selected);
+                    browserAction.execute(fileList.getFileSystemModel(), selectionCopy);
                 });
                 event.consume();
             });

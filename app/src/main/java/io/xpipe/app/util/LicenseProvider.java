@@ -24,7 +24,7 @@ public abstract class LicenseProvider {
 
     public abstract LicensedFeature getFeature(String id);
 
-    public abstract boolean checkOsName(String name);
+    public abstract LicensedFeature checkOsName(String name);
 
     public abstract void checkOsNameOrThrow(String s);
 

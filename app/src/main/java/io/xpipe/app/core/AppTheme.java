@@ -97,7 +97,10 @@ public class AppTheme {
         }
 
         try {
-            if (AppPrefs.get().theme.getValue() == null) {
+            var lastSystemDark = AppCache.getBoolean("lastTheme", false);
+            var nowDark = Platform.getPreferences().getColorScheme() == ColorScheme.DARK;
+            AppCache.update("lastTheme", nowDark);
+            if (AppPrefs.get().theme.getValue() == null || lastSystemDark != nowDark) {
                 setDefault();
             }
 
@@ -237,7 +240,7 @@ public class AppTheme {
         public static final Theme CUPERTINO_LIGHT = new Theme("cupertinoLight", "cupertino", new CupertinoLight());
         public static final Theme CUPERTINO_DARK = new Theme("cupertinoDark", "cupertino", new CupertinoDark());
         public static final Theme DRACULA = new Theme("dracula", "dracula", new Dracula());
-        public static final Theme MOCHA = new DerivedTheme("mocha", "primer", "Mocha", new PrimerDark());
+        public static final Theme MOCHA = new DerivedTheme("mocha", "mocha", "Mocha", new PrimerDark());
 
         // Adjust this to create your own theme
         public static final Theme CUSTOM = new DerivedTheme("custom", "primer", "Custom", new PrimerDark());

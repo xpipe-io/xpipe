@@ -3,7 +3,6 @@ package io.xpipe.app.update;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.util.LocalShell;
@@ -79,7 +78,6 @@ public class AppInstaller {
 
             @Override
             public void installLocal(Path file) throws Exception {
-                var shellProcessControl = new LocalStore().control().start();
                 var exec = (AppProperties.get().isDevelopmentEnvironment()
                                 ? Path.of(XPipeInstallation.getLocalDefaultInstallationBasePath())
                                 : XPipeInstallation.getCurrentInstallationBasePath())
@@ -98,7 +96,7 @@ public class AppInstaller {
                                 + ScriptHelper.createLocalExecScript(command) + "`\"\"";
 
                 runAndClose(() -> {
-                    shellProcessControl.executeSimpleCommand(toRun);
+                    LocalShell.getShell().executeSimpleCommand(toRun);
                 });
             }
 

@@ -140,7 +140,7 @@ public class AppExtensionManager {
     }
 
     private void loadAllExtensions() {
-        for (var ext : List.of("jdbc", "proc", "uacc")) {
+        for (var ext : List.of("proc", "uacc")) {
             var extension = findAndParseExtension(ext, baseLayer)
                     .orElseThrow(() -> ExtensionException.corrupt("Missing module " + ext));
             loadedExtensions.add(extension);

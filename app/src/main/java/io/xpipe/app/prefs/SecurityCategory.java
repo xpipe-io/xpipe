@@ -15,6 +15,8 @@ public class SecurityCategory extends AppPrefsCategory {
         var builder = new OptionsBuilder();
         builder.addTitle("securityPolicy")
                 .sub(new OptionsBuilder()
+                        .pref(prefs.checkForSecurityUpdates)
+                        .addToggle(prefs.checkForSecurityUpdates)
                         .nameAndDescription("alwaysConfirmElevation")
                         .addToggle(prefs.alwaysConfirmElevation)
                         .nameAndDescription("dontCachePasswords")

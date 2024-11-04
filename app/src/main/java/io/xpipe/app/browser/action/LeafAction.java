@@ -75,9 +75,8 @@ public interface LeafAction extends BrowserAction {
         var name = getName(model, selected);
         var mi = new MenuItem();
         mi.textProperty().bind(BindingsHelper.map(name, s -> {
-            if (getProFeatureId() != null
-                    && !LicenseProvider.get().getFeature(getProFeatureId()).isSupported()) {
-                return s + " (Pro)";
+            if (getProFeatureId() != null) {
+                return LicenseProvider.get().getFeature(getProFeatureId()).suffix(s);
             }
             return s;
         }));
