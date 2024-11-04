@@ -7,7 +7,7 @@ import io.xpipe.app.issue.EventHandlerImpl;
 import io.xpipe.app.storage.DataStateProviderImpl;
 import io.xpipe.app.util.AppJacksonModule;
 import io.xpipe.app.util.LicenseProvider;
-import io.xpipe.app.util.TerminalLauncher;
+import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.beacon.BeaconInterface;
 import io.xpipe.core.util.DataStateProvider;
 import io.xpipe.core.util.ModuleLayerLoader;

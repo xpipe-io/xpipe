@@ -1,6 +1,6 @@
 package io.xpipe.app.browser.session;
 
-import io.xpipe.app.browser.BrowserHomeModel;
+import io.xpipe.app.browser.BrowserHomeTabModel;
 import io.xpipe.app.browser.BrowserSavedState;
 import io.xpipe.app.browser.BrowserSavedStateImpl;
 import io.xpipe.app.browser.BrowserTransferModel;
@@ -27,7 +27,7 @@ public class BrowserSessionModel extends BrowserAbstractSessionModel<BrowserSess
     public static final BrowserSessionModel DEFAULT = new BrowserSessionModel();
 
     static {
-        DEFAULT.getSessionEntries().add(new BrowserHomeModel(DEFAULT));
+        DEFAULT.getSessionEntries().add(new BrowserHomeTabModel(DEFAULT));
     }
 
     private final BrowserTransferModel localTransfersStage = new BrowserTransferModel(this);

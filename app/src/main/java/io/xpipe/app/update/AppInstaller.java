@@ -7,7 +7,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
-import io.xpipe.app.util.TerminalLauncher;
+import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellDialects;

@@ -139,8 +139,15 @@ public class AppPrefs {
     final BooleanProperty requireDoubleClickForConnections =
             mapLocal(new SimpleBooleanProperty(false), "requireDoubleClickForConnections", Boolean.class, false);
 
+    final BooleanProperty enableTerminalDocking =
+            mapLocal(new SimpleBooleanProperty(true), "enableTerminalDocking", Boolean.class, true);
+
     public ObservableBooleanValue requireDoubleClickForConnections() {
         return requireDoubleClickForConnections;
+    }
+
+    public ObservableBooleanValue enableTerminalDocking() {
+        return enableTerminalDocking;
     }
 
     @Getter

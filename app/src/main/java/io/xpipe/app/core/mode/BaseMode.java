@@ -15,6 +15,7 @@ import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.resources.SystemIcons;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageSyncHandler;
+import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.*;
 
@@ -67,6 +68,7 @@ public class BaseMode extends OperationMode {
         FileBridge.init();
         BlobManager.init();
         ActionProvider.initProviders();
+        TerminalView.init();
         TrackEvent.info("Finished base components initialization");
         initialized = true;
     }

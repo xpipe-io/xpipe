@@ -7,7 +7,7 @@ import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.TerminalLauncher;
+import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ProcessOutputException;
 import io.xpipe.core.process.ShellControl;
@@ -15,6 +15,7 @@ import io.xpipe.core.process.ShellControl;
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class MultiExecuteSelectionAction implements BranchAction {
@@ -33,6 +34,8 @@ public abstract class MultiExecuteSelectionAction implements BranchAction {
                     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         model.withShell(
                                 pc -> {
+                                    var uuid = UUID.randomUUID();
+                                    model.getTerminalRequests().add(uuid);
                                     var cmd = pc.command(createCommand(pc, model, entries));
                                     TerminalLauncher.open(
                                             model.getEntry().getEntry(),
@@ -41,7 +44,8 @@ public abstract class MultiExecuteSelectionAction implements BranchAction {
                                                     ? model.getCurrentDirectory()
                                                             .getPath()
                                                     : null,
-                                            cmd);
+                                            cmd,
+                                            uuid);
                                 },
                                 false);
                     }

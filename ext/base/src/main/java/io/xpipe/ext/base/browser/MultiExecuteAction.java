@@ -6,13 +6,14 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.TerminalLauncher;
+import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
 
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;
+import java.util.UUID;
 
 public abstract class MultiExecuteAction implements BranchAction {
 
@@ -33,6 +34,8 @@ public abstract class MultiExecuteAction implements BranchAction {
                                             continue;
                                         }
 
+                                        var uuid = UUID.randomUUID();
+                                        model.getTerminalRequests().add(uuid);
                                         TerminalLauncher.open(
                                                 model.getEntry().getEntry(),
                                                 entry.getRawFileEntry().getName(),
@@ -40,7 +43,8 @@ public abstract class MultiExecuteAction implements BranchAction {
                                                         ? model.getCurrentDirectory()
                                                                 .getPath()
                                                         : null,
-                                                cmd);
+                                                cmd,
+                                                uuid);
                                     }
                                 },
                                 false);

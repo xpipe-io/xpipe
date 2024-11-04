@@ -18,7 +18,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
-import io.xpipe.app.util.TerminalLauncher;
+import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
@@ -28,9 +28,12 @@ import io.xpipe.core.store.*;
 import io.xpipe.core.util.FailableConsumer;
 import io.xpipe.core.util.FailableRunnable;
 
+import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -39,6 +42,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 @Getter
@@ -51,6 +55,7 @@ public final class OpenFileSystemModel extends BrowserStoreSessionTab<FileSystem
     private final Property<ModalOverlayComp.OverlayContent> overlay = new SimpleObjectProperty<>();
     private final BooleanProperty inOverview = new SimpleBooleanProperty();
     private final Property<BrowserTransferProgress> progress = new SimpleObjectProperty<>();
+    private final ObservableList<UUID> terminalRequests = FXCollections.observableArrayList();
     private FileSystem fileSystem;
     private OpenFileSystemSavedState savedState;
     private OpenFileSystemCache cache;
@@ -253,6 +258,8 @@ public final class OpenFileSystemModel extends BrowserStoreSessionTab<FileSystem
                 if (ShellDialects.getStartableDialects().stream().anyMatch(dialect -> adjustedPath
                         .toLowerCase()
                         .startsWith(dialect.getExecutableName().toLowerCase()))) {
+                    var uuid = UUID.randomUUID();
+                    terminalRequests.add(uuid);
                     TerminalLauncher.open(
                             entry.getEntry(),
                             name,
@@ -261,13 +268,17 @@ public final class OpenFileSystemModel extends BrowserStoreSessionTab<FileSystem
                                     .getShell()
                                     .get()
                                     .singularSubShell(
-                                            ShellOpenFunction.of(CommandBuilder.ofString(adjustedPath), false)));
+                                            ShellOpenFunction.of(CommandBuilder.ofString(adjustedPath), false)),
+                            uuid);
                 } else {
+                    var uuid = UUID.randomUUID();
+                    terminalRequests.add(uuid);
                     TerminalLauncher.open(
                             entry.getEntry(),
                             name,
                             directory,
-                            fileSystem.getShell().get().command(adjustedPath));
+                            fileSystem.getShell().get().command(adjustedPath),
+                            uuid);
                 }
             });
             return Optional.ofNullable(currentPath.get());
@@ -533,7 +544,9 @@ public final class OpenFileSystemModel extends BrowserStoreSessionTab<FileSystem
                     var connection = fileSystem.getShell().get();
                     var name = (directory != null ? directory + " - " : "")
                             + entry.get().getName();
-                    TerminalLauncher.open(entry.getEntry(), name, directory, connection);
+                    var uuid = UUID.randomUUID();
+                    terminalRequests.add(uuid);
+                    TerminalLauncher.open(entry.getEntry(), name, directory, connection, uuid);
 
                     // Restart connection as we will have to start it anyway, so we speed it up by doing it preemptively
                     startIfNeeded();

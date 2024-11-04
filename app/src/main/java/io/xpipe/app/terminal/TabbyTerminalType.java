@@ -9,7 +9,7 @@ import io.xpipe.core.process.TerminalInitFunction;
 import java.nio.file.Path;
 import java.util.Optional;
 
-public interface TabbyTerminalType extends ExternalTerminalType {
+public interface TabbyTerminalType extends ExternalTerminalType, DockableTerminalType {
 
     ExternalTerminalType TABBY_WINDOWS = new Windows();
     ExternalTerminalType TABBY_MAC_OS = new MacOs();

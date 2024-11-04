@@ -122,7 +122,7 @@ public class BrowserSessionComp extends SimpleComp {
         });
         var loadingIndicator = LoadingOverlayComp.noProgress(Comp.empty(), model.getBusy())
                 .apply(struc -> {
-                    AnchorPane.setTopAnchor(struc.get(), 0.0);
+                    AnchorPane.setTopAnchor(struc.get(), 3.0);
                     AnchorPane.setRightAnchor(struc.get(), 0.0);
                 })
                 .styleClass("tab-loading-indicator");

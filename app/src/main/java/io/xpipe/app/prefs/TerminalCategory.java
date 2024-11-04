@@ -10,12 +10,12 @@ import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.fxcomps.impl.TextFieldComp;
 import io.xpipe.app.terminal.ExternalTerminalType;
-import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.TerminalLauncher;
-import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.terminal.TerminalLauncher;
+import io.xpipe.app.terminal.TerminalView;
+import io.xpipe.app.util.*;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ListCell;
@@ -24,6 +24,7 @@ import javafx.scene.paint.Color;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
+import java.util.UUID;
 
 public class TerminalCategory extends AppPrefsCategory {
 
@@ -44,7 +45,7 @@ public class TerminalCategory extends AppPrefsCategory {
                                             "Test",
                                             ProcessControlProvider.get()
                                                     .createLocalProcessControl(true)
-                                                    .command("echo Test"));
+                                                    .command("echo Test"), UUID.randomUUID());
                                 }
                             });
                         })))
@@ -61,7 +62,11 @@ public class TerminalCategory extends AppPrefsCategory {
                                 .hide(prefs.terminalType.isNotEqualTo(ExternalTerminalType.CUSTOM)))
                         .addComp(terminalTest)
                         .nameAndDescription("clearTerminalOnInit")
-                        .addToggle(prefs.clearTerminalOnInit))
+                        .addToggle(prefs.clearTerminalOnInit)
+                        .nameAndDescription("enableTerminalDocking")
+                        .addToggle(prefs.enableTerminalDocking)
+                        .hide(new SimpleBooleanProperty(!TerminalView.isSupported()))
+                )
                 .buildComp();
     }
 

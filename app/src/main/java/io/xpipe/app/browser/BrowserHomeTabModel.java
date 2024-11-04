@@ -6,13 +6,10 @@ import io.xpipe.app.browser.session.BrowserSessionTab;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.storage.DataColor;
-import io.xpipe.core.store.*;
 
-import javafx.beans.property.*;
+public final class BrowserHomeTabModel extends BrowserSessionTab {
 
-public final class BrowserHomeModel extends BrowserSessionTab {
-
-    public BrowserHomeModel(BrowserAbstractSessionModel<?> browserModel) {
+    public BrowserHomeTabModel(BrowserAbstractSessionModel<?> browserModel) {
         super(browserModel, AppI18n.get("overview"), null);
     }
 

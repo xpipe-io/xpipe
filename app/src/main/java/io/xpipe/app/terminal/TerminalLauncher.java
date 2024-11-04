@@ -1,4 +1,4 @@
-package io.xpipe.app.util;
+package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
@@ -7,7 +7,10 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.terminal.ExternalTerminalType;
+import io.xpipe.app.util.LicenseProvider;
+import io.xpipe.app.util.LicenseRequiredException;
+import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.FailableFunction;
@@ -21,15 +24,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class TerminalLauncher {
-
-    public static void openDirect(String title, FailableFunction<ShellControl, String, Exception> command)
-            throws Exception {
-        var type = AppPrefs.get().terminalType().getValue();
-        if (type == null) {
-            throw ErrorEvent.expected(new IllegalStateException(AppI18n.get("noTerminalSet")));
-        }
-        openDirect(title, command, type);
-    }
 
     public static void openDirect(
             String title, FailableFunction<ShellControl, String, Exception> command, ExternalTerminalType type)
@@ -53,10 +47,18 @@ public class TerminalLauncher {
     }
 
     public static void open(String title, ProcessControl cc) throws Exception {
-        open(null, title, null, cc);
+        open(null, title, null, cc, UUID.randomUUID());
+    }
+
+    public static void open(String title, ProcessControl cc, UUID request) throws Exception {
+        open(null, title, null, cc, request);
     }
 
     public static void open(DataStoreEntry entry, String title, String directory, ProcessControl cc) throws Exception {
+        open(entry, title, directory, cc, UUID.randomUUID());
+    }
+
+    public static void open(DataStoreEntry entry, String title, String directory, ProcessControl cc, UUID request) throws Exception {
         var type = AppPrefs.get().terminalType().getValue();
         if (type == null) {
             throw ErrorEvent.expected(new IllegalStateException(AppI18n.get("noTerminalSet")));
@@ -73,7 +75,6 @@ public class TerminalLauncher {
                         && type.shouldClear()
                         && AppPrefs.get().clearTerminalOnInit().get(),
                 cc instanceof ShellControl ? type.additionalInitCommands() : TerminalInitFunction.none());
-        var request = UUID.randomUUID();
         var config = createConfig(request, entry, cleanTitle, adjustedTitle);
         var latch = TerminalLauncherManager.submitAsync(request, cc, terminalConfig, directory);
         try {

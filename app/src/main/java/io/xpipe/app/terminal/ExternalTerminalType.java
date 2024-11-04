@@ -23,7 +23,6 @@ import lombok.Value;
 import lombok.With;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -398,109 +397,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    ExternalTerminalType CMD = new SimplePathType("app.cmd", "cmd.exe", true) {
+    ExternalTerminalType CMD = new CmdTerminalType();
 
-        @Override
-        public boolean supportsTabs() {
-            return false;
-        }
+    ExternalTerminalType POWERSHELL = new PowerShellTerminalType();
 
-        @Override
-        public boolean isRecommended() {
-            return false;
-        }
+    ExternalTerminalType PWSH = new PwshTerminalType();
 
-        @Override
-        public boolean supportsColoredTitle() {
-            return false;
-        }
-
-        @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) {
-            if (configuration.getScriptDialect().equals(ShellDialects.CMD)) {
-                return CommandBuilder.of().add("/c").addFile(configuration.getScriptFile());
-            }
-
-            return CommandBuilder.of().add("/c").add(configuration.getDialectLaunchCommand());
-        }
-    };
-
-    ExternalTerminalType POWERSHELL = new SimplePathType("app.powershell", "powershell", true) {
-
-        @Override
-        public boolean supportsTabs() {
-            return false;
-        }
-
-        @Override
-        public boolean isRecommended() {
-            return false;
-        }
-
-        @Override
-        public boolean supportsColoredTitle() {
-            return false;
-        }
-
-        @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) {
-            if (configuration.getScriptDialect().equals(ShellDialects.POWERSHELL)) {
-                return CommandBuilder.of()
-                        .add("-ExecutionPolicy", "Bypass")
-                        .add("-File")
-                        .addFile(configuration.getScriptFile());
-            }
-
-            return CommandBuilder.of()
-                    .add("-ExecutionPolicy", "Bypass")
-                    .add("-EncodedCommand")
-                    .add(sc -> {
-                        var base64 = Base64.getEncoder()
-                                .encodeToString(configuration
-                                        .getDialectLaunchCommand()
-                                        .buildBase(sc)
-                                        .getBytes(StandardCharsets.UTF_16LE));
-                        return "\"" + base64 + "\"";
-                    });
-        }
-    };
-
-    ExternalTerminalType PWSH = new SimplePathType("app.pwsh", "pwsh", true) {
-
-        @Override
-        public String getWebsite() {
-            return "https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.4";
-        }
-
-        @Override
-        public boolean supportsTabs() {
-            return false;
-        }
-
-        @Override
-        public boolean isRecommended() {
-            return false;
-        }
-
-        @Override
-        public boolean supportsColoredTitle() {
-            return false;
-        }
-
-        @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) {
-            return CommandBuilder.of()
-                    .add("-ExecutionPolicy", "Bypass")
-                    .add("-EncodedCommand")
-                    .add(sc -> {
-                        // Fix for https://github.com/PowerShell/PowerShell/issues/18530#issuecomment-1325691850
-                        var c = "$env:PSModulePath=\"\";"
-                                + configuration.getDialectLaunchCommand().buildBase(sc);
-                        var base64 = Base64.getEncoder().encodeToString(c.getBytes(StandardCharsets.UTF_16LE));
-                        return "\"" + base64 + "\"";
-                    });
-        }
-    };
     ExternalTerminalType GNOME_TERMINAL = new PathCheckType("app.gnomeTerminal", "gnome-terminal", true) {
         @Override
         public String getWebsite() {
@@ -1214,4 +1116,5 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         protected abstract CommandBuilder toCommand(LaunchConfiguration configuration) throws Exception;
     }
+
 }

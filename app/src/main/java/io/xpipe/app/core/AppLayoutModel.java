@@ -3,6 +3,7 @@ package io.xpipe.app.core;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.browser.session.BrowserSessionComp;
 import io.xpipe.app.browser.session.BrowserSessionModel;
+import io.xpipe.app.terminal.TerminalDockComp;
 import io.xpipe.app.comp.store.StoreLayoutComp;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.util.LabelGraphic;
@@ -10,6 +11,7 @@ import io.xpipe.app.prefs.AppPrefsComp;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LicenseProvider;
 
+import io.xpipe.app.terminal.TerminalView;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -22,7 +24,6 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.extern.jackson.Jacksonized;
 
-import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class AppLayoutModel {
     public AppLayoutModel(SavedState savedState) {
         this.savedState = savedState;
         this.entries = createEntryList();
-        this.selected = new SimpleObjectProperty<>(entries.get(1));
+        this.selected = new SimpleObjectProperty<>(entries.get(0));
     }
 
     public static AppLayoutModel get() {
@@ -62,35 +63,49 @@ public class AppLayoutModel {
     }
 
     public void selectBrowser() {
-        selected.setValue(entries.getFirst());
+        selected.setValue(entries.get(1));
     }
 
-    public void selectSettings() {
+    public void selectTerminal() {
+        if (!TerminalView.isSupported()) {
+            return;
+        }
+
         selected.setValue(entries.get(2));
     }
 
+    public void selectSettings() {
+        selected.setValue(entries.get(TerminalView.isSupported() ? 3 : 2));
+    }
+
     public void selectLicense() {
-        selected.setValue(entries.get(3));
+        selected.setValue(entries.get(TerminalView.isSupported() ? 4 : 3));
     }
 
     public void selectConnections() {
-        selected.setValue(entries.get(1));
+        selected.setValue(entries.get(0));
     }
 
     private List<Entry> createEntryList() {
         var l = new ArrayList<>(List.of(
                 new Entry(
-                        AppI18n.observable("browser"),
-                        new LabelGraphic.IconGraphic("mdi2f-file-cabinet"),
-                        new BrowserSessionComp(BrowserSessionModel.DEFAULT),
-                        null,
-                        new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN)),
-                new Entry(
                         AppI18n.observable("connections"),
                         new LabelGraphic.IconGraphic("mdi2c-connection"),
                         new StoreLayoutComp(),
                         null,
+                        new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN)),
+                new Entry(
+                        AppI18n.observable("browser"),
+                        new LabelGraphic.IconGraphic("mdi2f-file-cabinet"),
+                        new BrowserSessionComp(BrowserSessionModel.DEFAULT),
+                        null,
                         new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN)),
+//                new Entry(
+//                        AppI18n.observable("terminal"),
+//                        new LabelGraphic.IconGraphic("mdi2m-monitor-screenshot"),
+//                        new TerminalDockComp(),
+//                        null,
+//                        new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.SHORTCUT_DOWN)),
                 new Entry(
                         AppI18n.observable("settings"),
                         new LabelGraphic.IconGraphic("mdsmz-miscellaneous_services"),
@@ -129,6 +144,11 @@ public class AppLayoutModel {
                 //                        () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
                 //                        null)
                 ));
+				
+        if (!TerminalView.isSupported()) {
+            l.remove(2);
+        }
+
         return l;
     }
 

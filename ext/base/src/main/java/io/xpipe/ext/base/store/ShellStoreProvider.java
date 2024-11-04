@@ -15,12 +15,14 @@ import io.xpipe.app.resources.SystemIcons;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.ShellStoreFormat;
-import io.xpipe.app.util.TerminalLauncher;
+import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.ext.base.script.ScriptStore;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ObservableValue;
+
+import java.util.UUID;
 
 public interface ShellStoreProvider extends DataStoreProvider {
 

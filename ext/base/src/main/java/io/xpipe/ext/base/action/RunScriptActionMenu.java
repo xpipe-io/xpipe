@@ -7,7 +7,7 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.TerminalLauncher;
+import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.process.ShellTtyState;
 import io.xpipe.ext.base.script.ScriptHierarchy;
@@ -18,6 +18,7 @@ import javafx.beans.value.ObservableValue;
 import lombok.Value;
 
 import java.util.List;
+import java.util.UUID;
 
 public class RunScriptActionMenu implements ActionProvider {
 

@@ -1,4 +1,4 @@
-package io.xpipe.app.util;
+package io.xpipe.app.terminal;
 
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.beacon.BeaconClientException;

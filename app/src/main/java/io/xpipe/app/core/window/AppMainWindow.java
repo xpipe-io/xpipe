@@ -264,6 +264,9 @@ public class AppMainWindow {
 
     public void show() {
         stage.show();
+        if (OsType.getLocal() == OsType.WINDOWS) {
+            NativeWinWindowControl.MAIN_WINDOW = new NativeWinWindowControl(stage);
+        }
     }
 
     private void setupContent(Comp<?> content) {

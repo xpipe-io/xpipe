@@ -10,7 +10,7 @@ import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.FileOpener;
 import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.TerminalLauncher;
+import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.util.XPipeInstallation;

@@ -1,5 +1,7 @@
-package io.xpipe.app.util;
+package io.xpipe.app.terminal;
 
+import io.xpipe.app.util.ScriptHelper;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.beacon.BeaconServerException;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.FilePath;
