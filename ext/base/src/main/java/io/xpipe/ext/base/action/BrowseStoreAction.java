@@ -57,7 +57,7 @@ public class BrowseStoreAction implements ActionProvider {
         public void execute() throws Exception {
             DataStoreEntryRef<FileSystemStore> replacement =
                     ProcessControlProvider.get().replace(entry.ref());
-            BrowserSessionModel.DEFAULT.openFileSystemSync(replacement, null, new SimpleBooleanProperty());
+            BrowserSessionModel.DEFAULT.openFileSystemSync(replacement, null, new SimpleBooleanProperty(), true);
             AppLayoutModel.get().selectBrowser();
         }
     }

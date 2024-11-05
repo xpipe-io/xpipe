@@ -43,12 +43,16 @@ public class TerminalView {
     private final List<TerminalViewInstance> terminalInstances = new ArrayList<>();
     private final List<Listener> listeners = new ArrayList<>();
 
-    public void addListener(Listener listener) {
+    public synchronized void addListener(Listener listener) {
         this.listeners.add(listener);
     }
 
+    public synchronized void removeListener(Listener listener) {
+        this.listeners.remove(listener);
+    }
+
     public boolean isEnabled() {
-        return isSupported() && AppPrefs.get().enableTerminalDocking().get();
+        return isSupported();
     }
 
     public synchronized void open(UUID request, long pid) {
@@ -125,7 +129,7 @@ public class TerminalView {
         ThreadHelper.createPlatformThread("terminal-view", true, () -> {
             while (true) {
                 instance.tick();
-                ThreadHelper.sleep(1000);
+                ThreadHelper.sleep(500);
             }
         }).start();
         INSTANCE = instance;

@@ -49,7 +49,7 @@ public final class WindowsTerminalViewInstance extends TerminalViewInstance {
     @Override
     public void updatePosition(Rect bounds) {
         control.move(bounds);
-        this.lastBounds = bounds;
+        this.lastBounds = queryBounds();
         this.customBounds = false;
     }
 

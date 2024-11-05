@@ -75,6 +75,10 @@
     -fx-background-color: -color-bg-default;
 }
 
+.browser .terminal-dock-comp {
+    -fx-padding: 7 0 7 7;
+}
+
 .selected-file-list {
     -fx-spacing: 5px;
     -fx-padding: 8px;

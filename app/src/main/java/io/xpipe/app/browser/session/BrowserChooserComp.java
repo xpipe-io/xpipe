@@ -6,7 +6,7 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemComp;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.comp.base.DialogComp;
-import io.xpipe.app.comp.base.SideSplitPaneComp;
+import io.xpipe.app.comp.base.LeftSplitPaneComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppLayoutModel;
@@ -148,7 +148,7 @@ public class BrowserChooserComp extends DialogComp {
         });
 
         var vertical = new VerticalComp(List.of(bookmarkTopBar, bookmarksContainer)).styleClass("left");
-        var splitPane = new SideSplitPaneComp(vertical, stack)
+        var splitPane = new LeftSplitPaneComp(vertical, stack)
                 .withInitialWidth(AppLayoutModel.get().getSavedState().getBrowserConnectionsWidth())
                 .withOnDividerChange(AppLayoutModel.get().getSavedState()::setBrowserConnectionsWidth)
                 .styleClass("background")

@@ -18,6 +18,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableDoubleValue;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
@@ -33,6 +34,7 @@ import atlantafx.base.theme.Styles;
 import lombok.Getter;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static atlantafx.base.theme.Styles.DENSE;
 import static atlantafx.base.theme.Styles.toggleStyleClass;
@@ -42,13 +44,15 @@ public class BrowserSessionTabsComp extends SimpleComp {
 
     private final BrowserSessionModel model;
     private final ObservableDoubleValue leftPadding;
+    private final DoubleProperty rightPadding;
 
     @Getter
     private final DoubleProperty headerHeight;
 
-    public BrowserSessionTabsComp(BrowserSessionModel model, ObservableDoubleValue leftPadding) {
+    public BrowserSessionTabsComp(BrowserSessionModel model, ObservableDoubleValue leftPadding, DoubleProperty rightPadding) {
         this.model = model;
         this.leftPadding = leftPadding;
+        this.rightPadding = rightPadding;
         this.headerHeight = new SimpleDoubleProperty();
     }
 
@@ -258,8 +262,27 @@ public class BrowserSessionTabsComp extends SimpleComp {
         return tabs;
     }
 
-    private ContextMenu createContextMenu(TabPane tabs, Tab tab) {
+    private ContextMenu createContextMenu(TabPane tabs, Tab tab, BrowserSessionTab tabModel) {
         var cm = ContextMenuHelper.create();
+
+        if (tabModel.isCloseable()) {
+            var unsplit = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("unpinTab"));
+            unsplit.visibleProperty().bind(PlatformThread.sync(Bindings.createBooleanBinding(() -> {
+                return model.getGlobalPinnedTab().getValue() != null && model.getGlobalPinnedTab().getValue().equals(tabModel);
+            }, model.getGlobalPinnedTab())));
+            unsplit.setOnAction(event -> {
+                model.unpinTab(tabModel);
+                event.consume();
+            });
+            cm.getItems().add(unsplit);
+
+            var split = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("pinTab"));
+            split.setOnAction(event -> {
+                model.pinTab(tabModel);
+                event.consume();
+            });
+            cm.getItems().add(split);
+        }
 
         var select = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("selectTab"));
         select.acceleratorProperty()
@@ -340,7 +363,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
 
     private Tab createTab(TabPane tabs, BrowserSessionTab tabModel) {
         var tab = new Tab();
-        tab.setContextMenu(createContextMenu(tabs, tab));
+        tab.setContextMenu(createContextMenu(tabs, tab, tabModel));
 
         tab.setClosable(tabModel.isCloseable());
 
@@ -368,10 +391,62 @@ public class BrowserSessionTabsComp extends SimpleComp {
                             },
                             PlatformThread.sync(tabModel.getBusy())));
         }
-        tab.setText(tabModel.getName());
+
+        if (tabModel.getBrowserModel() instanceof BrowserSessionModel sessionModel) {
+            var global = PlatformThread.sync(sessionModel.getGlobalPinnedTab());
+            tab.textProperty().bind(Bindings.createStringBinding(() -> {
+                return tabModel.getName() + (global.getValue() == tabModel ? " (" + AppI18n.get("pinned") + ")" : "");
+            }, global, AppPrefs.get().language()));
+        } else {
+            tab.setText(tabModel.getName());
+        }
 
         Comp<?> comp = tabModel.comp();
-        tab.setContent(comp.createRegion());
+        var compRegion = comp.createRegion();
+        var empty = new StackPane();
+        empty.widthProperty().addListener((observable, oldValue, newValue) -> {
+            if (tabModel.isCloseable() && tabs.getSelectionModel().getSelectedItem() == tab) {
+                rightPadding.setValue(newValue.doubleValue());
+            }
+        });
+        var split = new SplitPane(compRegion);
+        if (tabModel.isCloseable()) {
+            split.getItems().add(empty);
+        }
+        model.getEffectiveRightTab().subscribe(browserSessionTab -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                if (browserSessionTab != null && split.getItems().size() > 1) {
+                    split.getItems().set(1, empty);
+                } else if (browserSessionTab != null && split.getItems().size() == 1) {
+                    split.getItems().add(empty);
+                } else if (browserSessionTab == null && split.getItems().size() > 1) {
+                    split.getItems().remove(1);
+                }
+            });
+        });
+        tab.setContent(split);
+
+//        var lastSplitRegion = new AtomicReference<Region>();
+//        model.getGlobalPinnedTab().subscribe( (newValue) -> {
+//            PlatformThread.runLaterIfNeeded(() -> {
+//                if (newValue != null) {
+//                    var r = newValue.comp().createRegion();
+//                    split.getItems().add(r);
+//                    lastSplitRegion.set(r);
+//                } else if (split.getItems().size() > 1) {
+//                    split.getItems().removeLast();
+//                }
+//            });
+//        });
+//        model.getSelectedEntry().addListener((observable, oldValue, newValue) -> {
+//            PlatformThread.runLaterIfNeeded(() -> {
+//                if (newValue != null && newValue.equals(model.getGlobalPinnedTab().getValue()) && split.getItems().size() > 1) {
+//                    split.getItems().remove(lastSplitRegion.get());
+//                } else if (split.getItems().size() > 1 && !split.getItems().contains(lastSplitRegion.get())) {
+//                    split.getItems().add(lastSplitRegion.get());
+//                }
+//            });
+//        });
 
         var id = UUID.randomUUID().toString();
         tab.setId(id);

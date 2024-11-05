@@ -59,17 +59,29 @@ public class TerminalDockComp extends SimpleComp {
         s.addEventFilter(WindowEvent.WINDOW_HIDING,event -> {
             model.onClose();
         });
+        s.focusedProperty().addListener((observable, oldValue, newValue) -> {
+
+        });
         stack.setOnMouseClicked(event -> {
             model.clickView();
             event.consume();
         });
+        stack.getStyleClass().add("terminal-dock-comp");
         return stack;
     }
 
     private void update(Region region) {
+        if (region.getScene() == null || region.getScene().getWindow() == null) {
+            return;
+        }
+
         var bounds = region.localToScreen(region.getBoundsInLocal());
+        var p = region.getPadding();
         var sx = region.getScene().getWindow().getOutputScaleX();
         var sy = region.getScene().getWindow().getOutputScaleY();
-        model.resizeView((int) Math.ceil(bounds.getMinX() * sx), (int) Math.ceil(bounds.getMinY() * sy),(int) Math.floor(bounds.getWidth() * sx), (int) Math.floor(bounds.getHeight() * sy));
+        model.resizeView((int) Math.ceil(bounds.getMinX() * sx + p.getLeft()),
+                (int) Math.ceil(bounds.getMinY() * sy + p.getTop()),
+                (int) Math.floor(bounds.getWidth() * sx - p.getRight() - p.getLeft()),
+                (int) Math.floor(bounds.getHeight() * sy - p.getBottom() - p.getTop()));
     }
 }

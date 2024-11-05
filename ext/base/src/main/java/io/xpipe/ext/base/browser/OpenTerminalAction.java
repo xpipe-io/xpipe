@@ -1,5 +1,6 @@
 package io.xpipe.ext.base.browser;
 
+import io.xpipe.app.browser.BrowserTerminalDockTabModel;
 import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.fs.OpenFileSystemModel;
@@ -27,14 +28,14 @@ public class OpenTerminalAction implements LeafAction {
                     model.getCurrentDirectory() != null
                             ? model.getCurrentDirectory().getPath()
                             : null);
-            if (model.getBrowserModel() instanceof BrowserSessionModel sessionModel) {
-                sessionModel.
+        } else {
+            for (var entry : entries) {
+                model.openTerminalAsync(entry.getRawFileEntry().getPath());
             }
-            return;
         }
 
-        for (var entry : entries) {
-            model.openTerminalAsync(entry.getRawFileEntry().getPath());
+        if (AppPrefs.get().enableTerminalDocking().get() && model.getBrowserModel() instanceof BrowserSessionModel sessionModel) {
+            sessionModel.splitTab(model,new BrowserTerminalDockTabModel(sessionModel, model, model.getTerminalRequests()));
         }
     }
 

@@ -4,9 +4,12 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.Rect;
 import io.xpipe.core.process.OsType;
+import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class TerminalDockModel {
 
@@ -16,10 +19,26 @@ public class TerminalDockModel {
 
     private Rect viewBounds;
     private boolean viewActive;
-    private final List<TerminalViewInstance> terminalInstances = new ArrayList<>();
+    @Getter
+    private final Set<TerminalViewInstance> terminalInstances = new HashSet<>();
+
+    public TerminalDockModel() {
+        int a = 0;
+    }
 
     public synchronized void trackTerminal(TerminalViewInstance terminal) {
         terminalInstances.add(terminal);
+        terminal.alwaysInFront();
+        terminal.updatePosition(viewBounds);
+    }
+
+    public synchronized void closeTerminal(TerminalViewInstance terminal) {
+        if (!terminalInstances.contains(terminal)) {
+            return;
+        }
+
+        terminal.close();
+        terminalInstances.remove(terminal);
     }
 
     public boolean isEnabled() {
@@ -130,6 +149,7 @@ public class TerminalDockModel {
 
             terminalInstance.close();
         });
+        terminalInstances.clear();
     }
 
     private void updatePositions() {

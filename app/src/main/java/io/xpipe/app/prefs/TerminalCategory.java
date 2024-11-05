@@ -61,11 +61,11 @@ public class TerminalCategory extends AppPrefsCategory {
                                 .apply(struc -> struc.get().setPromptText("myterminal -e $CMD"))
                                 .hide(prefs.terminalType.isNotEqualTo(ExternalTerminalType.CUSTOM)))
                         .addComp(terminalTest)
-                        .nameAndDescription("clearTerminalOnInit")
-                        .addToggle(prefs.clearTerminalOnInit)
-                        .nameAndDescription("enableTerminalDocking")
+                        .pref(prefs.enableTerminalDocking)
                         .addToggle(prefs.enableTerminalDocking)
                         .hide(new SimpleBooleanProperty(!TerminalView.isSupported()))
+                        .nameAndDescription("clearTerminalOnInit")
+                        .addToggle(prefs.clearTerminalOnInit)
                 )
                 .buildComp();
     }
