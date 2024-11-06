@@ -182,7 +182,7 @@ public class OpenFileSystemComp extends SimpleComp {
                     });
                 });
 
-        var home = new BrowserOverviewComp(model).styleClass("browser-content");
+        var home = new BrowserOverviewComp(model).styleClass("browser-overview");
         var stack = new MultiContentComp(Map.of(
                 home,
                 model.getCurrentPath().isNull(),

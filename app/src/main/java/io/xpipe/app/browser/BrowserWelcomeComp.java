@@ -124,7 +124,7 @@ public class BrowserWelcomeComp extends SimpleComp {
 
         var layout = new VBox();
         layout.getStyleClass().add("welcome");
-        layout.setPadding(new Insets(60, 40, 40, 50));
+        layout.setPadding(new Insets(25, 40, 40, 40));
         layout.setSpacing(18);
         layout.getChildren().add(hbox);
         layout.getChildren().add(Comp.separator().hide(empty).createRegion());
@@ -158,7 +158,7 @@ public class BrowserWelcomeComp extends SimpleComp {
                                 }
                             });
                         })
-                .minWidth(250)
+                .minWidth(300)
                 .accessibleText(DataStorage.get().getStoreEntryDisplayName(entry.get()))
                 .disable(disable)
                 .styleClass("entry-button")
@@ -177,7 +177,7 @@ public class BrowserWelcomeComp extends SimpleComp {
                 .styleClass("directory-button")
                 .apply(struc -> struc.get().setMaxWidth(2000))
                 .styleClass(Styles.RIGHT_PILL)
-                .grow(true, false)
+                .hgrow()
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
     }
 }

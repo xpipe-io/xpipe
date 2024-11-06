@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 public class OpenFileSystemSavedState {
 
     private static final Timer TIMEOUT_TIMER = new Timer(true);
-    private static final int STORED = 10;
+    private static final int STORED = 15;
 
     @Setter
     private OpenFileSystemModel model;

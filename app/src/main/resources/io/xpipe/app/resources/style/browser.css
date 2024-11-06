@@ -71,6 +71,10 @@
     -fx-background-color: -color-bg-default;
 }
 
+.browser .browser-overview{
+    -fx-spacing: 7;
+}
+
 .browser .terminal-dock-comp {
     -fx-padding: 7 0 7 7;
 }

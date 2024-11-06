@@ -48,7 +48,7 @@ public class BrowserSavedStateImpl implements BrowserSavedState {
     public synchronized void add(BrowserSavedState.Entry entry) {
         lastSystems.removeIf(s -> s.getUuid().equals(entry.getUuid()));
         lastSystems.addFirst(entry);
-        if (lastSystems.size() > 10) {
+        if (lastSystems.size() > 15) {
             lastSystems.removeLast();
         }
     }
