@@ -24,9 +24,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableMap;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Getter
 public class BrowserSessionModel extends BrowserAbstractSessionModel<BrowserSessionTab> {
@@ -79,6 +77,16 @@ public class BrowserSessionModel extends BrowserAbstractSessionModel<BrowserSess
         });
     }
 
+    public Set<BrowserSessionTab> getAllTabs() {
+        var set = new HashSet<BrowserSessionTab>();
+        set.addAll(sessionEntries);
+        set.addAll(splits.values());
+        if (globalPinnedTab.getValue() != null) {
+            set.add(globalPinnedTab.getValue());
+        }
+        return set;
+    }
+
     public void splitTab(BrowserSessionTab tab, BrowserSessionTab split) {
         if (splits.containsKey(tab)) {
             return;
@@ -97,7 +105,6 @@ public class BrowserSessionModel extends BrowserAbstractSessionModel<BrowserSess
             });
         }
     }
-
 
     public void pinTab(BrowserSessionTab tab) {
         if (tab.equals(globalPinnedTab.getValue())) {

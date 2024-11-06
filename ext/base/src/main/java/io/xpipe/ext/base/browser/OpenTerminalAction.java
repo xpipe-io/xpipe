@@ -35,7 +35,13 @@ public class OpenTerminalAction implements LeafAction {
         }
 
         if (AppPrefs.get().enableTerminalDocking().get() && model.getBrowserModel() instanceof BrowserSessionModel sessionModel) {
-            sessionModel.splitTab(model,new BrowserTerminalDockTabModel(sessionModel, model, model.getTerminalRequests()));
+            // Check if the right side is already occupied
+            var existingSplit = sessionModel.getSplits().get(model);
+            if (existingSplit != null && !(existingSplit instanceof BrowserTerminalDockTabModel)) {
+                return;
+            }
+
+            sessionModel.splitTab(model, new BrowserTerminalDockTabModel(sessionModel, model, model.getTerminalRequests()));
         }
     }
 

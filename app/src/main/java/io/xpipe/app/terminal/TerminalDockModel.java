@@ -29,7 +29,9 @@ public class TerminalDockModel {
     public synchronized void trackTerminal(TerminalViewInstance terminal) {
         terminalInstances.add(terminal);
         terminal.alwaysInFront();
-        terminal.updatePosition(viewBounds);
+        if (viewBounds != null) {
+            terminal.updatePosition(viewBounds);
+        }
     }
 
     public synchronized void closeTerminal(TerminalViewInstance terminal) {

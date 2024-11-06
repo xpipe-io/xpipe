@@ -30,7 +30,7 @@ public final class WindowsTerminalViewInstance extends TerminalViewInstance {
     @Override
     public void alwaysInFront() {
         this.control.alwaysInFront();
-        this.control.removeBorders();
+        // this.control.removeBorders();
     }
 
     @Override

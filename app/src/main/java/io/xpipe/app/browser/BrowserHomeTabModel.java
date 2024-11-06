@@ -10,7 +10,7 @@ import io.xpipe.app.storage.DataColor;
 public final class BrowserHomeTabModel extends BrowserSessionTab {
 
     public BrowserHomeTabModel(BrowserAbstractSessionModel<?> browserModel) {
-        super(browserModel, AppI18n.get("overview"), null);
+        super(browserModel, AppI18n.get("overview"));
     }
 
     @Override

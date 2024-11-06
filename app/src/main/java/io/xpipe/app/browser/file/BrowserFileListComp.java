@@ -40,6 +40,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
@@ -274,8 +275,15 @@ public final class BrowserFileListComp extends SimpleComp {
         }
         table.getSelectionModel().setCellSelectionEnabled(false);
 
+        var updateFromModel = new BooleanScope(new SimpleBooleanProperty());
         table.getSelectionModel().getSelectedItems().addListener((ListChangeListener<? super BrowserEntry>) c -> {
-            fileList.getSelection().setAll(c.getList());
+            if (updateFromModel.get()) {
+                return;
+            }
+
+            try (var ignored = updateFromModel) {
+                fileList.getSelection().setAll(c.getList());
+            }
         });
 
         fileList.getSelection().addListener((ListChangeListener<? super BrowserEntry>) c -> {
@@ -284,16 +292,27 @@ public final class BrowserFileListComp extends SimpleComp {
             }
 
             Platform.runLater(() -> {
-                if (c.getList().isEmpty()) {
+                var tableIndices = table.getSelectionModel().getSelectedItems().stream()
+                        .mapToInt(entry -> table.getItems().indexOf(entry))
+                        .toArray();
+                var indices = c.getList().stream()
+                        .mapToInt(entry -> table.getItems().indexOf(entry))
+                        .toArray();
+                if (Arrays.equals(indices, tableIndices)) {
+                    return;
+                }
+
+                if (indices.length == 0) {
                     table.getSelectionModel().clearSelection();
                     return;
                 }
 
-                var indices = c.getList().stream()
-                        .mapToInt(entry -> table.getItems().indexOf(entry))
-                        .toArray();
-                table.getSelectionModel()
-                        .selectIndices(table.getItems().indexOf(c.getList().getFirst()), indices);
+                if (indices.length == 1) {
+                    table.getSelectionModel().clearAndSelect(indices[0]);
+                } else {
+                    table.getSelectionModel().clearSelection();
+                    table.getSelectionModel().selectIndices(indices[0], indices);
+                }
             });
         });
     }

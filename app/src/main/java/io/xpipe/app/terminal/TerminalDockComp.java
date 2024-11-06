@@ -60,7 +60,11 @@ public class TerminalDockComp extends SimpleComp {
             model.onClose();
         });
         s.focusedProperty().addListener((observable, oldValue, newValue) -> {
-
+            if (newValue) {
+                model.onFocusGain();
+            } else {
+                model.onFocusLost();
+            }
         });
         stack.setOnMouseClicked(event -> {
             model.clickView();

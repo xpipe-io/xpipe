@@ -18,13 +18,11 @@ public abstract class BrowserSessionTab {
     protected final BooleanProperty busy = new SimpleBooleanProperty();
     protected final BrowserAbstractSessionModel<?> browserModel;
     protected final String name;
-    protected final String tooltip;
     protected final Property<BrowserSessionTab> splitTab = new SimpleObjectProperty<>();
 
-    public BrowserSessionTab(BrowserAbstractSessionModel<?> browserModel, String name, String tooltip) {
+    public BrowserSessionTab(BrowserAbstractSessionModel<?> browserModel, String name) {
         this.browserModel = browserModel;
         this.name = name;
-        this.tooltip = tooltip;
     }
 
     public abstract Comp<?> comp();

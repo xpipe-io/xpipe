@@ -426,28 +426,6 @@ public class BrowserSessionTabsComp extends SimpleComp {
         });
         tab.setContent(split);
 
-//        var lastSplitRegion = new AtomicReference<Region>();
-//        model.getGlobalPinnedTab().subscribe( (newValue) -> {
-//            PlatformThread.runLaterIfNeeded(() -> {
-//                if (newValue != null) {
-//                    var r = newValue.comp().createRegion();
-//                    split.getItems().add(r);
-//                    lastSplitRegion.set(r);
-//                } else if (split.getItems().size() > 1) {
-//                    split.getItems().removeLast();
-//                }
-//            });
-//        });
-//        model.getSelectedEntry().addListener((observable, oldValue, newValue) -> {
-//            PlatformThread.runLaterIfNeeded(() -> {
-//                if (newValue != null && newValue.equals(model.getGlobalPinnedTab().getValue()) && split.getItems().size() > 1) {
-//                    split.getItems().remove(lastSplitRegion.get());
-//                } else if (split.getItems().size() > 1 && !split.getItems().contains(lastSplitRegion.get())) {
-//                    split.getItems().add(lastSplitRegion.get());
-//                }
-//            });
-//        });
-
         var id = UUID.randomUUID().toString();
         tab.setId(id);
 
@@ -471,7 +449,6 @@ public class BrowserSessionTabsComp extends SimpleComp {
                     if (color != null) {
                         c.getStyleClass().add(color.getId());
                     }
-                    new TooltipAugment<>(new SimpleStringProperty(tabModel.getTooltip()), null).augment(c);
                     c.addEventHandler(
                             DragEvent.DRAG_ENTERED,
                             mouseEvent -> Platform.runLater(

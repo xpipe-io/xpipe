@@ -16,8 +16,7 @@ public abstract class BrowserStoreSessionTab<T extends DataStore> extends Browse
     public BrowserStoreSessionTab(BrowserAbstractSessionModel<?> browserModel, DataStoreEntryRef<? extends T> entry) {
         super(
                 browserModel,
-                DataStorage.get().getStoreEntryDisplayName(entry.get()),
-                DataStorage.get().getStorePath(entry.getEntry()).toString());
+                DataStorage.get().getStoreEntryDisplayName(entry.get()));
         this.entry = entry;
     }
 
