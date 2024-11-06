@@ -110,6 +110,9 @@
     -color-chart-8-alpha20: rgba(136, 136, 136, 0.2);
     -fx-background-color: -color-bg-default;
     -fx-font-size: 14px;
+    -fx-background-radius: inherit;
+    -fx-background-insets: inherit;
+    -fx-padding: inherit;
 }
 
 .root { -color-bg-default-transparent: #0d1117d2; }

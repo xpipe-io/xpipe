@@ -192,10 +192,12 @@ public class AppTheme {
     public static class DerivedTheme extends Theme {
 
         private final String name;
+        private final int skipLines;
 
-        public DerivedTheme(String id, String cssId, String name, atlantafx.base.theme.Theme theme) {
+        public DerivedTheme(String id, String cssId, String name, atlantafx.base.theme.Theme theme, int skipLines) {
             super(id, cssId, theme);
             this.name = name;
+            this.skipLines = skipLines;
         }
 
         @Override
@@ -213,7 +215,7 @@ public class AppTheme {
                 builder.append("\n")
                         .append(baseStyleContent
                                 .lines()
-                                .skip(builder.toString().lines().count())
+                                .skip(skipLines)
                                 .collect(Collectors.joining("\n")));
             });
 
@@ -240,10 +242,10 @@ public class AppTheme {
         public static final Theme CUPERTINO_LIGHT = new Theme("cupertinoLight", "cupertino", new CupertinoLight());
         public static final Theme CUPERTINO_DARK = new Theme("cupertinoDark", "cupertino", new CupertinoDark());
         public static final Theme DRACULA = new Theme("dracula", "dracula", new Dracula());
-        public static final Theme MOCHA = new DerivedTheme("mocha", "mocha", "Mocha", new PrimerDark());
+        public static final Theme MOCHA = new DerivedTheme("mocha", "mocha", "Mocha", new PrimerDark(), 115);
 
         // Adjust this to create your own theme
-        public static final Theme CUSTOM = new DerivedTheme("custom", "primer", "Custom", new PrimerDark());
+        public static final Theme CUSTOM = new DerivedTheme("custom", "primer", "Custom", new PrimerDark(), 115);
 
         // Also include your custom theme here
         public static final List<Theme> ALL = List.of(

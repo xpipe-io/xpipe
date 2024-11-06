@@ -164,7 +164,3 @@
 .root:performance:dark .store-active-comp .dot {
     -fx-fill: rgb(30, 180, 30, 0.7);
 }
-
-.custom-text-field .font-icon, .custom-text-field .ikonli-font-icon {
-    -fx-icon-color: -color-fg-default;
-}
