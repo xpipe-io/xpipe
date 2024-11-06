@@ -146,7 +146,7 @@ public class AppLayoutModel {
                 ));
 				
         if (!TerminalView.isSupported()) {
-            l.remove(2);
+            // l.remove(2);
         }
 
         return l;
