@@ -16,7 +16,7 @@ public class LocalShellCategory extends AppPrefsCategory {
         return new OptionsBuilder()
                 .addTitle("localShell")
                 .sub(new OptionsBuilder()
-                        .nameAndDescription("useLocalFallbackShell")
+                        .pref(prefs.useLocalFallbackShell)
                         .addToggle(prefs.useLocalFallbackShell))
                 .buildComp();
     }

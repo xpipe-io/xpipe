@@ -144,7 +144,7 @@ public class PasswordManagerCategory extends AppPrefsCategory {
         return new OptionsBuilder()
                 .addTitle("passwordManager")
                 .sub(new OptionsBuilder()
-                        .nameAndDescription("passwordManagerCommand")
+                        .pref(prefs.passwordManagerCommand)
                         .addComp(choice)
                         .nameAndDescription("passwordManagerCommandTest")
                         .addComp(testPasswordManager))

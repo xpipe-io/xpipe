@@ -16,11 +16,11 @@ public class HttpApiCategory extends AppPrefsCategory {
         return new OptionsBuilder()
                 .addTitle("httpServerConfiguration")
                 .sub(new OptionsBuilder()
-                        .nameAndDescription("enableHttpApi")
+                        .pref(prefs.enableHttpApi)
                         .addToggle(prefs.enableHttpApi)
-                        .nameAndDescription("apiKey")
+                        .pref(prefs.apiKey)
                         .addString(prefs.apiKey)
-                        .nameAndDescription("disableApiAuthentication")
+                        .pref(prefs.disableApiAuthentication)
                         .addToggle(prefs.disableApiAuthentication))
                 .buildComp();
     }

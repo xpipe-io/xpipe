@@ -32,22 +32,22 @@ public class AppearanceCategory extends AppPrefsCategory {
         return new OptionsBuilder()
                 .addTitle("uiOptions")
                 .sub(new OptionsBuilder()
-                        .nameAndDescription("language")
+                        .pref(prefs.language)
                         .addComp(languageChoice(), prefs.language)
-                        .nameAndDescription("theme")
+                        .pref(prefs.theme)
                         .addComp(
                                 ChoiceComp.ofTranslatable(prefs.theme, AppTheme.Theme.ALL, false)
                                         .styleClass("theme-switcher"),
                                 prefs.theme)
-                        .nameAndDescription("performanceMode")
+                        .pref(prefs.performanceMode)
                         .addToggle(prefs.performanceMode)
-                        .nameAndDescription("uiScale")
+                        .pref(prefs.uiScale)
                         .addComp(new IntFieldComp(prefs.uiScale).maxWidth(100), prefs.uiScale)
-                        .nameAndDescription("useSystemFont")
+                        .pref(prefs.useSystemFont)
                         .addToggle(prefs.useSystemFont))
                 .addTitle("windowOptions")
                 .sub(new OptionsBuilder()
-                        .nameAndDescription("windowOpacity")
+                        .pref(prefs.windowOpacity)
                         .addComp(
                                 Comp.of(() -> {
                                     var s = new Slider(0.3, 1.0, prefs.windowOpacity.get());
@@ -57,9 +57,9 @@ public class AppearanceCategory extends AppPrefsCategory {
                                     return s;
                                 }),
                                 prefs.windowOpacity)
-                        .nameAndDescription("saveWindowLocation")
+                        .pref(prefs.saveWindowLocation)
                         .addToggle(prefs.saveWindowLocation)
-                        .nameAndDescription("enforceWindowModality")
+                        .pref(prefs.enforceWindowModality)
                         .addToggle(prefs.enforceWindowModality))
                 .buildComp();
     }

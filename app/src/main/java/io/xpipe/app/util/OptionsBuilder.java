@@ -150,15 +150,20 @@ public class OptionsBuilder {
 
     public OptionsBuilder pref(Object property) {
         var mapping = AppPrefs.get().getMapping(property);
-        var name = mapping.getKey();
+        pref(mapping.getKey(), mapping.isRequiresRestart(), mapping.getLicenseFeatureId());
+        return this;
+    }
+
+    public OptionsBuilder pref(String key, boolean requiresRestart, String licenseFeatureId) {
+        var name = key;
         name(name);
-        if (mapping.isRequiresRestart()) {
+        if (requiresRestart) {
             description(AppI18n.observable(name + "Description").map(s -> s + "\n\n" + AppI18n.get("requiresRestart")));
         } else {
             description(AppI18n.observable(name + "Description"));
         }
-        if (mapping.getLicenseFeatureId() != null) {
-            licenseRequirement(mapping.getLicenseFeatureId());
+        if (licenseFeatureId != null) {
+            licenseRequirement(licenseFeatureId);
         }
         return this;
     }
