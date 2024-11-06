@@ -83,7 +83,7 @@ public class ShellTemp {
         }
 
         var d = proc.getShellDialect();
-        return proc.executeSimpleBooleanCommand("/usr/bin/test -r %s && /usr/bin/test -w %s && /usr/bin/test -x %s"
+        return proc.executeSimpleBooleanCommand("test -r %s && test -w %s && test -x %s"
                 .formatted(d.fileArgument(dir), d.fileArgument(dir), d.fileArgument(dir)));
     }
 

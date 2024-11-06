@@ -22,7 +22,7 @@ public interface ElevationFunction {
                     return false;
                 }
 
-                var isRoot = shellControl.executeSimpleBooleanCommand("/usr/bin/test \"${EUID:-$(id -u)}\" -eq 0");
+                var isRoot = shellControl.executeSimpleBooleanCommand("test \"${EUID:-$(id -u)}\" -eq 0");
                 if (isRoot) {
                     return false;
                 }
