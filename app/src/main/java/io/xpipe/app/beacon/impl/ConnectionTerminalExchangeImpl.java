@@ -8,8 +8,6 @@ import io.xpipe.beacon.api.ConnectionTerminalExchange;
 
 import com.sun.net.httpserver.HttpExchange;
 
-import java.util.UUID;
-
 public class ConnectionTerminalExchangeImpl extends ConnectionTerminalExchange {
 
     @Override

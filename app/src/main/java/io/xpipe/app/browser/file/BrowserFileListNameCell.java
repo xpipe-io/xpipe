@@ -1,14 +1,14 @@
 package io.xpipe.app.browser.file;
 
-import atlantafx.base.controls.Spacer;
 import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
-import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ContextMenuHelper;
 import io.xpipe.app.util.InputHelper;
+import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FileKind;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -28,6 +28,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 
+import atlantafx.base.controls.Spacer;
+
 class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
 
     private final BrowserFileListModel fileList;
@@ -37,16 +39,26 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
 
     private final BooleanProperty updating = new SimpleBooleanProperty();
 
-    public BrowserFileListNameCell(BrowserFileListModel fileList, ObservableStringValue typedSelection, Property<BrowserEntry> editing, TableView<BrowserEntry> tableView) {
+    public BrowserFileListNameCell(
+            BrowserFileListModel fileList,
+            ObservableStringValue typedSelection,
+            Property<BrowserEntry> editing,
+            TableView<BrowserEntry> tableView) {
         this.fileList = fileList;
         this.typedSelection = typedSelection;
 
-        accessibleTextProperty().bind(Bindings.createStringBinding(() -> {
-            return getItem() != null ? getItem() : null;
-        }, itemProperty()));
+        accessibleTextProperty()
+                .bind(Bindings.createStringBinding(
+                        () -> {
+                            return getItem() != null ? getItem() : null;
+                        },
+                        itemProperty()));
         setAccessibleRole(AccessibleRole.TEXT);
 
-        var textField = new LazyTextFieldComp(text).minWidth(USE_PREF_SIZE).createStructure().get();
+        var textField = new LazyTextFieldComp(text)
+                .minWidth(USE_PREF_SIZE)
+                .createStructure()
+                .get();
         var quickAccess = createQuickAccessButton();
         setupShortcuts(tableView, (ButtonBase) quickAccess);
         setupRename(fileList, textField, editing);
@@ -62,16 +74,22 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
     }
 
     private Region createQuickAccessButton() {
-        var quickAccess = new BrowserQuickAccessButtonComp(() -> getTableRow().getItem(), fileList.getFileSystemModel()).hide(Bindings.createBooleanBinding(() -> {
-            if (getTableRow() == null) {
-                return true;
-            }
+        var quickAccess = new BrowserQuickAccessButtonComp(() -> getTableRow().getItem(), fileList.getFileSystemModel())
+                .hide(Bindings.createBooleanBinding(
+                        () -> {
+                            if (getTableRow() == null) {
+                                return true;
+                            }
 
-            var item = getTableRow().getItem();
-            var notDir = item.getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY;
-            var isParentLink = item.getRawFileEntry().equals(fileList.getFileSystemModel().getCurrentParentDirectory());
-            return notDir || isParentLink;
-        }, itemProperty())).focusTraversable(false).createRegion();
+                            var item = getTableRow().getItem();
+                            var notDir = item.getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY;
+                            var isParentLink = item.getRawFileEntry()
+                                    .equals(fileList.getFileSystemModel().getCurrentParentDirectory());
+                            return notDir || isParentLink;
+                        },
+                        itemProperty()))
+                .focusTraversable(false)
+                .createRegion();
         return quickAccess;
     }
 
@@ -85,7 +103,10 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
         });
         InputHelper.onExactKeyCode(tableView, KeyCode.SPACE, true, event -> {
             var selection = typedSelection.get() + " ";
-            var found = fileList.getShown().getValue().stream().filter(browserEntry -> browserEntry.getFileName().toLowerCase().startsWith(selection)).findFirst();
+            var found = fileList.getShown().getValue().stream()
+                    .filter(browserEntry ->
+                            browserEntry.getFileName().toLowerCase().startsWith(selection))
+                    .findFirst();
             // Ugly fix to prevent space from showing the menu when there is a file matching
             // Due to the table view input map, these events always get sent and consumed, not allowing us to
             // differentiate between these cases
@@ -96,7 +117,8 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
             var selected = fileList.getSelection();
             // Only show one menu across all selected entries
             if (selected.size() > 0 && selected.getLast() == getTableRow().getItem()) {
-                var cm = new BrowserContextMenu(fileList.getFileSystemModel(), getTableRow().getItem(), false);
+                var cm = new BrowserContextMenu(
+                        fileList.getFileSystemModel(), getTableRow().getItem(), false);
                 ContextMenuHelper.toggleShow(cm, this, Side.RIGHT);
                 event.consume();
             }
@@ -159,11 +181,17 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
                 var isDirectory = getTableRow().getItem().getRawFileEntry().getKind() == FileKind.DIRECTORY;
                 pseudoClassStateChanged(PseudoClass.getPseudoClass("folder"), isDirectory);
 
-                var normalName = getTableRow().getItem().getRawFileEntry().getKind() == FileKind.LINK ?
-                        getTableRow().getItem().getFileName() + " -> " + getTableRow().getItem().getRawFileEntry().resolved().getPath() :
-                        getTableRow().getItem().getFileName();
+                var normalName = getTableRow().getItem().getRawFileEntry().getKind() == FileKind.LINK
+                        ? getTableRow().getItem().getFileName() + " -> "
+                                + getTableRow()
+                                        .getItem()
+                                        .getRawFileEntry()
+                                        .resolved()
+                                        .getPath()
+                        : getTableRow().getItem().getFileName();
                 var fileName = normalName;
-                var hidden = getTableRow().getItem().getRawFileEntry().getInfo().explicitlyHidden() || fileName.startsWith(".");
+                var hidden = getTableRow().getItem().getRawFileEntry().getInfo().explicitlyHidden()
+                        || fileName.startsWith(".");
                 getTableRow().pseudoClassStateChanged(PseudoClass.getPseudoClass("hidden"), hidden);
                 text.set(fileName);
                 // Visibility seems to be bugged, so use opacity

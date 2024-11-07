@@ -1,14 +1,14 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.PrefsChoiceValue;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ChoiceComp;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.StackComp;
 import io.xpipe.app.comp.base.TextFieldComp;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.PrefsChoiceValue;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.terminal.TerminalView;
@@ -45,7 +45,8 @@ public class TerminalCategory extends AppPrefsCategory {
                                             "Test",
                                             ProcessControlProvider.get()
                                                     .createLocalProcessControl(true)
-                                                    .command("echo Test"), UUID.randomUUID());
+                                                    .command("echo Test"),
+                                            UUID.randomUUID());
                                 }
                             });
                         })))
@@ -65,8 +66,7 @@ public class TerminalCategory extends AppPrefsCategory {
                         .addToggle(prefs.enableTerminalDocking)
                         .hide(new SimpleBooleanProperty(!TerminalView.isSupported()))
                         .pref(prefs.clearTerminalOnInit)
-                        .addToggle(prefs.clearTerminalOnInit)
-                )
+                        .addToggle(prefs.clearTerminalOnInit))
                 .buildComp();
     }
 

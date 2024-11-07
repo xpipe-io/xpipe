@@ -1,11 +1,11 @@
 package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.util.BindingsHelper;
-import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.util.BindingsHelper;
+import io.xpipe.app.util.DerivedObservableList;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;

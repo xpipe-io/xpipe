@@ -1,7 +1,7 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.issue.TrackEvent;

@@ -1,10 +1,10 @@
 package io.xpipe.app.comp.store;
 
-import io.xpipe.app.ext.DataStoreProvider;
-import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.util.JfxHelper;
 
 import javafx.beans.property.Property;

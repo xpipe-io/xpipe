@@ -1,12 +1,12 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ChoiceComp;
 import io.xpipe.app.comp.base.StackComp;
 import io.xpipe.app.comp.base.TextFieldComp;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.util.FileOpener;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.ThreadHelper;

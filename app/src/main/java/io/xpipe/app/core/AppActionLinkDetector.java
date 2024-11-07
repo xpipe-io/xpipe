@@ -1,7 +1,7 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.core.launcher.LauncherInput;
+import io.xpipe.app.core.window.AppWindowHelper;
 
 import javafx.scene.control.Alert;
 import javafx.scene.input.Clipboard;

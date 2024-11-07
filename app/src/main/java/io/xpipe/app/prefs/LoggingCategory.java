@@ -1,9 +1,9 @@
 package io.xpipe.app.prefs;
 
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.comp.Comp;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.OptionsBuilder;

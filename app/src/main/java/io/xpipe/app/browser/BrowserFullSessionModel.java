@@ -1,10 +1,10 @@
 package io.xpipe.app.browser;
 
-import io.xpipe.app.browser.file.BrowserHistoryTabModel;
+import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.file.BrowserHistorySavedState;
 import io.xpipe.app.browser.file.BrowserHistorySavedStateImpl;
+import io.xpipe.app.browser.file.BrowserHistoryTabModel;
 import io.xpipe.app.browser.file.BrowserTransferModel;
-import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
@@ -12,6 +12,7 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystemStore;
 import io.xpipe.core.util.FailableFunction;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -21,6 +22,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableMap;
+
 import lombok.Getter;
 
 import java.util.*;
@@ -41,28 +43,32 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
     private final ObservableValue<BrowserSessionTab> effectiveRightTab = createEffectiveRightTab();
 
     private ObservableValue<BrowserSessionTab> createEffectiveRightTab() {
-        return Bindings.createObjectBinding(() -> {
-            var current = selectedEntry.getValue();
-            if (!current.isCloseable()) {
-                return null;
-            }
+        return Bindings.createObjectBinding(
+                () -> {
+                    var current = selectedEntry.getValue();
+                    if (!current.isCloseable()) {
+                        return null;
+                    }
 
-            var split = splits.get(current);
-            if (split != null) {
-                return split;
-            }
+                    var split = splits.get(current);
+                    if (split != null) {
+                        return split;
+                    }
 
-            var global = globalPinnedTab.getValue();
-            if (global == null) {
-                return null;
-            }
+                    var global = globalPinnedTab.getValue();
+                    if (global == null) {
+                        return null;
+                    }
 
-            if (global == selectedEntry.getValue()) {
-                return null;
-            }
+                    if (global == selectedEntry.getValue()) {
+                        return null;
+                    }
 
-            return global;
-        }, globalPinnedTab, selectedEntry, splits);
+                    return global;
+                },
+                globalPinnedTab,
+                selectedEntry,
+                splits);
     }
 
     public BrowserFullSessionModel() {

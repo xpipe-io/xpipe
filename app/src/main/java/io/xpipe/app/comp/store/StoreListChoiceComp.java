@@ -1,8 +1,8 @@
 package io.xpipe.app.comp.store;
 
-import io.xpipe.app.comp.base.*;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.base.*;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.DataStore;
 

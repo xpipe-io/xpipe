@@ -1,9 +1,9 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.core.AppFont;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.core.AppFont;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.Observable;

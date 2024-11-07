@@ -1,10 +1,10 @@
 package io.xpipe.app.comp.store;
 
+import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.ToggleSwitchComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
 

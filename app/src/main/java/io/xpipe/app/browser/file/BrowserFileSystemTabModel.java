@@ -1,17 +1,17 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.BrowserAbstractSessionModel;
 import io.xpipe.app.browser.BrowserStoreSessionTab;
+import io.xpipe.app.browser.action.BrowserAction;
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.comp.Comp;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.terminal.TerminalLauncher;
+import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
@@ -23,9 +23,9 @@ import io.xpipe.core.util.FailableRunnable;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
 import lombok.Getter;
 import lombok.SneakyThrows;
 

@@ -123,9 +123,8 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
                 });
             });
         });
-        var pathBar = new TextFieldComp(path, true)
-                .styleClass(Styles.CENTER_PILL)
-                .styleClass("path-text");
+        var pathBar =
+                new TextFieldComp(path, true).styleClass(Styles.CENTER_PILL).styleClass("path-text");
         pathBar.apply(struc -> {
                     struc.get().focusedProperty().subscribe(val -> {
                         struc.get()

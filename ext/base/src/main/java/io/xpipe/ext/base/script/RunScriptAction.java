@@ -1,11 +1,11 @@
 package io.xpipe.ext.base.script;
 
-import io.xpipe.app.browser.action.BrowserBranchAction;
+import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.action.BrowserAction;
+import io.xpipe.app.browser.action.BrowserBranchAction;
 import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
-import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
@@ -46,7 +46,8 @@ public class RunScriptAction implements BrowserAction, BrowserBranchAction {
     }
 
     @Override
-    public List<? extends BrowserAction> getBranchingActions(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public List<? extends BrowserAction> getBranchingActions(
+            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         var actions = createActionForScriptHierarchy(model, entries);
         if (actions.isEmpty()) {
             actions = List.of(new BrowserLeafAction() {
@@ -81,7 +82,8 @@ public class RunScriptAction implements BrowserAction, BrowserBranchAction {
         return createActionForScriptHierarchy(model, hierarchy).getBranchingActions(model, selected);
     }
 
-    private BrowserBranchAction createActionForScriptHierarchy(BrowserFileSystemTabModel model, ScriptHierarchy hierarchy) {
+    private BrowserBranchAction createActionForScriptHierarchy(
+            BrowserFileSystemTabModel model, ScriptHierarchy hierarchy) {
         if (hierarchy.isLeaf()) {
             return createActionForScript(model, hierarchy.getLeafBase());
         }
@@ -104,7 +106,8 @@ public class RunScriptAction implements BrowserAction, BrowserBranchAction {
         };
     }
 
-    private BrowserBranchAction createActionForScript(BrowserFileSystemTabModel model, DataStoreEntryRef<SimpleScriptStore> ref) {
+    private BrowserBranchAction createActionForScript(
+            BrowserFileSystemTabModel model, DataStoreEntryRef<SimpleScriptStore> ref) {
         return new MultiExecuteSelectionAction() {
 
             @Override

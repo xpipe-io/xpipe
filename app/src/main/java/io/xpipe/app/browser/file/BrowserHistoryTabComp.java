@@ -1,20 +1,20 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.comp.base.HorizontalComp;
+import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
+import io.xpipe.app.comp.base.PrettyImageHelper;
+import io.xpipe.app.comp.base.PrettySvgComp;
 import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.comp.base.HorizontalComp;
-import io.xpipe.app.comp.base.LabelComp;
-import io.xpipe.app.comp.base.PrettyImageHelper;
-import io.xpipe.app.comp.base.PrettySvgComp;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.DerivedObservableList;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.binding.Bindings;

@@ -1,13 +1,11 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.NativeWinWindowControl;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.Rect;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
-import javafx.application.Platform;
+
 import lombok.Value;
 
 import java.util.ArrayList;
@@ -72,7 +70,9 @@ public class TerminalView {
         }
 
         var session = new Session(request, shell.get(), terminal.get());
-        var instance = terminalInstances.stream().filter(i -> i.getTerminalProcess().equals(terminal.get())).findFirst();
+        var instance = terminalInstances.stream()
+                .filter(i -> i.getTerminalProcess().equals(terminal.get()))
+                .findFirst();
         if (instance.isEmpty()) {
             var control = NativeWinWindowControl.byPid(terminal.get().pid());
             if (control.isEmpty()) {
@@ -116,7 +116,9 @@ public class TerminalView {
             var alive = terminalInstance.getTerminalProcess().isAlive();
             if (!alive) {
                 terminalInstances.remove(terminalInstance);
-                TrackEvent.withTrace("Terminal session is dead").tag("pid", terminalInstance.getTerminalProcess().pid()).handle();
+                TrackEvent.withTrace("Terminal session is dead")
+                        .tag("pid", terminalInstance.getTerminalProcess().pid())
+                        .handle();
                 listeners.forEach(listener -> listener.onTerminalClosed(terminalInstance));
             }
         }
@@ -127,11 +129,12 @@ public class TerminalView {
     public static void init() {
         var instance = new TerminalView();
         ThreadHelper.createPlatformThread("terminal-view", true, () -> {
-            while (true) {
-                instance.tick();
-                ThreadHelper.sleep(500);
-            }
-        }).start();
+                    while (true) {
+                        instance.tick();
+                        ThreadHelper.sleep(500);
+                    }
+                })
+                .start();
         INSTANCE = instance;
     }
 

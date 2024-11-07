@@ -1,12 +1,12 @@
 package io.xpipe.app.comp.store;
 
-import io.xpipe.app.comp.base.CountComp;
-import io.xpipe.app.core.AppFont;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.base.CountComp;
 import io.xpipe.app.comp.base.FilterComp;
 import io.xpipe.app.comp.base.IconButtonComp;
+import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;

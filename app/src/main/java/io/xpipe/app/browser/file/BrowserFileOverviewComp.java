@@ -1,12 +1,12 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.icon.BrowserIcons;
-import io.xpipe.app.comp.base.ListBoxViewComp;
-import io.xpipe.app.comp.base.VBoxViewComp;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.HorizontalComp;
+import io.xpipe.app.comp.base.ListBoxViewComp;
+import io.xpipe.app.comp.base.VBoxViewComp;
 import io.xpipe.core.store.FileEntry;
 
 import javafx.collections.ObservableList;

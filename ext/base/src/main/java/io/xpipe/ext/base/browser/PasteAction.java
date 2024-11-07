@@ -1,10 +1,10 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.file.BrowserClipboard;
 import io.xpipe.app.browser.action.BrowserLeafAction;
+import io.xpipe.app.browser.file.BrowserClipboard;
 import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.app.browser.file.BrowserFileTransferMode;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
+import io.xpipe.app.browser.file.BrowserFileTransferMode;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.store.FileKind;
 

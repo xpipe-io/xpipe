@@ -1,9 +1,9 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;

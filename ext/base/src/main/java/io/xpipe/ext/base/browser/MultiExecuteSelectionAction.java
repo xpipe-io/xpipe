@@ -51,7 +51,8 @@ public abstract class MultiExecuteSelectionAction implements BrowserBranchAction
                     }
 
                     @Override
-                    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                    public ObservableValue<String> getName(
+                            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         var t = AppPrefs.get().terminalType().getValue();
                         return AppI18n.observable(
                                 "executeInTerminal",
@@ -92,7 +93,8 @@ public abstract class MultiExecuteSelectionAction implements BrowserBranchAction
                     }
 
                     @Override
-                    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                    public ObservableValue<String> getName(
+                            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         return AppI18n.observable("executeInBackground");
                     }
                 });

@@ -1,10 +1,10 @@
 package io.xpipe.app.browser.file;
 
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -104,88 +104,84 @@ public class BrowserTransferComp extends SimpleComp {
                 .padding(new Insets(10, 10, 5, 10))
                 .apply(struc -> struc.get().setMinHeight(200))
                 .apply(struc -> struc.get().setMaxHeight(200));
-        var stack = new StackComp(List.of(backgroundStack, listBox))
-                .apply(struc -> {
-                    struc.get().addEventFilter(DragEvent.DRAG_ENTERED, event -> {
-                        struc.get().pseudoClassStateChanged(PseudoClass.getPseudoClass("drag-over"), true);
-                    });
-                    struc.get().addEventFilter(DragEvent.DRAG_EXITED, event -> struc.get()
-                            .pseudoClassStateChanged(PseudoClass.getPseudoClass("drag-over"), false));
-                    struc.get().setOnDragOver(event -> {
-                        // Accept drops from inside the app window
-                        if (event.getGestureSource() != null && event.getGestureSource() != struc.get()) {
-                            event.acceptTransferModes(TransferMode.ANY);
-                            event.consume();
-                        }
-                    });
-                    struc.get().setOnDragDropped(event -> {
-                        // Accept drops from inside the app window
-                        if (event.getGestureSource() != null) {
-                            var drag = BrowserClipboard.retrieveDrag(event.getDragboard());
-                            if (drag == null) {
-                                return;
+        var stack = new StackComp(List.of(backgroundStack, listBox)).apply(struc -> {
+            struc.get().addEventFilter(DragEvent.DRAG_ENTERED, event -> {
+                struc.get().pseudoClassStateChanged(PseudoClass.getPseudoClass("drag-over"), true);
+            });
+            struc.get().addEventFilter(DragEvent.DRAG_EXITED, event -> struc.get()
+                    .pseudoClassStateChanged(PseudoClass.getPseudoClass("drag-over"), false));
+            struc.get().setOnDragOver(event -> {
+                // Accept drops from inside the app window
+                if (event.getGestureSource() != null && event.getGestureSource() != struc.get()) {
+                    event.acceptTransferModes(TransferMode.ANY);
+                    event.consume();
+                }
+            });
+            struc.get().setOnDragDropped(event -> {
+                // Accept drops from inside the app window
+                if (event.getGestureSource() != null) {
+                    var drag = BrowserClipboard.retrieveDrag(event.getDragboard());
+                    if (drag == null) {
+                        return;
+                    }
+
+                    if (!(model.getBrowserSessionModel().getSelectedEntry().getValue()
+                            instanceof BrowserFileSystemTabModel fileSystemModel)) {
+                        return;
+                    }
+
+                    var files = drag.getEntries();
+                    model.drop(fileSystemModel, files);
+                    event.setDropCompleted(true);
+                    event.consume();
+                }
+            });
+            struc.get().setOnDragDetected(event -> {
+                var items = model.getCurrentItems();
+                var selected =
+                        items.stream().map(item -> item.getBrowserEntry()).toList();
+                var files = items.stream()
+                        .filter(item -> item.downloadFinished().get())
+                        .map(item -> {
+                            try {
+                                var file = item.getLocalFile();
+                                if (!Files.exists(file)) {
+                                    return Optional.<File>empty();
+                                }
+
+                                return Optional.of(file.toRealPath().toFile());
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
                             }
+                        })
+                        .flatMap(Optional::stream)
+                        .toList();
+                if (files.isEmpty()) {
+                    return;
+                }
 
-                            if (!(model.getBrowserSessionModel()
-                                            .getSelectedEntry()
-                                            .getValue()
-                                    instanceof BrowserFileSystemTabModel fileSystemModel)) {
-                                return;
-                            }
+                var cc = new ClipboardContent();
+                cc.putFiles(files);
+                Dragboard db = struc.get().startDragAndDrop(TransferMode.COPY);
+                db.setContent(cc);
 
-                            var files = drag.getEntries();
-                            model.drop(fileSystemModel, files);
-                            event.setDropCompleted(true);
-                            event.consume();
-                        }
-                    });
-                    struc.get().setOnDragDetected(event -> {
-                        var items = model.getCurrentItems();
-                        var selected = items.stream()
-                                .map(item -> item.getBrowserEntry())
-                                .toList();
-                        var files = items.stream()
-                                .filter(item -> item.downloadFinished().get())
-                                .map(item -> {
-                                    try {
-                                        var file = item.getLocalFile();
-                                        if (!Files.exists(file)) {
-                                            return Optional.<File>empty();
-                                        }
+                Image image = BrowserFileSelectionListComp.snapshot(FXCollections.observableList(selected));
+                db.setDragView(image, -20, 15);
 
-                                        return Optional.of(file.toRealPath().toFile());
-                                    } catch (IOException e) {
-                                        throw new RuntimeException(e);
-                                    }
-                                })
-                                .flatMap(Optional::stream)
-                                .toList();
-                        if (files.isEmpty()) {
-                            return;
-                        }
+                event.setDragDetect(true);
+                event.consume();
+            });
+            struc.get().setOnDragDone(event -> {
+                if (!event.isAccepted()) {
+                    return;
+                }
 
-                        var cc = new ClipboardContent();
-                        cc.putFiles(files);
-                        Dragboard db = struc.get().startDragAndDrop(TransferMode.COPY);
-                        db.setContent(cc);
-
-                        Image image = BrowserFileSelectionListComp.snapshot(FXCollections.observableList(selected));
-                        db.setDragView(image, -20, 15);
-
-                        event.setDragDetect(true);
-                        event.consume();
-                    });
-                    struc.get().setOnDragDone(event -> {
-                        if (!event.isAccepted()) {
-                            return;
-                        }
-
-                        // The files might not have been transferred yet
-                        // We can't listen to this, so just don't delete them
-                        model.clear(false);
-                        event.consume();
-                    });
-                });
+                // The files might not have been transferred yet
+                // We can't listen to this, so just don't delete them
+                model.clear(false);
+                event.consume();
+            });
+        });
 
         stack.apply(struc -> {
             model.getBrowserSessionModel().getDraggingFiles().addListener((observable, oldValue, newValue) -> {

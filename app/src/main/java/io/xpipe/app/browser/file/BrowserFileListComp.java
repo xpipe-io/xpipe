@@ -1,10 +1,10 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.action.BrowserAction;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.*;
+import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileInfo;
@@ -72,7 +72,8 @@ public final class BrowserFileListComp extends SimpleComp {
                         : null));
         filenameCol.setComparator(Comparator.comparing(String::toLowerCase));
         filenameCol.setSortType(ASCENDING);
-        filenameCol.setCellFactory(col -> new BrowserFileListNameCell(fileList, typedSelection, fileList.getEditing(), col.getTableView()));
+        filenameCol.setCellFactory(col ->
+                new BrowserFileListNameCell(fileList, typedSelection, fileList.getEditing(), col.getTableView()));
         filenameCol.setReorderable(false);
         filenameCol.setResizable(false);
 
@@ -153,7 +154,10 @@ public final class BrowserFileListComp extends SimpleComp {
                 });
     }
 
-    private void prepareColumnVisibility(TableView<BrowserEntry> table, TableColumn<BrowserEntry, String> ownerCol, TableColumn<BrowserEntry, String> filenameCol) {
+    private void prepareColumnVisibility(
+            TableView<BrowserEntry> table,
+            TableColumn<BrowserEntry, String> ownerCol,
+            TableColumn<BrowserEntry, String> filenameCol) {
         var os = fileList.getFileSystemModel()
                 .getFileSystem()
                 .getShell()
@@ -628,5 +632,4 @@ public final class BrowserFileListComp extends SimpleComp {
             }
         }
     }
-
 }

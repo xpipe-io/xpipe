@@ -1,11 +1,11 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.comp.base.ListBoxViewComp;
-import io.xpipe.app.core.AppStyle;
-import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
+import io.xpipe.app.core.AppStyle;
+import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.PlatformThread;
 

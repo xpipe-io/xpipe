@@ -4,11 +4,10 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.Rect;
 import io.xpipe.core.process.OsType;
+
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class TerminalDockModel {
@@ -19,6 +18,7 @@ public class TerminalDockModel {
 
     private Rect viewBounds;
     private boolean viewActive;
+
     @Getter
     private final Set<TerminalViewInstance> terminalInstances = new HashSet<>();
 
@@ -48,9 +48,7 @@ public class TerminalDockModel {
     }
 
     public synchronized void toggleView(boolean active) {
-        TrackEvent.withTrace("Terminal view toggled")
-                .tag("active", active)
-                .handle();
+        TrackEvent.withTrace("Terminal view toggled").tag("active", active).handle();
         if (viewActive == active) {
             return;
         }
@@ -69,8 +67,7 @@ public class TerminalDockModel {
             return;
         }
 
-        TrackEvent.withTrace("Terminal view focus gained")
-                .handle();
+        TrackEvent.withTrace("Terminal view focus gained").handle();
         terminalInstances.forEach(terminalInstance -> {
             if (!terminalInstance.isActive()) {
                 return;
@@ -91,8 +88,7 @@ public class TerminalDockModel {
             return;
         }
 
-        TrackEvent.withTrace("Terminal view focus lost")
-                .handle();
+        TrackEvent.withTrace("Terminal view focus lost").handle();
         terminalInstances.forEach(terminalInstance -> {
             if (!terminalInstance.isActive()) {
                 return;
@@ -108,8 +104,7 @@ public class TerminalDockModel {
     }
 
     public synchronized void onWindowActivate() {
-        TrackEvent.withTrace("Terminal view focus gained")
-                .handle();
+        TrackEvent.withTrace("Terminal view focus gained").handle();
         terminalInstances.forEach(terminalInstance -> {
             terminalInstance.updateBoundsState();
             if (terminalInstance.isCustomBounds()) {
@@ -126,8 +121,7 @@ public class TerminalDockModel {
     }
 
     public synchronized void onWindowMinimize() {
-        TrackEvent.withTrace("Terminal view minimized")
-                .handle();
+        TrackEvent.withTrace("Terminal view minimized").handle();
 
         terminalInstances.forEach(terminalInstance -> {
             terminalInstance.updateBoundsState();
@@ -140,8 +134,7 @@ public class TerminalDockModel {
     }
 
     public synchronized void onClose() {
-        TrackEvent.withTrace("Terminal view closed")
-                .handle();
+        TrackEvent.withTrace("Terminal view closed").handle();
 
         terminalInstances.forEach(terminalInstance -> {
             terminalInstance.updateBoundsState();
@@ -174,16 +167,13 @@ public class TerminalDockModel {
             return;
         }
 
-        this.viewBounds = new Rect(x,y,w,h);
-        TrackEvent.withTrace("Terminal view resized")
-                .tag("rect", viewBounds)
-                .handle();
+        this.viewBounds = new Rect(x, y, w, h);
+        TrackEvent.withTrace("Terminal view resized").tag("rect", viewBounds).handle();
         updatePositions();
     }
 
     public void clickView() {
-        TrackEvent.withTrace("Terminal view clicked")
-                .handle();
+        TrackEvent.withTrace("Terminal view clicked").handle();
 
         terminalInstances.forEach(terminalInstance -> {
             terminalInstance.show();

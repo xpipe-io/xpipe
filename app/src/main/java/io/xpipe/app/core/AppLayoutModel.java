@@ -3,14 +3,14 @@ package io.xpipe.app.core;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.browser.BrowserFullSessionComp;
 import io.xpipe.app.browser.BrowserFullSessionModel;
-import io.xpipe.app.comp.store.StoreLayoutComp;
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.comp.store.StoreLayoutComp;
 import io.xpipe.app.prefs.AppPrefsComp;
+import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.app.util.Hyperlinks;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.LicenseProvider;
 
-import io.xpipe.app.terminal.TerminalView;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -99,12 +99,12 @@ public class AppLayoutModel {
                         new BrowserFullSessionComp(BrowserFullSessionModel.DEFAULT),
                         null,
                         new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN)),
-//                new Entry(
-//                        AppI18n.observable("terminal"),
-//                        new LabelGraphic.IconGraphic("mdi2m-monitor-screenshot"),
-//                        new TerminalDockComp(),
-//                        null,
-//                        new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.SHORTCUT_DOWN)),
+                //                new Entry(
+                //                        AppI18n.observable("terminal"),
+                //                        new LabelGraphic.IconGraphic("mdi2m-monitor-screenshot"),
+                //                        new TerminalDockComp(),
+                //                        null,
+                //                        new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.SHORTCUT_DOWN)),
                 new Entry(
                         AppI18n.observable("settings"),
                         new LabelGraphic.IconGraphic("mdsmz-miscellaneous_services"),
@@ -143,7 +143,7 @@ public class AppLayoutModel {
                 //                        () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
                 //                        null)
                 ));
-				
+
         if (!TerminalView.isSupported()) {
             // l.remove(2);
         }

@@ -3,8 +3,8 @@ package io.xpipe.app.comp.store;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.StackComp;
-import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.resources.AppResources;
+import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.core.process.OsNameState;
 import io.xpipe.core.store.FileNames;
 

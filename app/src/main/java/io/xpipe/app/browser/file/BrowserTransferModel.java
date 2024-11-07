@@ -191,7 +191,8 @@ public class BrowserTransferModel {
         Path localFile;
         Property<BrowserTransferProgress> progress;
 
-        public Item(BrowserFileSystemTabModel openFileSystemModel, String name, BrowserEntry browserEntry, Path localFile) {
+        public Item(
+                BrowserFileSystemTabModel openFileSystemModel, String name, BrowserEntry browserEntry, Path localFile) {
             this.openFileSystemModel = openFileSystemModel;
             this.name = name;
             this.browserEntry = browserEntry;

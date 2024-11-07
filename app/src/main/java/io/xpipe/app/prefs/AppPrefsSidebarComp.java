@@ -1,11 +1,11 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.VerticalComp;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.css.PseudoClass;
@@ -14,6 +14,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Region;
 import javafx.scene.text.TextAlignment;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.ArrayList;

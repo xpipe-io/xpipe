@@ -1,15 +1,9 @@
 package io.xpipe.app.core.check;
 
-import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ProcessOutputException;
 import io.xpipe.core.util.XPipeInstallation;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
 
 public class AppTestCommandCheck {
 
@@ -20,10 +14,16 @@ public class AppTestCommandCheck {
 
         try (var sc = LocalShell.getShell().start()) {
             try {
-                sc.getShellDialect().directoryExists(sc, XPipeInstallation.getCurrentInstallationBasePath().toString()).execute();
+                sc.getShellDialect()
+                        .directoryExists(
+                                sc,
+                                XPipeInstallation.getCurrentInstallationBasePath()
+                                        .toString())
+                        .execute();
             } catch (ProcessOutputException ex) {
                 throw ProcessOutputException.withPrefix(
-                        "Installation self test failed. Is your \"test\" shell command working as expected and is the XPipe installation directory accessible?", ex);
+                        "Installation self test failed. Is your \"test\" shell command working as expected and is the XPipe installation directory accessible?",
+                        ex);
             }
         }
     }

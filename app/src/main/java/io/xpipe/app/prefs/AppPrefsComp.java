@@ -1,7 +1,7 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.core.AppFont;
 import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.core.AppFont;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.geometry.Insets;

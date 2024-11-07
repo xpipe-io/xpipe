@@ -3,14 +3,15 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.browser.BrowserAbstractSessionModel;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.BrowserSessionTab;
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.comp.Comp;
 import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.terminal.TerminalDockComp;
 import io.xpipe.app.terminal.TerminalDockModel;
 import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.app.terminal.TerminalViewInstance;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableBooleanValue;
@@ -27,7 +28,10 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
     private TerminalView.Listener listener;
     private ObservableBooleanValue viewActive;
 
-    public BrowserTerminalDockTabModel(BrowserAbstractSessionModel<?> browserModel, BrowserSessionTab origin, ObservableList<UUID> terminalRequests) {
+    public BrowserTerminalDockTabModel(
+            BrowserAbstractSessionModel<?> browserModel,
+            BrowserSessionTab origin,
+            ObservableList<UUID> terminalRequests) {
         super(browserModel, AppI18n.get("terminal"));
         this.origin = origin;
         this.terminalRequests = terminalRequests;
@@ -55,7 +59,10 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
                 }
 
                 sessions.add(session);
-                var tv = terminals.stream().filter(instance -> sessions.stream().anyMatch(s -> instance.getTerminalProcess().equals(s.getTerminal()))).toList();
+                var tv = terminals.stream()
+                        .filter(instance -> sessions.stream()
+                                .anyMatch(s -> instance.getTerminalProcess().equals(s.getTerminal())))
+                        .toList();
                 if (tv.isEmpty()) {
                     return;
                 }
@@ -88,9 +95,18 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
         };
         TerminalView.get().addListener(listener);
 
-        viewActive = Bindings.createBooleanBinding(() -> {
-            return this.browserModel.getSelectedEntry().getValue() == origin && AppLayoutModel.get().getEntries().indexOf(AppLayoutModel.get().getSelected().getValue()) == 1;
-        }, this.browserModel.getSelectedEntry(), AppLayoutModel.get().getSelected());
+        viewActive = Bindings.createBooleanBinding(
+                () -> {
+                    return this.browserModel.getSelectedEntry().getValue() == origin
+                            && AppLayoutModel.get()
+                                            .getEntries()
+                                            .indexOf(AppLayoutModel.get()
+                                                    .getSelected()
+                                                    .getValue())
+                                    == 1;
+                },
+                this.browserModel.getSelectedEntry(),
+                AppLayoutModel.get().getSelected());
         viewActive.subscribe(aBoolean -> {
             Platform.runLater(() -> {
                 dockModel.toggleView(aBoolean);

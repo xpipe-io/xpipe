@@ -1,9 +1,9 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.core.App;
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.util.BindingsHelper;
+import io.xpipe.app.core.App;
 import io.xpipe.app.resources.AppImages;
+import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.core.store.FileNames;
 
 import javafx.beans.binding.Bindings;

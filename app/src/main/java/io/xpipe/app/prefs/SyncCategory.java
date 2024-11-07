@@ -1,12 +1,12 @@
 package io.xpipe.app.prefs;
 
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.MarkdownComp;
+import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppWindowHelper;
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.HorizontalComp;
-import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.util.DesktopHelper;

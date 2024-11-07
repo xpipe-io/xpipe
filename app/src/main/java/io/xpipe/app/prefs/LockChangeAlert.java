@@ -1,9 +1,9 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.SecretFieldComp;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.core.util.InPlaceSecretValue;
 
 import javafx.beans.binding.Bindings;

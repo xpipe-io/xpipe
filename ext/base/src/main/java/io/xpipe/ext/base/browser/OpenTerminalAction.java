@@ -1,10 +1,10 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.file.BrowserTerminalDockTabModel;
+import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
-import io.xpipe.app.browser.BrowserFullSessionModel;
+import io.xpipe.app.browser.file.BrowserTerminalDockTabModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.store.FileKind;
@@ -34,14 +34,16 @@ public class OpenTerminalAction implements BrowserLeafAction {
             }
         }
 
-        if (AppPrefs.get().enableTerminalDocking().get() && model.getBrowserModel() instanceof BrowserFullSessionModel sessionModel) {
+        if (AppPrefs.get().enableTerminalDocking().get()
+                && model.getBrowserModel() instanceof BrowserFullSessionModel sessionModel) {
             // Check if the right side is already occupied
             var existingSplit = sessionModel.getSplits().get(model);
             if (existingSplit != null && !(existingSplit instanceof BrowserTerminalDockTabModel)) {
                 return;
             }
 
-            sessionModel.splitTab(model, new BrowserTerminalDockTabModel(sessionModel, model, model.getTerminalRequests()));
+            sessionModel.splitTab(
+                    model, new BrowserTerminalDockTabModel(sessionModel, model, model.getTerminalRequests()));
         }
     }
 

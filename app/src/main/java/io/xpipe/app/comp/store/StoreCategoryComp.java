@@ -1,17 +1,17 @@
 package io.xpipe.app.comp.store;
 
-import io.xpipe.app.comp.base.*;
-import io.xpipe.app.core.AppFont;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
-import io.xpipe.app.util.DerivedObservableList;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.comp.base.*;
+import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.util.ContextMenuHelper;
+import io.xpipe.app.util.DerivedObservableList;
+import io.xpipe.app.util.LabelGraphic;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;

@@ -1,5 +1,7 @@
 package io.xpipe.app.comp.store;
 
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.FilterComp;
 import io.xpipe.app.comp.base.HorizontalComp;
@@ -8,8 +10,6 @@ import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;

@@ -3,17 +3,17 @@ package io.xpipe.app.browser;
 import io.xpipe.app.browser.file.BrowserConnectionListComp;
 import io.xpipe.app.browser.file.BrowserConnectionListFilterComp;
 import io.xpipe.app.browser.file.BrowserTransferComp;
-import io.xpipe.app.comp.base.LoadingOverlayComp;
-import io.xpipe.app.comp.base.LeftSplitPaneComp;
-import io.xpipe.app.comp.store.StoreEntryWrapper;
-import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.AnchorComp;
+import io.xpipe.app.comp.base.LeftSplitPaneComp;
+import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.comp.base.StackComp;
 import io.xpipe.app.comp.base.VerticalComp;
+import io.xpipe.app.comp.store.StoreEntryWrapper;
+import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
@@ -80,10 +80,10 @@ public class BrowserFullSessionComp extends SimpleComp {
                     leftSplit.set(d);
                 });
         splitPane.apply(struc -> {
-                    struc.getLeft().setMinWidth(200);
-                    struc.getLeft().setMaxWidth(500);
-                    struc.get().setPickOnBounds(false);
-                });
+            struc.getLeft().setMinWidth(200);
+            struc.getLeft().setMaxWidth(500);
+            struc.get().setPickOnBounds(false);
+        });
 
         splitPane.apply(struc -> {
             struc.get().skinProperty().subscribe(newValue -> {
@@ -173,7 +173,7 @@ public class BrowserFullSessionComp extends SimpleComp {
         var cache = new HashMap<BrowserSessionTab, Region>();
         var pinnedStack = new StackComp(List.of());
         pinnedStack.apply(struc -> {
-            model.getEffectiveRightTab().subscribe( (newValue) -> {
+            model.getEffectiveRightTab().subscribe((newValue) -> {
                 PlatformThread.runLaterIfNeeded(() -> {
                     var all = model.getAllTabs();
                     cache.keySet().removeIf(browserSessionTab -> !all.contains(browserSessionTab));
@@ -204,6 +204,7 @@ public class BrowserFullSessionComp extends SimpleComp {
             tabs.getHeaderHeight().subscribe(number -> {
                 AnchorPane.setTopAnchor(struc.get(), number.doubleValue());
             });
-        }); return pinnedStack;
+        });
+        return pinnedStack;
     }
 }

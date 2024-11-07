@@ -1,12 +1,12 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.core.AppFont;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.LabelComp;
+import io.xpipe.app.core.AppFont;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.HumanReadableFormat;
 

@@ -74,7 +74,10 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
         }
 
         try {
-            var rel = XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheck(false, !AppPrefs.get().automaticallyUpdate().get());
+            var rel = XPipeDistributionType.get()
+                    .getUpdateHandler()
+                    .refreshUpdateCheck(
+                            false, !AppPrefs.get().automaticallyUpdate().get());
             if (rel != null && rel.isUpdate()) {
                 var update = AppWindowHelper.showBlockingAlert(alert -> {
                             alert.setAlertType(Alert.AlertType.INFORMATION);

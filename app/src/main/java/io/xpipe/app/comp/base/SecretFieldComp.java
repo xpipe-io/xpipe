@@ -2,8 +2,8 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ClipboardHelper;
+import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.util.InPlaceSecretValue;
 
 import javafx.beans.property.Property;

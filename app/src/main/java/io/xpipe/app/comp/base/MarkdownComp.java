@@ -1,15 +1,15 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.MarkdownHelper;
+import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ShellTemp;
 
 import javafx.application.Platform;

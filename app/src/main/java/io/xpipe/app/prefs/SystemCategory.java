@@ -1,8 +1,8 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ChoiceComp;
+import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.util.OptionsBuilder;
 
 public class SystemCategory extends AppPrefsCategory {

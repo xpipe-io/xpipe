@@ -39,7 +39,8 @@ public final class BrowserFileListModel {
     private final Property<Boolean> draggedOverEmpty = new SimpleBooleanProperty();
     private final Property<BrowserEntry> editing = new SimpleObjectProperty<>();
 
-    public BrowserFileListModel(BrowserFileSystemTabModel.SelectionMode selectionMode, BrowserFileSystemTabModel fileSystemModel) {
+    public BrowserFileListModel(
+            BrowserFileSystemTabModel.SelectionMode selectionMode, BrowserFileSystemTabModel fileSystemModel) {
         this.selectionMode = selectionMode;
         this.fileSystemModel = fileSystemModel;
 

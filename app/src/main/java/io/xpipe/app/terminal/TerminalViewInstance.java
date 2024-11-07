@@ -1,6 +1,7 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.util.Rect;
+
 import lombok.Getter;
 
 @Getter
@@ -11,7 +12,9 @@ public abstract class TerminalViewInstance {
     protected Rect lastBounds;
     protected boolean customBounds;
 
-    protected TerminalViewInstance(ProcessHandle terminalProcess) {this.terminalProcess = terminalProcess;}
+    protected TerminalViewInstance(ProcessHandle terminalProcess) {
+        this.terminalProcess = terminalProcess;
+    }
 
     public abstract void show();
 

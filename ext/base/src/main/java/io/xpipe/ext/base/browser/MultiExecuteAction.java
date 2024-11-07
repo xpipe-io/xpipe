@@ -17,7 +17,8 @@ import java.util.UUID;
 
 public abstract class MultiExecuteAction implements BrowserBranchAction {
 
-    protected abstract CommandBuilder createCommand(ShellControl sc, BrowserFileSystemTabModel model, BrowserEntry entry);
+    protected abstract CommandBuilder createCommand(
+            ShellControl sc, BrowserFileSystemTabModel model, BrowserEntry entry);
 
     @Override
     public List<BrowserLeafAction> getBranchingActions(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
@@ -51,7 +52,8 @@ public abstract class MultiExecuteAction implements BrowserBranchAction {
                     }
 
                     @Override
-                    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                    public ObservableValue<String> getName(
+                            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         var t = AppPrefs.get().terminalType().getValue();
                         return AppI18n.observable(
                                 "executeInTerminal",
@@ -85,7 +87,8 @@ public abstract class MultiExecuteAction implements BrowserBranchAction {
                     }
 
                     @Override
-                    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                    public ObservableValue<String> getName(
+                            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         return AppI18n.observable("executeInBackground");
                     }
                 });

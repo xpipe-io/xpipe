@@ -1,14 +1,14 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.action.BrowserBranchAction;
 import io.xpipe.app.browser.action.BrowserAction;
+import io.xpipe.app.browser.action.BrowserBranchAction;
 import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.icon.BrowserIcons;
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.comp.Comp;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.process.OsType;
 
@@ -82,7 +82,8 @@ public class NewItemAction implements BrowserAction, BrowserBranchAction {
                     }
 
                     @Override
-                    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                    public ObservableValue<String> getName(
+                            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         return AppI18n.observable("file");
                     }
                 },
@@ -113,7 +114,8 @@ public class NewItemAction implements BrowserAction, BrowserBranchAction {
                     }
 
                     @Override
-                    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                    public ObservableValue<String> getName(
+                            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         return AppI18n.observable("directory");
                     }
                 },
@@ -146,7 +148,8 @@ public class NewItemAction implements BrowserAction, BrowserBranchAction {
                     }
 
                     @Override
-                    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                    public ObservableValue<String> getName(
+                            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         return AppI18n.observable("symbolicLink");
                     }
 

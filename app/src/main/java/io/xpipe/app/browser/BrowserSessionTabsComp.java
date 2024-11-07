@@ -1,14 +1,14 @@
 package io.xpipe.app.browser;
 
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
-import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ContextMenuHelper;
+import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.util.PlatformThread;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -45,7 +45,8 @@ public class BrowserSessionTabsComp extends SimpleComp {
     @Getter
     private final DoubleProperty headerHeight;
 
-    public BrowserSessionTabsComp(BrowserFullSessionModel model, ObservableDoubleValue leftPadding, DoubleProperty rightPadding) {
+    public BrowserSessionTabsComp(
+            BrowserFullSessionModel model, ObservableDoubleValue leftPadding, DoubleProperty rightPadding) {
         this.model = model;
         this.leftPadding = leftPadding;
         this.rightPadding = rightPadding;
@@ -263,9 +264,13 @@ public class BrowserSessionTabsComp extends SimpleComp {
 
         if (tabModel.isCloseable()) {
             var unsplit = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("unpinTab"));
-            unsplit.visibleProperty().bind(PlatformThread.sync(Bindings.createBooleanBinding(() -> {
-                return model.getGlobalPinnedTab().getValue() != null && model.getGlobalPinnedTab().getValue().equals(tabModel);
-            }, model.getGlobalPinnedTab())));
+            unsplit.visibleProperty()
+                    .bind(PlatformThread.sync(Bindings.createBooleanBinding(
+                            () -> {
+                                return model.getGlobalPinnedTab().getValue() != null
+                                        && model.getGlobalPinnedTab().getValue().equals(tabModel);
+                            },
+                            model.getGlobalPinnedTab())));
             unsplit.setOnAction(event -> {
                 model.unpinTab(tabModel);
                 event.consume();
@@ -396,9 +401,14 @@ public class BrowserSessionTabsComp extends SimpleComp {
 
         if (tabModel.getBrowserModel() instanceof BrowserFullSessionModel sessionModel) {
             var global = PlatformThread.sync(sessionModel.getGlobalPinnedTab());
-            tab.textProperty().bind(Bindings.createStringBinding(() -> {
-                return tabModel.getName() + (global.getValue() == tabModel ? " (" + AppI18n.get("pinned") + ")" : "");
-            }, global, AppPrefs.get().language()));
+            tab.textProperty()
+                    .bind(Bindings.createStringBinding(
+                            () -> {
+                                return tabModel.getName()
+                                        + (global.getValue() == tabModel ? " (" + AppI18n.get("pinned") + ")" : "");
+                            },
+                            global,
+                            AppPrefs.get().language()));
         } else {
             tab.setText(tabModel.getName());
         }

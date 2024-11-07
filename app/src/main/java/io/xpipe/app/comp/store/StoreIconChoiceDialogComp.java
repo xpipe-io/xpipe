@@ -1,13 +1,13 @@
 package io.xpipe.app.comp.store;
 
-import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.DialogComp;
-import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.comp.base.DialogComp;
 import io.xpipe.app.comp.base.FilterComp;
 import io.xpipe.app.comp.base.HorizontalComp;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.resources.SystemIcon;
 import io.xpipe.app.resources.SystemIcons;
 import io.xpipe.app.storage.DataStoreEntry;

@@ -1,10 +1,10 @@
 package io.xpipe.ext.base.desktop;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
+import io.xpipe.app.comp.store.StoreChoiceComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.ext.*;
-import io.xpipe.app.comp.store.StoreChoiceComp;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DataStoreFormatter;

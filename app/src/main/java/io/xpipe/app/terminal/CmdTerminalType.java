@@ -5,7 +5,9 @@ import io.xpipe.core.process.ShellDialects;
 
 public class CmdTerminalType extends ExternalTerminalType.SimplePathType implements DockableTerminalType {
 
-    public CmdTerminalType() {super("app.cmd", "cmd.exe", true);}
+    public CmdTerminalType() {
+        super("app.cmd", "cmd.exe", true);
+    }
 
     @Override
     public int getProcessHierarchyOffset() {

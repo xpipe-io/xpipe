@@ -1,5 +1,7 @@
 package io.xpipe.app.comp.store;
 
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.DialogComp;
 import io.xpipe.app.comp.base.ErrorOverlayComp;
@@ -9,9 +11,6 @@ import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.augment.GrowAugment;
-import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ExceptionConverter;
 import io.xpipe.app.issue.TrackEvent;

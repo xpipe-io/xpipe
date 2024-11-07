@@ -1,15 +1,10 @@
 package io.xpipe.app.comp.store;
 
-import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.base.HorizontalComp;
-import io.xpipe.app.comp.base.IconButtonComp;
-import io.xpipe.app.comp.base.PrettyImageHelper;
-import io.xpipe.app.comp.base.VerticalComp;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.comp.base.*;
 import io.xpipe.app.storage.DataColor;
+import io.xpipe.app.util.LabelGraphic;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;

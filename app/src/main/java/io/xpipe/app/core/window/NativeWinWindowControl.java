@@ -1,8 +1,7 @@
 package io.xpipe.app.core.window;
 
-import com.sun.jna.ptr.IntByReference;
-import io.sentry.protocol.User;
 import io.xpipe.app.util.Rect;
+
 import javafx.stage.Window;
 
 import com.sun.jna.Library;
@@ -12,6 +11,7 @@ import com.sun.jna.PointerType;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinNT;
+import com.sun.jna.ptr.IntByReference;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -24,21 +24,23 @@ public class NativeWinWindowControl {
 
     public static Optional<NativeWinWindowControl> byPid(long pid) {
         var ref = new AtomicReference<NativeWinWindowControl>();
-        User32.INSTANCE.EnumWindows((hWnd, data) -> {
-            var visible = User32.INSTANCE.IsWindowVisible(hWnd);
-            if (!visible) {
-                return true;
-            }
+        User32.INSTANCE.EnumWindows(
+                (hWnd, data) -> {
+                    var visible = User32.INSTANCE.IsWindowVisible(hWnd);
+                    if (!visible) {
+                        return true;
+                    }
 
-            var wpid = new IntByReference();
-            User32.INSTANCE.GetWindowThreadProcessId(hWnd, wpid);
-            if (wpid.getValue() == pid) {
-                ref.set(new NativeWinWindowControl(hWnd));
-                return false;
-            } else {
-                return true;
-            }
-        }, null);
+                    var wpid = new IntByReference();
+                    User32.INSTANCE.GetWindowThreadProcessId(hWnd, wpid);
+                    if (wpid.getValue() == pid) {
+                        ref.set(new NativeWinWindowControl(hWnd));
+                        return false;
+                    } else {
+                        return true;
+                    }
+                },
+                null);
         return Optional.ofNullable(ref.get());
     }
 
@@ -68,23 +70,24 @@ public class NativeWinWindowControl {
     public void removeBorders() {
         var style = User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_STYLE);
         var mod = style & ~(User32.WS_CAPTION | User32.WS_THICKFRAME | User32.WS_MAXIMIZEBOX);
-        User32.INSTANCE.SetWindowLong(windowHandle,User32.GWL_STYLE,mod);
+        User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_STYLE, mod);
     }
 
     public boolean isIconified() {
-        return (User32.INSTANCE.GetWindowLong(windowHandle,User32.GWL_STYLE) & User32.WS_MINIMIZE) != 0;
+        return (User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_STYLE) & User32.WS_MINIMIZE) != 0;
     }
 
     public void alwaysInFront() {
-        orderRelative(new WinDef.HWND(new Pointer( 0xFFFFFFFFFFFFFFFFL)));
+        orderRelative(new WinDef.HWND(new Pointer(0xFFFFFFFFFFFFFFFFL)));
     }
 
     public void defaultOrder() {
-        orderRelative(new WinDef.HWND(new Pointer( -2)));
+        orderRelative(new WinDef.HWND(new Pointer(-2)));
     }
 
     public void orderRelative(WinDef.HWND predecessor) {
-        User32.INSTANCE.SetWindowPos(windowHandle, predecessor, 0, 0, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOMOVE | User32.SWP_NOSIZE);
+        User32.INSTANCE.SetWindowPos(
+                windowHandle, predecessor, 0, 0, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOMOVE | User32.SWP_NOSIZE);
     }
 
     public void show() {
@@ -96,11 +99,12 @@ public class NativeWinWindowControl {
     }
 
     public void minimize() {
-        User32.INSTANCE.ShowWindow(windowHandle,User32.SW_MINIMIZE);
+        User32.INSTANCE.ShowWindow(windowHandle, User32.SW_MINIMIZE);
     }
 
     public void move(Rect bounds) {
-        User32.INSTANCE.SetWindowPos(windowHandle, null, bounds.getX(), bounds.getY(), bounds.getW(), bounds.getH(), User32.SWP_NOACTIVATE);
+        User32.INSTANCE.SetWindowPos(
+                windowHandle, null, bounds.getX(), bounds.getY(), bounds.getW(), bounds.getH(), User32.SWP_NOACTIVATE);
     }
 
     public Rect getBounds() {

@@ -1,13 +1,13 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.DialogComp;
 import io.xpipe.app.comp.base.ListSelectorComp;
+import io.xpipe.app.comp.store.StoreChoiceComp;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ScanProvider;
 import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.store.StoreChoiceComp;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;

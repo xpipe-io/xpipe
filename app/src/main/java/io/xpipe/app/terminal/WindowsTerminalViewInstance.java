@@ -2,12 +2,11 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.window.NativeWinWindowControl;
 import io.xpipe.app.util.Rect;
+
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
-@FieldDefaults(
-        makeFinal = true,
-        level = AccessLevel.PRIVATE)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public final class WindowsTerminalViewInstance extends TerminalViewInstance {
 
     NativeWinWindowControl control;

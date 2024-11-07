@@ -1,7 +1,7 @@
 package io.xpipe.app.comp.store;
 
-import io.xpipe.app.comp.base.ScrollComp;
 import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.base.ScrollComp;
 
 import javafx.beans.binding.Bindings;
 import javafx.scene.layout.Region;

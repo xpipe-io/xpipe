@@ -1,10 +1,10 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppStyle;
 import io.xpipe.app.core.AppTheme;
 import io.xpipe.app.core.window.AppWindowHelper;
-import io.xpipe.app.comp.base.TextFieldComp;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;

@@ -1,15 +1,10 @@
 package io.xpipe.ext.base.service;
 
-import io.xpipe.app.comp.store.StoreToggleComp;
-import io.xpipe.app.comp.store.SystemStateComp;
-import io.xpipe.app.comp.store.StoreEntryComp;
-import io.xpipe.app.comp.store.StoreEntryWrapper;
-import io.xpipe.app.comp.store.StoreSection;
-import io.xpipe.app.comp.store.StoreViewState;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.store.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreUsageCategory;
-import io.xpipe.app.comp.Comp;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;

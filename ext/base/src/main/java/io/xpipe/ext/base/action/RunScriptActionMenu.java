@@ -18,7 +18,6 @@ import javafx.beans.value.ObservableValue;
 import lombok.Value;
 
 import java.util.List;
-import java.util.UUID;
 
 public class RunScriptActionMenu implements ActionProvider {
 

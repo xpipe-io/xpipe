@@ -50,6 +50,7 @@ public class AppProperties {
      * Unique identifier that resets on every XPipe restart.
      */
     UUID sessionId;
+
     boolean newBuildSession;
 
     public AppProperties() {
@@ -121,15 +122,15 @@ public class AppProperties {
                 .map(Boolean::parseBoolean)
                 .orElse(false);
         AppCache.setBasePath(dataDir.resolve("cache"));
-       UUID id = AppCache.getNonNull("uuid", UUID.class, null);
-       if (id == null) {
-           uuid = UUID.randomUUID();
-           AppCache.update("uuid", uuid);
-       } else {
-           uuid = id;
-       }
+        UUID id = AppCache.getNonNull("uuid", UUID.class, null);
+        if (id == null) {
+            uuid = UUID.randomUUID();
+            AppCache.update("uuid", uuid);
+        } else {
+            uuid = id;
+        }
         initialLaunch = AppCache.getNonNull("lastBuildId", String.class, () -> null) == null;
-       sessionId = UUID.randomUUID();
+        sessionId = UUID.randomUUID();
         var cachedBuildId = AppCache.getNonNull("lastBuildId", String.class, () -> null);
         newBuildSession = !buildUuid.toString().equals(cachedBuildId);
         AppCache.update("lastBuildId", buildUuid);

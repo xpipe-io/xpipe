@@ -3,8 +3,8 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.browser.BrowserAbstractSessionModel;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.BrowserSessionTab;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.storage.DataColor;
 
 public final class BrowserHistoryTabModel extends BrowserSessionTab {

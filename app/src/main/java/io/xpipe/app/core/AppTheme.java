@@ -2,11 +2,11 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.PrefsChoiceValue;
-import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.resources.AppResources;
+import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
 
 import javafx.animation.Interpolator;
@@ -214,10 +214,7 @@ public class AppTheme {
             AppResources.with("atlantafx.base", theme.getUserAgentStylesheet().substring(1), path -> {
                 var baseStyleContent = Files.readString(path);
                 builder.append("\n")
-                        .append(baseStyleContent
-                                .lines()
-                                .skip(skipLines)
-                                .collect(Collectors.joining("\n")));
+                        .append(baseStyleContent.lines().skip(skipLines).collect(Collectors.joining("\n")));
             });
 
             Application.setUserAgentStylesheet(Styles.toDataURI(builder.toString()));

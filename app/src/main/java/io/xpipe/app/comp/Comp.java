@@ -1,9 +1,9 @@
 package io.xpipe.app.comp;
 
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.comp.augment.Augment;
 import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.TooltipAugment;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.PlatformThread;
 

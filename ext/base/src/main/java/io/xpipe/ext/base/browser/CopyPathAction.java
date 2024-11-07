@@ -1,8 +1,8 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.action.BrowserBranchAction;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserActionFormatter;
+import io.xpipe.app.browser.action.BrowserBranchAction;
 import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
@@ -47,7 +47,8 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
                     }
 
                     @Override
-                    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                    public ObservableValue<String> getName(
+                            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
                             return new SimpleObjectProperty<>(BrowserActionFormatter.centerEllipsis(
                                     entries.getFirst().getRawFileEntry().getPath(), 50));
@@ -66,7 +67,8 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
                 },
                 new BrowserLeafAction() {
                     @Override
-                    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                    public ObservableValue<String> getName(
+                            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
                             return new SimpleObjectProperty<>(BrowserActionFormatter.centerEllipsis(
                                     entries.getFirst().getRawFileEntry().getPath(), 50));
@@ -97,7 +99,8 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
                 },
                 new BrowserLeafAction() {
                     @Override
-                    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                    public ObservableValue<String> getName(
+                            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
                             return new SimpleObjectProperty<>("\""
                                     + BrowserActionFormatter.centerEllipsis(
@@ -131,7 +134,8 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
                     }
 
                     @Override
-                    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                    public ObservableValue<String> getName(
+                            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
                             return new SimpleObjectProperty<>(BrowserActionFormatter.centerEllipsis(
                                     FileNames.getFileName(
@@ -153,7 +157,8 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
                 },
                 new BrowserLeafAction() {
                     @Override
-                    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                    public ObservableValue<String> getName(
+                            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
                             return new SimpleObjectProperty<>(BrowserActionFormatter.centerEllipsis(
                                     FileNames.getFileName(
@@ -193,7 +198,8 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
                 },
                 new BrowserLeafAction() {
                     @Override
-                    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                    public ObservableValue<String> getName(
+                            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
                             return new SimpleObjectProperty<>("\""
                                     + BrowserActionFormatter.centerEllipsis(

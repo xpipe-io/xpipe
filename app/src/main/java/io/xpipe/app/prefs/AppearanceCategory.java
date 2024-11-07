@@ -1,12 +1,12 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppTheme;
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ChoiceComp;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.IntFieldComp;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppTheme;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.OptionsBuilder;
 

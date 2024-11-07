@@ -8,7 +8,9 @@ import java.util.Base64;
 
 public class PowerShellTerminalType extends ExternalTerminalType.SimplePathType implements DockableTerminalType {
 
-    public PowerShellTerminalType() {super("app.powershell", "powershell", true);}
+    public PowerShellTerminalType() {
+        super("app.powershell", "powershell", true);
+    }
 
     @Override
     public boolean supportsTabs() {
@@ -28,13 +30,22 @@ public class PowerShellTerminalType extends ExternalTerminalType.SimplePathType 
     @Override
     protected CommandBuilder toCommand(LaunchConfiguration configuration) {
         if (configuration.getScriptDialect().equals(ShellDialects.POWERSHELL)) {
-            return CommandBuilder.of().add("-ExecutionPolicy", "Bypass").add("-File").addFile(configuration.getScriptFile());
+            return CommandBuilder.of()
+                    .add("-ExecutionPolicy", "Bypass")
+                    .add("-File")
+                    .addFile(configuration.getScriptFile());
         }
 
-        return CommandBuilder.of().add("-ExecutionPolicy", "Bypass").add("-EncodedCommand").add(sc -> {
-            var base64 = Base64.getEncoder().encodeToString(
-                    configuration.getDialectLaunchCommand().buildBase(sc).getBytes(StandardCharsets.UTF_16LE));
-            return "\"" + base64 + "\"";
-        });
+        return CommandBuilder.of()
+                .add("-ExecutionPolicy", "Bypass")
+                .add("-EncodedCommand")
+                .add(sc -> {
+                    var base64 = Base64.getEncoder()
+                            .encodeToString(configuration
+                                    .getDialectLaunchCommand()
+                                    .buildBase(sc)
+                                    .getBytes(StandardCharsets.UTF_16LE));
+                    return "\"" + base64 + "\"";
+                });
     }
 }

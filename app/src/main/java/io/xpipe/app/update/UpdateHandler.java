@@ -99,13 +99,16 @@ public abstract class UpdateHandler {
 
     private void startBackgroundUpdater() {
         ThreadHelper.createPlatformThread("updater", true, () -> {
-            var checked = false;
+                    var checked = false;
                     ThreadHelper.sleep(Duration.ofMinutes(5).toMillis());
                     event("Starting background updater thread");
                     while (true) {
-                        if (AppPrefs.get().automaticallyUpdate().get() || AppPrefs.get().checkForSecurityUpdates().get()) {
+                        if (AppPrefs.get().automaticallyUpdate().get()
+                                || AppPrefs.get().checkForSecurityUpdates().get()) {
                             event("Performing background update");
-                            refreshUpdateCheckSilent(!checked, !AppPrefs.get().automaticallyUpdate().get());
+                            refreshUpdateCheckSilent(
+                                    !checked,
+                                    !AppPrefs.get().automaticallyUpdate().get());
                             checked = true;
                             prepareUpdate();
                         }
@@ -208,7 +211,10 @@ public abstract class UpdateHandler {
 
         // Check if prepared update is still the latest.
         // We only do that here to minimize the sent requests by only executing when it's really necessary
-        var available = XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheckSilent(false, !AppPrefs.get().automaticallyUpdate().get());
+        var available = XPipeDistributionType.get()
+                .getUpdateHandler()
+                .refreshUpdateCheckSilent(
+                        false, !AppPrefs.get().automaticallyUpdate().get());
         if (preparedUpdate.getValue() == null) {
             return;
         }

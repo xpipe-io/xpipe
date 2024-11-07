@@ -1,8 +1,8 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.augment.Augment;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.binding.Bindings;

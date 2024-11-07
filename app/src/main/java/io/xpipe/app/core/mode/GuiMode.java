@@ -7,11 +7,11 @@ import io.xpipe.app.core.AppGreetings;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.check.AppPtbCheck;
 import io.xpipe.app.core.window.AppMainWindow;
-import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.update.UpdateChangelogAlert;
 import io.xpipe.app.util.NativeBridge;
+import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.stage.Stage;

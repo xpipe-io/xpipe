@@ -58,7 +58,8 @@ public class TerminalLauncher {
         open(entry, title, directory, cc, UUID.randomUUID());
     }
 
-    public static void open(DataStoreEntry entry, String title, String directory, ProcessControl cc, UUID request) throws Exception {
+    public static void open(DataStoreEntry entry, String title, String directory, ProcessControl cc, UUID request)
+            throws Exception {
         var type = AppPrefs.get().terminalType().getValue();
         if (type == null) {
             throw ErrorEvent.expected(new IllegalStateException(AppI18n.get("noTerminalSet")));
