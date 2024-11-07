@@ -1,9 +1,9 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.core.AppFont;
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.CompStructure;
-import io.xpipe.app.fxcomps.SimpleCompStructure;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompStructure;
+import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.util.Hyperlinks;
 
 import javafx.geometry.Insets;

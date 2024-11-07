@@ -1,10 +1,10 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.CompStructure;
-import io.xpipe.app.fxcomps.SimpleCompStructure;
-import io.xpipe.app.fxcomps.util.DerivedObservableList;
-import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompStructure;
+import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.util.DerivedObservableList;
+import io.xpipe.app.util.PlatformThread;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;

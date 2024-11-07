@@ -2,9 +2,9 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.App;
-import io.xpipe.app.fxcomps.impl.HorizontalComp;
-import io.xpipe.app.fxcomps.impl.SecretFieldComp;
-import io.xpipe.app.fxcomps.impl.TextFieldComp;
+import io.xpipe.app.comp.base.HorizontalComp;
+import io.xpipe.app.comp.base.SecretFieldComp;
+import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreSecret;
 

@@ -1,7 +1,7 @@
 package io.xpipe.ext.base.browser.compress;
 
 import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.app.browser.fs.OpenFileSystemModel;
+import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
 import io.xpipe.app.browser.icon.BrowserIcons;
 import io.xpipe.app.core.AppI18n;
@@ -23,7 +23,7 @@ public abstract class BaseUnzipUnixAction extends ExecuteApplicationAction {
     }
 
     @Override
-    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return BrowserIcons.createIcon(BrowserIconFileType.byId("zip")).createRegion();
     }
 
@@ -38,7 +38,7 @@ public abstract class BaseUnzipUnixAction extends ExecuteApplicationAction {
     }
 
     @Override
-    protected CommandBuilder createCommand(OpenFileSystemModel model, BrowserEntry entry) {
+    protected CommandBuilder createCommand(BrowserFileSystemTabModel model, BrowserEntry entry) {
         var command = CommandBuilder.of()
                 .add("unzip", "-o")
                 .addFile(entry.getRawFileEntry().getPath());
@@ -54,7 +54,7 @@ public abstract class BaseUnzipUnixAction extends ExecuteApplicationAction {
     }
 
     @Override
-    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         var sep = model.getFileSystem().getShell().orElseThrow().getOsType().getFileSystemSeparator();
         var dir = entries.size() > 1 ? "[...]" : getTarget(entries.getFirst().getFileName()) + sep;
         return toDirectory ? AppI18n.observable("unzipDirectory", dir) : AppI18n.observable("unzipHere");
@@ -65,7 +65,7 @@ public abstract class BaseUnzipUnixAction extends ExecuteApplicationAction {
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return entries.stream()
                         .allMatch(entry -> entry.getRawFileEntry().getPath().endsWith(".zip"))
                 && !model.getFileSystem().getShell().orElseThrow().getOsType().equals(OsType.WINDOWS);

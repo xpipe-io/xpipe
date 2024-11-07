@@ -2,7 +2,6 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.ShellEnvironmentStoreState;

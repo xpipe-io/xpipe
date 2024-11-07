@@ -1,7 +1,7 @@
 package io.xpipe.app.comp.store;
 
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.storage.DataStorage;

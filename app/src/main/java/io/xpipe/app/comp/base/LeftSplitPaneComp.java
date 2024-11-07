@@ -1,7 +1,7 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompStructure;
 
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.Region;

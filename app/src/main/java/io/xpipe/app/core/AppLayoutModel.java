@@ -1,12 +1,11 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.beacon.AppBeaconServer;
-import io.xpipe.app.browser.session.BrowserSessionComp;
-import io.xpipe.app.browser.session.BrowserSessionModel;
-import io.xpipe.app.terminal.TerminalDockComp;
+import io.xpipe.app.browser.BrowserFullSessionComp;
+import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.store.StoreLayoutComp;
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.util.LabelGraphic;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.prefs.AppPrefsComp;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LicenseProvider;
@@ -97,7 +96,7 @@ public class AppLayoutModel {
                 new Entry(
                         AppI18n.observable("browser"),
                         new LabelGraphic.IconGraphic("mdi2f-file-cabinet"),
-                        new BrowserSessionComp(BrowserSessionModel.DEFAULT),
+                        new BrowserFullSessionComp(BrowserFullSessionModel.DEFAULT),
                         null,
                         new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN)),
 //                new Entry(

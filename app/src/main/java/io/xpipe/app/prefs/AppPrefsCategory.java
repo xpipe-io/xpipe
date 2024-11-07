@@ -1,6 +1,6 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.comp.Comp;
 
 public abstract class AppPrefsCategory {
 

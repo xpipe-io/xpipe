@@ -1,7 +1,7 @@
 package io.xpipe.app.comp.store;
 
 import io.xpipe.app.ext.ActionProvider;
-import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataColor;

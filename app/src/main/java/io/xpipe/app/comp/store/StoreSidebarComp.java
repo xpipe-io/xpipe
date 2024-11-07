@@ -1,9 +1,8 @@
 package io.xpipe.app.comp.store;
 
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.impl.StoreCategoryListComp;
-import io.xpipe.app.fxcomps.impl.VerticalComp;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.base.VerticalComp;
 
 import javafx.scene.layout.Region;
 

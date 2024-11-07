@@ -1,7 +1,5 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.fxcomps.util.LabelGraphic;
-
 import javafx.application.Platform;
 import javafx.geometry.Side;
 import javafx.scene.Node;

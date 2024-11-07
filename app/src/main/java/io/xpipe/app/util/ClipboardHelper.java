@@ -1,6 +1,5 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.core.util.SecretValue;
 
 import javafx.animation.PauseTransition;

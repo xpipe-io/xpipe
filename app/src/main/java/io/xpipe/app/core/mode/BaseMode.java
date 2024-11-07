@@ -2,7 +2,7 @@ package io.xpipe.app.core.mode;
 
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.beacon.BlobManager;
-import io.xpipe.app.browser.session.BrowserSessionModel;
+import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.*;
@@ -80,7 +80,7 @@ public class BaseMode extends OperationMode {
     @Override
     public void finalTeardown() throws Exception {
         TrackEvent.info("Background mode shutdown started");
-        BrowserSessionModel.DEFAULT.reset();
+        BrowserFullSessionModel.DEFAULT.reset();
         SshLocalBridge.reset();
         StoreViewState.reset();
         DataStoreProviders.reset();

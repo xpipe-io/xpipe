@@ -29,21 +29,17 @@ open module io.xpipe.app {
     exports io.xpipe.app.storage;
     exports io.xpipe.app.update;
     exports io.xpipe.app.ext;
-    exports io.xpipe.app.fxcomps.impl;
-    exports io.xpipe.app.fxcomps;
-    exports io.xpipe.app.fxcomps.util;
-    exports io.xpipe.app.fxcomps.augment;
+    exports io.xpipe.app.comp.augment;
     exports io.xpipe.app.test;
     exports io.xpipe.app.browser.action;
     exports io.xpipe.app.browser;
     exports io.xpipe.app.browser.icon;
     exports io.xpipe.app.core.check;
     exports io.xpipe.app.terminal;
-    exports io.xpipe.app.browser.session;
-    exports io.xpipe.app.browser.fs;
     exports io.xpipe.app.browser.file;
     exports io.xpipe.app.core.window;
     exports io.xpipe.app.resources;
+    exports io.xpipe.app.comp;
 
     requires com.sun.jna;
     requires com.sun.jna.platform;

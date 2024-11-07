@@ -1,8 +1,8 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.core.AppFont;
-import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.util.PlatformThread;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

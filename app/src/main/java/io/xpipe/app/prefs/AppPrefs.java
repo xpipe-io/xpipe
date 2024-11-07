@@ -4,15 +4,14 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.PasswordLockSecretValue;
-import io.xpipe.app.util.XPipeSession;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.ModuleHelper;
@@ -28,7 +27,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
-import lombok.experimental.NonFinal;
 import org.apache.commons.io.FileUtils;
 
 import java.nio.file.Path;
@@ -559,7 +557,7 @@ public class AppPrefs {
                         .getCanonicalVersion()
                         .map(v -> v.getMajor() == 12 && v.getMinor() == 2)
                         .orElse(false)
-                && XPipeSession.get().isNewBuildSession()) {
+                && AppProperties.get().isNewBuildSession()) {
             useLocalFallbackShell.setValue(false);
         }
 

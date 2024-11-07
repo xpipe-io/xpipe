@@ -2,7 +2,6 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.util.XPipeSession;
 import io.xpipe.core.util.Deobfuscator;
 
 import lombok.Getter;
@@ -104,7 +103,7 @@ public class AppLogs {
         var logDir = AppProperties.get().getDataDir().resolve("logs");
 
         // Regularly clean logs dir
-        if (XPipeSession.get().isNewBuildSession() && Files.exists(logDir)) {
+        if (AppProperties.get().isNewBuildSession() && Files.exists(logDir)) {
             try {
                 List<Path> all;
                 try (var s = Files.list(logDir)) {

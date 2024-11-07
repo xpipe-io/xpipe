@@ -3,7 +3,7 @@ package io.xpipe.app.comp.store;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProviders;
-import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
+import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.util.ScanAlert;
 
 import javafx.scene.control.Menu;

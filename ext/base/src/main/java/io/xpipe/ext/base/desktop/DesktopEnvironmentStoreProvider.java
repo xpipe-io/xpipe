@@ -1,15 +1,15 @@
 package io.xpipe.ext.base.desktop;
 
-import io.xpipe.app.browser.session.BrowserSessionModel;
+import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.ext.*;
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.impl.ChoiceComp;
-import io.xpipe.app.fxcomps.impl.DataStoreChoiceComp;
-import io.xpipe.app.fxcomps.impl.DataStoreListChoiceComp;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.base.ChoiceComp;
+import io.xpipe.app.comp.store.StoreChoiceComp;
+import io.xpipe.app.comp.store.StoreListChoiceComp;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.util.DataStoreFormatter;
@@ -35,7 +35,7 @@ public class DesktopEnvironmentStoreProvider implements DataStoreProvider {
 
     @Override
     public ActionProvider.Action browserAction(
-            BrowserSessionModel sessionModel, DataStoreEntry store, BooleanProperty busy) {
+            BrowserFullSessionModel sessionModel, DataStoreEntry store, BooleanProperty busy) {
         return launchAction(store);
     }
 
@@ -110,8 +110,8 @@ public class DesktopEnvironmentStoreProvider implements DataStoreProvider {
         return new OptionsBuilder()
                 .nameAndDescription("desktopHost")
                 .addComp(
-                        new DataStoreChoiceComp<>(
-                                DataStoreChoiceComp.Mode.HOST,
+                        new StoreChoiceComp<>(
+                                StoreChoiceComp.Mode.HOST,
                                 entry,
                                 host,
                                 DesktopBaseStore.class,
@@ -132,7 +132,7 @@ public class DesktopEnvironmentStoreProvider implements DataStoreProvider {
                 .nonNull()
                 .nameAndDescription("desktopSnippets")
                 .addComp(
-                        new DataStoreListChoiceComp<>(
+                        new StoreListChoiceComp<>(
                                 scripts,
                                 ScriptStore.class,
                                 scriptStore -> !scripts.contains(scriptStore),

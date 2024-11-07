@@ -1,13 +1,12 @@
 package io.xpipe.app.prefs;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.impl.VerticalComp;
-import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.base.VerticalComp;
+import io.xpipe.app.util.PlatformThread;
 
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;

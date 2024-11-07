@@ -1,11 +1,11 @@
 package io.xpipe.ext.base.script;
 
-import io.xpipe.app.browser.action.BranchAction;
+import io.xpipe.app.browser.action.BrowserBranchAction;
 import io.xpipe.app.browser.action.BrowserAction;
-import io.xpipe.app.browser.action.LeafAction;
+import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.app.browser.fs.OpenFileSystemModel;
-import io.xpipe.app.browser.session.BrowserSessionModel;
+import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
+import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
@@ -23,10 +23,10 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 
-public class RunScriptAction implements BrowserAction, BranchAction {
+public class RunScriptAction implements BrowserAction, BrowserBranchAction {
 
     @Override
-    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return new FontIcon("mdi2c-code-greater-than");
     }
 
@@ -36,28 +36,28 @@ public class RunScriptAction implements BrowserAction, BranchAction {
     }
 
     @Override
-    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return AppI18n.observable("runScript");
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return model.getBrowserModel() instanceof BrowserSessionModel;
+    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return model.getBrowserModel() instanceof BrowserFullSessionModel;
     }
 
     @Override
-    public List<? extends BrowserAction> getBranchingActions(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public List<? extends BrowserAction> getBranchingActions(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         var actions = createActionForScriptHierarchy(model, entries);
         if (actions.isEmpty()) {
-            actions = List.of(new LeafAction() {
+            actions = List.of(new BrowserLeafAction() {
                 @Override
-                public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
+                public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) throws Exception {
                     StoreViewState.get().getAllScriptsCategory().select();
                     AppLayoutModel.get().selectConnections();
                 }
 
                 @Override
-                public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                     return AppI18n.observable("noScriptsAvailable");
                 }
             });
@@ -66,7 +66,7 @@ public class RunScriptAction implements BrowserAction, BranchAction {
     }
 
     private List<? extends BrowserAction> createActionForScriptHierarchy(
-            OpenFileSystemModel model, List<BrowserEntry> selected) {
+            BrowserFileSystemTabModel model, List<BrowserEntry> selected) {
         var sc = model.getFileSystem().getShell().orElseThrow();
         var hierarchy = ScriptHierarchy.buildEnabledHierarchy(ref -> {
             if (!ref.getStore().isFileScript()) {
@@ -81,7 +81,7 @@ public class RunScriptAction implements BrowserAction, BranchAction {
         return createActionForScriptHierarchy(model, hierarchy).getBranchingActions(model, selected);
     }
 
-    private BranchAction createActionForScriptHierarchy(OpenFileSystemModel model, ScriptHierarchy hierarchy) {
+    private BrowserBranchAction createActionForScriptHierarchy(BrowserFileSystemTabModel model, ScriptHierarchy hierarchy) {
         if (hierarchy.isLeaf()) {
             return createActionForScript(model, hierarchy.getLeafBase());
         }
@@ -89,33 +89,33 @@ public class RunScriptAction implements BrowserAction, BranchAction {
         var list = hierarchy.getChildren().stream()
                 .map(c -> createActionForScriptHierarchy(model, c))
                 .toList();
-        return new BranchAction() {
+        return new BrowserBranchAction() {
             @Override
             public List<? extends BrowserAction> getBranchingActions(
-                    OpenFileSystemModel model, List<BrowserEntry> entries) {
+                    BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                 return list;
             }
 
             @Override
-            public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+            public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                 var b = hierarchy.getBase();
                 return new SimpleStringProperty(b != null ? b.get().getName() : null);
             }
         };
     }
 
-    private BranchAction createActionForScript(OpenFileSystemModel model, DataStoreEntryRef<SimpleScriptStore> ref) {
+    private BrowserBranchAction createActionForScript(BrowserFileSystemTabModel model, DataStoreEntryRef<SimpleScriptStore> ref) {
         return new MultiExecuteSelectionAction() {
 
             @Override
-            public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+            public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                 return new SimpleStringProperty(ref.get().getName());
             }
 
             @Override
             protected CommandBuilder createCommand(
-                    ShellControl sc, OpenFileSystemModel model, List<BrowserEntry> selected) {
-                if (!(model.getBrowserModel() instanceof BrowserSessionModel)) {
+                    ShellControl sc, BrowserFileSystemTabModel model, List<BrowserEntry> selected) {
+                if (!(model.getBrowserModel() instanceof BrowserFullSessionModel)) {
                     return null;
                 }
 

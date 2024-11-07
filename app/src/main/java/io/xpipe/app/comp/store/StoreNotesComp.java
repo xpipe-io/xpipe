@@ -5,10 +5,10 @@ import io.xpipe.app.comp.base.DialogComp;
 import io.xpipe.app.comp.base.MarkdownEditorComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.CompStructure;
-import io.xpipe.app.fxcomps.impl.IconButtonComp;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompStructure;
+import io.xpipe.app.comp.base.IconButtonComp;
+import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.storage.DataStorage;
 
 import javafx.application.Platform;

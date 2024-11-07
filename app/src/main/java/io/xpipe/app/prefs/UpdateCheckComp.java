@@ -2,8 +2,8 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.update.UpdateAvailableAlert;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.ThreadHelper;

@@ -4,12 +4,12 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.impl.HorizontalComp;
-import io.xpipe.app.fxcomps.impl.LabelComp;
-import io.xpipe.app.fxcomps.impl.TextFieldComp;
-import io.xpipe.app.fxcomps.impl.VerticalComp;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.base.HorizontalComp;
+import io.xpipe.app.comp.base.LabelComp;
+import io.xpipe.app.comp.base.TextFieldComp;
+import io.xpipe.app.comp.base.VerticalComp;
+import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.ThreadHelper;
 

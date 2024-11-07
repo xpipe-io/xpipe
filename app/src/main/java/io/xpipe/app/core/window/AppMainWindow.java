@@ -4,7 +4,7 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppTheme;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;

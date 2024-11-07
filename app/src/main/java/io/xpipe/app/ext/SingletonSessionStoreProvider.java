@@ -1,12 +1,12 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.app.comp.base.StoreToggleComp;
-import io.xpipe.app.comp.base.SystemStateComp;
+import io.xpipe.app.comp.store.StoreToggleComp;
+import io.xpipe.app.comp.store.SystemStateComp;
 import io.xpipe.app.comp.store.StoreEntryComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreSection;
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.util.LabelGraphic;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.SingletonSessionStore;
 

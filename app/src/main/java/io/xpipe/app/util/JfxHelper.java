@@ -1,7 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppFont;
-import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
+import io.xpipe.app.comp.base.PrettyImageHelper;
 
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;

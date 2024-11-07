@@ -2,8 +2,7 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.comp.store.StoreCategoryWrapper;
 import io.xpipe.app.comp.store.StoreViewState;
-import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.comp.SimpleComp;
 
 import javafx.beans.property.Property;
 import javafx.geometry.Insets;

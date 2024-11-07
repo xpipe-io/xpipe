@@ -46,6 +46,11 @@ public class AppProperties {
     boolean autoAcceptEula;
     UUID uuid;
     boolean initialLaunch;
+    /**
+     * Unique identifier that resets on every XPipe restart.
+     */
+    UUID sessionId;
+    boolean newBuildSession;
 
     public AppProperties() {
         var appDir = Path.of(System.getProperty("user.dir")).resolve("app");
@@ -123,7 +128,11 @@ public class AppProperties {
        } else {
            uuid = id;
        }
-        initialLaunch = AppCache.getNonNull("lastBuild", String.class, () -> null) == null;
+        initialLaunch = AppCache.getNonNull("lastBuildId", String.class, () -> null) == null;
+       sessionId = UUID.randomUUID();
+        var cachedBuildId = AppCache.getNonNull("lastBuildId", String.class, () -> null);
+        newBuildSession = !buildUuid.toString().equals(cachedBuildId);
+        AppCache.update("lastBuildId", buildUuid);
     }
 
     private static boolean isJUnitTest() {

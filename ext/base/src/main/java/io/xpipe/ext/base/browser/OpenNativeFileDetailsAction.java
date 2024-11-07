@@ -1,8 +1,8 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.action.LeafAction;
+import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.app.browser.fs.OpenFileSystemModel;
+import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;
@@ -19,10 +19,10 @@ import javafx.scene.input.KeyCombination;
 
 import java.util.List;
 
-public class OpenNativeFileDetailsAction implements LeafAction {
+public class OpenNativeFileDetailsAction implements BrowserLeafAction {
 
     @Override
-    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
+    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) throws Exception {
         ShellControl sc = model.getFileSystem().getShell().get();
         for (BrowserEntry entry : entries) {
             var e = entry.getRawFileEntry().getPath();
@@ -99,12 +99,12 @@ public class OpenNativeFileDetailsAction implements LeafAction {
     }
 
     @Override
-    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return AppI18n.observable("showDetails");
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         var sc = model.getFileSystem().getShell().orElseThrow();
         return sc.getLocalSystemAccess().supportsFileSystemAccess();
     }

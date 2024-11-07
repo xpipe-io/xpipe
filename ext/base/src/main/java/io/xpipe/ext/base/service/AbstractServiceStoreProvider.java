@@ -1,6 +1,6 @@
 package io.xpipe.ext.base.service;
 
-import io.xpipe.app.comp.base.SystemStateComp;
+import io.xpipe.app.comp.store.SystemStateComp;
 import io.xpipe.app.comp.store.DenseStoreEntryComp;
 import io.xpipe.app.comp.store.StoreEntryComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
@@ -9,7 +9,7 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.ext.SingletonSessionStoreProvider;
-import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DataStoreFormatter;

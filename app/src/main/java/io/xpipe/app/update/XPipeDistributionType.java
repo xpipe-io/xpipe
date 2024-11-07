@@ -5,7 +5,6 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.app.util.XPipeSession;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.XPipeInstallation;
@@ -22,7 +21,7 @@ public enum XPipeDistributionType {
     DEVELOPMENT("development", true, () -> new GitHubUpdater(false)),
     PORTABLE("portable", false, () -> new PortableUpdater(true)),
     NATIVE_INSTALLATION("install", true, () -> new GitHubUpdater(true)),
-    HOMEBREW("homebrew", true, () -> new HomebrewUpdater()),
+    HOMEBREW("homebrew", true, () -> new PortableUpdater(true)),
     WEBTOP("webtop", true, () -> new PortableUpdater(false)),
     CHOCO("choco", true, () -> new PortableUpdater(true));
 
@@ -53,7 +52,7 @@ public enum XPipeDistributionType {
             return;
         }
 
-        if (!XPipeSession.get().isNewBuildSession()) {
+        if (!AppProperties.get().isNewBuildSession()) {
             var cached = AppCache.getNonNull("dist", String.class, () -> null);
             var cachedType = Arrays.stream(values())
                     .filter(xPipeDistributionType ->

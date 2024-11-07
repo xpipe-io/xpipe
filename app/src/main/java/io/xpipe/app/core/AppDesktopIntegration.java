@@ -3,7 +3,7 @@ package io.xpipe.app.core;
 import io.xpipe.app.Main;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.launcher.LauncherInput;
+import io.xpipe.app.core.launcher.LauncherInput;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.ThreadHelper;

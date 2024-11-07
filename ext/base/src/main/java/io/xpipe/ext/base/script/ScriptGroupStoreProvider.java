@@ -1,12 +1,12 @@
 package io.xpipe.ext.base.script;
 
-import io.xpipe.app.comp.base.SystemStateComp;
+import io.xpipe.app.comp.store.SystemStateComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.ext.*;
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.impl.DataStoreChoiceComp;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.store.StoreChoiceComp;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.store.DataStore;
@@ -57,8 +57,8 @@ public class ScriptGroupStoreProvider implements EnabledParentStoreProvider, Dat
                 .name("scriptGroup")
                 .description("scriptGroupDescription")
                 .addComp(
-                        new DataStoreChoiceComp<>(
-                                DataStoreChoiceComp.Mode.OTHER,
+                        new StoreChoiceComp<>(
+                                StoreChoiceComp.Mode.OTHER,
                                 entry,
                                 group,
                                 ScriptGroupStore.class,

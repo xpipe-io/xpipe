@@ -1,6 +1,6 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.comp.Comp;
 
 import javafx.beans.property.Property;
 

@@ -2,7 +2,7 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppMainWindow;
-import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.comp.SimpleComp;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.Label;

@@ -3,7 +3,7 @@ package io.xpipe.app.comp.store;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.core.process.OsType;
 
 import javafx.beans.property.BooleanProperty;

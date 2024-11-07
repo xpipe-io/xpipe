@@ -3,7 +3,7 @@ package io.xpipe.app.comp.store;
 import io.xpipe.app.comp.base.LeftSplitPaneComp;
 import io.xpipe.app.core.AppActionLinkDetector;
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.util.InputHelper;
 
 import javafx.scene.input.KeyCode;

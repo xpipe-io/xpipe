@@ -1,8 +1,7 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.browser.fs.OpenFileSystemModel;
-import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.impl.IconButtonComp;
+import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.util.InputHelper;
 
 import javafx.scene.layout.Region;
@@ -12,9 +11,9 @@ import java.util.function.Supplier;
 public class BrowserQuickAccessButtonComp extends SimpleComp {
 
     private final Supplier<BrowserEntry> base;
-    private final OpenFileSystemModel model;
+    private final BrowserFileSystemTabModel model;
 
-    public BrowserQuickAccessButtonComp(Supplier<BrowserEntry> base, OpenFileSystemModel model) {
+    public BrowserQuickAccessButtonComp(Supplier<BrowserEntry> base, BrowserFileSystemTabModel model) {
         this.base = base;
         this.model = model;
     }

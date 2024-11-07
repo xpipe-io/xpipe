@@ -1,6 +1,6 @@
 package io.xpipe.app.core.window;
 
-import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
 

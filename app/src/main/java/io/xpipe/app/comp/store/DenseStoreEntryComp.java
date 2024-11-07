@@ -1,8 +1,8 @@
 package io.xpipe.app.comp.store;
 
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.augment.GrowAugment;
-import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.augment.GrowAugment;
+import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;

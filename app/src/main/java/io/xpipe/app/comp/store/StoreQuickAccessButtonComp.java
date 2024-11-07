@@ -1,10 +1,10 @@
 package io.xpipe.app.comp.store;
 
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.CompStructure;
-import io.xpipe.app.fxcomps.impl.IconButtonComp;
-import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
-import io.xpipe.app.fxcomps.util.LabelGraphic;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompStructure;
+import io.xpipe.app.comp.base.IconButtonComp;
+import io.xpipe.app.comp.base.PrettyImageHelper;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ContextMenuHelper;
 
 import javafx.geometry.Side;

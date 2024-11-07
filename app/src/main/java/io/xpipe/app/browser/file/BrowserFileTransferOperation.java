@@ -1,6 +1,5 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.browser.BrowserTransferProgress;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.store.*;
 
@@ -50,7 +49,7 @@ public class BrowserFileTransferOperation {
                     }
 
                     try {
-                        return LocalFileSystem.getLocalFileEntry(path);
+                        return BrowserLocalFileSystem.getLocalFileEntry(path);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }

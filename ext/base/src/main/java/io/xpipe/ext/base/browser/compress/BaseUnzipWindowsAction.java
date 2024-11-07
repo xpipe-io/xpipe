@@ -1,8 +1,8 @@
 package io.xpipe.ext.base.browser.compress;
 
-import io.xpipe.app.browser.action.LeafAction;
+import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.app.browser.fs.OpenFileSystemModel;
+import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
 import io.xpipe.app.browser.icon.BrowserIcons;
 import io.xpipe.app.core.AppI18n;
@@ -16,7 +16,7 @@ import javafx.scene.Node;
 
 import java.util.List;
 
-public abstract class BaseUnzipWindowsAction implements LeafAction {
+public abstract class BaseUnzipWindowsAction implements BrowserLeafAction {
 
     private final boolean toDirectory;
 
@@ -25,12 +25,12 @@ public abstract class BaseUnzipWindowsAction implements LeafAction {
     }
 
     @Override
-    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return BrowserIcons.createIcon(BrowserIconFileType.byId("zip")).createRegion();
     }
 
     @Override
-    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
+    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) throws Exception {
         model.runAsync(
                 () -> {
                     var sc = model.getFileSystem().getShell().orElseThrow();
@@ -49,7 +49,7 @@ public abstract class BaseUnzipWindowsAction implements LeafAction {
                 true);
     }
 
-    private void runCommand(ShellControl sc, OpenFileSystemModel model, BrowserEntry entry) throws Exception {
+    private void runCommand(ShellControl sc, BrowserFileSystemTabModel model, BrowserEntry entry) throws Exception {
         var command = CommandBuilder.of().add("Expand-Archive", "-Force");
         if (toDirectory) {
             var target = getTarget(entry.getRawFileEntry().getPath());
@@ -67,7 +67,7 @@ public abstract class BaseUnzipWindowsAction implements LeafAction {
     }
 
     @Override
-    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         var sep = model.getFileSystem().getShell().orElseThrow().getOsType().getFileSystemSeparator();
         var dir = entries.size() > 1 ? "[...]" : getTarget(entries.getFirst().getFileName()) + sep;
         return toDirectory ? AppI18n.observable("unzipDirectory", dir) : AppI18n.observable("unzipHere");
@@ -78,7 +78,7 @@ public abstract class BaseUnzipWindowsAction implements LeafAction {
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return entries.stream()
                         .allMatch(entry -> entry.getRawFileEntry().getPath().endsWith(".zip"))
                 && model.getFileSystem().getShell().orElseThrow().getOsType().equals(OsType.WINDOWS);

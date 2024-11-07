@@ -2,8 +2,8 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.impl.PrettySvgComp;
+import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.base.PrettySvgComp;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ScanAlert;

@@ -69,11 +69,11 @@ public abstract class BrowserIconFileType {
     public static class Simple extends BrowserIconFileType {
 
         private final String id;
-        private final IconVariant icon;
+        private final BrowserIconVariant icon;
         private final Set<String> endings;
 
         public Simple(String id, String lightIcon, String darkIcon, Set<String> endings) {
-            this.icon = new IconVariant(lightIcon, darkIcon);
+            this.icon = new BrowserIconVariant(lightIcon, darkIcon);
             this.id = id;
             this.endings = endings;
         }

@@ -1,7 +1,7 @@
 package io.xpipe.app.browser.action;
 
 import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.app.browser.fs.OpenFileSystemModel;
+import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.util.ModuleLayerLoader;
 
@@ -18,25 +18,25 @@ public interface BrowserAction {
 
     List<BrowserAction> ALL = new ArrayList<>();
 
-    static List<LeafAction> getFlattened(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    static List<BrowserLeafAction> getFlattened(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return ALL.stream()
                 .map(browserAction -> getFlattened(browserAction, model, entries))
                 .flatMap(List::stream)
                 .toList();
     }
 
-    static List<LeafAction> getFlattened(
-            BrowserAction browserAction, OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return browserAction instanceof LeafAction
-                ? List.of((LeafAction) browserAction)
-                : ((BranchAction) browserAction)
+    static List<BrowserLeafAction> getFlattened(
+            BrowserAction browserAction, BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return browserAction instanceof BrowserLeafAction
+                ? List.of((BrowserLeafAction) browserAction)
+                : ((BrowserBranchAction) browserAction)
                         .getBranchingActions(model, entries).stream()
                                 .map(action -> getFlattened(action, model, entries))
                                 .flatMap(List::stream)
                                 .toList();
     }
 
-    static LeafAction byId(String id, OpenFileSystemModel model, List<BrowserEntry> entries) {
+    static BrowserLeafAction byId(String id, BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return getFlattened(model, entries).stream()
                 .filter(browserAction -> id.equals(browserAction.getId()))
                 .findAny()
@@ -52,15 +52,15 @@ public interface BrowserAction {
                 : selected;
     }
 
-    MenuItem toMenuItem(OpenFileSystemModel model, List<BrowserEntry> selected);
+    MenuItem toMenuItem(BrowserFileSystemTabModel model, List<BrowserEntry> selected);
 
-    default void init(OpenFileSystemModel model) throws Exception {}
+    default void init(BrowserFileSystemTabModel model) throws Exception {}
 
     default String getProFeatureId() {
         return null;
     }
 
-    default Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    default Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return null;
     }
 
@@ -76,9 +76,9 @@ public interface BrowserAction {
         return false;
     }
 
-    ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries);
+    ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries);
 
-    default boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    default boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return true;
     }
 
@@ -86,7 +86,7 @@ public interface BrowserAction {
         return true;
     }
 
-    default boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    default boolean isActive(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return true;
     }
 

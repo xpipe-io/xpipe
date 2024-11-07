@@ -7,12 +7,11 @@ import io.xpipe.app.core.check.AppTempCheck;
 import io.xpipe.app.core.check.AppUserDirectoryCheck;
 import io.xpipe.app.core.window.ModifiedStage;
 import io.xpipe.app.issue.*;
-import io.xpipe.app.launcher.LauncherCommand;
+import io.xpipe.app.core.launcher.LauncherCommand;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.app.util.XPipeSession;
 import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeInstallation;
@@ -116,7 +115,6 @@ public abstract class OperationMode {
 
             TrackEvent.info("Initial setup");
             AppProperties.init();
-            XPipeSession.init(AppProperties.get().getBuildUuid());
             AppUserDirectoryCheck.check();
             AppTempCheck.check();
             AppLogs.init();

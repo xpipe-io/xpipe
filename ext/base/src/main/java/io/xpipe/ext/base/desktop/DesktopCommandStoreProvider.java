@@ -1,11 +1,11 @@
 package io.xpipe.ext.base.desktop;
 
-import io.xpipe.app.browser.session.BrowserSessionModel;
+import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.ext.*;
-import io.xpipe.app.fxcomps.impl.DataStoreChoiceComp;
+import io.xpipe.app.comp.store.StoreChoiceComp;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.OptionsBuilder;
@@ -28,7 +28,7 @@ public class DesktopCommandStoreProvider implements DataStoreProvider {
 
     @Override
     public ActionProvider.Action browserAction(
-            BrowserSessionModel sessionModel, DataStoreEntry store, BooleanProperty busy) {
+            BrowserFullSessionModel sessionModel, DataStoreEntry store, BooleanProperty busy) {
         return launchAction(store);
     }
 
@@ -68,8 +68,8 @@ public class DesktopCommandStoreProvider implements DataStoreProvider {
         return new OptionsBuilder()
                 .nameAndDescription("desktopEnvironmentBase")
                 .addComp(
-                        new DataStoreChoiceComp<>(
-                                DataStoreChoiceComp.Mode.HOST,
+                        new StoreChoiceComp<>(
+                                StoreChoiceComp.Mode.HOST,
                                 entry,
                                 env,
                                 DesktopEnvironmentStore.class,

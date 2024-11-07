@@ -1,7 +1,7 @@
 package io.xpipe.app.comp.base;
 
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.comp.SimpleComp;
 
 import javafx.beans.property.ListProperty;
 import javafx.geometry.Orientation;

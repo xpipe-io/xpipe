@@ -1,7 +1,7 @@
 package io.xpipe.app.core.mode;
 
 import io.xpipe.app.core.AppTray;
-import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.issue.*;
 import io.xpipe.core.process.OsType;
 
