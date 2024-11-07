@@ -97,9 +97,9 @@ public class AppTheme {
         }
 
         try {
-            var lastSystemDark = AppCache.getBoolean("lastTheme", false);
+            var lastSystemDark = AppCache.getBoolean("lastDarkTheme", false);
             var nowDark = Platform.getPreferences().getColorScheme() == ColorScheme.DARK;
-            AppCache.update("lastTheme", nowDark);
+            AppCache.update("lastDarkTheme", nowDark);
             if (AppPrefs.get().theme.getValue() == null || lastSystemDark != nowDark) {
                 setDefault();
             }
@@ -129,6 +129,7 @@ public class AppTheme {
         TrackEvent.debug("Set theme " + t.getId() + " for scene");
 
         AppPrefs.get().theme.addListener((c, o, n) -> {
+            AppCache.update("lastDarkTheme", n != null && n.isDark());
             changeTheme(n);
         });
 
