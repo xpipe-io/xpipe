@@ -79,7 +79,7 @@ class ScanDialog extends DialogComp {
                     }
 
                     // Previous scan operation could have exited the shell
-                    var sc = initialStore.getStore().getOrStartSession();
+                    var sc = entry.get().getStore().getOrStartSession();
 
                     try {
                         a.getProvider().scan(entry.get().getEntry(), sc);
@@ -143,7 +143,7 @@ class ScanDialog extends DialogComp {
 
         ThreadHelper.runFailableAsync(() -> {
             BooleanScope.executeExclusive(busy, () -> {
-                var sc = initialStore.getStore().getOrStartSession().withoutLicenseCheck();
+                var sc = entry.get().getStore().getOrStartSession().withoutLicenseCheck();
                 var a = applicable.apply(entry.get().get(), sc);
                 Platform.runLater(() -> {
                     if (a == null) {
