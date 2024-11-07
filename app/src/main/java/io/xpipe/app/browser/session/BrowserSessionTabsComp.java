@@ -366,6 +366,12 @@ public class BrowserSessionTabsComp extends SimpleComp {
         tab.setContextMenu(createContextMenu(tabs, tab, tabModel));
 
         tab.setClosable(tabModel.isCloseable());
+        // Prevent closing while busy
+        tab.setOnCloseRequest(event -> {
+            if (!tabModel.canImmediatelyClose()) {
+                event.consume();
+            }
+        });
 
         if (tabModel.getIcon() != null) {
             var ring = new RingProgressIndicator(0, false);
