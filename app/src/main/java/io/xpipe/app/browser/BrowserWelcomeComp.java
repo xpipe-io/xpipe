@@ -140,13 +140,14 @@ public class BrowserWelcomeComp extends SimpleComp {
                 .hide(empty)
                 .accessibleTextKey("restoreAllSessions");
         layout.getChildren().add(tile.createRegion());
+        AppFont.medium(layout);
         return layout;
     }
 
     private Comp<?> entryButton(BrowserSavedState.Entry e, BooleanProperty disable) {
         var entry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
         var graphic = entry.get().getEffectiveIconFile();
-        var view = PrettyImageHelper.ofFixedSize(graphic, 30, 24);
+        var view = PrettyImageHelper.ofFixedSize(graphic, 22, 16);
         return new ButtonComp(
                         new SimpleStringProperty(DataStorage.get().getStoreEntryDisplayName(entry.get())),
                         view.createRegion(),

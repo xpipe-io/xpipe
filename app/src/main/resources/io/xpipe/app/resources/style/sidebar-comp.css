@@ -5,11 +5,11 @@
     -fx-border-color: -color-border-default;
 }
 
-.root:dark .sidebar-comp {
+.root:dark:separate-frame .sidebar-comp {
     -fx-background-color: derive(-color-bg-default, 10%);
 }
 
-.root:light .sidebar-comp {
+.root:light:separate-frame .sidebar-comp {
     -fx-background-color: derive(-color-bg-default, -1%);
 }
 

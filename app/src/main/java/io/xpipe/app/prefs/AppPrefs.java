@@ -9,6 +9,7 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.ExternalTerminalType;
+import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.PasswordLockSecretValue;
 import io.xpipe.app.util.XPipeSession;
@@ -567,6 +568,10 @@ public class AppPrefs {
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).expected().build().handle();
             storageDirectory.setValue(DEFAULT_STORAGE_DIR);
+        }
+
+        if (!TerminalView.isSupported()) {
+            enableTerminalDocking.set(false);
         }
     }
 
