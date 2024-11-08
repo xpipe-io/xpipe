@@ -130,7 +130,7 @@
 .store-header-bar .filter-bar {
     -fx-background-radius: 3px;
     -fx-background-color: -color-bg-default;
-    -fx-border-color: -color-fg-default;
+    -fx-border-color: -color-fg-muted;
     -fx-border-width: 1;
     -fx-border-radius: 3px;
 }

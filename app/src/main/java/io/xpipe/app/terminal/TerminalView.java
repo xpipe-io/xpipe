@@ -111,7 +111,14 @@ public class TerminalView {
     }
 
     public synchronized void tick() {
-        sessions.removeIf(session -> !session.shell.isAlive() || !session.terminal.isAlive());
+        for (Session session : new ArrayList<>(sessions)) {
+            var alive = session.shell.isAlive() && session.terminal.isAlive();
+            if (!alive) {
+                sessions.remove(session);
+                listeners.forEach(listener -> listener.onSessionClosed(session));
+            }
+        }
+
         for (TerminalViewInstance terminalInstance : new ArrayList<>(terminalInstances)) {
             var alive = terminalInstance.getTerminalProcess().isAlive();
             if (!alive) {

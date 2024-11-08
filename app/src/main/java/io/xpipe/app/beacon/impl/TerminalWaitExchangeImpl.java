@@ -11,8 +11,8 @@ import com.sun.net.httpserver.HttpExchange;
 public class TerminalWaitExchangeImpl extends TerminalWaitExchange {
     @Override
     public Object handle(HttpExchange exchange, Request msg) throws BeaconClientException, BeaconServerException {
-        TerminalLauncherManager.waitExchange(msg.getRequest());
         TerminalView.get().open(msg.getRequest(), msg.getPid());
+        TerminalLauncherManager.waitExchange(msg.getRequest());
         return Response.builder().build();
     }
 

@@ -30,6 +30,8 @@ public class TerminalLaunchRequest {
     @NonFinal
     boolean setupCompleted;
 
+    CountDownLatch latch = new CountDownLatch(1);
+
     public Path waitForCompletion() throws BeaconServerException {
         while (true) {
             if (getResult() == null) {
@@ -47,16 +49,18 @@ public class TerminalLaunchRequest {
         }
     }
 
-    public CountDownLatch setupRequestAsync() {
-        var latch = new CountDownLatch(1);
+    public void setupRequestAsync() {
         ThreadHelper.runAsync(() -> {
             setupRequest();
             latch.countDown();
         });
-        return latch;
     }
 
-    public void setupRequest() {
+    public void abort() {
+        latch.countDown();
+    }
+
+    private void setupRequest() {
         var wd = new WorkingDirectoryFunction() {
 
             @Override
