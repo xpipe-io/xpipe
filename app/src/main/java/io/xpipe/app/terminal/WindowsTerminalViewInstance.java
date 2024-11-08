@@ -46,6 +46,11 @@ public final class WindowsTerminalViewInstance extends TerminalViewInstance {
     }
 
     @Override
+    public void focus() {
+        this.control.activate();
+    }
+
+    @Override
     public void updatePosition(Rect bounds) {
         control.move(bounds);
         this.lastBounds = queryBounds();

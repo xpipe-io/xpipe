@@ -56,7 +56,7 @@ public class AskpassExchangeImpl extends AskpassExchange {
             return;
         }
 
-        term.get().frontOfMainWindow();
+        term.get().focus();
     }
 
     @Override

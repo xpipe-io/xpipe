@@ -26,6 +26,8 @@ public abstract class TerminalViewInstance {
 
     public abstract void frontOfMainWindow();
 
+    public abstract void focus();
+
     public abstract void updatePosition(Rect bounds);
 
     public abstract void close();

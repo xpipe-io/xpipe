@@ -1,5 +1,6 @@
 package io.xpipe.app.core.window;
 
+import io.sentry.protocol.User;
 import io.xpipe.app.util.Rect;
 
 import javafx.stage.Window;
@@ -117,6 +118,10 @@ public class NativeWinWindowControl {
         var r = Dwm.INSTANCE.DwmSetWindowAttribute(
                 windowHandle, attribute, new WinDef.BOOLByReference(new WinDef.BOOL(attributeValue)), WinDef.BOOL.SIZE);
         return r.longValue() == 0;
+    }
+
+    public void activate() {
+        User32.INSTANCE.SetForegroundWindow(windowHandle);
     }
 
     public boolean setWindowBackdrop(DwmSystemBackDropType backdrop) {
