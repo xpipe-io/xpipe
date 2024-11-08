@@ -309,8 +309,12 @@
     -fx-background-color: -color-warning-subtle;
 }
 
-.root.nord .browser .table-row-cell:selected, .root.nord .browser .table-row-cell:hover:selected {
+.root:dark.nord .browser .table-row-cell:selected, .root:dark.nord .browser .table-row-cell:hover:selected {
     -fx-background-color: -color-success-7;
+}
+
+.root:light.nord .browser .table-row-cell:selected, .root:light.nord .browser .table-row-cell:hover:selected {
+    -fx-background-color: -color-success-1;
 }
 
 .browser .table-row-cell:folder:drag-over {

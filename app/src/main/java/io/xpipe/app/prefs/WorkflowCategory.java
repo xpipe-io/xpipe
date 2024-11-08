@@ -24,8 +24,6 @@ public class WorkflowCategory extends AppPrefsCategory {
                         .addToggle(prefs.openConnectionSearchWindowOnConnectionCreation)
                         .pref(prefs.requireDoubleClickForConnections)
                         .addToggle(prefs.requireDoubleClickForConnections))
-                .addTitle("fileBrowser")
-                .sub(new OptionsBuilder().pref(prefs.confirmAllDeletions).addToggle(prefs.confirmAllDeletions))
                 .buildComp();
     }
 }

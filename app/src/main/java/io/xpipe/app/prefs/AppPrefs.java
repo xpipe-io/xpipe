@@ -126,6 +126,8 @@ public class AppPrefs {
             new SimpleBooleanProperty(true), "openConnectionSearchWindowOnConnectionCreation", Boolean.class, false);
     final ObjectProperty<Path> storageDirectory =
             mapLocal(new SimpleObjectProperty<>(DEFAULT_STORAGE_DIR), "storageDirectory", Path.class, true);
+    final ObjectProperty<String> downloadsDirectory =
+            mapLocal(new SimpleObjectProperty<>(), "downloadsDirectory", String.class, false);
     final BooleanProperty confirmAllDeletions =
             mapLocal(new SimpleBooleanProperty(false), "confirmAllDeletions", Boolean.class, false);
     final BooleanProperty developerMode =
@@ -148,7 +150,7 @@ public class AppPrefs {
             mapLocal(new SimpleBooleanProperty(false), "requireDoubleClickForConnections", Boolean.class, false);
 
     final BooleanProperty enableTerminalDocking =
-            mapLocal(new SimpleBooleanProperty(true), "enableTerminalDocking", Boolean.class, true);
+            mapLocal(new SimpleBooleanProperty(true), "enableTerminalDocking", Boolean.class, false);
 
     public ObservableBooleanValue requireDoubleClickForConnections() {
         return requireDoubleClickForConnections;
@@ -226,6 +228,7 @@ public class AppPrefs {
                         new SshCategory(),
                         new LocalShellCategory(),
                         new LoggingCategory(),
+                        new FileBrowserCategory(),
                         new SecurityCategory(),
                         new HttpApiCategory(),
                         new WorkflowCategory(),
@@ -471,6 +474,10 @@ public class AppPrefs {
 
     public ObservableValue<Path> storageDirectory() {
         return storageDirectory;
+    }
+
+    public ObservableValue<String> downloadsDirectory() {
+        return downloadsDirectory;
     }
 
     public ObservableValue<Boolean> developerMode() {

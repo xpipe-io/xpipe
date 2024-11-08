@@ -38,6 +38,11 @@
     -fx-border-color: transparent;
 }
 
+.root.nord .store-header-bar .menu-button {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
+
 .root:light .store-header-bar .menu-button {
     -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, rgb(12, 11, 11) 40%, rgb(32, 32, 40) 50%, rgb(35, 29, 29) 100%);
 }
@@ -126,6 +131,11 @@
     -fx-background-radius: 3px;
     -fx-background-color: -color-bg-default;
     -fx-border-color: -color-fg-default;
-    -fx-border-width: 0.05em;
+    -fx-border-width: 1;
     -fx-border-radius: 3px;
+}
+
+.root.nord .store-header-bar .filter-bar {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
 }

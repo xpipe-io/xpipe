@@ -2,6 +2,7 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.ShellTemp;
 import io.xpipe.app.util.ThreadHelper;
@@ -18,6 +19,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -162,7 +164,7 @@ public class BrowserTransferModel {
         }
 
         var files = toMove.stream().map(item -> item.getLocalFile()).toList();
-        var downloads = DesktopHelper.getDownloadsDirectory();
+        var downloads = getDownloadsTargetDirectory();
         Files.createDirectories(downloads);
         for (Path file : files) {
             if (!Files.exists(file)) {
@@ -181,6 +183,22 @@ public class BrowserTransferModel {
             }
         }
         DesktopHelper.browseFileInDirectory(downloads.resolve(files.getFirst().getFileName()));
+    }
+
+    private Path getDownloadsTargetDirectory() throws Exception {
+        var def = DesktopHelper.getDownloadsDirectory();
+        var custom = AppPrefs.get().downloadsDirectory().getValue();
+        if (custom == null || custom.isBlank()) {
+            return def;
+        }
+
+        try {
+            var path = Path.of(custom);
+            if (Files.isDirectory(path)) {
+                return path;
+            }
+        } catch (InvalidPathException ignored) {}
+        return def;
     }
 
     @Value
