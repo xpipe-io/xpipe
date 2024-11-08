@@ -6,6 +6,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 
+import lombok.Getter;
 import lombok.Value;
 
 import java.util.ArrayList;
@@ -41,16 +42,20 @@ public class TerminalView {
     private final List<TerminalViewInstance> terminalInstances = new ArrayList<>();
     private final List<Listener> listeners = new ArrayList<>();
 
+    public synchronized List<Session> getSessions() {
+        return new ArrayList<>(sessions);
+    }
+
+    public synchronized List<TerminalViewInstance> getTerminalInstances() {
+        return new ArrayList<>(terminalInstances);
+    }
+
     public synchronized void addListener(Listener listener) {
         this.listeners.add(listener);
     }
 
     public synchronized void removeListener(Listener listener) {
         this.listeners.remove(listener);
-    }
-
-    public boolean isEnabled() {
-        return isSupported();
     }
 
     public synchronized void open(UUID request, long pid) {
@@ -88,12 +93,7 @@ public class TerminalView {
 
         TrackEvent.withTrace("Terminal instance opened")
                 .tag("terminalPid", terminal.get().pid())
-                .tag("viewEnabled", isEnabled())
                 .handle();
-
-        if (!isEnabled()) {
-            return;
-        }
     }
 
     private Optional<ProcessHandle> getTerminalProcess(ProcessHandle shell) {
@@ -108,6 +108,23 @@ public class TerminalView {
             current = current.flatMap(processHandle -> processHandle.parent());
         }
         return current;
+    }
+
+    public synchronized Optional<Session> findSession(long pid) {
+        var proc = ProcessHandle.of(pid);
+        while (true) {
+            if (proc.isEmpty()) {
+                return Optional.empty();
+            }
+
+            var finalProc = proc;
+            var found = TerminalView.get().getSessions().stream().filter(session -> session.getShell().equals(finalProc.get())).findFirst();
+            if (found.isPresent()) {
+                return found;
+            }
+
+            proc = proc.get().parent();
+        }
     }
 
     public synchronized void tick() {
