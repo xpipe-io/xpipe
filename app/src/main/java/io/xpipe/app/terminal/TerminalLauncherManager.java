@@ -51,7 +51,7 @@ public class TerminalLauncherManager {
         synchronized (entries) {
             var req = entries.get(request);
             if (req == null) {
-                req = new TerminalLaunchRequest(request, processControl, config, directory, null, false);
+                req = new TerminalLaunchRequest(request, processControl, config, directory, null, false, null);
                 entries.put(request, req);
             } else {
                 req.setResult(null);

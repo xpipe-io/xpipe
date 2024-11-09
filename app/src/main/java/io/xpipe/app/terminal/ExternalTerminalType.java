@@ -943,7 +943,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             WindowsTerminalType.WINDOWS_TERMINAL_CANARY,
             WindowsTerminalType.WINDOWS_TERMINAL_PREVIEW,
             WindowsTerminalType.WINDOWS_TERMINAL,
-            TabbyTerminalType.TABBY_WINDOWS,
             AlacrittyTerminalType.ALACRITTY_WINDOWS,
             WezTerminalType.WEZTERM_WINDOWS,
             CMD,

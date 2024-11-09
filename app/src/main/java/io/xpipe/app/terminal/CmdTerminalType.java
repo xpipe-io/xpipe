@@ -1,5 +1,7 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellDialects;
 
@@ -11,7 +13,8 @@ public class CmdTerminalType extends ExternalTerminalType.SimplePathType impleme
 
     @Override
     public int getProcessHierarchyOffset() {
-        return -1;
+        var powershell = ShellDialects.isPowershell(ProcessControlProvider.get().getEffectiveLocalDialect()) || AppPrefs.get().enableTerminalLogging().get();
+        return powershell ? 0 : -1;
     }
 
     @Override

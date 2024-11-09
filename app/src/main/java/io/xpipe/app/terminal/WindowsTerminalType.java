@@ -2,6 +2,7 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.process.CommandBuilder;
@@ -53,6 +54,12 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         }
 
         return cmd;
+    }
+
+    @Override
+    default int getProcessHierarchyOffset() {
+        var powershell = AppPrefs.get().enableTerminalLogging().get() && !ShellDialects.isPowershell(ProcessControlProvider.get().getEffectiveLocalDialect());
+        return powershell ? 1 : 0;
     }
 
     @Override

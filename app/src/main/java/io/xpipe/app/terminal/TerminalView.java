@@ -1,11 +1,13 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.window.NativeWinWindowControl;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 
+import io.xpipe.core.process.ShellDialects;
 import lombok.Getter;
 import lombok.Value;
 
@@ -79,11 +81,18 @@ public class TerminalView {
         }
 
         var shell = processHandle.get().parent();
+        TrackEvent.withTrace("Shell session opened")
+                .tag("pid", shell.map(p -> p.pid()).orElse(-1L))
+                .handle();
         if (shell.isEmpty()) {
             return;
         }
 
         var terminal = getTerminalProcess(shell.get());
+        TrackEvent.withTrace("Terminal session opened")
+                .tag("pid", terminal.map(p -> p.pid()).orElse(-1L))
+                .tag("exec", terminal.flatMap(p -> p.info().command()).orElse("?"))
+                .handle();
         if (terminal.isEmpty()) {
             return;
         }
@@ -131,9 +140,12 @@ public class TerminalView {
             return Optional.empty();
         }
 
+        // Adjust for terminal logging script setup
         var off = trackableTerminalType.getProcessHierarchyOffset();
         if (AppPrefs.get().enableTerminalLogging().get() && OsType.getLocal() != OsType.WINDOWS) {
             off += 2;
+        } else if (AppPrefs.get().enableTerminalLogging().get() && OsType.getLocal() == OsType.WINDOWS) {
+            off += ShellDialects.isPowershell(ProcessControlProvider.get().getEffectiveLocalDialect()) ? 0 : 1;
         }
 
         var current = Optional.of(shell);

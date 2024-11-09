@@ -12,7 +12,7 @@ import io.xpipe.core.process.ShellControl;
 import java.nio.file.Path;
 import java.util.Optional;
 
-public interface WezTerminalType extends ExternalTerminalType {
+public interface WezTerminalType extends ExternalTerminalType, TrackableTerminalType {
 
     ExternalTerminalType WEZTERM_WINDOWS = new Windows();
     ExternalTerminalType WEZTERM_LINUX = new Linux();

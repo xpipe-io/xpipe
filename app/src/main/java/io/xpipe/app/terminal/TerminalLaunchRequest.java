@@ -30,7 +30,8 @@ public class TerminalLaunchRequest {
     @NonFinal
     boolean setupCompleted;
 
-    CountDownLatch latch = new CountDownLatch(1);
+    @NonFinal
+    CountDownLatch latch;
 
     public Path waitForCompletion() throws BeaconServerException {
         while (true) {
@@ -54,6 +55,7 @@ public class TerminalLaunchRequest {
     }
 
     public void setupRequestAsync() {
+        latch = new CountDownLatch(1);
         ThreadHelper.runAsync(() -> {
             setupRequest();
             latch.countDown();

@@ -117,7 +117,8 @@ public class TerminalLauncher {
         var logFile = logDir.resolve(new FilePath(DataStorage.get().getStoreEntryDisplayName(entry) + " ("
                         + DATE_FORMATTER.format(Instant.now()) + ").log")
                 .fileSystemCompatible(OsType.getLocal())
-                .toString());
+                .toString()
+                .replaceAll(" ", "_"));
         try (var sc = LocalShell.getShell().start()) {
             if (OsType.getLocal() == OsType.WINDOWS) {
                 var content =

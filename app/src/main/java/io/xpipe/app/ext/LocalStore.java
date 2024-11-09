@@ -18,10 +18,6 @@ public class LocalStore extends JacksonizedValue
         return ShellStoreState.class;
     }
 
-    public ShellControl control(ShellControl parent) {
-        return parent;
-    }
-
     @Override
     public ShellControlFunction shellFunction() {
         return new ShellControlFunction() {

@@ -71,6 +71,7 @@ public abstract class PlatformMode extends OperationMode {
         onSwitchFrom();
         StoreViewState.reset();
         AppLayoutModel.reset();
+        AppTheme.reset();
         PlatformState.teardown();
         TrackEvent.info("Platform shutdown finished");
         BACKGROUND.finalTeardown();

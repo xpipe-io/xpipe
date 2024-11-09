@@ -1,6 +1,9 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.CommandBuilder;
+import io.xpipe.core.process.ShellDialects;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;

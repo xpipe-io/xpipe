@@ -129,11 +129,19 @@ public class AppTheme {
         TrackEvent.debug("Set theme " + t.getId() + " for scene");
 
         AppPrefs.get().theme.addListener((c, o, n) -> {
-            AppCache.update("lastDarkTheme", n != null && n.isDark());
             changeTheme(n);
         });
 
         init = true;
+    }
+
+    public static void reset() {
+        if (!init) {
+            return;
+        }
+
+        var nowDark = Platform.getPreferences().getColorScheme() == ColorScheme.DARK;
+        AppCache.update("lastDarkTheme", nowDark);
     }
 
     private static void setDefault() {
