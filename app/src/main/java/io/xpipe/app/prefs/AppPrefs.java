@@ -228,21 +228,16 @@ public class AppPrefs {
                         new SshCategory(),
                         new LocalShellCategory(),
                         new LoggingCategory(),
+                        new ConnectionsCategory(),
                         new FileBrowserCategory(),
                         new SecurityCategory(),
                         new HttpApiCategory(),
-                        new WorkflowCategory(),
                         new WorkspacesCategory(),
                         new TroubleshootCategory(),
                         new DeveloperCategory())
                 .filter(appPrefsCategory -> appPrefsCategory.show())
                 .toList();
-        var selected = AppCache.getNonNull("selectedPrefsCategory", Integer.class, () -> 0);
-        if (selected == null) {
-            selected = 0;
-        }
-        this.selectedCategory = new SimpleObjectProperty<>(
-                categories.get(selected >= 0 && selected < categories.size() ? selected : 0));
+        this.selectedCategory = new SimpleObjectProperty<>(categories.getFirst());
     }
 
     public static void initLocal() {

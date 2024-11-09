@@ -94,6 +94,10 @@ public class ShellStoreFormat {
     }
 
     public static String formattedOsName(String osName) {
+        if (osName == null) {
+            return null;
+        }
+
         osName = osName.replaceAll("^Microsoft ", "");
         osName = osName.replaceAll("Enterprise Evaluation", "Enterprise");
         return osName;

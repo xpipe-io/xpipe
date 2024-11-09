@@ -13,7 +13,7 @@ public class SecurityCategory extends AppPrefsCategory {
     public Comp<?> create() {
         var prefs = AppPrefs.get();
         var builder = new OptionsBuilder();
-        builder.addTitle("securityPolicy")
+        builder.addTitle("security")
                 .sub(new OptionsBuilder()
                         .pref(prefs.checkForSecurityUpdates)
                         .addToggle(prefs.checkForSecurityUpdates)

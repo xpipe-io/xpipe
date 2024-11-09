@@ -3,11 +3,11 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.util.OptionsBuilder;
 
-public class WorkflowCategory extends AppPrefsCategory {
+public class ConnectionsCategory extends AppPrefsCategory {
 
     @Override
     protected String getId() {
-        return "workflow";
+        return "connections";
     }
 
     @Override
