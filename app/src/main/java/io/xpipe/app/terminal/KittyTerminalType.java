@@ -155,6 +155,11 @@ public interface KittyTerminalType extends ExternalTerminalType {
         }
 
         @Override
+        public int getProcessHierarchyOffset() {
+            return 1;
+        }
+
+        @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
             // We use the absolute path to force the usage of macOS netcat
             // Homebrew versions have different option formats

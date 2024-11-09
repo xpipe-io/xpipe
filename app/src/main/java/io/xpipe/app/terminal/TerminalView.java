@@ -132,6 +132,10 @@ public class TerminalView {
         }
 
         var off = trackableTerminalType.getProcessHierarchyOffset();
+        if (AppPrefs.get().enableTerminalLogging().get() && OsType.getLocal() != OsType.WINDOWS) {
+            off += 2;
+        }
+
         var current = Optional.of(shell);
         for (int i = 0; i < 1 + off; i++) {
             current = current.flatMap(processHandle -> processHandle.parent());

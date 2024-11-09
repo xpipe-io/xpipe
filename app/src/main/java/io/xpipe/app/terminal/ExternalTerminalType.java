@@ -803,6 +803,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
     ExternalTerminalType MACOS_TERMINAL = new MacOsType("app.macosTerminal", "Terminal") {
+
+        @Override
+        public int getProcessHierarchyOffset() {
+            return 2;
+        }
+
         @Override
         public boolean supportsTabs() {
             return false;
@@ -828,6 +834,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
     ExternalTerminalType ITERM2 = new MacOsType("app.iterm2", "iTerm") {
+
+        @Override
+        public int getProcessHierarchyOffset() {
+            return 3;
+        }
+
         @Override
         public String getWebsite() {
             return "https://iterm2.com/";
@@ -858,6 +870,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
     ExternalTerminalType WARP = new MacOsType("app.warp", "Warp") {
+
+        @Override
+        public int getProcessHierarchyOffset() {
+            return 2;
+        }
 
         @Override
         public String getWebsite() {
