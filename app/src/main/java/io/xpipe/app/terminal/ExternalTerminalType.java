@@ -1073,7 +1073,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     }
 
-    abstract class MacOsType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
+    abstract class MacOsType extends ExternalApplicationType.MacApplication implements ExternalTerminalType, TrackableTerminalType {
 
         public MacOsType(String id, String applicationName) {
             super(id, applicationName);
@@ -1089,7 +1089,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     }
 
     @Getter
-    abstract class SimplePathType extends PathCheckType {
+    abstract class SimplePathType extends PathCheckType implements TrackableTerminalType {
 
         public SimplePathType(String id, String executable, boolean explicitAsync) {
             super(id, executable, explicitAsync);

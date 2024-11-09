@@ -5,15 +5,13 @@ import io.xpipe.app.util.Rect;
 import lombok.Getter;
 
 @Getter
-public abstract class TerminalViewInstance {
-
-    private final ProcessHandle terminalProcess;
+public abstract class ControllableTerminalSession extends TerminalView.TerminalSession {
 
     protected Rect lastBounds;
     protected boolean customBounds;
 
-    protected TerminalViewInstance(ProcessHandle terminalProcess) {
-        this.terminalProcess = terminalProcess;
+    protected ControllableTerminalSession(ProcessHandle terminalProcess) {
+        super(terminalProcess);
     }
 
     public abstract void show();

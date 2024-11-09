@@ -10,7 +10,6 @@ import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.terminal.TerminalDockComp;
 import io.xpipe.app.terminal.TerminalDockModel;
 import io.xpipe.app.terminal.TerminalView;
-import io.xpipe.app.terminal.TerminalViewInstance;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -18,6 +17,7 @@ import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
 
 public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
@@ -49,11 +49,11 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
 
     @Override
     public void init() throws Exception {
-        var sessions = new ArrayList<TerminalView.Session>();
-        var terminals = new ArrayList<TerminalViewInstance>();
+        var sessions = new ArrayList<TerminalView.ShellSession>();
+        var terminals = new ArrayList<TerminalView.TerminalSession>();
         listener = new TerminalView.Listener() {
             @Override
-            public void onSessionOpened(TerminalView.Session session) {
+            public void onSessionOpened(TerminalView.ShellSession session) {
                 if (!terminalRequests.contains(session.getRequest())) {
                     return;
                 }
@@ -62,6 +62,8 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
                 var tv = terminals.stream()
                         .filter(instance -> sessions.stream()
                                 .anyMatch(s -> instance.getTerminalProcess().equals(s.getTerminal())))
+                        .map(terminalSession -> terminalSession.controllable())
+                        .flatMap(Optional::stream)
                         .toList();
                 if (tv.isEmpty()) {
                     return;
@@ -76,17 +78,17 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
             }
 
             @Override
-            public void onSessionClosed(TerminalView.Session session) {
+            public void onSessionClosed(TerminalView.ShellSession session) {
                 sessions.remove(session);
             }
 
             @Override
-            public void onTerminalOpened(TerminalViewInstance instance) {
+            public void onTerminalOpened(TerminalView.TerminalSession instance) {
                 terminals.add(instance);
             }
 
             @Override
-            public void onTerminalClosed(TerminalViewInstance instance) {
+            public void onTerminalClosed(TerminalView.TerminalSession instance) {
                 terminals.remove(instance);
                 if (terminals.isEmpty()) {
                     ((BrowserFullSessionModel) browserModel).unsplitTab(BrowserTerminalDockTabModel.this);

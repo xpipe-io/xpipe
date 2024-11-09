@@ -42,10 +42,6 @@ public class AskpassExchangeImpl extends AskpassExchange {
     }
 
     private void focusTerminalIfNeeded(long pid) {
-        if (!TerminalView.isSupported()) {
-            return;
-        }
-
         var found = TerminalView.get().findSession(pid);
         if (found.isEmpty()) {
             return;
@@ -56,7 +52,10 @@ public class AskpassExchangeImpl extends AskpassExchange {
             return;
         }
 
-        term.get().focus();
+        var control = term.get().controllable();
+        control.ifPresent(controllableTerminalSession -> {
+            controllableTerminalSession.focus();
+        });
     }
 
     @Override

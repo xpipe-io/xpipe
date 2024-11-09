@@ -65,20 +65,12 @@ public class AppLayoutModel {
         selected.setValue(entries.get(1));
     }
 
-    public void selectTerminal() {
-        if (!TerminalView.isSupported()) {
-            return;
-        }
-
+    public void selectSettings() {
         selected.setValue(entries.get(2));
     }
 
-    public void selectSettings() {
-        selected.setValue(entries.get(TerminalView.isSupported() ? 3 : 2));
-    }
-
     public void selectLicense() {
-        selected.setValue(entries.get(TerminalView.isSupported() ? 4 : 3));
+        selected.setValue(entries.get(3));
     }
 
     public void selectConnections() {
@@ -99,12 +91,6 @@ public class AppLayoutModel {
                         new BrowserFullSessionComp(BrowserFullSessionModel.DEFAULT),
                         null,
                         new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN)),
-                //                new Entry(
-                //                        AppI18n.observable("terminal"),
-                //                        new LabelGraphic.IconGraphic("mdi2m-monitor-screenshot"),
-                //                        new TerminalDockComp(),
-                //                        null,
-                //                        new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.SHORTCUT_DOWN)),
                 new Entry(
                         AppI18n.observable("settings"),
                         new LabelGraphic.IconGraphic("mdsmz-miscellaneous_services"),
@@ -135,18 +121,14 @@ public class AppLayoutModel {
                         null,
                         () -> Hyperlinks.open(
                                 "http://localhost:" + AppBeaconServer.get().getPort()),
-                        null)
-                //                new Entry(
-                //                        AppI18n.observable("webtop"),
-                //                        "mdi2d-desktop-mac",
-                //                        null,
-                //                        () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
-                //                        null)
+                        null),
+                                new Entry(
+                                        AppI18n.observable("webtop"),
+                                        new LabelGraphic.IconGraphic("mdi2d-desktop-mac"),
+                                        null,
+                                        () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
+                                        null)
                 ));
-
-        if (!TerminalView.isSupported()) {
-            // l.remove(2);
-        }
 
         return l;
     }

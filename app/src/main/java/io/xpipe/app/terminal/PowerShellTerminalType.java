@@ -6,7 +6,7 @@ import io.xpipe.core.process.ShellDialects;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-public class PowerShellTerminalType extends ExternalTerminalType.SimplePathType implements DockableTerminalType {
+public class PowerShellTerminalType extends ExternalTerminalType.SimplePathType implements TrackableTerminalType {
 
     public PowerShellTerminalType() {
         super("app.powershell", "powershell", true);

@@ -21,32 +21,46 @@ public class TerminalView {
     }
 
     @Value
-    public static class Session {
+    public static class ShellSession {
         UUID request;
         ProcessHandle shell;
         ProcessHandle terminal;
     }
 
-    public static interface Listener {
+    @Getter
+    public static class TerminalSession {
 
-        void onSessionOpened(Session session);
+        protected final ProcessHandle terminalProcess;
 
-        void onSessionClosed(Session session);
+        protected TerminalSession(ProcessHandle terminalProcess) {
+            this.terminalProcess = terminalProcess;
+        }
 
-        void onTerminalOpened(TerminalViewInstance instance);
-
-        void onTerminalClosed(TerminalViewInstance instance);
+        public Optional<ControllableTerminalSession> controllable() {
+            return Optional.ofNullable(this instanceof ControllableTerminalSession c ? c : null);
+        }
     }
 
-    private final List<Session> sessions = new ArrayList<>();
-    private final List<TerminalViewInstance> terminalInstances = new ArrayList<>();
+    public static interface Listener {
+
+        void onSessionOpened(ShellSession session);
+
+        void onSessionClosed(ShellSession session);
+
+        void onTerminalOpened(TerminalSession instance);
+
+        void onTerminalClosed(TerminalSession instance);
+    }
+
+    private final List<ShellSession> sessions = new ArrayList<>();
+    private final List<TerminalSession> terminalInstances = new ArrayList<>();
     private final List<Listener> listeners = new ArrayList<>();
 
-    public synchronized List<Session> getSessions() {
+    public synchronized List<ShellSession> getSessions() {
         return new ArrayList<>(sessions);
     }
 
-    public synchronized List<TerminalViewInstance> getTerminalInstances() {
+    public synchronized List<TerminalSession> getTerminalInstances() {
         return new ArrayList<>(terminalInstances);
     }
 
@@ -74,18 +88,18 @@ public class TerminalView {
             return;
         }
 
-        var session = new Session(request, shell.get(), terminal.get());
+        var session = new ShellSession(request, shell.get(), terminal.get());
         var instance = terminalInstances.stream()
                 .filter(i -> i.getTerminalProcess().equals(terminal.get()))
                 .findFirst();
         if (instance.isEmpty()) {
-            var control = NativeWinWindowControl.byPid(terminal.get().pid());
-            if (control.isEmpty()) {
+            var tv = createTerminalSession(terminal.get());
+            if (tv.isEmpty()) {
                 return;
             }
-            var tv = new WindowsTerminalViewInstance(terminal.get(), control.get());
-            terminalInstances.add(tv);
-            listeners.forEach(listener -> listener.onTerminalOpened(tv));
+
+            terminalInstances.add(tv.get());
+            listeners.forEach(listener -> listener.onTerminalOpened(tv.get()));
         }
 
         sessions.add(session);
@@ -96,13 +110,28 @@ public class TerminalView {
                 .handle();
     }
 
+    private Optional<TerminalSession> createTerminalSession(ProcessHandle terminalProcess) {
+        return switch (OsType.getLocal()) {
+            case OsType.Linux linux -> Optional.of(new TerminalSession(terminalProcess));
+            case OsType.MacOs macOs -> Optional.of(new TerminalSession(terminalProcess));
+            case OsType.Windows windows -> {
+                var control = NativeWinWindowControl.byPid(terminalProcess.pid());
+                if (control.isEmpty()) {
+                    yield Optional.empty();
+                }
+
+                yield Optional.of(new WindowsTerminalSession(terminalProcess, control.get()));
+            }
+        };
+    }
+
     private Optional<ProcessHandle> getTerminalProcess(ProcessHandle shell) {
         var t = AppPrefs.get().terminalType().getValue();
-        if (!(t instanceof DockableTerminalType dockableTerminalType)) {
+        if (!(t instanceof TrackableTerminalType trackableTerminalType)) {
             return Optional.empty();
         }
 
-        var off = dockableTerminalType.getProcessHierarchyOffset();
+        var off = trackableTerminalType.getProcessHierarchyOffset();
         var current = Optional.of(shell);
         for (int i = 0; i < 1 + off; i++) {
             current = current.flatMap(processHandle -> processHandle.parent());
@@ -110,7 +139,7 @@ public class TerminalView {
         return current;
     }
 
-    public synchronized Optional<Session> findSession(long pid) {
+    public synchronized Optional<ShellSession> findSession(long pid) {
         var proc = ProcessHandle.of(pid);
         while (true) {
             if (proc.isEmpty()) {
@@ -128,7 +157,7 @@ public class TerminalView {
     }
 
     public synchronized void tick() {
-        for (Session session : new ArrayList<>(sessions)) {
+        for (ShellSession session : new ArrayList<>(sessions)) {
             var alive = session.shell.isAlive() && session.terminal.isAlive();
             if (!alive) {
                 sessions.remove(session);
@@ -136,7 +165,7 @@ public class TerminalView {
             }
         }
 
-        for (TerminalViewInstance terminalInstance : new ArrayList<>(terminalInstances)) {
+        for (TerminalSession terminalInstance : new ArrayList<>(terminalInstances)) {
             var alive = terminalInstance.getTerminalProcess().isAlive();
             if (!alive) {
                 terminalInstances.remove(terminalInstance);

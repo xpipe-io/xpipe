@@ -62,7 +62,6 @@ public class TerminalCategory extends AppPrefsCategory {
                                 .apply(struc -> struc.get().setPromptText("myterminal -e $CMD"))
                                 .hide(prefs.terminalType.isNotEqualTo(ExternalTerminalType.CUSTOM)))
                         .addComp(terminalTest)
-                        .hide(new SimpleBooleanProperty(!TerminalView.isSupported()))
                         .pref(prefs.clearTerminalOnInit)
                         .addToggle(prefs.clearTerminalOnInit))
                 .buildComp();

@@ -3,7 +3,7 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;
 
-public interface AlacrittyTerminalType extends ExternalTerminalType, DockableTerminalType {
+public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTerminalType {
 
     ExternalTerminalType ALACRITTY_WINDOWS = new Windows();
     ExternalTerminalType ALACRITTY_LINUX = new Linux();

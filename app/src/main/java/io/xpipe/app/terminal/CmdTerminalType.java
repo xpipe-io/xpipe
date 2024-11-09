@@ -3,7 +3,7 @@ package io.xpipe.app.terminal;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellDialects;
 
-public class CmdTerminalType extends ExternalTerminalType.SimplePathType implements DockableTerminalType {
+public class CmdTerminalType extends ExternalTerminalType.SimplePathType implements TrackableTerminalType {
 
     public CmdTerminalType() {
         super("app.cmd", "cmd.exe", true);

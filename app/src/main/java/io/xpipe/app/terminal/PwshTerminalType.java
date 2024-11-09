@@ -5,7 +5,7 @@ import io.xpipe.core.process.CommandBuilder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-public class PwshTerminalType extends ExternalTerminalType.SimplePathType implements DockableTerminalType {
+public class PwshTerminalType extends ExternalTerminalType.SimplePathType implements TrackableTerminalType {
 
     public PwshTerminalType() {
         super("app.pwsh", "pwsh", true);

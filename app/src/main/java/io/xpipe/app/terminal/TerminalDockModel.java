@@ -12,21 +12,13 @@ import java.util.Set;
 
 public class TerminalDockModel {
 
-    public static boolean isSupported() {
-        return OsType.getLocal() == OsType.WINDOWS;
-    }
-
     private Rect viewBounds;
     private boolean viewActive;
 
     @Getter
-    private final Set<TerminalViewInstance> terminalInstances = new HashSet<>();
+    private final Set<ControllableTerminalSession> terminalInstances = new HashSet<>();
 
-    public TerminalDockModel() {
-        int a = 0;
-    }
-
-    public synchronized void trackTerminal(TerminalViewInstance terminal) {
+    public synchronized void trackTerminal(ControllableTerminalSession terminal) {
         terminalInstances.add(terminal);
         terminal.alwaysInFront();
         if (viewBounds != null) {
@@ -34,17 +26,13 @@ public class TerminalDockModel {
         }
     }
 
-    public synchronized void closeTerminal(TerminalViewInstance terminal) {
+    public synchronized void closeTerminal(ControllableTerminalSession terminal) {
         if (!terminalInstances.contains(terminal)) {
             return;
         }
 
         terminal.close();
         terminalInstances.remove(terminal);
-    }
-
-    public boolean isEnabled() {
-        return isSupported() && AppPrefs.get().enableTerminalDocking().get();
     }
 
     public synchronized void toggleView(boolean active) {

@@ -7,11 +7,11 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public final class WindowsTerminalViewInstance extends TerminalViewInstance {
+public final class WindowsTerminalSession extends ControllableTerminalSession {
 
     NativeWinWindowControl control;
 
-    public WindowsTerminalViewInstance(ProcessHandle terminal, NativeWinWindowControl control) {
+    public WindowsTerminalSession(ProcessHandle terminal, NativeWinWindowControl control) {
         super(terminal);
         this.control = control;
     }

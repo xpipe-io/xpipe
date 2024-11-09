@@ -578,10 +578,6 @@ public class AppPrefs {
             ErrorEvent.fromThrowable(e).expected().build().handle();
             storageDirectory.setValue(DEFAULT_STORAGE_DIR);
         }
-
-        if (!TerminalView.isSupported()) {
-            enableTerminalDocking.set(false);
-        }
     }
 
     private void loadSharedRemote() {
