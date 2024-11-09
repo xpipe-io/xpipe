@@ -34,9 +34,13 @@ public class TerminalLaunchRequest {
 
     public Path waitForCompletion() throws BeaconServerException {
         while (true) {
-            if (getResult() == null) {
+            if (latch.getCount() > 0) {
                 ThreadHelper.sleep(10);
                 continue;
+            }
+
+            if (getResult() == null) {
+                throw new BeaconServerException("Launch request aborted");
             }
 
             var r = getResult();
