@@ -71,4 +71,21 @@ public final class WindowsTerminalSession extends ControllableTerminalSession {
     public Rect queryBounds() {
         return control.getBounds();
     }
+
+
+    public void updateBoundsState() {
+        if (!control.isIconified() || !control.isVisible()) {
+            return;
+        }
+
+        var bounds = queryBounds();
+        if (bounds.getX() == -32000 || bounds.getY() == -32000) {
+            return;
+        }
+
+        if (lastBounds != null && !lastBounds.equals(bounds)) {
+            customBounds = true;
+        }
+        lastBounds = bounds;
+    }
 }

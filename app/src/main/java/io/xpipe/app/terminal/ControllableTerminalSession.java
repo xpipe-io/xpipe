@@ -34,7 +34,7 @@ public abstract class ControllableTerminalSession extends TerminalView.TerminalS
 
     public abstract Rect queryBounds();
 
-    public final void updateBoundsState() {
+    public void updateBoundsState() {
         if (!isActive()) {
             return;
         }

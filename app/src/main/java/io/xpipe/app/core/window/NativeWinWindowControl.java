@@ -78,6 +78,10 @@ public class NativeWinWindowControl {
         return (User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_STYLE) & User32.WS_MINIMIZE) != 0;
     }
 
+    public boolean isVisible() {
+        return User32.INSTANCE.IsWindowVisible(windowHandle);
+    }
+
     public void alwaysInFront() {
         orderRelative(new WinDef.HWND(new Pointer(0xFFFFFFFFFFFFFFFFL)));
     }
