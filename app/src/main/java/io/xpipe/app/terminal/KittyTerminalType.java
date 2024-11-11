@@ -1,5 +1,6 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
@@ -7,6 +8,8 @@ import io.xpipe.app.util.ShellTemp;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.ShellDialect;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.XPipeInstallation;
 
@@ -96,7 +99,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
 
         @Override
         public int getProcessHierarchyOffset() {
-            return 1;
+            return ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.BASH ? 0 : 1;
         }
 
         public boolean isAvailable() {

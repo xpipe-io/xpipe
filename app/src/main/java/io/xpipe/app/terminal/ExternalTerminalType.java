@@ -742,7 +742,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public int getProcessHierarchyOffset() {
-            return 1;
+            return ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.BASH ? 0 : 1;
         }
 
         @Override
