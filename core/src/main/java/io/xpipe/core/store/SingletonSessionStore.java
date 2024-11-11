@@ -69,9 +69,12 @@ public interface SingletonSessionStore<T extends Session>
             var ex = getSession();
             setSessionEnabled(false);
             if (ex != null) {
-                ex.stop();
-                setCache("session", null);
-                onStateChange(false);
+                try {
+                    ex.stop();
+                } finally {
+                    setCache("session", null);
+                    onStateChange(false);
+                }
             }
         }
     }
