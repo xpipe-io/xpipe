@@ -739,6 +739,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
     ExternalTerminalType Q_TERMINAL = new SimplePathType("app.qTerminal", "qterminal", true) {
+
+        @Override
+        public int getProcessHierarchyOffset() {
+            return 1;
+        }
+
         @Override
         public String getWebsite() {
             return "https://github.com/lxqt/qterminal";

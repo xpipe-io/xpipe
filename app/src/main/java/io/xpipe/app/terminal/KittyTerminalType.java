@@ -94,6 +94,11 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
 
     class Linux implements KittyTerminalType {
 
+        @Override
+        public int getProcessHierarchyOffset() {
+            return 1;
+        }
+
         public boolean isAvailable() {
             try (ShellControl pc = LocalShell.getShell()) {
                 return CommandSupport.findProgram(pc, "kitty").isPresent();
