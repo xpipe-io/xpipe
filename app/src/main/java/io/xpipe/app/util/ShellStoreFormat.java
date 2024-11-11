@@ -90,7 +90,7 @@ public class ShellStoreFormat {
         if (state != null && state.isEmpty()) {
             state = null;
         }
-        return DataStoreFormatter.join(lic, state, name);
+        return DataStoreFormatter.join(lic, name, state);
     }
 
     public static String formattedOsName(String osName) {
