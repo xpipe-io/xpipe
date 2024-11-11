@@ -108,7 +108,7 @@ install() {
     elif [ -x "$(command -v zypper)" ]; then
       info "Installing file $file with zypper"
       sudo zypper refresh
-      sudo zypper install --allow-unsigned-rpm "$file"
+      sudo zypper install "$file"
     elif [ -x "$(command -v dnf)" ]; then
       info "Installing file $file with dnf"
       sudo dnf install --refresh "$file"
