@@ -12,7 +12,7 @@ import io.xpipe.core.util.XPipeInstallation;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
-public interface KittyTerminalType extends ExternalTerminalType {
+public interface KittyTerminalType extends ExternalTerminalType, TrackableTerminalType {
 
     ExternalTerminalType KITTY_LINUX = new Linux();
     ExternalTerminalType KITTY_MACOS = new MacOs();

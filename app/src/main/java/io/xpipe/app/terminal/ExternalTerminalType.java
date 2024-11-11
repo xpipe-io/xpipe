@@ -403,58 +403,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     ExternalTerminalType PWSH = new PwshTerminalType();
 
-    ExternalTerminalType GNOME_TERMINAL = new PathCheckType("app.gnomeTerminal", "gnome-terminal", true) {
-        @Override
-        public String getWebsite() {
-            return "https://help.gnome.org/users/gnome-terminal/stable/";
-        }
+    ExternalTerminalType GNOME_TERMINAL = new GnomeTerminalType();
 
-        @Override
-        public boolean supportsTabs() {
-            return false;
-        }
-
-        @Override
-        public boolean isRecommended() {
-            return false;
-        }
-
-        @Override
-        public boolean supportsColoredTitle() {
-            return false;
-        }
-
-        @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
-            try (ShellControl pc = LocalShell.getShell()) {
-                CommandSupport.isInPathOrThrow(
-                        pc, executable, toTranslatedString().getValue(), null);
-
-                var toExecute = CommandBuilder.of()
-                        .add(executable, "-v", "--title")
-                        .addQuoted(configuration.getColoredTitle())
-                        .add("--")
-                        .addFile(configuration.getScriptFile())
-                        // In order to fix this bug which also affects us:
-                        // https://askubuntu.com/questions/1148475/launching-gnome-terminal-from-vscode
-                        .envrironment("GNOME_TERMINAL_SCREEN", sc -> "");
-                pc.executeSimpleCommand(toExecute);
-            }
-        }
-
-        @Override
-        public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand(
-                ShellDialect systemDialect) {
-            return launchConfiguration -> {
-                var toExecute = CommandBuilder.of()
-                        .add(executable, "-v", "--title")
-                        .addQuoted(launchConfiguration.getColoredTitle())
-                        .add("--")
-                        .addFile(launchConfiguration.getScriptFile());
-                return toExecute.buildSimple();
-            };
-        }
-    };
     ExternalTerminalType KONSOLE = new SimplePathType("app.konsole", "konsole", true) {
 
         @Override
@@ -664,6 +614,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
     ExternalTerminalType GUAKE = new SimplePathType("app.guake", "guake", true) {
+
+        @Override
+        public int getProcessHierarchyOffset() {
+            return 1;
+        }
+
         @Override
         public String getWebsite() {
             return "https://github.com/Guake/guake";
@@ -751,6 +707,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
     ExternalTerminalType DEEPIN_TERMINAL = new SimplePathType("app.deepinTerminal", "deepin-terminal", true) {
+
+        @Override
+        public int getProcessHierarchyOffset() {
+            return 1;
+        }
+
         @Override
         public String getWebsite() {
             return "https://www.deepin.org/en/original/deepin-terminal/";
@@ -799,7 +761,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected CommandBuilder toCommand(LaunchConfiguration configuration) {
-            return CommandBuilder.of().add("-e").addQuoted(configuration.getColoredTitle());
+            return CommandBuilder.of().add("-e").add(configuration.getDialectLaunchCommand());
         }
     };
     ExternalTerminalType MACOS_TERMINAL = new MacOsType("app.macosTerminal", "Terminal") {
@@ -1132,4 +1094,5 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         protected abstract CommandBuilder toCommand(LaunchConfiguration configuration) throws Exception;
     }
+
 }
