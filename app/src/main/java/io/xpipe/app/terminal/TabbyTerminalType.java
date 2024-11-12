@@ -57,6 +57,11 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
         }
 
         @Override
+        public int getProcessHierarchyOffset() {
+            return 1;
+        }
+
+        @Override
         public boolean isRecommended() {
             return false;
         }
@@ -72,15 +77,14 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
                                 .add("run")
                                 .addFile(configuration.getScriptFile())
                                 .discardOutput());
+            } else {
+                // This is probably not going to work as it does not launch a bat file
+                LocalShell.getShell().executeSimpleCommand(CommandBuilder.of()
+                        .addFile(file.toString())
+                        .add("run")
+                        .add(configuration.getDialectLaunchCommand())
+                        .discardOutput());
             }
-
-            // This is probably not going to work as it does not launch a bat file
-            LocalShell.getShell()
-                    .executeSimpleCommand(CommandBuilder.of()
-                            .addFile(file.toString())
-                            .add("run")
-                            .add(configuration.getDialectLaunchCommand())
-                            .discardOutput());
         }
 
         @Override

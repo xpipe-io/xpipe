@@ -24,6 +24,10 @@ public class TerminalLaunchRequest {
 
     @Setter
     @NonFinal
+    long pid;
+
+    @Setter
+    @NonFinal
     TerminalLaunchResult result;
 
     @Setter

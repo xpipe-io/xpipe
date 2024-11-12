@@ -51,7 +51,7 @@ public class TerminalLauncherManager {
         synchronized (entries) {
             var req = entries.get(request);
             if (req == null) {
-                req = new TerminalLaunchRequest(request, processControl, config, directory, null, false, null);
+                req = new TerminalLaunchRequest(request, processControl, config, directory, -1, null, false, null);
                 entries.put(request, req);
             } else {
                 req.setResult(null);
@@ -74,7 +74,7 @@ public class TerminalLauncherManager {
         return last.waitForCompletion();
     }
 
-    public static Path waitExchange(UUID request) throws BeaconClientException, BeaconServerException {
+    public static Path waitExchange(UUID request, long pid) throws BeaconClientException, BeaconServerException {
         TerminalLaunchRequest req;
         synchronized (entries) {
             req = entries.get(request);
@@ -85,6 +85,13 @@ public class TerminalLauncherManager {
         if (req.isSetupCompleted() && AppPrefs.get().dontAllowTerminalRestart().get()) {
             throw new BeaconClientException("Terminal session restarts have been disabled in the security settings");
         }
+
+        var shell = ProcessHandle.of(pid).orElseThrow().parent().orElseThrow();
+        if (req.getPid() != -1 && shell.pid() != req.getPid()) {
+            throw new BeaconClientException("Wrong launch context");
+        }
+        req.setPid(shell.pid());
+
         if (req.isSetupCompleted()) {
             submitAsync(req.getRequest(), req.getProcessControl(), req.getConfig(), req.getWorkingDirectory());
         }

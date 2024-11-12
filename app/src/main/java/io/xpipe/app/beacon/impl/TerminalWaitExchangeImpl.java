@@ -12,7 +12,7 @@ public class TerminalWaitExchangeImpl extends TerminalWaitExchange {
     @Override
     public Object handle(HttpExchange exchange, Request msg) throws BeaconClientException, BeaconServerException {
         TerminalView.get().open(msg.getRequest(), msg.getPid());
-        TerminalLauncherManager.waitExchange(msg.getRequest());
+        TerminalLauncherManager.waitExchange(msg.getRequest(), msg.getPid());
         return Response.builder().build();
     }
 

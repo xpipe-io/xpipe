@@ -52,7 +52,7 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
         var desc = new Label();
         desc.textProperty().bind(PlatformThread.sync(description));
         AppFont.small(desc);
-        desc.setOpacity(0.65);
+        desc.setOpacity(0.8);
         var text = new VBox(header, desc);
         text.setSpacing(2);
 

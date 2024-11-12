@@ -47,7 +47,7 @@ public class AppLayoutComp extends Comp<CompStructure<Pane>> {
         var sidebarR = sidebar.createRegion();
         pane.setRight(sidebarR);
         model.getSelected().addListener((c, o, n) -> {
-            if (o != null && o.equals(model.getEntries().get(3))) {
+            if (o != null && o.equals(model.getEntries().get(2))) {
                 AppPrefs.get().save();
                 DataStorage.get().saveAsync();
             }
@@ -55,8 +55,6 @@ public class AppLayoutComp extends Comp<CompStructure<Pane>> {
             if (o != null && o.equals(model.getEntries().get(0))) {
                 StoreViewState.get().updateDisplay();
             }
-
-            // TerminalView.get().toggleView(model.getEntries().get(2).equals(n));
         });
         pane.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             sidebarR.getChildrenUnmodifiable().forEach(node -> {
