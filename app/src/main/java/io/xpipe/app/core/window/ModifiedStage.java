@@ -88,7 +88,11 @@ public class ModifiedStage extends Stage {
                         NativeWinWindowControl.DmwaWindowAttribute.DWMWA_USE_IMMERSIVE_DARK_MODE.get(),
                         AppPrefs.get().theme.getValue().isDark());
                 boolean seamlessFrame;
-                    seamlessFrame = ctrl.setWindowBackdrop(NativeWinWindowControl.DwmSystemBackDropType.MICA_ALT) || true;
+                if (AppPrefs.get().performanceMode().get() || !mergeFrame()) {
+                    seamlessFrame = false;
+                } else {
+                    seamlessFrame = ctrl.setWindowBackdrop(NativeWinWindowControl.DwmSystemBackDropType.MICA_ALT);
+                }
                 stage.getScene()
                         .getRoot()
                         .pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), seamlessFrame);
