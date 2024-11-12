@@ -120,6 +120,7 @@ public class AppDownloads {
     private static String queryLatestVersion(boolean first, boolean securityOnly) throws Exception {
         var req = JsonNodeFactory.instance.objectNode();
         req.put("securityOnly", securityOnly);
+        req.put("initial", AppProperties.get().isInitialLaunch() && first);
         req.put("ptb", AppProperties.get().isStaging());
         req.put("os", OsType.getLocal().getId());
         req.put("arch", AppProperties.get().getArch());
