@@ -227,7 +227,6 @@ public class AppPrefs {
                         new RdpCategory(),
                         new SshCategory(),
                         new LocalShellCategory(),
-                        new LoggingCategory(),
                         new ConnectionsCategory(),
                         new FileBrowserCategory(),
                         new SecurityCategory(),

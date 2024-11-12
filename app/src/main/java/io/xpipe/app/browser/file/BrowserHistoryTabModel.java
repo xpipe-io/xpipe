@@ -10,7 +10,7 @@ import io.xpipe.app.storage.DataColor;
 public final class BrowserHistoryTabModel extends BrowserSessionTab {
 
     public BrowserHistoryTabModel(BrowserAbstractSessionModel<?> browserModel) {
-        super(browserModel, AppI18n.get("history"));
+        super(browserModel, " " + AppI18n.get("history") + " ");
     }
 
     @Override

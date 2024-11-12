@@ -25,11 +25,6 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
     }
 
     @Override
-    default boolean isRecommended() {
-        return true;
-    }
-
-    @Override
     default boolean supportsColoredTitle() {
         return true;
     }
@@ -59,6 +54,11 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
 
         public Windows() {
             super("app.tabby", "Tabby.exe");
+        }
+
+        @Override
+        public boolean isRecommended() {
+            return false;
         }
 
         @Override
@@ -108,6 +108,11 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
     }
 
     class MacOs extends MacOsType implements TabbyTerminalType {
+
+        @Override
+        public boolean isRecommended() {
+            return true;
+        }
 
         public MacOs() {
             super("app.tabby", "Tabby");

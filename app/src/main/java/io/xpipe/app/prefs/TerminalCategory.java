@@ -7,8 +7,10 @@ import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.StackComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.terminal.TerminalView;
@@ -23,6 +25,8 @@ import javafx.scene.paint.Color;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.UUID;
 
@@ -64,6 +68,21 @@ public class TerminalCategory extends AppPrefsCategory {
                         .addComp(terminalTest)
                         .pref(prefs.clearTerminalOnInit)
                         .addToggle(prefs.clearTerminalOnInit))
+                .addTitle("sessionLogging")
+                .sub(new OptionsBuilder()
+                        .pref(prefs.enableTerminalLogging)
+                        .addToggle(prefs.enableTerminalLogging)
+                        .nameAndDescription("terminalLoggingDirectory")
+                        .addComp(new ButtonComp(AppI18n.observable("openSessionLogs"), () -> {
+                            var dir = AppProperties.get().getDataDir().resolve("sessions");
+                            try {
+                                Files.createDirectories(dir);
+                                DesktopHelper.browsePathLocal(dir);
+                            } catch (IOException e) {
+                                ErrorEvent.fromThrowable(e).handle();
+                            }
+                        })
+                                .disable(prefs.enableTerminalLogging.not())))
                 .buildComp();
     }
 

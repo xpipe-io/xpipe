@@ -919,7 +919,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             MOBAXTERM,
             SECURECRT,
             TERMIUS,
-            XSHELL);
+            XSHELL,
+            TabbyTerminalType.TABBY_WINDOWS);
     List<ExternalTerminalType> LINUX_TERMINALS = List.of(
             AlacrittyTerminalType.ALACRITTY_LINUX,
             WezTerminalType.WEZTERM_LINUX,
