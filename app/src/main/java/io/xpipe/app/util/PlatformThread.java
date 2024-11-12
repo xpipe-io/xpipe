@@ -22,59 +22,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @SuppressWarnings("unchecked")
 public class PlatformThread {
 
-    public static <T> ObservableValue<T> syncHighFrequency(ObservableValue<T> observable) {
-        var prop = new SimpleObjectProperty<>(observable.getValue());
-        var applied = new AtomicBoolean(true);
-        observable.addListener((observable1, oldValue, newValue) -> {
-            if (Platform.isFxApplicationThread()) {
-                prop.set(newValue);
-            } else {
-                if (applied.get()) {
-                    applied.set(false);
-                    Platform.runLater(() -> {
-                        applied.set(true);
-                        prop.set(observable.getValue());
-                    });
-                }
-            }
-        });
-        BindingsHelper.preserve(prop, observable);
-        return prop;
-    }
-
-    public static Observable sync(Observable o) {
-        Objects.requireNonNull(o);
-        return new Observable() {
-
-            private final Map<InvalidationListener, InvalidationListener> invListenerMap = new ConcurrentHashMap<>();
-
-            @Override
-            public void addListener(InvalidationListener listener) {
-                InvalidationListener l = o -> {
-                    PlatformThread.runLaterIfNeeded(() -> listener.invalidated(o));
-                };
-
-                invListenerMap.put(listener, l);
-                o.addListener(l);
-            }
-
-            @Override
-            public void removeListener(InvalidationListener listener) {
-                o.removeListener(invListenerMap.getOrDefault(listener, listener));
-            }
-        };
-    }
-
     public static <T> ObservableValue<T> sync(ObservableValue<T> ov) {
         Objects.requireNonNull(ov);
         ObservableValue<T> obs = new ObservableValue<>() {
 
-            private final Map<ChangeListener<? super T>, ChangeListener<? super T>> changeListenerMap =
-                    new ConcurrentHashMap<>();
-            private final Map<InvalidationListener, InvalidationListener> invListenerMap = new ConcurrentHashMap<>();
+            private final Map<ChangeListener<? super T>, ChangeListener<? super T>> changeListenerMap = new HashMap<>();
+            private final Map<InvalidationListener, InvalidationListener> invListenerMap = new HashMap<>();
 
             @Override
-            public void addListener(ChangeListener<? super T> listener) {
+            public synchronized void addListener(ChangeListener<? super T> listener) {
                 ChangeListener<? super T> l = (c, o, n) -> {
                     PlatformThread.runLaterIfNeeded(() -> listener.changed(c, o, n));
                 };
@@ -84,8 +40,11 @@ public class PlatformThread {
             }
 
             @Override
-            public void removeListener(ChangeListener<? super T> listener) {
-                ov.removeListener(changeListenerMap.getOrDefault(listener, listener));
+            public synchronized void removeListener(ChangeListener<? super T> listener) {
+                var r = changeListenerMap.remove(listener);
+                if (r != null) {
+                    ov.removeListener(r);
+                }
             }
 
             @Override
@@ -94,7 +53,7 @@ public class PlatformThread {
             }
 
             @Override
-            public void addListener(InvalidationListener listener) {
+            public synchronized void addListener(InvalidationListener listener) {
                 InvalidationListener l = o -> {
                     PlatformThread.runLaterIfNeeded(() -> listener.invalidated(o));
                 };
@@ -104,8 +63,11 @@ public class PlatformThread {
             }
 
             @Override
-            public void removeListener(InvalidationListener listener) {
-                ov.removeListener(invListenerMap.getOrDefault(listener, listener));
+            public synchronized void removeListener(InvalidationListener listener) {
+                var r = invListenerMap.remove(listener);
+                if (r != null) {
+                    ov.removeListener(r);
+                }
             }
         };
         return obs;
@@ -116,11 +78,12 @@ public class PlatformThread {
         ObservableList<T> obs = new ObservableList<>() {
 
             private final Map<ListChangeListener<? super T>, ListChangeListener<? super T>> listChangeListenerMap =
-                    new ConcurrentHashMap<>();
-            private final Map<InvalidationListener, InvalidationListener> invListenerMap = new ConcurrentHashMap<>();
+                    new HashMap<>();
+            private final Map<InvalidationListener, InvalidationListener> invListenerMap = new HashMap<>();
+
 
             @Override
-            public void addListener(ListChangeListener<? super T> listener) {
+            public synchronized void addListener(ListChangeListener<? super T> listener) {
                 ListChangeListener<? super T> l = (lc) -> {
                     PlatformThread.runLaterIfNeeded(() -> listener.onChanged(lc));
                 };
@@ -130,8 +93,11 @@ public class PlatformThread {
             }
 
             @Override
-            public void removeListener(ListChangeListener<? super T> listener) {
-                ol.removeListener(listChangeListenerMap.getOrDefault(listener, listener));
+            public synchronized void removeListener(ListChangeListener<? super T> listener) {
+                var r = listChangeListenerMap.remove(listener);
+                if (r != null) {
+                    ol.removeListener(r);
+                }
             }
 
             @Override
@@ -279,8 +245,9 @@ public class PlatformThread {
                 return ol.subList(fromIndex, toIndex);
             }
 
+
             @Override
-            public void addListener(InvalidationListener listener) {
+            public synchronized void addListener(InvalidationListener listener) {
                 InvalidationListener l = o -> {
                     PlatformThread.runLaterIfNeeded(() -> listener.invalidated(o));
                 };
@@ -290,8 +257,11 @@ public class PlatformThread {
             }
 
             @Override
-            public void removeListener(InvalidationListener listener) {
-                ol.removeListener(invListenerMap.getOrDefault(listener, listener));
+            public synchronized void removeListener(InvalidationListener listener) {
+                var r = invListenerMap.remove(listener);
+                if (r != null) {
+                    ol.removeListener(r);
+                }
             }
         };
         return obs;
