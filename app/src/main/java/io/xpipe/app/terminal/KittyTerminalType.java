@@ -164,7 +164,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
 
         @Override
         public int getProcessHierarchyOffset() {
-            return 1;
+            return ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.ZSH ? 1 : 0;
         }
 
         @Override
