@@ -6,7 +6,6 @@ import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.store.StoreLayoutComp;
 import io.xpipe.app.prefs.AppPrefsComp;
-import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.LicenseProvider;
@@ -122,13 +121,12 @@ public class AppLayoutModel {
                         () -> Hyperlinks.open(
                                 "http://localhost:" + AppBeaconServer.get().getPort()),
                         null),
-                                new Entry(
-                                        AppI18n.observable("webtop"),
-                                        new LabelGraphic.IconGraphic("mdi2d-desktop-mac"),
-                                        null,
-                                        () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
-                                        null)
-                ));
+                new Entry(
+                        AppI18n.observable("webtop"),
+                        new LabelGraphic.IconGraphic("mdi2d-desktop-mac"),
+                        null,
+                        () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
+                        null)));
 
         return l;
     }

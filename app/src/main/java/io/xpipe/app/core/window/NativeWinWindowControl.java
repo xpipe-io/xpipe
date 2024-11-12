@@ -1,6 +1,5 @@
 package io.xpipe.app.core.window;
 
-import io.sentry.protocol.User;
 import io.xpipe.app.util.Rect;
 
 import javafx.stage.Window;

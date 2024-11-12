@@ -197,7 +197,8 @@ public class BrowserTransferModel {
             if (Files.isDirectory(path)) {
                 return path;
             }
-        } catch (InvalidPathException ignored) {}
+        } catch (InvalidPathException ignored) {
+        }
         return def;
     }
 

@@ -6,8 +6,8 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
-
 import io.xpipe.core.process.ShellDialects;
+
 import lombok.Getter;
 import lombok.Value;
 
@@ -163,7 +163,9 @@ public class TerminalView {
             }
 
             var finalProc = proc;
-            var found = TerminalView.get().getSessions().stream().filter(session -> session.getShell().equals(finalProc.get())).findFirst();
+            var found = TerminalView.get().getSessions().stream()
+                    .filter(session -> session.getShell().equals(finalProc.get()))
+                    .findFirst();
             if (found.isPresent()) {
                 return found;
             }

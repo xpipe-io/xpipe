@@ -1,9 +1,7 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.Rect;
-import io.xpipe.core.process.OsType;
 
 import lombok.Getter;
 

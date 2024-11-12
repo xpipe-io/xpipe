@@ -1058,7 +1058,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     }
 
-    abstract class MacOsType extends ExternalApplicationType.MacApplication implements ExternalTerminalType, TrackableTerminalType {
+    abstract class MacOsType extends ExternalApplicationType.MacApplication
+            implements ExternalTerminalType, TrackableTerminalType {
 
         public MacOsType(String id, String applicationName) {
             super(id, applicationName);
@@ -1101,5 +1102,4 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         protected abstract CommandBuilder toCommand(LaunchConfiguration configuration) throws Exception;
     }
-
 }

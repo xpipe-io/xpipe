@@ -9,8 +9,6 @@ import io.xpipe.beacon.api.AskpassExchange;
 
 import com.sun.net.httpserver.HttpExchange;
 
-import java.util.UUID;
-
 public class AskpassExchangeImpl extends AskpassExchange {
 
     @Override
@@ -47,7 +45,10 @@ public class AskpassExchangeImpl extends AskpassExchange {
             return;
         }
 
-        var term = TerminalView.get().getTerminalInstances().stream().filter(instance -> instance.getTerminalProcess().equals(found.get().getTerminal())).findFirst();
+        var term = TerminalView.get().getTerminalInstances().stream()
+                .filter(instance ->
+                        instance.getTerminalProcess().equals(found.get().getTerminal()))
+                .findFirst();
         if (term.isEmpty()) {
             return;
         }

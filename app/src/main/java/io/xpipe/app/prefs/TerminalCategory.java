@@ -13,11 +13,9 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalLauncher;
-import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.app.util.*;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ListCell;
@@ -74,14 +72,14 @@ public class TerminalCategory extends AppPrefsCategory {
                         .addToggle(prefs.enableTerminalLogging)
                         .nameAndDescription("terminalLoggingDirectory")
                         .addComp(new ButtonComp(AppI18n.observable("openSessionLogs"), () -> {
-                            var dir = AppProperties.get().getDataDir().resolve("sessions");
-                            try {
-                                Files.createDirectories(dir);
-                                DesktopHelper.browsePathLocal(dir);
-                            } catch (IOException e) {
-                                ErrorEvent.fromThrowable(e).handle();
-                            }
-                        })
+                                    var dir = AppProperties.get().getDataDir().resolve("sessions");
+                                    try {
+                                        Files.createDirectories(dir);
+                                        DesktopHelper.browsePathLocal(dir);
+                                    } catch (IOException e) {
+                                        ErrorEvent.fromThrowable(e).handle();
+                                    }
+                                })
                                 .disable(prefs.enableTerminalLogging.not())))
                 .buildComp();
     }

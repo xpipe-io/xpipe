@@ -9,7 +9,9 @@ import io.xpipe.core.util.FailableFunction;
 
 public class GnomeTerminalType extends ExternalTerminalType.PathCheckType implements TrackableTerminalType {
 
-    public GnomeTerminalType() {super("app.gnomeTerminal", "gnome-terminal", true);}
+    public GnomeTerminalType() {
+        super("app.gnomeTerminal", "gnome-terminal", true);
+    }
 
     @Override
     public String getWebsite() {
@@ -36,8 +38,11 @@ public class GnomeTerminalType extends ExternalTerminalType.PathCheckType implem
         try (ShellControl pc = LocalShell.getShell()) {
             CommandSupport.isInPathOrThrow(pc, executable, toTranslatedString().getValue(), null);
 
-            var toExecute = CommandBuilder.of().add(executable, "-v", "--title").addQuoted(configuration.getColoredTitle()).add("--").addFile(
-                            configuration.getScriptFile())
+            var toExecute = CommandBuilder.of()
+                    .add(executable, "-v", "--title")
+                    .addQuoted(configuration.getColoredTitle())
+                    .add("--")
+                    .addFile(configuration.getScriptFile())
                     // In order to fix this bug which also affects us:
                     // https://askubuntu.com/questions/1148475/launching-gnome-terminal-from-vscode
                     .envrironment("GNOME_TERMINAL_SCREEN", sc -> "");
@@ -46,12 +51,13 @@ public class GnomeTerminalType extends ExternalTerminalType.PathCheckType implem
     }
 
     @Override
-    public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand(
-            ShellDialect systemDialect
-    ) {
+    public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand(ShellDialect systemDialect) {
         return launchConfiguration -> {
-            var toExecute = CommandBuilder.of().add(executable, "-v", "--title").addQuoted(launchConfiguration.getColoredTitle()).add("--").addFile(
-                    launchConfiguration.getScriptFile());
+            var toExecute = CommandBuilder.of()
+                    .add(executable, "-v", "--title")
+                    .addQuoted(launchConfiguration.getColoredTitle())
+                    .add("--")
+                    .addFile(launchConfiguration.getScriptFile());
             return toExecute.buildSimple();
         };
     }

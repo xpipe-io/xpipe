@@ -158,7 +158,9 @@ public class StoreEntryWrapper {
         busy.setValue(entry.getBusyCounter().get() != 0);
         deletable.setValue(entry.getConfiguration().isDeletable()
                 || AppPrefs.get().developerDisableGuiRestrictions().getValue());
-        sessionActive.setValue(entry.getStore() instanceof SingletonSessionStore<?> ss && entry.getStore() instanceof ShellStore && ss.isSessionRunning());
+        sessionActive.setValue(entry.getStore() instanceof SingletonSessionStore<?> ss
+                && entry.getStore() instanceof ShellStore
+                && ss.isSessionRunning());
 
         category.setValue(StoreViewState.get()
                 .getCategoryWrapper(DataStorage.get()

@@ -23,9 +23,11 @@ public class TerminalLauncherManager {
 
             @Override
             public void onSessionClosed(TerminalView.ShellSession session) {
-                var affectedEntry = entries.values().stream().filter(terminalLaunchRequest -> {
-                    return terminalLaunchRequest.getRequest().equals(session.getRequest());
-                }).findFirst();
+                var affectedEntry = entries.values().stream()
+                        .filter(terminalLaunchRequest -> {
+                            return terminalLaunchRequest.getRequest().equals(session.getRequest());
+                        })
+                        .findFirst();
                 if (affectedEntry.isEmpty()) {
                     return;
                 }
@@ -34,14 +36,10 @@ public class TerminalLauncherManager {
             }
 
             @Override
-            public void onTerminalOpened(TerminalView.TerminalSession instance) {
-
-            }
+            public void onTerminalOpened(TerminalView.TerminalSession instance) {}
 
             @Override
-            public void onTerminalClosed(TerminalView.TerminalSession instance) {
-
-            }
+            public void onTerminalClosed(TerminalView.TerminalSession instance) {}
         });
     }
 

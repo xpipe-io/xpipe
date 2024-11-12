@@ -5,8 +5,6 @@ import io.xpipe.app.issue.ErrorEvent;
 
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
@@ -15,9 +13,7 @@ import javafx.collections.ObservableList;
 import lombok.NonNull;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("unchecked")
 public class PlatformThread {
@@ -80,7 +76,6 @@ public class PlatformThread {
             private final Map<ListChangeListener<? super T>, ListChangeListener<? super T>> listChangeListenerMap =
                     new HashMap<>();
             private final Map<InvalidationListener, InvalidationListener> invListenerMap = new HashMap<>();
-
 
             @Override
             public synchronized void addListener(ListChangeListener<? super T> listener) {
@@ -244,7 +239,6 @@ public class PlatformThread {
             public @NonNull List<T> subList(int fromIndex, int toIndex) {
                 return ol.subList(fromIndex, toIndex);
             }
-
 
             @Override
             public synchronized void addListener(InvalidationListener listener) {

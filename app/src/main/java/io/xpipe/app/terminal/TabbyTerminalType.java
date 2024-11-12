@@ -79,11 +79,12 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
                                 .discardOutput());
             } else {
                 // This is probably not going to work as it does not launch a bat file
-                LocalShell.getShell().executeSimpleCommand(CommandBuilder.of()
-                        .addFile(file.toString())
-                        .add("run")
-                        .add(configuration.getDialectLaunchCommand())
-                        .discardOutput());
+                LocalShell.getShell()
+                        .executeSimpleCommand(CommandBuilder.of()
+                                .addFile(file.toString())
+                                .add("run")
+                                .add(configuration.getDialectLaunchCommand())
+                                .discardOutput());
             }
         }
 

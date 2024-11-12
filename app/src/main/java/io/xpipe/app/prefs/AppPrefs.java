@@ -8,7 +8,6 @@ import io.xpipe.app.ext.PrefsProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.ExternalTerminalType;
-import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.PasswordLockSecretValue;
 import io.xpipe.app.util.PlatformThread;

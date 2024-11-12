@@ -16,11 +16,12 @@ public class FileBrowserCategory extends AppPrefsCategory {
         return new OptionsBuilder()
                 .addTitle("fileBrowser")
                 .sub(new OptionsBuilder()
-                .pref(prefs.enableTerminalDocking)
-                .addToggle(prefs.enableTerminalDocking)
-                .pref(prefs.confirmAllDeletions).addToggle(prefs.confirmAllDeletions)
-                .pref(prefs.downloadsDirectory)
-                .addString(prefs.downloadsDirectory))
+                        .pref(prefs.enableTerminalDocking)
+                        .addToggle(prefs.enableTerminalDocking)
+                        .pref(prefs.confirmAllDeletions)
+                        .addToggle(prefs.confirmAllDeletions)
+                        .pref(prefs.downloadsDirectory)
+                        .addString(prefs.downloadsDirectory))
                 .buildComp();
     }
 }

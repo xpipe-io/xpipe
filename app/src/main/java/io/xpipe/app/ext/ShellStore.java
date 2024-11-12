@@ -70,7 +70,9 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
         }
 
         // Don't reuse local shell
-        var parentSc = p.getParentStore() instanceof LocalStore l ? l.standaloneControl() : p.getParentStore().getOrStartSession();
+        var parentSc = p.getParentStore() instanceof LocalStore l
+                ? l.standaloneControl()
+                : p.getParentStore().getOrStartSession();
         return p.control(parentSc);
     }
 }

@@ -58,7 +58,8 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
 
     @Override
     default int getProcessHierarchyOffset() {
-        var powershell = AppPrefs.get().enableTerminalLogging().get() && !ShellDialects.isPowershell(ProcessControlProvider.get().getEffectiveLocalDialect());
+        var powershell = AppPrefs.get().enableTerminalLogging().get()
+                && !ShellDialects.isPowershell(ProcessControlProvider.get().getEffectiveLocalDialect());
         return powershell ? 1 : 0;
     }
 

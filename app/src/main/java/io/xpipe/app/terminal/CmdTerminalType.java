@@ -13,7 +13,8 @@ public class CmdTerminalType extends ExternalTerminalType.SimplePathType impleme
 
     @Override
     public int getProcessHierarchyOffset() {
-        var powershell = ShellDialects.isPowershell(ProcessControlProvider.get().getEffectiveLocalDialect()) || AppPrefs.get().enableTerminalLogging().get();
+        var powershell = ShellDialects.isPowershell(ProcessControlProvider.get().getEffectiveLocalDialect())
+                || AppPrefs.get().enableTerminalLogging().get();
         return powershell ? 0 : -1;
     }
 

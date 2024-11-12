@@ -72,7 +72,6 @@ public final class WindowsTerminalSession extends ControllableTerminalSession {
         return control.getBounds();
     }
 
-
     public void updateBoundsState() {
         if (!control.isIconified() || !control.isVisible()) {
             return;
