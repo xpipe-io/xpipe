@@ -191,7 +191,8 @@ public abstract class UpdateHandler {
                 lastUpdateCheckResult.getValue().getReleaseUrl(),
                 null,
                 changelog,
-                lastUpdateCheckResult.getValue().getAssetType());
+                lastUpdateCheckResult.getValue().getAssetType(),
+                lastUpdateCheckResult.getValue().isSecurityOnly());
         preparedUpdate.setValue(rel);
     }
 
@@ -214,7 +215,7 @@ public abstract class UpdateHandler {
         var available = XPipeDistributionType.get()
                 .getUpdateHandler()
                 .refreshUpdateCheckSilent(
-                        false, !AppPrefs.get().automaticallyUpdate().get());
+                        false, preparedUpdate.getValue().isSecurityOnly());
         if (preparedUpdate.getValue() == null) {
             return;
         }
@@ -267,6 +268,7 @@ public abstract class UpdateHandler {
         AppInstaller.InstallerAssetType assetType;
         Instant checkTime;
         boolean isUpdate;
+        boolean securityOnly;
     }
 
     @Value
@@ -280,5 +282,6 @@ public abstract class UpdateHandler {
         Path file;
         String body;
         AppInstaller.InstallerAssetType assetType;
+        boolean securityOnly;
     }
 }

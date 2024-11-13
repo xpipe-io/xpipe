@@ -143,7 +143,7 @@ public class OptionsBuilder {
                 null,
                 null,
                 null,
-                Comp.of(() -> new Label(title.getValue())).styleClass("title-header")));
+                new LabelComp(title).styleClass("title-header")));
         return this;
     }
 

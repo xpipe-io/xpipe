@@ -60,6 +60,6 @@ public class ShellSession extends Session {
     }
 
     public void stop() throws Exception {
-        shellControl.close();
+        shellControl.shutdown();
     }
 }

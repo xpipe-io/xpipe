@@ -23,7 +23,7 @@ public class UpdateAvailableAlert {
         }
 
         // Check whether we still have the latest version prepared
-        uh.refreshUpdateCheckSilent(false, !AppPrefs.get().automaticallyUpdate().get());
+        uh.refreshUpdateCheckSilent(false, uh.getPreparedUpdate().getValue().isSecurityOnly());
         if (uh.getPreparedUpdate().getValue() == null) {
             return;
         }

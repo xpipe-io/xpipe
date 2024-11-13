@@ -263,26 +263,32 @@ public class BrowserSessionTabsComp extends SimpleComp {
         var cm = ContextMenuHelper.create();
 
         if (tabModel.isCloseable()) {
-            var unsplit = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("unpinTab"));
-            unsplit.visibleProperty()
+            var unpin = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("unpinTab"));
+            unpin.visibleProperty()
                     .bind(PlatformThread.sync(Bindings.createBooleanBinding(
                             () -> {
                                 return model.getGlobalPinnedTab().getValue() != null
                                         && model.getGlobalPinnedTab().getValue().equals(tabModel);
                             },
                             model.getGlobalPinnedTab())));
-            unsplit.setOnAction(event -> {
+            unpin.setOnAction(event -> {
                 model.unpinTab(tabModel);
                 event.consume();
             });
-            cm.getItems().add(unsplit);
+            cm.getItems().add(unpin);
 
-            var split = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("pinTab"));
-            split.setOnAction(event -> {
+            var pin = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("pinTab"));
+            pin.visibleProperty()
+                    .bind(PlatformThread.sync(Bindings.createBooleanBinding(
+                            () -> {
+                                return model.getGlobalPinnedTab().getValue() == null;
+                            },
+                            model.getGlobalPinnedTab())));
+            pin.setOnAction(event -> {
                 model.pinTab(tabModel);
                 event.consume();
             });
-            cm.getItems().add(split);
+            cm.getItems().add(pin);
         }
 
         var select = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("selectTab"));
@@ -364,7 +370,9 @@ public class BrowserSessionTabsComp extends SimpleComp {
 
     private Tab createTab(TabPane tabs, BrowserSessionTab tabModel) {
         var tab = new Tab();
-        tab.setContextMenu(createContextMenu(tabs, tab, tabModel));
+        if (tabModel.isCloseable()) {
+            tab.setContextMenu(createContextMenu(tabs, tab, tabModel));
+        }
 
         tab.setClosable(tabModel.isCloseable());
         // Prevent closing while busy

@@ -154,7 +154,6 @@ public class TerminalDockModel {
         }
 
         this.viewBounds = new Rect(x, y, w, h);
-        TrackEvent.withTrace("Terminal view resized").tag("rect", viewBounds).handle();
         updatePositions();
     }
 

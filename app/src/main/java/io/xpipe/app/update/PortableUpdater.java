@@ -48,7 +48,8 @@ public class PortableUpdater extends UpdateHandler {
                 null,
                 null,
                 Instant.now(),
-                isUpdate));
+                isUpdate,
+                securityOnly));
         return lastUpdateCheckResult.getValue();
     }
 }

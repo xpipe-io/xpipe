@@ -41,7 +41,8 @@ public class GitHubUpdater extends UpdateHandler {
                 lastUpdateCheckResult.getValue().getReleaseUrl(),
                 downloadFile.get(),
                 changelog,
-                lastUpdateCheckResult.getValue().getAssetType());
+                lastUpdateCheckResult.getValue().getAssetType(),
+                lastUpdateCheckResult.getValue().isSecurityOnly());
         preparedUpdate.setValue(rel);
     }
 
@@ -93,7 +94,8 @@ public class GitHubUpdater extends UpdateHandler {
                 ghAsset.get().getBrowserDownloadUrl(),
                 assetType,
                 Instant.now(),
-                isUpdate));
+                isUpdate,
+                securityOnly));
         return lastUpdateCheckResult.getValue();
     }
 }

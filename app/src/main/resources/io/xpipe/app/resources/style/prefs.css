@@ -14,7 +14,7 @@
 }
 
 .prefs-container > .title-header {
-    -fx-padding: 2em 0 -1em 0;
+    -fx-padding: 4em 0 -1em 0;
     -fx-font-weight: BOLD;
     -fx-font-size: 1.5em;
 }

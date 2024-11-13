@@ -112,7 +112,7 @@
     -fx-font-size: 14px;
 }
 
-.root { -color-bg-default-transparent: #0d1117d2; }
+.root { -color-bg-default-transparent: #10141ad2; }
 
 .root .table-view {
     -color-cell-bg-odd: derive(-color-bg-subtle, -35%);
