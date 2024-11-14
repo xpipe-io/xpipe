@@ -281,10 +281,10 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                             .get()
                             .singularSubShell(
                                     ShellOpenFunction.of(CommandBuilder.ofString(adjustedPath), false));
-                    openTerminalAsync(name,directory,cc);
+                    openTerminalAsync(name,directory,cc, true);
                 } else {
                     var cc = fileSystem.getShell().get().command(adjustedPath);
-                    openTerminalAsync(name,directory,cc);
+                    openTerminalAsync(name,directory,cc, true);
                 }
             });
             return Optional.ofNullable(currentPath.get());
@@ -539,7 +539,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         history.updateCurrent(null);
     }
 
-    public void openTerminalAsync(String name, String directory, ProcessControl processControl) {
+    public void openTerminalAsync(String name, String directory, ProcessControl processControl, boolean dockIfPossible) {
         ThreadHelper.runFailableAsync(() -> {
             if (fileSystem == null) {
                 return;
@@ -547,7 +547,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
 
             BooleanScope.executeExclusive(busy, () -> {
                 if (fileSystem.getShell().isPresent()) {
-                    var dock = shouldLaunchSplitTerminal();
+                    var dock = shouldLaunchSplitTerminal() && dockIfPossible;
                     var uuid = UUID.randomUUID();
                     terminalRequests.add(uuid);
                     if (dock && browserModel instanceof BrowserFullSessionModel fullSessionModel &&

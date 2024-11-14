@@ -30,7 +30,7 @@ public class OpenTerminalAction implements BrowserLeafAction {
                 : Collections.singletonList((String) null);
         for (String dir : dirs) {
             var name = (dir != null ? dir + " - " : "") + model.getName();
-            model.openTerminalAsync(name, dir, model.getFileSystem().getShell().orElseThrow());
+            model.openTerminalAsync(name, dir, model.getFileSystem().getShell().orElseThrow(), dirs.size() == 1);
         }
     }
 

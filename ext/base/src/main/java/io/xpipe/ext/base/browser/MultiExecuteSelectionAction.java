@@ -43,7 +43,7 @@ public abstract class MultiExecuteSelectionAction implements BrowserBranchAction
                                     model.openTerminalAsync(getTerminalTitle(), model.getCurrentDirectory() != null
                                             ? model.getCurrentDirectory()
                                             .getPath()
-                                            : null, cmd);
+                                            : null, cmd, true);
                                 },
                                 false);
                     }
