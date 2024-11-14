@@ -1,10 +1,8 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
-import io.xpipe.app.browser.file.BrowserTerminalDockTabModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.store.FileKind;
@@ -17,7 +15,6 @@ import javafx.scene.input.KeyCombination;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,9 +22,13 @@ public class OpenTerminalAction implements BrowserLeafAction {
 
     @Override
     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        var dirs = entries.size() > 0 ? entries.stream().map(browserEntry -> browserEntry.getRawFileEntry().getPath()).toList() : model.getCurrentDirectory() != null
-                ? List.of(model.getCurrentDirectory().getPath())
-                : Collections.singletonList((String) null);
+        var dirs = entries.size() > 0
+                ? entries.stream()
+                        .map(browserEntry -> browserEntry.getRawFileEntry().getPath())
+                        .toList()
+                : model.getCurrentDirectory() != null
+                        ? List.of(model.getCurrentDirectory().getPath())
+                        : Collections.singletonList((String) null);
         for (String dir : dirs) {
             var name = (dir != null ? dir + " - " : "") + model.getName();
             model.openTerminalAsync(name, dir, model.getFileSystem().getShell().orElseThrow(), dirs.size() == 1);

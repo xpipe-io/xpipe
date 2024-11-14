@@ -49,7 +49,8 @@ public class TerminalLauncher {
         open(entry, title, directory, cc, UUID.randomUUID(), true);
     }
 
-    public static void open(DataStoreEntry entry, String title, String directory, ProcessControl cc, UUID request, boolean preferTabs)
+    public static void open(
+            DataStoreEntry entry, String title, String directory, ProcessControl cc, UUID request, boolean preferTabs)
             throws Exception {
         var type = AppPrefs.get().terminalType().getValue();
         if (type == null) {

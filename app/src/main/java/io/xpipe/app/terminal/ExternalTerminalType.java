@@ -126,7 +126,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             // Note for later: When debugging konsole launches, it will always open as a child process of
             // IntelliJ/XPipe even though we try to detach it.
             // This is not the case for production where it works as expected
-            return CommandBuilder.of().addIf(configuration.isPreferTabs(), "--new-tab").add("-e").addFile(configuration.getScriptFile());
+            return CommandBuilder.of()
+                    .addIf(configuration.isPreferTabs(), "--new-tab")
+                    .add("-e")
+                    .addFile(configuration.getScriptFile());
         }
     };
     ExternalTerminalType XFCE = new SimplePathType("app.xfce", "xfce4-terminal", true) {
@@ -153,7 +156,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         @Override
         protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return CommandBuilder.of()
-                    .addIf(configuration.isPreferTabs(),"--tab")
+                    .addIf(configuration.isPreferTabs(), "--tab")
                     .add("--title")
                     .addQuoted(configuration.getColoredTitle())
                     .add("--command")
@@ -213,7 +216,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
-            return CommandBuilder.of().addIf(configuration.isPreferTabs(), "--new-tab").add("-e").addFile(configuration.getScriptFile());
+            return CommandBuilder.of()
+                    .addIf(configuration.isPreferTabs(), "--new-tab")
+                    .add("-e")
+                    .addFile(configuration.getScriptFile());
         }
     };
     ExternalTerminalType TILIX = new SimplePathType("app.tilix", "tilix", true) {
@@ -642,7 +648,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     default void launch(TerminalLaunchConfiguration configuration) throws Exception {}
 
-    default FailableFunction<TerminalLaunchConfiguration, String, Exception> remoteLaunchCommand(ShellDialect systemDialect) {
+    default FailableFunction<TerminalLaunchConfiguration, String, Exception> remoteLaunchCommand(
+            ShellDialect systemDialect) {
         return null;
     }
 
@@ -713,5 +720,4 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         protected abstract CommandBuilder toCommand(TerminalLaunchConfiguration configuration) throws Exception;
     }
-
 }

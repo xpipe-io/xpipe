@@ -7,7 +7,6 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ProcessOutputException;
 import io.xpipe.core.process.ShellControl;
@@ -15,7 +14,6 @@ import io.xpipe.core.process.ShellControl;
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class MultiExecuteSelectionAction implements BrowserBranchAction {
@@ -40,10 +38,14 @@ public abstract class MultiExecuteSelectionAction implements BrowserBranchAction
                                     }
 
                                     var cmd = pc.command(c);
-                                    model.openTerminalAsync(getTerminalTitle(), model.getCurrentDirectory() != null
-                                            ? model.getCurrentDirectory()
-                                            .getPath()
-                                            : null, cmd, true);
+                                    model.openTerminalAsync(
+                                            getTerminalTitle(),
+                                            model.getCurrentDirectory() != null
+                                                    ? model.getCurrentDirectory()
+                                                            .getPath()
+                                                    : null,
+                                            cmd,
+                                            true);
                                 },
                                 false);
                     }

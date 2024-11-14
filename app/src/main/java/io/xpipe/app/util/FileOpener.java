@@ -4,7 +4,6 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
 
 import java.io.ByteArrayInputStream;
@@ -59,7 +58,8 @@ public class FileOpener {
         try (var pc = LocalShell.getShell().start()) {
             if (pc.getOsType().equals(OsType.WINDOWS)) {
                 if (pc.getShellDialect() == ShellDialects.POWERSHELL) {
-                    pc.command(CommandBuilder.of().add("Invoke-Item").addFile(localFile)).execute();
+                    pc.command(CommandBuilder.of().add("Invoke-Item").addFile(localFile))
+                            .execute();
                 } else {
                     pc.executeSimpleCommand("start \"\" \"" + localFile + "\"");
                 }

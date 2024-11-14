@@ -16,6 +16,7 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FilePath;
+
 import lombok.Value;
 import lombok.With;
 
@@ -41,8 +42,8 @@ public class TerminalLaunchConfiguration {
             DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").withZone(ZoneId.systemDefault());
 
     public static TerminalLaunchConfiguration create(
-            UUID request, DataStoreEntry entry, String cleanTitle, String adjustedTitle, boolean preferTabs
-    ) throws Exception {
+            UUID request, DataStoreEntry entry, String cleanTitle, String adjustedTitle, boolean preferTabs)
+            throws Exception {
         var color = entry != null ? DataStorage.get().getEffectiveColor(entry) : null;
         var d = ProcessControlProvider.get().getEffectiveLocalDialect();
         var launcherScript = d.terminalLauncherScript(request, adjustedTitle);
@@ -84,7 +85,12 @@ public class TerminalLaunchConfiguration {
                                         logFile.getFileName().toString());
                 var ps = ScriptHelper.createExecScript(ShellDialects.POWERSHELL, sc, content);
                 var config = new TerminalLaunchConfiguration(
-                        entry != null ? color : null, adjustedTitle, cleanTitle, preferTabs, ps, ShellDialects.POWERSHELL);
+                        entry != null ? color : null,
+                        adjustedTitle,
+                        cleanTitle,
+                        preferTabs,
+                        ps,
+                        ShellDialects.POWERSHELL);
                 return config;
             } else {
                 var found = sc.command(sc.getShellDialect().getWhichCommand("script"))

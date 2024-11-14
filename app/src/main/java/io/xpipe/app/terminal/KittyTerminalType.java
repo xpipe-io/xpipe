@@ -27,8 +27,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
         }
     }
 
-    private static void open(TerminalLaunchConfiguration configuration, CommandBuilder socketWrite)
-            throws Exception {
+    private static void open(TerminalLaunchConfiguration configuration, CommandBuilder socketWrite) throws Exception {
         try (var sc = LocalShell.getShell().start()) {
             var payload = JsonNodeFactory.instance.objectNode();
             var args = configuration.getDialectLaunchCommand().buildBaseParts(sc);

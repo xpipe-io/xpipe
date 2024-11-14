@@ -13,7 +13,9 @@ import java.util.Optional;
 
 public class MobaXTermTerminalType extends ExternalTerminalType.WindowsType {
 
-    public MobaXTermTerminalType() {super("app.mobaXterm", "MobaXterm");}
+    public MobaXTermTerminalType() {
+        super("app.mobaXterm", "MobaXterm");
+    }
 
     @Override
     public TerminalOpenFormat getOpenFormat() {
@@ -23,7 +25,8 @@ public class MobaXTermTerminalType extends ExternalTerminalType.WindowsType {
     @Override
     protected Optional<Path> determineInstallation() {
         try {
-            var r = WindowsRegistry.local().readValue(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\mobaxterm\\DefaultIcon");
+            var r = WindowsRegistry.local()
+                    .readValue(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\mobaxterm\\DefaultIcon");
             return r.map(Path::of);
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).omit().handle();
@@ -51,14 +54,23 @@ public class MobaXTermTerminalType extends ExternalTerminalType.WindowsType {
         try (var sc = LocalShell.getShell()) {
             SshLocalBridge.init();
             var b = SshLocalBridge.get();
-            var command = CommandBuilder.of().addFile("ssh").addQuoted(b.getUser() + "@localhost").add("-i").add(
-                    "\"$(cygpath \"" + b.getIdentityKey().toString() + "\")\"").add("-p").add("" + b.getPort());
+            var command = CommandBuilder.of()
+                    .addFile("ssh")
+                    .addQuoted(b.getUser() + "@localhost")
+                    .add("-i")
+                    .add("\"$(cygpath \"" + b.getIdentityKey().toString() + "\")\"")
+                    .add("-p")
+                    .add("" + b.getPort());
             // Don't use local shell to build as it uses cygwin
             var rawCommand = command.buildSimple();
             var script = ScriptHelper.getExecScriptFile(sc, "sh");
             Files.writeString(Path.of(script.toString()), rawCommand);
             var fixedFile = script.toString().replaceAll("\\\\", "/").replaceAll("\\s", "\\$0");
-            sc.command(CommandBuilder.of().addFile(file.toString()).add("-newtab").add(fixedFile)).execute();
+            sc.command(CommandBuilder.of()
+                            .addFile(file.toString())
+                            .add("-newtab")
+                            .add(fixedFile))
+                    .execute();
         }
     }
 }

@@ -11,7 +11,9 @@ import java.util.Optional;
 
 public class SecureCrtTerminalType extends ExternalTerminalType.WindowsType {
 
-    public SecureCrtTerminalType() {super("app.secureCrt", "SecureCRT");}
+    public SecureCrtTerminalType() {
+        super("app.secureCrt", "SecureCRT");
+    }
 
     @Override
     public TerminalOpenFormat getOpenFormat() {
@@ -21,7 +23,8 @@ public class SecureCrtTerminalType extends ExternalTerminalType.WindowsType {
     @Override
     protected Optional<Path> determineInstallation() {
         try (var sc = LocalShell.getShell().start()) {
-            var env = sc.executeSimpleStringCommand(sc.getShellDialect().getPrintEnvironmentVariableCommand("ProgramFiles"));
+            var env = sc.executeSimpleStringCommand(
+                    sc.getShellDialect().getPrintEnvironmentVariableCommand("ProgramFiles"));
             var file = Path.of(env, "VanDyke Software\\SecureCRT\\SecureCRT.exe");
             if (!Files.exists(file)) {
                 return Optional.empty();
@@ -54,8 +57,15 @@ public class SecureCrtTerminalType extends ExternalTerminalType.WindowsType {
         try (var sc = LocalShell.getShell()) {
             SshLocalBridge.init();
             var b = SshLocalBridge.get();
-            var command = CommandBuilder.of().addFile(file.toString()).add("/T").add("/SSH2", "/ACCEPTHOSTKEYS", "/I").addFile(
-                    b.getIdentityKey().toString()).add("/P", "" + b.getPort()).add("/L").addQuoted(b.getUser()).add("localhost");
+            var command = CommandBuilder.of()
+                    .addFile(file.toString())
+                    .add("/T")
+                    .add("/SSH2", "/ACCEPTHOSTKEYS", "/I")
+                    .addFile(b.getIdentityKey().toString())
+                    .add("/P", "" + b.getPort())
+                    .add("/L")
+                    .addQuoted(b.getUser())
+                    .add("localhost");
             sc.executeSimpleCommand(command);
         }
     }

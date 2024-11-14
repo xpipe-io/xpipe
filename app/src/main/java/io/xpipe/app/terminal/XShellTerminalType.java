@@ -9,6 +9,7 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.SshLocalBridge;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.process.CommandBuilder;
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
@@ -18,7 +19,9 @@ import java.util.Optional;
 
 public class XShellTerminalType extends ExternalTerminalType.WindowsType {
 
-    public XShellTerminalType() {super("app.xShell", "Xshell");}
+    public XShellTerminalType() {
+        super("app.xShell", "Xshell");
+    }
 
     @Override
     public TerminalOpenFormat getOpenFormat() {
@@ -28,8 +31,10 @@ public class XShellTerminalType extends ExternalTerminalType.WindowsType {
     @Override
     protected Optional<Path> determineInstallation() {
         try {
-            var r = WindowsRegistry.local().readValue(WindowsRegistry.HKEY_LOCAL_MACHINE,
-                    "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\Xshell.exe");
+            var r = WindowsRegistry.local()
+                    .readValue(
+                            WindowsRegistry.HKEY_LOCAL_MACHINE,
+                            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\Xshell.exe");
             return r.map(Path::of);
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).omit().handle();
@@ -83,8 +88,12 @@ public class XShellTerminalType extends ExternalTerminalType.WindowsType {
             alert.setTitle(AppI18n.get("xshellSetup"));
             alert.setAlertType(Alert.AlertType.NONE);
 
-            var activated = AppI18n.get().getMarkdownDocumentation("app:xshellSetup").formatted(b.getIdentityKey(), keyName);
-            var markdown = new MarkdownComp(activated, s -> s).prefWidth(450).prefHeight(400).createRegion();
+            var activated =
+                    AppI18n.get().getMarkdownDocumentation("app:xshellSetup").formatted(b.getIdentityKey(), keyName);
+            var markdown = new MarkdownComp(activated, s -> s)
+                    .prefWidth(450)
+                    .prefHeight(400)
+                    .createRegion();
             alert.getDialogPane().setContent(markdown);
 
             alert.getButtonTypes().add(new ButtonType(AppI18n.get("ok"), ButtonBar.ButtonData.OK_DONE));

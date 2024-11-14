@@ -51,7 +51,8 @@ public class GnomeTerminalType extends ExternalTerminalType.PathCheckType implem
     }
 
     @Override
-    public FailableFunction<TerminalLaunchConfiguration, String, Exception> remoteLaunchCommand(ShellDialect systemDialect) {
+    public FailableFunction<TerminalLaunchConfiguration, String, Exception> remoteLaunchCommand(
+            ShellDialect systemDialect) {
         return launchConfiguration -> {
             var toExecute = CommandBuilder.of()
                     .add(executable, "-v", "--title")

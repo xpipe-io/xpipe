@@ -49,13 +49,17 @@ public class TerminalView {
 
     public static interface Listener {
 
-        default void onSessionOpened(ShellSession session) {};
+        default void onSessionOpened(ShellSession session) {}
+        ;
 
-        default void onSessionClosed(ShellSession session) {};
+        default void onSessionClosed(ShellSession session) {}
+        ;
 
-        default void onTerminalOpened(TerminalSession instance) {};
+        default void onTerminalOpened(TerminalSession instance) {}
+        ;
 
-        default void onTerminalClosed(TerminalSession instance) {};
+        default void onTerminalClosed(TerminalSession instance) {}
+        ;
     }
 
     private final List<ShellSession> sessions = new ArrayList<>();
@@ -130,7 +134,9 @@ public class TerminalView {
                     yield Optional.empty();
                 }
 
-                var existing = terminalInstances.stream().map(terminalSession -> ((WindowsTerminalSession) terminalSession).getControl()).toList();
+                var existing = terminalInstances.stream()
+                        .map(terminalSession -> ((WindowsTerminalSession) terminalSession).getControl())
+                        .toList();
                 controls.removeAll(existing);
                 if (controls.isEmpty()) {
                     yield Optional.empty();

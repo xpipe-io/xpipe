@@ -10,7 +10,6 @@ import io.xpipe.core.util.InPlaceSecretValue;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
-import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.controls.Spacer;
@@ -138,12 +137,7 @@ public class OptionsBuilder {
 
     public OptionsBuilder addTitle(ObservableValue<String> title) {
         finishCurrent();
-        entries.add(new OptionsComp.Entry(
-                null,
-                null,
-                null,
-                null,
-                new LabelComp(title).styleClass("title-header")));
+        entries.add(new OptionsComp.Entry(null, null, null, null, new LabelComp(title).styleClass("title-header")));
         return this;
     }
 

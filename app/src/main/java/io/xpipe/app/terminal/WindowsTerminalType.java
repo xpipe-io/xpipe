@@ -19,7 +19,9 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
     ExternalTerminalType WINDOWS_TERMINAL_CANARY = new Canary();
 
     private static CommandBuilder toCommand(TerminalLaunchConfiguration configuration) throws Exception {
-        var cmd = CommandBuilder.of().addIf(configuration.isPreferTabs(), "-w", "1").add("nt");
+        var cmd = CommandBuilder.of()
+                .addIf(configuration.isPreferTabs(), "-w", "1")
+                .add("nt");
 
         if (configuration.getColor() != null) {
             cmd.add("--tabColor").addQuoted(configuration.getColor().toHexString());
@@ -105,7 +107,8 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             if (!isAvailable()) {
-                throw ErrorEvent.expected(new IllegalArgumentException("Windows Terminal Preview is not installed at " + getPath()));
+                throw ErrorEvent.expected(
+                        new IllegalArgumentException("Windows Terminal Preview is not installed at " + getPath()));
             }
 
             LocalShell.getShell()
@@ -140,7 +143,8 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             if (!isAvailable()) {
-                throw ErrorEvent.expected(new IllegalArgumentException("Windows Terminal Canary is not installed at " + getPath()));
+                throw ErrorEvent.expected(
+                        new IllegalArgumentException("Windows Terminal Canary is not installed at " + getPath()));
             }
 
             LocalShell.getShell()

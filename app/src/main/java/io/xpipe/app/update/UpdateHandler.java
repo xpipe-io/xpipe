@@ -214,8 +214,7 @@ public abstract class UpdateHandler {
         // We only do that here to minimize the sent requests by only executing when it's really necessary
         var available = XPipeDistributionType.get()
                 .getUpdateHandler()
-                .refreshUpdateCheckSilent(
-                        false, preparedUpdate.getValue().isSecurityOnly());
+                .refreshUpdateCheckSilent(false, preparedUpdate.getValue().isSecurityOnly());
         if (preparedUpdate.getValue() == null) {
             return;
         }

@@ -16,7 +16,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.ObservableList;
 
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -57,7 +56,9 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
                 }
 
                 var sessions = TerminalView.get().getSessions();
-                var tv = sessions.stream().filter(s -> terminalRequests.contains(s.getRequest()) && s.getTerminal().isRunning())
+                var tv = sessions.stream()
+                        .filter(s -> terminalRequests.contains(s.getRequest())
+                                && s.getTerminal().isRunning())
                         .map(s -> s.getTerminal().controllable())
                         .flatMap(Optional::stream)
                         .toList();
@@ -72,7 +73,10 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
             @Override
             public void onTerminalClosed(TerminalView.TerminalSession instance) {
                 var sessions = TerminalView.get().getSessions();
-                var remaining = sessions.stream().filter(s -> terminalRequests.contains(s.getRequest()) && s.getTerminal().isRunning()).toList();
+                var remaining = sessions.stream()
+                        .filter(s -> terminalRequests.contains(s.getRequest())
+                                && s.getTerminal().isRunning())
+                        .toList();
                 if (remaining.isEmpty()) {
                     ((BrowserFullSessionModel) browserModel).unsplitTab(BrowserTerminalDockTabModel.this);
                 }

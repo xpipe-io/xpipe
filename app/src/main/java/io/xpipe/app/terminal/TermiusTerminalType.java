@@ -10,6 +10,7 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.SshLocalBridge;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.process.OsType;
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
@@ -41,7 +42,8 @@ public class TermiusTerminalType implements ExternalTerminalType {
                     yield Files.exists(Path.of("/Applications/Termius.app"));
                 }
                 case OsType.Windows windows -> {
-                    var r = WindowsRegistry.local().readValue(WindowsRegistry.HKEY_CURRENT_USER, "SOFTWARE\\Classes\\termius");
+                    var r = WindowsRegistry.local()
+                            .readValue(WindowsRegistry.HKEY_CURRENT_USER, "SOFTWARE\\Classes\\termius");
                     yield r.isPresent();
                 }
             };
@@ -78,7 +80,8 @@ public class TermiusTerminalType implements ExternalTerminalType {
         var port = b.getPort();
         var user = b.getUser();
         var name = b.getIdentityKey().getFileName().toString();
-        Hyperlinks.open("termius://app/host-sharing#label=" + name + "&ip=" + host + "&port=" + port + "&username=" + user + "&os=undefined");
+        Hyperlinks.open("termius://app/host-sharing#label=" + name + "&ip=" + host + "&port=" + port + "&username="
+                + user + "&os=undefined");
     }
 
     private boolean showInfo() throws IOException {
@@ -93,8 +96,13 @@ public class TermiusTerminalType implements ExternalTerminalType {
             alert.setTitle(AppI18n.get("termiusSetup"));
             alert.setAlertType(Alert.AlertType.NONE);
 
-            var activated = AppI18n.get().getMarkdownDocumentation("app:termiusSetup").formatted(b.getIdentityKey(), keyContent);
-            var markdown = new MarkdownComp(activated, s -> s).prefWidth(450).prefHeight(450).createRegion();
+            var activated = AppI18n.get()
+                    .getMarkdownDocumentation("app:termiusSetup")
+                    .formatted(b.getIdentityKey(), keyContent);
+            var markdown = new MarkdownComp(activated, s -> s)
+                    .prefWidth(450)
+                    .prefHeight(450)
+                    .createRegion();
             alert.getDialogPane().setContent(markdown);
 
             alert.getButtonTypes().add(new ButtonType(AppI18n.get("ok"), ButtonBar.ButtonData.OK_DONE));

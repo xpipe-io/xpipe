@@ -279,12 +279,11 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                     var cc = fileSystem
                             .getShell()
                             .get()
-                            .singularSubShell(
-                                    ShellOpenFunction.of(CommandBuilder.ofString(adjustedPath), false));
-                    openTerminalAsync(name,directory,cc, true);
+                            .singularSubShell(ShellOpenFunction.of(CommandBuilder.ofString(adjustedPath), false));
+                    openTerminalAsync(name, directory, cc, true);
                 } else {
                     var cc = fileSystem.getShell().get().command(adjustedPath);
-                    openTerminalAsync(name,directory,cc, true);
+                    openTerminalAsync(name, directory, cc, true);
                 }
             });
             return Optional.ofNullable(currentPath.get());
@@ -539,7 +538,8 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         history.updateCurrent(null);
     }
 
-    public void openTerminalAsync(String name, String directory, ProcessControl processControl, boolean dockIfPossible) {
+    public void openTerminalAsync(
+            String name, String directory, ProcessControl processControl, boolean dockIfPossible) {
         ThreadHelper.runFailableAsync(() -> {
             if (fileSystem == null) {
                 return;
@@ -550,9 +550,11 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                     var dock = shouldLaunchSplitTerminal() && dockIfPossible;
                     var uuid = UUID.randomUUID();
                     terminalRequests.add(uuid);
-                    if (dock && browserModel instanceof BrowserFullSessionModel fullSessionModel &&
-                            !(fullSessionModel.getSplits().get(this) instanceof BrowserTerminalDockTabModel)) {
-                        fullSessionModel.splitTab(this, new BrowserTerminalDockTabModel(browserModel, this, terminalRequests));
+                    if (dock
+                            && browserModel instanceof BrowserFullSessionModel fullSessionModel
+                            && !(fullSessionModel.getSplits().get(this) instanceof BrowserTerminalDockTabModel)) {
+                        fullSessionModel.splitTab(
+                                this, new BrowserTerminalDockTabModel(browserModel, this, terminalRequests));
                     }
                     TerminalLauncher.open(entry.getEntry(), name, directory, processControl, uuid, !dock);
 

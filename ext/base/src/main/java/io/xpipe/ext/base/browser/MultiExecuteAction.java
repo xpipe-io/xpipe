@@ -6,14 +6,12 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
 
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;
-import java.util.UUID;
 
 public abstract class MultiExecuteAction implements BrowserBranchAction {
 
@@ -36,10 +34,14 @@ public abstract class MultiExecuteAction implements BrowserBranchAction {
                                         }
 
                                         var cmd = pc.command(c);
-                                        model.openTerminalAsync(entry.getRawFileEntry().getName(), model.getCurrentDirectory() != null
-                                                ? model.getCurrentDirectory()
-                                                .getPath()
-                                                : null, cmd, entries.size() == 1);
+                                        model.openTerminalAsync(
+                                                entry.getRawFileEntry().getName(),
+                                                model.getCurrentDirectory() != null
+                                                        ? model.getCurrentDirectory()
+                                                                .getPath()
+                                                        : null,
+                                                cmd,
+                                                entries.size() == 1);
                                     }
                                 },
                                 false);

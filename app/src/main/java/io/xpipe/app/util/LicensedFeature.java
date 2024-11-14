@@ -2,7 +2,6 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppI18n;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 
 import java.util.Optional;

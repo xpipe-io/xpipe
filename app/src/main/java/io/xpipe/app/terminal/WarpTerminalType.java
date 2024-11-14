@@ -9,7 +9,9 @@ import io.xpipe.core.util.FailableFunction;
 
 public class WarpTerminalType extends ExternalTerminalType.MacOsType {
 
-    public WarpTerminalType() {super("app.warp", "Warp");}
+    public WarpTerminalType() {
+        super("app.warp", "Warp");
+    }
 
     @Override
     public TerminalOpenFormat getOpenFormat() {
@@ -43,18 +45,21 @@ public class WarpTerminalType extends ExternalTerminalType.MacOsType {
 
     @Override
     public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-        LocalShell.getShell().executeSimpleCommand(CommandBuilder.of()
-                .add("open", "-a")
-                .addQuoted("Warp.app")
-                .addFile(configuration.getScriptFile()));
+        LocalShell.getShell()
+                .executeSimpleCommand(CommandBuilder.of()
+                        .add("open", "-a")
+                        .addQuoted("Warp.app")
+                        .addFile(configuration.getScriptFile()));
     }
 
     @Override
     public FailableFunction<TerminalLaunchConfiguration, String, Exception> remoteLaunchCommand(
-            ShellDialect systemDialect
-    ) {
+            ShellDialect systemDialect) {
         return launchConfiguration -> {
-            var toExecute = CommandBuilder.of().add("open", "-a").addQuoted("Warp.app").addFile(launchConfiguration.getScriptFile());
+            var toExecute = CommandBuilder.of()
+                    .add("open", "-a")
+                    .addQuoted("Warp.app")
+                    .addFile(launchConfiguration.getScriptFile());
             return toExecute.buildSimple();
         };
     }
