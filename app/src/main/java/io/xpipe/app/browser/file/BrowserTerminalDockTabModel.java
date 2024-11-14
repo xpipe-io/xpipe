@@ -49,8 +49,6 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
 
     @Override
     public void init() throws Exception {
-        var sessions = new ArrayList<TerminalView.ShellSession>();
-        var terminals = new ArrayList<TerminalView.TerminalSession>();
         listener = new TerminalView.Listener() {
             @Override
             public void onSessionOpened(TerminalView.ShellSession session) {
@@ -58,17 +56,11 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
                     return;
                 }
 
-                sessions.add(session);
-                var tv = terminals.stream()
-                        .filter(instance -> sessions.stream()
-                                .anyMatch(s -> instance.getTerminalProcess().equals(s.getTerminal())))
-                        .map(terminalSession -> terminalSession.controllable())
+                var sessions = TerminalView.get().getSessions();
+                var tv = sessions.stream().filter(s -> terminalRequests.contains(s.getRequest()) && s.getTerminal().isRunning())
+                        .map(s -> s.getTerminal().controllable())
                         .flatMap(Optional::stream)
                         .toList();
-                if (tv.isEmpty()) {
-                    return;
-                }
-
                 for (int i = 0; i < tv.size() - 1; i++) {
                     dockModel.closeTerminal(tv.get(i));
                 }
@@ -78,19 +70,10 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
             }
 
             @Override
-            public void onSessionClosed(TerminalView.ShellSession session) {
-                sessions.remove(session);
-            }
-
-            @Override
-            public void onTerminalOpened(TerminalView.TerminalSession instance) {
-                terminals.add(instance);
-            }
-
-            @Override
             public void onTerminalClosed(TerminalView.TerminalSession instance) {
-                terminals.remove(instance);
-                if (terminals.isEmpty()) {
+                var sessions = TerminalView.get().getSessions();
+                var remaining = sessions.stream().filter(s -> terminalRequests.contains(s.getRequest()) && s.getTerminal().isRunning()).toList();
+                if (remaining.isEmpty()) {
                     ((BrowserFullSessionModel) browserModel).unsplitTab(BrowserTerminalDockTabModel.this);
                 }
             }

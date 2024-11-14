@@ -27,7 +27,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
         }
     }
 
-    private static void open(ExternalTerminalType.LaunchConfiguration configuration, CommandBuilder socketWrite)
+    private static void open(TerminalLaunchConfiguration configuration, CommandBuilder socketWrite)
             throws Exception {
         try (var sc = LocalShell.getShell().start()) {
             var payload = JsonNodeFactory.instance.objectNode();
@@ -74,11 +74,6 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
     }
 
     @Override
-    default boolean supportsTabs() {
-        return true;
-    }
-
-    @Override
     default String getWebsite() {
         return "https://github.com/kovidgoyal/kitty";
     }
@@ -87,6 +82,11 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
     default boolean isRecommended() {
         // There are some race conditions with the socket
         return false;
+    }
+
+    @Override
+    default TerminalOpenFormat getOpenFormat() {
+        return TerminalOpenFormat.TABBED;
     }
 
     @Override
@@ -116,7 +116,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
         }
 
         @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             try (var sc = LocalShell.getShell().start()) {
                 CommandSupport.isInPathOrThrow(sc, "kitty", "Kitty", null);
                 CommandSupport.isInPathOrThrow(sc, "socat", "socat", null);
@@ -167,7 +167,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
         }
 
         @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             // We use the absolute path to force the usage of macOS netcat
             // Homebrew versions have different option formats
             try (var sc = LocalShell.getShell().start()) {

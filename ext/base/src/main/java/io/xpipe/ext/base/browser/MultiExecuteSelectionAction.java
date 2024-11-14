@@ -34,18 +34,16 @@ public abstract class MultiExecuteSelectionAction implements BrowserBranchAction
                     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         model.withShell(
                                 pc -> {
-                                    var uuid = UUID.randomUUID();
-                                    model.getTerminalRequests().add(uuid);
-                                    var cmd = pc.command(createCommand(pc, model, entries));
-                                    TerminalLauncher.open(
-                                            model.getEntry().getEntry(),
-                                            getTerminalTitle(),
-                                            model.getCurrentDirectory() != null
-                                                    ? model.getCurrentDirectory()
-                                                            .getPath()
-                                                    : null,
-                                            cmd,
-                                            uuid);
+                                    var c = createCommand(pc, model, entries);
+                                    if (c == null) {
+                                        return;
+                                    }
+
+                                    var cmd = pc.command(c);
+                                    model.openTerminalAsync(getTerminalTitle(), model.getCurrentDirectory() != null
+                                            ? model.getCurrentDirectory()
+                                            .getPath()
+                                            : null, cmd);
                                 },
                                 false);
                     }

@@ -12,18 +12,22 @@ import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.ptr.IntByReference;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Getter
+@EqualsAndHashCode
 public class NativeWinWindowControl {
 
-    public static Optional<NativeWinWindowControl> byPid(long pid) {
-        var ref = new AtomicReference<NativeWinWindowControl>();
+    public static List<NativeWinWindowControl> byPid(long pid) {
+        var refs = new ArrayList<NativeWinWindowControl>();
         User32.INSTANCE.EnumWindows(
                 (hWnd, data) -> {
                     var visible = User32.INSTANCE.IsWindowVisible(hWnd);
@@ -34,14 +38,12 @@ public class NativeWinWindowControl {
                     var wpid = new IntByReference();
                     User32.INSTANCE.GetWindowThreadProcessId(hWnd, wpid);
                     if (wpid.getValue() == pid) {
-                        ref.set(new NativeWinWindowControl(hWnd));
-                        return false;
-                    } else {
-                        return true;
+                        refs.add(new NativeWinWindowControl(hWnd));
                     }
+                    return true;
                 },
                 null);
-        return Optional.ofNullable(ref.get());
+        return refs;
     }
 
     public static NativeWinWindowControl MAIN_WINDOW;

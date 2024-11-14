@@ -2,6 +2,7 @@ package io.xpipe.ext.base.desktop;
 
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.ExternalTerminalType;
+import io.xpipe.app.terminal.TerminalLaunchConfiguration;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellDialect;
@@ -99,7 +100,7 @@ public class DesktopEnvironmentStore extends JacksonizedValue
                 .createScript(
                         dialect,
                         dialect.prepareTerminalInitFileOpenCommand(dialect, null, scriptFile.toString(), false));
-        var launchConfig = new ExternalTerminalType.LaunchConfiguration(null, name, name, launchScriptFile, dialect);
+        var launchConfig = new TerminalLaunchConfiguration(null, name, name, true, launchScriptFile, dialect);
         base.getStore().runDesktopScript(name, launchCommand.apply(launchConfig));
     }
 

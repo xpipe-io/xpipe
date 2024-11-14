@@ -10,13 +10,13 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
     ExternalTerminalType ALACRITTY_MAC_OS = new MacOs();
 
     @Override
-    default boolean supportsTabs() {
-        return false;
+    default String getWebsite() {
+        return "https://github.com/alacritty/alacritty";
     }
 
     @Override
-    default String getWebsite() {
-        return "https://github.com/alacritty/alacritty";
+    default TerminalOpenFormat getOpenFormat() {
+        return TerminalOpenFormat.NEW_WINDOW;
     }
 
     @Override
@@ -36,7 +36,7 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
         }
 
         @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) {
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             var b = CommandBuilder.of();
 
             //            if (configuration.getColor() != null) {
@@ -61,7 +61,7 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
         }
 
         @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) {
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return CommandBuilder.of()
                     .add("-t")
                     .addQuoted(configuration.getCleanTitle())
@@ -77,7 +77,7 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
         }
 
         @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             LocalShell.getShell()
                     .executeSimpleCommand(CommandBuilder.of()
                             .add("open", "-a")

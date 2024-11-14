@@ -19,11 +19,6 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
     ExternalTerminalType WEZTERM_MAC_OS = new MacOs();
 
     @Override
-    default boolean supportsTabs() {
-        return false;
-    }
-
-    @Override
     default String getWebsite() {
         return "https://wezfurlong.org/wezterm/index.html";
     }
@@ -45,7 +40,12 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         }
 
         @Override
-        protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW;
+        }
+
+        @Override
+        protected void execute(Path file, TerminalLaunchConfiguration configuration) throws Exception {
             LocalShell.getShell()
                     .executeSimpleCommand(CommandBuilder.of()
                             .addFile(file.toString())
@@ -90,6 +90,11 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
             super("app.wezterm");
         }
 
+        @Override
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.TABBED;
+        }
+
         public boolean isAvailable() {
             try (ShellControl pc = LocalShell.getShell()) {
                 return pc.executeSimpleBooleanCommand(pc.getShellDialect().getWhichCommand("wezterm"))
@@ -101,7 +106,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         }
 
         @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             var spawn = LocalShell.getShell()
                     .command(CommandBuilder.of()
                             .addFile("wezterm")
@@ -122,7 +127,12 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         }
 
         @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.TABBED;
+        }
+
+        @Override
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             try (var sc = LocalShell.getShell()) {
                 var pathOut = sc.command(String.format(
                                 "mdfind -name '%s' -onlyin /Applications -onlyin ~/Applications -onlyin /System/Applications 2>/dev/null",

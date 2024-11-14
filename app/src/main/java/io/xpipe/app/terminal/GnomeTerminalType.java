@@ -14,13 +14,13 @@ public class GnomeTerminalType extends ExternalTerminalType.PathCheckType implem
     }
 
     @Override
-    public String getWebsite() {
-        return "https://help.gnome.org/users/gnome-terminal/stable/";
+    public TerminalOpenFormat getOpenFormat() {
+        return TerminalOpenFormat.NEW_WINDOW;
     }
 
     @Override
-    public boolean supportsTabs() {
-        return false;
+    public String getWebsite() {
+        return "https://help.gnome.org/users/gnome-terminal/stable/";
     }
 
     @Override
@@ -34,7 +34,7 @@ public class GnomeTerminalType extends ExternalTerminalType.PathCheckType implem
     }
 
     @Override
-    public void launch(LaunchConfiguration configuration) throws Exception {
+    public void launch(TerminalLaunchConfiguration configuration) throws Exception {
         try (ShellControl pc = LocalShell.getShell()) {
             CommandSupport.isInPathOrThrow(pc, executable, toTranslatedString().getValue(), null);
 
@@ -51,7 +51,7 @@ public class GnomeTerminalType extends ExternalTerminalType.PathCheckType implem
     }
 
     @Override
-    public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand(ShellDialect systemDialect) {
+    public FailableFunction<TerminalLaunchConfiguration, String, Exception> remoteLaunchCommand(ShellDialect systemDialect) {
         return launchConfiguration -> {
             var toExecute = CommandBuilder.of()
                     .add(executable, "-v", "--title")

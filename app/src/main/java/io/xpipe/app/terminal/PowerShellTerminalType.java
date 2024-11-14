@@ -15,15 +15,15 @@ public class PowerShellTerminalType extends ExternalTerminalType.SimplePathType 
     }
 
     @Override
-    public int getProcessHierarchyOffset() {
-        var powershell = ProcessControlProvider.get().getEffectiveLocalDialect() == POWERSHELL
-                || AppPrefs.get().enableTerminalLogging().get();
-        return powershell ? -1 : 0;
+    public TerminalOpenFormat getOpenFormat() {
+        return TerminalOpenFormat.NEW_WINDOW;
     }
 
     @Override
-    public boolean supportsTabs() {
-        return false;
+    public int getProcessHierarchyOffset() {
+        var powershell = ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.POWERSHELL
+                || AppPrefs.get().enableTerminalLogging().get();
+        return powershell ? -1 : 0;
     }
 
     @Override
@@ -37,7 +37,7 @@ public class PowerShellTerminalType extends ExternalTerminalType.SimplePathType 
     }
 
     @Override
-    protected CommandBuilder toCommand(LaunchConfiguration configuration) {
+    protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
         if (configuration.getScriptDialect().equals(ShellDialects.POWERSHELL)) {
             return CommandBuilder.of()
                     .add("-ExecutionPolicy", "Bypass")

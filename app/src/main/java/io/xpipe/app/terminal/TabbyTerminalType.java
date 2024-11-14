@@ -15,8 +15,8 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
     ExternalTerminalType TABBY_MAC_OS = new MacOs();
 
     @Override
-    default boolean supportsTabs() {
-        return true;
+    default TerminalOpenFormat getOpenFormat() {
+        return TerminalOpenFormat.TABBED;
     }
 
     @Override
@@ -67,7 +67,7 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
         }
 
         @Override
-        protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
+        protected void execute(Path file, TerminalLaunchConfiguration configuration) throws Exception {
             // Tabby has a very weird handling of output, even detaching with start does not prevent it from printing
             if (configuration.getScriptDialect().equals(ShellDialects.CMD)) {
                 // It also freezes with any other input than .bat files, why?
@@ -124,7 +124,7 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
         }
 
         @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             LocalShell.getShell()
                     .executeSimpleCommand(CommandBuilder.of()
                             .add("open", "-a")

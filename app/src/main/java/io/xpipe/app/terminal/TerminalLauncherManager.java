@@ -19,9 +19,6 @@ public class TerminalLauncherManager {
     public static void init() {
         TerminalView.get().addListener(new TerminalView.Listener() {
             @Override
-            public void onSessionOpened(TerminalView.ShellSession session) {}
-
-            @Override
             public void onSessionClosed(TerminalView.ShellSession session) {
                 var affectedEntry = entries.values().stream()
                         .filter(terminalLaunchRequest -> {
@@ -34,12 +31,6 @@ public class TerminalLauncherManager {
 
                 affectedEntry.get().abort();
             }
-
-            @Override
-            public void onTerminalOpened(TerminalView.TerminalSession instance) {}
-
-            @Override
-            public void onTerminalClosed(TerminalView.TerminalSession instance) {}
         });
     }
 

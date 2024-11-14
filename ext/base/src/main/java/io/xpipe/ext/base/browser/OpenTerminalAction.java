@@ -17,33 +17,20 @@ import javafx.scene.input.KeyCombination;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class OpenTerminalAction implements BrowserLeafAction {
 
     @Override
     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        if (entries.size() == 0) {
-            model.openTerminalAsync(
-                    model.getCurrentDirectory() != null
-                            ? model.getCurrentDirectory().getPath()
-                            : null);
-        } else {
-            for (var entry : entries) {
-                model.openTerminalAsync(entry.getRawFileEntry().getPath());
-            }
-        }
-
-        if (AppPrefs.get().enableTerminalDocking().get()
-                && model.getBrowserModel() instanceof BrowserFullSessionModel sessionModel) {
-            // Check if the right side is already occupied
-            var existingSplit = sessionModel.getSplits().get(model);
-            if (existingSplit != null && !(existingSplit instanceof BrowserTerminalDockTabModel)) {
-                return;
-            }
-
-            sessionModel.splitTab(
-                    model, new BrowserTerminalDockTabModel(sessionModel, model, model.getTerminalRequests()));
+        var dirs = entries.size() > 0 ? entries.stream().map(browserEntry -> browserEntry.getRawFileEntry().getPath()).toList() : model.getCurrentDirectory() != null
+                ? List.of(model.getCurrentDirectory().getPath())
+                : Collections.singletonList((String) null);
+        for (String dir : dirs) {
+            var name = (dir != null ? dir + " - " : "") + model.getName();
+            model.openTerminalAsync(name, dir, model.getFileSystem().getShell().orElseThrow());
         }
     }
 

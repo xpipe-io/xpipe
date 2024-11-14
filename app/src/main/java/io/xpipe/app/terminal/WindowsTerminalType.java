@@ -18,8 +18,8 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
     ExternalTerminalType WINDOWS_TERMINAL_PREVIEW = new Preview();
     ExternalTerminalType WINDOWS_TERMINAL_CANARY = new Canary();
 
-    private static CommandBuilder toCommand(ExternalTerminalType.LaunchConfiguration configuration) throws Exception {
-        var cmd = CommandBuilder.of().add("-w", "1", "nt");
+    private static CommandBuilder toCommand(TerminalLaunchConfiguration configuration) throws Exception {
+        var cmd = CommandBuilder.of().addIf(configuration.isPreferTabs(), "-w", "1").add("nt");
 
         if (configuration.getColor() != null) {
             cmd.add("--tabColor").addQuoted(configuration.getColor().toHexString());
@@ -57,15 +57,15 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
     }
 
     @Override
+    default TerminalOpenFormat getOpenFormat() {
+        return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
+    }
+
+    @Override
     default int getProcessHierarchyOffset() {
         var powershell = AppPrefs.get().enableTerminalLogging().get()
                 && !ShellDialects.isPowershell(ProcessControlProvider.get().getEffectiveLocalDialect());
         return powershell ? 1 : 0;
-    }
-
-    @Override
-    default boolean supportsTabs() {
-        return true;
     }
 
     @Override
@@ -90,7 +90,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         }
 
         @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) throws Exception {
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) throws Exception {
             return WindowsTerminalType.toCommand(configuration);
         }
     }
@@ -103,9 +103,9 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         }
 
         @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             if (!isAvailable()) {
-                throw ErrorEvent.expected(new IllegalArgumentException("Windows Terminal Preview is not installed"));
+                throw ErrorEvent.expected(new IllegalArgumentException("Windows Terminal Preview is not installed at " + getPath()));
             }
 
             LocalShell.getShell()
@@ -138,9 +138,9 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         }
 
         @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             if (!isAvailable()) {
-                throw ErrorEvent.expected(new IllegalArgumentException("Windows Terminal Canary is not installed"));
+                throw ErrorEvent.expected(new IllegalArgumentException("Windows Terminal Canary is not installed at " + getPath()));
             }
 
             LocalShell.getShell()

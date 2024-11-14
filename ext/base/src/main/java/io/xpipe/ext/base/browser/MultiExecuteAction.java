@@ -30,22 +30,16 @@ public abstract class MultiExecuteAction implements BrowserBranchAction {
                         model.withShell(
                                 pc -> {
                                     for (BrowserEntry entry : entries) {
-                                        var cmd = pc.command(createCommand(pc, model, entry));
-                                        if (cmd == null) {
+                                        var c = createCommand(pc, model, entry);
+                                        if (c == null) {
                                             continue;
                                         }
 
-                                        var uuid = UUID.randomUUID();
-                                        model.getTerminalRequests().add(uuid);
-                                        TerminalLauncher.open(
-                                                model.getEntry().getEntry(),
-                                                entry.getRawFileEntry().getName(),
-                                                model.getCurrentDirectory() != null
-                                                        ? model.getCurrentDirectory()
-                                                                .getPath()
-                                                        : null,
-                                                cmd,
-                                                uuid);
+                                        var cmd = pc.command(c);
+                                        model.openTerminalAsync(entry.getRawFileEntry().getName(), model.getCurrentDirectory() != null
+                                                ? model.getCurrentDirectory()
+                                                .getPath()
+                                                : null, cmd);
                                     }
                                 },
                                 false);

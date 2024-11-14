@@ -12,13 +12,13 @@ public class PwshTerminalType extends ExternalTerminalType.SimplePathType implem
     }
 
     @Override
-    public String getWebsite() {
-        return "https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.4";
+    public TerminalOpenFormat getOpenFormat() {
+        return TerminalOpenFormat.NEW_WINDOW;
     }
 
     @Override
-    public boolean supportsTabs() {
-        return false;
+    public String getWebsite() {
+        return "https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.4";
     }
 
     @Override
@@ -32,7 +32,7 @@ public class PwshTerminalType extends ExternalTerminalType.SimplePathType implem
     }
 
     @Override
-    protected CommandBuilder toCommand(LaunchConfiguration configuration) {
+    protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
         return CommandBuilder.of()
                 .add("-ExecutionPolicy", "Bypass")
                 .add("-EncodedCommand")

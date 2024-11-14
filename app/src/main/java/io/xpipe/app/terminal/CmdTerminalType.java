@@ -12,15 +12,15 @@ public class CmdTerminalType extends ExternalTerminalType.SimplePathType impleme
     }
 
     @Override
+    public TerminalOpenFormat getOpenFormat() {
+        return TerminalOpenFormat.NEW_WINDOW;
+    }
+
+    @Override
     public int getProcessHierarchyOffset() {
         var powershell = ShellDialects.isPowershell(ProcessControlProvider.get().getEffectiveLocalDialect())
                 || AppPrefs.get().enableTerminalLogging().get();
         return powershell ? 0 : -1;
-    }
-
-    @Override
-    public boolean supportsTabs() {
-        return false;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class CmdTerminalType extends ExternalTerminalType.SimplePathType impleme
     }
 
     @Override
-    protected CommandBuilder toCommand(LaunchConfiguration configuration) {
+    protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
         if (configuration.getScriptDialect().equals(ShellDialects.CMD)) {
             return CommandBuilder.of().add("/c").addFile(configuration.getScriptFile());
         }

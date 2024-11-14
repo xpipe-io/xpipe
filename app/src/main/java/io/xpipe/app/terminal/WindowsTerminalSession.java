@@ -4,9 +4,11 @@ import io.xpipe.app.core.window.NativeWinWindowControl;
 import io.xpipe.app.util.Rect;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Getter
 public final class WindowsTerminalSession extends ControllableTerminalSession {
 
     NativeWinWindowControl control;
@@ -14,6 +16,11 @@ public final class WindowsTerminalSession extends ControllableTerminalSession {
     public WindowsTerminalSession(ProcessHandle terminal, NativeWinWindowControl control) {
         super(terminal);
         this.control = control;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return super.isRunning() && control.isVisible();
     }
 
     @Override

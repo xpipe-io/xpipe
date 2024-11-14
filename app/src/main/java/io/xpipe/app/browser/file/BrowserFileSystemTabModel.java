@@ -1,6 +1,7 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.BrowserAbstractSessionModel;
+import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.BrowserStoreSessionTab;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.comp.Comp;
@@ -8,15 +9,13 @@ import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.terminal.TerminalLauncher;
+import io.xpipe.app.terminal.*;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.process.ShellOpenFunction;
+import io.xpipe.core.process.*;
 import io.xpipe.core.store.*;
 import io.xpipe.core.util.FailableConsumer;
 import io.xpipe.core.util.FailableRunnable;
@@ -206,6 +205,33 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         cdSyncOrRetry(path, false).ifPresent(s -> cdSyncOrRetry(s, false));
     }
 
+    private boolean shouldLaunchSplitTerminal() {
+        if (!AppPrefs.get().enableTerminalDocking().get()) {
+            return false;
+        }
+
+        if (OsType.getLocal() != OsType.WINDOWS) {
+            return false;
+        }
+
+        var term = AppPrefs.get().terminalType().getValue();
+        if (term == null || term.getOpenFormat() == TerminalOpenFormat.TABBED) {
+            return false;
+        }
+
+        if (!(browserModel instanceof BrowserFullSessionModel f)) {
+            return false;
+        }
+
+        // Check if the right side is already occupied
+        var existingSplit = f.getEffectiveRightTab().getValue();
+        if (existingSplit != null && !(existingSplit instanceof BrowserTerminalDockTabModel)) {
+            return false;
+        }
+
+        return true;
+    }
+
     public Optional<String> cdSyncOrRetry(String path, boolean customInput) {
         if (Objects.equals(path, currentPath.get())) {
             return Optional.empty();
@@ -250,27 +276,15 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                 if (ShellDialects.getStartableDialects().stream().anyMatch(dialect -> adjustedPath
                         .toLowerCase()
                         .startsWith(dialect.getExecutableName().toLowerCase()))) {
-                    var uuid = UUID.randomUUID();
-                    terminalRequests.add(uuid);
-                    TerminalLauncher.open(
-                            entry.getEntry(),
-                            name,
-                            directory,
-                            fileSystem
-                                    .getShell()
-                                    .get()
-                                    .singularSubShell(
-                                            ShellOpenFunction.of(CommandBuilder.ofString(adjustedPath), false)),
-                            uuid);
+                    var cc = fileSystem
+                            .getShell()
+                            .get()
+                            .singularSubShell(
+                                    ShellOpenFunction.of(CommandBuilder.ofString(adjustedPath), false));
+                    openTerminalAsync(name,directory,cc);
                 } else {
-                    var uuid = UUID.randomUUID();
-                    terminalRequests.add(uuid);
-                    TerminalLauncher.open(
-                            entry.getEntry(),
-                            name,
-                            directory,
-                            fileSystem.getShell().get().command(adjustedPath),
-                            uuid);
+                    var cc = fileSystem.getShell().get().command(adjustedPath);
+                    openTerminalAsync(name,directory,cc);
                 }
             });
             return Optional.ofNullable(currentPath.get());
@@ -525,7 +539,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         history.updateCurrent(null);
     }
 
-    public void openTerminalAsync(String directory) {
+    public void openTerminalAsync(String name, String directory, ProcessControl processControl) {
         ThreadHelper.runFailableAsync(() -> {
             if (fileSystem == null) {
                 return;
@@ -533,12 +547,14 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
 
             BooleanScope.executeExclusive(busy, () -> {
                 if (fileSystem.getShell().isPresent()) {
-                    var connection = fileSystem.getShell().get();
-                    var name = (directory != null ? directory + " - " : "")
-                            + entry.get().getName();
+                    var dock = shouldLaunchSplitTerminal();
                     var uuid = UUID.randomUUID();
                     terminalRequests.add(uuid);
-                    TerminalLauncher.open(entry.getEntry(), name, directory, connection, uuid);
+                    if (dock && browserModel instanceof BrowserFullSessionModel fullSessionModel &&
+                            !(fullSessionModel.getSplits().get(this) instanceof BrowserTerminalDockTabModel)) {
+                        fullSessionModel.splitTab(this, new BrowserTerminalDockTabModel(browserModel, this, terminalRequests));
+                    }
+                    TerminalLauncher.open(entry.getEntry(), name, directory, processControl, uuid, !dock);
 
                     // Restart connection as we will have to start it anyway, so we speed it up by doing it preemptively
                     startIfNeeded();

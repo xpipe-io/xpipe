@@ -16,8 +16,8 @@ public class CustomTerminalType extends ExternalApplicationType implements Exter
     }
 
     @Override
-    public boolean supportsTabs() {
-        return true;
+    public TerminalOpenFormat getOpenFormat() {
+        return TerminalOpenFormat.NEW_WINDOW;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class CustomTerminalType extends ExternalApplicationType implements Exter
     }
 
     @Override
-    public void launch(LaunchConfiguration configuration) throws Exception {
+    public void launch(TerminalLaunchConfiguration configuration) throws Exception {
         var custom = AppPrefs.get().customTerminalCommand().getValue();
         if (custom == null || custom.isBlank()) {
             throw ErrorEvent.expected(new IllegalStateException("No custom terminal command specified"));

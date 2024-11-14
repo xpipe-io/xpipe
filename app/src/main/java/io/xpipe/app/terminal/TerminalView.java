@@ -26,7 +26,7 @@ public class TerminalView {
     public static class ShellSession {
         UUID request;
         ProcessHandle shell;
-        ProcessHandle terminal;
+        TerminalSession terminal;
     }
 
     @Getter
@@ -38,6 +38,10 @@ public class TerminalView {
             this.terminalProcess = terminalProcess;
         }
 
+        public boolean isRunning() {
+            return terminalProcess.isAlive();
+        }
+
         public Optional<ControllableTerminalSession> controllable() {
             return Optional.ofNullable(this instanceof ControllableTerminalSession c ? c : null);
         }
@@ -45,13 +49,13 @@ public class TerminalView {
 
     public static interface Listener {
 
-        void onSessionOpened(ShellSession session);
+        default void onSessionOpened(ShellSession session) {};
 
-        void onSessionClosed(ShellSession session);
+        default void onSessionClosed(ShellSession session) {};
 
-        void onTerminalOpened(TerminalSession instance);
+        default void onTerminalOpened(TerminalSession instance) {};
 
-        void onTerminalClosed(TerminalSession instance);
+        default void onTerminalClosed(TerminalSession instance) {};
     }
 
     private final List<ShellSession> sessions = new ArrayList<>();
@@ -97,20 +101,17 @@ public class TerminalView {
             return;
         }
 
-        var session = new ShellSession(request, shell.get(), terminal.get());
-        var instance = terminalInstances.stream()
-                .filter(i -> i.getTerminalProcess().equals(terminal.get()))
-                .findFirst();
-        if (instance.isEmpty()) {
-            var tv = createTerminalSession(terminal.get());
-            if (tv.isEmpty()) {
-                return;
-            }
+        var tv = createTerminalSession(terminal.get());
+        if (tv.isEmpty()) {
+            return;
+        }
 
+        if (!terminalInstances.contains(tv.get())) {
             terminalInstances.add(tv.get());
             listeners.forEach(listener -> listener.onTerminalOpened(tv.get()));
         }
 
+        var session = new ShellSession(request, shell.get(), tv.get());
         sessions.add(session);
         listeners.forEach(listener -> listener.onSessionOpened(session));
 
@@ -124,12 +125,18 @@ public class TerminalView {
             case OsType.Linux linux -> Optional.of(new TerminalSession(terminalProcess));
             case OsType.MacOs macOs -> Optional.of(new TerminalSession(terminalProcess));
             case OsType.Windows windows -> {
-                var control = NativeWinWindowControl.byPid(terminalProcess.pid());
-                if (control.isEmpty()) {
+                var controls = NativeWinWindowControl.byPid(terminalProcess.pid());
+                if (controls.isEmpty()) {
                     yield Optional.empty();
                 }
 
-                yield Optional.of(new WindowsTerminalSession(terminalProcess, control.get()));
+                var existing = terminalInstances.stream().map(terminalSession -> ((WindowsTerminalSession) terminalSession).getControl()).toList();
+                controls.removeAll(existing);
+                if (controls.isEmpty()) {
+                    yield Optional.empty();
+                }
+
+                yield Optional.of(new WindowsTerminalSession(terminalProcess, controls.getFirst()));
             }
         };
     }
@@ -176,7 +183,7 @@ public class TerminalView {
 
     public synchronized void tick() {
         for (ShellSession session : new ArrayList<>(sessions)) {
-            var alive = session.shell.isAlive() && session.terminal.isAlive();
+            var alive = session.shell.isAlive() && session.getTerminal().isRunning();
             if (!alive) {
                 sessions.remove(session);
                 listeners.forEach(listener -> listener.onSessionClosed(session));
@@ -184,7 +191,7 @@ public class TerminalView {
         }
 
         for (TerminalSession terminalInstance : new ArrayList<>(terminalInstances)) {
-            var alive = terminalInstance.getTerminalProcess().isAlive();
+            var alive = terminalInstance.isRunning();
             if (!alive) {
                 terminalInstances.remove(terminalInstance);
                 TrackEvent.withTrace("Terminal session is dead")
