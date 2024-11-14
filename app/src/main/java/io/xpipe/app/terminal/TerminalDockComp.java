@@ -74,6 +74,8 @@ public class TerminalDockComp extends SimpleComp {
             event.consume();
         });
         stack.getStyleClass().add("terminal-dock-comp");
+        stack.setMinWidth(100);
+        stack.setMinHeight(100);
         return stack;
     }
 

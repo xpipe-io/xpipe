@@ -80,7 +80,7 @@ public final class WindowsTerminalSession extends ControllableTerminalSession {
     }
 
     public void updateBoundsState() {
-        if (!control.isIconified() || !control.isVisible()) {
+        if (control.isIconified() || !control.isVisible()) {
             return;
         }
 

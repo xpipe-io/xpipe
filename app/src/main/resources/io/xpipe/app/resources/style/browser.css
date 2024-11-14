@@ -76,7 +76,7 @@
 }
 
 .browser .terminal-dock-comp {
-    -fx-padding: 7 0 7 7;
+    -fx-padding: 7 0 7 0;
 }
 
 .selected-file-list {

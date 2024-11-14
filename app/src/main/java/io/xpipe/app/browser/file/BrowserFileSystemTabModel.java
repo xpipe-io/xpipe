@@ -6,6 +6,7 @@ import io.xpipe.app.browser.BrowserStoreSessionTab;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlayComp;
+import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEvent;
@@ -211,6 +212,10 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         }
 
         if (OsType.getLocal() != OsType.WINDOWS) {
+            return false;
+        }
+
+        if (AppMainWindow.getInstance().getStage().getWidth() <= 1280) {
             return false;
         }
 

@@ -171,8 +171,8 @@ public class BrowserFullSessionComp extends SimpleComp {
 
     private StackComp createSplitStack(SimpleDoubleProperty rightSplit, BrowserSessionTabsComp tabs) {
         var cache = new HashMap<BrowserSessionTab, Region>();
-        var pinnedStack = new StackComp(List.of());
-        pinnedStack.apply(struc -> {
+        var splitStack = new StackComp(List.of());
+        splitStack.apply(struc -> {
             model.getEffectiveRightTab().subscribe((newValue) -> {
                 PlatformThread.runLaterIfNeeded(() -> {
                     var all = model.getAllTabs();
@@ -190,6 +190,10 @@ public class BrowserFullSessionComp extends SimpleComp {
                     var r = cache.get(newValue);
                     struc.get().getChildren().clear();
                     struc.get().getChildren().add(r);
+
+                    struc.get().setMinWidth(rightSplit.get());
+                    struc.get().setMaxWidth(rightSplit.get());
+                    struc.get().setPrefWidth(rightSplit.get());
                 });
             });
 
@@ -205,6 +209,6 @@ public class BrowserFullSessionComp extends SimpleComp {
                 AnchorPane.setTopAnchor(struc.get(), number.doubleValue());
             });
         });
-        return pinnedStack;
+        return splitStack;
     }
 }
