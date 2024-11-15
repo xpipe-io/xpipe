@@ -37,6 +37,10 @@ public class BrowserFileListFilterComp extends Comp<BrowserFileListFilterComp.St
         button.minWidthProperty().bind(button.heightProperty());
         button.setFocusTraversable(true);
         InputHelper.onExactKeyCode(text, KeyCode.ESCAPE, true, keyEvent -> {
+            if (!expanded.get()) {
+                return;
+            }
+
             text.clear();
             button.fire();
             keyEvent.consume();

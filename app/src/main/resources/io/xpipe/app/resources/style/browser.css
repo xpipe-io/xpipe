@@ -51,6 +51,7 @@
     -fx-background-color: -color-bg-inset;
     -fx-border-width: 0 0 1 0;
     -fx-border-color: -color-border-default;
+    -fx-opacity: 0.7;
 }
 
 .root:seamless-frame .browser .top-spacer {

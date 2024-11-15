@@ -16,6 +16,6 @@
 .dialog-comp .buttons {
     -fx-padding: 10;
     -fx-border-color: -color-border-default;
-    -fx-background-color: -color-bg-overlay;
+    -fx-background-color: -color-bg-subtle;
     -fx-border-width: 1 0 0 0;
 }

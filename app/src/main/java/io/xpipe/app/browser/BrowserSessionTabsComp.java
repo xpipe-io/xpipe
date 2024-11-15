@@ -57,7 +57,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
         var tabs = createTabPane();
         var topBackground = Comp.hspacer().styleClass("top-spacer").createRegion();
         leftPadding.subscribe(number -> {
-            StackPane.setMargin(topBackground, new Insets(0, 0, 0, -number.doubleValue()));
+            StackPane.setMargin(topBackground, new Insets(0, 0, 0, -number.doubleValue() - 6));
         });
         var stack = new StackPane(topBackground, tabs);
         stack.setAlignment(Pos.TOP_CENTER);
