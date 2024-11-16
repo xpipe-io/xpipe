@@ -1,7 +1,7 @@
 package io.xpipe.app.core.window;
 
-import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
 
 import javafx.animation.PauseTransition;
@@ -88,7 +88,10 @@ public class ModifiedStage extends Stage {
                         NativeWinWindowControl.DmwaWindowAttribute.DWMWA_USE_IMMERSIVE_DARK_MODE.get(),
                         AppPrefs.get().theme.getValue().isDark());
                 boolean seamlessFrame;
-                if (AppPrefs.get().performanceMode().get() || !mergeFrame()) {
+                if (AppPrefs.get().performanceMode().get()
+                        || !mergeFrame()
+                        || AppMainWindow.getInstance() == null
+                        || stage != AppMainWindow.getInstance().getStage()) {
                     seamlessFrame = false;
                 } else {
                     seamlessFrame = ctrl.setWindowBackdrop(NativeWinWindowControl.DwmSystemBackDropType.MICA_ALT);

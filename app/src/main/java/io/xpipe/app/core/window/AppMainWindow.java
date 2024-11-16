@@ -1,10 +1,10 @@
 package io.xpipe.app.core.window;
 
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppTheme;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -231,7 +231,7 @@ public class AppMainWindow {
             return null;
         }
 
-        WindowState state = AppCache.get("windowState", WindowState.class, () -> null);
+        WindowState state = AppCache.getNonNull("windowState", WindowState.class, () -> null);
         if (state == null) {
             return null;
         }
@@ -264,6 +264,9 @@ public class AppMainWindow {
 
     public void show() {
         stage.show();
+        if (OsType.getLocal() == OsType.WINDOWS) {
+            NativeWinWindowControl.MAIN_WINDOW = new NativeWinWindowControl(stage);
+        }
     }
 
     private void setupContent(Comp<?> content) {

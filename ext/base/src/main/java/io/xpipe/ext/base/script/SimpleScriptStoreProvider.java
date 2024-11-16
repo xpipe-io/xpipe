@@ -1,19 +1,15 @@
 package io.xpipe.ext.base.script;
 
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.comp.base.ListSelectorComp;
-import io.xpipe.app.comp.base.SystemStateComp;
-import io.xpipe.app.comp.store.StoreEntryWrapper;
-import io.xpipe.app.comp.store.StoreViewState;
+import io.xpipe.app.comp.store.*;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.EnabledParentStoreProvider;
 import io.xpipe.app.ext.GuiDialog;
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.impl.DataStoreChoiceComp;
-import io.xpipe.app.fxcomps.impl.DataStoreListChoiceComp;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.MarkdownBuilder;
@@ -152,7 +148,7 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                 .description("snippetsDescription")
                 .longDescription("base:scriptDependencies")
                 .addComp(
-                        new DataStoreListChoiceComp<>(
+                        new StoreListChoiceComp<>(
                                 others,
                                 ScriptStore.class,
                                 scriptStore -> !scriptStore.get().equals(entry) && !others.contains(scriptStore),
@@ -181,8 +177,8 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                 .name("scriptGroup")
                 .description("scriptGroupDescription")
                 .addComp(
-                        new DataStoreChoiceComp<>(
-                                DataStoreChoiceComp.Mode.OTHER,
+                        new StoreChoiceComp<>(
+                                StoreChoiceComp.Mode.OTHER,
                                 null,
                                 group,
                                 ScriptGroupStore.class,

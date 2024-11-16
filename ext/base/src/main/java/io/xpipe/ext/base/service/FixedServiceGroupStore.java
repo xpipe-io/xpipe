@@ -5,7 +5,6 @@ import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FixedChildStore;
-import io.xpipe.core.store.ValidationContext;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
@@ -22,7 +21,7 @@ import java.util.List;
 @Jacksonized
 @JsonTypeName("fixedServiceGroup")
 public class FixedServiceGroupStore extends AbstractServiceGroupStore<FixedServiceCreatorStore>
-        implements DataStore, FixedHierarchyStore<ValidationContext<?>> {
+        implements DataStore, FixedHierarchyStore {
 
     @Override
     public void checkComplete() throws Throwable {
@@ -32,14 +31,8 @@ public class FixedServiceGroupStore extends AbstractServiceGroupStore<FixedServi
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<? extends DataStoreEntryRef<? extends FixedChildStore>> listChildren(ValidationContext<?> context)
-            throws Exception {
+    public List<? extends DataStoreEntryRef<? extends FixedChildStore>> listChildren() throws Exception {
         return (List<? extends DataStoreEntryRef<? extends FixedChildStore>>)
                 getParent().getStore().createFixedServices();
-    }
-
-    @Override
-    public ValidationContext<?> createContext() throws Exception {
-        return null;
     }
 }

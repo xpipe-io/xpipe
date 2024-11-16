@@ -1,11 +1,11 @@
 package io.xpipe.app.prefs;
 
+import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.update.UpdateAvailableAlert;
 import io.xpipe.app.update.XPipeDistributionType;
+import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.binding.Bindings;
@@ -29,13 +29,13 @@ public class UpdateCheckComp extends SimpleComp {
     }
 
     private void performUpdateAndRestart() {
-        XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheckSilent();
+        XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheckSilent(false, false);
         UpdateAvailableAlert.showIfNeeded();
     }
 
     private void refresh() {
         ThreadHelper.runFailableAsync(() -> {
-            XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheck();
+            XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheck(false, false);
             XPipeDistributionType.get().getUpdateHandler().prepareUpdate();
         });
     }

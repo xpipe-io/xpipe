@@ -1,19 +1,19 @@
 package io.xpipe.app.prefs;
 
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.comp.base.ChoiceComp;
+import io.xpipe.app.comp.base.HorizontalComp;
+import io.xpipe.app.comp.base.StackComp;
+import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.LocalStore;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.PrefsChoiceValue;
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.impl.ChoiceComp;
-import io.xpipe.app.fxcomps.impl.HorizontalComp;
-import io.xpipe.app.fxcomps.impl.StackComp;
-import io.xpipe.app.fxcomps.impl.TextFieldComp;
+import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.terminal.ExternalTerminalType;
-import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.TerminalLauncher;
-import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.terminal.TerminalLauncher;
+import io.xpipe.app.util.*;
 
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
@@ -23,7 +23,10 @@ import javafx.scene.paint.Color;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
+import java.util.UUID;
 
 public class TerminalCategory extends AppPrefsCategory {
 
@@ -41,7 +44,11 @@ public class TerminalCategory extends AppPrefsCategory {
                                 var term = AppPrefs.get().terminalType().getValue();
                                 if (term != null) {
                                     TerminalLauncher.open(
-                                            "Test", new LocalStore().control().command("echo Test"));
+                                            "Test",
+                                            ProcessControlProvider.get()
+                                                    .createLocalProcessControl(true)
+                                                    .command("echo Test"),
+                                            UUID.randomUUID());
                                 }
                             });
                         })))
@@ -50,15 +57,30 @@ public class TerminalCategory extends AppPrefsCategory {
         return new OptionsBuilder()
                 .addTitle("terminalConfiguration")
                 .sub(new OptionsBuilder()
-                        .nameAndDescription("terminalEmulator")
+                        .pref(prefs.terminalType)
                         .addComp(terminalChoice(), prefs.terminalType)
-                        .nameAndDescription("customTerminalCommand")
+                        .pref(prefs.customTerminalCommand)
                         .addComp(new TextFieldComp(prefs.customTerminalCommand, true)
                                 .apply(struc -> struc.get().setPromptText("myterminal -e $CMD"))
                                 .hide(prefs.terminalType.isNotEqualTo(ExternalTerminalType.CUSTOM)))
                         .addComp(terminalTest)
-                        .nameAndDescription("clearTerminalOnInit")
+                        .pref(prefs.clearTerminalOnInit)
                         .addToggle(prefs.clearTerminalOnInit))
+                .addTitle("sessionLogging")
+                .sub(new OptionsBuilder()
+                        .pref(prefs.enableTerminalLogging)
+                        .addToggle(prefs.enableTerminalLogging)
+                        .nameAndDescription("terminalLoggingDirectory")
+                        .addComp(new ButtonComp(AppI18n.observable("openSessionLogs"), () -> {
+                                    var dir = AppProperties.get().getDataDir().resolve("sessions");
+                                    try {
+                                        Files.createDirectories(dir);
+                                        DesktopHelper.browsePathLocal(dir);
+                                    } catch (IOException e) {
+                                        ErrorEvent.fromThrowable(e).handle();
+                                    }
+                                })
+                                .disable(prefs.enableTerminalLogging.not())))
                 .buildComp();
     }
 

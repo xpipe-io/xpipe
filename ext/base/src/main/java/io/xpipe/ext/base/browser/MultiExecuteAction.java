@@ -1,12 +1,11 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.action.BranchAction;
-import io.xpipe.app.browser.action.LeafAction;
+import io.xpipe.app.browser.action.BrowserBranchAction;
+import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.app.browser.fs.OpenFileSystemModel;
+import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
 
@@ -14,40 +13,43 @@ import javafx.beans.value.ObservableValue;
 
 import java.util.List;
 
-public abstract class MultiExecuteAction implements BranchAction {
+public abstract class MultiExecuteAction implements BrowserBranchAction {
 
-    protected abstract CommandBuilder createCommand(ShellControl sc, OpenFileSystemModel model, BrowserEntry entry);
+    protected abstract CommandBuilder createCommand(
+            ShellControl sc, BrowserFileSystemTabModel model, BrowserEntry entry);
 
     @Override
-    public List<LeafAction> getBranchingActions(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public List<BrowserLeafAction> getBranchingActions(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return List.of(
-                new LeafAction() {
+                new BrowserLeafAction() {
 
                     @Override
-                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         model.withShell(
                                 pc -> {
                                     for (BrowserEntry entry : entries) {
-                                        var cmd = pc.command(createCommand(pc, model, entry));
-                                        if (cmd == null) {
+                                        var c = createCommand(pc, model, entry);
+                                        if (c == null) {
                                             continue;
                                         }
 
-                                        TerminalLauncher.open(
-                                                model.getEntry().getEntry(),
+                                        var cmd = pc.command(c);
+                                        model.openTerminalAsync(
                                                 entry.getRawFileEntry().getName(),
                                                 model.getCurrentDirectory() != null
                                                         ? model.getCurrentDirectory()
                                                                 .getPath()
                                                         : null,
-                                                cmd);
+                                                cmd,
+                                                entries.size() == 1);
                                     }
                                 },
                                 false);
                     }
 
                     @Override
-                    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                    public ObservableValue<String> getName(
+                            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         var t = AppPrefs.get().terminalType().getValue();
                         return AppI18n.observable(
                                 "executeInTerminal",
@@ -55,14 +57,14 @@ public abstract class MultiExecuteAction implements BranchAction {
                     }
 
                     @Override
-                    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         return AppPrefs.get().terminalType().getValue() != null;
                     }
                 },
-                new LeafAction() {
+                new BrowserLeafAction() {
 
                     @Override
-                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         model.withShell(
                                 pc -> {
                                     for (BrowserEntry entry : entries) {
@@ -81,7 +83,8 @@ public abstract class MultiExecuteAction implements BranchAction {
                     }
 
                     @Override
-                    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                    public ObservableValue<String> getName(
+                            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         return AppI18n.observable("executeInBackground");
                     }
                 });

@@ -1,8 +1,8 @@
 package io.xpipe.app.prefs;
 
+import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppFont;
-import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.util.PlatformThread;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -23,7 +23,7 @@ public class AppPrefsComp extends SimpleComp {
                     return appPrefsCategory
                             .create()
                             .maxWidth(700)
-                            .padding(new Insets(40, 40, 20, 40))
+                            .padding(new Insets(40, 40, 20, 60))
                             .styleClass("prefs-container")
                             .createRegion();
                 }));
@@ -46,6 +46,7 @@ public class AppPrefsComp extends SimpleComp {
         sidebar.setMaxWidth(280);
 
         var split = new HBox(sidebar, pfxLimit);
+        HBox.setMargin(sidebar, new Insets(6));
         HBox.setHgrow(pfxLimit, Priority.ALWAYS);
         split.setFillHeight(true);
         split.getStyleClass().add("prefs");

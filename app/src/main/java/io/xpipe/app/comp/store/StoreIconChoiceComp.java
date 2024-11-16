@@ -1,7 +1,7 @@
 package io.xpipe.app.comp.store;
 
-import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
+import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.resources.SystemIcon;
 
 import javafx.beans.property.Property;

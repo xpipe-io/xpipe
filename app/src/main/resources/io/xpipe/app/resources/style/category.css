@@ -2,7 +2,7 @@
     -fx-background-color: transparent;
     -fx-background-radius: 4px;
     -fx-border-radius: 4px;
-    -fx-border-width: 1px;
+    -fx-border-width: 0;
     -fx-padding: 0 0 0 2;
     -fx-background-insets: 0;
 }
@@ -18,6 +18,10 @@
 .category:selected .category-button {
     -fx-border-color: -color-border-default;
     -fx-background-color: -color-bg-default;
+}
+
+.category:selected .category-button .name {
+    -fx-font-weight: BOLD;
 }
 
 .root:light .category.yellow > .category-button .expand-button .ikonli-font-icon {

@@ -1,6 +1,6 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.util.OptionsBuilder;
 
 public class LocalShellCategory extends AppPrefsCategory {
@@ -15,9 +15,7 @@ public class LocalShellCategory extends AppPrefsCategory {
         var prefs = AppPrefs.get();
         return new OptionsBuilder()
                 .addTitle("localShell")
-                .sub(new OptionsBuilder()
-                        .nameAndDescription("useLocalFallbackShell")
-                        .addToggle(prefs.useLocalFallbackShell))
+                .sub(new OptionsBuilder().pref(prefs.useLocalFallbackShell).addToggle(prefs.useLocalFallbackShell))
                 .buildComp();
     }
 }

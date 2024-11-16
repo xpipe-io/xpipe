@@ -1,6 +1,6 @@
 package io.xpipe.app.beacon.impl;
 
-import io.xpipe.app.browser.session.BrowserSessionModel;
+import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.beacon.BeaconClientException;
@@ -19,8 +19,8 @@ public class ConnectionBrowseExchangeImpl extends ConnectionBrowseExchange {
         if (!(e.getStore() instanceof FileSystemStore)) {
             throw new BeaconClientException("Not a file system connection");
         }
-        BrowserSessionModel.DEFAULT.openFileSystemSync(
-                e.ref(), msg.getDirectory() != null ? ignored -> msg.getDirectory() : null, null);
+        BrowserFullSessionModel.DEFAULT.openFileSystemSync(
+                e.ref(), msg.getDirectory() != null ? ignored -> msg.getDirectory() : null, null, true);
         AppLayoutModel.get().selectBrowser();
         return Response.builder().build();
     }

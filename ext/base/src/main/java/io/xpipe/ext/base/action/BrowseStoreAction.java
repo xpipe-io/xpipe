@@ -1,14 +1,14 @@
 package io.xpipe.ext.base.action;
 
-import io.xpipe.app.browser.session.BrowserSessionModel;
+import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.FileSystemStore;
-import io.xpipe.core.store.ShellStore;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
@@ -57,7 +57,7 @@ public class BrowseStoreAction implements ActionProvider {
         public void execute() throws Exception {
             DataStoreEntryRef<FileSystemStore> replacement =
                     ProcessControlProvider.get().replace(entry.ref());
-            BrowserSessionModel.DEFAULT.openFileSystemSync(replacement, null, new SimpleBooleanProperty());
+            BrowserFullSessionModel.DEFAULT.openFileSystemSync(replacement, null, new SimpleBooleanProperty(), true);
             AppLayoutModel.get().selectBrowser();
         }
     }

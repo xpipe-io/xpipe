@@ -1,5 +1,7 @@
 package io.xpipe.app.core.window;
 
+import io.xpipe.app.util.Rect;
+
 import javafx.stage.Window;
 
 import com.sun.jna.Library;
@@ -9,13 +11,40 @@ import com.sun.jna.PointerType;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinNT;
+import com.sun.jna.ptr.IntByReference;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
+@EqualsAndHashCode
 public class NativeWinWindowControl {
+
+    public static List<NativeWinWindowControl> byPid(long pid) {
+        var refs = new ArrayList<NativeWinWindowControl>();
+        User32.INSTANCE.EnumWindows(
+                (hWnd, data) -> {
+                    var visible = User32.INSTANCE.IsWindowVisible(hWnd);
+                    if (!visible) {
+                        return true;
+                    }
+
+                    var wpid = new IntByReference();
+                    User32.INSTANCE.GetWindowThreadProcessId(hWnd, wpid);
+                    if (wpid.getValue() == pid) {
+                        refs.add(new NativeWinWindowControl(hWnd));
+                    }
+                    return true;
+                },
+                null);
+        return refs;
+    }
+
+    public static NativeWinWindowControl MAIN_WINDOW;
 
     private final WinDef.HWND windowHandle;
 
@@ -38,14 +67,64 @@ public class NativeWinWindowControl {
         this.windowHandle = windowHandle;
     }
 
-    public void move(int x, int y, int w, int h) {
-        User32.INSTANCE.SetWindowPos(windowHandle, new WinDef.HWND(), x, y, w, h, 0);
+    public void removeBorders() {
+        var style = User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_STYLE);
+        var mod = style & ~(User32.WS_CAPTION | User32.WS_THICKFRAME | User32.WS_MAXIMIZEBOX);
+        User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_STYLE, mod);
+    }
+
+    public boolean isIconified() {
+        return (User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_STYLE) & User32.WS_MINIMIZE) != 0;
+    }
+
+    public boolean isVisible() {
+        return User32.INSTANCE.IsWindowVisible(windowHandle);
+    }
+
+    public void alwaysInFront() {
+        orderRelative(new WinDef.HWND(new Pointer(0xFFFFFFFFFFFFFFFFL)));
+    }
+
+    public void defaultOrder() {
+        orderRelative(new WinDef.HWND(new Pointer(-2)));
+    }
+
+    public void orderRelative(WinDef.HWND predecessor) {
+        User32.INSTANCE.SetWindowPos(
+                windowHandle, predecessor, 0, 0, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOMOVE | User32.SWP_NOSIZE);
+    }
+
+    public void show() {
+        User32.INSTANCE.ShowWindow(windowHandle, User32.SW_RESTORE);
+    }
+
+    public void close() {
+        User32.INSTANCE.PostMessage(windowHandle, User32.WM_CLOSE, null, null);
+    }
+
+    public void minimize() {
+        User32.INSTANCE.ShowWindow(windowHandle, User32.SW_MINIMIZE);
+    }
+
+    public void move(Rect bounds) {
+        User32.INSTANCE.SetWindowPos(
+                windowHandle, null, bounds.getX(), bounds.getY(), bounds.getW(), bounds.getH(), User32.SWP_NOACTIVATE);
+    }
+
+    public Rect getBounds() {
+        var rect = new WinDef.RECT();
+        User32.INSTANCE.GetWindowRect(windowHandle, rect);
+        return new Rect(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
     }
 
     public boolean setWindowAttribute(int attribute, boolean attributeValue) {
         var r = Dwm.INSTANCE.DwmSetWindowAttribute(
                 windowHandle, attribute, new WinDef.BOOLByReference(new WinDef.BOOL(attributeValue)), WinDef.BOOL.SIZE);
         return r.longValue() == 0;
+    }
+
+    public void activate() {
+        User32.INSTANCE.SetForegroundWindow(windowHandle);
     }
 
     public boolean setWindowBackdrop(DwmSystemBackDropType backdrop) {

@@ -1,13 +1,13 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.app.browser.session.BrowserSessionModel;
+import io.xpipe.app.browser.BrowserFullSessionModel;
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.comp.store.StoreEntryComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.comp.store.StoreSectionComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -76,7 +76,7 @@ public interface DataStoreProvider {
     }
 
     default ActionProvider.Action browserAction(
-            BrowserSessionModel sessionModel, DataStoreEntry store, BooleanProperty busy) {
+            BrowserFullSessionModel sessionModel, DataStoreEntry store, BooleanProperty busy) {
         return null;
     }
 

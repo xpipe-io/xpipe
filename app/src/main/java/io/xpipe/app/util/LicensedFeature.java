@@ -1,19 +1,23 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.core.AppI18n;
+
+import javafx.beans.value.ObservableValue;
+
 import java.util.Optional;
 
 public interface LicensedFeature {
 
-    default Optional<String> getDescriptionSuffix() {
-        if (isSupported()) {
-            return Optional.empty();
-        }
+    Optional<String> getDescriptionSuffix();
 
-        if (isPreviewSupported()) {
-            return Optional.of("Preview");
-        }
+    ObservableValue<String> suffixObservable(ObservableValue<String> s);
 
-        return Optional.of("Pro");
+    public default ObservableValue<String> suffixObservable(String key) {
+        return suffixObservable(AppI18n.observable(key));
+    }
+
+    public default String suffix(String s) {
+        return getDescriptionSuffix().map(suffix -> s + " (" + suffix + "+)").orElse(s);
     }
 
     String getId();

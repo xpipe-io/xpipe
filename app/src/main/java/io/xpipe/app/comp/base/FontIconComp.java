@@ -1,8 +1,8 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.CompStructure;
-import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompStructure;
+import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;

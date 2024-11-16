@@ -1,14 +1,14 @@
 package io.xpipe.app.comp.store;
 
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.CountComp;
+import io.xpipe.app.comp.base.FilterComp;
+import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.impl.FilterComp;
-import io.xpipe.app.fxcomps.impl.IconButtonComp;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
-import io.xpipe.app.fxcomps.util.LabelGraphic;
+import io.xpipe.app.util.BindingsHelper;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 
@@ -69,27 +69,10 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                                     .getValue()
                                     .getRoot()
                                     .equals(rootCategory);
-                            // Sadly the all binding does not update when the individual visibility of entries changes
-                            // But it is good enough.
-                            var showProvider = true;
-                            try {
-                                showProvider = storeEntryWrapper.getEntry().getProvider() == null
-                                        || storeEntryWrapper
-                                                .getEntry()
-                                                .getProvider()
-                                                .shouldShow(storeEntryWrapper);
-                            } catch (Exception ignored) {
-                            }
-                            return inRootCategory && showProvider;
+                            return inRootCategory;
                         },
                         StoreViewState.get().getActiveCategory());
-        var shownList = all.filtered(
-                storeEntryWrapper -> {
-                    return storeEntryWrapper.matchesFilter(
-                            StoreViewState.get().getFilterString().getValue());
-                },
-                StoreViewState.get().getFilterString());
-        var count = new CountComp<>(shownList.getList(), all.getList());
+        var count = new CountComp<>(all.getList(), all.getList());
 
         var c = count.createRegion();
         var topBar = new HBox(

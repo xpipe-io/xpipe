@@ -1,17 +1,17 @@
 package io.xpipe.app.core.mode;
 
-import io.xpipe.app.browser.file.LocalFileSystem;
-import io.xpipe.app.browser.icon.FileIconManager;
+import io.xpipe.app.browser.file.BrowserLocalFileSystem;
+import io.xpipe.app.browser.icon.BrowserIconManager;
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppGreetings;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.check.AppPtbCheck;
 import io.xpipe.app.core.window.AppMainWindow;
-import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.update.UpdateChangelogAlert;
 import io.xpipe.app.util.NativeBridge;
+import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.stage.Stage;
@@ -57,10 +57,10 @@ public class GuiMode extends PlatformMode {
 
         // Can be loaded async
         ThreadHelper.runFailableAsync(() -> {
-            FileIconManager.loadIfNecessary();
+            BrowserIconManager.loadIfNecessary();
         });
         ThreadHelper.runFailableAsync(() -> {
-            LocalFileSystem.init();
+            BrowserLocalFileSystem.init();
         });
 
         UpdateChangelogAlert.showIfNeeded();
@@ -68,7 +68,7 @@ public class GuiMode extends PlatformMode {
 
     @Override
     public void finalTeardown() throws Throwable {
-        LocalFileSystem.reset();
+        BrowserLocalFileSystem.reset();
         super.finalTeardown();
     }
 }

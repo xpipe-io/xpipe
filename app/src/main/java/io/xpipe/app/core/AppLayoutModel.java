@@ -1,13 +1,13 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.beacon.AppBeaconServer;
-import io.xpipe.app.browser.session.BrowserSessionComp;
-import io.xpipe.app.browser.session.BrowserSessionModel;
+import io.xpipe.app.browser.BrowserFullSessionComp;
+import io.xpipe.app.browser.BrowserFullSessionModel;
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.store.StoreLayoutComp;
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.util.LabelGraphic;
 import io.xpipe.app.prefs.AppPrefsComp;
 import io.xpipe.app.util.Hyperlinks;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.LicenseProvider;
 
 import javafx.beans.property.Property;
@@ -22,7 +22,6 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.extern.jackson.Jacksonized;
 
-import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +39,7 @@ public class AppLayoutModel {
     public AppLayoutModel(SavedState savedState) {
         this.savedState = savedState;
         this.entries = createEntryList();
-        this.selected = new SimpleObjectProperty<>(entries.get(1));
+        this.selected = new SimpleObjectProperty<>(entries.get(0));
     }
 
     public static AppLayoutModel get() {
@@ -48,7 +47,7 @@ public class AppLayoutModel {
     }
 
     public static void init() {
-        var state = AppCache.get("layoutState", SavedState.class, () -> new SavedState(260, 300));
+        var state = AppCache.getNonNull("layoutState", SavedState.class, () -> new SavedState(260, 300));
         INSTANCE = new AppLayoutModel(state);
     }
 
@@ -62,7 +61,7 @@ public class AppLayoutModel {
     }
 
     public void selectBrowser() {
-        selected.setValue(entries.getFirst());
+        selected.setValue(entries.get(1));
     }
 
     public void selectSettings() {
@@ -74,21 +73,21 @@ public class AppLayoutModel {
     }
 
     public void selectConnections() {
-        selected.setValue(entries.get(1));
+        selected.setValue(entries.get(0));
     }
 
     private List<Entry> createEntryList() {
         var l = new ArrayList<>(List.of(
                 new Entry(
-                        AppI18n.observable("browser"),
-                        new LabelGraphic.IconGraphic("mdi2f-file-cabinet"),
-                        new BrowserSessionComp(BrowserSessionModel.DEFAULT),
-                        null,
-                        new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN)),
-                new Entry(
                         AppI18n.observable("connections"),
                         new LabelGraphic.IconGraphic("mdi2c-connection"),
                         new StoreLayoutComp(),
+                        null,
+                        new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN)),
+                new Entry(
+                        AppI18n.observable("browser"),
+                        new LabelGraphic.IconGraphic("mdi2f-file-cabinet"),
+                        new BrowserFullSessionComp(BrowserFullSessionModel.DEFAULT),
                         null,
                         new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN)),
                 new Entry(
@@ -121,14 +120,14 @@ public class AppLayoutModel {
                         null,
                         () -> Hyperlinks.open(
                                 "http://localhost:" + AppBeaconServer.get().getPort()),
-                        null)
-                //                new Entry(
-                //                        AppI18n.observable("webtop"),
-                //                        "mdi2d-desktop-mac",
-                //                        null,
-                //                        () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
-                //                        null)
-                ));
+                        null),
+                new Entry(
+                        AppI18n.observable("webtop"),
+                        new LabelGraphic.IconGraphic("mdi2d-desktop-mac"),
+                        null,
+                        () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
+                        null)));
+
         return l;
     }
 

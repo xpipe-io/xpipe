@@ -1,8 +1,8 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.action.LeafAction;
+import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.app.browser.fs.OpenFileSystemModel;
+import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.store.FileKind;
@@ -15,22 +15,23 @@ import javafx.scene.input.KeyCombination;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.util.Collections;
 import java.util.List;
 
-public class OpenTerminalAction implements LeafAction {
+public class OpenTerminalAction implements BrowserLeafAction {
 
     @Override
-    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        if (entries.size() == 0) {
-            model.openTerminalAsync(
-                    model.getCurrentDirectory() != null
-                            ? model.getCurrentDirectory().getPath()
-                            : null);
-            return;
-        }
-
-        for (var entry : entries) {
-            model.openTerminalAsync(entry.getRawFileEntry().getPath());
+    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        var dirs = entries.size() > 0
+                ? entries.stream()
+                        .map(browserEntry -> browserEntry.getRawFileEntry().getPath())
+                        .toList()
+                : model.getCurrentDirectory() != null
+                        ? List.of(model.getCurrentDirectory().getPath())
+                        : Collections.singletonList((String) null);
+        for (String dir : dirs) {
+            var name = (dir != null ? dir + " - " : "") + model.getName();
+            model.openTerminalAsync(name, dir, model.getFileSystem().getShell().orElseThrow(), dirs.size() == 1);
         }
     }
 
@@ -39,7 +40,7 @@ public class OpenTerminalAction implements LeafAction {
     }
 
     @Override
-    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return new FontIcon("mdi2c-console");
     }
 
@@ -54,17 +55,17 @@ public class OpenTerminalAction implements LeafAction {
     }
 
     @Override
-    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return AppI18n.observable("openInTerminal");
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.DIRECTORY);
     }
 
     @Override
-    public boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public boolean isActive(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         var t = AppPrefs.get().terminalType().getValue();
         return t != null;
     }

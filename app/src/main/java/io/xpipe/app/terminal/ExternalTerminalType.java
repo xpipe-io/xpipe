@@ -1,30 +1,15 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.comp.base.MarkdownComp;
-import io.xpipe.app.core.AppCache;
-import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.ExternalApplicationType;
-import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.*;
-import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.FailableFunction;
 
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-
 import lombok.Getter;
-import lombok.Value;
-import lombok.With;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -98,461 +83,22 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     }
 
-    ExternalTerminalType XSHELL = new WindowsType("app.xShell", "Xshell") {
+    ExternalTerminalType XSHELL = new XShellTerminalType();
 
-        @Override
-        protected Optional<Path> determineInstallation() {
-            try {
-                var r = WindowsRegistry.local()
-                        .readValue(
-                                WindowsRegistry.HKEY_LOCAL_MACHINE,
-                                "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\Xshell.exe");
-                return r.map(Path::of);
-            } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).omit().handle();
-                return Optional.empty();
-            }
-        }
+    ExternalTerminalType SECURECRT = new SecureCrtTerminalType();
 
-        @Override
-        public String getWebsite() {
-            return "https://www.netsarang.com/en/xshell/";
-        }
+    ExternalTerminalType MOBAXTERM = new MobaXTermTerminalType();
 
-        @Override
-        public boolean supportsTabs() {
-            return true;
-        }
+    ExternalTerminalType TERMIUS = new TermiusTerminalType();
 
-        @Override
-        public boolean isRecommended() {
-            return false;
-        }
+    ExternalTerminalType CMD = new CmdTerminalType();
 
-        @Override
-        public boolean supportsColoredTitle() {
-            return false;
-        }
+    ExternalTerminalType POWERSHELL = new PowerShellTerminalType();
 
-        @Override
-        protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
-            SshLocalBridge.init();
-            if (!showInfo()) {
-                return;
-            }
+    ExternalTerminalType PWSH = new PwshTerminalType();
 
-            try (var sc = LocalShell.getShell()) {
-                var b = SshLocalBridge.get();
-                var keyName = b.getIdentityKey().getFileName().toString();
-                var command = CommandBuilder.of()
-                        .addFile(file.toString())
-                        .add("-url")
-                        .addQuoted("ssh://" + b.getUser() + "@localhost:" + b.getPort())
-                        .add("-i", keyName);
-                sc.executeSimpleCommand(command);
-            }
-        }
+    ExternalTerminalType GNOME_TERMINAL = new GnomeTerminalType();
 
-        private boolean showInfo() {
-            boolean set = AppCache.get("xshellSetup", Boolean.class, () -> false);
-            if (set) {
-                return true;
-            }
-
-            var b = SshLocalBridge.get();
-            var keyName = b.getIdentityKey().getFileName().toString();
-            var r = AppWindowHelper.showBlockingAlert(alert -> {
-                alert.setTitle(AppI18n.get("xshellSetup"));
-                alert.setAlertType(Alert.AlertType.NONE);
-
-                var activated = AppI18n.get()
-                        .getMarkdownDocumentation("app:xshellSetup")
-                        .formatted(b.getIdentityKey(), keyName);
-                var markdown = new MarkdownComp(activated, s -> s)
-                        .prefWidth(450)
-                        .prefHeight(400)
-                        .createRegion();
-                alert.getDialogPane().setContent(markdown);
-
-                alert.getButtonTypes().add(new ButtonType(AppI18n.get("ok"), ButtonBar.ButtonData.OK_DONE));
-            });
-            r.filter(buttonType -> buttonType.getButtonData().isDefaultButton());
-            r.ifPresent(buttonType -> {
-                AppCache.update("xshellSetup", true);
-            });
-            return r.isPresent();
-        }
-    };
-
-    ExternalTerminalType SECURECRT = new WindowsType("app.secureCrt", "SecureCRT") {
-
-        @Override
-        protected Optional<Path> determineInstallation() {
-            try (var sc = LocalShell.getShell().start()) {
-                var env = sc.executeSimpleStringCommand(
-                        sc.getShellDialect().getPrintEnvironmentVariableCommand("ProgramFiles"));
-                var file = Path.of(env, "VanDyke Software\\SecureCRT\\SecureCRT.exe");
-                if (!Files.exists(file)) {
-                    return Optional.empty();
-                }
-
-                return Optional.of(file);
-            } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).omit().handle();
-                return Optional.empty();
-            }
-        }
-
-        @Override
-        public boolean supportsTabs() {
-            return true;
-        }
-
-        @Override
-        public boolean isRecommended() {
-            return false;
-        }
-
-        @Override
-        public boolean supportsColoredTitle() {
-            return false;
-        }
-
-        @Override
-        public String getWebsite() {
-            return "https://www.vandyke.com/products/securecrt/";
-        }
-
-        @Override
-        protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
-            try (var sc = LocalShell.getShell()) {
-                SshLocalBridge.init();
-                var b = SshLocalBridge.get();
-                var command = CommandBuilder.of()
-                        .addFile(file.toString())
-                        .add("/T")
-                        .add("/SSH2", "/ACCEPTHOSTKEYS", "/I")
-                        .addFile(b.getIdentityKey().toString())
-                        .add("/P", "" + b.getPort())
-                        .add("/L")
-                        .addQuoted(b.getUser())
-                        .add("localhost");
-                sc.executeSimpleCommand(command);
-            }
-        }
-    };
-
-    ExternalTerminalType MOBAXTERM = new WindowsType("app.mobaXterm", "MobaXterm") {
-
-        @Override
-        protected Optional<Path> determineInstallation() {
-            try {
-                var r = WindowsRegistry.local()
-                        .readValue(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\mobaxterm\\DefaultIcon");
-                return r.map(Path::of);
-            } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).omit().handle();
-                return Optional.empty();
-            }
-        }
-
-        @Override
-        public boolean supportsTabs() {
-            return true;
-        }
-
-        @Override
-        public boolean isRecommended() {
-            return false;
-        }
-
-        @Override
-        public boolean supportsColoredTitle() {
-            return true;
-        }
-
-        @Override
-        public String getWebsite() {
-            return "https://mobaxterm.mobatek.net/";
-        }
-
-        @Override
-        protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
-            try (var sc = LocalShell.getShell()) {
-                SshLocalBridge.init();
-                var b = SshLocalBridge.get();
-                var command = CommandBuilder.of()
-                        .addFile("ssh")
-                        .addQuoted(b.getUser() + "@localhost")
-                        .add("-i")
-                        .add("\"$(cygpath \"" + b.getIdentityKey().toString() + "\")\"")
-                        .add("-p")
-                        .add("" + b.getPort());
-                // Don't use local shell to build as it uses cygwin
-                var rawCommand = command.buildSimple();
-                var script = ScriptHelper.getExecScriptFile(sc, "sh");
-                Files.writeString(Path.of(script.toString()), rawCommand);
-                var fixedFile = script.toString().replaceAll("\\\\", "/").replaceAll("\\s", "\\$0");
-                sc.command(CommandBuilder.of()
-                                .addFile(file.toString())
-                                .add("-newtab")
-                                .add(fixedFile))
-                        .execute();
-            }
-        }
-    };
-
-    ExternalTerminalType TERMIUS = new ExternalTerminalType() {
-
-        @Override
-        public String getId() {
-            return "app.termius";
-        }
-
-        @Override
-        public boolean isAvailable() {
-            try (var sc = LocalShell.getShell()) {
-                return switch (OsType.getLocal()) {
-                    case OsType.Linux linux -> {
-                        yield Files.exists(Path.of("/opt/Termius"));
-                    }
-                    case OsType.MacOs macOs -> {
-                        yield Files.exists(Path.of("/Applications/Termius.app"));
-                    }
-                    case OsType.Windows windows -> {
-                        var r = WindowsRegistry.local()
-                                .readValue(WindowsRegistry.HKEY_CURRENT_USER, "SOFTWARE\\Classes\\termius");
-                        yield r.isPresent();
-                    }
-                };
-            } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).omit().handle();
-                return false;
-            }
-        }
-
-        @Override
-        public String getWebsite() {
-            return "https://termius.com/";
-        }
-
-        @Override
-        public boolean supportsTabs() {
-            return true;
-        }
-
-        @Override
-        public boolean isRecommended() {
-            return false;
-        }
-
-        @Override
-        public boolean supportsColoredTitle() {
-            return true;
-        }
-
-        @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
-            SshLocalBridge.init();
-            if (!showInfo()) {
-                return;
-            }
-
-            var host = "localhost";
-            var b = SshLocalBridge.get();
-            var port = b.getPort();
-            var user = b.getUser();
-            var name = b.getIdentityKey().getFileName().toString();
-            Hyperlinks.open("termius://app/host-sharing#label=" + name + "&ip=" + host + "&port=" + port + "&username="
-                    + user + "&os=undefined");
-        }
-
-        private boolean showInfo() throws IOException {
-            boolean set = AppCache.get("termiusSetup", Boolean.class, () -> false);
-            if (set) {
-                return true;
-            }
-
-            var b = SshLocalBridge.get();
-            var keyContent = Files.readString(b.getIdentityKey());
-            var r = AppWindowHelper.showBlockingAlert(alert -> {
-                alert.setTitle(AppI18n.get("termiusSetup"));
-                alert.setAlertType(Alert.AlertType.NONE);
-
-                var activated = AppI18n.get()
-                        .getMarkdownDocumentation("app:termiusSetup")
-                        .formatted(b.getIdentityKey(), keyContent);
-                var markdown = new MarkdownComp(activated, s -> s)
-                        .prefWidth(450)
-                        .prefHeight(450)
-                        .createRegion();
-                alert.getDialogPane().setContent(markdown);
-
-                alert.getButtonTypes().add(new ButtonType(AppI18n.get("ok"), ButtonBar.ButtonData.OK_DONE));
-            });
-            r.filter(buttonType -> buttonType.getButtonData().isDefaultButton());
-            r.ifPresent(buttonType -> {
-                AppCache.update("termiusSetup", true);
-            });
-            return r.isPresent();
-        }
-    };
-
-    ExternalTerminalType CMD = new SimplePathType("app.cmd", "cmd.exe", true) {
-
-        @Override
-        public boolean supportsTabs() {
-            return false;
-        }
-
-        @Override
-        public boolean isRecommended() {
-            return false;
-        }
-
-        @Override
-        public boolean supportsColoredTitle() {
-            return false;
-        }
-
-        @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) {
-            if (configuration.getScriptDialect().equals(ShellDialects.CMD)) {
-                return CommandBuilder.of().add("/c").addFile(configuration.getScriptFile());
-            }
-
-            return CommandBuilder.of().add("/c").add(configuration.getDialectLaunchCommand());
-        }
-    };
-
-    ExternalTerminalType POWERSHELL = new SimplePathType("app.powershell", "powershell", true) {
-
-        @Override
-        public boolean supportsTabs() {
-            return false;
-        }
-
-        @Override
-        public boolean isRecommended() {
-            return false;
-        }
-
-        @Override
-        public boolean supportsColoredTitle() {
-            return false;
-        }
-
-        @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) {
-            if (configuration.getScriptDialect().equals(ShellDialects.POWERSHELL)) {
-                return CommandBuilder.of()
-                        .add("-ExecutionPolicy", "Bypass")
-                        .add("-File")
-                        .addFile(configuration.getScriptFile());
-            }
-
-            return CommandBuilder.of()
-                    .add("-ExecutionPolicy", "Bypass")
-                    .add("-EncodedCommand")
-                    .add(sc -> {
-                        var base64 = Base64.getEncoder()
-                                .encodeToString(configuration
-                                        .getDialectLaunchCommand()
-                                        .buildBase(sc)
-                                        .getBytes(StandardCharsets.UTF_16LE));
-                        return "\"" + base64 + "\"";
-                    });
-        }
-    };
-
-    ExternalTerminalType PWSH = new SimplePathType("app.pwsh", "pwsh", true) {
-
-        @Override
-        public String getWebsite() {
-            return "https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.4";
-        }
-
-        @Override
-        public boolean supportsTabs() {
-            return false;
-        }
-
-        @Override
-        public boolean isRecommended() {
-            return false;
-        }
-
-        @Override
-        public boolean supportsColoredTitle() {
-            return false;
-        }
-
-        @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) {
-            return CommandBuilder.of()
-                    .add("-ExecutionPolicy", "Bypass")
-                    .add("-EncodedCommand")
-                    .add(sc -> {
-                        // Fix for https://github.com/PowerShell/PowerShell/issues/18530#issuecomment-1325691850
-                        var c = "$env:PSModulePath=\"\";"
-                                + configuration.getDialectLaunchCommand().buildBase(sc);
-                        var base64 = Base64.getEncoder().encodeToString(c.getBytes(StandardCharsets.UTF_16LE));
-                        return "\"" + base64 + "\"";
-                    });
-        }
-    };
-    ExternalTerminalType GNOME_TERMINAL = new PathCheckType("app.gnomeTerminal", "gnome-terminal", true) {
-        @Override
-        public String getWebsite() {
-            return "https://help.gnome.org/users/gnome-terminal/stable/";
-        }
-
-        @Override
-        public boolean supportsTabs() {
-            return false;
-        }
-
-        @Override
-        public boolean isRecommended() {
-            return false;
-        }
-
-        @Override
-        public boolean supportsColoredTitle() {
-            return false;
-        }
-
-        @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
-            try (ShellControl pc = LocalShell.getShell()) {
-                CommandSupport.isInPathOrThrow(
-                        pc, executable, toTranslatedString().getValue(), null);
-
-                var toExecute = CommandBuilder.of()
-                        .add(executable, "-v", "--title")
-                        .addQuoted(configuration.getColoredTitle())
-                        .add("--")
-                        .addFile(configuration.getScriptFile())
-                        // In order to fix this bug which also affects us:
-                        // https://askubuntu.com/questions/1148475/launching-gnome-terminal-from-vscode
-                        .envrironment("GNOME_TERMINAL_SCREEN", sc -> "");
-                pc.executeSimpleCommand(toExecute);
-            }
-        }
-
-        @Override
-        public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand(
-                ShellDialect systemDialect) {
-            return launchConfiguration -> {
-                var toExecute = CommandBuilder.of()
-                        .add(executable, "-v", "--title")
-                        .addQuoted(launchConfiguration.getColoredTitle())
-                        .add("--")
-                        .addFile(launchConfiguration.getScriptFile());
-                return toExecute.buildSimple();
-            };
-        }
-    };
     ExternalTerminalType KONSOLE = new SimplePathType("app.konsole", "konsole", true) {
 
         @Override
@@ -561,8 +107,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsTabs() {
-            return true;
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
         }
 
         @Override
@@ -576,11 +122,14 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) {
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             // Note for later: When debugging konsole launches, it will always open as a child process of
             // IntelliJ/XPipe even though we try to detach it.
             // This is not the case for production where it works as expected
-            return CommandBuilder.of().add("--new-tab", "-e").addFile(configuration.getScriptFile());
+            return CommandBuilder.of()
+                    .addIf(configuration.isPreferTabs(), "--new-tab")
+                    .add("-e")
+                    .addFile(configuration.getScriptFile());
         }
     };
     ExternalTerminalType XFCE = new SimplePathType("app.xfce", "xfce4-terminal", true) {
@@ -590,8 +139,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsTabs() {
-            return true;
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
         }
 
         @Override
@@ -605,9 +154,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) {
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return CommandBuilder.of()
-                    .add("--tab", "--title")
+                    .addIf(configuration.isPreferTabs(), "--tab")
+                    .add("--title")
                     .addQuoted(configuration.getColoredTitle())
                     .add("--command")
                     .addFile(configuration.getScriptFile());
@@ -620,8 +170,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsTabs() {
-            return false;
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW;
         }
 
         @Override
@@ -635,7 +185,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) {
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return CommandBuilder.of()
                     .add("--title")
                     .addQuoted(configuration.getColoredTitle())
@@ -650,8 +200,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsTabs() {
-            return true;
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
         }
 
         @Override
@@ -665,8 +215,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) {
-            return CommandBuilder.of().add("--new-tab").add("-e").addFile(configuration.getScriptFile());
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
+            return CommandBuilder.of()
+                    .addIf(configuration.isPreferTabs(), "--new-tab")
+                    .add("-e")
+                    .addFile(configuration.getScriptFile());
         }
     };
     ExternalTerminalType TILIX = new SimplePathType("app.tilix", "tilix", true) {
@@ -676,8 +229,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsTabs() {
-            return false;
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW;
         }
 
         @Override
@@ -691,7 +244,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) {
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return CommandBuilder.of()
                     .add("-t")
                     .addQuoted(configuration.getColoredTitle())
@@ -706,11 +259,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsTabs() {
-            return true;
-        }
-
-        @Override
         public boolean isRecommended() {
             return true;
         }
@@ -721,13 +269,18 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) {
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
+        }
+
+        @Override
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return CommandBuilder.of()
                     .add("-e")
                     .addFile(configuration.getScriptFile())
                     .add("-T")
                     .addQuoted(configuration.getColoredTitle())
-                    .add("--new-tab");
+                    .addIf(configuration.isPreferTabs(), "--new-tab");
         }
     };
     ExternalTerminalType TERMINOLOGY = new SimplePathType("app.terminology", "terminology", true) {
@@ -737,11 +290,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsTabs() {
-            return true;
-        }
-
-        @Override
         public boolean isRecommended() {
             return true;
         }
@@ -752,8 +300,14 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) {
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
+        }
+
+        @Override
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return CommandBuilder.of()
+                    .addIf(!configuration.isPreferTabs(), "-s")
                     .add("-T")
                     .addQuoted(configuration.getColoredTitle())
                     .add("-2")
@@ -762,14 +316,15 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
     ExternalTerminalType GUAKE = new SimplePathType("app.guake", "guake", true) {
+
         @Override
-        public String getWebsite() {
-            return "https://github.com/Guake/guake";
+        public int getProcessHierarchyOffset() {
+            return 1;
         }
 
         @Override
-        public boolean supportsTabs() {
-            return true;
+        public String getWebsite() {
+            return "https://github.com/Guake/guake";
         }
 
         @Override
@@ -783,7 +338,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) {
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.TABBED;
+        }
+
+        @Override
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return CommandBuilder.of()
                     .add("-n", "~")
                     .add("-r")
@@ -799,11 +359,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsTabs() {
-            return true;
-        }
-
-        @Override
         public boolean isRecommended() {
             return true;
         }
@@ -814,7 +369,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) {
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.TABBED;
+        }
+
+        @Override
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return CommandBuilder.of().add("-c").addFile(configuration.getScriptFile());
         }
     };
@@ -825,8 +385,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsTabs() {
-            return false;
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW;
         }
 
         @Override
@@ -840,7 +400,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) {
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return CommandBuilder.of()
                     .add("-title")
                     .addQuoted(configuration.getColoredTitle())
@@ -849,14 +409,20 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
     ExternalTerminalType DEEPIN_TERMINAL = new SimplePathType("app.deepinTerminal", "deepin-terminal", true) {
+
+        @Override
+        public int getProcessHierarchyOffset() {
+            return 1;
+        }
+
         @Override
         public String getWebsite() {
             return "https://www.deepin.org/en/original/deepin-terminal/";
         }
 
         @Override
-        public boolean supportsTabs() {
-            return false;
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW;
         }
 
         @Override
@@ -870,19 +436,25 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) {
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return CommandBuilder.of().add("-C").addFile(configuration.getScriptFile());
         }
     };
     ExternalTerminalType Q_TERMINAL = new SimplePathType("app.qTerminal", "qterminal", true) {
+
+        @Override
+        public int getProcessHierarchyOffset() {
+            return ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.BASH ? 0 : 1;
+        }
+
         @Override
         public String getWebsite() {
             return "https://github.com/lxqt/qterminal";
         }
 
         @Override
-        public boolean supportsTabs() {
-            return false;
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW;
         }
 
         @Override
@@ -896,14 +468,20 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) {
-            return CommandBuilder.of().add("-e").addQuoted(configuration.getColoredTitle());
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
+            return CommandBuilder.of().add("-e").add(configuration.getDialectLaunchCommand());
         }
     };
     ExternalTerminalType MACOS_TERMINAL = new MacOsType("app.macosTerminal", "Terminal") {
+
         @Override
-        public boolean supportsTabs() {
-            return false;
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.TABBED;
+        }
+
+        @Override
+        public int getProcessHierarchyOffset() {
+            return 2;
         }
 
         @Override
@@ -917,7 +495,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             LocalShell.getShell()
                     .executeSimpleCommand(CommandBuilder.of()
                             .add("open", "-a")
@@ -926,14 +504,20 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
     ExternalTerminalType ITERM2 = new MacOsType("app.iterm2", "iTerm") {
+
         @Override
-        public String getWebsite() {
-            return "https://iterm2.com/";
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.TABBED;
         }
 
         @Override
-        public boolean supportsTabs() {
-            return true;
+        public int getProcessHierarchyOffset() {
+            return 3;
+        }
+
+        @Override
+        public String getWebsite() {
+            return "https://iterm2.com/";
         }
 
         @Override
@@ -947,7 +531,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             LocalShell.getShell()
                     .executeSimpleCommand(CommandBuilder.of()
                             .add("open", "-a")
@@ -955,76 +539,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                             .addFile(configuration.getScriptFile()));
         }
     };
-    ExternalTerminalType WARP = new MacOsType("app.warp", "Warp") {
-
-        @Override
-        public String getWebsite() {
-            return "https://www.warp.dev/";
-        }
-
-        @Override
-        public boolean supportsTabs() {
-            return true;
-        }
-
-        @Override
-        public boolean isRecommended() {
-            return true;
-        }
-
-        @Override
-        public boolean supportsColoredTitle() {
-            return true;
-        }
-
-        @Override
-        public boolean shouldClear() {
-            return false;
-        }
-
-        @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
-            LocalShell.getShell()
-                    .executeSimpleCommand(CommandBuilder.of()
-                            .add("open", "-a")
-                            .addQuoted("Warp.app")
-                            .addFile(configuration.getScriptFile()));
-        }
-
-        @Override
-        public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand(
-                ShellDialect systemDialect) {
-            return launchConfiguration -> {
-                var toExecute = CommandBuilder.of()
-                        .add("open", "-a")
-                        .addQuoted("Warp.app")
-                        .addFile(launchConfiguration.getScriptFile());
-                return toExecute.buildSimple();
-            };
-        }
-
-        @Override
-        public TerminalInitFunction additionalInitCommands() {
-            return TerminalInitFunction.of(sc -> {
-                if (sc.getShellDialect() == ShellDialects.ZSH) {
-                    return "printf '\\eP$f{\"hook\": \"SourcedRcFileForWarp\", \"value\": { \"shell\": \"zsh\"}}\\x9c'";
-                }
-                if (sc.getShellDialect() == ShellDialects.BASH) {
-                    return "printf '\\eP$f{\"hook\": \"SourcedRcFileForWarp\", \"value\": { \"shell\": \"bash\"}}\\x9c'";
-                }
-                if (sc.getShellDialect() == ShellDialects.FISH) {
-                    return "printf '\\eP$f{\"hook\": \"SourcedRcFileForWarp\", \"value\": { \"shell\": \"fish\"}}\\x9c'";
-                }
-                return null;
-            });
-        }
-    };
+    ExternalTerminalType WARP = new WarpTerminalType();
     ExternalTerminalType CUSTOM = new CustomTerminalType();
     List<ExternalTerminalType> WINDOWS_TERMINALS = List.of(
             WindowsTerminalType.WINDOWS_TERMINAL_CANARY,
             WindowsTerminalType.WINDOWS_TERMINAL_PREVIEW,
             WindowsTerminalType.WINDOWS_TERMINAL,
-            TabbyTerminalType.TABBY_WINDOWS,
             AlacrittyTerminalType.ALACRITTY_WINDOWS,
             WezTerminalType.WEZTERM_WINDOWS,
             CMD,
@@ -1033,7 +553,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             MOBAXTERM,
             SECURECRT,
             TERMIUS,
-            XSHELL);
+            XSHELL,
+            TabbyTerminalType.TABBY_WINDOWS);
     List<ExternalTerminalType> LINUX_TERMINALS = List.of(
             AlacrittyTerminalType.ALACRITTY_LINUX,
             WezTerminalType.WEZTERM_LINUX,
@@ -1111,7 +632,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         return TerminalInitFunction.none();
     }
 
-    boolean supportsTabs();
+    TerminalOpenFormat getOpenFormat();
 
     default String getWebsite() {
         return null;
@@ -1125,9 +646,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         return true;
     }
 
-    default void launch(LaunchConfiguration configuration) throws Exception {}
+    default void launch(TerminalLaunchConfiguration configuration) throws Exception {}
 
-    default FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand(ShellDialect systemDialect) {
+    default FailableFunction<TerminalLaunchConfiguration, String, Exception> remoteLaunchCommand(
+            ShellDialect systemDialect) {
         return null;
     }
 
@@ -1138,7 +660,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             var location = determineFromPath();
             if (location.isEmpty()) {
                 location = determineInstallation();
@@ -1151,27 +673,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             execute(location.get(), configuration);
         }
 
-        protected abstract void execute(Path file, LaunchConfiguration configuration) throws Exception;
+        protected abstract void execute(Path file, TerminalLaunchConfiguration configuration) throws Exception;
     }
 
-    @Value
-    class LaunchConfiguration {
-        DataColor color;
-        String coloredTitle;
-        String cleanTitle;
-
-        @With
-        FilePath scriptFile;
-
-        ShellDialect scriptDialect;
-
-        public CommandBuilder getDialectLaunchCommand() {
-            var open = scriptDialect.getOpenScriptCommand(scriptFile.toString());
-            return open;
-        }
-    }
-
-    abstract class MacOsType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
+    abstract class MacOsType extends ExternalApplicationType.MacApplication
+            implements ExternalTerminalType, TrackableTerminalType {
 
         public MacOsType(String id, String applicationName) {
             super(id, applicationName);
@@ -1187,20 +693,20 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     }
 
     @Getter
-    abstract class SimplePathType extends PathCheckType {
+    abstract class SimplePathType extends PathCheckType implements TrackableTerminalType {
 
         public SimplePathType(String id, String executable, boolean explicitAsync) {
             super(id, executable, explicitAsync);
         }
 
         @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             var args = toCommand(configuration);
             launch(configuration.getColoredTitle(), args);
         }
 
         @Override
-        public FailableFunction<LaunchConfiguration, String, Exception> remoteLaunchCommand(
+        public FailableFunction<TerminalLaunchConfiguration, String, Exception> remoteLaunchCommand(
                 ShellDialect systemDialect) {
             return launchConfiguration -> {
                 var args = toCommand(launchConfiguration);
@@ -1212,6 +718,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             };
         }
 
-        protected abstract CommandBuilder toCommand(LaunchConfiguration configuration) throws Exception;
+        protected abstract CommandBuilder toCommand(TerminalLaunchConfiguration configuration) throws Exception;
     }
 }

@@ -1,13 +1,12 @@
 package io.xpipe.app.prefs;
 
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.MarkdownComp;
+import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppWindowHelper;
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.impl.HorizontalComp;
-import io.xpipe.app.fxcomps.impl.TextFieldComp;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.util.DesktopHelper;
@@ -71,13 +70,7 @@ public class SyncCategory extends AppPrefsCategory {
         testButton.apply(struc -> button.set(struc.get()));
         testButton.padding(new Insets(6, 10, 6, 6));
 
-        var restartButton = new ButtonComp(AppI18n.observable("restart"), new FontIcon("mdi2r-restart"), () -> {
-            OperationMode.restart();
-        });
-        restartButton.visible(canRestart);
-        restartButton.padding(new Insets(6, 10, 6, 6));
-
-        var testRow = new HorizontalComp(List.of(testButton, restartButton))
+        var testRow = new HorizontalComp(List.of(testButton))
                 .spacing(10)
                 .padding(new Insets(10, 0, 0, 0))
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
@@ -92,10 +85,9 @@ public class SyncCategory extends AppPrefsCategory {
         var builder = new OptionsBuilder();
         builder.addTitle("sync")
                 .sub(new OptionsBuilder()
-                        .name("enableGitStorage")
-                        .description("enableGitStorageDescription")
+                        .pref(prefs.enableGitStorage)
                         .addToggle(prefs.enableGitStorage)
-                        .nameAndDescription("storageGitRemote")
+                        .pref(prefs.storageGitRemote)
                         .addComp(remoteRow, prefs.storageGitRemote)
                         .disable(prefs.enableGitStorage.not())
                         .addComp(testRow)

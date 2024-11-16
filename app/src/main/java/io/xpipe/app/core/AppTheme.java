@@ -2,11 +2,11 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.PrefsChoiceValue;
-import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.resources.AppResources;
+import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
 
 import javafx.animation.Interpolator;
@@ -97,7 +97,10 @@ public class AppTheme {
         }
 
         try {
-            if (AppPrefs.get().theme.getValue() == null) {
+            var lastSystemDark = AppCache.getBoolean("lastDarkTheme", false);
+            var nowDark = Platform.getPreferences().getColorScheme() == ColorScheme.DARK;
+            AppCache.update("lastDarkTheme", nowDark);
+            if (AppPrefs.get().theme.getValue() == null || lastSystemDark != nowDark) {
                 setDefault();
             }
 
@@ -130,6 +133,15 @@ public class AppTheme {
         });
 
         init = true;
+    }
+
+    public static void reset() {
+        if (!init) {
+            return;
+        }
+
+        var nowDark = Platform.getPreferences().getColorScheme() == ColorScheme.DARK;
+        AppCache.update("lastDarkTheme", nowDark);
     }
 
     private static void setDefault() {
@@ -189,10 +201,12 @@ public class AppTheme {
     public static class DerivedTheme extends Theme {
 
         private final String name;
+        private final int skipLines;
 
-        public DerivedTheme(String id, String cssId, String name, atlantafx.base.theme.Theme theme) {
+        public DerivedTheme(String id, String cssId, String name, atlantafx.base.theme.Theme theme, int skipLines) {
             super(id, cssId, theme);
             this.name = name;
+            this.skipLines = skipLines;
         }
 
         @Override
@@ -208,10 +222,7 @@ public class AppTheme {
             AppResources.with("atlantafx.base", theme.getUserAgentStylesheet().substring(1), path -> {
                 var baseStyleContent = Files.readString(path);
                 builder.append("\n")
-                        .append(baseStyleContent
-                                .lines()
-                                .skip(builder.toString().lines().count())
-                                .collect(Collectors.joining("\n")));
+                        .append(baseStyleContent.lines().skip(skipLines).collect(Collectors.joining("\n")));
             });
 
             Application.setUserAgentStylesheet(Styles.toDataURI(builder.toString()));
@@ -237,10 +248,10 @@ public class AppTheme {
         public static final Theme CUPERTINO_LIGHT = new Theme("cupertinoLight", "cupertino", new CupertinoLight());
         public static final Theme CUPERTINO_DARK = new Theme("cupertinoDark", "cupertino", new CupertinoDark());
         public static final Theme DRACULA = new Theme("dracula", "dracula", new Dracula());
-        public static final Theme MOCHA = new DerivedTheme("mocha", "primer", "Mocha", new PrimerDark());
+        public static final Theme MOCHA = new DerivedTheme("mocha", "mocha", "Mocha", new PrimerDark(), 115);
 
         // Adjust this to create your own theme
-        public static final Theme CUSTOM = new DerivedTheme("custom", "primer", "Custom", new PrimerDark());
+        public static final Theme CUSTOM = new DerivedTheme("custom", "primer", "Custom", new PrimerDark(), 115);
 
         // Also include your custom theme here
         public static final List<Theme> ALL = List.of(

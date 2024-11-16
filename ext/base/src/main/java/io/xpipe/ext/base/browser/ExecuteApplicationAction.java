@@ -1,18 +1,18 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.action.ApplicationPathAction;
-import io.xpipe.app.browser.action.LeafAction;
+import io.xpipe.app.browser.action.BrowserApplicationPathAction;
+import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.app.browser.fs.OpenFileSystemModel;
+import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
 
 import java.util.List;
 
-public abstract class ExecuteApplicationAction implements LeafAction, ApplicationPathAction {
+public abstract class ExecuteApplicationAction implements BrowserLeafAction, BrowserApplicationPathAction {
 
     @Override
-    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
+    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) throws Exception {
         ShellControl sc = model.getFileSystem().getShell().orElseThrow();
         for (BrowserEntry entry : entries) {
             var command = createCommand(model, entry);
@@ -32,5 +32,5 @@ public abstract class ExecuteApplicationAction implements LeafAction, Applicatio
         return false;
     }
 
-    protected abstract CommandBuilder createCommand(OpenFileSystemModel model, BrowserEntry entry);
+    protected abstract CommandBuilder createCommand(BrowserFileSystemTabModel model, BrowserEntry entry);
 }

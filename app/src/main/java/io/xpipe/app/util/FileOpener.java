@@ -4,6 +4,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.process.ShellDialects;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -56,7 +57,12 @@ public class FileOpener {
     public static void openInDefaultApplication(String localFile) {
         try (var pc = LocalShell.getShell().start()) {
             if (pc.getOsType().equals(OsType.WINDOWS)) {
-                pc.executeSimpleCommand("start \"\" \"" + localFile + "\"");
+                if (pc.getShellDialect() == ShellDialects.POWERSHELL) {
+                    pc.command(CommandBuilder.of().add("Invoke-Item").addFile(localFile))
+                            .execute();
+                } else {
+                    pc.executeSimpleCommand("start \"\" \"" + localFile + "\"");
+                }
             } else if (pc.getOsType().equals(OsType.LINUX)) {
                 pc.executeSimpleCommand("xdg-open \"" + localFile + "\"");
             } else {

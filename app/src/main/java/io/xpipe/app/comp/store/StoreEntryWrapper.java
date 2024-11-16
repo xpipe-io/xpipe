@@ -1,14 +1,16 @@
 package io.xpipe.app.comp.store;
 
 import io.xpipe.app.ext.ActionProvider;
-import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.store.SingletonSessionStore;
 
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -44,6 +46,7 @@ public class StoreEntryWrapper {
     private final Property<StoreNotes> notes;
     private final Property<String> customIcon = new SimpleObjectProperty<>();
     private final Property<String> iconFile = new SimpleObjectProperty<>();
+    private final BooleanProperty sessionActive = new SimpleBooleanProperty();
 
     public StoreEntryWrapper(DataStoreEntry entry) {
         this.entry = entry;
@@ -118,7 +121,15 @@ public class StoreEntryWrapper {
         });
     }
 
-    public void update() {
+    public void stopSession() {
+        ThreadHelper.runFailableAsync(() -> {
+            if (entry.getStore() instanceof SingletonSessionStore<?> singletonSessionStore) {
+                singletonSessionStore.stopSessionIfNeeded();
+            }
+        });
+    }
+
+    public synchronized void update() {
         // We are probably in shutdown then
         if (StoreViewState.get() == null) {
             return;
@@ -147,6 +158,9 @@ public class StoreEntryWrapper {
         busy.setValue(entry.getBusyCounter().get() != 0);
         deletable.setValue(entry.getConfiguration().isDeletable()
                 || AppPrefs.get().developerDisableGuiRestrictions().getValue());
+        sessionActive.setValue(entry.getStore() instanceof SingletonSessionStore<?> ss
+                && entry.getStore() instanceof ShellStore
+                && ss.isSessionRunning());
 
         category.setValue(StoreViewState.get()
                 .getCategoryWrapper(DataStorage.get()
@@ -220,7 +234,7 @@ public class StoreEntryWrapper {
     }
 
     public void refreshChildren() {
-        var hasChildren = DataStorage.get().refreshChildren(entry, null);
+        var hasChildren = DataStorage.get().refreshChildren(entry);
         PlatformThread.runLaterIfNeeded(() -> {
             expanded.set(hasChildren);
         });

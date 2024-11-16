@@ -63,7 +63,7 @@ public abstract class BrowserIconDirectoryType {
                     var closedIcon = "browser/" + split[2].trim();
                     var lightClosedIcon = split.length > 4 ? "browser/" + split[4].trim() : closedIcon;
 
-                    ALL.add(new Simple(id, new IconVariant(lightClosedIcon, closedIcon), filter));
+                    ALL.add(new Simple(id, new BrowserIconVariant(lightClosedIcon, closedIcon), filter));
                 }
             }
         });
@@ -84,10 +84,10 @@ public abstract class BrowserIconDirectoryType {
         @Getter
         private final String id;
 
-        private final IconVariant closed;
+        private final BrowserIconVariant closed;
         private final Set<String> names;
 
-        public Simple(String id, IconVariant closed, Set<String> names) {
+        public Simple(String id, BrowserIconVariant closed, Set<String> names) {
             this.id = id;
             this.closed = closed;
             this.names = names;

@@ -20,7 +20,7 @@ public class CloseBehaviourAlert {
             return true;
         }
 
-        boolean set = AppCache.get("closeBehaviourSet", Boolean.class, () -> false);
+        boolean set = AppCache.getBoolean("closeBehaviourSet", false);
         if (set) {
             return true;
         }

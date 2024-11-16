@@ -1,14 +1,14 @@
 package io.xpipe.app.comp.store;
 
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompStructure;
+import io.xpipe.app.comp.augment.GrowAugment;
+import io.xpipe.app.comp.base.HorizontalComp;
+import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.CompStructure;
-import io.xpipe.app.fxcomps.augment.GrowAugment;
-import io.xpipe.app.fxcomps.impl.HorizontalComp;
-import io.xpipe.app.fxcomps.impl.IconButtonComp;
-import io.xpipe.app.fxcomps.impl.VerticalComp;
-import io.xpipe.app.fxcomps.util.LabelGraphic;
+import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.storage.DataColor;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.binding.Bindings;

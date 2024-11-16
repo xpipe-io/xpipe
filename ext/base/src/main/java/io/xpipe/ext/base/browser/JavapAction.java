@@ -2,7 +2,7 @@ package io.xpipe.ext.base.browser;
 
 import io.xpipe.app.browser.action.BrowserActionFormatter;
 import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.app.browser.fs.OpenFileSystemModel;
+import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
 import io.xpipe.core.store.FileNames;
 
@@ -19,12 +19,12 @@ public class JavapAction extends ToFileCommandAction implements FileTypeAction, 
     }
 
     @Override
-    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return new SimpleStringProperty("javap -c -p " + BrowserActionFormatter.filesArgument(entries));
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return super.isApplicable(model, entries) && FileTypeAction.super.isApplicable(model, entries);
     }
 
@@ -34,7 +34,7 @@ public class JavapAction extends ToFileCommandAction implements FileTypeAction, 
     }
 
     @Override
-    protected String createCommand(OpenFileSystemModel model, BrowserEntry entry) {
+    protected String createCommand(BrowserFileSystemTabModel model, BrowserEntry entry) {
         return "javap -c -p "
                 + FileNames.quoteIfNecessary(entry.getRawFileEntry().getPath());
     }

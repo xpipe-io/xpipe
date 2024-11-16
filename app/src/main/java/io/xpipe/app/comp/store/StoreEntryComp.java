@@ -1,19 +1,19 @@
 package io.xpipe.app.comp.store;
 
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.comp.augment.ContextMenuAugment;
+import io.xpipe.app.comp.augment.GrowAugment;
+import io.xpipe.app.comp.base.IconButtonComp;
+import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
-import io.xpipe.app.core.*;
+import io.xpipe.app.comp.base.TooltipAugment;
+import io.xpipe.app.core.App;
+import io.xpipe.app.core.AppActionLinkDetector;
+import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.SimpleCompStructure;
-import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
-import io.xpipe.app.fxcomps.augment.GrowAugment;
-import io.xpipe.app.fxcomps.impl.IconButtonComp;
-import io.xpipe.app.fxcomps.impl.LabelComp;
-import io.xpipe.app.fxcomps.impl.TooltipAugment;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
-import io.xpipe.app.fxcomps.util.DerivedObservableList;
-import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.storage.DataColor;
@@ -439,7 +439,8 @@ public abstract class StoreEntryComp extends SimpleComp {
                 && !LicenseProvider.get().getFeature(p.getProFeatureId()).isSupported();
         if (proRequired) {
             item.setDisable(true);
-            item.textProperty().bind(Bindings.createStringBinding(() -> name.getValue() + " (Pro)", name));
+            item.textProperty()
+                    .bind(LicenseProvider.get().getFeature(p.getProFeatureId()).suffixObservable(name.getValue()));
         } else {
             item.textProperty().bind(name);
         }

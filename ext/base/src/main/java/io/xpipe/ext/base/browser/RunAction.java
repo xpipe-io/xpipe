@@ -1,7 +1,7 @@
 package io.xpipe.ext.base.browser;
 
 import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.app.browser.fs.OpenFileSystemModel;
+import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
@@ -54,7 +54,7 @@ public class RunAction extends MultiExecuteAction {
     }
 
     @Override
-    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return new FontIcon("mdi2p-play");
     }
 
@@ -64,16 +64,16 @@ public class RunAction extends MultiExecuteAction {
     }
 
     @Override
-    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return AppI18n.observable("run");
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return entries.stream().allMatch(entry -> isExecutable(entry.getRawFileEntry()));
     }
 
-    protected CommandBuilder createCommand(ShellControl sc, OpenFileSystemModel model, BrowserEntry entry) {
+    protected CommandBuilder createCommand(ShellControl sc, BrowserFileSystemTabModel model, BrowserEntry entry) {
         return CommandBuilder.of()
                 .add(sc.getShellDialect()
                         .runScriptCommand(sc, entry.getRawFileEntry().getPath()));

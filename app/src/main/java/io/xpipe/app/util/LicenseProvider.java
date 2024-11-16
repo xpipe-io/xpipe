@@ -1,7 +1,7 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.ext.ExtensionException;
-import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.core.util.ModuleLayerLoader;
 
 import javafx.beans.value.ObservableValue;
@@ -24,7 +24,7 @@ public abstract class LicenseProvider {
 
     public abstract LicensedFeature getFeature(String id);
 
-    public abstract boolean checkOsName(String name);
+    public abstract LicensedFeature checkOsName(String name);
 
     public abstract void checkOsNameOrThrow(String s);
 

@@ -1,9 +1,9 @@
 package io.xpipe.app.comp.store;
 
-import io.xpipe.app.comp.base.SideSplitPaneComp;
+import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.base.LeftSplitPaneComp;
 import io.xpipe.app.core.AppActionLinkDetector;
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.util.InputHelper;
 
 import javafx.scene.input.KeyCode;
@@ -15,7 +15,7 @@ public class StoreLayoutComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var struc = new SideSplitPaneComp(new StoreSidebarComp(), new StoreEntryListComp())
+        var struc = new LeftSplitPaneComp(new StoreSidebarComp(), new StoreEntryListComp())
                 .withInitialWidth(AppLayoutModel.get().getSavedState().getSidebarWidth())
                 .withOnDividerChange(aDouble -> {
                     AppLayoutModel.get().getSavedState().setSidebarWidth(aDouble);

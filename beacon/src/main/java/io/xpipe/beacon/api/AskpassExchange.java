@@ -26,6 +26,8 @@ public class AskpassExchange extends BeaconInterface<AskpassExchange.Request> {
     @Builder
     @Value
     public static class Request {
+        long pid;
+
         UUID secretId;
 
         UUID request;

@@ -1,9 +1,9 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.comp.base.ModalOverlayComp;
+import io.xpipe.app.comp.base.TooltipAugment;
 import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.ext.PrefsChoiceValue;
-import io.xpipe.app.fxcomps.impl.TooltipAugment;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;

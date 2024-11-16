@@ -1,10 +1,10 @@
 package io.xpipe.app.comp.base;
 
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.CompStructure;
-import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -52,7 +52,7 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
         var desc = new Label();
         desc.textProperty().bind(PlatformThread.sync(description));
         AppFont.small(desc);
-        desc.setOpacity(0.65);
+        desc.setOpacity(0.8);
         var text = new VBox(header, desc);
         text.setSpacing(2);
 

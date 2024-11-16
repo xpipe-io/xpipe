@@ -22,6 +22,8 @@ public class TerminalWaitExchange extends BeaconInterface<TerminalWaitExchange.R
     public static class Request {
         @NonNull
         UUID request;
+
+        long pid;
     }
 
     @Jacksonized

@@ -40,7 +40,6 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
     private void handleGui(ErrorEvent event) {
         try {
             AppProperties.init();
-            AppState.init();
             AppExtensionManager.init(false);
             AppI18n.init();
             AppStyle.init();
@@ -74,7 +73,7 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
         }
 
         try {
-            var rel = XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheck();
+            var rel = XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheck(false, false);
             if (rel != null && rel.isUpdate()) {
                 var update = AppWindowHelper.showBlockingAlert(alert -> {
                             alert.setAlertType(Alert.AlertType.INFORMATION);

@@ -13,7 +13,7 @@ buildscript {
 
 plugins {
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
-    id 'org.gradlex.extra-java-module-info' version '1.8' apply false
+    id 'org.gradlex.extra-java-module-info' version '1.9' apply false
     id("com.diffplug.spotless") version "6.25.0" apply false
 }
 
@@ -101,8 +101,7 @@ project.ext {
     os = org.gradle.internal.os.OperatingSystem.current()
     allExtensions = Stream.concat(Stream.of(project(':base')), Arrays.stream(file("$rootDir/ext").list())
             .filter(s -> file("$rootDir/ext/$s/build.gradle").exists())
-            .filter(s -> !s.equals('base') && !s.equals('csv') && !s.equals('office') && !s.equals('pdx') && !s.equals('jackson') && !s.equals(
-                    'collections'))
+            .filter(s -> !s.equals('base'))
             .map(l -> project(":$l"))).toList()
     fullVersion = file("$rootDir/private_files.txt").exists()
     arch = getArchName()
@@ -125,7 +124,7 @@ project.ext {
     website = 'https://xpipe.io'
     sourceWebsite = isStage ? 'https://github.com/xpipe-io/xpipe-ptb' : 'https://github.com/xpipe-io/xpipe'
     authors = 'Christopher Schnick'
-    javafxVersion = '24-ea+5'
+    javafxVersion = '24-ea+15'
     platformName = getPlatformName()
     languages = ["en", "nl", "es", "fr", "de", "it", "pt", "ru", "ja", "zh", "tr", "da"]
     jvmRunArgs = [
@@ -208,7 +207,6 @@ def testTasks = [
         project(':core').getTasksByName('test', true),
         project(':app').getTasksByName('test', true),
         project(':base').getTasksByName('localTest', true),
-        project(':jdbc').getTasksByName('localTest', true),
         project(':proc').getTasksByName('localTest', true),
 ]
 

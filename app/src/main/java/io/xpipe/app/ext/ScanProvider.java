@@ -2,7 +2,6 @@ package io.xpipe.app.ext;
 
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.core.util.ModuleLayerLoader;
 
 import lombok.AllArgsConstructor;
@@ -21,30 +20,33 @@ public abstract class ScanProvider {
         return ALL;
     }
 
-    public ScanOperation create(DataStoreEntry entry, ShellControl sc) throws Exception {
+    public ScanOpportunity create(DataStoreEntry entry, ShellControl sc) throws Exception {
         return null;
     }
 
+    public abstract void scan(DataStoreEntry entry, ShellControl sc) throws Throwable;
+
     @Value
     @AllArgsConstructor
-    public static class ScanOperation {
+    public class ScanOpportunity {
         String nameKey;
         boolean disabled;
         boolean defaultSelected;
-        FailableRunnable<Throwable> scanner;
         String licenseFeatureId;
 
-        public ScanOperation(
-                String nameKey, boolean disabled, boolean defaultSelected, FailableRunnable<Throwable> scanner) {
+        public ScanOpportunity(String nameKey, boolean disabled, boolean defaultSelected) {
             this.nameKey = nameKey;
             this.disabled = disabled;
             this.defaultSelected = defaultSelected;
-            this.scanner = scanner;
             this.licenseFeatureId = null;
         }
 
         public String getLicensedFeatureId() {
             return licenseFeatureId;
+        }
+
+        public ScanProvider getProvider() {
+            return ScanProvider.this;
         }
     }
 

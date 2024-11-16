@@ -1,17 +1,24 @@
 package io.xpipe.app.prefs;
 
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.impl.VerticalComp;
-import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.util.PlatformThread;
 
 import javafx.css.PseudoClass;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Region;
 import javafx.scene.text.TextAlignment;
+
+import org.kordamp.ikonli.javafx.FontIcon;
+
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class AppPrefsSidebarComp extends SimpleComp {
 
@@ -33,7 +40,17 @@ public class AppPrefsSidebarComp extends SimpleComp {
                             })
                             .grow(true, false);
                 })
-                .toList();
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        var restartButton = new ButtonComp(AppI18n.observable("restart"), new FontIcon("mdi2r-restart"), () -> {
+            OperationMode.restart();
+        });
+        restartButton.grow(true, false);
+        restartButton.visible(AppPrefs.get().getRequiresRestart());
+        restartButton.padding(new Insets(6, 10, 6, 6));
+        buttons.add(Comp.vspacer());
+        buttons.add(restartButton);
+
         var vbox = new VerticalComp(buttons).styleClass("sidebar");
         vbox.apply(struc -> {
             AppPrefs.get().getSelectedCategory().subscribe(val -> {

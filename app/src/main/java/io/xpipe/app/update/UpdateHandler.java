@@ -36,7 +36,7 @@ public abstract class UpdateHandler {
     protected final boolean updateSucceeded;
 
     protected UpdateHandler(boolean startBackgroundThread) {
-        performedUpdate = AppCache.get("performedUpdate", PerformedUpdate.class, () -> null);
+        performedUpdate = AppCache.getNonNull("performedUpdate", PerformedUpdate.class, () -> null);
         var hasUpdated = performedUpdate != null;
         event("Was updated is " + hasUpdated);
         if (hasUpdated) {
@@ -48,7 +48,7 @@ public abstract class UpdateHandler {
             updateSucceeded = false;
         }
 
-        preparedUpdate.setValue(AppCache.get("preparedUpdate", PreparedUpdate.class, () -> null));
+        preparedUpdate.setValue(AppCache.getNonNull("preparedUpdate", PreparedUpdate.class, () -> null));
 
         // Check if the original version this was downloaded from is still the same
         if (preparedUpdate.getValue() != null
@@ -99,12 +99,17 @@ public abstract class UpdateHandler {
 
     private void startBackgroundUpdater() {
         ThreadHelper.createPlatformThread("updater", true, () -> {
+                    var checked = false;
                     ThreadHelper.sleep(Duration.ofMinutes(5).toMillis());
                     event("Starting background updater thread");
                     while (true) {
-                        if (AppPrefs.get().automaticallyUpdate().get()) {
+                        if (AppPrefs.get().automaticallyUpdate().get()
+                                || AppPrefs.get().checkForSecurityUpdates().get()) {
                             event("Performing background update");
-                            refreshUpdateCheckSilent();
+                            refreshUpdateCheckSilent(
+                                    !checked,
+                                    !AppPrefs.get().automaticallyUpdate().get());
+                            checked = true;
                             prepareUpdate();
                         }
 
@@ -134,17 +139,9 @@ public abstract class UpdateHandler {
         return false;
     }
 
-    public final void prepareUpdateAsync() {
-        ThreadHelper.runAsync(() -> prepareUpdate());
-    }
-
-    public final void refreshUpdateCheckAsync() {
-        ThreadHelper.runAsync(() -> refreshUpdateCheckSilent());
-    }
-
-    public final AvailableRelease refreshUpdateCheckSilent() {
+    public final AvailableRelease refreshUpdateCheckSilent(boolean first, boolean securityOnly) {
         try {
-            return refreshUpdateCheck();
+            return refreshUpdateCheck(first, securityOnly);
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).discard().handle();
             return null;
@@ -194,7 +191,8 @@ public abstract class UpdateHandler {
                 lastUpdateCheckResult.getValue().getReleaseUrl(),
                 null,
                 changelog,
-                lastUpdateCheckResult.getValue().getAssetType());
+                lastUpdateCheckResult.getValue().getAssetType(),
+                lastUpdateCheckResult.getValue().isSecurityOnly());
         preparedUpdate.setValue(rel);
     }
 
@@ -214,7 +212,9 @@ public abstract class UpdateHandler {
 
         // Check if prepared update is still the latest.
         // We only do that here to minimize the sent requests by only executing when it's really necessary
-        var available = XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheckSilent();
+        var available = XPipeDistributionType.get()
+                .getUpdateHandler()
+                .refreshUpdateCheckSilent(false, preparedUpdate.getValue().isSecurityOnly());
         if (preparedUpdate.getValue() == null) {
             return;
         }
@@ -233,17 +233,17 @@ public abstract class UpdateHandler {
         throw new UnsupportedOperationException();
     }
 
-    public final AvailableRelease refreshUpdateCheck() throws Exception {
+    public final AvailableRelease refreshUpdateCheck(boolean first, boolean securityOnly) throws Exception {
         if (busy.getValue()) {
             return lastUpdateCheckResult.getValue();
         }
 
         try (var ignored = new BooleanScope(busy).start()) {
-            return refreshUpdateCheckImpl();
+            return refreshUpdateCheckImpl(first, securityOnly);
         }
     }
 
-    public abstract AvailableRelease refreshUpdateCheckImpl() throws Exception;
+    public abstract AvailableRelease refreshUpdateCheckImpl(boolean first, boolean securityOnly) throws Exception;
 
     @Value
     @Builder
@@ -267,6 +267,7 @@ public abstract class UpdateHandler {
         AppInstaller.InstallerAssetType assetType;
         Instant checkTime;
         boolean isUpdate;
+        boolean securityOnly;
     }
 
     @Value
@@ -280,5 +281,6 @@ public abstract class UpdateHandler {
         Path file;
         String body;
         AppInstaller.InstallerAssetType assetType;
+        boolean securityOnly;
     }
 }

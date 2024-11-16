@@ -1,9 +1,9 @@
 package io.xpipe.app.comp.store;
 
+import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProviders;
-import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.util.ScanAlert;
 
 import javafx.scene.control.Menu;
@@ -22,7 +22,7 @@ public class StoreCreationMenu {
         automatically.setGraphic(new FontIcon("mdi2e-eye-plus-outline"));
         automatically.textProperty().bind(AppI18n.observable("addAutomatically"));
         automatically.setOnAction(event -> {
-            ScanAlert.showAsync(null, null);
+            ScanAlert.showAsync(null);
             event.consume();
         });
         menu.getItems().add(automatically);
@@ -33,11 +33,9 @@ public class StoreCreationMenu {
         menu.getItems().add(category("addDesktop", "mdi2c-camera-plus", DataStoreCreationCategory.DESKTOP, null));
 
         menu.getItems()
-                .add(category(
-                        "addShell", "mdi2t-text-box-multiple", DataStoreCreationCategory.SHELL, "shellEnvironment"));
-
-        menu.getItems()
                 .add(category("addScript", "mdi2s-script-text-outline", DataStoreCreationCategory.SCRIPT, "script"));
+
+        menu.getItems().add(category("addCommand", "mdi2c-code-greater-than", DataStoreCreationCategory.COMMAND, null));
 
         menu.getItems()
                 .add(category(

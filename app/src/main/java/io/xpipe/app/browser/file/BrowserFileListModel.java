@@ -1,6 +1,5 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileEntry;
@@ -27,9 +26,9 @@ public final class BrowserFileListModel {
     static final Comparator<BrowserEntry> FILE_TYPE_COMPARATOR =
             Comparator.comparing(path -> path.getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY);
 
-    private final OpenFileSystemModel.SelectionMode selectionMode;
+    private final BrowserFileSystemTabModel.SelectionMode selectionMode;
 
-    private final OpenFileSystemModel fileSystemModel;
+    private final BrowserFileSystemTabModel fileSystemModel;
     private final Property<Comparator<BrowserEntry>> comparatorProperty =
             new SimpleObjectProperty<>(FILE_TYPE_COMPARATOR);
     private final Property<List<BrowserEntry>> all = new SimpleObjectProperty<>(new ArrayList<>());
@@ -40,7 +39,8 @@ public final class BrowserFileListModel {
     private final Property<Boolean> draggedOverEmpty = new SimpleBooleanProperty();
     private final Property<BrowserEntry> editing = new SimpleObjectProperty<>();
 
-    public BrowserFileListModel(OpenFileSystemModel.SelectionMode selectionMode, OpenFileSystemModel fileSystemModel) {
+    public BrowserFileListModel(
+            BrowserFileSystemTabModel.SelectionMode selectionMode, BrowserFileSystemTabModel fileSystemModel) {
         this.selectionMode = selectionMode;
         this.fileSystemModel = fileSystemModel;
 

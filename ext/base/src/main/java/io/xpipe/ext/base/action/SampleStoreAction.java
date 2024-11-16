@@ -3,13 +3,13 @@ package io.xpipe.ext.base.action;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.LocalStore;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.process.CommandControl;
 import io.xpipe.core.process.ElevationFunction;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.store.ShellStore;
 
 import javafx.beans.value.ObservableValue;
 
@@ -66,7 +66,7 @@ public class SampleStoreAction implements ActionProvider {
         public void execute() throws Exception {
             var docker = new LocalStore();
             // Start a shell control from the docker connection store
-            try (ShellControl sc = docker.control().start()) {
+            try (ShellControl sc = docker.standaloneControl().start()) {
                 // Once we are here, the shell connection is initialized and we can query all kinds of information
 
                 // Query the detected shell dialect, e.g. cmd, powershell, sh, bash, etc.

@@ -1,13 +1,13 @@
 package io.xpipe.ext.base.browser.compress;
 
-import io.xpipe.app.browser.action.BranchAction;
 import io.xpipe.app.browser.action.BrowserAction;
-import io.xpipe.app.browser.action.LeafAction;
+import io.xpipe.app.browser.action.BrowserBranchAction;
+import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.app.browser.fs.OpenFileSystemModel;
+import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
@@ -24,7 +24,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 
-public abstract class BaseCompressAction implements BrowserAction, BranchAction {
+public abstract class BaseCompressAction implements BrowserAction, BrowserBranchAction {
 
     private final boolean directory;
 
@@ -33,7 +33,7 @@ public abstract class BaseCompressAction implements BrowserAction, BranchAction 
     }
 
     @Override
-    public void init(OpenFileSystemModel model) throws Exception {
+    public void init(BrowserFileSystemTabModel model) throws Exception {
         var sc = model.getFileSystem().getShell().orElseThrow();
 
         var foundTar = CommandSupport.findProgram(sc, "tar");
@@ -59,7 +59,7 @@ public abstract class BaseCompressAction implements BrowserAction, BranchAction 
     }
 
     @Override
-    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return new FontIcon("mdi2a-archive");
     }
 
@@ -69,12 +69,12 @@ public abstract class BaseCompressAction implements BrowserAction, BranchAction 
     }
 
     @Override
-    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return AppI18n.observable(directory ? "compressContents" : "compress");
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         var ext = List.of("zip", "tar", "tar.gz", "tgz", "7z", "rar", "xar");
         if (entries.stream().anyMatch(browserEntry -> ext.stream()
                 .anyMatch(s ->
@@ -88,7 +88,7 @@ public abstract class BaseCompressAction implements BrowserAction, BranchAction 
     }
 
     @Override
-    public List<LeafAction> getBranchingActions(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public List<BrowserLeafAction> getBranchingActions(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return List.of(
                 new Windows7zAction(),
                 new WindowsZipAction(),
@@ -108,10 +108,10 @@ public abstract class BaseCompressAction implements BrowserAction, BranchAction 
                 });
     }
 
-    private abstract class Action implements LeafAction {
+    private abstract class Action implements BrowserLeafAction {
 
         @Override
-        public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             var name = new SimpleStringProperty(directory ? entries.getFirst().getFileName() : null);
             model.getOverlay()
                     .setValue(new ModalOverlayComp.OverlayContent(
@@ -140,11 +140,11 @@ public abstract class BaseCompressAction implements BrowserAction, BranchAction 
         }
 
         @Override
-        public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             return new SimpleStringProperty("." + getExtension());
         }
 
-        protected abstract void create(String fileName, OpenFileSystemModel model, List<BrowserEntry> entries);
+        protected abstract void create(String fileName, BrowserFileSystemTabModel model, List<BrowserEntry> entries);
 
         protected abstract String getExtension();
     }
@@ -152,7 +152,7 @@ public abstract class BaseCompressAction implements BrowserAction, BranchAction 
     private class WindowsZipAction extends Action {
 
         @Override
-        protected void create(String fileName, OpenFileSystemModel model, List<BrowserEntry> entries) {
+        protected void create(String fileName, BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             var base = new FilePath(model.getCurrentDirectory().getPath());
             var target = base.join(fileName);
             var command = CommandBuilder.of()
@@ -195,7 +195,7 @@ public abstract class BaseCompressAction implements BrowserAction, BranchAction 
         }
 
         @Override
-        public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             return model.getFileSystem().getShell().orElseThrow().getOsType() == OsType.WINDOWS;
         }
     }
@@ -203,7 +203,7 @@ public abstract class BaseCompressAction implements BrowserAction, BranchAction 
     private class UnixZipAction extends Action {
 
         @Override
-        protected void create(String fileName, OpenFileSystemModel model, List<BrowserEntry> entries) {
+        protected void create(String fileName, BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             var base = new FilePath(model.getCurrentDirectory().getPath());
             var target = base.join(fileName);
             var command = CommandBuilder.of().add("zip", "-r", "-");
@@ -240,12 +240,12 @@ public abstract class BaseCompressAction implements BrowserAction, BranchAction 
         }
 
         @Override
-        public boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        public boolean isActive(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             return model.getCache().getInstalledApplications().get("zip");
         }
 
         @Override
-        public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             return model.getFileSystem().getShell().orElseThrow().getOsType() != OsType.WINDOWS;
         }
     }
@@ -253,7 +253,7 @@ public abstract class BaseCompressAction implements BrowserAction, BranchAction 
     private class Windows7zAction extends Action {
 
         @Override
-        protected void create(String fileName, OpenFileSystemModel model, List<BrowserEntry> entries) {
+        protected void create(String fileName, BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             var base = new FilePath(model.getCurrentDirectory().getPath());
             var target = base.join(fileName);
             var command = CommandBuilder.of()
@@ -282,12 +282,12 @@ public abstract class BaseCompressAction implements BrowserAction, BranchAction 
         }
 
         @Override
-        public boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        public boolean isActive(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             return model.getCache().getMultiPurposeCache().containsKey("7zExecutable");
         }
 
         @Override
-        public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             return model.getFileSystem().getShell().orElseThrow().getOsType() == OsType.WINDOWS;
         }
     }
@@ -301,7 +301,7 @@ public abstract class BaseCompressAction implements BrowserAction, BranchAction 
         }
 
         @Override
-        protected void create(String fileName, OpenFileSystemModel model, List<BrowserEntry> entries) {
+        protected void create(String fileName, BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             var tar = CommandBuilder.of()
                     .add("tar", "-c")
                     .addIf(gz, "-z")
@@ -331,12 +331,12 @@ public abstract class BaseCompressAction implements BrowserAction, BranchAction 
         }
 
         @Override
-        public boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        public boolean isActive(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             return model.getCache().getInstalledApplications().get("tar");
         }
 
         @Override
-        public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             return model.getFileSystem().getShell().orElseThrow().getOsType() != OsType.WINDOWS || !directory;
         }
     }

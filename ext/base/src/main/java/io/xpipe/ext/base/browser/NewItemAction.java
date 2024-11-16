@@ -1,14 +1,14 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.action.BranchAction;
 import io.xpipe.app.browser.action.BrowserAction;
-import io.xpipe.app.browser.action.LeafAction;
+import io.xpipe.app.browser.action.BrowserBranchAction;
+import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.app.browser.fs.OpenFileSystemModel;
+import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.icon.BrowserIcons;
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.process.OsType;
 
@@ -21,10 +21,10 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 
-public class NewItemAction implements BrowserAction, BranchAction {
+public class NewItemAction implements BrowserAction, BrowserBranchAction {
 
     @Override
-    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return new FontIcon("mdi2p-plus-box-outline");
     }
 
@@ -39,12 +39,12 @@ public class NewItemAction implements BrowserAction, BranchAction {
     }
 
     @Override
-    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return AppI18n.observable("new");
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return entries.size() == 1
                 && entries.getFirst()
                         .getRawFileEntry()
@@ -53,11 +53,11 @@ public class NewItemAction implements BrowserAction, BranchAction {
     }
 
     @Override
-    public List<LeafAction> getBranchingActions(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public List<BrowserLeafAction> getBranchingActions(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return List.of(
-                new LeafAction() {
+                new BrowserLeafAction() {
                     @Override
-                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         var name = new SimpleStringProperty();
                         model.getOverlay()
                                 .setValue(new ModalOverlayComp.OverlayContent(
@@ -77,18 +77,19 @@ public class NewItemAction implements BrowserAction, BranchAction {
                     }
 
                     @Override
-                    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                    public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         return BrowserIcons.createDefaultFileIcon().createRegion();
                     }
 
                     @Override
-                    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                    public ObservableValue<String> getName(
+                            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         return AppI18n.observable("file");
                     }
                 },
-                new LeafAction() {
+                new BrowserLeafAction() {
                     @Override
-                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         var name = new SimpleStringProperty();
                         model.getOverlay()
                                 .setValue(new ModalOverlayComp.OverlayContent(
@@ -108,18 +109,19 @@ public class NewItemAction implements BrowserAction, BranchAction {
                     }
 
                     @Override
-                    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                    public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         return BrowserIcons.createDefaultDirectoryIcon().createRegion();
                     }
 
                     @Override
-                    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                    public ObservableValue<String> getName(
+                            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         return AppI18n.observable("directory");
                     }
                 },
-                new LeafAction() {
+                new BrowserLeafAction() {
                     @Override
-                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         var linkName = new SimpleStringProperty();
                         var target = new SimpleStringProperty();
                         model.getOverlay()
@@ -141,17 +143,18 @@ public class NewItemAction implements BrowserAction, BranchAction {
                     }
 
                     @Override
-                    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                    public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         return BrowserIcons.createDefaultFileIcon().createRegion();
                     }
 
                     @Override
-                    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                    public ObservableValue<String> getName(
+                            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         return AppI18n.observable("symbolicLink");
                     }
 
                     @Override
-                    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         return model.getFileSystem().getShell().orElseThrow().getOsType() != OsType.WINDOWS;
                     }
                 });

@@ -1,12 +1,12 @@
 package io.xpipe.app.prefs;
 
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.TileButtonComp;
+import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.window.AppWindowHelper;
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.impl.LabelComp;
-import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.JfxHelper;
 import io.xpipe.app.util.OptionsBuilder;

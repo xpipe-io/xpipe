@@ -5,9 +5,9 @@ import io.xpipe.app.ext.*;
 import io.xpipe.app.issue.EventHandler;
 import io.xpipe.app.issue.EventHandlerImpl;
 import io.xpipe.app.storage.DataStateProviderImpl;
+import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.AppJacksonModule;
 import io.xpipe.app.util.LicenseProvider;
-import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.beacon.BeaconInterface;
 import io.xpipe.core.util.DataStateProvider;
 import io.xpipe.core.util.ModuleLayerLoader;
@@ -29,21 +29,17 @@ open module io.xpipe.app {
     exports io.xpipe.app.storage;
     exports io.xpipe.app.update;
     exports io.xpipe.app.ext;
-    exports io.xpipe.app.fxcomps.impl;
-    exports io.xpipe.app.fxcomps;
-    exports io.xpipe.app.fxcomps.util;
-    exports io.xpipe.app.fxcomps.augment;
+    exports io.xpipe.app.comp.augment;
     exports io.xpipe.app.test;
     exports io.xpipe.app.browser.action;
     exports io.xpipe.app.browser;
     exports io.xpipe.app.browser.icon;
     exports io.xpipe.app.core.check;
     exports io.xpipe.app.terminal;
-    exports io.xpipe.app.browser.session;
-    exports io.xpipe.app.browser.fs;
     exports io.xpipe.app.browser.file;
     exports io.xpipe.app.core.window;
     exports io.xpipe.app.resources;
+    exports io.xpipe.app.comp;
 
     requires com.sun.jna;
     requires com.sun.jna.platform;
@@ -94,6 +90,7 @@ open module io.xpipe.app {
 
     // For debugging
     requires jdk.jdwp.agent;
+    requires java.net.http;
 
     uses TerminalLauncher;
     uses io.xpipe.app.ext.ActionProvider;

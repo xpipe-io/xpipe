@@ -1,6 +1,6 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.ext.LocalStore;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreSecret;
@@ -180,7 +180,10 @@ public interface SecretRetrievalStrategy {
                         throw ErrorEvent.expected(new IllegalStateException("No custom command specified"));
                     }
 
-                    try (var cc = new LocalStore().control().command(command).start()) {
+                    try (var cc = ProcessControlProvider.get()
+                            .createLocalProcessControl(true)
+                            .command(command)
+                            .start()) {
                         return new SecretQueryResult(
                                 InPlaceSecretValue.of(cc.readStdoutOrThrow()), SecretQueryState.NORMAL);
                     } catch (Exception ex) {

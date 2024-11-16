@@ -1,12 +1,12 @@
 package io.xpipe.app.prefs;
 
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.comp.base.ChoiceComp;
+import io.xpipe.app.comp.base.StackComp;
+import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.PrefsChoiceValue;
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.impl.ChoiceComp;
-import io.xpipe.app.fxcomps.impl.StackComp;
-import io.xpipe.app.fxcomps.impl.TextFieldComp;
 import io.xpipe.app.util.FileOpener;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.ThreadHelper;
@@ -49,9 +49,7 @@ public class EditorCategory extends AppPrefsCategory {
                         .addComp(new TextFieldComp(prefs.customEditorCommand, true)
                                 .apply(struc -> struc.get().setPromptText("myeditor $FILE"))
                                 .hide(prefs.externalEditor.isNotEqualTo(ExternalEditorType.CUSTOM)))
-                        .addComp(terminalTest)
-                        .nameAndDescription("preferEditorTabs")
-                        .addToggle(prefs.preferEditorTabs))
+                        .addComp(terminalTest))
                 .buildComp();
     }
 }

@@ -4,12 +4,12 @@ import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.TerminalLauncher;
+import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.process.ShellTtyState;
-import io.xpipe.core.store.ShellStore;
 import io.xpipe.ext.base.script.ScriptHierarchy;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -33,15 +33,14 @@ public class RunScriptActionMenu implements ActionProvider {
 
             @Override
             public void execute() throws Exception {
-                try (var sc = shellStore.getStore().control().start()) {
-                    var script = hierarchy.getLeafBase().getStore().assembleScriptChain(sc);
-                    TerminalLauncher.open(
-                            shellStore.getEntry(),
-                            hierarchy.getLeafBase().get().getName() + " - "
-                                    + shellStore.get().getName(),
-                            null,
-                            sc.command(script));
-                }
+                var sc = shellStore.getStore().getOrStartSession();
+                var script = hierarchy.getLeafBase().getStore().assembleScriptChain(sc);
+                TerminalLauncher.open(
+                        shellStore.getEntry(),
+                        hierarchy.getLeafBase().get().getName() + " - "
+                                + shellStore.get().getName(),
+                        null,
+                        sc.command(script));
             }
         }
 
@@ -86,10 +85,9 @@ public class RunScriptActionMenu implements ActionProvider {
 
             @Override
             public void execute() throws Exception {
-                try (var sc = shellStore.getStore().control().start()) {
-                    var script = hierarchy.getLeafBase().getStore().assembleScriptChain(sc);
-                    sc.command(script).execute();
-                }
+                var sc = shellStore.getStore().getOrStartSession();
+                var script = hierarchy.getLeafBase().getStore().assembleScriptChain(sc);
+                sc.command(script).execute();
             }
         }
 

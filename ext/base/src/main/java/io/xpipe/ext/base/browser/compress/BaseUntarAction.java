@@ -1,9 +1,9 @@
 package io.xpipe.ext.base.browser.compress;
 
-import io.xpipe.app.browser.action.ApplicationPathAction;
-import io.xpipe.app.browser.action.LeafAction;
+import io.xpipe.app.browser.action.BrowserApplicationPathAction;
+import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.app.browser.fs.OpenFileSystemModel;
+import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
 import io.xpipe.app.browser.icon.BrowserIcons;
 import io.xpipe.app.core.AppI18n;
@@ -15,7 +15,7 @@ import javafx.scene.Node;
 
 import java.util.List;
 
-public class BaseUntarAction implements ApplicationPathAction, LeafAction {
+public class BaseUntarAction implements BrowserApplicationPathAction, BrowserLeafAction {
 
     private final boolean gz;
     private final boolean toDirectory;
@@ -26,7 +26,7 @@ public class BaseUntarAction implements ApplicationPathAction, LeafAction {
     }
 
     @Override
-    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return BrowserIcons.createIcon(BrowserIconFileType.byId("zip")).createRegion();
     }
 
@@ -36,7 +36,7 @@ public class BaseUntarAction implements ApplicationPathAction, LeafAction {
     }
 
     @Override
-    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
+    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) throws Exception {
         model.runAsync(
                 () -> {
                     ShellControl sc = model.getFileSystem().getShell().orElseThrow();
@@ -66,7 +66,7 @@ public class BaseUntarAction implements ApplicationPathAction, LeafAction {
     }
 
     @Override
-    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         var sep = model.getFileSystem().getShell().orElseThrow().getOsType().getFileSystemSeparator();
         var dir = entries.size() > 1 ? "[...]" : getTarget(entries.getFirst().getFileName()) + sep;
         return toDirectory ? AppI18n.observable("untarDirectory", dir) : AppI18n.observable("untarHere");
@@ -77,7 +77,7 @@ public class BaseUntarAction implements ApplicationPathAction, LeafAction {
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         if (gz) {
             return entries.stream()
                     .allMatch(entry -> entry.getRawFileEntry().getPath().endsWith(".tar.gz")

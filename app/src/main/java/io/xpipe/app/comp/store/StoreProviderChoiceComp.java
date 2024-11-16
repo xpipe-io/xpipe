@@ -1,10 +1,10 @@
 package io.xpipe.app.comp.store;
 
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompStructure;
+import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.CompStructure;
-import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.util.JfxHelper;
 
 import javafx.beans.property.Property;
@@ -27,7 +27,6 @@ public class StoreProviderChoiceComp extends Comp<CompStructure<ComboBox<DataSto
 
     Predicate<DataStoreProvider> filter;
     Property<DataStoreProvider> provider;
-    boolean staticDisplay;
 
     public List<DataStoreProvider> getProviders() {
         return DataStoreProviders.getAll().stream()
@@ -65,9 +64,7 @@ public class StoreProviderChoiceComp extends Comp<CompStructure<ComboBox<DataSto
             return cellFactory.get();
         });
         cb.setButtonCell(cellFactory.get());
-        var l = getProviders().stream()
-                .filter(p -> p.getCreationCategory() != null || staticDisplay)
-                .toList();
+        var l = getProviders();
         l.forEach(dataStoreProvider -> cb.getItems().add(dataStoreProvider));
         if (provider.getValue() == null) {
             provider.setValue(l.getFirst());

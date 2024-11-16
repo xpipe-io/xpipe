@@ -12,16 +12,11 @@ import io.xpipe.core.process.ShellControl;
 import java.nio.file.Path;
 import java.util.Optional;
 
-public interface WezTerminalType extends ExternalTerminalType {
+public interface WezTerminalType extends ExternalTerminalType, TrackableTerminalType {
 
     ExternalTerminalType WEZTERM_WINDOWS = new Windows();
     ExternalTerminalType WEZTERM_LINUX = new Linux();
     ExternalTerminalType WEZTERM_MAC_OS = new MacOs();
-
-    @Override
-    default boolean supportsTabs() {
-        return false;
-    }
 
     @Override
     default String getWebsite() {
@@ -45,7 +40,12 @@ public interface WezTerminalType extends ExternalTerminalType {
         }
 
         @Override
-        protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW;
+        }
+
+        @Override
+        protected void execute(Path file, TerminalLaunchConfiguration configuration) throws Exception {
             LocalShell.getShell()
                     .executeSimpleCommand(CommandBuilder.of()
                             .addFile(file.toString())
@@ -90,6 +90,11 @@ public interface WezTerminalType extends ExternalTerminalType {
             super("app.wezterm");
         }
 
+        @Override
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.TABBED;
+        }
+
         public boolean isAvailable() {
             try (ShellControl pc = LocalShell.getShell()) {
                 return pc.executeSimpleBooleanCommand(pc.getShellDialect().getWhichCommand("wezterm"))
@@ -101,7 +106,7 @@ public interface WezTerminalType extends ExternalTerminalType {
         }
 
         @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             var spawn = LocalShell.getShell()
                     .command(CommandBuilder.of()
                             .addFile("wezterm")
@@ -122,7 +127,12 @@ public interface WezTerminalType extends ExternalTerminalType {
         }
 
         @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.TABBED;
+        }
+
+        @Override
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             try (var sc = LocalShell.getShell()) {
                 var pathOut = sc.command(String.format(
                                 "mdfind -name '%s' -onlyin /Applications -onlyin ~/Applications -onlyin /System/Applications 2>/dev/null",

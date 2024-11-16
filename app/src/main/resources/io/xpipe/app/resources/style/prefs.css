@@ -14,7 +14,7 @@
 }
 
 .prefs-container > .title-header {
-    -fx-padding: 2em 0 -1em 0;
+    -fx-padding: 4em 0 -1em 0;
     -fx-font-weight: BOLD;
     -fx-font-size: 1.5em;
 }
@@ -33,21 +33,33 @@
 
 .prefs .sidebar {
     -fx-spacing: 0;
-    -fx-background-color: -color-bg-subtle;
-    -fx-border-width: 0 1 0 0;
+    -fx-background-color: -color-foreground-base;
     -fx-border-color: -color-border-default;
     -fx-padding: 0.2em 0 0 0;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+.root.nord .prefs .sidebar {
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
 }
 
 .prefs .sidebar .button {
     -fx-background-color: transparent;
-    -fx-padding: 0.6em 1em 0.6em 1em;
+    -fx-padding: 0.5em 1em 0.5em 1.0em;
     -fx-background-radius: 0, 4, 4;
-    -fx-background-insets: 0, 2 4 2 4, 3 5 3 5;
+    -fx-background-insets: 0, 1 4 1 4;
+}
+
+.root.nord .prefs .sidebar .button {
+    -fx-background-radius: 0, 0, 0;
 }
 
 .prefs .sidebar .button:selected {
     -fx-background-color: transparent, -color-border-default, -color-bg-default;
+    -fx-font-weight: BOLD;
 }
 
 .prefs .sidebar .button:armed {

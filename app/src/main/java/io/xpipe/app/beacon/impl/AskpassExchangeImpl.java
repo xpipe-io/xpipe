@@ -1,5 +1,6 @@
 package io.xpipe.app.beacon.impl;
 
+import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.app.util.AskpassAlert;
 import io.xpipe.app.util.SecretManager;
 import io.xpipe.app.util.SecretQueryState;
@@ -34,7 +35,28 @@ public class AskpassExchangeImpl extends AskpassExchange {
         if (p.getState() != SecretQueryState.NORMAL) {
             throw new BeaconClientException(SecretQueryState.toErrorMessage(p.getState()));
         }
+        focusTerminalIfNeeded(msg.getPid());
         return Response.builder().value(secret.inPlace()).build();
+    }
+
+    private void focusTerminalIfNeeded(long pid) {
+        var found = TerminalView.get().findSession(pid);
+        if (found.isEmpty()) {
+            return;
+        }
+
+        var term = TerminalView.get().getTerminalInstances().stream()
+                .filter(instance ->
+                        instance.getTerminalProcess().equals(found.get().getTerminal()))
+                .findFirst();
+        if (term.isEmpty()) {
+            return;
+        }
+
+        var control = term.get().controllable();
+        control.ifPresent(controllableTerminalSession -> {
+            controllableTerminalSession.focus();
+        });
     }
 
     @Override

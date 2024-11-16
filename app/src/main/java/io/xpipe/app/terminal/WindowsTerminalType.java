@@ -2,6 +2,7 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.process.CommandBuilder;
@@ -11,14 +12,15 @@ import io.xpipe.core.store.FileNames;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public interface WindowsTerminalType extends ExternalTerminalType {
+public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerminalType {
 
     ExternalTerminalType WINDOWS_TERMINAL = new Standard();
     ExternalTerminalType WINDOWS_TERMINAL_PREVIEW = new Preview();
     ExternalTerminalType WINDOWS_TERMINAL_CANARY = new Canary();
 
-    private static CommandBuilder toCommand(ExternalTerminalType.LaunchConfiguration configuration) throws Exception {
-        var cmd = CommandBuilder.of().add("-w", "1", "nt");
+    private static CommandBuilder toCommand(TerminalLaunchConfiguration configuration) throws Exception {
+        var cmd = CommandBuilder.of()
+                .addIf(configuration.isPreferTabs(), "-w", "1", "nt");
 
         if (configuration.getColor() != null) {
             cmd.add("--tabColor").addQuoted(configuration.getColor().toHexString());
@@ -33,7 +35,8 @@ public interface WindowsTerminalType extends ExternalTerminalType {
         // wt can't elevate a command consisting out of multiple parts if wt is configured to elevate by default
         // So work around it by just passing a script file if possible
         if (ShellDialects.isPowershell(configuration.getScriptDialect())) {
-            var usesPowershell = ShellDialects.isPowershell(ProcessControlProvider.get().getEffectiveLocalDialect());
+            var usesPowershell =
+                    ShellDialects.isPowershell(ProcessControlProvider.get().getEffectiveLocalDialect());
             if (usesPowershell) {
                 // We can't work around it in this case, so let's just hope that there's no elevation configured
                 cmd.add(configuration.getDialectLaunchCommand());
@@ -41,7 +44,9 @@ public interface WindowsTerminalType extends ExternalTerminalType {
                 // There might be a mismatch if we are for example using logging
                 // In this case we can actually work around the problem
                 cmd.addFile(shellControl -> {
-                    var script = ScriptHelper.createExecScript(shellControl, configuration.getDialectLaunchCommand().buildFull(shellControl));
+                    var script = ScriptHelper.createExecScript(
+                            shellControl,
+                            configuration.getDialectLaunchCommand().buildFull(shellControl));
                     return script.toString();
                 });
             }
@@ -53,8 +58,15 @@ public interface WindowsTerminalType extends ExternalTerminalType {
     }
 
     @Override
-    default boolean supportsTabs() {
-        return true;
+    default TerminalOpenFormat getOpenFormat() {
+        return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
+    }
+
+    @Override
+    default int getProcessHierarchyOffset() {
+        var powershell = AppPrefs.get().enableTerminalLogging().get()
+                && !ShellDialects.isPowershell(ProcessControlProvider.get().getEffectiveLocalDialect());
+        return powershell ? 1 : 0;
     }
 
     @Override
@@ -79,7 +91,7 @@ public interface WindowsTerminalType extends ExternalTerminalType {
         }
 
         @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) throws Exception {
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) throws Exception {
             return WindowsTerminalType.toCommand(configuration);
         }
     }
@@ -92,9 +104,10 @@ public interface WindowsTerminalType extends ExternalTerminalType {
         }
 
         @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             if (!isAvailable()) {
-                throw ErrorEvent.expected(new IllegalArgumentException("Windows Terminal Preview is not installed"));
+                throw ErrorEvent.expected(
+                        new IllegalArgumentException("Windows Terminal Preview is not installed at " + getPath()));
             }
 
             LocalShell.getShell()
@@ -110,7 +123,8 @@ public interface WindowsTerminalType extends ExternalTerminalType {
 
         @Override
         public boolean isAvailable() {
-            return Files.exists(getPath());
+            // The executable is a weird link
+            return Files.exists(getPath().getParent());
         }
 
         @Override
@@ -127,9 +141,10 @@ public interface WindowsTerminalType extends ExternalTerminalType {
         }
 
         @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             if (!isAvailable()) {
-                throw ErrorEvent.expected(new IllegalArgumentException("Windows Terminal Canary is not installed"));
+                throw ErrorEvent.expected(
+                        new IllegalArgumentException("Windows Terminal Canary is not installed at " + getPath()));
             }
 
             LocalShell.getShell()
@@ -145,7 +160,8 @@ public interface WindowsTerminalType extends ExternalTerminalType {
 
         @Override
         public boolean isAvailable() {
-            return Files.exists(getPath());
+            // The executable is a weird link
+            return Files.exists(getPath().getParent());
         }
 
         @Override

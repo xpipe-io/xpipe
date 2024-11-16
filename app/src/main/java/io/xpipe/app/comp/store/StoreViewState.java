@@ -1,14 +1,14 @@
 package io.xpipe.app.comp.store;
 
 import io.xpipe.app.core.AppCache;
-import io.xpipe.app.fxcomps.util.DerivedObservableList;
-import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.StorageListener;
+import io.xpipe.app.util.DerivedObservableList;
+import io.xpipe.app.util.PlatformThread;
 
 import javafx.application.Platform;
 import javafx.beans.property.*;
@@ -126,7 +126,7 @@ public class StoreViewState {
         activeCategory.addListener((observable, oldValue, newValue) -> {
             DataStorage.get().setSelectedCategory(newValue.getCategory());
         });
-        var selected = AppCache.get("selectedCategory", UUID.class, () -> DataStorage.DEFAULT_CATEGORY_UUID);
+        var selected = AppCache.getNonNull("selectedCategory", UUID.class, () -> DataStorage.DEFAULT_CATEGORY_UUID);
         activeCategory.setValue(categories.getList().stream()
                 .filter(storeCategoryWrapper ->
                         storeCategoryWrapper.getCategory().getUuid().equals(selected))

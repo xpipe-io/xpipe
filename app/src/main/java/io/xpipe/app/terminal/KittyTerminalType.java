@@ -1,5 +1,6 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
@@ -7,12 +8,13 @@ import io.xpipe.app.util.ShellTemp;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.XPipeInstallation;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
-public interface KittyTerminalType extends ExternalTerminalType {
+public interface KittyTerminalType extends ExternalTerminalType, TrackableTerminalType {
 
     ExternalTerminalType KITTY_LINUX = new Linux();
     ExternalTerminalType KITTY_MACOS = new MacOs();
@@ -25,8 +27,7 @@ public interface KittyTerminalType extends ExternalTerminalType {
         }
     }
 
-    private static void open(ExternalTerminalType.LaunchConfiguration configuration, CommandBuilder socketWrite)
-            throws Exception {
+    private static void open(TerminalLaunchConfiguration configuration, CommandBuilder socketWrite) throws Exception {
         try (var sc = LocalShell.getShell().start()) {
             var payload = JsonNodeFactory.instance.objectNode();
             var args = configuration.getDialectLaunchCommand().buildBaseParts(sc);
@@ -46,7 +47,7 @@ public interface KittyTerminalType extends ExternalTerminalType {
             var echoString = "'\\eP@kitty-cmd" + jsonString + "\\e\\\\'";
 
             sc.executeSimpleCommand(CommandBuilder.of()
-                    .add("echo", "-en", echoString, "|")
+                    .add("printf", echoString, "|")
                     .add(socketWrite)
                     .addFile(getSocket()));
         }
@@ -65,15 +66,10 @@ public interface KittyTerminalType extends ExternalTerminalType {
             var echoString = "'\\eP@kitty-cmd" + jsonString + "\\e\\\\'";
 
             sc.executeSimpleCommand(CommandBuilder.of()
-                    .add("echo", "-en", echoString, "|")
+                    .add("printf", echoString, "|")
                     .add(socketWrite)
                     .addFile(getSocket()));
         }
-    }
-
-    @Override
-    default boolean supportsTabs() {
-        return true;
     }
 
     @Override
@@ -88,11 +84,21 @@ public interface KittyTerminalType extends ExternalTerminalType {
     }
 
     @Override
+    default TerminalOpenFormat getOpenFormat() {
+        return TerminalOpenFormat.TABBED;
+    }
+
+    @Override
     default boolean supportsColoredTitle() {
         return true;
     }
 
     class Linux implements KittyTerminalType {
+
+        @Override
+        public int getProcessHierarchyOffset() {
+            return ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.BASH ? 0 : 1;
+        }
 
         public boolean isAvailable() {
             try (ShellControl pc = LocalShell.getShell()) {
@@ -109,7 +115,7 @@ public interface KittyTerminalType extends ExternalTerminalType {
         }
 
         @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             try (var sc = LocalShell.getShell().start()) {
                 CommandSupport.isInPathOrThrow(sc, "kitty", "Kitty", null);
                 CommandSupport.isInPathOrThrow(sc, "socat", "socat", null);
@@ -155,7 +161,12 @@ public interface KittyTerminalType extends ExternalTerminalType {
         }
 
         @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
+        public int getProcessHierarchyOffset() {
+            return ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.ZSH ? 1 : 0;
+        }
+
+        @Override
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             // We use the absolute path to force the usage of macOS netcat
             // Homebrew versions have different option formats
             try (var sc = LocalShell.getShell().start()) {

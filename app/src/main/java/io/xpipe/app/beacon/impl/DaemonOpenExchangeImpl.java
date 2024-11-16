@@ -1,7 +1,7 @@
 package io.xpipe.app.beacon.impl;
 
+import io.xpipe.app.core.launcher.LauncherInput;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.launcher.LauncherInput;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.beacon.BeaconServerException;
 import io.xpipe.beacon.api.DaemonOpenExchange;

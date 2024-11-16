@@ -9,24 +9,19 @@ import io.xpipe.core.process.TerminalInitFunction;
 import java.nio.file.Path;
 import java.util.Optional;
 
-public interface TabbyTerminalType extends ExternalTerminalType {
+public interface TabbyTerminalType extends ExternalTerminalType, TrackableTerminalType {
 
     ExternalTerminalType TABBY_WINDOWS = new Windows();
     ExternalTerminalType TABBY_MAC_OS = new MacOs();
 
     @Override
-    default boolean supportsTabs() {
-        return true;
+    default TerminalOpenFormat getOpenFormat() {
+        return TerminalOpenFormat.TABBED;
     }
 
     @Override
     default String getWebsite() {
         return "https://tabby.sh";
-    }
-
-    @Override
-    default boolean isRecommended() {
-        return true;
     }
 
     @Override
@@ -62,7 +57,17 @@ public interface TabbyTerminalType extends ExternalTerminalType {
         }
 
         @Override
-        protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
+        public int getProcessHierarchyOffset() {
+            return 1;
+        }
+
+        @Override
+        public boolean isRecommended() {
+            return false;
+        }
+
+        @Override
+        protected void execute(Path file, TerminalLaunchConfiguration configuration) throws Exception {
             // Tabby has a very weird handling of output, even detaching with start does not prevent it from printing
             if (configuration.getScriptDialect().equals(ShellDialects.CMD)) {
                 // It also freezes with any other input than .bat files, why?
@@ -72,15 +77,15 @@ public interface TabbyTerminalType extends ExternalTerminalType {
                                 .add("run")
                                 .addFile(configuration.getScriptFile())
                                 .discardOutput());
+            } else {
+                // This is probably not going to work as it does not launch a bat file
+                LocalShell.getShell()
+                        .executeSimpleCommand(CommandBuilder.of()
+                                .addFile(file.toString())
+                                .add("run")
+                                .add(configuration.getDialectLaunchCommand())
+                                .discardOutput());
             }
-
-            // This is probably not going to work as it does not launch a bat file
-            LocalShell.getShell()
-                    .executeSimpleCommand(CommandBuilder.of()
-                            .addFile(file.toString())
-                            .add("run")
-                            .add(configuration.getDialectLaunchCommand())
-                            .discardOutput());
         }
 
         @Override
@@ -109,12 +114,17 @@ public interface TabbyTerminalType extends ExternalTerminalType {
 
     class MacOs extends MacOsType implements TabbyTerminalType {
 
+        @Override
+        public boolean isRecommended() {
+            return true;
+        }
+
         public MacOs() {
             super("app.tabby", "Tabby");
         }
 
         @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             LocalShell.getShell()
                     .executeSimpleCommand(CommandBuilder.of()
                             .add("open", "-a")

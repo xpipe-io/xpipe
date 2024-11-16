@@ -11,6 +11,7 @@ import io.xpipe.ext.base.desktop.DesktopEnvironmentStoreProvider;
 import io.xpipe.ext.base.script.*;
 import io.xpipe.ext.base.service.*;
 import io.xpipe.ext.base.store.StorePauseAction;
+import io.xpipe.ext.base.store.StoreRestartAction;
 import io.xpipe.ext.base.store.StoreStartAction;
 import io.xpipe.ext.base.store.StoreStopAction;
 
@@ -76,6 +77,7 @@ open module io.xpipe.ext.base {
             StoreStopAction,
             StoreStartAction,
             StorePauseAction,
+            StoreRestartAction,
             ServiceOpenAction,
             ServiceOpenHttpAction,
             ServiceOpenHttpsAction,
@@ -86,6 +88,7 @@ open module io.xpipe.ext.base {
             LaunchStoreAction,
             XPipeUrlAction,
             EditStoreAction,
+            EditScriptStoreAction,
             BrowseStoreAction,
             ScanStoreAction,
             ChangeStoreIconAction;

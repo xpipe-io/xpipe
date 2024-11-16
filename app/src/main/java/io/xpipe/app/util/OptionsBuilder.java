@@ -1,16 +1,15 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.comp.base.ToggleSwitchComp;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.GuiDialog;
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.impl.*;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.util.InPlaceSecretValue;
 
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
-import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.controls.Spacer;
@@ -138,12 +137,34 @@ public class OptionsBuilder {
 
     public OptionsBuilder addTitle(ObservableValue<String> title) {
         finishCurrent();
-        entries.add(new OptionsComp.Entry(
-                null,
-                null,
-                null,
-                null,
-                Comp.of(() -> new Label(title.getValue())).styleClass("title-header")));
+        entries.add(new OptionsComp.Entry(null, null, null, null, new LabelComp(title).styleClass("title-header")));
+        return this;
+    }
+
+    public OptionsBuilder pref(Object property) {
+        var mapping = AppPrefs.get().getMapping(property);
+        pref(mapping.getKey(), mapping.isRequiresRestart(), mapping.getLicenseFeatureId());
+        return this;
+    }
+
+    public OptionsBuilder pref(String key, boolean requiresRestart, String licenseFeatureId) {
+        var name = key;
+        name(name);
+        if (requiresRestart) {
+            description(AppI18n.observable(name + "Description").map(s -> s + "\n\n" + AppI18n.get("requiresRestart")));
+        } else {
+            description(AppI18n.observable(name + "Description"));
+        }
+        if (licenseFeatureId != null) {
+            licenseRequirement(licenseFeatureId);
+        }
+        return this;
+    }
+
+    public OptionsBuilder licenseRequirement(String featureId) {
+        var f = LicenseProvider.get().getFeature(featureId);
+        name = f.suffixObservable(name);
+        lastNameReference = name;
         return this;
     }
 

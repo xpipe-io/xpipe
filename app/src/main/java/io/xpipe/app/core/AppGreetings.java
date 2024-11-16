@@ -1,9 +1,9 @@
 package io.xpipe.app.core;
 
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppWindowHelper;
-import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.resources.AppResources;
 
 import javafx.beans.property.SimpleBooleanProperty;
@@ -52,7 +52,7 @@ public class AppGreetings {
     }
 
     public static void showIfNeeded() {
-        boolean set = AppCache.get("legalAccepted", Boolean.class, () -> false);
+        boolean set = AppCache.getBoolean("legalAccepted", false);
         if (set || AppProperties.get().isDevelopmentEnvironment()) {
             return;
         }

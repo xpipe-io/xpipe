@@ -1,9 +1,7 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.CompStructure;
-import io.xpipe.app.fxcomps.impl.IconButtonComp;
-import io.xpipe.app.fxcomps.impl.TextAreaComp;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.util.FileOpener;
 
 import javafx.application.Platform;
@@ -68,7 +66,14 @@ public class IntegratedTextAreaComp extends Comp<IntegratedTextAreaComp.Structur
                         return new TextAreaStructure(c, textArea.getTextArea());
                     }
                 },
-                paths -> value.setValue(Files.readString(paths.getFirst())));
+                paths -> {
+                    var first = paths.getFirst();
+                    if (Files.size(first) > 1_000_000) {
+                        return;
+                    }
+
+                    value.setValue(Files.readString(first));
+                });
         var struc = fileDrop.createStructure();
         return new Structure(struc.get(), struc.getCompStructure().getTextArea());
     }

@@ -38,7 +38,6 @@ public interface SingletonSessionStore<T extends Session>
     default void startSessionIfNeeded() throws Exception {
         synchronized (this) {
             var s = getSession();
-            setSessionEnabled(true);
             if (s != null) {
                 if (s.isRunning()) {
                     return;
@@ -50,9 +49,14 @@ public interface SingletonSessionStore<T extends Session>
 
             try {
                 s = newSession();
-                s.start();
-                setCache("session", s);
-                onStateChange(true);
+                if (s != null) {
+                    setSessionEnabled(true);
+                    s.start();
+                    setCache("session", s);
+                    onStateChange(true);
+                } else {
+                    setSessionEnabled(false);
+                }
             } catch (Exception ex) {
                 onStateChange(false);
                 throw ex;
@@ -65,9 +69,12 @@ public interface SingletonSessionStore<T extends Session>
             var ex = getSession();
             setSessionEnabled(false);
             if (ex != null) {
-                ex.stop();
-                setCache("session", null);
-                onStateChange(false);
+                try {
+                    ex.stop();
+                } finally {
+                    setCache("session", null);
+                    onStateChange(false);
+                }
             }
         }
     }

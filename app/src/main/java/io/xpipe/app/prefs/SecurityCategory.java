@@ -1,6 +1,6 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.util.OptionsBuilder;
 
 public class SecurityCategory extends AppPrefsCategory {
@@ -13,23 +13,25 @@ public class SecurityCategory extends AppPrefsCategory {
     public Comp<?> create() {
         var prefs = AppPrefs.get();
         var builder = new OptionsBuilder();
-        builder.addTitle("securityPolicy")
+        builder.addTitle("security")
                 .sub(new OptionsBuilder()
-                        .nameAndDescription("alwaysConfirmElevation")
+                        .pref(prefs.checkForSecurityUpdates)
+                        .addToggle(prefs.checkForSecurityUpdates)
+                        .pref(prefs.alwaysConfirmElevation)
                         .addToggle(prefs.alwaysConfirmElevation)
-                        .nameAndDescription("dontCachePasswords")
+                        .pref(prefs.dontCachePasswords)
                         .addToggle(prefs.dontCachePasswords)
-                        .nameAndDescription("denyTempScriptCreation")
+                        .pref(prefs.denyTempScriptCreation)
                         .addToggle(prefs.denyTempScriptCreation)
-                        .nameAndDescription("disableCertutilUse")
+                        .pref(prefs.disableCertutilUse)
                         .addToggle(prefs.disableCertutilUse)
-                        .nameAndDescription("dontAcceptNewHostKeys")
+                        .pref(prefs.dontAcceptNewHostKeys)
                         .addToggle(prefs.dontAcceptNewHostKeys)
-                        .nameAndDescription("dontAutomaticallyStartVmSshServer")
+                        .pref(prefs.dontAutomaticallyStartVmSshServer)
                         .addToggle(prefs.dontAutomaticallyStartVmSshServer)
-                        .nameAndDescription("disableTerminalRemotePasswordPreparation")
+                        .pref(prefs.disableTerminalRemotePasswordPreparation)
                         .addToggle(prefs.disableTerminalRemotePasswordPreparation)
-                        .nameAndDescription("dontAllowTerminalRestart")
+                        .pref(prefs.dontAllowTerminalRestart)
                         .addToggle(prefs.dontAllowTerminalRestart));
         return builder.buildComp();
     }

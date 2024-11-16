@@ -1,8 +1,7 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.browser.fs.OpenFileSystemModel;
-import io.xpipe.app.browser.icon.FileIconManager;
-import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
+import io.xpipe.app.browser.icon.BrowserIconManager;
+import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.util.BooleanAnimationTimer;
 import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.ThreadHelper;
@@ -32,13 +31,13 @@ import java.util.stream.Collectors;
 public class BrowserQuickAccessContextMenu extends ContextMenu {
 
     private final Supplier<BrowserEntry> base;
-    private final OpenFileSystemModel model;
+    private final BrowserFileSystemTabModel model;
     private ContextMenu shownBrowserActionsMenu;
     private boolean expandBrowserActionMenuKey;
     private boolean keyBasedNavigation;
     private boolean closeBrowserActionMenuKey;
 
-    public BrowserQuickAccessContextMenu(Supplier<BrowserEntry> base, OpenFileSystemModel model) {
+    public BrowserQuickAccessContextMenu(Supplier<BrowserEntry> base, BrowserFileSystemTabModel model) {
         this.base = base;
         this.model = model;
 
@@ -142,7 +141,8 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
             this.menu = new Menu(
                     // Use original name, not the link target
                     browserEntry.getRawFileEntry().getName(),
-                    PrettyImageHelper.ofFixedSize(FileIconManager.getFileIcon(browserEntry.getRawFileEntry()), 24, 24)
+                    PrettyImageHelper.ofFixedSize(
+                                    BrowserIconManager.getFileIcon(browserEntry.getRawFileEntry()), 24, 24)
                             .createRegion());
             createMenu();
             addInputListeners();

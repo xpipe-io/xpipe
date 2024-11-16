@@ -1,7 +1,6 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.action.BrowserAction;
-import io.xpipe.app.browser.fs.OpenFileSystemModel;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.util.InputHelper;
 
@@ -13,11 +12,11 @@ import java.util.List;
 
 public final class BrowserContextMenu extends ContextMenu {
 
-    private final OpenFileSystemModel model;
+    private final BrowserFileSystemTabModel model;
     private final BrowserEntry source;
     private final boolean quickAccess;
 
-    public BrowserContextMenu(OpenFileSystemModel model, BrowserEntry source, boolean quickAccess) {
+    public BrowserContextMenu(BrowserFileSystemTabModel model, BrowserEntry source, boolean quickAccess) {
         this.model = model;
         this.source = source;
         this.quickAccess = quickAccess;

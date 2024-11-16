@@ -41,7 +41,8 @@ public class GitHubUpdater extends UpdateHandler {
                 lastUpdateCheckResult.getValue().getReleaseUrl(),
                 downloadFile.get(),
                 changelog,
-                lastUpdateCheckResult.getValue().getAssetType());
+                lastUpdateCheckResult.getValue().getAssetType(),
+                lastUpdateCheckResult.getValue().isSecurityOnly());
         preparedUpdate.setValue(rel);
     }
 
@@ -65,8 +66,8 @@ public class GitHubUpdater extends UpdateHandler {
         }
     }
 
-    public synchronized AvailableRelease refreshUpdateCheckImpl() throws Exception {
-        var rel = AppDownloads.getLatestSuitableRelease();
+    public synchronized AvailableRelease refreshUpdateCheckImpl(boolean first, boolean securityOnly) throws Exception {
+        var rel = AppDownloads.queryLatestRelease(first, securityOnly);
         event("Determined latest suitable release "
                 + rel.map(GHRelease::getName).orElse(null));
 
@@ -93,7 +94,8 @@ public class GitHubUpdater extends UpdateHandler {
                 ghAsset.get().getBrowserDownloadUrl(),
                 assetType,
                 Instant.now(),
-                isUpdate));
+                isUpdate,
+                securityOnly));
         return lastUpdateCheckResult.getValue();
     }
 }

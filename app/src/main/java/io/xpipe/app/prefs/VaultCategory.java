@@ -1,11 +1,10 @@
 package io.xpipe.app.prefs;
 
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppWindowHelper;
-import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.Validator;
 import io.xpipe.core.util.XPipeInstallation;
 
 import javafx.application.Platform;
@@ -27,15 +26,6 @@ public class VaultCategory extends AppPrefsCategory {
     public Comp<?> create() {
         var prefs = AppPrefs.get();
         var builder = new OptionsBuilder();
-        if (!STORAGE_DIR_FIXED) {
-            var sub =
-                    new OptionsBuilder().nameAndDescription("storageDirectory").addPath(prefs.storageDirectory);
-            sub.withValidator(val -> {
-                sub.check(Validator.absolutePath(val, prefs.storageDirectory));
-                sub.check(Validator.directory(val, prefs.storageDirectory));
-            });
-            builder.addTitle("storage").sub(sub);
-        }
 
         var encryptVault = new SimpleBooleanProperty(prefs.encryptAllVaultData().get());
         encryptVault.addListener((observable, oldValue, newValue) -> {
@@ -70,12 +60,12 @@ public class VaultCategory extends AppPrefsCategory {
                                                 prefs.getLockCrypt()),
                                         LockChangeAlert::show),
                                 prefs.getLockCrypt())
-                        .nameAndDescription("lockVaultOnHibernation")
+                        .pref(prefs.lockVaultOnHibernation)
                         .addToggle(prefs.lockVaultOnHibernation)
                         .hide(prefs.getLockCrypt()
                                 .isNull()
                                 .or(prefs.getLockCrypt().isEmpty()))
-                        .nameAndDescription("encryptAllVaultData")
+                        .pref(prefs.encryptAllVaultData)
                         .addToggle(encryptVault));
         return builder.buildComp();
     }

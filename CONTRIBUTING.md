@@ -27,7 +27,7 @@ You should therefore always check out the matching version tag for your local re
 You can find the available version tags at https://github.com/xpipe-io/xpipe/tags.
 So for example if you currently have XPipe `11.3` installed, you should run `git reset --hard 11.3` first to properly compile against it.
 
-You need to have JDK for Java 21 installed to compile the project.
+You need to have JDK for Java 22 installed to compile the project.
 If you are on Linux or macOS, you can easily accomplish that by running
 ```bash
 curl -s "https://get.sdkman.io" | bash
@@ -57,7 +57,7 @@ to connect to that debugger through [AttachMe](https://plugins.jetbrains.com/plu
 
 ## Modularity and IDEs
 
-All XPipe components target [Java 21](https://openjdk.java.net/projects/jdk/21/) and make full use of the Java Module System (JPMS).
+All XPipe components target [Java 22](https://openjdk.java.net/projects/jdk/22/) and make full use of the Java Module System (JPMS).
 All components are modularized, including all their dependencies.
 In case a dependency is (sadly) not modularized yet, module information is manually added using [extra-java-module-info](https://github.com/gradlex-org/extra-java-module-info).
 Further, note that as this is a pretty complicated Java project that fully utilizes modularity,
@@ -65,7 +65,7 @@ many IDEs still have problems building this project properly.
 
 For example, you can't build this project in eclipse or vscode as it will complain about missing modules.
 The tested and recommended IDE is IntelliJ.
-When setting up the project in IntelliJ, make sure that the correct JDK (Java 21)
+When setting up the project in IntelliJ, make sure that the correct JDK (Java 22)
 is selected both for the project and for gradle itself.
 
 ## Contributing guide

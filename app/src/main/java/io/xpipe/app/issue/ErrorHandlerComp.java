@@ -1,14 +1,14 @@
 package io.xpipe.app.issue;
 
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.TitledPaneComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppWindowHelper;
-import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.util.LicenseRequiredException;
 import io.xpipe.app.util.PlatformState;
 

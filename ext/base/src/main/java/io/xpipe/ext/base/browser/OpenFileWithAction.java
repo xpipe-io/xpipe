@@ -1,9 +1,9 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.BrowserFileOpener;
-import io.xpipe.app.browser.action.LeafAction;
+import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.app.browser.fs.OpenFileSystemModel;
+import io.xpipe.app.browser.file.BrowserFileOpener;
+import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileKind;
@@ -18,16 +18,16 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 
-public class OpenFileWithAction implements LeafAction {
+public class OpenFileWithAction implements BrowserLeafAction {
 
     @Override
-    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         var e = entries.getFirst();
         BrowserFileOpener.openWithAnyApplication(model, e.getRawFileEntry());
     }
 
     @Override
-    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return new FontIcon("mdi2b-book-open-page-variant-outline");
     }
 
@@ -42,12 +42,12 @@ public class OpenFileWithAction implements LeafAction {
     }
 
     @Override
-    public ObservableValue<String> getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return AppI18n.observable("openFileWith");
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return OsType.getLocal().equals(OsType.WINDOWS)
                 && entries.size() == 1
                 && entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.FILE);

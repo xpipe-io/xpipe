@@ -2,7 +2,7 @@ package io.xpipe.app.core.mode;
 
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.beacon.BlobManager;
-import io.xpipe.app.browser.session.BrowserSessionModel;
+import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.*;
@@ -15,6 +15,8 @@ import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.resources.SystemIcons;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageSyncHandler;
+import io.xpipe.app.terminal.TerminalLauncherManager;
+import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.*;
 
@@ -52,6 +54,7 @@ public class BaseMode extends OperationMode {
         LocalShell.init();
         AppShellCheck.check();
         AppRosettaCheck.check();
+        AppTestCommandCheck.check();
         XPipeDistributionType.init();
         AppPrefs.setLocalDefaultsIfNeeded();
         // Initialize beacon server as we should be prepared for git askpass commands
@@ -67,6 +70,8 @@ public class BaseMode extends OperationMode {
         FileBridge.init();
         BlobManager.init();
         ActionProvider.initProviders();
+        TerminalView.init();
+        TerminalLauncherManager.init();
         TrackEvent.info("Finished base components initialization");
         initialized = true;
     }
@@ -77,7 +82,7 @@ public class BaseMode extends OperationMode {
     @Override
     public void finalTeardown() throws Exception {
         TrackEvent.info("Background mode shutdown started");
-        BrowserSessionModel.DEFAULT.reset();
+        BrowserFullSessionModel.DEFAULT.reset();
         SshLocalBridge.reset();
         StoreViewState.reset();
         DataStoreProviders.reset();
