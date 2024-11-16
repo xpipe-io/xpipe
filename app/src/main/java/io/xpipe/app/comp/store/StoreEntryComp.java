@@ -14,6 +14,7 @@ import io.xpipe.app.core.AppActionLinkDetector;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.storage.DataColor;
@@ -25,6 +26,7 @@ import io.xpipe.app.util.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableDoubleValue;
+import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -143,26 +145,6 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     protected abstract Region createContent();
-
-    protected Label createInformation() {
-        var information = new Label();
-        information.setGraphicTextGap(7);
-        information
-                .textProperty()
-                .bind(
-                        getWrapper().getEntry().getProvider() != null
-                                ? PlatformThread.sync(
-                                        getWrapper().getEntry().getProvider().informationString(section))
-                                : new SimpleStringProperty());
-        information.getStyleClass().add("information");
-
-        var state = getWrapper().getEntry().getProvider() != null
-                ? getWrapper().getEntry().getProvider().stateDisplay(getWrapper())
-                : Comp.empty();
-        information.setGraphic(state.createRegion());
-
-        return information;
-    }
 
     protected void applyState(Node node) {
         PlatformThread.sync(getWrapper().getValidity()).subscribe(val -> {

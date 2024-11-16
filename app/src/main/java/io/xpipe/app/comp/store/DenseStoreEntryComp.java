@@ -2,10 +2,12 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.augment.GrowAugment;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -31,9 +33,16 @@ public class DenseStoreEntryComp extends StoreEntryComp {
                 : Comp.empty();
         information.setGraphic(state.createRegion());
 
-        var info = getWrapper().getEntry().getProvider() != null
-                ? getWrapper().getEntry().getProvider().informationString(section)
-                : new SimpleStringProperty();
+        ObservableValue<String> info = new SimpleStringProperty();
+        if (getWrapper().getEntry().getProvider() != null) {
+            try {
+                info = getWrapper().getEntry().getProvider().informationString(section);
+            } catch (Exception e) {
+                ErrorEvent.fromThrowable(e).handle();
+            }
+        }
+        ObservableValue<String> finalInfo = info;
+
         var summary = getWrapper().getSummary();
         if (getWrapper().getEntry().getProvider() != null) {
             information
@@ -44,10 +53,10 @@ public class DenseStoreEntryComp extends StoreEntryComp {
                                 var p = getWrapper().getEntry().getProvider();
                                 if (val != null && grid.isHover() && p.alwaysShowSummary()) {
                                     return val;
-                                } else if (info.getValue() == null && p.alwaysShowSummary()) {
+                                } else if (finalInfo.getValue() == null && p.alwaysShowSummary()) {
                                     return val;
                                 } else {
-                                    return info.getValue();
+                                    return finalInfo.getValue();
                                 }
                             },
                             grid.hoverProperty(),

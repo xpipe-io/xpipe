@@ -2,6 +2,8 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
 
 import javafx.geometry.HPos;
@@ -91,5 +93,25 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         applyState(grid);
 
         return grid;
+    }
+
+    private Label createInformation() {
+        var information = new Label();
+        information.setGraphicTextGap(7);
+        if (getWrapper().getEntry().getProvider() != null) {
+            try {
+                information.textProperty().bind(PlatformThread.sync(getWrapper().getEntry().getProvider().informationString(section)));
+            } catch (Exception e) {
+                ErrorEvent.fromThrowable(e).handle();
+            }
+        }
+        information.getStyleClass().add("information");
+
+        var state = getWrapper().getEntry().getProvider() != null
+                ? getWrapper().getEntry().getProvider().stateDisplay(getWrapper())
+                : Comp.empty();
+        information.setGraphic(state.createRegion());
+
+        return information;
     }
 }
