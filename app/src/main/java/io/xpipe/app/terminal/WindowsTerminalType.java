@@ -20,8 +20,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
 
     private static CommandBuilder toCommand(TerminalLaunchConfiguration configuration) throws Exception {
         var cmd = CommandBuilder.of()
-                .addIf(configuration.isPreferTabs(), "-w", "1")
-                .add("nt");
+                .addIf(configuration.isPreferTabs(), "-w", "1", "nt");
 
         if (configuration.getColor() != null) {
             cmd.add("--tabColor").addQuoted(configuration.getColor().toHexString());
@@ -124,7 +123,8 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
 
         @Override
         public boolean isAvailable() {
-            return Files.exists(getPath());
+            // The executable is a weird link
+            return Files.exists(getPath().getParent());
         }
 
         @Override
@@ -160,7 +160,8 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
 
         @Override
         public boolean isAvailable() {
-            return Files.exists(getPath());
+            // The executable is a weird link
+            return Files.exists(getPath().getParent());
         }
 
         @Override

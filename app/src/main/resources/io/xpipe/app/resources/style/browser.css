@@ -15,7 +15,7 @@
     -fx-padding: 0 6 8 8;
 }
 
-.transfer > .download-background {
+.transfer > .download-background.color-box.gray {
     -fx-border-radius: 4;
     -fx-background-radius: 4;
     -fx-border-color: -color-border-default;
@@ -23,7 +23,7 @@
     -fx-background-color: -color-foreground-base;
 }
 
-.transfer:highlighted > .download-background {
+.transfer:highlighted > .download-background.color-box.gray {
     -fx-border-color: -color-accent-emphasis;
     -fx-background-color: derive(-color-bg-subtle, 5%);
 }
@@ -51,7 +51,7 @@
     -fx-background-color: -color-bg-inset;
     -fx-border-width: 0 0 1 0;
     -fx-border-color: -color-border-default;
-    -fx-opacity: 0.7;
+    -fx-opacity: 0.5;
 }
 
 .root:seamless-frame .browser .top-spacer {
@@ -97,7 +97,7 @@
     -fx-border-radius: 1px;
 }
 
-*:drag-over .download-background {
+.transfer:drag-over > .download-background.color-box.gray {
     -fx-background-color: -color-success-muted;
 }
 
