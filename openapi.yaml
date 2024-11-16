@@ -24,7 +24,7 @@ info:
   contact:
     name: XPipe - Contact us
     url: mailto:hello@xpipe.io
-  version: "11.3"
+  version: "13.0"
 externalDocs:
   description: XPipe - Plans and pricing
   url: https://xpipe.io/pricing
