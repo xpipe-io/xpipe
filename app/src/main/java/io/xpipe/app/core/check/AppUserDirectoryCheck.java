@@ -7,12 +7,11 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class AppUserDirectoryCheck {
 
-    public static void check() {
-        var dataDirectory = AppProperties.get().getDataDir();
-
+    public static void check(Path dataDirectory) {
         try {
             FileUtils.forceMkdir(dataDirectory.toFile());
             var testDirectory = dataDirectory.resolve("permissions_check");

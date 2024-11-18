@@ -39,7 +39,7 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
                         StoreChoiceComp.other(
                                 host,
                                 NetworkTunnelStore.class,
-                                n -> n.getStore().isLocallyTunneable(),
+                                n -> n.getStore().isLocallyTunnelable(),
                                 StoreViewState.get().getAllConnectionsCategory()),
                         host)
                 .nonNull()

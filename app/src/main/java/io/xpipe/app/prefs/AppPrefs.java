@@ -133,12 +133,8 @@ public class AppPrefs {
             mapLocal(new SimpleBooleanProperty(false), "developerMode", Boolean.class, true);
     final BooleanProperty developerDisableUpdateVersionCheck =
             mapLocal(new SimpleBooleanProperty(false), "developerDisableUpdateVersionCheck", Boolean.class, false);
-    private final ObservableBooleanValue developerDisableUpdateVersionCheckEffective =
-            bindDeveloperTrue(developerDisableUpdateVersionCheck);
     final BooleanProperty developerDisableGuiRestrictions =
             mapLocal(new SimpleBooleanProperty(false), "developerDisableGuiRestrictions", Boolean.class, false);
-    private final ObservableBooleanValue developerDisableGuiRestrictionsEffective =
-            bindDeveloperTrue(developerDisableGuiRestrictions);
     final BooleanProperty developerForceSshTty =
             mapLocal(new SimpleBooleanProperty(false), "developerForceSshTty", Boolean.class, false);
 
@@ -274,24 +270,6 @@ public class AppPrefs {
 
     public boolean isDevelopmentEnvironment() {
         return developerMode().getValue() && !ModuleHelper.isImage();
-    }
-
-    private ObservableBooleanValue bindDeveloperTrue(ObservableBooleanValue o) {
-        return Bindings.createBooleanBinding(
-                () -> {
-                    return developerMode().getValue() && o.get();
-                },
-                o,
-                developerMode());
-    }
-
-    private ObservableBooleanValue bindDeveloperFalse(ObservableBooleanValue o) {
-        return Bindings.createBooleanBinding(
-                () -> {
-                    return !developerMode().getValue() && o.get();
-                },
-                o,
-                developerMode());
     }
 
     public ObservableValue<ExternalPasswordManager> externalPasswordManager() {
@@ -488,15 +466,15 @@ public class AppPrefs {
     }
 
     public ObservableBooleanValue developerDisableUpdateVersionCheck() {
-        return developerDisableUpdateVersionCheckEffective;
+        return developerDisableUpdateVersionCheck;
     }
 
     public ObservableBooleanValue developerDisableGuiRestrictions() {
-        return developerDisableGuiRestrictionsEffective;
+        return developerDisableGuiRestrictions;
     }
 
     public ObservableBooleanValue developerForceSshTty() {
-        return bindDeveloperTrue(developerForceSshTty);
+        return developerForceSshTty;
     }
 
     @SuppressWarnings("unchecked")

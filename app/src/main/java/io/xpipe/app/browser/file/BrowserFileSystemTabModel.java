@@ -113,7 +113,8 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             }
 
             var current = getCurrentDirectory();
-            if (DataStorage.get().getStoreEntries().contains(getEntry().get())
+            // We might close this after storage shutdown
+            if (DataStorage.get() != null && DataStorage.get().getStoreEntries().contains(getEntry().get())
                     && savedState != null
                     && current != null) {
                 savedState.cd(current.getPath(), false);

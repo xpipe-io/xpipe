@@ -1,5 +1,6 @@
 package io.xpipe.app.core;
 
+import io.xpipe.app.core.check.AppUserDirectoryCheck;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -121,6 +122,9 @@ public class AppProperties {
         autoAcceptEula = Optional.ofNullable(System.getProperty("io.xpipe.app.acceptEula"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
+
+        // We require the user dir from here
+        AppUserDirectoryCheck.check(dataDir);
         AppCache.setBasePath(dataDir.resolve("cache"));
         UUID id = AppCache.getNonNull("uuid", UUID.class, null);
         if (id == null) {

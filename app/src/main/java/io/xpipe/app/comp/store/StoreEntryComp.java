@@ -390,11 +390,13 @@ public abstract class StoreEntryComp extends SimpleComp {
                 .bind(Bindings.createBooleanBinding(
                         () -> {
                             return !getWrapper().getDeletable().get()
+                                    && AppPrefs.get().developerMode().getValue()
                                     && !AppPrefs.get()
                                             .developerDisableGuiRestrictions()
                                             .get();
                         },
                         getWrapper().getDeletable(),
+                        AppPrefs.get().developerMode(),
                         AppPrefs.get().developerDisableGuiRestrictions()));
         del.setOnAction(event -> getWrapper().delete());
         contextMenu.getItems().add(del);

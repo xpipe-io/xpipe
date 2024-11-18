@@ -42,7 +42,7 @@ public interface NetworkTunnelStore extends DataStore {
         }
     }
 
-    default boolean isLocallyTunneable() {
+    default boolean isLocallyTunnelable() {
         NetworkTunnelStore current = this;
         while (true) {
             if (current.getNetworkParent() == null) {
@@ -58,7 +58,7 @@ public interface NetworkTunnelStore extends DataStore {
     }
 
     default NetworkTunnelSession sessionChain(int local, int remotePort, String address) throws Exception {
-        if (!isLocallyTunneable()) {
+        if (!isLocallyTunnelable()) {
             throw new IllegalStateException(
                     "Unable to create tunnel chain as one intermediate system does not support tunneling");
         }
