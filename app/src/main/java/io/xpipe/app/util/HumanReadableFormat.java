@@ -48,8 +48,13 @@ public final class HumanReadableFormat {
             bytes /= b;
             ci.next();
         }
-        var f = ci.getIndex() >= 2 ? "%.3f" : "%.0f";
-        return String.format(f + " %cB", bytes / (double) b, ci.current());
+
+        var f = ci.getIndex() >= 2 ? "%.3f" : "%.1f";
+        var r = String.format(f + " %cB", bytes / (double) b, ci.current());
+        if (r.endsWith(".0")) {
+            r = r.substring(0, r.length() - 2);
+        }
+        return r;
     }
 
     public static String date(LocalDateTime x) {
