@@ -36,6 +36,7 @@ open module io.xpipe.ext.base {
     requires atlantafx.base;
 
     provides BrowserAction with
+            DownloadAction,
             RunScriptAction,
             FollowLinkAction,
             BackAction,

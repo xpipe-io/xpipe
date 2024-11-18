@@ -115,7 +115,6 @@ public abstract class OperationMode {
 
             TrackEvent.info("Initial setup");
             AppProperties.init();
-            AppUserDirectoryCheck.check();
             AppTempCheck.check();
             AppLogs.init();
             AppDebugModeCheck.printIfNeeded();

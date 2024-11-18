@@ -43,6 +43,13 @@ public class AppPrefs {
     @Getter
     private final BooleanProperty requiresRestart = new SimpleBooleanProperty(false);
 
+    final BooleanProperty pinLocalMachineOnStartup =
+            map(Mapping.builder()
+                    .property(new SimpleBooleanProperty(false))
+                    .key("pinLocalMachineOnStartup")
+                    .valueClass(Boolean.class)
+                    .requiresRestart(true)
+                    .build());
     final BooleanProperty dontAllowTerminalRestart =
             mapVaultShared(new SimpleBooleanProperty(false), "dontAllowTerminalRestart", Boolean.class, false);
     final BooleanProperty enableHttpApi =
@@ -133,12 +140,8 @@ public class AppPrefs {
             mapLocal(new SimpleBooleanProperty(false), "developerMode", Boolean.class, true);
     final BooleanProperty developerDisableUpdateVersionCheck =
             mapLocal(new SimpleBooleanProperty(false), "developerDisableUpdateVersionCheck", Boolean.class, false);
-    private final ObservableBooleanValue developerDisableUpdateVersionCheckEffective =
-            bindDeveloperTrue(developerDisableUpdateVersionCheck);
     final BooleanProperty developerDisableGuiRestrictions =
             mapLocal(new SimpleBooleanProperty(false), "developerDisableGuiRestrictions", Boolean.class, false);
-    private final ObservableBooleanValue developerDisableGuiRestrictionsEffective =
-            bindDeveloperTrue(developerDisableGuiRestrictions);
     final BooleanProperty developerForceSshTty =
             mapLocal(new SimpleBooleanProperty(false), "developerForceSshTty", Boolean.class, false);
 
@@ -193,6 +196,10 @@ public class AppPrefs {
 
     public ObservableBooleanValue dontAllowTerminalRestart() {
         return dontAllowTerminalRestart;
+    }
+
+    public ObservableBooleanValue pinLocalMachineOnStartup() {
+        return pinLocalMachineOnStartup;
     }
 
     private final IntegerProperty editorReloadTimeout =
@@ -274,24 +281,6 @@ public class AppPrefs {
 
     public boolean isDevelopmentEnvironment() {
         return developerMode().getValue() && !ModuleHelper.isImage();
-    }
-
-    private ObservableBooleanValue bindDeveloperTrue(ObservableBooleanValue o) {
-        return Bindings.createBooleanBinding(
-                () -> {
-                    return developerMode().getValue() && o.get();
-                },
-                o,
-                developerMode());
-    }
-
-    private ObservableBooleanValue bindDeveloperFalse(ObservableBooleanValue o) {
-        return Bindings.createBooleanBinding(
-                () -> {
-                    return !developerMode().getValue() && o.get();
-                },
-                o,
-                developerMode());
     }
 
     public ObservableValue<ExternalPasswordManager> externalPasswordManager() {
@@ -488,33 +477,35 @@ public class AppPrefs {
     }
 
     public ObservableBooleanValue developerDisableUpdateVersionCheck() {
-        return developerDisableUpdateVersionCheckEffective;
+        return developerDisableUpdateVersionCheck;
     }
 
     public ObservableBooleanValue developerDisableGuiRestrictions() {
-        return developerDisableGuiRestrictionsEffective;
+        return developerDisableGuiRestrictions;
     }
 
     public ObservableBooleanValue developerForceSshTty() {
-        return bindDeveloperTrue(developerForceSshTty);
+        return developerForceSshTty;
     }
 
     @SuppressWarnings("unchecked")
     private <T> T map(Mapping m) {
         mapping.add(m);
+        m.property.addListener((observable, oldValue, newValue) -> {
+            var running = OperationMode.get() == OperationMode.GUI;
+            if (running && m.requiresRestart) {
+                AppPrefs.get().requiresRestart.set(true);
+            }
+        });
         return (T) m.getProperty();
     }
 
-    @SuppressWarnings("unchecked")
     private <T> T mapLocal(Property<?> o, String name, Class<?> clazz, boolean requiresRestart) {
-        mapping.add(new Mapping(name, o, clazz, false, requiresRestart));
-        return (T) o;
+        return map(new Mapping(name, o, clazz, false, requiresRestart));
     }
 
-    @SuppressWarnings("unchecked")
-    private <T> T mapVaultShared(T o, String name, Class<?> clazz, boolean requiresRestart) {
-        mapping.add(new Mapping(name, (Property<T>) o, (Class<T>) clazz, true, requiresRestart));
-        return o;
+    private <T> T mapVaultShared(Property<?> o, String name, Class<?> clazz, boolean requiresRestart) {
+        return map(new Mapping(name, o, clazz, true, requiresRestart));
     }
 
     public <T> void setFromExternal(ObservableValue<T> prop, T newValue) {
@@ -668,13 +659,6 @@ public class AppPrefs {
             this.vaultSpecific = vaultSpecific;
             this.requiresRestart = requiresRestart;
             this.licenseFeatureId = null;
-
-            this.property.addListener((observable, oldValue, newValue) -> {
-                var running = OperationMode.get() == OperationMode.GUI;
-                if (running && requiresRestart) {
-                    AppPrefs.get().requiresRestart.set(true);
-                }
-            });
         }
     }
 
