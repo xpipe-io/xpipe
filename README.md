@@ -93,7 +93,7 @@ Installers are the easiest way to get started and come with an optional automati
 
 - [Windows .msi Installer (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-windows-x86_64.msi)
 
-You can also install XPipe by pasting the installation command into your terminal. This will perform the .msi setup automatically:
+You can also install XPipe by pasting the installation command into your terminal. This will perform the .msi setup for the current user automatically:
 
 ```
 powershell -ExecutionPolicy Bypass -Command iwr "https://github.com/xpipe-io/xpipe/raw/master/get-xpipe.ps1" -OutFile "$env:TEMP\get-xpipe.ps1" ";"  "&" "$env:TEMP\get-xpipe.ps1"
