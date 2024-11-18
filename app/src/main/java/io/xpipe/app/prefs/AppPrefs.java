@@ -43,6 +43,13 @@ public class AppPrefs {
     @Getter
     private final BooleanProperty requiresRestart = new SimpleBooleanProperty(false);
 
+    final BooleanProperty pinLocalMachineOnStartup =
+            map(Mapping.builder()
+                    .property(new SimpleBooleanProperty(false))
+                    .key("pinLocalMachineOnStartup")
+                    .valueClass(Boolean.class)
+                    .requiresRestart(true)
+                    .build());
     final BooleanProperty dontAllowTerminalRestart =
             mapVaultShared(new SimpleBooleanProperty(false), "dontAllowTerminalRestart", Boolean.class, false);
     final BooleanProperty enableHttpApi =
@@ -189,6 +196,10 @@ public class AppPrefs {
 
     public ObservableBooleanValue dontAllowTerminalRestart() {
         return dontAllowTerminalRestart;
+    }
+
+    public ObservableBooleanValue pinLocalMachineOnStartup() {
+        return pinLocalMachineOnStartup;
     }
 
     private final IntegerProperty editorReloadTimeout =
@@ -480,19 +491,21 @@ public class AppPrefs {
     @SuppressWarnings("unchecked")
     private <T> T map(Mapping m) {
         mapping.add(m);
+        m.property.addListener((observable, oldValue, newValue) -> {
+            var running = OperationMode.get() == OperationMode.GUI;
+            if (running && m.requiresRestart) {
+                AppPrefs.get().requiresRestart.set(true);
+            }
+        });
         return (T) m.getProperty();
     }
 
-    @SuppressWarnings("unchecked")
     private <T> T mapLocal(Property<?> o, String name, Class<?> clazz, boolean requiresRestart) {
-        mapping.add(new Mapping(name, o, clazz, false, requiresRestart));
-        return (T) o;
+        return map(new Mapping(name, o, clazz, false, requiresRestart));
     }
 
-    @SuppressWarnings("unchecked")
-    private <T> T mapVaultShared(T o, String name, Class<?> clazz, boolean requiresRestart) {
-        mapping.add(new Mapping(name, (Property<T>) o, (Class<T>) clazz, true, requiresRestart));
-        return o;
+    private <T> T mapVaultShared(Property<?> o, String name, Class<?> clazz, boolean requiresRestart) {
+        return map(new Mapping(name, o, clazz, true, requiresRestart));
     }
 
     public <T> void setFromExternal(ObservableValue<T> prop, T newValue) {
@@ -646,13 +659,6 @@ public class AppPrefs {
             this.vaultSpecific = vaultSpecific;
             this.requiresRestart = requiresRestart;
             this.licenseFeatureId = null;
-
-            this.property.addListener((observable, oldValue, newValue) -> {
-                var running = OperationMode.get() == OperationMode.GUI;
-                if (running && requiresRestart) {
-                    AppPrefs.get().requiresRestart.set(true);
-                }
-            });
         }
     }
 

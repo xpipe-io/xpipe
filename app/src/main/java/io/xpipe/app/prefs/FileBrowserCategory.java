@@ -21,7 +21,10 @@ public class FileBrowserCategory extends AppPrefsCategory {
                         .pref(prefs.confirmAllDeletions)
                         .addToggle(prefs.confirmAllDeletions)
                         .pref(prefs.downloadsDirectory)
-                        .addString(prefs.downloadsDirectory))
+                        .addString(prefs.downloadsDirectory)
+                        .pref(prefs.pinLocalMachineOnStartup)
+                        .addToggle(prefs.pinLocalMachineOnStartup)
+                )
                 .buildComp();
     }
 }

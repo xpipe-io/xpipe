@@ -5,6 +5,7 @@ import io.xpipe.app.browser.file.BrowserHistorySavedState;
 import io.xpipe.app.browser.file.BrowserHistorySavedStateImpl;
 import io.xpipe.app.browser.file.BrowserHistoryTabModel;
 import io.xpipe.app.browser.file.BrowserTransferModel;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
@@ -34,6 +35,13 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
 
     static {
         DEFAULT.getSessionEntries().add(new BrowserHistoryTabModel(DEFAULT));
+        if (AppPrefs.get().pinLocalMachineOnStartup().get()) {
+            var tab = new BrowserFileSystemTabModel(DEFAULT, DataStorage.get().local().ref(), BrowserFileSystemTabModel.SelectionMode.ALL);
+            ThreadHelper.runFailableAsync(() -> {
+                DEFAULT.openSync(tab,null);
+                DEFAULT.pinTab(tab);
+            });
+        }
     }
 
     private final BrowserTransferModel localTransfersStage = new BrowserTransferModel(this);
@@ -41,6 +49,7 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
     private final Property<BrowserSessionTab> globalPinnedTab = new SimpleObjectProperty<>();
     private final ObservableMap<BrowserSessionTab, BrowserSessionTab> splits = FXCollections.observableHashMap();
     private final ObservableValue<BrowserSessionTab> effectiveRightTab = createEffectiveRightTab();
+    private final SequencedSet<BrowserSessionTab> previousTabs = new LinkedHashSet<>();
 
     private ObservableValue<BrowserSessionTab> createEffectiveRightTab() {
         return Bindings.createObjectBinding(
@@ -80,6 +89,13 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
 
             splits.keySet().removeIf(browserSessionTab -> !c.getList().contains(browserSessionTab));
         });
+
+        selectedEntry.addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                previousTabs.remove(newValue);
+                previousTabs.add(newValue);
+            }
+        });
     }
 
     public Set<BrowserSessionTab> getAllTabs() {
@@ -118,9 +134,10 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
 
         globalPinnedTab.setValue(tab);
 
-        var nextIndex = getSessionEntries().indexOf(tab) + 1;
-        if (nextIndex < getSessionEntries().size()) {
-            getSelectedEntry().setValue(getSessionEntries().get(nextIndex));
+        var previousOthers = previousTabs.stream().filter(browserSessionTab -> browserSessionTab != tab).toList();
+        var prev = previousOthers.getLast();
+        if (prev != null) {
+            getSelectedEntry().setValue(prev);
         }
     }
 

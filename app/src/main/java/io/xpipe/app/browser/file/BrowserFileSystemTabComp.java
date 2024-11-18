@@ -1,17 +1,17 @@
 package io.xpipe.app.browser.file;
 
+import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
-import io.xpipe.app.comp.base.ModalOverlayComp;
-import io.xpipe.app.comp.base.MultiContentComp;
-import io.xpipe.app.comp.base.TooltipAugment;
-import io.xpipe.app.comp.base.VerticalComp;
+import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.util.InputHelper;
 
+import io.xpipe.app.util.PlatformThread;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuButton;
@@ -96,6 +96,28 @@ public class BrowserFileSystemTabComp extends SimpleComp {
                         refreshBtn,
                         terminalBtn,
                         menuButton);
+
+        if (model.getBrowserModel() instanceof BrowserFullSessionModel fullSessionModel) {
+            var pinButton = new Button();
+            pinButton.graphicProperty().bind(PlatformThread.sync(Bindings.createObjectBinding(() -> {
+                if (fullSessionModel.getGlobalPinnedTab().getValue() != model) {
+                    return new FontIcon("mdi2p-pin");
+                }
+
+                return new FontIcon("mdi2p-pin-off");
+            }, fullSessionModel.getGlobalPinnedTab())));
+            pinButton.setOnAction(e -> {
+                if (fullSessionModel.getGlobalPinnedTab().getValue() != model) {
+                    fullSessionModel.pinTab(model);
+                } else {
+                    fullSessionModel.unpinTab(model);
+                }
+                e.consume();
+            });
+            topBar.getChildren().add(7, pinButton);
+            squaredSize(navBar.get(), pinButton, true);
+        }
+
         squaredSize(navBar.get(), overview, true);
         squaredSize(navBar.get(), backBtn, true);
         squaredSize(navBar.get(), forthBtn, true);
