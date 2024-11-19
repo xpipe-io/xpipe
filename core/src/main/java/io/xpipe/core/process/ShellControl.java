@@ -199,6 +199,14 @@ public interface ShellControl extends ProcessControl {
         return sc;
     }
 
+    default ShellControl elevateIfNeeded(ElevationFunction function) throws Exception {
+        if (function.apply(this)) {
+            return identicalSubShell().elevated(ElevationFunction.elevated(function.getPrefix()));
+        } else {
+            return new StubShellControl(this);
+        }
+    }
+
     default <T> T enforceDialect(@NonNull ShellDialect type, FailableFunction<ShellControl, T, Exception> sc)
             throws Exception {
         if (isRunning() && getShellDialect().equals(type)) {

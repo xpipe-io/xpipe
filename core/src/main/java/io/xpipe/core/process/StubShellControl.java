@@ -1,6 +1,4 @@
-package io.xpipe.app.ext;
-
-import io.xpipe.core.process.ShellControl;
+package io.xpipe.core.process;
 
 public class StubShellControl extends WrapperShellControl {
 

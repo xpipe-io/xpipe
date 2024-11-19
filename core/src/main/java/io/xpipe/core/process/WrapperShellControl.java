@@ -1,6 +1,5 @@
-package io.xpipe.app.ext;
+package io.xpipe.core.process;
 
-import io.xpipe.core.process.*;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.FailableConsumer;

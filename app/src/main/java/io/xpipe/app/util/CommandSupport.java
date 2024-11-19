@@ -2,6 +2,7 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.util.FailableSupplier;
 
@@ -9,6 +10,15 @@ import java.io.IOException;
 import java.util.Optional;
 
 public class CommandSupport {
+
+    public static boolean isRoot(ShellControl shellControl) throws Exception {
+        if (shellControl.getOsType() == OsType.WINDOWS) {
+            return false;
+        }
+
+        var isRoot = shellControl.executeSimpleBooleanCommand("test \"${EUID:-$(id -u)}\" -eq 0");
+        return isRoot;
+    }
 
     public static Optional<String> findProgram(ShellControl processControl, String name) throws Exception {
         var out = processControl

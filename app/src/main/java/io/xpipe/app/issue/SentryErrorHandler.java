@@ -199,7 +199,7 @@ public class SentryErrorHandler implements ErrorHandler {
                     options.setProguardUuid(AppProperties.get().getBuildUuid().toString());
                     options.setTag("os", System.getProperty("os.name"));
                     options.setTag("osVersion", System.getProperty("os.version"));
-                    options.setTag("arch", System.getProperty("os.arch"));
+                    options.setTag("arch", AppProperties.get().getArch());
                     options.setDist(XPipeDistributionType.get().getId());
                     options.setTag("staging", String.valueOf(AppProperties.get().isStaging()));
                     options.setSendModules(false);
