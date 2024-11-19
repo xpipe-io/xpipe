@@ -113,6 +113,10 @@ function Uninstall {
         ) -join [Environment]::NewLine
         Write-Host $message
         $cimResult = Invoke-CimMethod -InputObject $cim -Name Uninstall
+        if ($cimResult.ReturnValue) {
+            Write-Host "Uninstallation failed: Code $($cimResult.ReturnValue)"
+            exit
+        }
     }
 }
 
