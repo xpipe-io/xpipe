@@ -2,6 +2,7 @@ package io.xpipe.app.ext;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.StubShellControl;
 import io.xpipe.core.store.*;
 
 public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore, SingletonSessionStore<ShellSession> {

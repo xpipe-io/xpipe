@@ -4,6 +4,7 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.HttpHelper;
+import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.JacksonMapper;
 
@@ -127,6 +128,7 @@ public class AppDownloads {
         req.put("uuid", AppProperties.get().getUuid().toString());
         req.put("version", AppProperties.get().getVersion());
         req.put("first", first);
+        req.put("license", LicenseProvider.get().getLicenseId());
         var url = URI.create("https://api.xpipe.io/version");
 
         var builder = HttpRequest.newBuilder();

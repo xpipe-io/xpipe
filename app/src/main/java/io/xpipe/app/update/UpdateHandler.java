@@ -100,7 +100,7 @@ public abstract class UpdateHandler {
     private void startBackgroundUpdater() {
         ThreadHelper.createPlatformThread("updater", true, () -> {
                     var checked = false;
-                    ThreadHelper.sleep(Duration.ofMinutes(5).toMillis());
+                    ThreadHelper.sleep(Duration.ofMinutes(1).toMillis());
                     event("Starting background updater thread");
                     while (true) {
                         if (AppPrefs.get().automaticallyUpdate().get()

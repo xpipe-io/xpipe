@@ -20,6 +20,8 @@ public abstract class LicenseProvider {
 
     public abstract boolean hasLicense();
 
+    public abstract String getLicenseId();
+
     public abstract ObservableValue<String> licenseTitle();
 
     public abstract LicensedFeature getFeature(String id);
