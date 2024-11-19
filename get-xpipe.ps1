@@ -100,7 +100,7 @@ function Uninstall {
     param()
 
     # Quick heuristic to see whether is can be possibly installed
-    if (-not (Test-Path "$env:LOCALAPPDATA\$ProductName" -PathType Container)) {
+    if (-not ((Test-Path "$env:LOCALAPPDATA\$ProductName" -PathType Container) -or (Test-Path "$env:ProgramFiles\$ProductName" -PathType Container))) {
         return
     }
 

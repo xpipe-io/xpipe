@@ -3,6 +3,7 @@ package io.xpipe.app.update;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalLauncher;
@@ -87,14 +88,19 @@ public class AppInstaller {
                         AppLogs.get().getSessionLogsDirectory().getParent().toString();
                 var logFile = FileNames.join(
                         logsDir, "installer_" + file.getFileName().toString() + ".log");
+                var systemWide = isSystemWide();
                 var command = LocalShell.getShell().getShellDialect().equals(ShellDialects.CMD)
-                        ? getCmdCommand(file.toString(), logFile, exec)
-                        : getPowershellCommand(file.toString(), logFile, exec);
-                var toRun = LocalShell.getShell().getShellDialect().equals(ShellDialects.CMD)
-                        ? "start \"XPipe Updater\" /min cmd /c \"" + ScriptHelper.createLocalExecScript(command) + "\""
-                        : "Start-Process -WindowStyle Minimized -FilePath powershell -ArgumentList  \"-ExecutionPolicy\", \"Bypass\", \"-File\", \"`\""
-                                + ScriptHelper.createLocalExecScript(command) + "`\"\"";
-
+                        ? getCmdCommand(file.toString(), logFile, exec, systemWide)
+                        : getPowershellCommand(file.toString(), logFile, exec, systemWide);
+                String toRun;
+                if (ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.CMD) {
+                    toRun = systemWide ? "powershell -Command Start-Process -Verb runAs -WindowStyle Minimized -FilePath cmd -ArgumentList  \"/c\", '\""
+                            + ScriptHelper.createLocalExecScript(command) + "\"'" :
+                            "start \"XPipe Updater\" /min cmd /c \"" + ScriptHelper.createLocalExecScript(command) + "\"";
+                } else {
+                    toRun = "Start-Process -WindowStyle Minimized -FilePath powershell -ArgumentList  \"-ExecutionPolicy\", \"Bypass\", \"-File\", \"`\""
+                            + ScriptHelper.createLocalExecScript(command) + "`\"\"" + (systemWide ? " -Verb runAs" : "");
+                }
                 runAndClose(() -> {
                     LocalShell.getShell().executeSimpleCommand(toRun);
                 });
@@ -105,32 +111,38 @@ public class AppInstaller {
                 return ".msi";
             }
 
-            private String getCmdCommand(String file, String logFile, String exec) {
+            private boolean isSystemWide() {
+                return Files.exists(XPipeInstallation.getCurrentInstallationBasePath().resolve("system"));
+            }
+
+            private String getCmdCommand(String file, String logFile, String exec, boolean systemWide) {
+                var args = systemWide ? "ALLUSERS=1" : "";
                 return String.format(
                         """
                         echo Installing %s ...
                         cd /D "%%HOMEDRIVE%%%%HOMEPATH%%"
-                        echo + msiexec /i "%s" /lv "%s" /qr
-                        start "" /wait msiexec /i "%s" /lv "%s" /qb
+                        echo + msiexec /i "%s" /lv "%s" /qb %s
+                        start "" /wait msiexec /i "%s" /lv "%s" /qb %s
                         echo Starting XPipe ...
                         echo + "%s"
                         start "" "%s"
                         """,
-                        file, file, logFile, file, logFile, exec, exec);
+                        file, file, logFile, args, file, logFile, args, exec, exec);
             }
 
-            private String getPowershellCommand(String file, String logFile, String exec) {
+            private String getPowershellCommand(String file, String logFile, String exec, boolean systemWide) {
+                var args = systemWide ? "ALLUSERS=1" : "";
                 return String.format(
                         """
                         echo Installing %s ...
                         cd "$env:HOMEDRIVE\\$env:HOMEPATH"
-                        echo '+ msiexec /i "%s" /lv "%s" /qr'
-                        Start-Process msiexec -Wait -ArgumentList "/i", "`"%s`"", "/lv", "`"%s`"", "/qb"
+                        echo '+ msiexec /i "%s" /lv "%s" /qb %s'
+                        Start-Process msiexec -Wait -ArgumentList "/i", "`"%s`"", "/lv", "`"%s`"", "/qb", %s
                         echo 'Starting XPipe ...'
                         echo '+ "%s"'
                         Start-Process -FilePath "%s"
                         """,
-                        file, file, logFile, file, logFile, exec, exec);
+                        file, file, logFile, args, file, logFile, args, exec, exec);
             }
         }
 
