@@ -15,12 +15,12 @@ XPipe fully integrates with your tools such as your favourite text/code editors,
 It currently supports:
 - [SSH](https://www.ssh.com/academy/ssh/protocol) connections, config files, and tunnels
 - [Docker](https://www.docker.com/), [Podman](https://podman.io/), and [LXD](https://linuxcontainers.org/lxd/introduction/) container instances located on any host
-- [Windows Subsystem for Linux](https://ubuntu.com/wsl), [Cygwin](https://www.cygwin.com/), and [MSYS2](https://www.msys2.org/) instances
 - [Proxmox PVE](https://www.proxmox.com/en/proxmox-virtual-environment/overview) virtual machines and containers
-- [Hyper-V](https://learn.microsoft.com/en-us/virtualization/hyper-v-on-windows/about/) and [VMware Player/Workstation/Fusion](https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion) virtual machines
+- [Hyper-V](https://learn.microsoft.com/en-us/virtualization/hyper-v-on-windows/about/), [KVM/QEMU](https://linux-kvm.org/page/Main_Page), [VMware Player/Workstation/Fusion](https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion) virtual machines
 - [Kubernetes](https://kubernetes.io/) clusters, pods, and containers
+- [Windows Subsystem for Linux](https://ubuntu.com/wsl), [Cygwin](https://www.cygwin.com/), and [MSYS2](https://www.msys2.org/) instances
 - [Powershell Remote Sessions](https://learn.microsoft.com/en-us/powershell/scripting/learn/remoting/running-remote-commands?view=powershell-7.3)
-- Built-in VNC connections and RDP launchers
+- VNC connections
 - Any other custom remote connection methods that work through the command-line
 
 ## Connection hub
@@ -29,7 +29,7 @@ It currently supports:
 - Organize all your connections in hierarchical categories so you can keep an overview hundreds of connections
 - Create specific login environments on any system to instantly jump into a properly set up environment for every use case
 - Quickly perform various commonly used actions like starting/stopping containers, establishing tunnels, and more
-- Create desktop shortcuts that automatically open remote connections in your terminal  without having to open any GUI
+- Create desktop shortcuts that automatically open remote connections in your terminal without having to open any GUI
 
 ![Connections](https://github.com/xpipe-io/.github/raw/main/img/hub_shadow.png)
 
@@ -197,13 +197,13 @@ XPipe is a desktop application first and foremost. It requires a full desktop en
 
 ## Open source model
 
-XPipe follows an open core model, which essentially means that the main application is open source while certain other components are not. This mainly concerns the features only available in the professional edition and the shell handling library implementation. Furthermore, some CI pipelines and tests that run on private servers are also not included in the open repository.
+XPipe follows an open core model, which essentially means that the main application is open source while certain other components are not. This mainly concerns the features only available in the homelab/professional plan and the shell handling library implementation. Furthermore, some CI pipelines and tests that run on private servers are also not included in the open repository.
 
 The distributed XPipe application consists out of two parts:
 - The open-source core that you can find this repository. It is licensed under the [Apache License 2.0](/LICENSE.md).
-- The closed-source extensions, mostly for professional edition features, which are not included in this repository
+- The closed-source extensions, mostly for homelab/professional plan features, which are not included in this repository
 
-Additional features are available in the professional edition. For more details see https://xpipe.io/pricing.
+Additional features are available in the homelab/professional plan . For more details see https://xpipe.io/pricing.
 If your enterprise puts great emphasis on having access to the full source code, there are also full source-available enterprise options available.
 
 ## More links
