@@ -48,6 +48,7 @@ public class BaseMode extends OperationMode {
         LicenseProvider.get().init();
         AppCertutilCheck.check();
         AppBundledToolsCheck.check();
+        AppHomebrewCoreutilsCheck.check();
         AppAvCheck.check();
         AppJavaOptionsCheck.check();
         AppSid.init();

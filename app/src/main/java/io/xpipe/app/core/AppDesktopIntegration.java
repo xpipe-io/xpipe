@@ -55,7 +55,9 @@ public class AppDesktopIntegration {
                         return;
                     }
 
-                    AppLayoutModel.get().selectSettings();
+                    if (AppLayoutModel.get() != null) {
+                        AppLayoutModel.get().selectSettings();
+                    }
                 });
 
                 // URL open operations have to be handled in a special way on macOS!

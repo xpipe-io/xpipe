@@ -135,8 +135,8 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
         globalPinnedTab.setValue(tab);
 
         var previousOthers = previousTabs.stream().filter(browserSessionTab -> browserSessionTab != tab).toList();
-        var prev = previousOthers.getLast();
-        if (prev != null) {
+        if (previousOthers.size() > 0) {
+            var prev = previousOthers.getLast();
             getSelectedEntry().setValue(prev);
         }
     }

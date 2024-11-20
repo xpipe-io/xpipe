@@ -40,6 +40,10 @@ public class AskpassExchangeImpl extends AskpassExchange {
     }
 
     private void focusTerminalIfNeeded(long pid) {
+        if (TerminalView.get() == null) {
+            return;
+        }
+
         var found = TerminalView.get().findSession(pid);
         if (found.isEmpty()) {
             return;
