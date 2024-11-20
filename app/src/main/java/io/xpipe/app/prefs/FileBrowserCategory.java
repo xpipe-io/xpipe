@@ -23,8 +23,7 @@ public class FileBrowserCategory extends AppPrefsCategory {
                         .pref(prefs.downloadsDirectory)
                         .addString(prefs.downloadsDirectory)
                         .pref(prefs.pinLocalMachineOnStartup)
-                        .addToggle(prefs.pinLocalMachineOnStartup)
-                )
+                        .addToggle(prefs.pinLocalMachineOnStartup))
                 .buildComp();
     }
 }

@@ -15,7 +15,6 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.ModuleHelper;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableDoubleValue;
@@ -43,13 +42,12 @@ public class AppPrefs {
     @Getter
     private final BooleanProperty requiresRestart = new SimpleBooleanProperty(false);
 
-    final BooleanProperty pinLocalMachineOnStartup =
-            map(Mapping.builder()
-                    .property(new SimpleBooleanProperty(false))
-                    .key("pinLocalMachineOnStartup")
-                    .valueClass(Boolean.class)
-                    .requiresRestart(true)
-                    .build());
+    final BooleanProperty pinLocalMachineOnStartup = map(Mapping.builder()
+            .property(new SimpleBooleanProperty(false))
+            .key("pinLocalMachineOnStartup")
+            .valueClass(Boolean.class)
+            .requiresRestart(true)
+            .build());
     final BooleanProperty dontAllowTerminalRestart =
             mapVaultShared(new SimpleBooleanProperty(false), "dontAllowTerminalRestart", Boolean.class, false);
     final BooleanProperty enableHttpApi =

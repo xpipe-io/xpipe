@@ -94,12 +94,16 @@ public class AppInstaller {
                         : getPowershellCommand(file.toString(), logFile, exec, systemWide);
                 String toRun;
                 if (ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.CMD) {
-                    toRun = systemWide ? "powershell -Command Start-Process -Verb runAs -WindowStyle Minimized -FilePath cmd -ArgumentList  \"/c\", '\""
-                            + ScriptHelper.createLocalExecScript(command) + "\"'" :
-                            "start \"XPipe Updater\" /min cmd /c \"" + ScriptHelper.createLocalExecScript(command) + "\"";
+                    toRun = systemWide
+                            ? "powershell -Command Start-Process -Verb runAs -WindowStyle Minimized -FilePath cmd -ArgumentList  \"/c\", '\""
+                                    + ScriptHelper.createLocalExecScript(command) + "\"'"
+                            : "start \"XPipe Updater\" /min cmd /c \"" + ScriptHelper.createLocalExecScript(command)
+                                    + "\"";
                 } else {
-                    toRun = "Start-Process -WindowStyle Minimized -FilePath powershell -ArgumentList  \"-ExecutionPolicy\", \"Bypass\", \"-File\", \"`\""
-                            + ScriptHelper.createLocalExecScript(command) + "`\"\"" + (systemWide ? " -Verb runAs" : "");
+                    toRun =
+                            "Start-Process -WindowStyle Minimized -FilePath powershell -ArgumentList  \"-ExecutionPolicy\", \"Bypass\", \"-File\", \"`\""
+                                    + ScriptHelper.createLocalExecScript(command) + "`\"\""
+                                    + (systemWide ? " -Verb runAs" : "");
                 }
                 runAndClose(() -> {
                     LocalShell.getShell().executeSimpleCommand(toRun);
@@ -112,7 +116,8 @@ public class AppInstaller {
             }
 
             private boolean isSystemWide() {
-                return Files.exists(XPipeInstallation.getCurrentInstallationBasePath().resolve("system"));
+                return Files.exists(
+                        XPipeInstallation.getCurrentInstallationBasePath().resolve("system"));
             }
 
             private String getCmdCommand(String file, String logFile, String exec, boolean systemWide) {

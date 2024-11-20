@@ -1,6 +1,5 @@
 package io.xpipe.app.core.check;
 
-import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 
 import org.apache.commons.io.FileUtils;

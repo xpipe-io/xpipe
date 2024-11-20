@@ -9,8 +9,8 @@ import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.util.InputHelper;
-
 import io.xpipe.app.util.PlatformThread;
+
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -99,13 +99,17 @@ public class BrowserFileSystemTabComp extends SimpleComp {
 
         if (model.getBrowserModel() instanceof BrowserFullSessionModel fullSessionModel) {
             var pinButton = new Button();
-            pinButton.graphicProperty().bind(PlatformThread.sync(Bindings.createObjectBinding(() -> {
-                if (fullSessionModel.getGlobalPinnedTab().getValue() != model) {
-                    return new FontIcon("mdi2p-pin");
-                }
+            pinButton
+                    .graphicProperty()
+                    .bind(PlatformThread.sync(Bindings.createObjectBinding(
+                            () -> {
+                                if (fullSessionModel.getGlobalPinnedTab().getValue() != model) {
+                                    return new FontIcon("mdi2p-pin");
+                                }
 
-                return new FontIcon("mdi2p-pin-off");
-            }, fullSessionModel.getGlobalPinnedTab())));
+                                return new FontIcon("mdi2p-pin-off");
+                            },
+                            fullSessionModel.getGlobalPinnedTab())));
             pinButton.setOnAction(e -> {
                 if (fullSessionModel.getGlobalPinnedTab().getValue() != model) {
                     fullSessionModel.pinTab(model);

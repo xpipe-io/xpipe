@@ -19,8 +19,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
     ExternalTerminalType WINDOWS_TERMINAL_CANARY = new Canary();
 
     private static CommandBuilder toCommand(TerminalLaunchConfiguration configuration) throws Exception {
-        var cmd = CommandBuilder.of()
-                .addIf(configuration.isPreferTabs(), "-w", "1", "nt");
+        var cmd = CommandBuilder.of().addIf(configuration.isPreferTabs(), "-w", "1", "nt");
 
         if (configuration.getColor() != null) {
             cmd.add("--tabColor").addQuoted(configuration.getColor().toHexString());

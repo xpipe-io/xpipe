@@ -36,9 +36,10 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
     static {
         DEFAULT.getSessionEntries().add(new BrowserHistoryTabModel(DEFAULT));
         if (AppPrefs.get().pinLocalMachineOnStartup().get()) {
-            var tab = new BrowserFileSystemTabModel(DEFAULT, DataStorage.get().local().ref(), BrowserFileSystemTabModel.SelectionMode.ALL);
+            var tab = new BrowserFileSystemTabModel(
+                    DEFAULT, DataStorage.get().local().ref(), BrowserFileSystemTabModel.SelectionMode.ALL);
             ThreadHelper.runFailableAsync(() -> {
-                DEFAULT.openSync(tab,null);
+                DEFAULT.openSync(tab, null);
                 DEFAULT.pinTab(tab);
             });
         }
@@ -134,7 +135,9 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
 
         globalPinnedTab.setValue(tab);
 
-        var previousOthers = previousTabs.stream().filter(browserSessionTab -> browserSessionTab != tab).toList();
+        var previousOthers = previousTabs.stream()
+                .filter(browserSessionTab -> browserSessionTab != tab)
+                .toList();
         if (previousOthers.size() > 0) {
             var prev = previousOthers.getLast();
             getSelectedEntry().setValue(prev);

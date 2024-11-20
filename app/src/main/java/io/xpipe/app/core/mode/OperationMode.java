@@ -4,7 +4,6 @@ import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppDebugModeCheck;
 import io.xpipe.app.core.check.AppTempCheck;
-import io.xpipe.app.core.check.AppUserDirectoryCheck;
 import io.xpipe.app.core.launcher.LauncherCommand;
 import io.xpipe.app.core.window.ModifiedStage;
 import io.xpipe.app.issue.*;

@@ -14,7 +14,6 @@ import io.xpipe.app.core.AppActionLinkDetector;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
-import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.storage.DataColor;
@@ -24,9 +23,7 @@ import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.*;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableDoubleValue;
-import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

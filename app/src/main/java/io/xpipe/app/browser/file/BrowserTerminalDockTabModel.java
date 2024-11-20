@@ -11,9 +11,9 @@ import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.terminal.TerminalDockComp;
 import io.xpipe.app.terminal.TerminalDockModel;
 import io.xpipe.app.terminal.TerminalView;
-
 import io.xpipe.app.terminal.WindowsTerminalType;
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableBooleanValue;
@@ -90,7 +90,9 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
                 // Ugly fix for Windows Terminal instances not closing properly if multiple windows exist
                 if (AppPrefs.get().terminalType().getValue() instanceof WindowsTerminalType) {
                     var sessions = TerminalView.get().getSessions();
-                    var others = sessions.stream().filter(shellSession -> shellSession.getTerminal().equals(session.getTerminal())).count();
+                    var others = sessions.stream()
+                            .filter(shellSession -> shellSession.getTerminal().equals(session.getTerminal()))
+                            .count();
                     if (others == 0) {
                         session.getTerminal().controllable().ifPresent(controllableTerminalSession -> {
                             controllableTerminalSession.close();

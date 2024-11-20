@@ -100,7 +100,10 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         information.setGraphicTextGap(7);
         if (getWrapper().getEntry().getProvider() != null) {
             try {
-                information.textProperty().bind(PlatformThread.sync(getWrapper().getEntry().getProvider().informationString(section)));
+                information
+                        .textProperty()
+                        .bind(PlatformThread.sync(
+                                getWrapper().getEntry().getProvider().informationString(section)));
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).handle();
             }

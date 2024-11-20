@@ -260,7 +260,7 @@ public class XPipeInstallation {
         String path;
         if (OsType.getLocal().equals(OsType.WINDOWS)) {
             var pg = System.getenv("ProgramFiles");
-            var systemPath = Path.of(pg,stage ? "XPipe PTB" : "XPipe");
+            var systemPath = Path.of(pg, stage ? "XPipe PTB" : "XPipe");
             if (Files.exists(systemPath)) {
                 return systemPath.toString();
             }
