@@ -29,7 +29,6 @@ public class AppHomebrewCoreutilsCheck {
             ErrorEvent.fromMessage("You have the homebrew coreutils package installed and added to your PATH." +
                             " The coreutils commands overwrite and are incompatible to the native macOS commands, which XPipe expects." +
                             " Please remove the coreutils commands from your PATH prior to launching XPipe.")
-                    .noDefaultActions()
                     .term()
                     .handle();
         }

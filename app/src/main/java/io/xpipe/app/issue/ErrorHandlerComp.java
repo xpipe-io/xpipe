@@ -201,6 +201,10 @@ public class ErrorHandlerComp extends SimpleComp {
         }
         desc = desc.trim();
 
+        if (event.isTerminal()) {
+            desc = desc + "\n\n" + AppI18n.get("terminalErrorDescription");
+        }
+
         var graphic = new FontIcon("mdomz-warning");
         graphic.setIconColor(Color.RED);
 
