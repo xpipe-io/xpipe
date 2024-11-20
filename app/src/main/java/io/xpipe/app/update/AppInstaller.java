@@ -136,18 +136,19 @@ public class AppInstaller {
             }
 
             private String getPowershellCommand(String file, String logFile, String exec, boolean systemWide) {
-                var args = systemWide ? "ALLUSERS=1" : "";
+                var property = systemWide ? " ALLUSERS=1" : "";
+                var startProcessProperty = systemWide ? ", ALLUSERS=1" : "";
                 return String.format(
                         """
                         echo Installing %s ...
                         cd "$env:HOMEDRIVE\\$env:HOMEPATH"
-                        echo '+ msiexec /i "%s" /lv "%s" /qb %s'
-                        Start-Process msiexec -Wait -ArgumentList "/i", "`"%s`"", "/lv", "`"%s`"", "/qb", %s
+                        echo '+ msiexec /i "%s" /lv "%s" /qb%s'
+                        Start-Process msiexec -Wait -ArgumentList "/i", "`"%s`"", "/lv", "`"%s`"", "/qb"%s
                         echo 'Starting XPipe ...'
                         echo '+ "%s"'
                         Start-Process -FilePath "%s"
                         """,
-                        file, file, logFile, args, file, logFile, args, exec, exec);
+                        file, file, logFile, property, file, logFile, startProcessProperty, exec, exec);
             }
         }
 

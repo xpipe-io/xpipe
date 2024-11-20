@@ -26,7 +26,7 @@ public class UpdateChangelogAlert {
             Note that you can also install the latest version manually from %s
             if there are any problems with the automatic update installation.
             """
-                                    .formatted(Hyperlinks.GITHUB + "/releases/latest"))
+                                    .formatted(Hyperlinks.GITHUB_LATEST))
                     .handle();
             return;
         }
