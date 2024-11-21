@@ -1,6 +1,8 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
+import io.xpipe.app.util.BooleanScope;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FileKind;
 
 import javafx.geometry.Point2D;
@@ -50,6 +52,26 @@ public class BrowserFileListCompEntry {
             var cm = new BrowserContextMenu(model.getFileSystemModel(), item, false);
             cm.show(row, t.getScreenX(), t.getScreenY());
             lastContextMenu = cm;
+            t.consume();
+            return;
+        }
+
+        if (t.getButton() == MouseButton.BACK) {
+            ThreadHelper.runFailableAsync(() -> {
+                BooleanScope.executeExclusive(model.getFileSystemModel().getBusy(), () -> {
+                    model.getFileSystemModel().backSync(1);
+                });
+            });
+            t.consume();
+            return;
+        }
+
+        if (t.getButton() == MouseButton.FORWARD) {
+            ThreadHelper.runFailableAsync(() -> {
+                BooleanScope.executeExclusive(model.getFileSystemModel().getBusy(), () -> {
+                    model.getFileSystemModel().forthSync(1);
+                });
+            });
             t.consume();
             return;
         }

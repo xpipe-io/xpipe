@@ -64,13 +64,9 @@ public final class BrowserFileSystemHistory {
         return history.get(cursor.get());
     }
 
-    public String forth() {
-        return forth(1);
-    }
-
     public String forth(int i) {
         if (!canGoForth.get()) {
-            return null;
+            return history.getLast();
         }
         cursor.set(Math.min(history.size() - 1, cursor.get() + i));
         return history.get(cursor.get());
