@@ -6,16 +6,16 @@ public class Hyperlinks {
 
     public static final String DOUBLE_PROMPT = "https://docs.xpipe.io/two-step-connections";
     public static final String AGENT_SETUP = "https://docs.xpipe.io/ssh-agent-socket";
-    public static final String GITHUB = "https://github.com/xpipe-io/xpipe?ref=xpipe.app";
-    public static final String GITHUB_PTB = "https://github.com/xpipe-io/xpipe-ptb?ref=xpipe.app";
+    public static final String GITHUB = "https://github.com/xpipe-io/xpipe";
+    public static final String GITHUB_PTB = "https://github.com/xpipe-io/xpipe-ptb";
     public static final String GITHUB_LATEST = "https://github.com/xpipe-io/xpipe/releases/latest";
     public static final String PRIVACY = "https://docs.xpipe.io/privacy-policy";
     public static final String EULA = "https://docs.xpipe.io/end-user-license-agreement";
     public static final String SECURITY = "https://docs.xpipe.io/security";
-    public static final String TRANSLATE = "https://github.com/xpipe-io/xpipe/tree/master/lang?ref=xpipe.app";
+    public static final String TRANSLATE = "https://github.com/xpipe-io/xpipe/tree/master/lang";
     public static final String DISCORD = "https://discord.gg/8y89vS8cRb";
-    public static final String GITHUB_WEBTOP = "https://github.com/xpipe-io/xpipe-webtop?ref=xpipe.app";
-    public static final String SELFHST_ICONS = "https://github.com/selfhst/icons?ref=xpipe.app";
+    public static final String GITHUB_WEBTOP = "https://github.com/xpipe-io/xpipe-webtop";
+    public static final String SELFHST_ICONS = "https://github.com/selfhst/icons";
     public static final String SLACK =
             "https://join.slack.com/t/XPipe/shared_invite/zt-1awjq0t5j-5i4UjNJfNe1VN4b_auu6Cg";
 
