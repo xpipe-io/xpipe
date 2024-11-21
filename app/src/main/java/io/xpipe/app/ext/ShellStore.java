@@ -32,9 +32,6 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
     default ShellSession newSession() throws Exception {
         var func = shellFunction();
         var c = func.control();
-        if (!isInStorage()) {
-            c.withoutLicenseCheck();
-        }
         return new ShellSession(this, () -> c);
     }
 

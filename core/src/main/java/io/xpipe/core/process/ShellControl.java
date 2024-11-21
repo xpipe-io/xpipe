@@ -54,8 +54,6 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl getMachineRootSession();
 
-    ShellControl withoutLicenseCheck();
-
     String getOsName();
 
     boolean isLicenseCheck();
@@ -105,6 +103,8 @@ public interface ShellControl extends ProcessControl {
     ShellControl start() throws Exception;
 
     ShellControl withErrorFormatter(Function<String, String> formatter);
+
+    void checkLicenseOrThrow();
 
     String prepareIntermediateTerminalOpen(
             TerminalInitFunction content, TerminalInitScriptConfig config, WorkingDirectoryFunction workingDirectory)

@@ -107,11 +107,6 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public ShellControl withoutLicenseCheck() {
-        return parent.withoutLicenseCheck();
-    }
-
-    @Override
     public String getOsName() {
         return parent.getOsName();
     }
@@ -260,6 +255,11 @@ public class WrapperShellControl implements ShellControl {
     @Override
     public ShellControl withErrorFormatter(Function<String, String> formatter) {
         return parent.withErrorFormatter(formatter);
+    }
+
+    @Override
+    public void checkLicenseOrThrow() {
+        parent.checkLicenseOrThrow();
     }
 
     @Override

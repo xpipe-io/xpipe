@@ -143,7 +143,7 @@ class ScanDialog extends DialogComp {
 
         ThreadHelper.runFailableAsync(() -> {
             BooleanScope.executeExclusive(busy, () -> {
-                var sc = entry.get().getStore().getOrStartSession().withoutLicenseCheck();
+                var sc = entry.get().getStore().getOrStartSession();
                 var a = applicable.apply(entry.get().get(), sc);
                 Platform.runLater(() -> {
                     if (a == null) {

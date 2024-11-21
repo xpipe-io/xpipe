@@ -50,6 +50,8 @@ public class ConnectionFileSystem implements FileSystem {
                     "Shell has a PTY allocated and as a result does not support file system operations");
         }
 
+        shellControl.checkLicenseOrThrow();
+
         return this;
     }
 

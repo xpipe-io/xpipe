@@ -43,7 +43,6 @@ public class LocalShell {
                 localPowershell = ProcessControlProvider.get()
                         .createLocalProcessControl(false)
                         .subShell(ShellDialects.POWERSHELL)
-                        .withoutLicenseCheck()
                         .start();
             } catch (ProcessOutputException ex) {
                 throw ProcessOutputException.withPrefix("Failed to start local powershell process", ex);
