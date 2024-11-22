@@ -156,9 +156,7 @@ public class StoreEntryWrapper {
         iconFile.setValue(entry.getEffectiveIconFile());
 
         busy.setValue(entry.getBusyCounter().get() != 0);
-        deletable.setValue(entry.getConfiguration().isDeletable()
-                || (AppPrefs.get().developerMode().getValue()
-                        && AppPrefs.get().developerDisableGuiRestrictions().getValue()));
+        deletable.setValue(entry.getConfiguration().isDeletable());
         sessionActive.setValue(entry.getStore() instanceof SingletonSessionStore<?> ss
                 && entry.getStore() instanceof ShellStore
                 && ss.isSessionRunning());

@@ -243,7 +243,7 @@ public class StandardStorage extends DataStorage {
                 addStoreEntryIfNotPresent(entry1);
             });
         });
-        // Update validaties from synthetic parent I changes
+        // Update validaties from synthetic parent changes
         refreshEntries();
 
         if (!hasFixedLocal) {

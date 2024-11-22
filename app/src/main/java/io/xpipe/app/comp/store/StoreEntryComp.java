@@ -386,15 +386,9 @@ public abstract class StoreEntryComp extends SimpleComp {
         del.disableProperty()
                 .bind(Bindings.createBooleanBinding(
                         () -> {
-                            return !getWrapper().getDeletable().get()
-                                    && AppPrefs.get().developerMode().getValue()
-                                    && !AppPrefs.get()
-                                            .developerDisableGuiRestrictions()
-                                            .get();
+                            return !getWrapper().getDeletable().get();
                         },
-                        getWrapper().getDeletable(),
-                        AppPrefs.get().developerMode(),
-                        AppPrefs.get().developerDisableGuiRestrictions()));
+                        getWrapper().getDeletable()));
         del.setOnAction(event -> getWrapper().delete());
         contextMenu.getItems().add(del);
 

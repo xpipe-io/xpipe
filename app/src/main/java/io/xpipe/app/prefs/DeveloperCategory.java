@@ -63,8 +63,6 @@ public class DeveloperCategory extends AppPrefsCategory {
                         .addToggle(prefs.developerDisableUpdateVersionCheck)
                         .nameAndDescription("developerForceSshTty")
                         .addToggle(prefs.developerForceSshTty)
-                        .nameAndDescription("developerDisableGuiRestrictions")
-                        .addToggle(prefs.developerDisableGuiRestrictions)
                         .nameAndDescription("shellCommandTest")
                         .addComp(runLocalCommand))
                 .buildComp();

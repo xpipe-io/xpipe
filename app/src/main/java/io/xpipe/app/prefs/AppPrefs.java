@@ -138,8 +138,6 @@ public class AppPrefs {
             mapLocal(new SimpleBooleanProperty(false), "developerMode", Boolean.class, true);
     final BooleanProperty developerDisableUpdateVersionCheck =
             mapLocal(new SimpleBooleanProperty(false), "developerDisableUpdateVersionCheck", Boolean.class, false);
-    final BooleanProperty developerDisableGuiRestrictions =
-            mapLocal(new SimpleBooleanProperty(false), "developerDisableGuiRestrictions", Boolean.class, false);
     final BooleanProperty developerForceSshTty =
             mapLocal(new SimpleBooleanProperty(false), "developerForceSshTty", Boolean.class, false);
 
@@ -476,10 +474,6 @@ public class AppPrefs {
 
     public ObservableBooleanValue developerDisableUpdateVersionCheck() {
         return developerDisableUpdateVersionCheck;
-    }
-
-    public ObservableBooleanValue developerDisableGuiRestrictions() {
-        return developerDisableGuiRestrictions;
     }
 
     public ObservableBooleanValue developerForceSshTty() {
