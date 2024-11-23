@@ -62,7 +62,9 @@ public class AppCache {
                     return r;
                 }
             } catch (Exception ex) {
-                ErrorEvent.fromThrowable("Could not parse cached data for key " + key, ex).omit().handle();
+                ErrorEvent.fromThrowable("Could not parse cached data for key " + key, ex)
+                        .omit()
+                        .handle();
                 FileUtils.deleteQuietly(path.toFile());
             }
         }
@@ -81,7 +83,9 @@ public class AppCache {
 
                 return tree.asBoolean();
             } catch (Exception ex) {
-                ErrorEvent.fromThrowable("Could not parse cached data for key " + key, ex).omit().handle();
+                ErrorEvent.fromThrowable("Could not parse cached data for key " + key, ex)
+                        .omit()
+                        .handle();
                 FileUtils.deleteQuietly(path.toFile());
             }
         }

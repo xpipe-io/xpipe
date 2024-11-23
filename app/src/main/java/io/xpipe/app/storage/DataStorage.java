@@ -974,6 +974,8 @@ public abstract class DataStorage {
     }
 
     public DataStoreEntry local() {
-        return getStoreEntryIfPresent(LOCAL_ID).orElseThrow(() -> new IllegalStateException("Missing local machine connection, restart is required to fix this"));
+        return getStoreEntryIfPresent(LOCAL_ID)
+                .orElseThrow(() ->
+                        new IllegalStateException("Missing local machine connection, restart is required to fix this"));
     }
 }

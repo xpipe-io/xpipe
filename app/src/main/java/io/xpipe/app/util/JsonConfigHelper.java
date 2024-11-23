@@ -33,7 +33,10 @@ public class JsonConfigHelper {
                     .build()
                     .handle();
         } catch (IOException e) {
-            ErrorEvent.fromThrowable("Unable to parse file " + in, e).expected().build().handle();
+            ErrorEvent.fromThrowable("Unable to parse file " + in, e)
+                    .expected()
+                    .build()
+                    .handle();
         }
         return JsonNodeFactory.instance.missingNode();
     }
@@ -63,7 +66,10 @@ public class JsonConfigHelper {
             var newContent = writer.toString();
             Files.writeString(out, newContent);
         } catch (IOException e) {
-            ErrorEvent.fromThrowable("Unable to write file " + out, e).expected().build().handle();
+            ErrorEvent.fromThrowable("Unable to write file " + out, e)
+                    .expected()
+                    .build()
+                    .handle();
         }
     }
 }
