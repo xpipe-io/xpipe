@@ -62,26 +62,7 @@ public class AppCache {
                     return r;
                 }
             } catch (Exception ex) {
-                ErrorEvent.fromThrowable(ex).omit().handle();
-                FileUtils.deleteQuietly(path.toFile());
-            }
-        }
-        return notPresent != null ? notPresent.get() : null;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> T getNullable(String key, Class<?> type, Supplier<T> notPresent) {
-        var path = getPath(key);
-        if (Files.exists(path)) {
-            try {
-                var tree = JsonConfigHelper.readRaw(path);
-                if (tree.isMissingNode()) {
-                    return notPresent.get();
-                }
-
-                return (T) JacksonMapper.getDefault().treeToValue(tree, type);
-            } catch (Exception ex) {
-                ErrorEvent.fromThrowable(ex).omit().handle();
+                ErrorEvent.fromThrowable("Could not parse cached data for key " + key, ex).omit().handle();
                 FileUtils.deleteQuietly(path.toFile());
             }
         }
@@ -100,7 +81,7 @@ public class AppCache {
 
                 return tree.asBoolean();
             } catch (Exception ex) {
-                ErrorEvent.fromThrowable(ex).omit().handle();
+                ErrorEvent.fromThrowable("Could not parse cached data for key " + key, ex).omit().handle();
                 FileUtils.deleteQuietly(path.toFile());
             }
         }
@@ -115,7 +96,7 @@ public class AppCache {
             var tree = JacksonMapper.getDefault().valueToTree(val);
             JsonConfigHelper.writeConfig(path, tree);
         } catch (Exception e) {
-            ErrorEvent.fromThrowable("Could not parse cached data for key " + key, e)
+            ErrorEvent.fromThrowable("Could not write cache data for key " + key, e)
                     .omitted(true)
                     .build()
                     .handle();

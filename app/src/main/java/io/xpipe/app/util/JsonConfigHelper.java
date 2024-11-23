@@ -33,7 +33,7 @@ public class JsonConfigHelper {
                     .build()
                     .handle();
         } catch (IOException e) {
-            ErrorEvent.fromThrowable("Unable to parse file " + in, e).build().handle();
+            ErrorEvent.fromThrowable("Unable to parse file " + in, e).expected().build().handle();
         }
         return JsonNodeFactory.instance.missingNode();
     }
@@ -52,7 +52,7 @@ public class JsonConfigHelper {
         try {
             FileUtils.forceMkdirParent(out.toFile());
         } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).build().handle();
+            ErrorEvent.fromThrowable(e).expected().build().handle();
             return;
         }
 
@@ -63,7 +63,7 @@ public class JsonConfigHelper {
             var newContent = writer.toString();
             Files.writeString(out, newContent);
         } catch (IOException e) {
-            ErrorEvent.fromThrowable("Unable to write file " + out, e).build().handle();
+            ErrorEvent.fromThrowable("Unable to write file " + out, e).expected().build().handle();
         }
     }
 }

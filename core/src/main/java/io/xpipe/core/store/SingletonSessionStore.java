@@ -48,9 +48,9 @@ public interface SingletonSessionStore<T extends Session>
             }
 
             try {
+                setSessionEnabled(true);
                 s = newSession();
                 if (s != null) {
-                    setSessionEnabled(true);
                     s.start();
                     setCache("session", s);
                     onStateChange(true);
@@ -58,6 +58,7 @@ public interface SingletonSessionStore<T extends Session>
                     setSessionEnabled(false);
                 }
             } catch (Exception ex) {
+                setSessionEnabled(false);
                 onStateChange(false);
                 throw ex;
             }

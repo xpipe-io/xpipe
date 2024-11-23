@@ -86,6 +86,7 @@ public class RunScriptActionMenu implements ActionProvider {
             @Override
             public void execute() throws Exception {
                 var sc = shellStore.getStore().getOrStartSession();
+                sc.checkLicenseOrThrow();
                 var script = hierarchy.getLeafBase().getStore().assembleScriptChain(sc);
                 sc.command(script).execute();
             }
