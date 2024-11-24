@@ -8,6 +8,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.process.ShellTtyState;
+import io.xpipe.core.process.SystemState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +20,9 @@ public class ScanAlert {
         ThreadHelper.runAsync(() -> {
             var showForCon = entry == null
                     || (entry.getStore() instanceof ShellStore
-                            && (!(entry.getStorePersistentState() instanceof ShellStoreState shellStoreState)
-                                    || shellStoreState.getTtyState() == null
-                                    || shellStoreState.getTtyState() == ShellTtyState.NONE));
+                            && (!(entry.getStorePersistentState() instanceof SystemState systemState)
+                                    || systemState.getTtyState() == null
+                                    || systemState.getTtyState() == ShellTtyState.NONE));
             if (showForCon) {
                 showForShellStore(entry);
             }

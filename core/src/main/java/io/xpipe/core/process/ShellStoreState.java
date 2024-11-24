@@ -14,7 +14,7 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder(toBuilder = true)
 @Jacksonized
-public class ShellStoreState extends DataStoreState implements OsNameState {
+public class ShellStoreState extends DataStoreState implements SystemState {
 
     OsType.Any osType;
     String osName;

@@ -5,7 +5,7 @@ import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.StackComp;
 import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.util.BindingsHelper;
-import io.xpipe.core.process.OsNameState;
+import io.xpipe.core.process.SystemState;
 import io.xpipe.core.store.FileNames;
 
 import javafx.beans.binding.Bindings;
@@ -43,7 +43,7 @@ public class OsLogoComp extends SimpleComp {
                     }
 
                     var ps = wrapper.getPersistentState().getValue();
-                    if (!(ps instanceof OsNameState ons)) {
+                    if (!(ps instanceof SystemState ons)) {
                         return null;
                     }
 

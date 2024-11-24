@@ -56,9 +56,9 @@ public interface ShellControl extends ProcessControl {
 
     String getOsName();
 
-    boolean isLicenseCheck();
-
     ReentrantLock getLock();
+
+    void requireLicensedFeature(String id);
 
     ShellDialect getOriginalShellDialect();
 

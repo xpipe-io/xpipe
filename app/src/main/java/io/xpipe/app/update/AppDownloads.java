@@ -129,6 +129,7 @@ public class AppDownloads {
         req.put("version", AppProperties.get().getVersion());
         req.put("first", first);
         req.put("license", LicenseProvider.get().getLicenseId());
+        req.put("dist", XPipeDistributionType.get().getId());
         var url = URI.create("https://api.xpipe.io/version");
 
         var builder = HttpRequest.newBuilder();

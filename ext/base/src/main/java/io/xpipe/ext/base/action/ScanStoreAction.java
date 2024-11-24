@@ -9,6 +9,7 @@ import io.xpipe.app.util.ScanAlert;
 import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.process.ShellTtyState;
 
+import io.xpipe.core.process.SystemState;
 import javafx.beans.value.ObservableValue;
 
 import lombok.Value;
@@ -37,14 +38,14 @@ public class ScanStoreAction implements ActionProvider {
             @Override
             public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
                 var state = o.get().getStorePersistentState();
-                if (state instanceof ShellStoreState shellStoreState) {
-                    return (shellStoreState.getShellDialect() == null
-                                    || shellStoreState
+                if (state instanceof SystemState systemState) {
+                    return (systemState.getShellDialect() == null
+                                    || systemState
                                             .getShellDialect()
                                             .getDumbMode()
                                             .supportsAnyPossibleInteraction())
-                            && (shellStoreState.getTtyState() == null
-                                    || shellStoreState.getTtyState() == ShellTtyState.NONE);
+                            && (systemState.getTtyState() == null
+                                    || systemState.getTtyState() == ShellTtyState.NONE);
                 } else {
                     return true;
                 }

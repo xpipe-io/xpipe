@@ -112,13 +112,13 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public boolean isLicenseCheck() {
-        return parent.isLicenseCheck();
+    public ReentrantLock getLock() {
+        return parent.getLock();
     }
 
     @Override
-    public ReentrantLock getLock() {
-        return parent.getLock();
+    public void requireLicensedFeature(String id) {
+        parent.requireLicensedFeature(id);
     }
 
     @Override

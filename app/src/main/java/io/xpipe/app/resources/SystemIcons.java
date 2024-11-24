@@ -1,9 +1,6 @@
 package io.xpipe.app.resources;
 
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.process.ShellStoreState;
+import io.xpipe.core.process.*;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.StatefulDataStore;
 
@@ -23,16 +20,16 @@ public class SystemIcons {
                 @Override
                 public boolean isApplicable(DataStore store) {
                     return store instanceof StatefulDataStore<?> statefulDataStore
-                            && statefulDataStore.getState() instanceof ShellStoreState shellStoreState
-                            && shellStoreState.getShellDialect() == ShellDialects.OPNSENSE;
+                            && statefulDataStore.getState() instanceof SystemState systemState
+                            && systemState.getShellDialect() == ShellDialects.OPNSENSE;
                 }
             },
             new SystemIcon("pfsense", "pfsense") {
                 @Override
                 public boolean isApplicable(DataStore store) {
                     return store instanceof StatefulDataStore<?> statefulDataStore
-                            && statefulDataStore.getState() instanceof ShellStoreState shellStoreState
-                            && shellStoreState.getShellDialect() == ShellDialects.PFSENSE;
+                            && statefulDataStore.getState() instanceof SystemState systemState
+                            && systemState.getShellDialect() == ShellDialects.PFSENSE;
                 }
             },
             new ContainerAutoSystemIcon("file-browser", "file browser", name -> name.contains("filebrowser")),

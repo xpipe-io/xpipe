@@ -53,10 +53,10 @@ public class OptionsBuilder {
         return new ChainedValidator(allValidators);
     }
 
-    public OptionsBuilder choice(IntegerProperty selectedIndex, Map<String, OptionsBuilder> options) {
+    public OptionsBuilder choice(IntegerProperty selectedIndex, Map<ObservableValue<String>, OptionsBuilder> options) {
         var list = options.entrySet().stream()
                 .map(e -> new ChoicePaneComp.Entry(
-                        AppI18n.observable(e.getKey()),
+                        e.getKey(),
                         e.getValue() != null ? e.getValue().buildComp() : Comp.empty()))
                 .toList();
         var validatorList = options.values().stream()

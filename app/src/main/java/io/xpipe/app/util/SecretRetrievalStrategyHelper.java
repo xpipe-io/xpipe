@@ -5,6 +5,7 @@ import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.SecretFieldComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.App;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreSecret;
 
@@ -12,6 +13,7 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
+import javafx.beans.value.ObservableValue;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.Arrays;
@@ -88,14 +90,14 @@ public class SecretRetrievalStrategyHelper {
                 new SimpleObjectProperty<>(strat instanceof SecretRetrievalStrategy.PasswordManager i ? i : null);
         var customCommand =
                 new SimpleObjectProperty<>(strat instanceof SecretRetrievalStrategy.CustomCommand i ? i : null);
-        var map = new LinkedHashMap<String, OptionsBuilder>();
+        var map = new LinkedHashMap<ObservableValue<String>, OptionsBuilder>();
         if (allowNone) {
-            map.put("app.none", new OptionsBuilder());
+            map.put(AppI18n.observable("app.none"), new OptionsBuilder());
         }
-        map.put("app.password", inPlace(inPlace));
-        map.put("app.passwordManager", passwordManager(passwordManager));
-        map.put("app.customCommand", customCommand(customCommand));
-        map.put("app.prompt", new OptionsBuilder());
+        map.put(AppI18n.observable("app.password"), inPlace(inPlace));
+        map.put(AppI18n.observable("app.passwordManager"), passwordManager(passwordManager));
+        map.put(AppI18n.observable("app.customCommand"), customCommand(customCommand));
+        map.put(AppI18n.observable("app.prompt"), new OptionsBuilder());
 
         int offset = allowNone ? 0 : -1;
         var selected = new SimpleIntegerProperty(

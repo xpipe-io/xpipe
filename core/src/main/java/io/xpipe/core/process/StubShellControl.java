@@ -7,5 +7,10 @@ public class StubShellControl extends WrapperShellControl {
     }
 
     @Override
+    public boolean canHaveSubshells() {
+        return parent.canHaveSubshells();
+    }
+
+    @Override
     public void close() throws Exception {}
 }

@@ -10,6 +10,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.process.ShellTtyState;
+import io.xpipe.core.process.SystemState;
 import io.xpipe.ext.base.script.ScriptHierarchy;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -259,14 +260,14 @@ public class RunScriptActionMenu implements ActionProvider {
             @Override
             public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
                 var state = o.get().getStorePersistentState();
-                if (state instanceof ShellStoreState shellStoreState) {
-                    return (shellStoreState.getShellDialect() == null
-                                    || shellStoreState
+                if (state instanceof SystemState systemState) {
+                    return (systemState.getShellDialect() == null
+                                    || systemState
                                             .getShellDialect()
                                             .getDumbMode()
                                             .supportsAnyPossibleInteraction())
-                            && (shellStoreState.getTtyState() == null
-                                    || shellStoreState.getTtyState() == ShellTtyState.NONE);
+                            && (systemState.getTtyState() == null
+                                    || systemState.getTtyState() == ShellTtyState.NONE);
                 } else {
                     return false;
                 }
@@ -276,7 +277,7 @@ public class RunScriptActionMenu implements ActionProvider {
             public List<? extends ActionProvider> getChildren(DataStoreEntryRef<ShellStore> store) {
                 var replacement = ProcessControlProvider.get().replace(store);
                 var state = replacement.getEntry().getStorePersistentState();
-                if (!(state instanceof ShellStoreState shellStoreState) || shellStoreState.getShellDialect() == null) {
+                if (!(state instanceof SystemState systemState) || systemState.getShellDialect() == null) {
                     return List.of(new NoScriptsActionProvider());
                 }
 
@@ -285,7 +286,7 @@ public class RunScriptActionMenu implements ActionProvider {
                         return false;
                     }
 
-                    if (!ref.getStore().isCompatible(shellStoreState.getShellDialect())) {
+                    if (!ref.getStore().isCompatible(systemState.getShellDialect())) {
                         return false;
                     }
 
