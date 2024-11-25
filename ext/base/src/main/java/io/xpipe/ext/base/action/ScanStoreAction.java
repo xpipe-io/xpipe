@@ -6,10 +6,9 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ScanAlert;
-import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.process.ShellTtyState;
-
 import io.xpipe.core.process.SystemState;
+
 import javafx.beans.value.ObservableValue;
 
 import lombok.Value;
@@ -44,8 +43,7 @@ public class ScanStoreAction implements ActionProvider {
                                             .getShellDialect()
                                             .getDumbMode()
                                             .supportsAnyPossibleInteraction())
-                            && (systemState.getTtyState() == null
-                                    || systemState.getTtyState() == ShellTtyState.NONE);
+                            && (systemState.getTtyState() == null || systemState.getTtyState() == ShellTtyState.NONE);
                 } else {
                     return true;
                 }

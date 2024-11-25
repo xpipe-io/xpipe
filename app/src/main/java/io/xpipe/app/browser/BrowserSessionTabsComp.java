@@ -96,7 +96,9 @@ public class BrowserSessionTabsComp extends SimpleComp {
             map.put(v, t);
             tabs.getTabs().add(t);
         });
-        tabs.getSelectionModel().select(model.getSessionEntries().indexOf(model.getSelectedEntry().getValue()));
+        tabs.getSelectionModel()
+                .select(model.getSessionEntries()
+                        .indexOf(model.getSelectedEntry().getValue()));
 
         // Used for ignoring changes by the tabpane when new tabs are added. We want to perform the selections manually!
         var addingTab = new SimpleBooleanProperty();
@@ -112,9 +114,9 @@ public class BrowserSessionTabsComp extends SimpleComp {
                 return;
             }
 
-            var source = map.entrySet()
-                    .stream()
-                    .filter(openFileSystemModelTabEntry -> openFileSystemModelTabEntry.getValue().equals(newValue))
+            var source = map.entrySet().stream()
+                    .filter(openFileSystemModelTabEntry ->
+                            openFileSystemModelTabEntry.getValue().equals(newValue))
                     .findAny()
                     .map(Map.Entry::getKey)
                     .orElse(null);
@@ -129,9 +131,9 @@ public class BrowserSessionTabsComp extends SimpleComp {
                     return;
                 }
 
-                var toSelect = map.entrySet()
-                        .stream()
-                        .filter(openFileSystemModelTabEntry -> openFileSystemModelTabEntry.getKey().equals(newValue))
+                var toSelect = map.entrySet().stream()
+                        .filter(openFileSystemModelTabEntry ->
+                                openFileSystemModelTabEntry.getKey().equals(newValue))
                         .findAny()
                         .map(Map.Entry::getValue)
                         .orElse(null);
@@ -171,9 +173,9 @@ public class BrowserSessionTabsComp extends SimpleComp {
         tabs.getTabs().addListener((ListChangeListener<? super Tab>) c -> {
             while (c.next()) {
                 for (var r : c.getRemoved()) {
-                    var source = map.entrySet()
-                            .stream()
-                            .filter(openFileSystemModelTabEntry -> openFileSystemModelTabEntry.getValue().equals(r))
+                    var source = map.entrySet().stream()
+                            .filter(openFileSystemModelTabEntry ->
+                                    openFileSystemModelTabEntry.getValue().equals(r))
                             .findAny()
                             .orElse(null);
 

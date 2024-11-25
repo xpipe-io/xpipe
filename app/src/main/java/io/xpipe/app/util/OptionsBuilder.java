@@ -56,8 +56,7 @@ public class OptionsBuilder {
     public OptionsBuilder choice(IntegerProperty selectedIndex, Map<ObservableValue<String>, OptionsBuilder> options) {
         var list = options.entrySet().stream()
                 .map(e -> new ChoicePaneComp.Entry(
-                        e.getKey(),
-                        e.getValue() != null ? e.getValue().buildComp() : Comp.empty()))
+                        e.getKey(), e.getValue() != null ? e.getValue().buildComp() : Comp.empty()))
                 .toList();
         var validatorList = options.values().stream()
                 .map(builder -> builder != null ? builder.buildEffectiveValidator() : new SimpleValidator())

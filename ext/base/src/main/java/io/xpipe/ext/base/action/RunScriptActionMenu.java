@@ -8,7 +8,6 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.TerminalLauncher;
-import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.process.ShellTtyState;
 import io.xpipe.core.process.SystemState;
 import io.xpipe.ext.base.script.ScriptHierarchy;
@@ -266,8 +265,7 @@ public class RunScriptActionMenu implements ActionProvider {
                                             .getShellDialect()
                                             .getDumbMode()
                                             .supportsAnyPossibleInteraction())
-                            && (systemState.getTtyState() == null
-                                    || systemState.getTtyState() == ShellTtyState.NONE);
+                            && (systemState.getTtyState() == null || systemState.getTtyState() == ShellTtyState.NONE);
                 } else {
                     return false;
                 }

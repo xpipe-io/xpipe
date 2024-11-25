@@ -138,7 +138,10 @@ public class SentryErrorHandler implements ErrorHandler {
             atts.forEach(attachment -> s.addAttachment(attachment));
         }
 
-        s.setTag("hasLicense", String.valueOf(LicenseProvider.get() != null ? LicenseProvider.get().hasPaidLicense() : null));
+        s.setTag(
+                "hasLicense",
+                String.valueOf(
+                        LicenseProvider.get() != null ? LicenseProvider.get().hasPaidLicense() : null));
         s.setTag(
                 "updatesEnabled",
                 AppPrefs.get() != null

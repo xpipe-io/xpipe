@@ -12,8 +12,8 @@ import io.xpipe.app.storage.DataStoreSecret;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
-
 import javafx.beans.value.ObservableValue;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.Arrays;

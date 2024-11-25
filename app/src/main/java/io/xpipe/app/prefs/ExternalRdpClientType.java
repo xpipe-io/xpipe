@@ -1,6 +1,5 @@
 package io.xpipe.app.prefs;
 
-import com.vladsch.flexmark.util.misc.FileUtil;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.*;
