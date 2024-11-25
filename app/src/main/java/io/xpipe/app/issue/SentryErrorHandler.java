@@ -138,7 +138,7 @@ public class SentryErrorHandler implements ErrorHandler {
             atts.forEach(attachment -> s.addAttachment(attachment));
         }
 
-        s.setTag("hasLicense", String.valueOf(LicenseProvider.get().hasPaidLicense()));
+        s.setTag("hasLicense", String.valueOf(LicenseProvider.get() != null ? LicenseProvider.get().hasPaidLicense() : null));
         s.setTag(
                 "updatesEnabled",
                 AppPrefs.get() != null
@@ -172,6 +172,7 @@ public class SentryErrorHandler implements ErrorHandler {
                 AppPrefs.get() != null
                         ? String.valueOf(AppPrefs.get().useLocalFallbackShell().get())
                         : "unknown");
+        s.setTag("initial", AppProperties.get() != null ? AppProperties.get().isInitialLaunch() + "" : null);
 
         var exMessage = ee.getThrowable() != null ? ee.getThrowable().getMessage() : null;
         if (ee.getDescription() != null
