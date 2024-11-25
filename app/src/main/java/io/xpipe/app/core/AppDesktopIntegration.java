@@ -92,6 +92,10 @@ public class AppDesktopIntegration {
                     }
                 }
             }
+
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.APP_SUDDEN_TERMINATION)) {
+                Desktop.getDesktop().disableSuddenTermination();
+            }
         } catch (Throwable ex) {
             ErrorEvent.fromThrowable(ex).term().handle();
         }
