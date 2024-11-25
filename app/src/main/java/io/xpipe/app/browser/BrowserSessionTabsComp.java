@@ -77,38 +77,17 @@ public class BrowserSessionTabsComp extends SimpleComp {
         Styles.toggleStyleClass(tabs, TabPane.STYLE_CLASS_FLOATING);
         toggleStyleClass(tabs, DENSE);
 
-        tabs.skinProperty().subscribe(newValue -> {
-            if (newValue != null) {
-                Platform.runLater(() -> {
-                    tabs.setClip(null);
-                    tabs.setPickOnBounds(false);
-                    tabs.lookupAll(".tab-header-area").forEach(node -> {
-                        node.setClip(null);
-                        node.setPickOnBounds(false);
+        setupCustomStyle(tabs);
+        // Sync to guarantee that no external changes are made during this
+        synchronized (model) {
+            setupTabEntries(tabs);
+        }
+        setupKeyEvents(tabs);
 
-                        var r = (Region) node;
-                        r.prefHeightProperty().bind(r.maxHeightProperty());
-                        r.setMinHeight(Region.USE_PREF_SIZE);
-                    });
-                    tabs.lookupAll(".headers-region").forEach(node -> {
-                        node.setClip(null);
-                        node.setPickOnBounds(false);
+        return tabs;
+    }
 
-                        var r = (Region) node;
-                        r.prefHeightProperty().bind(r.maxHeightProperty());
-                        r.setMinHeight(Region.USE_PREF_SIZE);
-                    });
-
-                    Region headerArea = (Region) tabs.lookup(".tab-header-area");
-                    headerArea
-                            .paddingProperty()
-                            .bind(Bindings.createObjectBinding(
-                                    () -> new Insets(2, 0, 4, -leftPadding.get() + 2), leftPadding));
-                    headerHeight.bind(headerArea.heightProperty());
-                });
-            }
-        });
-
+    private void setupTabEntries(TabPane tabs) {
         var map = new HashMap<BrowserSessionTab, Tab>();
 
         // Restore state
@@ -117,9 +96,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
             map.put(v, t);
             tabs.getTabs().add(t);
         });
-        tabs.getSelectionModel()
-                .select(model.getSessionEntries()
-                        .indexOf(model.getSelectedEntry().getValue()));
+        tabs.getSelectionModel().select(model.getSessionEntries().indexOf(model.getSelectedEntry().getValue()));
 
         // Used for ignoring changes by the tabpane when new tabs are added. We want to perform the selections manually!
         var addingTab = new SimpleBooleanProperty();
@@ -135,9 +112,9 @@ public class BrowserSessionTabsComp extends SimpleComp {
                 return;
             }
 
-            var source = map.entrySet().stream()
-                    .filter(openFileSystemModelTabEntry ->
-                            openFileSystemModelTabEntry.getValue().equals(newValue))
+            var source = map.entrySet()
+                    .stream()
+                    .filter(openFileSystemModelTabEntry -> openFileSystemModelTabEntry.getValue().equals(newValue))
                     .findAny()
                     .map(Map.Entry::getKey)
                     .orElse(null);
@@ -152,9 +129,9 @@ public class BrowserSessionTabsComp extends SimpleComp {
                     return;
                 }
 
-                var toSelect = map.entrySet().stream()
-                        .filter(openFileSystemModelTabEntry ->
-                                openFileSystemModelTabEntry.getKey().equals(newValue))
+                var toSelect = map.entrySet()
+                        .stream()
+                        .filter(openFileSystemModelTabEntry -> openFileSystemModelTabEntry.getKey().equals(newValue))
                         .findAny()
                         .map(Map.Entry::getValue)
                         .orElse(null);
@@ -194,9 +171,9 @@ public class BrowserSessionTabsComp extends SimpleComp {
         tabs.getTabs().addListener((ListChangeListener<? super Tab>) c -> {
             while (c.next()) {
                 for (var r : c.getRemoved()) {
-                    var source = map.entrySet().stream()
-                            .filter(openFileSystemModelTabEntry ->
-                                    openFileSystemModelTabEntry.getValue().equals(r))
+                    var source = map.entrySet()
+                            .stream()
+                            .filter(openFileSystemModelTabEntry -> openFileSystemModelTabEntry.getValue().equals(r))
                             .findAny()
                             .orElse(null);
 
@@ -209,7 +186,43 @@ public class BrowserSessionTabsComp extends SimpleComp {
                 }
             }
         });
+    }
 
+    private void setupCustomStyle(TabPane tabs) {
+        tabs.skinProperty().subscribe(newValue -> {
+            if (newValue != null) {
+                Platform.runLater(() -> {
+                    tabs.setClip(null);
+                    tabs.setPickOnBounds(false);
+                    tabs.lookupAll(".tab-header-area").forEach(node -> {
+                        node.setClip(null);
+                        node.setPickOnBounds(false);
+
+                        var r = (Region) node;
+                        r.prefHeightProperty().bind(r.maxHeightProperty());
+                        r.setMinHeight(Region.USE_PREF_SIZE);
+                    });
+                    tabs.lookupAll(".headers-region").forEach(node -> {
+                        node.setClip(null);
+                        node.setPickOnBounds(false);
+
+                        var r = (Region) node;
+                        r.prefHeightProperty().bind(r.maxHeightProperty());
+                        r.setMinHeight(Region.USE_PREF_SIZE);
+                    });
+
+                    Region headerArea = (Region) tabs.lookup(".tab-header-area");
+                    headerArea
+                            .paddingProperty()
+                            .bind(Bindings.createObjectBinding(
+                                    () -> new Insets(2, 0, 4, -leftPadding.get() + 2), leftPadding));
+                    headerHeight.bind(headerArea.heightProperty());
+                });
+            }
+        });
+    }
+
+    private static void setupKeyEvents(TabPane tabs) {
         tabs.addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {
             var current = tabs.getSelectionModel().getSelectedItem();
             if (current == null) {
@@ -255,8 +268,6 @@ public class BrowserSessionTabsComp extends SimpleComp {
                 keyEvent.consume();
             }
         });
-
-        return tabs;
     }
 
     private ContextMenu createContextMenu(TabPane tabs, Tab tab, BrowserSessionTab tabModel) {

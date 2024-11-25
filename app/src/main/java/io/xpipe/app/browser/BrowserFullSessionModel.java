@@ -25,6 +25,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableMap;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 import java.util.*;
 
@@ -34,7 +35,12 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
     public static final BrowserFullSessionModel DEFAULT = new BrowserFullSessionModel();
 
     static {
-        DEFAULT.getSessionEntries().add(new BrowserHistoryTabModel(DEFAULT));
+        init();
+    }
+
+    @SneakyThrows
+    private static void init() {
+        DEFAULT.openSync(new BrowserHistoryTabModel(DEFAULT), null);
         if (AppPrefs.get().pinLocalMachineOnStartup().get()) {
             var tab = new BrowserFileSystemTabModel(
                     DEFAULT, DataStorage.get().local().ref(), BrowserFileSystemTabModel.SelectionMode.ALL);

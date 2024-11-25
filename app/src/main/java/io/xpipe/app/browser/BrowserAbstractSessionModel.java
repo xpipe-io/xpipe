@@ -12,6 +12,9 @@ import javafx.collections.ObservableList;
 
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 public class BrowserAbstractSessionModel<T extends BrowserSessionTab> {
 
@@ -41,6 +44,12 @@ public class BrowserAbstractSessionModel<T extends BrowserSessionTab> {
         e.close();
         synchronized (BrowserAbstractSessionModel.this) {
             this.sessionEntries.remove(e);
+        }
+    }
+
+    public List<T> getSessionEntriesSnapshot() {
+        synchronized (this) {
+            return new ArrayList<>(sessionEntries);
         }
     }
 }
