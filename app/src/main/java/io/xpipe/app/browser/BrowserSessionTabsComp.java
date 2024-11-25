@@ -445,6 +445,11 @@ public class BrowserSessionTabsComp extends SimpleComp {
         if (tabModel.isCloseable()) {
             split.getItems().add(empty);
         }
+        tabs.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (tabModel.isCloseable() && newValue == tab) {
+                rightPadding.setValue(empty.getWidth());
+            }
+        });
         model.getEffectiveRightTab().subscribe(browserSessionTab -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 if (browserSessionTab != null && split.getItems().size() > 1) {

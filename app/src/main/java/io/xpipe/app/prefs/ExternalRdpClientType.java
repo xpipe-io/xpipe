@@ -1,5 +1,6 @@
 package io.xpipe.app.prefs;
 
+import com.vladsch.flexmark.util.misc.FileUtil;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.*;
@@ -8,6 +9,7 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.SecretValue;
 
 import lombok.Value;
+import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -35,7 +37,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
                     .executeSimpleCommand(CommandBuilder.of().add(executable).addFile(file.toString()));
             ThreadHelper.runFailableAsync(() -> {
                 ThreadHelper.sleep(1000);
-                Files.delete(file);
+                FileUtils.deleteQuietly(file.toFile());
             });
         }
 

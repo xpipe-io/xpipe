@@ -24,8 +24,10 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Insets;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import java.util.HashMap;
@@ -192,15 +194,17 @@ public class BrowserFullSessionComp extends SimpleComp {
                     struc.get().getChildren().add(r);
 
                     struc.get().setMinWidth(rightSplit.get());
-                    struc.get().setMaxWidth(rightSplit.get());
                     struc.get().setPrefWidth(rightSplit.get());
+                    struc.get().setMaxWidth(rightSplit.get());
+                    struc.get().getParent().requestLayout();
                 });
             });
 
             rightSplit.addListener((observable, oldValue, newValue) -> {
                 struc.get().setMinWidth(newValue.doubleValue());
-                struc.get().setMaxWidth(newValue.doubleValue());
                 struc.get().setPrefWidth(newValue.doubleValue());
+                struc.get().setMaxWidth(newValue.doubleValue());
+                struc.get().getParent().requestLayout();
             });
 
             AnchorPane.setBottomAnchor(struc.get(), 0.0);
