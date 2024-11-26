@@ -11,6 +11,7 @@ import io.xpipe.core.store.FileNames;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerminalType {
 
@@ -18,8 +19,12 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
     ExternalTerminalType WINDOWS_TERMINAL_PREVIEW = new Preview();
     ExternalTerminalType WINDOWS_TERMINAL_CANARY = new Canary();
 
+    static AtomicInteger windowCounter = new AtomicInteger(2);
+
     private static CommandBuilder toCommand(TerminalLaunchConfiguration configuration) throws Exception {
-        var cmd = CommandBuilder.of().addIf(configuration.isPreferTabs(), "-w", "1", "nt");
+        var cmd = CommandBuilder.of().addIf(configuration.isPreferTabs(), "-w", "1")
+                .addIf(!configuration.isPreferTabs(),"-w", "" + windowCounter.getAndIncrement())
+                .add("nt");
 
         if (configuration.getColor() != null) {
             cmd.add("--tabColor").addQuoted(configuration.getColor().toHexString());
