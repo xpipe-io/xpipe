@@ -52,11 +52,6 @@ public class TerminalDockComp extends SimpleComp {
                 update(stack);
             }
         };
-        s.xProperty().addListener(update);
-        s.yProperty().addListener(update);
-        s.widthProperty().addListener(update);
-        s.heightProperty().addListener(update);
-
         var iconified = new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
@@ -67,8 +62,6 @@ public class TerminalDockComp extends SimpleComp {
                 }
             }
         };
-        s.iconifiedProperty().addListener(iconified);
-
         var focus = new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
@@ -79,26 +72,21 @@ public class TerminalDockComp extends SimpleComp {
                 }
             }
         };
-        s.focusedProperty().addListener(focus);
-
         var show = new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
                 update(stack);
             }
         };
-        s.addEventFilter(WindowEvent.WINDOW_SHOWN, show);
-
         var hide = new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
                 update(stack);
             }
         };
-        s.addEventFilter(WindowEvent.WINDOW_HIDING, hide);
 
-        stack.sceneProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue != null && newValue == null) {
+        stack.sceneProperty().subscribe(scene -> {
+            if (scene == null) {
                 s.xProperty().removeListener(update);
                 s.yProperty().removeListener(update);
                 s.widthProperty().removeListener(update);
@@ -107,6 +95,16 @@ public class TerminalDockComp extends SimpleComp {
                 s.focusedProperty().removeListener(focus);
                 s.removeEventFilter(WindowEvent.WINDOW_SHOWN, show);
                 s.removeEventFilter(WindowEvent.WINDOW_HIDING, hide);
+            } else {
+                s.xProperty().addListener(update);
+                s.yProperty().addListener(update);
+                s.widthProperty().addListener(update);
+                s.heightProperty().addListener(update);
+                s.iconifiedProperty().addListener(iconified);
+                s.focusedProperty().addListener(focus);
+                s.addEventFilter(WindowEvent.WINDOW_SHOWN, show);
+                s.addEventFilter(WindowEvent.WINDOW_HIDING, hide);
+                update(stack);
             }
         });
     }

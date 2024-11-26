@@ -22,9 +22,8 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
     static AtomicInteger windowCounter = new AtomicInteger(2);
 
     private static CommandBuilder toCommand(TerminalLaunchConfiguration configuration) throws Exception {
-        var cmd = CommandBuilder.of().addIf(configuration.isPreferTabs(), "-w", "1")
-                .addIf(!configuration.isPreferTabs(),"-w", "" + windowCounter.getAndIncrement())
-                .add("nt");
+        var cmd = CommandBuilder.of().addIf(configuration.isPreferTabs(), "-w", "1", "nt")
+                .addIf(!configuration.isPreferTabs(),"-w", "" + windowCounter.getAndIncrement());
 
         if (configuration.getColor() != null) {
             cmd.add("--tabColor").addQuoted(configuration.getColor().toHexString());

@@ -232,6 +232,9 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
 
         // Check if the right side is already occupied
         var existingSplit = f.getEffectiveRightTab().getValue();
+        if (existingSplit == this) {
+            return false;
+        }
         if (existingSplit != null && !(existingSplit instanceof BrowserTerminalDockTabModel)) {
             return false;
         }
