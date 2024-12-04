@@ -4,6 +4,8 @@ import io.xpipe.app.browser.action.BrowserBranchAction;
 import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
@@ -12,9 +14,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 
+import javafx.scene.control.TextField;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public class ChownAction implements BrowserBranchAction {
 
@@ -41,12 +45,12 @@ public class ChownAction implements BrowserBranchAction {
 
     @Override
     public List<BrowserLeafAction> getBranchingActions(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return model.getCache().getUsers().entrySet().stream()
+        return Stream.concat(model.getCache().getUsers().entrySet().stream()
                 .filter(e -> !e.getValue().equals("nohome")
                         && !e.getValue().equals("nobody")
                         && (e.getKey().equals(0) || e.getKey() >= 900))
                 .map(e -> e.getValue())
-                .map(s -> (BrowserLeafAction) new Chown(s))
+                .map(s -> (BrowserLeafAction) new Chown(s)), Stream.of(new Custom()))
                 .toList();
     }
 
@@ -74,6 +78,40 @@ public class ChownAction implements BrowserBranchAction {
                                     .map(browserEntry ->
                                             browserEntry.getRawFileEntry().getPath())
                                     .toList()));
+        }
+    }
+
+
+    private static class Custom implements BrowserLeafAction {
+        @Override
+        public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+            var user = new SimpleStringProperty();
+            model.getOverlay()
+                    .setValue(new ModalOverlayComp.OverlayContent(
+                            "userName",
+                            Comp.of(() -> {
+                                        var creationName = new TextField();
+                                        creationName.textProperty().bindBidirectional(user);
+                                        return creationName;
+                                    })
+                                    .prefWidth(350),
+                            null,
+                            "finish",
+                            () -> {
+                                model.runCommandAsync(CommandBuilder.of()
+                                        .add("chown", user.getValue())
+                                        .addFiles(entries.stream()
+                                                .map(browserEntry ->
+                                                        browserEntry.getRawFileEntry().getPath())
+                                                .toList()), false);
+                            },
+                            true));
+        }
+
+        @Override
+        public ObservableValue<String> getName(
+                BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+            return new SimpleStringProperty("...");
         }
     }
 }
