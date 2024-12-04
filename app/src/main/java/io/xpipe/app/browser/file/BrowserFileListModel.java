@@ -1,6 +1,7 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
@@ -14,10 +15,7 @@ import javafx.collections.ObservableList;
 
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Getter
@@ -144,8 +142,17 @@ public final class BrowserFileListModel {
     }
 
     public void onDoubleClick(BrowserEntry entry) {
-        if (entry.getRawFileEntry().resolved().getKind() == FileKind.DIRECTORY) {
-            fileSystemModel.cdAsync(entry.getRawFileEntry().resolved().getPath());
+        var r = entry.getRawFileEntry().resolved();
+        if (r.getKind() == FileKind.DIRECTORY) {
+            fileSystemModel.cdAsync(r.getPath());
+        }
+
+        if (AppPrefs.get().editFilesWithDoubleClick().get() && r.getKind() == FileKind.FILE) {
+            var selection = new LinkedHashSet<>(getSelection());
+            selection.add(entry);
+            for (BrowserEntry e : selection) {
+                BrowserFileOpener.openInTextEditor(getFileSystemModel(), e.getRawFileEntry());
+            }
         }
     }
 }

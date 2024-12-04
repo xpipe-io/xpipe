@@ -34,7 +34,8 @@ public class DataStoreCategoryChoiceComp extends SimpleComp {
             } else if (root == null) {
                 value.setValue(newValue);
             } else if (!newValue.getRoot().equals(root)) {
-                value.setValue(root);
+                // Ignore change, that is more user-friendly
+                // value.setValue(root);
             } else {
                 value.setValue(newValue);
             }

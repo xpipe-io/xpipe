@@ -160,7 +160,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             })
             .get();
 
-    static ExternalEditorType detectDefault(ExternalEditorType existing) {
+    static ExternalEditorType determineDefault(ExternalEditorType existing) {
         // Verify that our selection is still valid
         if (existing != null && existing.isAvailable()) {
             return existing;

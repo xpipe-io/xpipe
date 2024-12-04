@@ -18,12 +18,15 @@ public class FileBrowserCategory extends AppPrefsCategory {
                 .sub(new OptionsBuilder()
                         .pref(prefs.enableTerminalDocking)
                         .addToggle(prefs.enableTerminalDocking)
+                        .pref(prefs.editFilesWithDoubleClick)
+                        .addToggle(prefs.editFilesWithDoubleClick)
                         .pref(prefs.confirmAllDeletions)
                         .addToggle(prefs.confirmAllDeletions)
                         .pref(prefs.downloadsDirectory)
                         .addString(prefs.downloadsDirectory)
                         .pref(prefs.pinLocalMachineOnStartup)
-                        .addToggle(prefs.pinLocalMachineOnStartup))
+                        .addToggle(prefs.pinLocalMachineOnStartup)
+                )
                 .buildComp();
     }
 }

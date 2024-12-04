@@ -1,10 +1,13 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.util.SecretValue;
 
 import lombok.Value;
@@ -145,10 +148,30 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
                     return false;
                 }
             };
+
+    ExternalRdpClientType WINDOWS_APP_MACOS =
+            new MacOsType("app.windowsApp", "Windows App.app") {
+
+                @Override
+                public void launch(LaunchConfiguration configuration) throws Exception {
+                    var file = writeConfig(configuration.getConfig());
+                    LocalShell.getShell()
+                            .executeSimpleCommand(CommandBuilder.of()
+                                    .add("open", "-a")
+                                    .addQuoted("Windows App.app")
+                                    .addFile(file.toString()));
+                }
+
+                @Override
+                public boolean supportsPasswordPassing() {
+                    return false;
+                }
+            };
+
     ExternalRdpClientType CUSTOM = new CustomType();
     List<ExternalRdpClientType> WINDOWS_CLIENTS = List.of(MSTSC, DEVOLUTIONS);
     List<ExternalRdpClientType> LINUX_CLIENTS = List.of(REMMINA);
-    List<ExternalRdpClientType> MACOS_CLIENTS = List.of(MICROSOFT_REMOTE_DESKTOP_MACOS_APP);
+    List<ExternalRdpClientType> MACOS_CLIENTS = List.of(MICROSOFT_REMOTE_DESKTOP_MACOS_APP, WINDOWS_APP_MACOS);
 
     @SuppressWarnings("TrivialFunctionalExpressionUsage")
     List<ExternalRdpClientType> ALL = ((Supplier<List<ExternalRdpClientType>>) () -> {
@@ -167,12 +190,25 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
             })
             .get();
 
-    static ExternalRdpClientType determineDefault() {
-        return ALL.stream()
+    static ExternalRdpClientType determineDefault(ExternalRdpClientType existing) {
+        // Verify that our selection is still valid
+        if (existing != null && existing.isAvailable()) {
+            return existing;
+        }
+
+        var r = ALL.stream()
                 .filter(t -> !t.equals(CUSTOM))
                 .filter(t -> t.isAvailable())
                 .findFirst()
                 .orElse(null);
+
+        // Check if detection failed for some reason
+        if (r == null) {
+            var def = OsType.getLocal() == OsType.WINDOWS ? MSTSC : OsType.getLocal() == OsType.MACOS ? WINDOWS_APP_MACOS : REMMINA;
+            r = def;
+        }
+
+        return r;
     }
 
     void launch(LaunchConfiguration configuration) throws Exception;

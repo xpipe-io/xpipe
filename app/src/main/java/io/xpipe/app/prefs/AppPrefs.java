@@ -147,8 +147,15 @@ public class AppPrefs {
     final BooleanProperty requireDoubleClickForConnections =
             mapLocal(new SimpleBooleanProperty(false), "requireDoubleClickForConnections", Boolean.class, false);
 
+    final BooleanProperty editFilesWithDoubleClick =
+            mapLocal(new SimpleBooleanProperty(false), "editFilesWithDoubleClick", Boolean.class, false);
+
     final BooleanProperty enableTerminalDocking =
             mapLocal(new SimpleBooleanProperty(true), "enableTerminalDocking", Boolean.class, false);
+
+    public ObservableBooleanValue editFilesWithDoubleClick() {
+        return editFilesWithDoubleClick;
+    }
 
     public ObservableBooleanValue requireDoubleClickForConnections() {
         return requireDoubleClickForConnections;
@@ -509,11 +516,9 @@ public class AppPrefs {
     }
 
     public void initDefaultValues() {
-        externalEditor.setValue(ExternalEditorType.detectDefault(externalEditor.get()));
+        externalEditor.setValue(ExternalEditorType.determineDefault(externalEditor.get()));
         terminalType.set(ExternalTerminalType.determineDefault(terminalType.get()));
-        if (rdpClientType.get() == null) {
-            rdpClientType.setValue(ExternalRdpClientType.determineDefault());
-        }
+        rdpClientType.setValue(ExternalRdpClientType.determineDefault(rdpClientType.get()));
         if (AppProperties.get().isInitialLaunch()) {
             performanceMode.setValue(XPipeDistributionType.get() == XPipeDistributionType.WEBTOP);
         }

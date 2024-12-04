@@ -1,6 +1,7 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FileKind;
@@ -108,7 +109,7 @@ public class BrowserFileListCompEntry {
 
         if (item.getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY) {
             return event.getButton() == MouseButton.SECONDARY
-                    || event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2;
+                    || !AppPrefs.get().editFilesWithDoubleClick().get() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2;
         }
 
         return false;
