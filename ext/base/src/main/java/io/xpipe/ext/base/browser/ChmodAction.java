@@ -4,6 +4,9 @@ import io.xpipe.app.browser.action.BrowserBranchAction;
 import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
+import io.xpipe.app.browser.icon.BrowserIcons;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
@@ -12,6 +15,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 
+import javafx.scene.control.TextField;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -40,6 +44,7 @@ public class ChmodAction implements BrowserBranchAction {
 
     @Override
     public List<BrowserLeafAction> getBranchingActions(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        var custom = new Custom();
         return List.of(
                 new Chmod("400"),
                 new Chmod("600"),
@@ -48,7 +53,8 @@ public class ChmodAction implements BrowserBranchAction {
                 new Chmod("755"),
                 new Chmod("777"),
                 new Chmod("u+x"),
-                new Chmod("a+x"));
+                new Chmod("a+x"),
+                custom);
     }
 
     private static class Chmod implements BrowserLeafAction {
@@ -75,6 +81,39 @@ public class ChmodAction implements BrowserBranchAction {
                                     .map(browserEntry ->
                                             browserEntry.getRawFileEntry().getPath())
                                     .toList()));
+        }
+    }
+
+    private static class Custom implements BrowserLeafAction {
+        @Override
+        public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+            var permissions = new SimpleStringProperty();
+            model.getOverlay()
+                    .setValue(new ModalOverlayComp.OverlayContent(
+                            "chmodPermissions",
+                            Comp.of(() -> {
+                                        var creationName = new TextField();
+                                        creationName.textProperty().bindBidirectional(permissions);
+                                        return creationName;
+                                    })
+                                    .prefWidth(350),
+                            null,
+                            "finish",
+                            () -> {
+                                model.runCommandAsync(CommandBuilder.of()
+                                        .add("chmod", permissions.getValue())
+                                        .addFiles(entries.stream()
+                                                .map(browserEntry ->
+                                                        browserEntry.getRawFileEntry().getPath())
+                                                .toList()), false);
+                            },
+                            true));
+        }
+
+        @Override
+        public ObservableValue<String> getName(
+                BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+            return new SimpleStringProperty("...");
         }
     }
 }

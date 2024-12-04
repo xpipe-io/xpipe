@@ -113,7 +113,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public boolean isRecommended() {
-            return true;
+            return false;
         }
 
         @Override

@@ -4,6 +4,8 @@ import io.xpipe.app.browser.action.BrowserBranchAction;
 import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
@@ -12,9 +14,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 
+import javafx.scene.control.TextField;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public class ChgrpAction implements BrowserBranchAction {
 
@@ -41,13 +45,13 @@ public class ChgrpAction implements BrowserBranchAction {
 
     @Override
     public List<BrowserLeafAction> getBranchingActions(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return model.getCache().getGroups().entrySet().stream()
+        return Stream.concat(model.getCache().getGroups().entrySet().stream()
                 .filter(e -> !e.getValue().equals("nohome")
                         && !e.getValue().equals("nogroup")
                         && !e.getValue().equals("nobody")
                         && (e.getKey().equals(0) || e.getKey() >= 900))
                 .map(e -> e.getValue())
-                .map(s -> (BrowserLeafAction) new Chgrp(s))
+                .map(s -> (BrowserLeafAction) new Chgrp(s)), Stream.of(new Custom()))
                 .toList();
     }
 
@@ -75,6 +79,40 @@ public class ChgrpAction implements BrowserBranchAction {
                                     .map(browserEntry ->
                                             browserEntry.getRawFileEntry().getPath())
                                     .toList()));
+        }
+    }
+
+
+    private static class Custom implements BrowserLeafAction {
+        @Override
+        public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+            var group = new SimpleStringProperty();
+            model.getOverlay()
+                    .setValue(new ModalOverlayComp.OverlayContent(
+                            "groupName",
+                            Comp.of(() -> {
+                                        var creationName = new TextField();
+                                        creationName.textProperty().bindBidirectional(group);
+                                        return creationName;
+                                    })
+                                    .prefWidth(350),
+                            null,
+                            "finish",
+                            () -> {
+                                model.runCommandAsync(CommandBuilder.of()
+                                        .add("chgrp", group.getValue())
+                                        .addFiles(entries.stream()
+                                                .map(browserEntry ->
+                                                        browserEntry.getRawFileEntry().getPath())
+                                                .toList()), false);
+                            },
+                            true));
+        }
+
+        @Override
+        public ObservableValue<String> getName(
+                BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+            return new SimpleStringProperty("...");
         }
     }
 }
