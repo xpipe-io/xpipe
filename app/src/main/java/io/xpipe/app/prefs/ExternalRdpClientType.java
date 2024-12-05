@@ -131,7 +131,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
         }
     };
     ExternalRdpClientType MICROSOFT_REMOTE_DESKTOP_MACOS_APP =
-            new MacOsType("app.microsoftRemoteDesktopApp", "Microsoft Remote Desktop.app") {
+            new MacOsType("app.microsoftRemoteDesktopApp", "Microsoft Remote Desktop") {
 
                 @Override
                 public void launch(LaunchConfiguration configuration) throws Exception {
@@ -150,7 +150,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
             };
 
     ExternalRdpClientType WINDOWS_APP_MACOS =
-            new MacOsType("app.windowsApp", "Windows App.app") {
+            new MacOsType("app.windowsApp", "Windows App") {
 
                 @Override
                 public void launch(LaunchConfiguration configuration) throws Exception {
