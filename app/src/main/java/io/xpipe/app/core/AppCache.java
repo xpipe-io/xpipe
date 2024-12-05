@@ -1,5 +1,6 @@
 package io.xpipe.app.core;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.JsonConfigHelper;
 import io.xpipe.core.util.JacksonMapper;
@@ -48,8 +49,9 @@ public class AppCache {
         var path = getPath(key);
         if (Files.exists(path)) {
             try {
-                var tree = JsonConfigHelper.readRaw(path);
-                if (tree.isMissingNode() || tree.isNull()) {
+                ObjectMapper o = JacksonMapper.getDefault();
+                var tree = o.readTree(path.toFile());
+                if (tree == null || tree.isMissingNode() || tree.isNull()) {
                     FileUtils.deleteQuietly(path.toFile());
                     return notPresent.get();
                 }
@@ -75,8 +77,9 @@ public class AppCache {
         var path = getPath(key);
         if (Files.exists(path)) {
             try {
-                var tree = JsonConfigHelper.readRaw(path);
-                if (!tree.isBoolean()) {
+                ObjectMapper o = JacksonMapper.getDefault();
+                var tree = o.readTree(path.toFile());
+                if (tree == null || !tree.isBoolean()) {
                     FileUtils.deleteQuietly(path.toFile());
                     return notPresent;
                 }
