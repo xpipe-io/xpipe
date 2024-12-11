@@ -191,7 +191,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
 
                 var time = System.currentTimeMillis();
                 sc.executeSimpleCommand(CommandBuilder.of()
-                        .add("open", "-a", "kitty.app", "--args")
+                        .add("open", "-n", "-a", "kitty.app", "--args")
                         .add("-o", "allow_remote_control=socket-only", "--listen-on", "unix:" + getSocket()));
                 var elapsed = System.currentTimeMillis() - time;
                 // Good heuristic on how long to wait
