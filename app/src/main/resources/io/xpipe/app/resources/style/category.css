@@ -55,3 +55,7 @@
 .root:dark .category.red > .category-button  .expand-button .ikonli-font-icon {
     -fx-icon-color: red;
 }
+
+.category-button  .expand-button:disabled {
+    -fx-opacity: 1.0;
+}

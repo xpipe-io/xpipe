@@ -69,6 +69,7 @@ public class StoreCategoryComp extends SimpleComp {
                     struc.get().setPadding(new Insets(-2, 0, 0, 0));
                     struc.get().setFocusTraversable(false);
                 })
+                .disable(Bindings.isEmpty(category.getChildren()))
                 .styleClass("expand-button")
                 .tooltipKey("expand", new KeyCodeCombination(KeyCode.SPACE));
 
