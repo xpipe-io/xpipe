@@ -144,6 +144,12 @@ public class CommandBuilder {
         return this;
     }
 
+    public CommandBuilder add(int index, CommandBuilder sub) {
+        elements.addAll(index, sub.elements);
+        environmentVariables.putAll(sub.environmentVariables);
+        return this;
+    }
+
     public CommandBuilder prepend(Element e) {
         elements.addFirst(e);
         return this;
