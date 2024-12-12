@@ -87,6 +87,8 @@ public abstract class StoreEntryComp extends SimpleComp {
     @Override
     protected final Region createSimple() {
         var r = createContent();
+        var buttonBar = r.lookup(".button-bar");
+        var iconChooser = r.lookup(".icon");
 
         var button = new Button();
         button.setGraphic(r);
@@ -103,7 +105,8 @@ public abstract class StoreEntryComp extends SimpleComp {
             });
         });
         button.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
-            if (AppPrefs.get().requireDoubleClickForConnections().get()) {
+            var notOnButton = NodeHelper.isParent(iconChooser, event.getTarget()) || NodeHelper.isParent(buttonBar, event.getTarget());
+            if (AppPrefs.get().requireDoubleClickForConnections().get() && !notOnButton) {
                 if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() != 2) {
                     event.consume();
                 }
@@ -114,7 +117,8 @@ public abstract class StoreEntryComp extends SimpleComp {
             }
         });
         button.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-            if (AppPrefs.get().requireDoubleClickForConnections().get()) {
+            var notOnButton = NodeHelper.isParent(iconChooser, event.getTarget()) || NodeHelper.isParent(buttonBar, event.getTarget());
+            if (AppPrefs.get().requireDoubleClickForConnections().get() && !notOnButton) {
                 if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() != 2) {
                     event.consume();
                 }
