@@ -62,6 +62,7 @@ public class AppMainWindow {
         stage.opacityProperty().bind(AppPrefs.get().windowOpacity());
         AppWindowHelper.addIcons(stage);
         AppWindowHelper.setupStylesheets(stage.getScene());
+        AppWindowHelper.setupClickShield(stage);
         return INSTANCE;
     }
 

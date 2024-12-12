@@ -12,6 +12,7 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
@@ -19,10 +20,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -81,6 +79,7 @@ public class AppWindowHelper {
         addIcons(stage);
         setupContent(stage, contentFunc, bindSize, loading);
         setupStylesheets(stage.getScene());
+        AppWindowHelper.setupClickShield(stage);
         AppWindowBounds.fixInvalidStagePosition(stage);
 
         if (AppPrefs.get() != null && AppPrefs.get().enforceWindowModality().get()) {
@@ -224,6 +223,25 @@ public class AppWindowHelper {
                 r.pseudoClassStateChanged(PseudoClass.getPseudoClass("key-navigation"), kb);
                 r.pseudoClassStateChanged(PseudoClass.getPseudoClass("normal-navigation"), !kb);
                 r.pseudoClassStateChanged(PseudoClass.getPseudoClass("accessibility-navigation"), acc);
+            }
+        });
+    }
+
+    public static void setupClickShield(Stage stage) {
+        if (OsType.getLocal() != OsType.MACOS) {
+            return;
+        }
+
+        var blockClick = new SimpleBooleanProperty(false);
+        stage.focusedProperty().subscribe((newValue) -> {
+            if (newValue) {
+                blockClick.set(true);
+            }
+        });
+        stage.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            if (blockClick.get()) {
+                event.consume();
+                blockClick.set(false);
             }
         });
     }
