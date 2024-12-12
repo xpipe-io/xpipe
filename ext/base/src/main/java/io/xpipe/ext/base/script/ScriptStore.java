@@ -158,8 +158,8 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
 
     public static List<DataStoreEntryRef<SimpleScriptStore>> flatten(List<DataStoreEntryRef<ScriptStore>> scripts) {
         var seen = new LinkedHashSet<DataStoreEntryRef<SimpleScriptStore>>();
-        scripts.forEach(scriptStoreDataStoreEntryRef ->
-                scriptStoreDataStoreEntryRef.getStore().queryFlattenedScripts(seen));
+        scripts.stream().filter(scriptStoreDataStoreEntryRef -> scriptStoreDataStoreEntryRef.get().getValidity().isUsable())
+                .forEach(scriptStoreDataStoreEntryRef -> scriptStoreDataStoreEntryRef.getStore().queryFlattenedScripts(seen));
 
         var dependencies =
                 new HashMap<DataStoreEntryRef<? extends ScriptStore>, Set<DataStoreEntryRef<SimpleScriptStore>>>();
