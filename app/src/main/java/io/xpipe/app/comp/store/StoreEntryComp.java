@@ -105,7 +105,8 @@ public abstract class StoreEntryComp extends SimpleComp {
             });
         });
         button.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
-            var notOnButton = NodeHelper.isParent(iconChooser, event.getTarget()) || NodeHelper.isParent(buttonBar, event.getTarget());
+            var notOnButton = NodeHelper.isParent(iconChooser, event.getTarget())
+                    || NodeHelper.isParent(buttonBar, event.getTarget());
             if (AppPrefs.get().requireDoubleClickForConnections().get() && !notOnButton) {
                 if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() != 2) {
                     event.consume();
@@ -117,7 +118,8 @@ public abstract class StoreEntryComp extends SimpleComp {
             }
         });
         button.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-            var notOnButton = NodeHelper.isParent(iconChooser, event.getTarget()) || NodeHelper.isParent(buttonBar, event.getTarget());
+            var notOnButton = NodeHelper.isParent(iconChooser, event.getTarget())
+                    || NodeHelper.isParent(buttonBar, event.getTarget());
             if (AppPrefs.get().requireDoubleClickForConnections().get() && !notOnButton) {
                 if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() != 2) {
                     event.consume();

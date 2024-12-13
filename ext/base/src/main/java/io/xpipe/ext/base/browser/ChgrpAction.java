@@ -13,8 +13,8 @@ import io.xpipe.core.process.OsType;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
-
 import javafx.scene.control.TextField;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -45,13 +45,15 @@ public class ChgrpAction implements BrowserBranchAction {
 
     @Override
     public List<BrowserLeafAction> getBranchingActions(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return Stream.concat(model.getCache().getGroups().entrySet().stream()
-                .filter(e -> !e.getValue().equals("nohome")
-                        && !e.getValue().equals("nogroup")
-                        && !e.getValue().equals("nobody")
-                        && (e.getKey().equals(0) || e.getKey() >= 900))
-                .map(e -> e.getValue())
-                .map(s -> (BrowserLeafAction) new Chgrp(s)), Stream.of(new Custom()))
+        return Stream.concat(
+                        model.getCache().getGroups().entrySet().stream()
+                                .filter(e -> !e.getValue().equals("nohome")
+                                        && !e.getValue().equals("nogroup")
+                                        && !e.getValue().equals("nobody")
+                                        && (e.getKey().equals(0) || e.getKey() >= 900))
+                                .map(e -> e.getValue())
+                                .map(s -> (BrowserLeafAction) new Chgrp(s)),
+                        Stream.of(new Custom()))
                 .toList();
     }
 
@@ -82,7 +84,6 @@ public class ChgrpAction implements BrowserBranchAction {
         }
     }
 
-
     private static class Custom implements BrowserLeafAction {
         @Override
         public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
@@ -99,19 +100,21 @@ public class ChgrpAction implements BrowserBranchAction {
                             null,
                             "finish",
                             () -> {
-                                model.runCommandAsync(CommandBuilder.of()
-                                        .add("chgrp", group.getValue())
-                                        .addFiles(entries.stream()
-                                                .map(browserEntry ->
-                                                        browserEntry.getRawFileEntry().getPath())
-                                                .toList()), false);
+                                model.runCommandAsync(
+                                        CommandBuilder.of()
+                                                .add("chgrp", group.getValue())
+                                                .addFiles(entries.stream()
+                                                        .map(browserEntry -> browserEntry
+                                                                .getRawFileEntry()
+                                                                .getPath())
+                                                        .toList()),
+                                        false);
                             },
                             true));
         }
 
         @Override
-        public ObservableValue<String> getName(
-                BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             return new SimpleStringProperty("...");
         }
     }

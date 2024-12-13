@@ -4,7 +4,6 @@ import io.xpipe.app.browser.action.BrowserBranchAction;
 import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
-import io.xpipe.app.browser.icon.BrowserIcons;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.core.AppI18n;
@@ -14,8 +13,8 @@ import io.xpipe.core.process.OsType;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
-
 import javafx.scene.control.TextField;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -100,19 +99,21 @@ public class ChmodAction implements BrowserBranchAction {
                             null,
                             "finish",
                             () -> {
-                                model.runCommandAsync(CommandBuilder.of()
-                                        .add("chmod", permissions.getValue())
-                                        .addFiles(entries.stream()
-                                                .map(browserEntry ->
-                                                        browserEntry.getRawFileEntry().getPath())
-                                                .toList()), false);
+                                model.runCommandAsync(
+                                        CommandBuilder.of()
+                                                .add("chmod", permissions.getValue())
+                                                .addFiles(entries.stream()
+                                                        .map(browserEntry -> browserEntry
+                                                                .getRawFileEntry()
+                                                                .getPath())
+                                                        .toList()),
+                                        false);
                             },
                             true));
         }
 
         @Override
-        public ObservableValue<String> getName(
-                BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             return new SimpleStringProperty("...");
         }
     }

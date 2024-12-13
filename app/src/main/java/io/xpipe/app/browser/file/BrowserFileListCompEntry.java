@@ -109,7 +109,9 @@ public class BrowserFileListCompEntry {
 
         if (item.getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY) {
             return event.getButton() == MouseButton.SECONDARY
-                    || !AppPrefs.get().editFilesWithDoubleClick().get() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2;
+                    || !AppPrefs.get().editFilesWithDoubleClick().get()
+                            && event.getButton() == MouseButton.PRIMARY
+                            && event.getClickCount() == 2;
         }
 
         return false;

@@ -1,13 +1,10 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.util.SecretValue;
 
 import lombok.Value;
@@ -149,24 +146,23 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
                 }
             };
 
-    ExternalRdpClientType WINDOWS_APP_MACOS =
-            new MacOsType("app.windowsApp", "Windows App") {
+    ExternalRdpClientType WINDOWS_APP_MACOS = new MacOsType("app.windowsApp", "Windows App") {
 
-                @Override
-                public void launch(LaunchConfiguration configuration) throws Exception {
-                    var file = writeConfig(configuration.getConfig());
-                    LocalShell.getShell()
-                            .executeSimpleCommand(CommandBuilder.of()
-                                    .add("open", "-a")
-                                    .addQuoted("Windows App.app")
-                                    .addFile(file.toString()));
-                }
+        @Override
+        public void launch(LaunchConfiguration configuration) throws Exception {
+            var file = writeConfig(configuration.getConfig());
+            LocalShell.getShell()
+                    .executeSimpleCommand(CommandBuilder.of()
+                            .add("open", "-a")
+                            .addQuoted("Windows App.app")
+                            .addFile(file.toString()));
+        }
 
-                @Override
-                public boolean supportsPasswordPassing() {
-                    return false;
-                }
-            };
+        @Override
+        public boolean supportsPasswordPassing() {
+            return false;
+        }
+    };
 
     ExternalRdpClientType CUSTOM = new CustomType();
     List<ExternalRdpClientType> WINDOWS_CLIENTS = List.of(MSTSC, DEVOLUTIONS);
@@ -204,7 +200,9 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
 
         // Check if detection failed for some reason
         if (r == null) {
-            var def = OsType.getLocal() == OsType.WINDOWS ? MSTSC : OsType.getLocal() == OsType.MACOS ? WINDOWS_APP_MACOS : REMMINA;
+            var def = OsType.getLocal() == OsType.WINDOWS
+                    ? MSTSC
+                    : OsType.getLocal() == OsType.MACOS ? WINDOWS_APP_MACOS : REMMINA;
             r = def;
         }
 

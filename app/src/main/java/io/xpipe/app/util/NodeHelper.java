@@ -1,12 +1,10 @@
 package io.xpipe.app.util;
 
 import javafx.scene.Node;
-import javafx.scene.Parent;
 
 import java.util.Set;
 
 public class NodeHelper {
-
 
     public static boolean isParent(Set<Node> parent, Object child) {
         return parent.stream().anyMatch(node -> isParent(node, child));
