@@ -244,7 +244,7 @@ public class AppWindowHelper {
         var blockNextPress = new SimpleBooleanProperty();
         stage.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
             var elapsed = Duration.between(focusInstant.get(), Instant.now());
-            if (elapsed.toMillis() < 100) {
+            if (elapsed.toMillis() < 50) {
                 blockNextPress.set(true);
                 event.consume();
             } else {
@@ -255,6 +255,11 @@ public class AppWindowHelper {
             var elapsed = Duration.between(focusInstant.get(), Instant.now());
             if (elapsed.toMillis() < 1000 && blockNextPress.get()) {
                 blockNextPress.set(false);
+                event.consume();
+            }
+        });
+        stage.addEventFilter(MouseEvent.ANY, event -> {
+            if (!stage.isFocused()) {
                 event.consume();
             }
         });
