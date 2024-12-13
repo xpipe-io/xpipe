@@ -13,6 +13,7 @@ import io.xpipe.core.process.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
@@ -29,6 +30,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
@@ -232,16 +235,18 @@ public class AppWindowHelper {
             return;
         }
 
-        var blockClick = new SimpleBooleanProperty(false);
+        var focusInstant = new SimpleObjectProperty<>(Instant.EPOCH);
         stage.focusedProperty().subscribe((newValue) -> {
             if (newValue) {
-                blockClick.set(true);
+                focusInstant.set(Instant.now());
             }
         });
         stage.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-            if (blockClick.get()) {
+            var elapsed = Duration.between(focusInstant.get(), Instant.now());
+            if (elapsed.toMillis() < 100) {
                 event.consume();
-                blockClick.set(false);
+                // Don't block multiple clicks
+                focusInstant.set(Instant.EPOCH);
             }
         });
     }
