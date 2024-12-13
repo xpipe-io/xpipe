@@ -241,12 +241,21 @@ public class AppWindowHelper {
                 focusInstant.set(Instant.now());
             }
         });
+        var blockNextPress = new SimpleBooleanProperty();
         stage.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
             var elapsed = Duration.between(focusInstant.get(), Instant.now());
             if (elapsed.toMillis() < 100) {
+                blockNextPress.set(true);
                 event.consume();
-                // Don't block multiple clicks
-                focusInstant.set(Instant.EPOCH);
+            } else {
+                blockNextPress.set(false);
+            }
+        });
+        stage.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+            var elapsed = Duration.between(focusInstant.get(), Instant.now());
+            if (elapsed.toMillis() < 1000 && blockNextPress.get()) {
+                blockNextPress.set(false);
+                event.consume();
             }
         });
     }
