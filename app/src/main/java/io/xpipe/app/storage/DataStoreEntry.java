@@ -336,7 +336,11 @@ public class DataStoreEntry extends StorageElement {
     }
 
     public boolean isPerUserStore() {
-        return getValidity().isUsable() && store instanceof UserScopeStore s && s.isPerUser();
+        var perUser = false;
+        try {
+            perUser = store instanceof UserScopeStore s && s.isPerUser();
+        } catch (Exception ignored) {}
+        return perUser;
     }
 
     public void incrementBusyCounter() {

@@ -82,9 +82,6 @@ public class PodmanContainerStore
     }
 
     private List<MappedServiceStore> findServices() throws Exception {
-        if (true) {
-            return List.of(MappedServiceStore.builder().host(getCmd().getStore().getHost().asNeeded()).displayParent(getSelfEntry().ref()).containerPort(55).remotePort(5555).build());
-        }
         var entry = getSelfEntry();
         var view = commandView(getCmd().getStore().getHost().getStore().getOrStartSession());
         var out = view.port(containerName);
