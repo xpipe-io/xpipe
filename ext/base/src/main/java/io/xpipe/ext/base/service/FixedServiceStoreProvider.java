@@ -19,7 +19,7 @@ public class FixedServiceStoreProvider extends AbstractServiceStoreProvider {
                         s.getDisplayParent().get(),
                         "Services",
                         FixedServiceGroupStore.builder()
-                                .parent(s.getDisplayParent().get().ref())
+                                .parent(s.getDisplayParent().asNeeded())
                                 .build());
     }
 

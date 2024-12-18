@@ -126,8 +126,8 @@ public class AppInstaller {
                         """
                         echo Installing %s ...
                         cd /D "%%HOMEDRIVE%%%%HOMEPATH%%"
-                        echo + msiexec /i "%s" /lv "%s" /qb %s
-                        start "" /wait msiexec /i "%s" /lv "%s" /qb %s
+                        echo + msiexec /i "%s" /lv "%s" /qn %s
+                        start "" /wait msiexec /i "%s" /lv "%s" /qn %s
                         echo Starting XPipe ...
                         echo + "%s"
                         start "" "%s"
@@ -142,8 +142,8 @@ public class AppInstaller {
                         """
                         echo Installing %s ...
                         cd "$env:HOMEDRIVE\\$env:HOMEPATH"
-                        echo '+ msiexec /i "%s" /lv "%s" /qb%s'
-                        Start-Process msiexec -Wait -ArgumentList "/i", "`"%s`"", "/lv", "`"%s`"", "/qb"%s
+                        echo '+ msiexec /i "%s" /lv "%s" /qn%s'
+                        Start-Process msiexec -Wait -ArgumentList "/i", "`"%s`"", "/lv", "`"%s`"", "/qn"%s
                         echo 'Starting XPipe ...'
                         echo '+ "%s"'
                         Start-Process -FilePath "%s"

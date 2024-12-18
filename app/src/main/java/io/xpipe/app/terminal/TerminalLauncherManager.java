@@ -1,6 +1,5 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.BeaconServerException;
 import io.xpipe.core.process.ProcessControl;
@@ -71,11 +70,12 @@ public class TerminalLauncherManager {
         if (req == null) {
             throw new BeaconClientException("Unknown launch request " + request);
         }
-        if (req.isSetupCompleted() && AppPrefs.get().dontAllowTerminalRestart().get()) {
-            throw new BeaconClientException("Terminal session restarts have been disabled in the security settings");
-        }
 
-        var shell = ProcessHandle.of(pid).orElseThrow().parent().orElseThrow();
+        var byPid = ProcessHandle.of(pid);
+        if (byPid.isEmpty()) {
+            throw new BeaconClientException("Unable to find terminal child process " + pid);
+        }
+        var shell = byPid.get().parent().orElseThrow();
         if (req.getPid() != -1 && shell.pid() != req.getPid()) {
             throw new BeaconClientException("Wrong launch context");
         }

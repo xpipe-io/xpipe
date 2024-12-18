@@ -12,6 +12,10 @@ public class AppPtbCheck {
             return;
         }
 
+        if (AppProperties.get().isAotTrainMode()) {
+            return;
+        }
+
         AppWindowHelper.showBlockingAlert(alert -> {
             alert.setAlertType(Alert.AlertType.INFORMATION);
             alert.setHeaderText("Notice for the public test build");

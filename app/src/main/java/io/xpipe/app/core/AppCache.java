@@ -1,7 +1,6 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.util.JsonConfigHelper;
 import io.xpipe.core.util.JacksonMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -100,8 +99,7 @@ public class AppCache {
 
         try {
             FileUtils.forceMkdirParent(path.toFile());
-            var tree = JacksonMapper.getDefault().valueToTree(val);
-            JsonConfigHelper.writeConfig(path, tree);
+            JacksonMapper.getDefault().writeValue(path.toFile(), val);
         } catch (Exception e) {
             ErrorEvent.fromThrowable("Could not write cache data for key " + key, e)
                     .omitted(true)

@@ -55,6 +55,7 @@ public class StoreViewState {
         INSTANCE = new StoreViewState();
         INSTANCE.updateContent();
         INSTANCE.initSections();
+        INSTANCE.updateContent();
         INSTANCE.initFilterJump();
     }
 
@@ -291,14 +292,18 @@ public class StoreViewState {
         });
     }
 
-    public Optional<StoreSection> getParentSectionForWrapper(StoreEntryWrapper wrapper) {
+    public Optional<StoreSection> getSectionForWrapper(StoreEntryWrapper wrapper) {
+        if (currentTopLevelSection == null) {
+            return Optional.empty();
+        }
+
         StoreSection current = getCurrentTopLevelSection();
         while (true) {
             var child = current.getAllChildren().getList().stream()
                     .filter(section -> section.getWrapper().equals(wrapper))
                     .findFirst();
             if (child.isPresent()) {
-                return Optional.of(current);
+                return child;
             }
 
             var traverse = current.getAllChildren().getList().stream()
@@ -380,6 +385,14 @@ public class StoreViewState {
         return categories.getList().stream()
                 .filter(storeCategoryWrapper ->
                         storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    public StoreCategoryWrapper getAllIdentitiesCategory() {
+        return categories.getList().stream()
+                .filter(storeCategoryWrapper ->
+                        storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.ALL_IDENTITIES_CATEGORY_UUID))
                 .findFirst()
                 .orElseThrow();
     }

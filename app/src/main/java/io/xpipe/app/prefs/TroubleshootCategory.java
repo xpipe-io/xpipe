@@ -15,6 +15,13 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.util.XPipeInstallation;
 
+import com.sun.management.HotSpotDiagnosticMXBean;
+import lombok.SneakyThrows;
+import org.apache.commons.io.FileUtils;
+
+import java.lang.management.ManagementFactory;
+import javax.management.MBeanServer;
+
 public class TroubleshootCategory extends AppPrefsCategory {
 
     @Override
@@ -26,7 +33,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
     protected Comp<?> create() {
         OptionsBuilder b = new OptionsBuilder()
                 .addTitle("troubleshootingOptions")
-                .spacer(30)
+                .spacer(25)
                 .addComp(
                         new TileButtonComp("reportIssue", "reportIssueDescription", "mdal-bug_report", e -> {
                                     var event = ErrorEvent.fromMessage("User Report");
@@ -98,7 +105,26 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                     e.consume();
                                 })
                                 .grow(true, false),
+                        null)
+                .separator()
+                .addComp(
+                        new TileButtonComp("createHeapDump", "createHeapDumpDescription", "mdi2m-memory", e -> {
+                                    heapDump();
+                                    e.consume();
+                                })
+                                .grow(true, false),
                         null);
         return b.buildComp();
+    }
+
+    @SneakyThrows
+    private static void heapDump() {
+        var file = DesktopHelper.getDesktopDirectory().resolve("xpipe.hprof");
+        FileUtils.deleteQuietly(file.toFile());
+        MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+        HotSpotDiagnosticMXBean mxBean = ManagementFactory.newPlatformMXBeanProxy(
+                server, "com.sun.management:type=HotSpotDiagnostic", HotSpotDiagnosticMXBean.class);
+        mxBean.dumpHeap(file.toString(), true);
+        DesktopHelper.browseFileInDirectory(file);
     }
 }

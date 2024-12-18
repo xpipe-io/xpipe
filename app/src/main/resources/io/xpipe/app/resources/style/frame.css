@@ -2,6 +2,10 @@
     -fx-padding: 0 0 27 0;
 }
 
+.root:windows:seamless-frame:maximized {
+    -fx-padding: 5 0 0 0;
+}
+
 .root:dark:separate-frame .background {
     -fx-background-color: derive(-color-bg-default, -3%);
 }

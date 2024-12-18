@@ -7,9 +7,7 @@ import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppWindowHelper;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageSyncHandler;
-import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -83,7 +81,7 @@ public class SyncCategory extends AppPrefsCategory {
         remoteRow.apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
 
         var builder = new OptionsBuilder();
-        builder.addTitle("sync")
+        builder.addTitle("gitSync")
                 .sub(new OptionsBuilder()
                         .pref(prefs.enableGitStorage)
                         .addToggle(prefs.enableGitStorage)
@@ -92,11 +90,7 @@ public class SyncCategory extends AppPrefsCategory {
                         .disable(prefs.enableGitStorage.not())
                         .addComp(testRow)
                         .disable(prefs.storageGitRemote.isNull().or(prefs.enableGitStorage.not()))
-                        .addComp(prefs.getCustomComp("gitVaultIdentityStrategy"))
-                        .nameAndDescription("openDataDir")
-                        .addComp(new ButtonComp(AppI18n.observable("openDataDirButton"), () -> {
-                            DesktopHelper.browsePathLocal(DataStorage.get().getDataDir());
-                        })));
+                        .addComp(prefs.getCustomComp("gitVaultIdentityStrategy")));
         return builder.buildComp();
     }
 }

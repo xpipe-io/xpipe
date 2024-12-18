@@ -6,6 +6,9 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.DataStore;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
+
 import lombok.Getter;
 
 @Getter
@@ -14,8 +17,13 @@ public abstract class BrowserStoreSessionTab<T extends DataStore> extends Browse
     protected final DataStoreEntryRef<? extends T> entry;
 
     public BrowserStoreSessionTab(BrowserAbstractSessionModel<?> browserModel, DataStoreEntryRef<? extends T> entry) {
-        super(browserModel, DataStorage.get().getStoreEntryDisplayName(entry.get()));
+        super(browserModel);
         this.entry = entry;
+    }
+
+    @Override
+    public ObservableValue<String> getName() {
+        return new SimpleStringProperty(DataStorage.get().getStoreEntryDisplayName(entry.get()));
     }
 
     public abstract Comp<?> comp();

@@ -14,6 +14,8 @@ public class ConnectionsCategory extends AppPrefsCategory {
     protected Comp<?> create() {
         var prefs = AppPrefs.get();
         return new OptionsBuilder()
+                .addTitle("localShell")
+                .sub(new OptionsBuilder().pref(prefs.useLocalFallbackShell).addToggle(prefs.useLocalFallbackShell))
                 .addTitle("connections")
                 .sub(new OptionsBuilder()
                         .pref(prefs.condenseConnectionDisplay)

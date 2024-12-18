@@ -99,6 +99,10 @@ public class ChmodAction implements BrowserBranchAction {
                             null,
                             "finish",
                             () -> {
+                                if (permissions.getValue() == null) {
+                                    return;
+                                }
+
                                 model.runCommandAsync(
                                         CommandBuilder.of()
                                                 .add("chmod", permissions.getValue())

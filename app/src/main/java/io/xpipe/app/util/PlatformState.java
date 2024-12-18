@@ -8,6 +8,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
 
 import javafx.application.Platform;
+import javafx.scene.text.Font;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -52,17 +53,12 @@ public enum PlatformState {
     }
 
     public static void initPlatformOrThrow() throws Throwable {
-        initPlatformIfNeeded();
-        if (lastError != null) {
-            throw getLastError();
-        }
-    }
-
-    public static boolean initPlatformIfNeeded() {
         if (current == NOT_INITIALIZED) {
             PlatformState.initPlatform();
         }
-        return current == RUNNING;
+        if (lastError != null) {
+            throw getLastError();
+        }
     }
 
     private static void initPlatform() {
@@ -139,12 +135,14 @@ public enum PlatformState {
                 PlatformState.setCurrent(PlatformState.RUNNING);
             } catch (InterruptedException e) {
                 lastError = e;
+                return;
             }
         } catch (Throwable t) {
             // Check if we already exited
             if ("Platform.exit has been called".equals(t.getMessage())) {
                 PlatformState.setCurrent(PlatformState.EXITED);
                 lastError = t;
+                return;
             } else if ("Toolkit already initialized".equals(t.getMessage())) {
                 PlatformState.setCurrent(PlatformState.RUNNING);
             } else {
@@ -152,7 +150,17 @@ public enum PlatformState {
                 PlatformState.setCurrent(PlatformState.EXITED);
                 TrackEvent.error(t.getMessage());
                 lastError = t;
+                return;
             }
+        }
+
+        try {
+            // This can fail if the found system fonts can somehow not be loaded
+            Font.getDefault();
+        } catch (Throwable e) {
+            var ex = new IllegalStateException("Unable to load fonts. Do you have valid font packages installed?", e);
+            lastError = ex;
+            return;
         }
     }
 }

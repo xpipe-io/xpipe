@@ -3,6 +3,7 @@ package io.xpipe.app.update;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppWindowHelper;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.Hyperlinks;
 
 import javafx.event.ActionEvent;
@@ -27,6 +28,9 @@ public class UpdateAvailableAlert {
             return;
         }
 
+        TrackEvent.withInfo("Showing update alert ...")
+                .tag("version", uh.getPreparedUpdate().getValue().getVersion())
+                .handle();
         var u = uh.getPreparedUpdate().getValue();
         var update = AppWindowHelper.showBlockingAlert(alert -> {
                     alert.setTitle(AppI18n.get("updateReadyAlertTitle"));

@@ -203,6 +203,12 @@ public class OptionsBuilder {
         return check(Validator.nonNull(ownValidator, e, p));
     }
 
+    public OptionsBuilder nonNullIf(ObservableValue<Boolean> b) {
+        var e = lastNameReference;
+        var p = props.getLast();
+        return check(Validator.nonNullIf(ownValidator, e, p, b));
+    }
+
     public OptionsBuilder withValidator(Consumer<Validator> val) {
         val.accept(ownValidator);
         return this;

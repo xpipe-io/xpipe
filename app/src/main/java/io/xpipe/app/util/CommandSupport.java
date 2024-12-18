@@ -11,6 +11,18 @@ import java.util.Optional;
 
 public class CommandSupport {
 
+    public static String getPath(ShellControl sc) throws Exception {
+        var path = sc.command(sc.getShellDialect().getPrintEnvironmentVariableCommand("PATH"))
+                .readStdoutOrThrow();
+        return path;
+    }
+
+    public static String getLibraryPath(ShellControl sc) throws Exception {
+        var path = sc.command(sc.getShellDialect().getPrintEnvironmentVariableCommand("LD_LIBRARY_PATH"))
+                .readStdoutOrThrow();
+        return path;
+    }
+
     public static boolean isRoot(ShellControl shellControl) throws Exception {
         if (shellControl.getOsType() == OsType.WINDOWS) {
             return false;

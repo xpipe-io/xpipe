@@ -82,7 +82,7 @@ class ScanDialog extends DialogComp {
                     var sc = entry.get().getStore().getOrStartSession();
 
                     try {
-                        a.getProvider().scan(entry.get().getEntry(), sc);
+                        a.getProvider().scan(entry.get().get(), sc);
                     } catch (Throwable ex) {
                         ErrorEvent.fromThrowable(ex).handle();
                     }

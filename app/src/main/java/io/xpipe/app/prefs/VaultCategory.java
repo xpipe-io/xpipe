@@ -4,18 +4,19 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppWindowHelper;
+import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStorageSyncHandler;
+import io.xpipe.app.storage.DataStorageUserHandler;
+import io.xpipe.app.util.DesktopHelper;
+import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.core.util.XPipeInstallation;
 
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 
 import lombok.SneakyThrows;
 
 public class VaultCategory extends AppPrefsCategory {
-
-    private static final boolean STORAGE_DIR_FIXED = System.getProperty(XPipeInstallation.DATA_DIR_PROP) != null;
 
     @Override
     protected String getId() {
@@ -43,30 +44,37 @@ public class VaultCategory extends AppPrefsCategory {
             prefs.encryptAllVaultData.setValue(newValue);
         });
 
+        builder.addTitle("vaultUsers")
+                .sub(new OptionsBuilder()
+                        .name("userManagement")
+                        .description(
+                                DataStorageUserHandler.getInstance().getActiveUser() != null
+                                        ? "userManagementDescription"
+                                        : "userManagementDescriptionEmpty")
+                        .addComp(DataStorageUserHandler.getInstance().createOverview())
+                        .nameAndDescription("teamVaults")
+                        .addComp(Comp.empty())
+                        .licenseRequirement("team")
+                        .disable(!LicenseProvider.get().getFeature("team").isSupported())
+                        .nameAndDescription("syncTeamVaults")
+                        .addComp(new ButtonComp(AppI18n.observable("enableGitSync"), () -> AppPrefs.get()
+                                .selectCategory("sync")))
+                        .licenseRequirement("team")
+                        .disable(!LicenseProvider.get().getFeature("team").isSupported())
+                        .hide(new SimpleBooleanProperty(
+                                DataStorageSyncHandler.getInstance().supportsSync())));
         builder.addTitle("vaultSecurity")
                 .sub(new OptionsBuilder()
-                        .nameAndDescription("workspaceLock")
-                        .addComp(
-                                new ButtonComp(
-                                        Bindings.createStringBinding(
-                                                () -> {
-                                                    return prefs.getLockCrypt().getValue() != null
-                                                                    && !prefs.getLockCrypt()
-                                                                            .getValue()
-                                                                            .isEmpty()
-                                                            ? AppI18n.get("changeLock")
-                                                            : AppI18n.get("createLock");
-                                                },
-                                                prefs.getLockCrypt()),
-                                        LockChangeAlert::show),
-                                prefs.getLockCrypt())
                         .pref(prefs.lockVaultOnHibernation)
                         .addToggle(prefs.lockVaultOnHibernation)
-                        .hide(prefs.getLockCrypt()
-                                .isNull()
-                                .or(prefs.getLockCrypt().isEmpty()))
                         .pref(prefs.encryptAllVaultData)
                         .addToggle(encryptVault));
+        builder.addTitle("vault")
+                .sub(new OptionsBuilder()
+                        .nameAndDescription("browseVault")
+                        .addComp(new ButtonComp(AppI18n.observable("browseVaultButton"), () -> {
+                            DesktopHelper.browsePathLocal(DataStorage.get().getStorageDir());
+                        })));
         return builder.buildComp();
     }
 }

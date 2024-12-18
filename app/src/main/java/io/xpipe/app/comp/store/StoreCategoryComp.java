@@ -6,6 +6,7 @@ import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
@@ -15,6 +16,7 @@ import io.xpipe.app.util.LabelGraphic;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -47,9 +49,17 @@ public class StoreCategoryComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var name = new LazyTextFieldComp(category.nameProperty())
-                .styleClass("name")
-                .createRegion();
+        var prop = new SimpleStringProperty(category.getName().getValue());
+        AppPrefs.get().censorMode().subscribe(aBoolean -> {
+            var n = category.getName().getValue();
+            prop.setValue(aBoolean ? "*".repeat(n.length()) : n);
+        });
+        prop.addListener((observable, oldValue, newValue) -> {
+            if (!AppPrefs.get().censorMode().get()) {
+                category.getName().setValue(newValue);
+            }
+        });
+        var name = new LazyTextFieldComp(prop).styleClass("name").createRegion();
         var showing = new SimpleBooleanProperty();
 
         var expandIcon = Bindings.createObjectBinding(
@@ -81,7 +91,10 @@ public class StoreCategoryComp extends SimpleComp {
                     }
 
                     if (!DataStorage.get().supportsSharing()
-                            || !category.getCategory().canShare()) {
+                            || (!category.getCategory().canShare()
+                                    && !category.getCategory()
+                                            .getUuid()
+                                            .equals(DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID))) {
                         return new LabelGraphic.IconGraphic("mdi2g-git");
                     }
 
@@ -93,7 +106,7 @@ public class StoreCategoryComp extends SimpleComp {
                 .apply(struc -> AppFont.small(struc.get()))
                 .apply(struc -> {
                     struc.get().setAlignment(Pos.CENTER);
-                    struc.get().setPadding(new Insets(0, 0, 7, 0));
+                    struc.get().setPadding(new Insets(0, 0, 0, 0));
                     struc.get().setFocusTraversable(false);
                     hover.bind(struc.get().hoverProperty());
                 })
@@ -134,7 +147,7 @@ public class StoreCategoryComp extends SimpleComp {
                 .styleClass("category-button")
                 .apply(struc -> hover.bind(struc.get().hoverProperty()))
                 .apply(struc -> focus.bind(struc.get().focusedProperty()))
-                .accessibleText(category.nameProperty())
+                .accessibleText(prop)
                 .grow(true, false);
         categoryButton.apply(new ContextMenuAugment<>(
                 mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY,

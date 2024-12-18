@@ -99,6 +99,10 @@ public class ChownAction implements BrowserBranchAction {
                             null,
                             "finish",
                             () -> {
+                                if (user.getValue() == null) {
+                                    return;
+                                }
+
                                 model.runCommandAsync(
                                         CommandBuilder.of()
                                                 .add("chown", user.getValue())

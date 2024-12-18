@@ -12,11 +12,8 @@ import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.EnabledStoreState;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.StatefulDataStore;
-import io.xpipe.core.util.JacksonizedValue;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Singular;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.*;
@@ -24,7 +21,9 @@ import java.util.*;
 @SuperBuilder(toBuilder = true)
 @Getter
 @AllArgsConstructor
-public abstract class ScriptStore extends JacksonizedValue implements DataStore, StatefulDataStore<EnabledStoreState> {
+@EqualsAndHashCode
+@ToString
+public abstract class ScriptStore implements DataStore, StatefulDataStore<EnabledStoreState> {
 
     protected final DataStoreEntryRef<ScriptGroupStore> group;
 

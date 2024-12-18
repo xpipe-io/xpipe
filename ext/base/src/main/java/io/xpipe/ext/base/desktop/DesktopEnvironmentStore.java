@@ -8,24 +8,22 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FilePath;
-import io.xpipe.core.util.JacksonizedValue;
 import io.xpipe.ext.base.SelfReferentialStore;
 import io.xpipe.ext.base.script.ScriptStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import lombok.Getter;
+import lombok.Value;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
+@Value
 @SuperBuilder
 @Jacksonized
 @JsonTypeName("desktopEnvironment")
-public class DesktopEnvironmentStore extends JacksonizedValue
-        implements DesktopBaseStore, DataStore, SelfReferentialStore {
+public class DesktopEnvironmentStore implements DesktopBaseStore, DataStore, SelfReferentialStore {
 
     private final DataStoreEntryRef<DesktopBaseStore> base;
     private final ExternalTerminalType terminal;

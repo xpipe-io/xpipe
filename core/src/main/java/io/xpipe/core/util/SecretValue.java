@@ -2,6 +2,7 @@ package io.xpipe.core.util;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.function.Consumer;
@@ -9,6 +10,14 @@ import java.util.function.Function;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface SecretValue {
+
+    static char[] toBase64eChars(byte[] b) {
+        var base64 = Base64.getEncoder().encode(b);
+        var charBuf = ByteBuffer.wrap(base64).asCharBuffer();
+        char[] arr = new char[charBuf.remaining()];
+        charBuf.get(arr);
+        return arr;
+    }
 
     static String toBase64e(byte[] b) {
         var base64 = Base64.getEncoder().encodeToString(b);

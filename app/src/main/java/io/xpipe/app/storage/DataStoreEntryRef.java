@@ -26,4 +26,9 @@ public class DataStoreEntryRef<T extends DataStore> {
     public T getStore() {
         return entry.getStore().asNeeded();
     }
+
+    @SuppressWarnings("unchecked")
+    public <T extends DataStore> DataStoreEntryRef<T> asNeeded() {
+        return (DataStoreEntryRef<T>) this;
+    }
 }

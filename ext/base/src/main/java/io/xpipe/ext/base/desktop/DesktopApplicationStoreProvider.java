@@ -5,7 +5,6 @@ import io.xpipe.app.comp.store.StoreChoiceComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.ext.*;
-import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.OptionsBuilder;
@@ -63,7 +62,7 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
     public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
         DesktopApplicationStore st = (DesktopApplicationStore) store.getValue();
         var host = new SimpleObjectProperty<>(st.getDesktop());
-        var path = new SimpleStringProperty(st.getPath() != null ? st.getPath().toAbsoluteFilePath(null) : null);
+        var path = new SimpleStringProperty(st.getPath());
         var args = new SimpleStringProperty(st.getArguments() != null ? st.getArguments() : null);
         return new OptionsBuilder()
                 .nameAndDescription("desktopBase")
@@ -87,7 +86,7 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
                         () -> {
                             return DesktopApplicationStore.builder()
                                     .desktop(host.get())
-                                    .path(ContextualFileReference.of(path.get()))
+                                    .path(path.get())
                                     .arguments(args.get())
                                     .build();
                         },

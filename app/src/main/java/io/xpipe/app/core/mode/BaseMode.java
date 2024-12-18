@@ -44,7 +44,6 @@ public class BaseMode extends OperationMode {
         // if (true) throw new IllegalStateException();
 
         TrackEvent.info("Initializing base mode components ...");
-        AppI18n.init();
         LicenseProvider.get().init();
         AppCertutilCheck.check();
         AppBundledToolsCheck.check();
@@ -63,7 +62,6 @@ public class BaseMode extends OperationMode {
         DataStorageSyncHandler.getInstance().init();
         DataStorageSyncHandler.getInstance().retrieveSyncedData();
         AppPrefs.initSharedRemote();
-        UnlockAlert.showIfNeeded();
         SystemIcons.init();
         DataStorage.init();
         DataStoreProviders.init();

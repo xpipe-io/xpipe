@@ -7,14 +7,10 @@ import java.util.List;
 public class SessionChain extends NetworkTunnelSession {
 
     private final List<NetworkTunnelSession> sessions;
-    private int runningCounter;
 
     public SessionChain(SessionListener listener, List<NetworkTunnelSession> sessions) {
         super(listener);
         this.sessions = sessions;
-        sessions.forEach(session -> session.addListener(running -> {
-            runningCounter += running ? 1 : -1;
-        }));
     }
 
     public ShellControl getShellControl() {

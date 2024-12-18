@@ -13,6 +13,7 @@ import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Rectangle2D;
@@ -63,6 +64,7 @@ public class AppMainWindow {
         AppWindowHelper.addIcons(stage);
         AppWindowHelper.setupStylesheets(stage.getScene());
         AppWindowHelper.setupClickShield(stage);
+        AppWindowHelper.addMaximizedPseudoClass(stage);
         return INSTANCE;
     }
 
@@ -257,6 +259,7 @@ public class AppMainWindow {
         stage.setMinHeight(400);
 
         var state = loadState();
+        TrackEvent.withDebug("Window state loaded").tag("state", state).handle();
         initializeWindow(state);
         setupListeners();
         windowActive.set(true);
@@ -275,6 +278,16 @@ public class AppMainWindow {
         stage.getScene().setRoot(contentR);
         AppTheme.initThemeHandlers(stage);
         TrackEvent.debug("Set content scene");
+
+        contentR.opacityProperty()
+                .bind(Bindings.createDoubleBinding(
+                        () -> {
+                            if (OsType.getLocal() != OsType.MACOS) {
+                                return 1.0;
+                            }
+                            return stage.isFocused() ? 1.0 : 0.8;
+                        },
+                        stage.focusedProperty()));
 
         contentR.prefWidthProperty().bind(stage.getScene().widthProperty());
         contentR.prefHeightProperty().bind(stage.getScene().heightProperty());

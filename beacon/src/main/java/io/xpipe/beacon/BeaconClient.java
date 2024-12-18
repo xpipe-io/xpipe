@@ -52,7 +52,9 @@ public class BeaconClient {
             System.out.println(content);
         }
 
-        var client = HttpClient.newHttpClient();
+        var client = HttpClient.newBuilder()
+                .followRedirects(HttpClient.Redirect.NORMAL)
+                .build();
         HttpResponse<String> response;
         try {
             // Use direct IP to prevent DNS lookups and potential blocks (e.g. portmaster)

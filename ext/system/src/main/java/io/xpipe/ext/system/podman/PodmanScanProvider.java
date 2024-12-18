@@ -1,0 +1,28 @@
+package io.xpipe.ext.system.podman;
+
+import io.xpipe.app.ext.ScanProvider;
+import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.core.process.ShellControl;
+
+public class PodmanScanProvider extends ScanProvider {
+
+    @Override
+    public ScanOpportunity create(DataStoreEntry entry, ShellControl sc) throws Exception {
+        var view = new PodmanCommandView(sc);
+        return new ScanOpportunity("system.podmanContainers", !view.isSupported(), true);
+    }
+
+    @Override
+    public void scan(DataStoreEntry entry, ShellControl sc) throws Throwable {
+        var view = new PodmanCommandView(sc);
+        var e = DataStorage.get()
+                .addStoreIfNotPresent(
+                        entry,
+                        "Podman containers",
+                        PodmanCmdStore.builder().host(entry.ref()).build());
+        if (view.isDaemonRunning()) {
+            DataStorage.get().refreshChildren(e);
+        }
+    }
+}

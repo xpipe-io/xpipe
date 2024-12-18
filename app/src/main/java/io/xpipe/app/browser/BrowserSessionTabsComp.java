@@ -425,13 +425,16 @@ public class BrowserSessionTabsComp extends SimpleComp {
             tab.textProperty()
                     .bind(Bindings.createStringBinding(
                             () -> {
-                                return tabModel.getName()
+                                var n = tabModel.getName().getValue();
+                                return (AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n)
                                         + (global.getValue() == tabModel ? " (" + AppI18n.get("pinned") + ")" : "");
                             },
+                            tabModel.getName(),
                             global,
-                            AppPrefs.get().language()));
+                            AppPrefs.get().language(),
+                            AppPrefs.get().censorMode()));
         } else {
-            tab.setText(tabModel.getName());
+            tab.textProperty().bind(tabModel.getName());
         }
 
         Comp<?> comp = tabModel.comp();

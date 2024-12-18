@@ -9,6 +9,7 @@ import io.xpipe.app.core.window.ModifiedStage;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.util.PlatformInit;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.util.FailableRunnable;
@@ -18,6 +19,7 @@ import io.xpipe.core.util.XPipeInstallation;
 import javafx.application.Platform;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,6 +91,11 @@ public abstract class OperationMode {
 
             // Only for handling SIGTERM
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                // If we used System.exit(), we don't want to do this
+                if (OperationMode.isInShutdown()) {
+                    return;
+                }
+
                 TrackEvent.info("Received SIGTERM externally");
                 OperationMode.shutdown(true, false);
             }));
@@ -123,6 +130,8 @@ public abstract class OperationMode {
             AppExtensionManager.init(true);
             AppI18n.init();
             AppPrefs.initLocal();
+            // Initialize early to load in parallel
+            PlatformInit.init(false);
             AppBeaconServer.setupPort();
             TrackEvent.info("Finished initial setup");
         } catch (Throwable ex) {
@@ -130,12 +139,21 @@ public abstract class OperationMode {
         }
     }
 
+    @SneakyThrows
     public static void init(String[] args) {
         inStartup = true;
         var usedArgs = parseProperties(args);
         setup(args);
+
+        if (AppProperties.get().isAotTrainMode()) {
+            OperationMode.switchToSyncOrThrow(BACKGROUND);
+            inStartup = false;
+            OperationMode.switchToSyncIfPossible(OperationMode.GUI);
+            OperationMode.shutdown(false, false);
+            return;
+        }
+
         LauncherCommand.runLauncher(usedArgs);
-        AppDesktopIntegration.setupDesktopIntegrations();
         inStartup = false;
     }
 
@@ -191,7 +209,6 @@ public abstract class OperationMode {
 
         if (newMode.equals(GUI) && GUI.isSupported()) {
             set(GUI);
-            App.getApp().focus();
         }
     }
 
@@ -293,6 +310,8 @@ public abstract class OperationMode {
                 OperationMode.halt(1);
             });
         }
+
+        TrackEvent.info("Starting shutdown ...");
 
         inShutdown = true;
         OperationMode.inShutdownHook = inShutdownHook;

@@ -22,7 +22,7 @@ public class AppPrefsComp extends SimpleComp {
                 .collect(Collectors.toMap(appPrefsCategory -> appPrefsCategory, appPrefsCategory -> {
                     return appPrefsCategory
                             .create()
-                            .maxWidth(700)
+                            .maxWidth(800)
                             .padding(new Insets(40, 40, 20, 60))
                             .styleClass("prefs-container")
                             .createRegion();

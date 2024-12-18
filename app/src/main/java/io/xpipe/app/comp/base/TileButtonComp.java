@@ -15,15 +15,11 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Value;
+import lombok.*;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.function.Consumer;
 
-@AllArgsConstructor
 @Getter
 public class TileButtonComp extends Comp<TileButtonComp.Structure> {
 
@@ -32,10 +28,24 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
     private final ObservableValue<String> icon;
     private final Consumer<ActionEvent> action;
 
+    @Setter
+    private double iconSize = 0.55;
+
     public TileButtonComp(String nameKey, String descriptionKey, String icon, Consumer<ActionEvent> action) {
         this.name = AppI18n.observable(nameKey);
         this.description = AppI18n.observable(descriptionKey);
         this.icon = new SimpleStringProperty(icon);
+        this.action = action;
+    }
+
+    public TileButtonComp(
+            ObservableValue<String> name,
+            ObservableValue<String> description,
+            ObservableValue<String> icon,
+            Consumer<ActionEvent> action) {
+        this.name = name;
+        this.description = description;
+        this.icon = icon;
         this.action = action;
     }
 
@@ -72,7 +82,7 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
                         desc.heightProperty()));
         pane.prefHeightProperty().addListener((c, o, n) -> {
             var size = Math.min(n.intValue(), 100);
-            fi.getIcon().setIconSize((int) (size * 0.55));
+            fi.getIcon().setIconSize((int) (size * iconSize));
         });
         bt.setGraphic(hbox);
         return Structure.builder()

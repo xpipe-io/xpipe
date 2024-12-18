@@ -35,7 +35,7 @@ public class DataStoreEntry extends StorageElement {
 
     @NonFinal
     @Setter
-    JsonNode storeNode;
+    DataStorageNode storeNode;
 
     @Getter
     @NonFinal
@@ -80,7 +80,7 @@ public class DataStoreEntry extends StorageElement {
             Instant lastUsed,
             Instant lastModified,
             DataStore store,
-            JsonNode storeNode,
+            DataStorageNode storeNode,
             boolean dirty,
             Validity validity,
             Configuration configuration,
@@ -118,7 +118,7 @@ public class DataStoreEntry extends StorageElement {
         this.store = store;
         this.explicitOrder = explicitOrder;
         this.icon = icon;
-        this.storeNode = null;
+        this.storeNode = DataStorageNode.fail();
         this.validity = Validity.INCOMPLETE;
         this.configuration = Configuration.defaultConfiguration();
         this.expanded = false;
@@ -147,8 +147,8 @@ public class DataStoreEntry extends StorageElement {
     @SneakyThrows
     public static DataStoreEntry createNew(
             @NonNull UUID uuid, @NonNull UUID categoryUuid, @NonNull String name, @NonNull DataStore store) {
-        var node = JacksonMapper.getDefault().valueToTree(store);
-        var storeFromNode = JacksonMapper.getDefault().treeToValue(node, DataStore.class);
+        var storeNode = DataStorageNode.ofNewStore(store);
+        var storeFromNode = storeNode.parseStore();
         var validity = storeFromNode == null
                 ? Validity.LOAD_FAILED
                 : store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE;
@@ -161,7 +161,7 @@ public class DataStoreEntry extends StorageElement {
                 Instant.now(),
                 Instant.now(),
                 storeFromNode,
-                node,
+                storeNode,
                 true,
                 validity,
                 Configuration.defaultConfiguration(),
@@ -288,9 +288,9 @@ public class DataStoreEntry extends StorageElement {
             notes = null;
         }
 
-        // Store loading is prone to errors.
-        JsonNode storeNode = DataStorageEncryption.readPossiblyEncryptedNode(mapper.readTree(storeFile.toFile()));
-        var store = JacksonMapper.getDefault().treeToValue(storeNode, DataStore.class);
+        var fileNode = mapper.readTree(storeFile.toFile());
+        var node = DataStorageNode.readPossiblyEncryptedNode(fileNode);
+        var store = node.parseStore();
         return Optional.of(new DataStoreEntry(
                 dir,
                 uuid,
@@ -299,7 +299,7 @@ public class DataStoreEntry extends StorageElement {
                 lastUsed,
                 lastModified,
                 store,
-                storeNode,
+                node,
                 false,
                 store == null ? Validity.LOAD_FAILED : Validity.INCOMPLETE,
                 configuration,
@@ -332,6 +332,10 @@ public class DataStoreEntry extends StorageElement {
     @Override
     public String toString() {
         return getName();
+    }
+
+    public boolean isPerUser() {
+        return getStoreNode().isPerUser();
     }
 
     public void incrementBusyCounter() {
@@ -445,7 +449,7 @@ public class DataStoreEntry extends StorageElement {
 
         var entryString = mapper.writeValueAsString(obj);
         var stateString = mapper.writeValueAsString(stateObj);
-        var storeString = mapper.writeValueAsString(DataStorageEncryption.encryptNodeIfNeeded(storeNode));
+        var storeString = mapper.writeValueAsString(DataStorageNode.encryptNodeIfNeeded(storeNode));
 
         FileUtils.forceMkdir(directory.toFile());
         Files.writeString(directory.resolve("state.json"), stateString);
@@ -492,8 +496,12 @@ public class DataStoreEntry extends StorageElement {
             return;
         }
 
+        if (!storeNode.hasAccess()) {
+            return;
+        }
+
         this.store = store;
-        this.storeNode = JacksonMapper.getDefault().valueToTree(store);
+        this.storeNode = this.storeNode.withStore(store);
         this.provider = DataStoreProviders.byStore(store);
         if (updateTime) {
             lastModified = Instant.now();
@@ -503,7 +511,7 @@ public class DataStoreEntry extends StorageElement {
     }
 
     public void reassignStore() {
-        this.storeNode = JacksonMapper.getDefault().valueToTree(store);
+        this.storeNode = this.storeNode.withStore(store);
         dirty = true;
     }
 
@@ -540,7 +548,7 @@ public class DataStoreEntry extends StorageElement {
 
         DataStore newStore;
         try {
-            newStore = JacksonMapper.getDefault().treeToValue(storeNode, DataStore.class);
+            newStore = storeNode.parseStore();
             // Check whether we have a provider as well
             DataStoreProviders.byStore(newStore);
         } catch (Throwable e) {

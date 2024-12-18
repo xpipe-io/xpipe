@@ -54,6 +54,8 @@ public class AppProperties {
 
     boolean newBuildSession;
 
+    boolean aotTrainMode;
+
     public AppProperties() {
         var appDir = Path.of(System.getProperty("user.dir")).resolve("app");
         Path propsFile = appDir.resolve("dev.properties");
@@ -138,6 +140,9 @@ public class AppProperties {
         var cachedBuildId = AppCache.getNonNull("lastBuildId", String.class, () -> null);
         newBuildSession = !buildUuid.toString().equals(cachedBuildId);
         AppCache.update("lastBuildId", buildUuid);
+        aotTrainMode = Optional.ofNullable(System.getProperty("io.xpipe.app.aotTrainMode"))
+                .map(Boolean::parseBoolean)
+                .orElse(false);
     }
 
     private static boolean isJUnitTest() {

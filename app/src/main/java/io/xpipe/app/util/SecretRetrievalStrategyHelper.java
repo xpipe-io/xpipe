@@ -7,7 +7,7 @@ import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataStoreSecret;
+import io.xpipe.app.storage.DataStorageSecret;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -26,7 +26,7 @@ public class SecretRetrievalStrategyHelper {
         var original = p.getValue() != null ? p.getValue().getValue() : null;
         var secretProperty = new SimpleObjectProperty<>(
                 p.getValue() != null && p.getValue().getValue() != null
-                        ? p.getValue().getValue().getInternalSecret()
+                        ? p.getValue().getValue().getInternalSecret().inPlace()
                         : null);
         return new OptionsBuilder()
                 .addComp(new SecretFieldComp(secretProperty, true), secretProperty)
@@ -37,7 +37,7 @@ public class SecretRetrievalStrategyHelper {
                                     newSecret != null ? newSecret.getSecret() : new char[0],
                                     original != null ? original.getSecret() : new char[0]);
                             return new SecretRetrievalStrategy.InPlace(
-                                    changed ? new DataStoreSecret(secretProperty.getValue()) : original);
+                                    changed ? DataStorageSecret.ofCurrentSecret(secretProperty.getValue()) : original);
                         },
                         p);
     }

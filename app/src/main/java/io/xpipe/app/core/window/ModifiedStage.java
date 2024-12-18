@@ -57,10 +57,7 @@ public class ModifiedStage extends Stage {
             return;
         }
 
-        var applyToStage = (OsType.getLocal() == OsType.WINDOWS)
-                || (OsType.getLocal() == OsType.MACOS
-                        && AppMainWindow.getInstance() != null
-                        && AppMainWindow.getInstance().getStage() == stage);
+        var applyToStage = (OsType.getLocal() == OsType.WINDOWS) || (OsType.getLocal() == OsType.MACOS);
         if (!applyToStage || AppPrefs.get() == null || AppPrefs.get().theme.getValue() == null) {
             stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), false);
             stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), true);
@@ -71,7 +68,10 @@ public class ModifiedStage extends Stage {
             case OsType.Linux linux -> {}
             case OsType.MacOs macOs -> {
                 var ctrl = new NativeMacOsWindowControl(stage);
-                var seamlessFrame = !AppPrefs.get().performanceMode().get() && mergeFrame();
+                var seamlessFrame = AppMainWindow.getInstance() != null
+                        && AppMainWindow.getInstance().getStage() == stage
+                        && !AppPrefs.get().performanceMode().get()
+                        && mergeFrame();
                 var seamlessFrameApplied = ctrl.setAppearance(
                                 seamlessFrame, AppPrefs.get().theme.getValue().isDark())
                         && seamlessFrame;

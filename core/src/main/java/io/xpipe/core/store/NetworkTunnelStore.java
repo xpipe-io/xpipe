@@ -15,41 +15,21 @@ public interface NetworkTunnelStore extends DataStore {
         return p;
     }
 
-    interface TunnelFunction {
-
-        NetworkTunnelSession create(int localPort, int remotePort, String address) throws Exception;
-    }
-
     DataStore getNetworkParent();
 
     default boolean requiresTunnel() {
-        NetworkTunnelStore current = this;
-        while (true) {
-            var func = current.tunnelSession();
-            if (func != null) {
-                return true;
-            }
-
-            if (current.getNetworkParent() == null) {
-                return false;
-            }
-
-            if (current.getNetworkParent() instanceof NetworkTunnelStore t) {
-                current = t;
-            } else {
-                return false;
-            }
-        }
+        return getNetworkParent() != null;
     }
 
     default boolean isLocallyTunnelable() {
         NetworkTunnelStore current = this;
         while (true) {
-            if (current.getNetworkParent() == null) {
+            var p = current.getNetworkParent();
+            if (p == null) {
                 return true;
             }
 
-            if (current.getNetworkParent() instanceof NetworkTunnelStore t) {
+            if (p instanceof NetworkTunnelStore t) {
                 current = t;
             } else {
                 return false;
@@ -67,15 +47,11 @@ public interface NetworkTunnelStore extends DataStore {
         var sessions = new ArrayList<NetworkTunnelSession>();
         NetworkTunnelStore current = this;
         do {
-            var func = current.tunnelSession();
-            if (func == null) {
-                continue;
-            }
-
-            var currentLocalPort = isLast(current) ? local : randomPort();
+            var currentLocalPort = current.isLast() ? local : randomPort();
             var currentRemotePort =
                     sessions.isEmpty() ? remotePort : sessions.getLast().getLocalPort();
-            var t = func.create(currentLocalPort, currentRemotePort, current == this ? address : "localhost");
+            var t = current.createTunnelSession(
+                    currentLocalPort, currentRemotePort, current == this ? address : "localhost");
             t.start();
             sessions.add(t);
             counter.incrementAndGet();
@@ -119,18 +95,11 @@ public interface NetworkTunnelStore extends DataStore {
         return new SessionChain(running1 -> {}, sessions);
     }
 
-    default boolean isLast(NetworkTunnelStore tunnelStore) {
-        NetworkTunnelStore current = tunnelStore;
-        while ((current = (NetworkTunnelStore) current.getNetworkParent()) != null) {
-            var func = current.tunnelSession();
-            if (func != null) {
-                return false;
-            }
-        }
-        return true;
+    default boolean isLast() {
+        return getNetworkParent() != null
+                && getNetworkParent() instanceof NetworkTunnelStore n
+                && n.getNetworkParent() == null;
     }
 
-    default TunnelFunction tunnelSession() {
-        return null;
-    }
+    NetworkTunnelSession createTunnelSession(int localPort, int remotePort, String address) throws Exception;
 }

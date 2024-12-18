@@ -36,7 +36,7 @@ public class RunScriptActionMenu implements ActionProvider {
                 var sc = shellStore.getStore().getOrStartSession();
                 var script = hierarchy.getLeafBase().getStore().assembleScriptChain(sc);
                 TerminalLauncher.open(
-                        shellStore.getEntry(),
+                        shellStore.get(),
                         hierarchy.getLeafBase().get().getName() + " - "
                                 + shellStore.get().getName(),
                         null,
@@ -274,7 +274,7 @@ public class RunScriptActionMenu implements ActionProvider {
             @Override
             public List<? extends ActionProvider> getChildren(DataStoreEntryRef<ShellStore> store) {
                 var replacement = ProcessControlProvider.get().replace(store);
-                var state = replacement.getEntry().getStorePersistentState();
+                var state = replacement.get().getStorePersistentState();
                 if (!(state instanceof SystemState systemState) || systemState.getShellDialect() == null) {
                     return List.of(new NoScriptsActionProvider());
                 }

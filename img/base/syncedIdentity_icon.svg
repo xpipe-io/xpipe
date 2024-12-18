@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   id="Layer_1"
+   data-name="Layer 1"
+   viewBox="0 0 204.59 204.59"
+   version="1.1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <defs
+     id="defs856">
+    <style
+       id="style854">.cls-1{fill:#ac55ff;}</style>
+    <style
+       id="style2411">.cls-1{fill:#606161;}</style>
+  </defs>
+  <title
+     id="title858">identity</title>
+  <path
+     class="cls-1"
+     d="M332.32,153.7H179.68a26,26,0,0,0-26,26V332.32a26,26,0,0,0,26,26H332.32a26,26,0,0,0,26-26V179.68A26,26,0,0,0,332.32,153.7Zm14,178.62a14,14,0,0,1-14,14H179.68a14,14,0,0,1-14-14V179.68a14,14,0,0,1,14-14H332.32a14,14,0,0,1,14,14Z"
+     id="path860"
+     style="fill:#5b2cff;fill-opacity:1"
+     transform="translate(-153.7 -153.7)" />
+  <metadata
+     id="metadata932">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title>identity</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <path
+     class="cls-1"
+     d="m 128.46827,98.407463 a 38.670445,38.670445 0 1 0 -48.402498,0 A 70.895817,70.895817 0 0 0 33.40343,164.9851 v 6.44508 H 175.19505 V 164.9851 A 70.895817,70.895817 0 0 0 128.46827,98.407463 Z M 78.518945,68.308967 A 25.780297,25.780297 0 1 1 104.29923,94.089269 25.780297,25.780297 0 0 1 78.518945,68.308967 Z M 46.680286,158.54002 a 58.005667,58.005667 0 0 1 115.302364,0 z"
+     id="path2417"
+     style="fill:#5b2cff;fill-opacity:1;stroke-width:8.06261;stroke-miterlimit:4;stroke-dasharray:none" />
+</svg>

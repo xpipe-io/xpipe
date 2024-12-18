@@ -2,8 +2,6 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppStyle;
-import io.xpipe.app.core.AppTheme;
 import io.xpipe.app.core.window.AppWindowHelper;
 
 import javafx.animation.AnimationTimer;
@@ -18,13 +16,6 @@ import java.util.Optional;
 public class AsktextAlert {
 
     public static Optional<String> query(String prompt) {
-        if (!PlatformState.initPlatformIfNeeded()) {
-            return Optional.empty();
-        }
-
-        AppStyle.init();
-        AppTheme.init();
-
         var prop = new SimpleObjectProperty<String>();
         var r = AppWindowHelper.showBlockingAlert(alert -> {
                     alert.setTitle(AppI18n.get("asktextAlertTitle"));

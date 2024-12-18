@@ -25,6 +25,10 @@ public class StoreSidebarComp extends SimpleComp {
                         .styleClass("color-box")
                         .styleClass("gray")
                         .styleClass("bar"),
+                new StoreCategoryListComp(StoreViewState.get().getAllIdentitiesCategory())
+                        .styleClass("color-box")
+                        .styleClass("gray")
+                        .styleClass("bar"),
                 Comp.of(() -> new Region())
                         .styleClass("color-box")
                         .styleClass("gray")

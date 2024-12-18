@@ -36,6 +36,11 @@ import java.util.stream.Stream;
 public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, DataStoreProvider {
 
     @Override
+    public boolean canMoveCategories() {
+        return false;
+    }
+
+    @Override
     public boolean editByDefault() {
         return true;
     }

@@ -7,7 +7,9 @@ import io.xpipe.core.store.FixedChildStore;
 import io.xpipe.core.store.NetworkTunnelStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -17,10 +19,17 @@ import java.util.OptionalInt;
 @Getter
 @Jacksonized
 @JsonTypeName("fixedService")
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public class FixedServiceStore extends AbstractServiceStore implements FixedChildStore {
 
     private final DataStoreEntryRef<NetworkTunnelStore> host;
     private final DataStoreEntryRef<? extends DataStore> displayParent;
+
+    @Override
+    public boolean licenseRequired() {
+        return false;
+    }
 
     @Override
     public void checkComplete() throws Throwable {

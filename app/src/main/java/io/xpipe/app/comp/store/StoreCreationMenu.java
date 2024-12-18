@@ -38,10 +38,20 @@ public class StoreCreationMenu {
         menu.getItems().add(category("addCommand", "mdi2c-code-greater-than", DataStoreCreationCategory.COMMAND, null));
 
         menu.getItems()
+                .add(category("addService", "mdi2l-link-plus", DataStoreCreationCategory.SERVICE, "customService"));
+
+        menu.getItems()
                 .add(category(
-                        "addTunnel", "mdi2v-vector-polyline-plus", DataStoreCreationCategory.TUNNEL, "customService"));
+                        "addTunnel", "mdi2v-vector-polyline-plus", DataStoreCreationCategory.TUNNEL, "sshLocalTunnel"));
 
         menu.getItems().add(category("addSerial", "mdi2s-serial-port", DataStoreCreationCategory.SERIAL, "serial"));
+
+        menu.getItems()
+                .add(category(
+                        "addIdentity",
+                        "mdi2a-account-multiple-plus",
+                        DataStoreCreationCategory.IDENTITY,
+                        "localIdentity"));
 
         // menu.getItems().add(category("addDatabase", "mdi2d-database-plus", DataStoreCreationCategory.DATABASE,
         // null));

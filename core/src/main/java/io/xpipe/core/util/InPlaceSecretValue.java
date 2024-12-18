@@ -5,15 +5,32 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
+import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 import java.util.Random;
 import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 
 @JsonTypeName("default")
 @SuperBuilder
 @Jacksonized
 @EqualsAndHashCode(callSuper = true)
 public class InPlaceSecretValue extends AesSecretValue {
+
+    private static final int AES_KEY_BIT = 128;
+    private static final int SALT_BIT = 16;
+    private static final SecretKeyFactory SECRET_FACTORY;
+
+    static {
+        try {
+            SECRET_FACTORY = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
     public InPlaceSecretValue(byte[] b) {
         super(b);
@@ -46,8 +63,12 @@ public class InPlaceSecretValue extends AesSecretValue {
         return nonce;
     }
 
-    protected SecretKey getAESKey() throws InvalidKeySpecException {
-        return getSecretKey(new char[] {'X', 'P', 'E' << 1});
+    @Override
+    protected SecretKey getSecretKey() throws InvalidKeySpecException {
+        var salt = new byte[SALT_BIT];
+        new Random(AES_KEY_BIT).nextBytes(salt);
+        KeySpec spec = new PBEKeySpec(new char[] {'X', 'P', 'E' << 1}, salt, getIterationCount(), AES_KEY_BIT);
+        return new SecretKeySpec(SECRET_FACTORY.generateSecret(spec).getEncoded(), "AES");
     }
 
     @Override

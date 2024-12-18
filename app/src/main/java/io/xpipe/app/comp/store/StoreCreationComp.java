@@ -42,6 +42,7 @@ import net.synedra.validatorfx.GraphicDecorationStackPane;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -132,15 +133,16 @@ public class StoreCreationComp extends DialogComp {
                             .getRootCategory(DataStorage.get()
                                     .getStoreCategoryIfPresent(targetCategory)
                                     .orElseThrow());
-                    // Don't put connections in the scripts category ever
+
+                    // Don't put it in the wrong root category
                     if ((provider.getValue().getCreationCategory() == null
-                                    || !provider.getValue()
-                                            .getCreationCategory()
-                                            .equals(DataStoreCreationCategory.SCRIPT))
-                            && rootCategory.equals(DataStorage.get().getAllScriptsCategory())) {
-                        targetCategory = DataStorage.get()
-                                .getDefaultConnectionsCategory()
-                                .getUuid();
+                            || !provider.getValue()
+                                    .getCreationCategory()
+                                    .getCategory()
+                                    .equals(rootCategory.getUuid()))) {
+                        targetCategory = provider.getValue().getCreationCategory() != null
+                                ? provider.getValue().getCreationCategory().getCategory()
+                                : DataStorage.ALL_CONNECTIONS_CATEGORY_UUID;
                     }
 
                     // Don't use the all connections category
@@ -150,6 +152,21 @@ public class StoreCreationComp extends DialogComp {
                                 .getDefaultConnectionsCategory()
                                 .getUuid();
                     }
+
+                    // Don't use the all scripts category
+                    if (targetCategory.equals(
+                            DataStorage.get().getAllScriptsCategory().getUuid())) {
+                        targetCategory = DataStorage.CUSTOM_SCRIPTS_CATEGORY_UUID;
+                    }
+
+                    // Don't use the all identities category
+                    if (targetCategory.equals(
+                            DataStorage.get().getAllIdentitiesCategory().getUuid())) {
+                        targetCategory = DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID;
+                    }
+
+                    // Custom category stuff
+                    targetCategory = provider.getValue().getTargetCategory(store.getValue(), targetCategory);
 
                     return DataStoreEntry.createNew(
                             UUID.randomUUID(), targetCategory, name.getValue(), store.getValue());
@@ -194,10 +211,14 @@ public class StoreCreationComp extends DialogComp {
     }
 
     public static void showCreation(DataStoreProvider selected, DataStoreCreationCategory category) {
-        showCreation(selected != null ? selected.defaultStore() : null, category);
+        showCreation(selected != null ? selected.defaultStore() : null, category, dataStoreEntry -> {}, true);
     }
 
-    public static void showCreation(DataStore base, DataStoreCreationCategory category) {
+    public static void showCreation(
+            DataStore base,
+            DataStoreCreationCategory category,
+            Consumer<DataStoreEntry> listener,
+            boolean selectCategory) {
         var prov = base != null ? DataStoreProviders.byStore(base) : null;
         show(
                 null,
@@ -207,13 +228,26 @@ public class StoreCreationComp extends DialogComp {
                         || dataStoreProvider.equals(prov),
                 (e, validated) -> {
                     try {
-                        DataStorage.get().addStoreEntryIfNotPresent(e);
+                        var returned = DataStorage.get().addStoreEntryIfNotPresent(e);
+                        listener.accept(returned);
                         if (validated
                                 && e.getProvider().shouldShowScan()
                                 && AppPrefs.get()
                                         .openConnectionSearchWindowOnConnectionCreation()
                                         .get()) {
                             ScanAlert.showAsync(e);
+                        }
+
+                        if (selectCategory) {
+                            // Select new category if needed
+                            var cat = DataStorage.get()
+                                    .getStoreCategoryIfPresent(e.getCategoryUuid())
+                                    .orElseThrow();
+                            PlatformThread.runLaterIfNeeded(() -> {
+                                StoreViewState.get()
+                                        .getActiveCategory()
+                                        .setValue(StoreViewState.get().getCategoryWrapper(cat));
+                            });
                         }
                     } catch (Exception ex) {
                         ErrorEvent.fromThrowable(ex).handle();

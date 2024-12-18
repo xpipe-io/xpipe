@@ -108,6 +108,11 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                     HBox.setHgrow(descriptionBox, Priority.ALWAYS);
                     descriptionBox.setAlignment(Pos.CENTER_LEFT);
                     line.getChildren().add(descriptionBox);
+
+                    if (compRegion != null) {
+                        descriptionBox.visibleProperty().bind(PlatformThread.sync(compRegion.visibleProperty()));
+                        descriptionBox.managedProperty().bind(PlatformThread.sync(compRegion.managedProperty()));
+                    }
                 } else {
                     line.getChildren().add(description);
                 }
@@ -149,6 +154,11 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                     pane.getChildren().add(compRegion);
                 }
             }
+        }
+
+        if (entries.size() == 1 && firstComp != null) {
+            pane.visibleProperty().bind(PlatformThread.sync(firstComp.visibleProperty()));
+            pane.managedProperty().bind(PlatformThread.sync(firstComp.managedProperty()));
         }
 
         if (entries.stream().anyMatch(entry -> entry.name() != null && entry.description() == null)) {

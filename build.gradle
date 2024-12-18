@@ -168,6 +168,7 @@ project.ext {
     }
     deeplApiKey = findProperty('DEEPL_API_KEY')
     customJavaFxPath = null
+    bundleCds = ci && fullVersion
 }
 
 if (org.gradle.internal.os.OperatingSystem.current() == org.gradle.internal.os.OperatingSystem.LINUX) {

@@ -100,6 +100,10 @@ public class ChgrpAction implements BrowserBranchAction {
                             null,
                             "finish",
                             () -> {
+                                if (group.getValue() == null) {
+                                    return;
+                                }
+
                                 model.runCommandAsync(
                                         CommandBuilder.of()
                                                 .add("chgrp", group.getValue())

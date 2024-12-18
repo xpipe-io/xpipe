@@ -97,7 +97,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         button.setPadding(Insets.EMPTY);
         button.setMaxWidth(5000);
         button.setFocusTraversable(true);
-        button.accessibleTextProperty().bind(getWrapper().nameProperty());
+        button.accessibleTextProperty().bind(getWrapper().getShownName());
         button.setOnAction(event -> {
             event.consume();
             ThreadHelper.runFailableAsync(() -> {
@@ -169,7 +169,7 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     protected Comp<?> createName() {
-        LabelComp name = new LabelComp(getWrapper().nameProperty());
+        LabelComp name = new LabelComp(getWrapper().getShownName());
         name.apply(struc -> struc.get().setTextOverrun(OverrunStyle.CENTER_ELLIPSIS));
         name.styleClass("name");
         return name;
@@ -327,7 +327,8 @@ public abstract class StoreEntryComp extends SimpleComp {
             contextMenu.getItems().add(color);
         }
 
-        if (getWrapper().getEntry().getProvider() != null) {
+        if (getWrapper().getEntry().getProvider() != null
+                && getWrapper().getEntry().getProvider().canMoveCategories()) {
             var move = new Menu(AppI18n.get("moveTo"), new FontIcon("mdi2f-folder-move-outline"));
             StoreViewState.get()
                     .getSortedCategories(getWrapper().getCategory().getValue().getRoot())

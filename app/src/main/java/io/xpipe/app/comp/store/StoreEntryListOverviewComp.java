@@ -54,7 +54,11 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                 categoryWrapper -> AppI18n.observable(
                         categoryWrapper.getRoot().equals(StoreViewState.get().getAllConnectionsCategory())
                                 ? "connections"
-                                : "scripts"));
+                                : categoryWrapper
+                                                .getRoot()
+                                                .equals(StoreViewState.get().getAllScriptsCategory())
+                                        ? "scripts"
+                                        : "identities"));
         label.textProperty().bind(name);
         label.getStyleClass().add("name");
 

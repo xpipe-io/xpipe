@@ -135,7 +135,7 @@ public class RunScriptAction implements BrowserAction, BrowserBranchAction {
 
             @Override
             protected String getTerminalTitle() {
-                return ref.get().getName() + " - " + model.getName();
+                return ref.get().getName() + " - " + model.getName().getValue();
             }
         };
     }

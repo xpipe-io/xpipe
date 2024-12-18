@@ -27,6 +27,11 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
+    public ShellCapabilities getCapabilities() {
+        return parent.getCapabilities();
+    }
+
+    @Override
     public Optional<ShellControl> getParentControl() {
         return parent.getParentControl();
     }

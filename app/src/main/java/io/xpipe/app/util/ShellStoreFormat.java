@@ -76,6 +76,12 @@ public class ShellStoreFormat {
     String name;
     String[] states;
 
+    public ShellStoreFormat(LicensedFeature licensedFeature, String name, String... states) {
+        this.licensedFeature = licensedFeature;
+        this.name = name;
+        this.states = states;
+    }
+
     public String format() {
         var licenseReq =
                 licensedFeature != null ? licensedFeature.getDescriptionSuffix().orElse(null) : null;

@@ -70,6 +70,22 @@ public class StoreEntryListComp extends SimpleComp {
                 },
                 StoreViewState.get().getAllEntries().getList(),
                 StoreViewState.get().getActiveCategory());
+        var showIdentitiesIntro = Bindings.createBooleanBinding(
+                () -> {
+                    var allCat = StoreViewState.get().getAllIdentitiesCategory();
+                    var connections = StoreViewState.get().getAllEntries().getList().stream()
+                            .filter(wrapper -> allCat.equals(
+                                    wrapper.getCategory().getValue().getRoot()))
+                            .toList();
+                    return 0 == connections.size()
+                            && StoreViewState.get()
+                                    .getActiveCategory()
+                                    .getValue()
+                                    .getRoot()
+                                    .equals(allCat);
+                },
+                StoreViewState.get().getAllEntries().getList(),
+                StoreViewState.get().getActiveCategory());
         var showScriptsIntro = Bindings.createBooleanBinding(
                 () -> {
                     if (StoreViewState.get()
@@ -123,6 +139,7 @@ public class StoreEntryListComp extends SimpleComp {
         map.put(createList(), showList);
         map.put(new StoreIntroComp(), showIntro);
         map.put(new StoreScriptsIntroComp(scriptsIntroShowing), showScriptsIntro);
+        map.put(new StoreIdentitiesIntroComp(), showIdentitiesIntro);
 
         return new MultiContentComp(map).createRegion();
     }

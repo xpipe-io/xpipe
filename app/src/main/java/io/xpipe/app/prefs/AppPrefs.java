@@ -9,10 +9,8 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.update.XPipeDistributionType;
-import io.xpipe.app.util.PasswordLockSecretValue;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.ModuleHelper;
 
 import javafx.beans.property.*;
@@ -48,8 +46,6 @@ public class AppPrefs {
             .valueClass(Boolean.class)
             .requiresRestart(true)
             .build());
-    final BooleanProperty dontAllowTerminalRestart =
-            mapVaultShared(new SimpleBooleanProperty(false), "dontAllowTerminalRestart", Boolean.class, false);
     final BooleanProperty enableHttpApi =
             mapVaultShared(new SimpleBooleanProperty(false), "enableHttpApi", Boolean.class, false);
     final BooleanProperty dontAutomaticallyStartVmSshServer =
@@ -157,6 +153,12 @@ public class AppPrefs {
         return editFilesWithDoubleClick;
     }
 
+    final BooleanProperty censorMode = mapLocal(new SimpleBooleanProperty(false), "censorMode", Boolean.class, false);
+
+    public ObservableBooleanValue censorMode() {
+        return censorMode;
+    }
+
     public ObservableBooleanValue requireDoubleClickForConnections() {
         return requireDoubleClickForConnections;
     }
@@ -164,9 +166,6 @@ public class AppPrefs {
     public ObservableBooleanValue enableTerminalDocking() {
         return enableTerminalDocking;
     }
-
-    @Getter
-    private final Property<InPlaceSecretValue> lockPassword = new SimpleObjectProperty<>();
 
     @Getter
     private final StringProperty lockCrypt =
@@ -195,10 +194,6 @@ public class AppPrefs {
 
     public ObservableBooleanValue enableHttpApi() {
         return enableHttpApi;
-    }
-
-    public ObservableBooleanValue dontAllowTerminalRestart() {
-        return dontAllowTerminalRestart;
     }
 
     public ObservableBooleanValue pinLocalMachineOnStartup() {
@@ -235,7 +230,6 @@ public class AppPrefs {
                         new EditorCategory(),
                         new RdpCategory(),
                         new SshCategory(),
-                        new LocalShellCategory(),
                         new ConnectionsCategory(),
                         new FileBrowserCategory(),
                         new SecurityCategory(),
@@ -388,41 +382,6 @@ public class AppPrefs {
 
     public ObservableValue<String> customEditorCommand() {
         return customEditorCommand;
-    }
-
-    public void changeLock(InPlaceSecretValue newLockPw) {
-        if (lockCrypt.get() == null && newLockPw == null) {
-            return;
-        }
-
-        if (newLockPw == null) {
-            lockPassword.setValue(null);
-            lockCrypt.setValue(null);
-            if (DataStorage.get() != null) {
-                DataStorage.get().forceRewrite();
-            }
-            return;
-        }
-
-        lockPassword.setValue(newLockPw);
-        lockCrypt.setValue(new PasswordLockSecretValue("xpipe".toCharArray()).getEncryptedValue());
-        if (DataStorage.get() != null) {
-            DataStorage.get().forceRewrite();
-        }
-    }
-
-    public boolean unlock(InPlaceSecretValue lockPw) {
-        lockPassword.setValue(lockPw);
-        var check = PasswordLockSecretValue.builder()
-                .encryptedValue(lockCrypt.get())
-                .build()
-                .getSecret();
-        if (!Arrays.equals(check, new char[] {'x', 'p', 'i', 'p', 'e'})) {
-            lockPassword.setValue(null);
-            return false;
-        } else {
-            return true;
-        }
     }
 
     public final ReadOnlyIntegerProperty editorReloadTimeout() {

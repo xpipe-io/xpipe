@@ -8,6 +8,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.util.InputHelper;
+import io.xpipe.app.util.PlatformInit;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 
@@ -29,6 +30,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import lombok.SneakyThrows;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -52,6 +55,12 @@ public class AppWindowHelper {
         var sp = new StackPane(text);
         sp.setPadding(new Insets(5));
         return sp;
+    }
+
+    public static void addMaximizedPseudoClass(Stage stage) {
+        stage.maximizedProperty().subscribe(v -> {
+            stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("maximized"), v);
+        });
     }
 
     public static void addIcons(Stage stage) {
@@ -134,7 +143,10 @@ public class AppWindowHelper {
                 .orElse(false);
     }
 
+    @SneakyThrows
     public static Optional<ButtonType> showBlockingAlert(Consumer<Alert> c) {
+        PlatformInit.init(true);
+
         Supplier<Alert> supplier = () -> {
             Alert a = AppWindowHelper.createEmptyAlert();
             AppFont.normal(a.getDialogPane());

@@ -3,15 +3,16 @@ package io.xpipe.app.ext;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.NetworkTunnelSession;
 import io.xpipe.core.store.NetworkTunnelStore;
 import io.xpipe.core.store.StatefulDataStore;
-import io.xpipe.core.util.JacksonizedValue;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import lombok.Value;
 
 @JsonTypeName("local")
-public class LocalStore extends JacksonizedValue
-        implements NetworkTunnelStore, ShellStore, StatefulDataStore<ShellStoreState> {
+@Value
+public class LocalStore implements NetworkTunnelStore, ShellStore, StatefulDataStore<ShellStoreState> {
 
     @Override
     public Class<ShellStoreState> getStateClass() {
@@ -35,5 +36,10 @@ public class LocalStore extends JacksonizedValue
     @Override
     public DataStore getNetworkParent() {
         return null;
+    }
+
+    @Override
+    public NetworkTunnelSession createTunnelSession(int localPort, int remotePort, String address) throws Exception {
+        throw new UnsupportedOperationException();
     }
 }

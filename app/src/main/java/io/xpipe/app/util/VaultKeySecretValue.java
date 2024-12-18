@@ -18,6 +18,10 @@ import javax.crypto.SecretKey;
 @EqualsAndHashCode(callSuper = true)
 public class VaultKeySecretValue extends AesSecretValue {
 
+    public VaultKeySecretValue(String encryptedValue) {
+        super(encryptedValue);
+    }
+
     public VaultKeySecretValue(char[] secret) {
         super(secret);
     }
@@ -27,9 +31,9 @@ public class VaultKeySecretValue extends AesSecretValue {
         return 8192;
     }
 
-    protected SecretKey getAESKey() throws InvalidKeySpecException {
-        var chars = DataStorage.get() != null ? DataStorage.get().getVaultKey().toCharArray() : new char[0];
-        return getSecretKey(chars);
+    @Override
+    protected SecretKey getSecretKey() throws InvalidKeySpecException {
+        return DataStorage.get().getVaultKey();
     }
 
     @Override

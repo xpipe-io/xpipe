@@ -9,20 +9,27 @@ import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.NetworkTunnelSession;
 import io.xpipe.core.store.NetworkTunnelStore;
 import io.xpipe.core.store.SingletonSessionStore;
-import io.xpipe.core.util.JacksonizedValue;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
 @Getter
-public abstract class AbstractServiceStore extends JacksonizedValue
-        implements SingletonSessionStore<NetworkTunnelSession>, DataStore {
+@EqualsAndHashCode
+@ToString
+public abstract class AbstractServiceStore implements SingletonSessionStore<NetworkTunnelSession>, DataStore {
 
     public abstract DataStoreEntryRef<NetworkTunnelStore> getHost();
 
     private final Integer remotePort;
     private final Integer localPort;
+    private final String path;
+
+    public boolean licenseRequired() {
+        return true;
+    }
 
     @Override
     public void checkComplete() throws Throwable {
@@ -38,10 +45,11 @@ public abstract class AbstractServiceStore extends JacksonizedValue
     @Override
     public NetworkTunnelSession newSession() throws Exception {
         var f = LicenseProvider.get().getFeature("services");
-        if (!f.isSupported()) {
+        if (licenseRequired() && !f.isSupported()) {
             var active = DataStorage.get().getStoreEntries().stream()
                     .filter(dataStoreEntry -> dataStoreEntry.getStore() instanceof AbstractServiceStore a
                             && a != this
+                            && a.licenseRequired()
                             && a.isSessionRunning())
                     .count();
             if (active > 0) {

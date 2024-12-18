@@ -463,10 +463,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     public void runCommandAsync(CommandBuilder command, boolean refresh) {
-        if (name == null || name.isBlank()) {
-            return;
-        }
-
         ThreadHelper.runFailableAsync(() -> {
             BooleanScope.executeExclusive(busy, () -> {
                 if (fileSystem == null) {
@@ -491,10 +487,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     public void runAsync(FailableRunnable<Exception> r, boolean refresh) {
-        if (name == null || name.isBlank()) {
-            return;
-        }
-
         ThreadHelper.runFailableAsync(() -> {
             BooleanScope.executeExclusive(busy, () -> {
                 if (fileSystem == null) {

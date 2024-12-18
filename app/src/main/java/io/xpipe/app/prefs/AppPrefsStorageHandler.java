@@ -3,15 +3,18 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.util.JsonConfigHelper;
 import io.xpipe.core.util.JacksonMapper;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import org.apache.commons.io.FileUtils;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static io.xpipe.app.ext.PrefsChoiceValue.getAll;
@@ -37,7 +40,19 @@ public class AppPrefsStorageHandler {
 
     private void loadIfNeeded() {
         if (content == null) {
-            content = JsonConfigHelper.readConfigObject(file);
+            if (Files.exists(file)) {
+                try {
+                    ObjectMapper o = JacksonMapper.getDefault();
+                    var read = o.readTree(Files.readAllBytes(file));
+                    content = read.isObject() ? (ObjectNode) read : null;
+                } catch (IOException e) {
+                    ErrorEvent.fromThrowable(e).handle();
+                }
+            }
+
+            if (content == null) {
+                content = JsonNodeFactory.instance.objectNode();
+            }
         }
     }
 
@@ -46,7 +61,12 @@ public class AppPrefsStorageHandler {
     }
 
     void save() {
-        JsonConfigHelper.writeConfig(file, content);
+        try {
+            FileUtils.forceMkdirParent(file.getParent().toFile());
+            JacksonMapper.getDefault().writeValue(file.toFile(), content);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void updateObject(String key, Object object) {

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 28.2.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:url(#SVGID_1_);}
+	.st1{clip-path:url(#SVGID_00000149376729841400146590000008711126154204518834_);}
+</style>
+<g>
+	
+		<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="-1599.9519" y1="936.3494" x2="-1202.465" y2="936.3494" gradientTransform="matrix(-1 0 0 1 -1145.24 -680.57)">
+		<stop  offset="0" style="stop-color:#9CECFB"/>
+		<stop  offset="0.21" style="stop-color:#7ED8F9"/>
+		<stop  offset="0.37" style="stop-color:#65C7F7"/>
+		<stop  offset="1" style="stop-color:#0052D4"/>
+	</linearGradient>
+	<path class="st0" d="M256,454.5c-109.8,0-198.8-88.9-198.8-198.7S146.2,57.1,255.9,57S454.7,146,454.7,255.7c0,0,0,0,0,0
+		C454.6,365.5,365.7,454.4,256,454.5z M256,145.2c-61.1,0-110.6,49.5-110.6,110.6S194.9,366.4,256,366.4
+		c61.1,0,110.6-49.5,110.6-110.6C366.5,194.7,317.1,145.2,256,145.2z"/>
+	
+		<image style="overflow:visible;enable-background:new    ;" width="677" height="677" xlink:href="54BA2A5.png"  transform="matrix(0.7563 0 0 0.7563 0 0)">
+	</image>
+	<g>
+		<defs>
+			<path id="SVGID_00000154385800527547596950000006015417334751744918_" d="M423.4,256.8v-1l0.3-4.6c3.1-24.2,25.3-41.2,49.4-38.1
+				c21.6,2.8,37.9,20.9,38.4,42.7v1.5L423.4,256.8z"/>
+		</defs>
+		<clipPath id="SVGID_00000129904577101894893030000002049463046850146970_">
+			<use xlink:href="#SVGID_00000154385800527547596950000006015417334751744918_"  style="overflow:visible;"/>
+		</clipPath>
+		<g style="clip-path:url(#SVGID_00000129904577101894893030000002049463046850146970_);">
+			
+				<image style="overflow:visible;enable-background:new    ;" width="128" height="240" xlink:href="54BA2A7.png"  transform="matrix(0.7563 0 0 0.7563 422.7592 79.4092)">
+			</image>
+		</g>
+	</g>
+</g>
+</svg>

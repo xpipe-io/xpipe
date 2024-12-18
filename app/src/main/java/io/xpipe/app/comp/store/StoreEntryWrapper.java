@@ -3,15 +3,19 @@ package io.xpipe.app.comp.store;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.SingletonSessionStore;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 
 import lombok.Getter;
@@ -46,6 +50,8 @@ public class StoreEntryWrapper {
     private final Property<String> customIcon = new SimpleObjectProperty<>();
     private final Property<String> iconFile = new SimpleObjectProperty<>();
     private final BooleanProperty sessionActive = new SimpleBooleanProperty();
+    private final Property<DataStore> store = new SimpleObjectProperty<>();
+    private final Property<String> information = new SimpleStringProperty();
 
     public StoreEntryWrapper(DataStoreEntry entry) {
         this.entry = entry;
@@ -137,6 +143,19 @@ public class StoreEntryWrapper {
         // Avoid reupdating name when changed from the name property!
         if (!entry.getName().equals(name.getValue())) {
             name.setValue(entry.getName());
+        }
+
+        var storeChanged = store.getValue() != entry.getStore();
+        store.setValue(entry.getStore());
+        if (storeChanged || !information.isBound()) {
+            if (entry.getProvider() != null) {
+                var section = StoreViewState.get().getSectionForWrapper(this);
+                if (section.isPresent()) {
+                    information.unbind();
+                    var binding = PlatformThread.sync(entry.getProvider().informationString(section.get()));
+                    information.bind(binding);
+                }
+            }
         }
 
         lastAccess.setValue(entry.getLastAccess());
@@ -295,5 +314,35 @@ public class StoreEntryWrapper {
 
     public BooleanProperty disabledProperty() {
         return disabled;
+    }
+
+    public ObservableStringValue getShownName() {
+        return Bindings.createStringBinding(
+                () -> {
+                    var n = nameProperty().getValue();
+                    return AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n;
+                },
+                AppPrefs.get().censorMode(),
+                nameProperty());
+    }
+
+    public ObservableStringValue getShownSummary() {
+        return Bindings.createStringBinding(
+                () -> {
+                    var n = summary.getValue();
+                    return AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n;
+                },
+                AppPrefs.get().censorMode(),
+                summary);
+    }
+
+    public ObservableStringValue getShownInformation() {
+        return Bindings.createStringBinding(
+                () -> {
+                    var n = information.getValue();
+                    return AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n;
+                },
+                AppPrefs.get().censorMode(),
+                information);
     }
 }

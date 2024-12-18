@@ -7,7 +7,9 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.util.PlatformThread;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -57,6 +59,16 @@ public class StoreCategoryWrapper {
         this.directContainedEntries = FXCollections.observableArrayList();
         this.color.setValue(category.getColor());
         setupListeners();
+    }
+
+    public ObservableStringValue getShownName() {
+        return Bindings.createStringBinding(
+                () -> {
+                    var n = nameProperty().getValue();
+                    return AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n;
+                },
+                AppPrefs.get().censorMode(),
+                nameProperty());
     }
 
     public StoreCategoryWrapper getRoot() {

@@ -15,6 +15,10 @@ public abstract class EncryptedSecretValue implements SecretValue {
 
     String encryptedValue;
 
+    public EncryptedSecretValue(String encryptedValue) {
+        this.encryptedValue = encryptedValue;
+    }
+
     public EncryptedSecretValue(byte[] b) {
         encryptedValue = SecretValue.toBase64e(encrypt(b));
     }

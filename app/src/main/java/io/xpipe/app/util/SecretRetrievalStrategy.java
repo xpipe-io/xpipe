@@ -3,7 +3,7 @@ package io.xpipe.app.util;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataStoreSecret;
+import io.xpipe.app.storage.DataStorageSecret;
 import io.xpipe.core.util.InPlaceSecretValue;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -30,6 +30,7 @@ public interface SecretRetrievalStrategy {
     }
 
     @JsonTypeName("none")
+    @Value
     class None implements SecretRetrievalStrategy {
 
         @Override
@@ -48,9 +49,9 @@ public interface SecretRetrievalStrategy {
     @Jacksonized
     class InPlace implements SecretRetrievalStrategy {
 
-        DataStoreSecret value;
+        DataStorageSecret value;
 
-        public InPlace(DataStoreSecret value) {
+        public InPlace(DataStorageSecret value) {
             this.value = value;
         }
 

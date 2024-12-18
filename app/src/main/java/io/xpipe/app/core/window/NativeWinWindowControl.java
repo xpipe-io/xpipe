@@ -160,14 +160,10 @@ public class NativeWinWindowControl {
     }
 
     public enum DwmSystemBackDropType {
-        // DWMSBT_NONE
         NONE(1),
-        // DWMSBT_MAINWINDOW
         MICA(2),
-        // DWMSBT_TRANSIENTWINDOW
-        ACRYLIC(3),
-        // DWMSBT_TABBEDWINDOW
-        MICA_ALT(4);
+        MICA_ALT(4),
+        ACRYLIC(3);
 
         private final int value;
 

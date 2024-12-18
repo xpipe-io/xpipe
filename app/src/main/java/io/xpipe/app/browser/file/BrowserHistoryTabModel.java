@@ -7,10 +7,12 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.storage.DataColor;
 
+import javafx.beans.value.ObservableValue;
+
 public final class BrowserHistoryTabModel extends BrowserSessionTab {
 
     public BrowserHistoryTabModel(BrowserAbstractSessionModel<?> browserModel) {
-        super(browserModel, " " + AppI18n.get("history") + " ");
+        super(browserModel);
     }
 
     @Override
@@ -28,6 +30,11 @@ public final class BrowserHistoryTabModel extends BrowserSessionTab {
 
     @Override
     public void close() {}
+
+    @Override
+    public ObservableValue<String> getName() {
+        return AppI18n.observable("history").map(s -> " " + s + " ");
+    }
 
     @Override
     public String getIcon() {

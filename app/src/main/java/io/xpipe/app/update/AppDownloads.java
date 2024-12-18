@@ -3,7 +3,6 @@ package io.xpipe.app.update;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.util.HttpHelper;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.JacksonMapper;
@@ -60,16 +59,24 @@ public class AppDownloads {
                 return Optional.empty();
             }
 
-            var url = URI.create(asset.get().getBrowserDownloadUrl()).toURL();
-            var bytes = HttpHelper.executeGet(url, aFloat -> {});
+            var builder = HttpRequest.newBuilder();
+            var httpRequest = builder.uri(URI.create(asset.get().getBrowserDownloadUrl()))
+                    .GET()
+                    .build();
+            var client = HttpClient.newBuilder()
+                    .followRedirects(HttpClient.Redirect.NORMAL)
+                    .build();
+            var response = client.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
+            if (response.statusCode() != 200) {
+                throw new IOException(new String(response.body(), StandardCharsets.UTF_8));
+            }
             var downloadFile =
                     FileUtils.getTempDirectory().toPath().resolve(asset.get().getName());
-            Files.write(downloadFile, bytes);
-
+            Files.write(downloadFile, response.body());
             TrackEvent.withInfo("Downloaded asset")
                     .tag("version", version)
-                    .tag("url", url)
-                    .tag("size", FileUtils.byteCountToDisplaySize(bytes.length))
+                    .tag("url", asset.get().getBrowserDownloadUrl())
+                    .tag("size", FileUtils.byteCountToDisplaySize(response.body().length))
                     .tag("target", downloadFile)
                     .handle();
 
@@ -87,13 +94,19 @@ public class AppDownloads {
         }
 
         try {
-            var url = URI.create("https://api.xpipe.io/changelog?from="
-                            + AppProperties.get().getVersion() + "&to=" + version + "&stage="
-                            + AppProperties.get().isStaging())
-                    .toURL();
-            var bytes = HttpHelper.executeGet(url, aFloat -> {});
-            var string = new String(bytes, StandardCharsets.UTF_8);
-            var json = JacksonMapper.getDefault().readTree(string);
+            var uri = URI.create("https://api.xpipe.io/changelog?from="
+                    + AppProperties.get().getVersion() + "&to=" + version + "&stage="
+                    + AppProperties.get().isStaging());
+            var builder = HttpRequest.newBuilder();
+            var httpRequest = builder.uri(uri).GET().build();
+            var client = HttpClient.newBuilder()
+                    .followRedirects(HttpClient.Redirect.NORMAL)
+                    .build();
+            var response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) {
+                throw new IOException(response.body());
+            }
+            var json = JacksonMapper.getDefault().readTree(response.body());
             var changelog = json.required("changelog").asText();
             return Optional.of(changelog);
         } catch (Throwable t) {
@@ -109,9 +122,17 @@ public class AppDownloads {
                 return Optional.empty();
             }
 
-            var url = URI.create(asset.get().getBrowserDownloadUrl()).toURL();
-            var bytes = HttpHelper.executeGet(url, aFloat -> {});
-            return Optional.of(new String(bytes, StandardCharsets.UTF_8));
+            var uri = URI.create(asset.get().getBrowserDownloadUrl());
+            var builder = HttpRequest.newBuilder();
+            var httpRequest = builder.uri(uri).GET().build();
+            var client = HttpClient.newBuilder()
+                    .followRedirects(HttpClient.Redirect.NORMAL)
+                    .build();
+            var response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) {
+                throw new IOException(response.body());
+            }
+            return Optional.of(response.body());
         } catch (Throwable t) {
             ErrorEvent.fromThrowable(t).omitted(omitErrors).expected().handle();
             return Optional.empty();
@@ -136,7 +157,9 @@ public class AppDownloads {
         var httpRequest = builder.uri(url)
                 .POST(HttpRequest.BodyPublishers.ofString(req.toPrettyString()))
                 .build();
-        var client = HttpClient.newHttpClient();
+        var client = HttpClient.newBuilder()
+                .followRedirects(HttpClient.Redirect.NORMAL)
+                .build();
         var response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() != 200) {
             throw new IOException(response.body());

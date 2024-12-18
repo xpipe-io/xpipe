@@ -5,6 +5,7 @@ import io.xpipe.app.core.launcher.LauncherInput;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.storage.DataStorageUserHandler;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
@@ -16,13 +17,7 @@ import javax.imageio.ImageIO;
 
 public class AppDesktopIntegration {
 
-    public static void setupDesktopIntegrations() {
-        // Check if we were/are able to initialize the platform
-        // If not, we don't have to attempt the awt setup as well
-        if (!PlatformState.initPlatformIfNeeded()) {
-            return;
-        }
-
+    public static void init() {
         try {
             if (Desktop.isDesktopSupported()) {
                 Desktop.getDesktop().addAppEventListener(new SystemSleepListener() {
@@ -31,10 +26,11 @@ public class AppDesktopIntegration {
 
                     @Override
                     public void systemAwoke(SystemSleepEvent e) {
+                        var handler = DataStorageUserHandler.getInstance();
                         if (AppPrefs.get() != null
                                 && AppPrefs.get().lockVaultOnHibernation().get()
-                                && AppPrefs.get().getLockCrypt().get() != null
-                                && !AppPrefs.get().getLockCrypt().get().isBlank()) {
+                                && handler != null
+                                && handler.getActiveUser() != null) {
                             // If we run this at the same time as the system is sleeping, there might be exceptions
                             // because the platform does not like being shut down while sleeping
                             // This assures that it will be run later, on system wake

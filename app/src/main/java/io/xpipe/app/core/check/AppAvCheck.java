@@ -3,11 +3,9 @@ package io.xpipe.app.core.check;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.AppStyle;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.resources.AppResources;
-import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.process.OsType;
 
@@ -42,9 +40,6 @@ public class AppAvCheck {
         if (found.isEmpty()) {
             return;
         }
-
-        PlatformState.initPlatformOrThrow();
-        AppStyle.init();
 
         var a = AppWindowHelper.showBlockingAlert(alert -> {
             alert.setTitle(AppI18n.get("antivirusNoticeTitle"));

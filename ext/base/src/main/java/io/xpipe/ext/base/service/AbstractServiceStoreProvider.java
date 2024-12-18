@@ -2,17 +2,19 @@ package io.xpipe.ext.base.service;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.store.*;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.ext.SingletonSessionStoreProvider;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DataStoreFormatter;
+import io.xpipe.app.util.ShellStoreFormat;
 import io.xpipe.core.store.DataStore;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;
@@ -59,7 +61,7 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
                         return SystemStateComp.State.SUCCESS;
                     }
 
-                    if (!s.isSessionEnabled()) {
+                    if (!s.isSessionEnabled() || (s.isSessionEnabled() && !s.isSessionRunning())) {
                         return SystemStateComp.State.OTHER;
                     }
 
@@ -102,11 +104,22 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     @Override
     public ObservableValue<String> informationString(StoreSection section) {
         AbstractServiceStore s = section.getWrapper().getEntry().getStore().asNeeded();
-        if (s.getLocalPort() != null) {
-            return new SimpleStringProperty("Port " + s.getLocalPort() + " <- " + s.getRemotePort());
-        } else {
-            return new SimpleStringProperty("Port " + s.getRemotePort());
-        }
+        return Bindings.createStringBinding(
+                () -> {
+                    var desc = s.getLocalPort() != null
+                            ? "localhost:" + s.getLocalPort() + " <- " + s.getRemotePort()
+                            : s.isSessionRunning()
+                                    ? "localhost:" + s.getSession().getLocalPort() + " <- " + s.getRemotePort()
+                                    : AppI18n.get("remotePort", s.getRemotePort());
+                    var state = !s.requiresTunnel()
+                            ? null
+                            : s.isSessionRunning()
+                                    ? AppI18n.get("active")
+                                    : s.isSessionEnabled() ? AppI18n.get("starting") : AppI18n.get("inactive");
+                    return new ShellStoreFormat(null, desc, state).format();
+                },
+                section.getWrapper().getCache(),
+                AppPrefs.get().language());
     }
 
     @Override

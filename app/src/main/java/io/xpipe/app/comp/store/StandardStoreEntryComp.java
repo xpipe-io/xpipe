@@ -2,8 +2,6 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.AppFont;
-import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
 
 import javafx.geometry.HPos;
@@ -25,7 +23,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
 
     private Label createSummary() {
         var summary = new Label();
-        summary.textProperty().bind(getWrapper().getSummary());
+        summary.textProperty().bind(getWrapper().getShownSummary());
         summary.getStyleClass().add("summary");
         AppFont.small(summary);
         return summary;
@@ -98,16 +96,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
     private Label createInformation() {
         var information = new Label();
         information.setGraphicTextGap(7);
-        if (getWrapper().getEntry().getProvider() != null) {
-            try {
-                information
-                        .textProperty()
-                        .bind(PlatformThread.sync(
-                                getWrapper().getEntry().getProvider().informationString(section)));
-            } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).handle();
-            }
-        }
+        information.textProperty().bind(getWrapper().getShownInformation());
         information.getStyleClass().add("information");
 
         var state = getWrapper().getEntry().getProvider() != null

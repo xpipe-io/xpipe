@@ -55,6 +55,7 @@ public class App extends Application {
 
         var appWindow = AppMainWindow.init(stage);
         appWindow.getStage().titleProperty().bind(PlatformThread.sync(titleBinding));
+        TrackEvent.debug("Application title bound");
         appWindow.initialize();
         appWindow.setContent(content);
         TrackEvent.info("Application window initialized");

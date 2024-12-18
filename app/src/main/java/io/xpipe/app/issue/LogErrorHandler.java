@@ -15,6 +15,7 @@ public class LogErrorHandler implements ErrorHandler {
                         .logEvent(TrackEvent.fromMessage("error", event.getDescription())
                                 .build());
             }
+            AppLogs.get().flush();
             return;
         }
 

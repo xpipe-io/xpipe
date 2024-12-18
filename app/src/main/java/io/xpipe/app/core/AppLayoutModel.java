@@ -5,6 +5,7 @@ import io.xpipe.app.browser.BrowserFullSessionComp;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.store.StoreLayoutComp;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.AppPrefsComp;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LabelGraphic;
@@ -101,6 +102,12 @@ public class AppLayoutModel {
                         new LabelGraphic.IconGraphic("mdi2p-professional-hexagon"),
                         LicenseProvider.get().overviewPage(),
                         null,
+                        null),
+                new Entry(
+                        AppI18n.observable("team"),
+                        new LabelGraphic.IconGraphic("mdi2a-account-group"),
+                        null,
+                        () -> AppPrefs.get().selectCategory("vault"),
                         null),
                 new Entry(
                         AppI18n.observable("visitGithubRepository"),
