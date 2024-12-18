@@ -62,7 +62,7 @@ public class AppPrefsStorageHandler {
 
     void save() {
         try {
-            FileUtils.forceMkdirParent(file.getParent().toFile());
+            FileUtils.forceMkdir(file.getParent().toFile());
             JacksonMapper.getDefault().writeValue(file.toFile(), content);
         } catch (IOException e) {
             throw new RuntimeException(e);
