@@ -1,5 +1,6 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellDialect;
@@ -41,7 +42,7 @@ public class WaveTerminalType extends ExternalTerminalType.MacOsType {
     @Override
     public void launch(TerminalLaunchConfiguration configuration) throws Exception {
         try (var sc = LocalShell.getShell().start()) {
-            var wsh = sc.command(sc.getShellDialect().getWhichCommand("wsh")).readStdoutIfPossible();
+            var wsh = CommandSupport.findProgram(sc, "wsh");
             var def = sc.getOsType().getUserHomeDirectory(sc) + "/Library/Application Support/waveterm/bin/wsh";
             var absPath = wsh.orElse(def);
             sc.command(CommandBuilder.of().addFile(absPath).add("run", "--").add(configuration.getDialectLaunchCommand())).execute();

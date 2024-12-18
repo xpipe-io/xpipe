@@ -12,6 +12,7 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.PlatformInit;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeInstallation;
@@ -148,7 +149,10 @@ public abstract class OperationMode {
         if (AppProperties.get().isAotTrainMode()) {
             OperationMode.switchToSyncOrThrow(BACKGROUND);
             inStartup = false;
-            OperationMode.switchToSyncIfPossible(OperationMode.GUI);
+            // Linux runners don't support graphics
+            if (OsType.getLocal() != OsType.LINUX) {
+                OperationMode.switchToSyncOrThrow(OperationMode.GUI);
+            }
             OperationMode.shutdown(false, false);
             return;
         }
