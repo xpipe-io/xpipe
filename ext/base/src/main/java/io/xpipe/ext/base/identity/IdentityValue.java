@@ -76,7 +76,7 @@ public interface IdentityValue {
 
         @Override
         public boolean isPerUser() {
-            return ref.getStore() instanceof SyncedIdentityStore s && s.isPerUser();
+            return ref.get().isPerUserStore();
         }
     }
 }

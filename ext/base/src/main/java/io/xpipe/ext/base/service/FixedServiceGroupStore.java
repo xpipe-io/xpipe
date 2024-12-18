@@ -8,7 +8,9 @@ import io.xpipe.core.store.FixedChildStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -20,6 +22,8 @@ import java.util.List;
 @SuperBuilder
 @Jacksonized
 @JsonTypeName("fixedServiceGroup")
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public class FixedServiceGroupStore extends AbstractServiceGroupStore<FixedServiceCreatorStore>
         implements DataStore, FixedHierarchyStore {
 

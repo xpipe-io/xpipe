@@ -43,6 +43,10 @@ public interface NetworkTunnelStore extends DataStore {
                     "Unable to create tunnel chain as one intermediate system does not support tunneling");
         }
 
+        if (getNetworkParent() == null) {
+            return null;
+        }
+
         var counter = new AtomicInteger();
         var sessions = new ArrayList<NetworkTunnelSession>();
         NetworkTunnelStore current = this;

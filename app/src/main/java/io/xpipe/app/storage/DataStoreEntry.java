@@ -2,6 +2,7 @@ package io.xpipe.app.storage;
 
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
+import io.xpipe.app.ext.UserScopeStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.resources.SystemIcons;
 import io.xpipe.app.util.ThreadHelper;
@@ -334,8 +335,8 @@ public class DataStoreEntry extends StorageElement {
         return getName();
     }
 
-    public boolean isPerUser() {
-        return getStoreNode().isPerUser();
+    public boolean isPerUserStore() {
+        return getValidity().isUsable() && store instanceof UserScopeStore s && s.isPerUser();
     }
 
     public void incrementBusyCounter() {

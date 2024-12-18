@@ -6,13 +6,17 @@ import io.xpipe.core.store.DataStore;
 import io.xpipe.ext.base.GroupStore;
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
 @Getter
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @SuperBuilder
+@EqualsAndHashCode
+@ToString
 public abstract class AbstractServiceGroupStore<T extends DataStore> implements DataStore, GroupStore<T> {
 
     DataStoreEntryRef<T> parent;

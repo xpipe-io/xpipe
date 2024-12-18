@@ -24,7 +24,10 @@ import java.io.IOException;
 public class DataStorageNode {
 
     public static DataStorageNode ofNewStore(DataStore store) {
-        var perUser = store instanceof UserScopeStore s && s.isPerUser();
+        var perUser = false;
+        try {
+            perUser = store instanceof UserScopeStore s && s.isPerUser();
+        } catch (Exception ignored) {}
         var encrypted = perUser
                 || (AppPrefs.get() != null
                         && AppPrefs.get().encryptAllVaultData().get());

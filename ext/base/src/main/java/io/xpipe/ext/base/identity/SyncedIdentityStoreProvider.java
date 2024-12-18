@@ -95,8 +95,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
 
     @Override
     public String summaryString(StoreEntryWrapper wrapper) {
-        var st = (SyncedIdentityStore) wrapper.getStore().getValue();
-        return st.isPerUser() ? AppI18n.get("userIdentity") : AppI18n.get("globalIdentity");
+        return wrapper.getEntry().isPerUserStore() ? AppI18n.get("userIdentity") : AppI18n.get("globalIdentity");
     }
 
     @Override
