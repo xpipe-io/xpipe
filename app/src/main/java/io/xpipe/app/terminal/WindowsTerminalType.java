@@ -80,7 +80,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         var profiles = config.withObjectProperty("profiles").withArrayProperty("list");
         for (int i = 0; i < profiles.size(); i++) {
             var profile = profiles.get(i);
-            var profileId = profile.get("guids");
+            var profileId = profile.get("guid");
             if (profileId != null && profileId.asText().equals(uuid)) {
                 profiles.remove(i);
                 break;
