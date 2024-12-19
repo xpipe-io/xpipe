@@ -10,7 +10,8 @@ public interface ElevationHandler {
         return new ElevationHandler() {
 
             @Override
-            public boolean handleRequest(ShellControl parent, UUID requestId, CountDown countDown, boolean confirmIfNeeded) {
+            public boolean handleRequest(
+                    ShellControl parent, UUID requestId, CountDown countDown, boolean confirmIfNeeded) {
                 var r = ElevationHandler.this.handleRequest(parent, requestId, countDown, confirmIfNeeded);
                 return r || other.handleRequest(parent, requestId, countDown, confirmIfNeeded);
             }

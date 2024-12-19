@@ -5,7 +5,9 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.TerminalLauncher;
+
 import javafx.beans.value.ObservableValue;
+
 import lombok.Value;
 
 public class IncusContainerEditConfigAction implements ActionProvider {
@@ -49,7 +51,8 @@ public class IncusContainerEditConfigAction implements ActionProvider {
         @Override
         public void execute() throws Exception {
             var d = (IncusContainerStore) store.getStore();
-            var view = new IncusCommandView(d.getInstall().getStore().getHost().getStore().getOrStartSession());
+            var view = new IncusCommandView(
+                    d.getInstall().getStore().getHost().getStore().getOrStartSession());
             TerminalLauncher.open(store.getName(), view.configEdit(d.getContainerName()));
         }
     }

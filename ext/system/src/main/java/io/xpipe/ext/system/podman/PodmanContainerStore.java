@@ -124,39 +124,6 @@ public class PodmanContainerStore
         Validators.nonNull(containerName);
     }
 
-    private ShellControl control(ShellControl parent) {
-        var pc = new PodmanCommandView(parent).container().exec(containerName);
-        pc.withSourceStore(this);
-        pc.withShellStateInit(this);
-        pc.onInit(shellControl -> {
-            var s = getState().toBuilder()
-                    .osType(shellControl.getOsType())
-                    .shellDialect(shellControl.getShellDialect())
-                    .ttyState(shellControl.getTtyState())
-                    .running(true)
-                    .osName(shellControl.getOsName())
-                    .build();
-            setState(s);
-        });
-        pc.onStartupFail(throwable -> {
-            if (throwable instanceof LicenseRequiredException) {
-                return;
-            }
-
-            var stateBuilder = getState().toBuilder();
-            stateBuilder.running(false);
-            var hasShell =
-                    throwable.getMessage() == null || !throwable.getMessage().contains("OCI runtime exec failed");
-            if (!hasShell) {
-                stateBuilder.containerState("No shell available");
-            } else {
-                stateBuilder.containerState("Connection failed");
-            }
-            setState(stateBuilder.build());
-        });
-        return pc;
-    }
-
     @Override
     public ShellControlFunction shellFunction() {
         return new ShellControlParentStoreFunction() {

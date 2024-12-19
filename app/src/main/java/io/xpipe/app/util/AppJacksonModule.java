@@ -12,13 +12,10 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
 import java.util.UUID;
 
 public class AppJacksonModule extends SimpleModule {
@@ -181,8 +178,8 @@ public class AppJacksonModule extends SimpleModule {
             // Keep an invalid entry if it is per-user, meaning that it will get removed later on
             var e = DataStorage.get()
                     .getStoreEntryIfPresent(id)
-                    .filter(dataStoreEntry -> dataStoreEntry.getValidity() != DataStoreEntry.Validity.LOAD_FAILED ||
-                            !dataStoreEntry.getStoreNode().isAvailableForUser())
+                    .filter(dataStoreEntry -> dataStoreEntry.getValidity() != DataStoreEntry.Validity.LOAD_FAILED
+                            || !dataStoreEntry.getStoreNode().isAvailableForUser())
                     .orElse(null);
             if (e == null) {
                 return null;

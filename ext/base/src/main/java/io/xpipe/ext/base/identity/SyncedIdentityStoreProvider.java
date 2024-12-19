@@ -71,7 +71,8 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                 .nonNull()
                 .check(val -> Validator.create(val, AppI18n.observable("keyNotSynced"), identity, i -> {
                     var wrong = i instanceof SshIdentityStrategy.File f
-                            && f.getFile() != null && !f.getFile().isInDataDirectory();
+                            && f.getFile() != null
+                            && !f.getFile().isInDataDirectory();
                     return !wrong;
                 }))
                 .nameAndDescription(

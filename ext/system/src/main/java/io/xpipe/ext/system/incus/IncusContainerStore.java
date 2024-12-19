@@ -6,27 +6,22 @@ import io.xpipe.app.ext.ShellControlParentStoreFunction;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
-import io.xpipe.core.process.CountDown;
-import io.xpipe.core.process.ElevationHandler;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FixedChildStore;
 import io.xpipe.core.store.StatefulDataStore;
-
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.core.util.SecretReference;
 import io.xpipe.ext.base.store.PauseableStore;
 import io.xpipe.ext.base.store.StartableStore;
 import io.xpipe.ext.base.store.StoppableStore;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.OptionalInt;
-import java.util.UUID;
 
 @JsonTypeName("incusContainer")
 @SuperBuilder
@@ -34,7 +29,13 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @Value
-public class IncusContainerStore implements ShellStore, FixedChildStore, StatefulDataStore<ContainerStoreState>, StartableStore, StoppableStore, PauseableStore {
+public class IncusContainerStore
+        implements ShellStore,
+                FixedChildStore,
+                StatefulDataStore<ContainerStoreState>,
+                StartableStore,
+                StoppableStore,
+                PauseableStore {
 
     DataStoreEntryRef<IncusInstallStore> install;
     String containerName;
@@ -72,7 +73,9 @@ public class IncusContainerStore implements ShellStore, FixedChildStore, Statefu
             public ShellControl control(ShellControl parent) throws Exception {
                 Integer uid = null;
                 if (user != null) {
-                    try (var temp = new IncusCommandView(parent).exec(containerName, null).start()) {
+                    try (var temp = new IncusCommandView(parent)
+                            .exec(containerName, null)
+                            .start()) {
                         var passwd = PasswdFile.parse(temp);
                         uid = passwd.getUidForUser(user);
                     }
@@ -80,7 +83,8 @@ public class IncusContainerStore implements ShellStore, FixedChildStore, Statefu
 
                 var sc = new IncusCommandView(parent).exec(containerName, uid);
                 sc.withSourceStore(IncusContainerStore.this);
-                sc.setElevationHandler(new BaseElevationHandler(IncusContainerStore.this, password).orElse(sc.getElevationHandler()));
+                sc.setElevationHandler(
+                        new BaseElevationHandler(IncusContainerStore.this, password).orElse(sc.getElevationHandler()));
                 sc.withShellStateInit(IncusContainerStore.this);
                 sc.onStartupFail(throwable -> {
                     if (throwable instanceof LicenseRequiredException) {
@@ -104,7 +108,8 @@ public class IncusContainerStore implements ShellStore, FixedChildStore, Statefu
         var view = new IncusCommandView(sc);
         var displayState = view.queryContainerState(containerName);
         var running = "RUNNING".equals(displayState);
-        var newState = state.toBuilder().containerState(displayState).running(running).build();
+        var newState =
+                state.toBuilder().containerState(displayState).running(running).build();
         setState(newState);
     }
 

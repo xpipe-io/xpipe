@@ -6,14 +6,10 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.FileOpener;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.store.DataStore;
-import io.xpipe.ext.base.script.PredefinedScriptStore;
-import javafx.beans.value.ObservableValue;
-import lombok.Value;
 
-import java.util.Arrays;
+import javafx.beans.value.ObservableValue;
+
+import lombok.Value;
 
 public class LocalIdentityConvertAction implements ActionProvider {
 
@@ -60,7 +56,11 @@ public class LocalIdentityConvertAction implements ActionProvider {
         @Override
         public void execute() {
             var st = ref.getStore();
-            var synced = SyncedIdentityStore.builder().username(st.getUsername()).password(st.getPassword()).sshIdentity(st.getSshIdentity()).build();
+            var synced = SyncedIdentityStore.builder()
+                    .username(st.getUsername())
+                    .password(st.getPassword())
+                    .sshIdentity(st.getSshIdentity())
+                    .build();
             StoreCreationComp.showCreation(synced, DataStoreCreationCategory.IDENTITY, dataStoreEntry -> {}, true);
         }
     }

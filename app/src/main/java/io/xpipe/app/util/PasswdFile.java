@@ -1,10 +1,9 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellDialect;
+
 import lombok.Getter;
 
 import java.util.LinkedHashMap;

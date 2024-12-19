@@ -86,15 +86,18 @@ public class IncusCommandView extends CommandViewBase {
     }
 
     public void start(String containerName) throws Exception {
-        build(commandBuilder -> commandBuilder.add("start").addQuoted(containerName)).execute();
+        build(commandBuilder -> commandBuilder.add("start").addQuoted(containerName))
+                .execute();
     }
 
     public void stop(String containerName) throws Exception {
-        build(commandBuilder -> commandBuilder.add("stop").addQuoted(containerName)).execute();
+        build(commandBuilder -> commandBuilder.add("stop").addQuoted(containerName))
+                .execute();
     }
 
     public void pause(String containerName) throws Exception {
-        build(commandBuilder -> commandBuilder.add("pause").addQuoted(containerName)).execute();
+        build(commandBuilder -> commandBuilder.add("pause").addQuoted(containerName))
+                .execute();
     }
 
     public CommandControl console(String containerName) throws Exception {
@@ -163,11 +166,8 @@ public class IncusCommandView extends CommandViewBase {
     public CommandBuilder execCommand(String containerName, Integer uid, boolean terminal) {
         var c = CommandBuilder.of().add("incus", "exec", terminal ? "-t" : "-T");
         if (uid != null) {
-            c
-                    .add("--user")
-                    .add(uid.toString());
+            c.add("--user").add(uid.toString());
         }
-        return c.addQuoted(containerName)
-                .add("--");
+        return c.addQuoted(containerName).add("--");
     }
 }

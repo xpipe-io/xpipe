@@ -284,8 +284,12 @@ public class StandardStorage extends DataStorage {
     }
 
     private void filterPerUserEntries() {
-        var toRemove = getStoreEntries().stream().filter(dataStoreEntry -> shouldRemoveOtherUserEntry(dataStoreEntry)).toList();
-        directoriesToKeep.addAll(toRemove.stream().map(dataStoreEntry -> dataStoreEntry.getDirectory()).toList());
+        var toRemove = getStoreEntries().stream()
+                .filter(dataStoreEntry -> shouldRemoveOtherUserEntry(dataStoreEntry))
+                .toList();
+        directoriesToKeep.addAll(toRemove.stream()
+                .map(dataStoreEntry -> dataStoreEntry.getDirectory())
+                .toList());
         toRemove.forEach(storeEntries::remove);
     }
 

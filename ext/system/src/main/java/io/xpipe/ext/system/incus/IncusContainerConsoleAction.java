@@ -5,8 +5,9 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.TerminalLauncher;
-import io.xpipe.app.util.LicenseProvider;
+
 import javafx.beans.value.ObservableValue;
+
 import lombok.Value;
 
 public class IncusContainerConsoleAction implements ActionProvider {
@@ -50,7 +51,8 @@ public class IncusContainerConsoleAction implements ActionProvider {
         @Override
         public void execute() throws Exception {
             var d = (IncusContainerStore) store.getStore();
-            var view = new IncusCommandView(d.getInstall().getStore().getHost().getStore().getOrStartSession());
+            var view = new IncusCommandView(
+                    d.getInstall().getStore().getHost().getStore().getOrStartSession());
             TerminalLauncher.open(store.getName(), view.console(d.getContainerName()));
         }
     }

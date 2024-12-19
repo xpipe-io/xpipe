@@ -103,10 +103,12 @@ public class IdentityChoiceComp extends Comp<CompStructure<HBox>> {
 
     private String formatName(DataStoreEntry storeEntry) {
         IdentityStore id = storeEntry.getStore().asNeeded();
-        var suffix = id instanceof LocalIdentityStore ? AppI18n.get("localIdentity") : id instanceof SyncedIdentityStore && storeEntry.isPerUserStore() ?
-                AppI18n.get("userIdentity") : AppI18n.get("globalIdentity");
-        return storeEntry.getName() + " ("
-                + suffix + ")";
+        var suffix = id instanceof LocalIdentityStore
+                ? AppI18n.get("localIdentity")
+                : id instanceof SyncedIdentityStore && storeEntry.isPerUserStore()
+                        ? AppI18n.get("userIdentity")
+                        : AppI18n.get("globalIdentity");
+        return storeEntry.getName() + " (" + suffix + ")";
     }
 
     private void applyRef(DataStoreEntryRef<IdentityStore> newRef) {

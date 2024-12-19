@@ -80,9 +80,16 @@ public class IncusContainerStoreProvider implements ShellStoreProvider {
                 .addString(user, false)
                 .nameAndDescription("customUsernamePassword")
                 .sub(SecretRetrievalStrategyHelper.comp(password, false), password)
-                .bind(() -> {
-                    return IncusContainerStore.builder().containerName(st.getContainerName()).install(st.getInstall()).user(user.getValue()).password(password.getValue()).build();
-                }, store)
+                .bind(
+                        () -> {
+                            return IncusContainerStore.builder()
+                                    .containerName(st.getContainerName())
+                                    .install(st.getInstall())
+                                    .user(user.getValue())
+                                    .password(password.getValue())
+                                    .build();
+                        },
+                        store)
                 .buildDialog();
         return q;
     }

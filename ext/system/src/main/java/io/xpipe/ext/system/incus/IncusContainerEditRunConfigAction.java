@@ -9,7 +9,9 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.FilePath;
+
 import javafx.beans.value.ObservableValue;
+
 import lombok.Value;
 
 public class IncusContainerEditRunConfigAction implements ActionProvider {
@@ -53,9 +55,11 @@ public class IncusContainerEditRunConfigAction implements ActionProvider {
         @Override
         public void execute() throws Exception {
             var d = (IncusContainerStore) store.getStore();
-            var elevatedRef = ProcessControlProvider.get().elevated(d.getInstall().getStore().getHost().get().ref());
+            var elevatedRef = ProcessControlProvider.get()
+                    .elevated(d.getInstall().getStore().getHost().get().ref());
             var file = new FilePath("/run/incus/" + d.getContainerName() + "/lxc.conf");
-            var model = BrowserFullSessionModel.DEFAULT.openFileSystemSync(elevatedRef, m -> file.getParent().toString(), null, true);
+            var model = BrowserFullSessionModel.DEFAULT.openFileSystemSync(
+                    elevatedRef, m -> file.getParent().toString(), null, true);
             var found = model.findFile(file.toString());
             if (found.isEmpty()) {
                 return;

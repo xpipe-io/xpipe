@@ -1,7 +1,5 @@
 package io.xpipe.core.store;
 
-import io.xpipe.core.process.ShellControl;
-
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 

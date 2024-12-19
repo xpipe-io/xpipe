@@ -5,7 +5,6 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppDebugModeCheck;
 import io.xpipe.app.core.check.AppTempCheck;
 import io.xpipe.app.core.launcher.LauncherCommand;
-import io.xpipe.app.core.window.ModifiedStage;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.LocalShell;

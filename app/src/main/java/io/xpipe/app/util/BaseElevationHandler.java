@@ -29,8 +29,7 @@ public class BaseElevationHandler implements ElevationHandler {
         SecretManager.expectAskpass(
                 requestId,
                 ref.getSecretId(),
-                List.of(SecretQuery.confirmElevationIfNeeded(
-                        password.query(), confirmIfNeeded)),
+                List.of(SecretQuery.confirmElevationIfNeeded(password.query(), confirmIfNeeded)),
                 SecretQuery.prompt(false),
                 List.of(),
                 countDown,
@@ -40,8 +39,6 @@ public class BaseElevationHandler implements ElevationHandler {
 
     @Override
     public SecretReference getSecretRef() {
-        return password != null && password.expectsQuery()
-                ? new SecretReference(dataStore)
-                : null;
+        return password != null && password.expectsQuery() ? new SecretReference(dataStore) : null;
     }
 }

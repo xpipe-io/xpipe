@@ -27,7 +27,8 @@ public class DataStorageNode {
         var perUser = false;
         try {
             perUser = store instanceof UserScopeStore s && s.isPerUser();
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         var encrypted = perUser
                 || (AppPrefs.get() != null
                         && AppPrefs.get().encryptAllVaultData().get());
@@ -114,7 +115,8 @@ public class DataStorageNode {
 
         try {
             var perUser = store instanceof UserScopeStore s && s.isPerUser();
-            return new DataStorageNode(JacksonMapper.getDefault().valueToTree(store), perUser, availableForUser, encrypted);
+            return new DataStorageNode(
+                    JacksonMapper.getDefault().valueToTree(store), perUser, availableForUser, encrypted);
         } catch (Exception e) {
             // The per user check might fail for incomplete stores
             return new DataStorageNode(JacksonMapper.getDefault().valueToTree(store), false, true, encrypted);

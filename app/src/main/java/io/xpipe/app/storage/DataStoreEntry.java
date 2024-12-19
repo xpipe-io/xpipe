@@ -339,7 +339,8 @@ public class DataStoreEntry extends StorageElement {
         var perUser = false;
         try {
             perUser = store instanceof UserScopeStore s && s.isPerUser();
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         return perUser;
     }
 
