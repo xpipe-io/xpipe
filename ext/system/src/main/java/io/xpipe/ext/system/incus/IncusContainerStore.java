@@ -54,7 +54,7 @@ public class IncusContainerStore
         install.checkComplete();
         Validators.nonNull(containerName);
         if (identity != null) {
-            identity.checkComplete(true, false, false);
+            identity.checkComplete(false, false, false);
         }
     }
 
@@ -75,7 +75,7 @@ public class IncusContainerStore
             @Override
             public ShellControl control(ShellControl parent) throws Exception {
                 Integer uid = null;
-                if (identity != null) {
+                if (identity != null && identity.unwrap().getUsername() != null) {
                     try (var temp = new IncusCommandView(parent)
                             .exec(containerName, null)
                             .start()) {
@@ -87,7 +87,7 @@ public class IncusContainerStore
 
                 var sc = new IncusCommandView(parent).exec(containerName, uid);
                 sc.withSourceStore(IncusContainerStore.this);
-                if (identity != null) {
+                if (identity != null && identity.unwrap().getPassword() != null) {
                     sc.setElevationHandler(
                             new BaseElevationHandler(IncusContainerStore.this, identity.unwrap().getPassword()).orElse(sc.getElevationHandler()));
                 }

@@ -184,7 +184,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                             return selectedReference.get().get().getName();
                         }
 
-                        return AppI18n.get("defineNewIdentity");
+                        return AppI18n.get("defineNewIdentityOrSelect");
                     },
                     AppPrefs.get().language(),
                     selectedReference);

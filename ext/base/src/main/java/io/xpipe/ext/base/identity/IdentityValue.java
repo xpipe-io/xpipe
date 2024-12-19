@@ -17,6 +17,10 @@ import lombok.extern.jackson.Jacksonized;
 })
 public interface IdentityValue {
 
+    static IdentityValue of(LocalIdentityStore identityStore) {
+        return new InPlace(identityStore);
+    }
+
     void checkComplete(boolean requireUser, boolean requirePassword, boolean requireKey) throws Throwable;
 
     IdentityStore unwrap();
