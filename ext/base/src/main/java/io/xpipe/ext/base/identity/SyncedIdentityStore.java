@@ -30,16 +30,4 @@ public class SyncedIdentityStore extends IdentityStore implements UserScopeStore
             }
         }
     }
-
-    public boolean shouldSync() {
-        var self = getSelfEntry();
-        var cat = DataStorage.get()
-                .getStoreCategoryIfPresent(self.getCategoryUuid())
-                .orElseThrow();
-        var sync = DataStorage.get().shouldSync(cat)
-                || DataStorage.get().getCategoryParentHierarchy(cat).stream()
-                        .anyMatch(dataStoreCategory ->
-                                dataStoreCategory.getUuid().equals(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID));
-        return sync;
-    }
 }

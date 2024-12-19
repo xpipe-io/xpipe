@@ -30,6 +30,7 @@ public class SecretRetrievalStrategyHelper {
                         : null);
         return new OptionsBuilder()
                 .addComp(new SecretFieldComp(secretProperty, true), secretProperty)
+                .nonNull()
                 .bind(
                         () -> {
                             var newSecret = secretProperty.get();
@@ -76,6 +77,7 @@ public class SecretRetrievalStrategyHelper {
         var content = new TextFieldComp(cmdProperty);
         return new OptionsBuilder()
                 .addComp(content, cmdProperty)
+                .nonNull()
                 .bind(
                         () -> {
                             return new SecretRetrievalStrategy.CustomCommand(cmdProperty.getValue());

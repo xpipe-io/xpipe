@@ -9,6 +9,7 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FixedChildStore;
 import io.xpipe.core.store.StatefulDataStore;
+import io.xpipe.ext.base.identity.IdentityValue;
 import io.xpipe.ext.base.store.PauseableStore;
 import io.xpipe.ext.base.store.StartableStore;
 import io.xpipe.ext.base.store.StoppableStore;
@@ -39,8 +40,7 @@ public class IncusContainerStore
 
     DataStoreEntryRef<IncusInstallStore> install;
     String containerName;
-    String user;
-    SecretRetrievalStrategy password;
+    IdentityValue identity;
 
     @Override
     public Class<ContainerStoreState> getStateClass() {
@@ -53,6 +53,9 @@ public class IncusContainerStore
         Validators.isType(install, IncusInstallStore.class);
         install.checkComplete();
         Validators.nonNull(containerName);
+        if (identity != null) {
+            identity.checkComplete(true, false, false);
+        }
     }
 
     @Override
@@ -72,19 +75,22 @@ public class IncusContainerStore
             @Override
             public ShellControl control(ShellControl parent) throws Exception {
                 Integer uid = null;
-                if (user != null) {
+                if (identity != null) {
                     try (var temp = new IncusCommandView(parent)
                             .exec(containerName, null)
                             .start()) {
                         var passwd = PasswdFile.parse(temp);
-                        uid = passwd.getUidForUser(user);
+                        uid = passwd.getUidForUserIfPresent(identity.unwrap().getUsername())
+                                .orElseThrow(() -> new IllegalArgumentException("User " + identity.unwrap().getUsername() + " not found"));
                     }
                 }
 
                 var sc = new IncusCommandView(parent).exec(containerName, uid);
                 sc.withSourceStore(IncusContainerStore.this);
-                sc.setElevationHandler(
-                        new BaseElevationHandler(IncusContainerStore.this, password).orElse(sc.getElevationHandler()));
+                if (identity != null) {
+                    sc.setElevationHandler(
+                            new BaseElevationHandler(IncusContainerStore.this, identity.unwrap().getPassword()).orElse(sc.getElevationHandler()));
+                }
                 sc.withShellStateInit(IncusContainerStore.this);
                 sc.onStartupFail(throwable -> {
                     if (throwable instanceof LicenseRequiredException) {

@@ -580,7 +580,7 @@ public abstract class DataStorage {
     }
 
     public void deleteWithChildren(DataStoreEntry... entries) {
-        var toDelete = Arrays.stream(entries)
+        List<DataStoreEntry> toDelete = Arrays.stream(entries)
                 .flatMap(entry -> {
                     var c = getDeepStoreChildren(entry);
                     c.add(entry);
@@ -591,8 +591,13 @@ public abstract class DataStorage {
             return;
         }
 
-        toDelete.forEach(entry -> entry.finalizeEntry());
-        toDelete.forEach(this.storeEntriesSet::remove);
+        for (var td : toDelete) {
+            td.finalizeEntry();
+            this.storeEntriesSet.remove(td);
+            var parent = getDefaultDisplayParent(td);
+            parent.ifPresent(p -> p.setChildrenCache(null));
+        }
+
         this.listeners.forEach(l -> l.onStoreRemove(toDelete.toArray(DataStoreEntry[]::new)));
         refreshEntries();
         saveAsync();

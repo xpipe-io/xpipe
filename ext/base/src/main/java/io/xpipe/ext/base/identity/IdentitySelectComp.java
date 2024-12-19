@@ -33,9 +33,9 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-public class IdentityChoiceComp extends Comp<CompStructure<HBox>> {
+public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
 
-    public IdentityChoiceComp(
+    public IdentitySelectComp(
             ObjectProperty<DataStoreEntryRef<IdentityStore>> selectedReference,
             Property<String> inPlaceUser,
             ObservableValue<SecretRetrievalStrategy> password,

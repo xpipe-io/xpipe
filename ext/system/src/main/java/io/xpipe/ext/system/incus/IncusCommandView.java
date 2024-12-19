@@ -113,7 +113,7 @@ public class IncusCommandView extends CommandViewBase {
         return listContainersAndStates().entrySet().stream()
                 .map(s -> {
                     boolean running = s.getValue().toLowerCase(Locale.ROOT).equals("running");
-                    var c = new IncusContainerStore(store, s.getKey(), null, null);
+                    var c = new IncusContainerStore(store, s.getKey(), null);
                     var entry = DataStoreEntry.createNew(c.getContainerName(), c);
                     entry.setStorePersistentState(ContainerStoreState.builder()
                             .containerState(s.getValue())

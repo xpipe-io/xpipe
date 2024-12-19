@@ -45,7 +45,6 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
                 .description("keyAuthenticationDescription")
                 .longDescription("base:sshKey")
                 .sub(SshIdentityStrategyHelper.identity(new SimpleObjectProperty<>(), identity, false, null), identity)
-                .nonNull()
                 .bind(
                         () -> {
                             return LocalIdentityStore.builder()

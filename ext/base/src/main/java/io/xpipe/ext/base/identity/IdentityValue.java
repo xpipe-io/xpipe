@@ -17,9 +17,9 @@ import lombok.extern.jackson.Jacksonized;
 })
 public interface IdentityValue {
 
-    void checkComplete(boolean requireUser) throws Throwable;
+    void checkComplete(boolean requireUser, boolean requirePassword, boolean requireKey) throws Throwable;
 
-    IdentityStore getIdentityStore();
+    IdentityStore unwrap();
 
     boolean isPerUser();
 
@@ -32,16 +32,22 @@ public interface IdentityValue {
         LocalIdentityStore identityStore;
 
         @Override
-        public void checkComplete(boolean requireUser) throws Throwable {
+        public void checkComplete(boolean requireUser, boolean requirePassword, boolean requireKey) throws Throwable {
             Validators.nonNull(identityStore);
             identityStore.checkComplete();
             if (requireUser) {
                 Validators.nonNull(identityStore.getUsername());
             }
+            if (requirePassword) {
+                Validators.nonNull(identityStore.getPassword());
+            }
+            if (requireKey) {
+                Validators.nonNull(identityStore.getSshIdentity());
+            }
         }
 
         @Override
-        public LocalIdentityStore getIdentityStore() {
+        public LocalIdentityStore unwrap() {
             return identityStore;
         }
 
@@ -60,17 +66,23 @@ public interface IdentityValue {
         DataStoreEntryRef<IdentityStore> ref;
 
         @Override
-        public void checkComplete(boolean requireUser) throws Throwable {
+        public void checkComplete(boolean requireUser, boolean requirePassword, boolean requireKey) throws Throwable {
             Validators.nonNull(ref);
             Validators.isType(ref, IdentityStore.class);
             ref.getStore().checkComplete();
             if (requireUser) {
                 Validators.nonNull(ref.getStore().getUsername());
             }
+            if (requirePassword) {
+                Validators.nonNull(ref.getStore().getPassword());
+            }
+            if (requireKey) {
+                Validators.nonNull(ref.getStore().getSshIdentity());
+            }
         }
 
         @Override
-        public IdentityStore getIdentityStore() {
+        public IdentityStore unwrap() {
             return ref.getStore();
         }
 

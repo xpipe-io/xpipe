@@ -9,6 +9,7 @@ import io.xpipe.core.util.InPlaceSecretValue;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.core.util.ValidationException;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -22,6 +23,8 @@ import lombok.extern.jackson.Jacksonized;
     @JsonSubTypes.Type(value = SecretRetrievalStrategy.PasswordManager.class)
 })
 public interface SecretRetrievalStrategy {
+
+    default void checkComplete() throws ValidationException {}
 
     SecretQuery query();
 
@@ -53,6 +56,11 @@ public interface SecretRetrievalStrategy {
 
         public InPlace(DataStorageSecret value) {
             this.value = value;
+        }
+
+        @Override
+        public void checkComplete() throws ValidationException {
+            Validators.nonNull(value);
         }
 
         @Override
@@ -121,6 +129,11 @@ public interface SecretRetrievalStrategy {
         String key;
 
         @Override
+        public void checkComplete() throws ValidationException {
+            Validators.nonNull(key);
+        }
+
+        @Override
         public SecretQuery query() {
             return new SecretQuery() {
                 @Override
@@ -171,6 +184,11 @@ public interface SecretRetrievalStrategy {
     class CustomCommand implements SecretRetrievalStrategy {
 
         String command;
+
+        @Override
+        public void checkComplete() throws ValidationException {
+            Validators.nonNull(command);
+        }
 
         @Override
         public SecretQuery query() {

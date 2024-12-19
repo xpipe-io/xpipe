@@ -9,6 +9,7 @@ import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.ext.base.identity.IdentityChoice;
 import io.xpipe.ext.base.store.ShellStoreProvider;
 
 import javafx.beans.property.Property;
@@ -62,8 +63,7 @@ public class IncusContainerStoreProvider implements ShellStoreProvider {
     @Override
     public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
         IncusContainerStore st = (IncusContainerStore) store.getValue();
-        Property<String> user = new SimpleObjectProperty<>(st.getUser());
-        Property<SecretRetrievalStrategy> password = new SimpleObjectProperty<>(st.getPassword());
+        var identity = new SimpleObjectProperty<>(st.getIdentity());
 
         var q = new OptionsBuilder()
                 .name("host")
@@ -76,17 +76,13 @@ public class IncusContainerStoreProvider implements ShellStoreProvider {
                 .description("lxdContainerDescription")
                 .addString(new SimpleObjectProperty<>(st.getContainerName()), false)
                 .disable()
-                .nameAndDescription("customUsername")
-                .addString(user, false)
-                .nameAndDescription("customUsernamePassword")
-                .sub(SecretRetrievalStrategyHelper.comp(password, false), password)
+                .sub(IdentityChoice.container(identity), identity)
                 .bind(
                         () -> {
                             return IncusContainerStore.builder()
                                     .containerName(st.getContainerName())
                                     .install(st.getInstall())
-                                    .user(user.getValue())
-                                    .password(password.getValue())
+                                    .identity(identity.getValue())
                                     .build();
                         },
                         store)
