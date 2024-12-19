@@ -85,12 +85,32 @@ public class IncusCommandView extends CommandViewBase {
         return build(commandBuilder -> commandBuilder.add("version")).readStdoutOrThrow();
     }
 
+    public void start(String containerName) throws Exception {
+        build(commandBuilder -> commandBuilder.add("start").addQuoted(containerName)).execute();
+    }
+
+    public void stop(String containerName) throws Exception {
+        build(commandBuilder -> commandBuilder.add("stop").addQuoted(containerName)).execute();
+    }
+
+    public void pause(String containerName) throws Exception {
+        build(commandBuilder -> commandBuilder.add("pause").addQuoted(containerName)).execute();
+    }
+
+    public CommandControl console(String containerName) throws Exception {
+        return build(commandBuilder -> commandBuilder.add("console").addQuoted(containerName));
+    }
+
+    public CommandControl configEdit(String containerName) throws Exception {
+        return build(commandBuilder -> commandBuilder.add("config", "edit").addQuoted(containerName));
+    }
+
     public List<DataStoreEntryRef<IncusContainerStore>> listContainers(DataStoreEntryRef<IncusInstallStore> store)
             throws Exception {
         return listContainersAndStates().entrySet().stream()
                 .map(s -> {
                     boolean running = s.getValue().toLowerCase(Locale.ROOT).equals("running");
-                    var c = new IncusContainerStore(store, s.getKey());
+                    var c = new IncusContainerStore(store, s.getKey(), null, null);
                     var entry = DataStoreEntry.createNew(c.getContainerName(), c);
                     entry.setStorePersistentState(ContainerStoreState.builder()
                             .containerState(s.getValue())
@@ -100,6 +120,11 @@ public class IncusCommandView extends CommandViewBase {
                 })
                 .flatMap(Optional::stream)
                 .toList();
+    }
+
+    public String queryContainerState(String containerName) throws Exception {
+        var states = listContainersAndStates();
+        return states.getOrDefault(containerName, "?");
     }
 
     private Map<String, String> listContainersAndStates() throws Exception {
@@ -112,33 +137,37 @@ public class IncusCommandView extends CommandViewBase {
         }
     }
 
-    public ShellControl exec(String container) {
+    public ShellControl exec(String container, Integer uid) {
         return shellControl
-                .subShell(createOpenFunction(container, false), createOpenFunction(container, true))
+                .subShell(createOpenFunction(container, uid, false), createOpenFunction(container, uid, true))
                 .withErrorFormatter(IncusCommandView::formatErrorMessage)
                 .withExceptionConverter(IncusCommandView::convertException)
                 .elevated(requiresElevation());
     }
 
-    private ShellOpenFunction createOpenFunction(String containerName, boolean terminal) {
+    private ShellOpenFunction createOpenFunction(String containerName, Integer uid, boolean terminal) {
         return new ShellOpenFunction() {
             @Override
             public CommandBuilder prepareWithoutInitCommand() {
-                return execCommand(containerName, terminal)
+                return execCommand(containerName, uid, terminal)
                         .add(ShellDialects.SH.getLaunchCommand().loginCommand());
             }
 
             @Override
             public CommandBuilder prepareWithInitCommand(@NonNull String command) {
-                return execCommand(containerName, terminal).add(command);
+                return execCommand(containerName, uid, terminal).add(command);
             }
         };
     }
 
-    public CommandBuilder execCommand(String containerName, boolean terminal) {
-        return CommandBuilder.of()
-                .add("incus", "exec", terminal ? "-t" : "-T")
-                .addQuoted(containerName)
+    public CommandBuilder execCommand(String containerName, Integer uid, boolean terminal) {
+        var c = CommandBuilder.of().add("incus", "exec", terminal ? "-t" : "-T");
+        if (uid != null) {
+            c
+                    .add("--user")
+                    .add(uid.toString());
+        }
+        return c.addQuoted(containerName)
                 .add("--");
     }
 }

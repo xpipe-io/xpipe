@@ -15,15 +15,15 @@ public class IdentityHelper {
             boolean allowUserInput) {
         var existing = identity.getValue();
         var user = new SimpleStringProperty(
-                existing instanceof IdentityValue.InPlace inPlace
+                existing instanceof IdentityValue.InPlace inPlace && inPlace.getIdentityStore() != null
                         ? inPlace.getIdentityStore().getUsername()
                         : null);
         var pass = new SimpleObjectProperty<>(
-                existing instanceof IdentityValue.InPlace inPlace
+                existing instanceof IdentityValue.InPlace inPlace && inPlace.getIdentityStore() != null
                         ? inPlace.getIdentityStore().getPassword()
                         : null);
         var identityStrategy = new SimpleObjectProperty<>(
-                existing instanceof IdentityValue.InPlace inPlace
+                existing instanceof IdentityValue.InPlace inPlace && inPlace.getIdentityStore() != null
                         ? inPlace.getIdentityStore().getSshIdentity()
                         : null);
         var ref = new SimpleObjectProperty<>(existing instanceof IdentityValue.Ref r ? r.getRef() : null);

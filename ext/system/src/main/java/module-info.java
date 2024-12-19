@@ -1,6 +1,7 @@
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.ScanProvider;
+import io.xpipe.ext.system.incus.IncusContainerActionMenu;
 import io.xpipe.ext.system.incus.IncusContainerStoreProvider;
 import io.xpipe.ext.system.incus.IncusInstallStoreProvider;
 import io.xpipe.ext.system.incus.IncusScanProvider;
@@ -34,5 +35,6 @@ open module io.xpipe.ext.system {
             PodmanContainerStoreProvider,
             PodmanCmdStoreProvider;
     provides ActionProvider with
+            IncusContainerActionMenu,
             PodmanContainerActionMenu;
 }

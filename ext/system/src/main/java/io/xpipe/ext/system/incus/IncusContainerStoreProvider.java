@@ -7,10 +7,7 @@ import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.ext.ContainerStoreState;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.DataStoreFormatter;
-import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.ShellStoreFormat;
-import io.xpipe.app.util.SimpleValidator;
+import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.ext.base.store.ShellStoreProvider;
 
@@ -51,7 +48,7 @@ public class IncusContainerStoreProvider implements ShellStoreProvider {
                     in a host shell of `%s` to open a shell into the container.
                     """,
                 new IncusCommandView(null)
-                        .execCommand(c.getContainerName(), true)
+                        .execCommand(c.getContainerName(), null, true)
                         .buildSimple(),
                 c.getInstall().getStore().getHost().get().getName());
     }
@@ -64,8 +61,9 @@ public class IncusContainerStoreProvider implements ShellStoreProvider {
 
     @Override
     public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
-        var val = new SimpleValidator();
         IncusContainerStore st = (IncusContainerStore) store.getValue();
+        Property<String> user = new SimpleObjectProperty<>(st.getUser());
+        Property<SecretRetrievalStrategy> password = new SimpleObjectProperty<>(st.getPassword());
 
         var q = new OptionsBuilder()
                 .name("host")
@@ -78,8 +76,15 @@ public class IncusContainerStoreProvider implements ShellStoreProvider {
                 .description("lxdContainerDescription")
                 .addString(new SimpleObjectProperty<>(st.getContainerName()), false)
                 .disable()
-                .buildComp();
-        return new GuiDialog(q, val);
+                .nameAndDescription("customUsername")
+                .addString(user, false)
+                .nameAndDescription("customUsernamePassword")
+                .sub(SecretRetrievalStrategyHelper.comp(password, false), password)
+                .bind(() -> {
+                    return IncusContainerStore.builder().containerName(st.getContainerName()).install(st.getInstall()).user(user.getValue()).password(password.getValue()).build();
+                }, store)
+                .buildDialog();
+        return q;
     }
 
     @Override

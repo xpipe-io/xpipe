@@ -65,6 +65,13 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         fileList = new BrowserFileListModel(selectionMode, this);
     }
 
+    public Optional<FileEntry> findFile(String path) {
+        return getFileList().getAll().getValue().stream()
+                .filter(browserEntry -> browserEntry.getFileName().equals(path) || browserEntry.getRawFileEntry().getPath().equals(path))
+                .findFirst()
+                .map(browserEntry -> browserEntry.getRawFileEntry());
+    }
+
     @Override
     public Comp<?> comp() {
         return new BrowserFileSystemTabComp(this, true);
