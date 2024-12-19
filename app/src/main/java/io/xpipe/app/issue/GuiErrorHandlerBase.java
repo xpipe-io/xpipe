@@ -11,7 +11,6 @@ public class GuiErrorHandlerBase {
         try {
             AppProperties.init();
             AppExtensionManager.init(false);
-            AppI18n.init();
             PlatformInit.init(true);
         } catch (Throwable ex) {
             onFail.accept(ex);

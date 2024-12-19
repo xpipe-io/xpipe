@@ -5,6 +5,7 @@ import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialect;
+import lombok.Getter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -17,6 +18,7 @@ public class PasswdFile {
         return passwdFile;
     }
 
+    @Getter
     private final Map<Integer, String> users = new LinkedHashMap<>();
 
     public int getUidForUser(String name) {

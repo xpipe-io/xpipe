@@ -32,6 +32,10 @@ public class BrowserFileSystemCache extends ShellControlCache {
         loadGroups();
     }
 
+    public Map<Integer, String> getUsers() {
+        return passwdFile.getUsers();
+    }
+
     public int getUidForUser(String name) {
         return passwdFile.getUidForUser(name);
     }

@@ -5,6 +5,7 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.Hyperlinks;
+import io.xpipe.app.util.PlatformInit;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.scene.control.Alert;
@@ -41,9 +42,7 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
         try {
             AppProperties.init();
             AppExtensionManager.init(false);
-            AppI18n.init();
-            AppStyle.init();
-            AppTheme.init();
+            PlatformInit.init(true);
             ErrorHandlerComp.showAndTryWait(event, true);
         } catch (Throwable r) {
             event.clearAttachments();

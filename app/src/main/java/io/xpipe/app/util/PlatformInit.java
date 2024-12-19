@@ -1,8 +1,10 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppDesktopIntegration;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppStyle;
 import io.xpipe.app.core.AppTheme;
+import io.xpipe.app.core.window.ModifiedStage;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 
@@ -44,9 +46,11 @@ public class PlatformInit {
     private static synchronized void initSync() {
         try {
             TrackEvent.info("Platform init started");
+            ModifiedStage.init();
             PlatformState.initPlatformOrThrow();
             AppStyle.init();
             AppTheme.init();
+            AppI18n.init();
             AppDesktopIntegration.init();
             TrackEvent.info("Platform init finished");
             latch.countDown();

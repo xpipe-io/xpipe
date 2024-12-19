@@ -8,6 +8,8 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.OptionsBuilder;
+import io.xpipe.app.util.PlatformState;
+import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.Translatable;
 import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.XPipeInstallation;
@@ -116,15 +118,18 @@ public class AppI18n {
             Locale.setDefault(Locale.ENGLISH);
         }
 
-        if (currentLanguage.getValue() == null) {
+        if (currentLanguage.getValue() == null && PlatformState.getCurrent() == PlatformState.RUNNING) {
             if (AppPrefs.get() != null) {
-                AppPrefs.get().language().subscribe(n -> {
-                    try {
-                        currentLanguage.setValue(n != null ? load(n.getLocale()) : null);
-                        Locale.setDefault(n != null ? n.getLocale() : Locale.ENGLISH);
-                    } catch (Exception e) {
-                        ErrorEvent.fromThrowable(e).handle();
-                    }
+                // Perform initial update on platform thread
+                PlatformThread.runLaterIfNeededBlocking(() -> {
+                    AppPrefs.get().language().subscribe(n -> {
+                        try {
+                            currentLanguage.setValue(n != null ? load(n.getLocale()) : null);
+                            Locale.setDefault(n != null ? n.getLocale() : Locale.ENGLISH);
+                        } catch (Exception e) {
+                            ErrorEvent.fromThrowable(e).handle();
+                        }
+                    });
                 });
             }
         }

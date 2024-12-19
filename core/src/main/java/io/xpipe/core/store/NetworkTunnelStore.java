@@ -43,14 +43,14 @@ public interface NetworkTunnelStore extends DataStore {
                     "Unable to create tunnel chain as one intermediate system does not support tunneling");
         }
 
-        if (getNetworkParent() == null) {
-            return null;
-        }
-
         var counter = new AtomicInteger();
         var sessions = new ArrayList<NetworkTunnelSession>();
         NetworkTunnelStore current = this;
         do {
+            if (current.getNetworkParent() == null) {
+                break;
+            }
+
             var currentLocalPort = current.isLast() ? local : randomPort();
             var currentRemotePort =
                     sessions.isEmpty() ? remotePort : sessions.getLast().getLocalPort();
@@ -66,34 +66,7 @@ public interface NetworkTunnelStore extends DataStore {
         }
 
         if (sessions.isEmpty()) {
-            return new NetworkTunnelSession(null) {
-
-                @Override
-                public boolean isRunning() {
-                    return false;
-                }
-
-                @Override
-                public void start() {}
-
-                @Override
-                public void stop() {}
-
-                @Override
-                public int getLocalPort() {
-                    return remotePort;
-                }
-
-                @Override
-                public int getRemotePort() {
-                    return remotePort;
-                }
-
-                @Override
-                public ShellControl getShellControl() {
-                    return null;
-                }
-            };
+            return null;
         }
 
         return new SessionChain(running1 -> {}, sessions);
