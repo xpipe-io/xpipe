@@ -6,6 +6,7 @@ import io.xpipe.core.process.OsType;
 
 import javafx.scene.Node;
 import javafx.scene.text.Font;
+import org.kordamp.ikonli.javafx.IkonResolver;
 
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -46,6 +47,8 @@ public class AppFont {
     }
 
     public static void init() {
+        // Load ikonli font
+        IkonResolver.getInstance();
         TrackEvent.info("Loading fonts ...");
         AppResources.with(
                 AppResources.XPIPE_MODULE,

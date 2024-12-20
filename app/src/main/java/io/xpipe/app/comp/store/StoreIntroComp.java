@@ -1,6 +1,7 @@
 package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.PrettySvgComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
@@ -44,7 +45,7 @@ public class StoreIntroComp extends SimpleComp {
         var scanPane = new StackPane(scanButton);
         scanPane.setAlignment(Pos.CENTER);
 
-        var img = new PrettySvgComp(new SimpleStringProperty("graphics/Wave.svg"), 80, 150).createRegion();
+        var img = PrettyImageHelper.ofFixedSize("graphics/Wave.svg", 80, 141).createRegion();
         var text = new VBox(title, introDesc);
         text.setSpacing(5);
         text.setAlignment(Pos.CENTER_LEFT);

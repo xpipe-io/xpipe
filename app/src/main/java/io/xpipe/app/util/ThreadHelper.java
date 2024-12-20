@@ -4,7 +4,9 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.util.FailableRunnable;
+import lombok.SneakyThrows;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ThreadHelper {
@@ -62,5 +64,25 @@ public class ThreadHelper {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    @SafeVarargs
+    @SneakyThrows
+    public static void loadParallel(boolean terminal, FailableRunnable<Throwable>... r) {
+        var latch = new CountDownLatch(r.length);
+        for (var i = 0; i < r.length; i++) {
+            var runnable = r[i];
+            var thread = ThreadHelper.createPlatformThread("init-" + i, false, () -> {
+                try {
+                    runnable.run();
+                    latch.countDown();
+                } catch (Throwable e) {
+                    ErrorEvent.fromThrowable(e).terminal(terminal).handle();
+                    latch.countDown();
+                }
+            });
+            thread.start();
+        }
+        latch.await();
     }
 }

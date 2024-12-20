@@ -53,7 +53,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
         var vbox = new VBox(welcome, new Spacer(4, Orientation.VERTICAL));
         vbox.setAlignment(Pos.CENTER_LEFT);
 
-        var img = new PrettySvgComp(new SimpleStringProperty("graphics/Hips.svg"), 50, 75)
+        var img = PrettyImageHelper.ofFixedSize("graphics/Hips.svg", 50, 61)
                 .padding(new Insets(5, 0, 0, 0))
                 .createRegion();
 

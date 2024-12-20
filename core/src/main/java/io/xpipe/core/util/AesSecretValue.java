@@ -68,6 +68,10 @@ public abstract class AesSecretValue extends EncryptedSecretValue {
         bb.get(cipherText);
 
         SecretKey secretKey = getSecretKey();
+        if (secretKey == null) {
+            return new byte[0];
+        }
+
         Cipher cipher = Cipher.getInstance(ENCRYPT_ALGO);
         cipher.init(Cipher.DECRYPT_MODE, secretKey, new GCMParameterSpec(TAG_LENGTH_BIT, iv));
         return cipher.doFinal(cipherText);

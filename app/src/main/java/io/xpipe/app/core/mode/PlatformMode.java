@@ -32,21 +32,6 @@ public abstract class PlatformMode extends OperationMode {
 
         TrackEvent.info("Platform mode initial setup");
         PlatformInit.init(true);
-        // Can be loaded async
-        var imageThread = ThreadHelper.runFailableAsync(() -> {
-            AppImages.init();
-        });
-        TrackEvent.info("Finished essential component initialization before platform");
-
-        // If we downloaded an update, and decided to no longer automatically update, don't remind us!
-        // You can still update manually in the about tab
-        if (AppPrefs.get().automaticallyUpdate().get()
-                || AppPrefs.get().checkForSecurityUpdates().get()) {
-            UpdateAvailableAlert.showIfNeeded();
-        }
-
-        StoreViewState.init();
-        imageThread.join();
         loaded = true;
         TrackEvent.info("Platform mode startup finished");
     }

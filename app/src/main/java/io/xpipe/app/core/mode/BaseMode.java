@@ -11,12 +11,14 @@ import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.resources.SystemIcons;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.terminal.TerminalLauncherManager;
 import io.xpipe.app.terminal.TerminalView;
+import io.xpipe.app.update.UpdateAvailableAlert;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.*;
 
@@ -51,26 +53,42 @@ public class BaseMode extends OperationMode {
         AppAvCheck.check();
         AppJavaOptionsCheck.check();
         AppSid.init();
-        LocalShell.init();
-        AppShellCheck.check();
-        AppRosettaCheck.check();
-        AppTestCommandCheck.check();
-        XPipeDistributionType.init();
-        AppPrefs.setLocalDefaultsIfNeeded();
-        // Initialize beacon server as we should be prepared for git askpass commands
-        AppBeaconServer.init();
-        DataStorageSyncHandler.getInstance().init();
-        DataStorageSyncHandler.getInstance().retrieveSyncedData();
-        AppPrefs.initSharedRemote();
-        SystemIcons.init();
-        DataStorage.init();
-        DataStoreProviders.init();
-        AppFileWatcher.init();
-        FileBridge.init();
-        BlobManager.init();
+        ThreadHelper.loadParallel(true, () -> {
+            LocalShell.init();
+            AppShellCheck.check();
+            AppRosettaCheck.check();
+            AppTestCommandCheck.check();
+            XPipeDistributionType.init();
+            AppPrefs.setLocalDefaultsIfNeeded();
+        }, () -> {
+            // Initialize beacon server as we should be prepared for git askpass commands
+            AppBeaconServer.init();
+            DataStorageSyncHandler.getInstance().init();
+            DataStorageSyncHandler.getInstance().retrieveSyncedData();
+            AppPrefs.initSharedRemote();
+            SystemIcons.init();
+            DataStorage.init();
+            StoreViewState.init();
+        }, () -> {
+            AppFileWatcher.init();
+            FileBridge.init();
+            BlobManager.init();
+            TerminalView.init();
+            TerminalLauncherManager.init();
+        }, () -> {
+            PlatformInit.init(true);
+            AppImages.init();
+        }, () -> {
+            // If we downloaded an update, and decided to no longer automatically update, don't remind us!
+            // You can still update manually in the about tab
+            if (AppPrefs.get().automaticallyUpdate().get()
+                    || AppPrefs.get().checkForSecurityUpdates().get()) {
+                UpdateAvailableAlert.showIfNeeded();
+            }
+        });
         ActionProvider.initProviders();
-        TerminalView.init();
-        TerminalLauncherManager.init();
+        DataStoreProviders.init();
+
         TrackEvent.info("Finished base components initialization");
         initialized = true;
     }
