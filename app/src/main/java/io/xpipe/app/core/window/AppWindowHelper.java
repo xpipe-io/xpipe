@@ -58,8 +58,10 @@ public class AppWindowHelper {
     }
 
     public static void addMaximizedPseudoClass(Stage stage) {
-        stage.maximizedProperty().subscribe(v -> {
-            stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("maximized"), v);
+        stage.getScene().rootProperty().subscribe(root -> {
+            stage.maximizedProperty().subscribe(v -> {
+                root.pseudoClassStateChanged(PseudoClass.getPseudoClass("maximized"), v);
+            });
         });
     }
 

@@ -181,6 +181,15 @@ public class StoreCategoryWrapper {
         if (original.equals("All scripts")) {
             return AppI18n.get("allScripts");
         }
+        if (original.equals("All identities")) {
+            return AppI18n.get("allIdentities");
+        }
+        if (original.equals("Local")) {
+            return AppI18n.get("local");
+        }
+        if (original.equals("Synced")) {
+            return AppI18n.get("synced");
+        }
         if (original.equals("Predefined")) {
             return AppI18n.get("predefined");
         }

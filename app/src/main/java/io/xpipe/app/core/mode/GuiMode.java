@@ -2,6 +2,7 @@ package io.xpipe.app.core.mode;
 
 import io.xpipe.app.browser.file.BrowserLocalFileSystem;
 import io.xpipe.app.browser.icon.BrowserIconManager;
+import io.xpipe.app.comp.base.AppLayoutComp;
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppGreetings;
 import io.xpipe.app.core.AppLayoutModel;
@@ -42,18 +43,10 @@ public class GuiMode extends PlatformMode {
         NativeBridge.init();
         AppLayoutModel.init();
 
-        TrackEvent.info("Waiting for window setup completion ...");
         PlatformThread.runLaterIfNeededBlocking(() -> {
-            if (AppMainWindow.getInstance() == null) {
-                try {
-                    App.getApp().setupWindow();
-                } catch (Throwable t) {
-                    ErrorEvent.fromThrowable(t).terminal(true).handle();
-                }
-            }
-            AppMainWindow.getInstance().show();
+            var content = new AppLayoutComp();
+            AppMainWindow.initContent(content);
         });
-        TrackEvent.info("Window setup complete");
 
         // Can be loaded async
         ThreadHelper.runFailableAsync(() -> {

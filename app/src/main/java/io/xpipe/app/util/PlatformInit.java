@@ -1,13 +1,15 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.core.AppDesktopIntegration;
-import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppStyle;
-import io.xpipe.app.core.AppTheme;
+import io.xpipe.app.core.*;
+import io.xpipe.app.core.check.AppGpuCheck;
+import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.core.window.ModifiedStage;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 
+import io.xpipe.core.util.XPipeDaemonMode;
+import javafx.application.Application;
 import lombok.SneakyThrows;
 
 import java.util.concurrent.CountDownLatch;
@@ -48,10 +50,25 @@ public class PlatformInit {
             TrackEvent.info("Platform init started");
             ModifiedStage.init();
             PlatformState.initPlatformOrThrow();
+            AppGpuCheck.check();
+            AppFont.init();
             AppStyle.init();
             AppTheme.init();
             AppI18n.init();
             AppDesktopIntegration.init();
+
+            // Must not be called on platform thread
+            ThreadHelper.runAsync(() -> {
+                Application.launch(App.class);
+            });
+            while (App.getApp() == null) {
+                ThreadHelper.sleep(100);
+            }
+            if (OperationMode.getStartupMode() == XPipeDaemonMode.GUI) {
+                PlatformThread.runLaterIfNeededBlocking(() -> {
+                    AppMainWindow.initEmpty();
+                });
+            }
             TrackEvent.info("Platform init finished");
             latch.countDown();
         } catch (Throwable t) {

@@ -29,10 +29,6 @@ public class LxdCommandView extends CommandViewBase {
 
             @Override
             public boolean apply(ShellControl shellControl) throws Exception {
-                if (shellControl.getOsType().equals(OsType.WINDOWS)) {
-                    return false;
-                }
-
                 // This is not perfect as it does not respect custom locations for the LXD socket
                 // Sadly the socket location changes based on the installation type, and we can't dynamically query the
                 // path

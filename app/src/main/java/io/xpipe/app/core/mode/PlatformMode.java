@@ -15,6 +15,8 @@ import javafx.application.Application;
 
 public abstract class PlatformMode extends OperationMode {
 
+    private boolean loaded;
+
     @Override
     public boolean isSupported() {
         return true;
@@ -22,7 +24,9 @@ public abstract class PlatformMode extends OperationMode {
 
     @Override
     public void onSwitchTo() throws Throwable {
-        if (App.getApp() != null) {
+        OperationMode.BACKGROUND.onSwitchTo();
+
+        if (loaded) {
             return;
         }
 
@@ -32,22 +36,7 @@ public abstract class PlatformMode extends OperationMode {
         var imageThread = ThreadHelper.runFailableAsync(() -> {
             AppImages.init();
         });
-        AppGpuCheck.check();
-        AppFont.init();
         TrackEvent.info("Finished essential component initialization before platform");
-
-        TrackEvent.info("Launching application ...");
-        ThreadHelper.createPlatformThread("app", false, () -> {
-                    TrackEvent.info("Application thread started");
-                    Application.launch(App.class);
-                })
-                .start();
-
-        TrackEvent.info("Waiting for platform application startup ...");
-        while (App.getApp() == null) {
-            ThreadHelper.sleep(100);
-        }
-        TrackEvent.info("Application startup finished ...");
 
         // If we downloaded an update, and decided to no longer automatically update, don't remind us!
         // You can still update manually in the about tab
@@ -58,6 +47,7 @@ public abstract class PlatformMode extends OperationMode {
 
         StoreViewState.init();
         imageThread.join();
+        loaded = true;
         TrackEvent.info("Platform mode startup finished");
     }
 

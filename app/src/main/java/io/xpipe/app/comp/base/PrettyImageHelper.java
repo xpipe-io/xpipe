@@ -2,12 +2,15 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.App;
+import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.core.store.FileNames;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;
@@ -34,6 +37,7 @@ public class PrettyImageHelper {
     }
 
     private static ObservableValue<String> rasterizedImageIfExistsScaled(String img, int height) {
+        ObservableDoubleValue obs = AppMainWindow.getInstance() != null ? AppMainWindow.getInstance().displayScale() : new SimpleDoubleProperty(1.0);
         return Bindings.createStringBinding(
                 () -> {
                     if (img == null) {
@@ -45,7 +49,7 @@ public class PrettyImageHelper {
                     }
 
                     var sizes = List.of(16, 24, 40, 80);
-                    var mult = Math.round(App.getApp().displayScale().get() * height);
+                    var mult = Math.round(obs.get() * height);
                     var base = FileNames.getBaseName(img);
                     var available = sizes.stream()
                             .filter(integer -> AppImages.hasNormalImage(base + "-" + integer + ".png"))
@@ -56,7 +60,7 @@ public class PrettyImageHelper {
                             .orElse(available.size() > 0 ? available.getLast() : 0);
                     return rasterizedImageIfExists(img, closest).orElse(null);
                 },
-                App.getApp().displayScale());
+                obs);
     }
 
     public static Comp<?> ofFixedSizeSquare(String img, int size) {

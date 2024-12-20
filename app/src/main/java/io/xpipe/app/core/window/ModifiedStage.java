@@ -50,10 +50,17 @@ public class ModifiedStage extends Stage {
                 updateStage(stage);
             });
         }
+        stage.getScene().rootProperty().addListener((observable, oldValue, newValue) -> {
+            applyModes(stage);
+        });
     }
 
     private static void applyModes(Stage stage) {
         if (stage.getScene() == null) {
+            return;
+        }
+
+        if (!stage.isShowing()) {
             return;
         }
 

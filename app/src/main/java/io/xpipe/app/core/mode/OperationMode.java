@@ -4,7 +4,6 @@ import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppDebugModeCheck;
 import io.xpipe.app.core.check.AppTempCheck;
-import io.xpipe.app.core.launcher.LauncherCommand;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.LocalShell;
@@ -27,11 +26,9 @@ import java.util.regex.Pattern;
 
 public abstract class OperationMode {
 
-    public static final String MODE_PROP = "io.xpipe.app.mode";
     public static final OperationMode BACKGROUND = new BaseMode();
     public static final OperationMode TRAY = new TrayMode();
     public static final OperationMode GUI = new GuiMode();
-    private static final Pattern PROPERTY_PATTERN = Pattern.compile("^-[DP](.+)=(.+)$");
     private static final List<OperationMode> ALL = List.of(BACKGROUND, TRAY, GUI);
 
     @Getter
@@ -69,21 +66,6 @@ public abstract class OperationMode {
         return null;
     }
 
-    private static String[] parseProperties(String[] args) {
-        List<String> newArgs = new ArrayList<>();
-        for (var a : args) {
-            var m = PROPERTY_PATTERN.matcher(a);
-            if (m.matches()) {
-                var k = m.group(1);
-                var v = m.group(2);
-                System.setProperty(k, v);
-            } else {
-                newArgs.add(a);
-            }
-        }
-        return newArgs.toArray(String[]::new);
-    }
-
     private static void setup(String[] args) {
         try {
             // Only for handling SIGTERM
@@ -117,29 +99,44 @@ public abstract class OperationMode {
             });
 
             TrackEvent.info("Initial setup");
-            AppProperties.init();
+            AppProperties.init(args);
             AppTempCheck.check();
             AppLogs.init();
             AppDebugModeCheck.printIfNeeded();
-            AppProperties.logArguments(args);
             AppProperties.logSystemProperties();
             AppProperties.logPassedProperties();
             AppExtensionManager.init(true);
             AppI18n.init();
             AppPrefs.initLocal();
+            AppBeaconServer.setupPort();
+            AppInstance.init();
             // Initialize early to load in parallel
             PlatformInit.init(false);
-            AppBeaconServer.setupPort();
             TrackEvent.info("Finished initial setup");
         } catch (Throwable ex) {
             ErrorEvent.fromThrowable(ex).term().handle();
         }
     }
 
+    public static XPipeDaemonMode getStartupMode() {
+        var arg = AppProperties.get().getArguments().getModeArg();
+        if (arg != null) {
+            return arg;
+        }
+
+        var prop = AppProperties.get().getExplicitMode();
+        if (prop != null) {
+            return prop;
+        }
+
+        return AppPrefs.get() != null
+                ? AppPrefs.get().startupBehaviour().getValue().getMode()
+                : XPipeDaemonMode.GUI;
+    }
+
     @SneakyThrows
     public static void init(String[] args) {
         inStartup = true;
-        var usedArgs = parseProperties(args);
         setup(args);
 
         if (AppProperties.get().isAotTrainMode()) {
@@ -153,7 +150,7 @@ public abstract class OperationMode {
             return;
         }
 
-        LauncherCommand.runLauncher(usedArgs);
+        switchToSyncOrThrow(map(getStartupMode()));
         inStartup = false;
     }
 
@@ -337,21 +334,6 @@ public abstract class OperationMode {
             OperationMode.halt(1);
         }
     }
-
-    //    public static synchronized void reload() {
-    //        ThreadHelper.create("reloader", false, () -> {
-    //                    try {
-    //                        switchTo(BACKGROUND);
-    //                        CURRENT.finalTeardown();
-    //                        CURRENT.onSwitchTo();
-    //                        switchTo(GUI);
-    //                    } catch (Throwable t) {
-    //                        ErrorEvent.fromThrowable(t).build().handle();
-    //                        OperationMode.halt(1);
-    //                    }
-    //                })
-    //                .start();
-    //    }
 
     private static synchronized void set(OperationMode newMode) {
         if (inShutdown) {
