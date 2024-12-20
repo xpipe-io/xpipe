@@ -56,68 +56,70 @@ public class ModalOverlayComp extends SimpleComp {
             }
         });
 
-        PlatformThread.sync(overlayContent).addListener((observable, oldValue, newValue) -> {
-            if (oldValue != null && newValue == null && modal.isDisplay()) {
-                modal.hide(true);
-                return;
-            }
-
-            if (newValue != null) {
-                var l = new Label(
-                        AppI18n.get(newValue.getTitleKey()),
-                        newValue.getGraphic() != null ? newValue.getGraphic().createRegion() : null);
-                l.setGraphicTextGap(6);
-                AppFont.normal(l);
-                var r = newValue.getContent().createRegion();
-                var box = new VBox(l, r);
-                box.focusedProperty().addListener((o, old, n) -> {
-                    if (n) {
-                        r.requestFocus();
-                    }
-                });
-                box.setSpacing(10);
-                box.setPadding(new Insets(10, 15, 15, 15));
-
-                var buttonBar = new ButtonBar();
-                for (var mb : newValue.getButtons()) {
-                    buttonBar.getButtons().add(toButton(mb));
-                }
-                box.getChildren().add(buttonBar);
-
-                var modalBox = new ModalBox(box);
-                modalBox.setOnClose(event -> {
-                    overlayContent.setValue(null);
+        overlayContent.addListener((observable, oldValue, newValue) -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                if (oldValue != null && newValue == null && modal.isDisplay()) {
                     modal.hide(true);
-                    event.consume();
-                });
-                modalBox.prefWidthProperty().bind(box.widthProperty());
-                modalBox.prefHeightProperty().bind(box.heightProperty());
-                modalBox.maxWidthProperty().bind(box.widthProperty());
-                modalBox.maxHeightProperty().bind(box.heightProperty());
-                modalBox.focusedProperty().addListener((o, old, n) -> {
-                    if (n) {
-                        box.requestFocus();
-                    }
-                });
-                modal.show(modalBox);
+                    return;
+                }
 
-//                if (newValue.isFinishOnEnter()) {
-//                    modalBox.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-//                        if (event.getCode() == KeyCode.ENTER) {
-//                            newValue.getOnFinish().run();
-//                            overlayContent.setValue(null);
-//                            event.consume();
-//                        }
-//                    });
-//                }
-
-                // Wait 2 pulses before focus so that the scene can be assigned to r
-                Platform.runLater(() -> {
-                    Platform.runLater(() -> {
-                        modalBox.requestFocus();
+                if (newValue != null) {
+                    var l = new Label(
+                            AppI18n.get(newValue.getTitleKey()),
+                            newValue.getGraphic() != null ? newValue.getGraphic().createRegion() : null);
+                    l.setGraphicTextGap(6);
+                    AppFont.normal(l);
+                    var r = newValue.getContent().createRegion();
+                    var box = new VBox(l, r);
+                    box.focusedProperty().addListener((o, old, n) -> {
+                        if (n) {
+                            r.requestFocus();
+                        }
                     });
-                });
-            }
+                    box.setSpacing(10);
+                    box.setPadding(new Insets(10, 15, 15, 15));
+
+                    var buttonBar = new ButtonBar();
+                    for (var mb : newValue.getButtons()) {
+                        buttonBar.getButtons().add(toButton(mb));
+                    }
+                    box.getChildren().add(buttonBar);
+
+                    var modalBox = new ModalBox(box);
+                    modalBox.setOnClose(event -> {
+                        overlayContent.setValue(null);
+                        modal.hide(true);
+                        event.consume();
+                    });
+                    modalBox.prefWidthProperty().bind(box.widthProperty());
+                    modalBox.prefHeightProperty().bind(box.heightProperty());
+                    modalBox.maxWidthProperty().bind(box.widthProperty());
+                    modalBox.maxHeightProperty().bind(box.heightProperty());
+                    modalBox.focusedProperty().addListener((o, old, n) -> {
+                        if (n) {
+                            box.requestFocus();
+                        }
+                    });
+                    modal.show(modalBox);
+
+                    //                if (newValue.isFinishOnEnter()) {
+                    //                    modalBox.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                    //                        if (event.getCode() == KeyCode.ENTER) {
+                    //                            newValue.getOnFinish().run();
+                    //                            overlayContent.setValue(null);
+                    //                            event.consume();
+                    //                        }
+                    //                    });
+                    //                }
+
+                    // Wait 2 pulses before focus so that the scene can be assigned to r
+                    Platform.runLater(() -> {
+                        Platform.runLater(() -> {
+                            modalBox.requestFocus();
+                        });
+                    });
+                }
+            });
         });
         return pane;
     }

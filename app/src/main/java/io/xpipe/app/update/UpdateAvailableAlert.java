@@ -31,22 +31,25 @@ public class UpdateAvailableAlert {
                 .handle();
         var u = uh.getPreparedUpdate().getValue();
 
-        var markdown = new MarkdownComp(u.getBody() != null ? u.getBody() : "", s -> s).createRegion();
-        var updaterContent = uh.createInterface();
+        var comp = Comp.of(() -> {
+            var markdown = new MarkdownComp(u.getBody() != null ? u.getBody() : "", s -> s).createRegion();
+            var updaterContent = uh.createInterface();
 
-        Region region;
-        if (updaterContent != null) {
-            var stack = new StackPane(updaterContent);
-            stack.setPadding(new Insets(18));
-            var box = new VBox(markdown, stack);
-            box.setFillWidth(true);
-            box.setPadding(Insets.EMPTY);
-            region = box;
-        } else {
-            region = markdown;
-        }
+            Region region;
+            if (updaterContent != null) {
+                var stack = new StackPane(updaterContent);
+                stack.setPadding(new Insets(18));
+                var box = new VBox(markdown, stack);
+                box.setFillWidth(true);
+                box.setPadding(Insets.EMPTY);
+                region = box;
+            } else {
+                region = markdown;
+            }
 
-        var modal = ModalOverlay.of("updateReadyAlertTitle", Comp.of(() -> region).prefWidth(600), null);
+            return region;
+        });
+        var modal = ModalOverlay.of("updateReadyAlertTitle", comp.prefWidth(600), null);
         modal.addButton(new ModalOverlay.ModalButton("ignore",null,true,false));
         modal.addButton(new ModalOverlay.ModalButton("checkOutUpdate",() -> {
             Hyperlinks.open(uh.getPreparedUpdate().getValue().getReleaseUrl());
