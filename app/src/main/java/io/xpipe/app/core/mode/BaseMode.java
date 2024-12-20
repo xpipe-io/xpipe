@@ -3,9 +3,13 @@ package io.xpipe.app.core.mode;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.beacon.BlobManager;
 import io.xpipe.app.browser.BrowserFullSessionModel;
+import io.xpipe.app.browser.file.BrowserLocalFileSystem;
+import io.xpipe.app.browser.icon.BrowserIconManager;
+import io.xpipe.app.comp.base.AppLayoutComp;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.*;
+import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.ext.ProcessControlProvider;
@@ -19,6 +23,7 @@ import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.terminal.TerminalLauncherManager;
 import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.app.update.UpdateAvailableAlert;
+import io.xpipe.app.update.UpdateChangelogAlert;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.*;
 
@@ -66,9 +71,15 @@ public class BaseMode extends OperationMode {
             DataStorageSyncHandler.getInstance().init();
             DataStorageSyncHandler.getInstance().retrieveSyncedData();
             AppPrefs.initSharedRemote();
-            SystemIcons.init();
             DataStorage.init();
             StoreViewState.init();
+            AppLayoutModel.init();
+            PlatformInit.init(true);
+            PlatformThread.runLaterIfNeededBlocking(() -> {
+                var content = new AppLayoutComp();
+                var region = content.createRegion();
+                AppMainWindow.getInstance().setLoadedContent(region);
+            });
         }, () -> {
             AppFileWatcher.init();
             FileBridge.init();
@@ -78,6 +89,7 @@ public class BaseMode extends OperationMode {
         }, () -> {
             PlatformInit.init(true);
             AppImages.init();
+            SystemIcons.init();
         }, () -> {
             // If we downloaded an update, and decided to no longer automatically update, don't remind us!
             // You can still update manually in the about tab
@@ -85,6 +97,11 @@ public class BaseMode extends OperationMode {
                     || AppPrefs.get().checkForSecurityUpdates().get()) {
                 UpdateAvailableAlert.showIfNeeded();
             }
+            UpdateChangelogAlert.showIfNeeded();
+        }, () -> {
+            BrowserIconManager.loadIfNecessary();
+        }, () -> {
+            BrowserLocalFileSystem.init();
         });
         ActionProvider.initProviders();
         DataStoreProviders.init();

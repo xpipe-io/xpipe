@@ -28,7 +28,7 @@ public class ErrorOverlayComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var content = new SimpleObjectProperty<ModalOverlayComp.OverlayContent>();
+        var content = new SimpleObjectProperty<ModalOverlay>();
         this.text.addListener((observable, oldValue, newValue) -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 var comp = Comp.of(() -> {
@@ -39,17 +39,12 @@ public class ErrorOverlayComp extends SimpleComp {
                     l.setEditable(false);
                     return l;
                 });
-                content.set(new ModalOverlayComp.OverlayContent(
-                        "error",
-                        comp,
-                        Comp.of(() -> {
-                            var graphic = new FontIcon("mdomz-warning");
-                            graphic.setIconColor(Color.RED);
-                            return new StackPane(graphic);
-                        }),
-                        null,
-                        () -> {},
-                        false));
+                var overlay = ModalOverlay.of("error", comp, Comp.of(() -> {
+                    var graphic = new FontIcon("mdomz-warning");
+                    graphic.setIconColor(Color.RED);
+                    return new StackPane(graphic);
+                })).withDefaultButtons();
+                content.set(overlay);
             });
         });
         content.addListener((observable, oldValue, newValue) -> {

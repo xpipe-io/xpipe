@@ -5,7 +5,7 @@ import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.ModalOverlayComp;
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
@@ -87,33 +87,28 @@ public class ChownAction implements BrowserBranchAction {
         @Override
         public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             var user = new SimpleStringProperty();
-            model.getOverlay()
-                    .setValue(new ModalOverlayComp.OverlayContent(
-                            "userName",
-                            Comp.of(() -> {
-                                        var creationName = new TextField();
-                                        creationName.textProperty().bindBidirectional(user);
-                                        return creationName;
-                                    })
-                                    .prefWidth(350),
-                            null,
-                            "finish",
-                            () -> {
-                                if (user.getValue() == null) {
-                                    return;
-                                }
+            var modal = ModalOverlay.of("userName",                             Comp.of(() -> {
+                        var creationName = new TextField();
+                        creationName.textProperty().bindBidirectional(user);
+                        return creationName;
+                    })
+                    .prefWidth(350));
+            modal.withDefaultButtons(() -> {
+                if (user.getValue() == null) {
+                    return;
+                }
 
-                                model.runCommandAsync(
-                                        CommandBuilder.of()
-                                                .add("chown", user.getValue())
-                                                .addFiles(entries.stream()
-                                                        .map(browserEntry -> browserEntry
-                                                                .getRawFileEntry()
-                                                                .getPath())
-                                                        .toList()),
-                                        false);
-                            },
-                            true));
+                model.runCommandAsync(
+                        CommandBuilder.of()
+                                .add("chown", user.getValue())
+                                .addFiles(entries.stream()
+                                        .map(browserEntry -> browserEntry
+                                                .getRawFileEntry()
+                                                .getPath())
+                                        .toList()),
+                        false);
+            });
+            model.getOverlay().setValue(modal);
         }
 
         @Override

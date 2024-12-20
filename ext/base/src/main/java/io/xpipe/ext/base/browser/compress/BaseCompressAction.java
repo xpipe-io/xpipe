@@ -6,7 +6,7 @@ import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.ModalOverlayComp;
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.core.process.CommandBuilder;
@@ -113,30 +113,25 @@ public abstract class BaseCompressAction implements BrowserAction, BrowserBranch
         @Override
         public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             var name = new SimpleStringProperty(directory ? entries.getFirst().getFileName() : null);
-            model.getOverlay()
-                    .setValue(new ModalOverlayComp.OverlayContent(
-                            "base.archiveName",
-                            Comp.of(() -> {
-                                        var creationName = new TextField();
-                                        creationName.textProperty().bindBidirectional(name);
-                                        return creationName;
-                                    })
-                                    .prefWidth(350),
-                            null,
-                            "finish",
-                            () -> {
-                                var fixedName = name.getValue();
-                                if (fixedName == null) {
-                                    return;
-                                }
+            var modal = ModalOverlay.of("base.archiveName",                                                         Comp.of(() -> {
+                        var creationName = new TextField();
+                        creationName.textProperty().bindBidirectional(name);
+                        return creationName;
+                    })
+                    .prefWidth(350));
+            modal.withDefaultButtons(() -> {
+                var fixedName = name.getValue();
+                if (fixedName == null) {
+                    return;
+                }
 
-                                if (!fixedName.endsWith(getExtension())) {
-                                    fixedName = fixedName + "." + getExtension();
-                                }
+                if (!fixedName.endsWith(getExtension())) {
+                    fixedName = fixedName + "." + getExtension();
+                }
 
-                                create(fixedName, model, entries);
-                            },
-                            true));
+                create(fixedName, model, entries);
+            });
+            model.getOverlay().setValue(modal);
         }
 
         @Override

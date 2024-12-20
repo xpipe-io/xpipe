@@ -64,6 +64,7 @@ public class PlatformInit {
             while (App.getApp() == null) {
                 ThreadHelper.sleep(100);
             }
+            NativeBridge.init();
             if (OperationMode.getStartupMode() == XPipeDaemonMode.GUI) {
                 PlatformThread.runLaterIfNeededBlocking(() -> {
                     AppMainWindow.initEmpty();

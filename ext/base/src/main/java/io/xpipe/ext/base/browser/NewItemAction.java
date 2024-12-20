@@ -7,7 +7,7 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.icon.BrowserIcons;
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.ModalOverlayComp;
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.process.OsType;
@@ -59,21 +59,16 @@ public class NewItemAction implements BrowserAction, BrowserBranchAction {
                     @Override
                     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         var name = new SimpleStringProperty();
-                        model.getOverlay()
-                                .setValue(new ModalOverlayComp.OverlayContent(
-                                        "newFile",
-                                        Comp.of(() -> {
-                                                    var creationName = new TextField();
-                                                    creationName.textProperty().bindBidirectional(name);
-                                                    return creationName;
-                                                })
-                                                .prefWidth(350),
-                                        null,
-                                        "finish",
-                                        () -> {
-                                            model.createFileAsync(name.getValue());
-                                        },
-                                        true));
+                        var modal = ModalOverlay.of("newFile",                                                                                                 Comp.of(() -> {
+                                    var creationName = new TextField();
+                                    creationName.textProperty().bindBidirectional(name);
+                                    return creationName;
+                                })
+                                .prefWidth(350));
+                        modal.withDefaultButtons(() -> {
+                            model.createFileAsync(name.getValue());
+                        });
+                        model.getOverlay().setValue(modal);
                     }
 
                     @Override
@@ -91,21 +86,16 @@ public class NewItemAction implements BrowserAction, BrowserBranchAction {
                     @Override
                     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         var name = new SimpleStringProperty();
-                        model.getOverlay()
-                                .setValue(new ModalOverlayComp.OverlayContent(
-                                        "newDirectory",
-                                        Comp.of(() -> {
-                                                    var creationName = new TextField();
-                                                    creationName.textProperty().bindBidirectional(name);
-                                                    return creationName;
-                                                })
-                                                .prefWidth(350),
-                                        null,
-                                        "finish",
-                                        () -> {
-                                            model.createDirectoryAsync(name.getValue());
-                                        },
-                                        true));
+                        var modal = ModalOverlay.of("newDirectory",                                                                                                 Comp.of(() -> {
+                                    var creationName = new TextField();
+                                    creationName.textProperty().bindBidirectional(name);
+                                    return creationName;
+                                })
+                                .prefWidth(350));
+                        modal.withDefaultButtons(() -> {
+                            model.createDirectoryAsync(name.getValue());
+                        });
+                        model.getOverlay().setValue(modal);
                     }
 
                     @Override
@@ -124,22 +114,18 @@ public class NewItemAction implements BrowserAction, BrowserBranchAction {
                     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         var linkName = new SimpleStringProperty();
                         var target = new SimpleStringProperty();
-                        model.getOverlay()
-                                .setValue(new ModalOverlayComp.OverlayContent(
-                                        "base.newLink",
-                                        new OptionsBuilder()
-                                                .name("linkName")
-                                                .addString(linkName)
-                                                .name("targetPath")
-                                                .addString(target)
-                                                .buildComp()
-                                                .prefWidth(350),
-                                        null,
-                                        "finish",
-                                        () -> {
-                                            model.createLinkAsync(linkName.getValue(), target.getValue());
-                                        },
-                                        true));
+                        var modal = ModalOverlay.of("base.newLink",
+                                new OptionsBuilder()
+                                        .name("linkName")
+                                        .addString(linkName)
+                                        .name("targetPath")
+                                        .addString(target)
+                                        .buildComp()
+                                        .prefWidth(350));
+                        modal.withDefaultButtons(() -> {
+                            model.createLinkAsync(linkName.getValue(), target.getValue());
+                        });
+                        model.getOverlay().setValue(modal);
                     }
 
                     @Override

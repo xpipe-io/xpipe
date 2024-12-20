@@ -5,7 +5,7 @@ import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.BrowserStoreSessionTab;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.ModalOverlayComp;
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
@@ -44,7 +44,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     private final BrowserFileListModel fileList;
     private final ReadOnlyObjectWrapper<String> currentPath = new ReadOnlyObjectWrapper<>();
     private final BrowserFileSystemHistory history = new BrowserFileSystemHistory();
-    private final Property<ModalOverlayComp.OverlayContent> overlay = new SimpleObjectProperty<>();
+    private final Property<ModalOverlay> overlay = new SimpleObjectProperty<>();
     private final BooleanProperty inOverview = new SimpleBooleanProperty();
     private final Property<BrowserTransferProgress> progress = new SimpleObjectProperty<>();
     private final ObservableList<UUID> terminalRequests = FXCollections.observableArrayList();

@@ -2,6 +2,7 @@ package io.xpipe.app.core.window;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.AppWindowLoadComp;
+import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
@@ -35,6 +36,7 @@ import javafx.stage.Stage;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
@@ -56,6 +58,9 @@ public class AppMainWindow {
     private Thread thread;
     private volatile Instant lastUpdate;
 
+    @Setter
+    private Region loadedContent;
+
     public AppMainWindow(Stage stage) {
         this.stage = stage;
     }
@@ -67,7 +72,8 @@ public class AppMainWindow {
 
         var stage = App.getApp().getStage();
         INSTANCE = new AppMainWindow(stage);
-        var scene = new Scene(new AppWindowLoadComp().createRegion(), -1, -1, false);
+        var emptyContent = new ModalOverlayComp(new AppWindowLoadComp(), AppDialog.getModalOverlay());
+        var scene = new Scene(emptyContent.createRegion(), -1, -1, false);
         scene.setFill(Color.TRANSPARENT);
         ModifiedStage.prepareStage(stage);
         stage.setScene(scene);
@@ -99,12 +105,12 @@ public class AppMainWindow {
         return getStage().outputScaleXProperty();
     }
 
-    public static synchronized void initContent(Comp<?> content) {
+    public static synchronized void initContent() {
         if (INSTANCE == null) {
             initEmpty();
         }
 
-        INSTANCE.setupContent(content);
+        INSTANCE.setupContent(INSTANCE.loadedContent);
     }
 
     private static ObservableValue<String> createTitle() {
@@ -318,12 +324,12 @@ public class AppMainWindow {
         return inBounds ? state : null;
     }
 
-    private void setupContent(Comp<?> content) {
-        var contentR = content.createRegion();
-        stage.getScene().setRoot(contentR);
+    private void setupContent(Region content) {
+        var withOverlay = new ModalOverlayComp(Comp.of(() -> content), AppDialog.getModalOverlay());
+        stage.getScene().setRoot(withOverlay.createRegion());
         TrackEvent.debug("Set content scene");
 
-        contentR.opacityProperty()
+        content.opacityProperty()
                 .bind(Bindings.createDoubleBinding(
                         () -> {
                             if (OsType.getLocal() != OsType.MACOS) {
@@ -333,8 +339,8 @@ public class AppMainWindow {
                         },
                         stage.focusedProperty()));
 
-        contentR.prefWidthProperty().bind(stage.getScene().widthProperty());
-        contentR.prefHeightProperty().bind(stage.getScene().heightProperty());
+        content.prefWidthProperty().bind(stage.getScene().widthProperty());
+        content.prefHeightProperty().bind(stage.getScene().heightProperty());
 
         if (OsType.getLocal().equals(OsType.LINUX) || OsType.getLocal().equals(OsType.MACOS)) {
             stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
@@ -346,15 +352,6 @@ public class AppMainWindow {
         }
 
         stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            if (AppProperties.get().isDeveloperMode() && event.getCode().equals(KeyCode.F6)) {
-                var newR = content.createRegion();
-                stage.getScene().setRoot(newR);
-                newR.requestFocus();
-
-                TrackEvent.debug("Rebuilt content");
-                event.consume();
-            }
-
             if (AppProperties.get().isShowcase() && event.getCode().equals(KeyCode.F12)) {
                 var image = stage.getScene().snapshot(null);
                 var awt = AppImages.toAwtImage(image);

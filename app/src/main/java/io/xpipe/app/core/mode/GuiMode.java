@@ -40,23 +40,10 @@ public class GuiMode extends PlatformMode {
 
         AppGreetings.showIfNeeded();
         AppPtbCheck.check();
-        NativeBridge.init();
-        AppLayoutModel.init();
 
         PlatformThread.runLaterIfNeededBlocking(() -> {
-            var content = new AppLayoutComp();
-            AppMainWindow.initContent(content);
+            AppMainWindow.initContent();
         });
-
-        // Can be loaded async
-        ThreadHelper.runFailableAsync(() -> {
-            BrowserIconManager.loadIfNecessary();
-        });
-        ThreadHelper.runFailableAsync(() -> {
-            BrowserLocalFileSystem.init();
-        });
-
-        UpdateChangelogAlert.showIfNeeded();
     }
 
     @Override

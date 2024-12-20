@@ -21,14 +21,13 @@ import javafx.scene.layout.VBox;
 import atlantafx.base.controls.ModalPane;
 import atlantafx.base.layout.ModalBox;
 import atlantafx.base.theme.Styles;
-import lombok.Value;
 
 public class ModalOverlayComp extends SimpleComp {
 
     private final Comp<?> background;
-    private final Property<OverlayContent> overlayContent;
+    private final Property<ModalOverlay> overlayContent;
 
-    public ModalOverlayComp(Comp<?> background, Property<OverlayContent> overlayContent) {
+    public ModalOverlayComp(Comp<?> background, Property<ModalOverlay> overlayContent) {
         this.background = background;
         this.overlayContent = overlayContent;
     }
@@ -65,11 +64,11 @@ public class ModalOverlayComp extends SimpleComp {
 
             if (newValue != null) {
                 var l = new Label(
-                        AppI18n.get(newValue.titleKey),
-                        newValue.graphic != null ? newValue.graphic.createRegion() : null);
+                        AppI18n.get(newValue.getTitleKey()),
+                        newValue.getGraphic() != null ? newValue.getGraphic().createRegion() : null);
                 l.setGraphicTextGap(6);
                 AppFont.normal(l);
-                var r = newValue.content.createRegion();
+                var r = newValue.getContent().createRegion();
                 var box = new VBox(l, r);
                 box.focusedProperty().addListener((o, old, n) -> {
                     if (n) {
@@ -79,19 +78,11 @@ public class ModalOverlayComp extends SimpleComp {
                 box.setSpacing(10);
                 box.setPadding(new Insets(10, 15, 15, 15));
 
-                if (newValue.finishKey != null) {
-                    var finishButton = new Button(AppI18n.get(newValue.finishKey));
-                    finishButton.getStyleClass().add(Styles.ACCENT);
-                    finishButton.setOnAction(event -> {
-                        newValue.onFinish.run();
-                        overlayContent.setValue(null);
-                        event.consume();
-                    });
-
-                    var buttonBar = new ButtonBar();
-                    buttonBar.getButtons().addAll(finishButton);
-                    box.getChildren().add(buttonBar);
+                var buttonBar = new ButtonBar();
+                for (var mb : newValue.getButtons()) {
+                    buttonBar.getButtons().add(toButton(mb));
                 }
+                box.getChildren().add(buttonBar);
 
                 var modalBox = new ModalBox(box);
                 modalBox.setOnClose(event -> {
@@ -110,15 +101,15 @@ public class ModalOverlayComp extends SimpleComp {
                 });
                 modal.show(modalBox);
 
-                if (newValue.finishOnEnter) {
-                    modalBox.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-                        if (event.getCode() == KeyCode.ENTER) {
-                            newValue.onFinish.run();
-                            overlayContent.setValue(null);
-                            event.consume();
-                        }
-                    });
-                }
+//                if (newValue.isFinishOnEnter()) {
+//                    modalBox.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+//                        if (event.getCode() == KeyCode.ENTER) {
+//                            newValue.getOnFinish().run();
+//                            overlayContent.setValue(null);
+//                            event.consume();
+//                        }
+//                    });
+//                }
 
                 // Wait 2 pulses before focus so that the scene can be assigned to r
                 Platform.runLater(() -> {
@@ -131,14 +122,20 @@ public class ModalOverlayComp extends SimpleComp {
         return pane;
     }
 
-    @Value
-    public static class OverlayContent {
-
-        String titleKey;
-        Comp<?> content;
-        Comp<?> graphic;
-        String finishKey;
-        Runnable onFinish;
-        boolean finishOnEnter;
+    private Button toButton(ModalOverlay.ModalButton mb) {
+        var button = new Button(AppI18n.get(mb.getKey()));
+        if (mb.isDefaultButton()) {
+            button.getStyleClass().add(Styles.ACCENT);
+        }
+        button.setOnAction(event -> {
+            if (mb.getAction() != null) {
+                mb.getAction().run();
+            }
+            if (mb.isClose()) {
+                overlayContent.setValue(null);
+            }
+            event.consume();
+        });
+        return button;
     }
 }
