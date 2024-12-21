@@ -37,13 +37,7 @@ public class GuiMode extends PlatformMode {
     @Override
     public void onSwitchTo() throws Throwable {
         super.onSwitchTo();
-
-        AppGreetings.showIfNeeded();
         AppPtbCheck.check();
-
-        PlatformThread.runLaterIfNeededBlocking(() -> {
-            AppMainWindow.initContent();
-        });
     }
 
     @Override

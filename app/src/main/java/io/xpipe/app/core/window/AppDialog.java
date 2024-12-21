@@ -6,6 +6,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.PlatformInit;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -23,7 +24,7 @@ import java.util.function.Function;
 public class AppDialog {
 
     @Getter
-    private static final Property<ModalOverlay> modalOverlay = new SimpleObjectProperty<>();
+    private static final ObjectProperty<ModalOverlay> modalOverlay = new SimpleObjectProperty<>();
 
     private static void showMainWindow() {
         PlatformInit.init(true);
@@ -34,7 +35,7 @@ public class AppDialog {
         modalOverlay.setValue(null);
     }
 
-    private static void waitForClose() {
+    public static void waitForClose() {
         while (modalOverlay.getValue() != null) {
             ThreadHelper.sleep(10);
         }
@@ -62,9 +63,13 @@ public class AppDialog {
         } else {
             modalOverlay.setValue(o);
             var key = new Object();
+            modalOverlay.addListener((observable, oldValue, newValue) -> {
+                if (oldValue == o && newValue == null) {
+                    Platform.exitNestedEventLoop(key, null);
+                }
+            });
             Platform.enterNestedEventLoop(key);
             waitForClose();
-            Platform.exitNestedEventLoop(key, null);
         }
     }
 }

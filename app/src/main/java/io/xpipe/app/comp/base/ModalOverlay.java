@@ -39,27 +39,9 @@ public class ModalOverlay {
     @Singular
     List<ModalButton> buttons;
 
-    public void addButton(ModalButton button) {
+    public ModalButton addButton(ModalButton button) {
         buttons.add(button);
+        return button;
     }
 
-    @Value
-    public static class ModalButton {
-        String key;
-        Runnable action;
-        boolean close;
-        boolean defaultButton;
-
-        public static ModalButton finish(Runnable action) {
-            return new ModalButton("finish", action, true, true);
-        }
-
-        public static ModalButton ok(Runnable action) {
-            return new ModalButton("ok", action, true, true);
-        }
-
-        public static ModalButton cancel() {
-            return new ModalButton("cancel", () -> {}, true, false);
-        }
-    }
 }

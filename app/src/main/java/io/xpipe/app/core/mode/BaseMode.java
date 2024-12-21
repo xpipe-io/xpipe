@@ -76,9 +76,8 @@ public class BaseMode extends OperationMode {
             AppLayoutModel.init();
             PlatformInit.init(true);
             PlatformThread.runLaterIfNeededBlocking(() -> {
-                var content = new AppLayoutComp();
-                var region = content.createRegion();
-                AppMainWindow.getInstance().setLoadedContent(region);
+                AppGreetings.showIfNeeded();
+                AppMainWindow.initContent();
             });
         }, () -> {
             AppFileWatcher.init();

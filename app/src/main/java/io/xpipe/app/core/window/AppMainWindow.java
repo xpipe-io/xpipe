@@ -1,8 +1,7 @@
 package io.xpipe.app.core.window;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.AppWindowLoadComp;
-import io.xpipe.app.comp.base.ModalOverlayComp;
+import io.xpipe.app.comp.base.AppLayoutComp;
+import io.xpipe.app.comp.base.AppMainWindowContentComp;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
@@ -16,11 +15,8 @@ import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Rectangle2D;
@@ -36,7 +32,6 @@ import javafx.stage.Stage;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
@@ -58,8 +53,8 @@ public class AppMainWindow {
     private Thread thread;
     private volatile Instant lastUpdate;
 
-    @Setter
-    private Region loadedContent;
+    @Getter
+    private final Property<Region> loadedContent = new SimpleObjectProperty<>();
 
     public AppMainWindow(Stage stage) {
         this.stage = stage;
@@ -72,9 +67,22 @@ public class AppMainWindow {
 
         var stage = App.getApp().getStage();
         INSTANCE = new AppMainWindow(stage);
-        var emptyContent = new ModalOverlayComp(new AppWindowLoadComp(), AppDialog.getModalOverlay());
-        var scene = new Scene(emptyContent.createRegion(), -1, -1, false);
+
+        var content = new AppMainWindowContentComp().createRegion();
+        content.opacityProperty()
+                .bind(Bindings.createDoubleBinding(
+                        () -> {
+                            if (OsType.getLocal() != OsType.MACOS) {
+                                return 1.0;
+                            }
+                            return stage.isFocused() ? 1.0 : 0.8;
+                        },
+                        stage.focusedProperty()));
+        var scene = new Scene(content, -1, -1, false);
+        content.prefWidthProperty().bind(scene.widthProperty());
+        content.prefHeightProperty().bind(scene.heightProperty());
         scene.setFill(Color.TRANSPARENT);
+
         ModifiedStage.prepareStage(stage);
         stage.setScene(scene);
         stage.opacityProperty().bind(PlatformThread.sync(AppPrefs.get().windowOpacity()));
@@ -110,7 +118,10 @@ public class AppMainWindow {
             initEmpty();
         }
 
-        INSTANCE.setupContent(INSTANCE.loadedContent);
+        var content = new AppLayoutComp();
+        var region = content.createRegion();
+        AppDialog.waitForClose();
+        INSTANCE.loadedContent.setValue(region);
     }
 
     private static ObservableValue<String> createTitle() {
@@ -253,6 +264,31 @@ public class AppMainWindow {
             }
         });
 
+
+        if (OsType.getLocal().equals(OsType.LINUX) || OsType.getLocal().equals(OsType.MACOS)) {
+            stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+                if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {
+                    OperationMode.onWindowClose();
+                    event.consume();
+                }
+            });
+        }
+
+        stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if (AppProperties.get().isShowcase() && event.getCode().equals(KeyCode.F12)) {
+                var image = stage.getScene().snapshot(null);
+                var awt = AppImages.toAwtImage(image);
+                var file = Path.of(System.getProperty("user.home"), "Desktop", "xpipe-screenshot.png");
+                try {
+                    ImageIO.write(awt, "png", file.toFile());
+                } catch (IOException e) {
+                    ErrorEvent.fromThrowable(e).handle();
+                }
+                TrackEvent.debug("Screenshot taken");
+                event.consume();
+            }
+        });
+
         TrackEvent.debug("Window listeners added");
     }
 
@@ -322,50 +358,6 @@ public class AppMainWindow {
             }
         }
         return inBounds ? state : null;
-    }
-
-    private void setupContent(Region content) {
-        var withOverlay = new ModalOverlayComp(Comp.of(() -> content), AppDialog.getModalOverlay());
-        stage.getScene().setRoot(withOverlay.createRegion());
-        TrackEvent.debug("Set content scene");
-
-        content.opacityProperty()
-                .bind(Bindings.createDoubleBinding(
-                        () -> {
-                            if (OsType.getLocal() != OsType.MACOS) {
-                                return 1.0;
-                            }
-                            return stage.isFocused() ? 1.0 : 0.8;
-                        },
-                        stage.focusedProperty()));
-
-        content.prefWidthProperty().bind(stage.getScene().widthProperty());
-        content.prefHeightProperty().bind(stage.getScene().heightProperty());
-
-        if (OsType.getLocal().equals(OsType.LINUX) || OsType.getLocal().equals(OsType.MACOS)) {
-            stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-                if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {
-                    OperationMode.onWindowClose();
-                    event.consume();
-                }
-            });
-        }
-
-        stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            if (AppProperties.get().isShowcase() && event.getCode().equals(KeyCode.F12)) {
-                var image = stage.getScene().snapshot(null);
-                var awt = AppImages.toAwtImage(image);
-                var file = Path.of(System.getProperty("user.home"), "Desktop", "xpipe-screenshot.png");
-                try {
-                    ImageIO.write(awt, "png", file.toFile());
-                } catch (IOException e) {
-                    ErrorEvent.fromThrowable(e).handle();
-                }
-                TrackEvent.debug("Screenshot taken");
-                event.consume();
-            }
-        });
-        TrackEvent.debug("Set content reload listener");
     }
 
     @Builder

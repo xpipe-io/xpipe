@@ -12,8 +12,6 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Label;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -56,6 +54,23 @@ public class ModalOverlayComp extends SimpleComp {
             }
         });
 
+        modal.contentProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null) {
+                overlayContent.setValue(null);
+                bgRegion.setDisable(false);
+            }
+
+            if (newValue != null) {
+                bgRegion.setDisable(true);
+            }
+        });
+
+        modal.displayProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                modal.hide(true);
+            }
+        });
+
         overlayContent.addListener((observable, oldValue, newValue) -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 if (oldValue != null && newValue == null && modal.isDisplay()) {
@@ -64,42 +79,7 @@ public class ModalOverlayComp extends SimpleComp {
                 }
 
                 if (newValue != null) {
-                    var l = new Label(
-                            AppI18n.get(newValue.getTitleKey()),
-                            newValue.getGraphic() != null ? newValue.getGraphic().createRegion() : null);
-                    l.setGraphicTextGap(6);
-                    AppFont.normal(l);
-                    var r = newValue.getContent().createRegion();
-                    var box = new VBox(l, r);
-                    box.focusedProperty().addListener((o, old, n) -> {
-                        if (n) {
-                            r.requestFocus();
-                        }
-                    });
-                    box.setSpacing(10);
-                    box.setPadding(new Insets(10, 15, 15, 15));
-
-                    var buttonBar = new ButtonBar();
-                    for (var mb : newValue.getButtons()) {
-                        buttonBar.getButtons().add(toButton(mb));
-                    }
-                    box.getChildren().add(buttonBar);
-
-                    var modalBox = new ModalBox(box);
-                    modalBox.setOnClose(event -> {
-                        overlayContent.setValue(null);
-                        modal.hide(true);
-                        event.consume();
-                    });
-                    modalBox.prefWidthProperty().bind(box.widthProperty());
-                    modalBox.prefHeightProperty().bind(box.heightProperty());
-                    modalBox.maxWidthProperty().bind(box.widthProperty());
-                    modalBox.maxHeightProperty().bind(box.heightProperty());
-                    modalBox.focusedProperty().addListener((o, old, n) -> {
-                        if (n) {
-                            box.requestFocus();
-                        }
-                    });
+                    var modalBox = toBox(newValue);
                     modal.show(modalBox);
 
                     //                if (newValue.isFinishOnEnter()) {
@@ -121,13 +101,65 @@ public class ModalOverlayComp extends SimpleComp {
                 }
             });
         });
+
+        var current = overlayContent.getValue();
+        if (current != null) {
+            var modalBox = toBox(current);
+            modal.show(modalBox);
+            modalBox.requestFocus();
+        }
+
         return pane;
     }
 
-    private Button toButton(ModalOverlay.ModalButton mb) {
+    private ModalBox toBox(ModalOverlay newValue) {
+        var l = new Label(
+                AppI18n.get(newValue.getTitleKey()),
+                newValue.getGraphic() != null ? newValue.getGraphic().createRegion() : null);
+        l.setGraphicTextGap(6);
+        AppFont.normal(l);
+        var r = newValue.getContent().createRegion();
+        var box = new VBox(l, r);
+        box.focusedProperty().addListener((o, old, n) -> {
+            if (n) {
+                r.requestFocus();
+            }
+        });
+        box.setSpacing(10);
+        box.setPadding(new Insets(10, 15, 15, 15));
+
+        var buttonBar = new ButtonBar();
+        for (var mb : newValue.getButtons()) {
+            buttonBar.getButtons().add(toButton(mb));
+        }
+        box.getChildren().add(buttonBar);
+
+        var modalBox = new ModalBox(box);
+        modalBox.setOnClose(event -> {
+            overlayContent.setValue(null);
+            event.consume();
+        });
+        modalBox.setMinWidth(100);
+        modalBox.setMinHeight(100);
+        modalBox.prefWidthProperty().bind(box.widthProperty());
+        modalBox.prefHeightProperty().bind(box.heightProperty());
+        modalBox.maxWidthProperty().bind(box.widthProperty());
+        modalBox.maxHeightProperty().bind(box.heightProperty());
+        modalBox.focusedProperty().addListener((o, old, n) -> {
+            if (n) {
+                box.requestFocus();
+            }
+        });
+        return modalBox;
+    }
+
+    private Button toButton(ModalButton mb) {
         var button = new Button(AppI18n.get(mb.getKey()));
         if (mb.isDefaultButton()) {
             button.getStyleClass().add(Styles.ACCENT);
+        }
+        if (mb.getAugment() != null) {
+            mb.getAugment().accept(button);
         }
         button.setOnAction(event -> {
             if (mb.getAction() != null) {

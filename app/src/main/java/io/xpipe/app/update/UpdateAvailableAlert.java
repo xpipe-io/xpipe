@@ -2,6 +2,7 @@ package io.xpipe.app.update;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.MarkdownComp;
+import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.TrackEvent;
@@ -50,11 +51,11 @@ public class UpdateAvailableAlert {
             return region;
         });
         var modal = ModalOverlay.of("updateReadyAlertTitle", comp.prefWidth(600), null);
-        modal.addButton(new ModalOverlay.ModalButton("ignore",null,true,false));
-        modal.addButton(new ModalOverlay.ModalButton("checkOutUpdate",() -> {
+        modal.addButton(new ModalButton("ignore",null,true,false));
+        modal.addButton(new ModalButton("checkOutUpdate",() -> {
             Hyperlinks.open(uh.getPreparedUpdate().getValue().getReleaseUrl());
         },false,false));
-        modal.addButton(new ModalOverlay.ModalButton("install",() -> {
+        modal.addButton(new ModalButton("install",() -> {
             uh.executeUpdateAndClose();
         },false,true));
         AppDialog.show(modal);

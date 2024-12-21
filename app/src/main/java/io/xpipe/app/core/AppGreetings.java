@@ -2,7 +2,10 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.MarkdownComp;
+import io.xpipe.app.comp.base.ModalButton;
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.resources.AppResources;
 
@@ -64,58 +67,47 @@ public class AppGreetings {
 
         var read = new SimpleBooleanProperty();
         var accepted = new SimpleBooleanProperty();
-        AppWindowHelper.showBlockingAlert(alert -> {
-                    alert.setTitle(AppI18n.get("greetingsAlertTitle"));
-                    alert.setAlertType(Alert.AlertType.NONE);
-                    alert.initModality(Modality.APPLICATION_MODAL);
 
-                    var content = List.of(createIntroduction(), createEula());
-                    var accordion = new Accordion(content.toArray(TitledPane[]::new));
-                    accordion.setExpandedPane(content.get(0));
-                    accordion.expandedPaneProperty().addListener((observable, oldValue, newValue) -> {
-                        if (content.get(1).equals(newValue)) {
-                            read.set(true);
-                        }
-                    });
+        var modal = ModalOverlay.of("greetingsAlertTitle",Comp.of(() -> {
+            var content = List.of(createIntroduction(), createEula());
+            var accordion = new Accordion(content.toArray(TitledPane[]::new));
+            accordion.setExpandedPane(content.get(0));
+            accordion.expandedPaneProperty().addListener((observable, oldValue, newValue) -> {
+                if (content.get(1).equals(newValue)) {
+                    read.set(true);
+                }
+            });
 
-                    var acceptanceBox = Comp.of(() -> {
-                                var cb = new CheckBox();
-                                cb.selectedProperty().bindBidirectional(accepted);
+            var acceptanceBox = Comp.of(() -> {
+                        var cb = new CheckBox();
+                        cb.selectedProperty().bindBidirectional(accepted);
 
-                                var label = new Label(AppI18n.get("legalAccept"));
-                                label.setGraphic(cb);
-                                AppFont.medium(label);
-                                label.setPadding(new Insets(20, 0, 10, 0));
-                                label.setOnMouseClicked(event -> accepted.set(!accepted.get()));
-                                label.setGraphicTextGap(10);
-                                return label;
-                            })
-                            .createRegion();
+                        var label = new Label(AppI18n.get("legalAccept"));
+                        label.setGraphic(cb);
+                        AppFont.medium(label);
+                        label.setPadding(new Insets(20, 0, 10, 0));
+                        label.setOnMouseClicked(event -> accepted.set(!accepted.get()));
+                        label.setGraphicTextGap(10);
+                        return label;
+                    })
+                    .createRegion();
 
-                    var layout = new BorderPane();
-                    layout.setPadding(new Insets(20));
-                    layout.setCenter(accordion);
-                    layout.setBottom(acceptanceBox);
-                    layout.setPrefWidth(700);
-                    layout.setPrefHeight(600);
+            var layout = new BorderPane();
+            layout.setPadding(new Insets(20));
+            layout.setCenter(accordion);
+            layout.setBottom(acceptanceBox);
+            layout.setPrefWidth(600);
+            layout.setPrefHeight(600);
+            return layout;
+        }));
+        modal.addButton(ModalButton.quit());
+        modal.addButton(ModalButton.confirm(() -> {
+            AppCache.update("legalAccepted", true);
+        })).augment(button -> button.disableProperty().bind(accepted.not()));
+        AppDialog.show(modal);
 
-                    alert.getDialogPane().setContent(layout);
-
-                    {
-                        var buttonType = new ButtonType(AppI18n.get("confirm"), ButtonBar.ButtonData.OK_DONE);
-                        alert.getButtonTypes().add(buttonType);
-
-                        Button button = (Button) alert.getDialogPane().lookupButton(buttonType);
-                        button.disableProperty().bind(accepted.not());
-                    }
-
-                    alert.getButtonTypes().add(ButtonType.CANCEL);
-                })
-                .filter(b -> b.getButtonData().isDefaultButton() && accepted.get())
-                .ifPresentOrElse(
-                        t -> {
-                            AppCache.update("legalAccepted", true);
-                        },
-                        OperationMode::close);
+        if (!AppCache.getBoolean("legalAccepted", false)) {
+            OperationMode.halt(1);
+        }
     }
 }
