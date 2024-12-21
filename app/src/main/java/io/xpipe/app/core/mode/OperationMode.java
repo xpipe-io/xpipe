@@ -7,10 +7,7 @@ import io.xpipe.app.core.check.AppTempCheck;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.LocalShell;
-import io.xpipe.app.util.PlatformInit;
-import io.xpipe.app.util.PlatformState;
-import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.core.util.XPipeDaemonMode;
@@ -21,9 +18,7 @@ import javafx.application.Platform;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public abstract class OperationMode {
 
@@ -116,6 +111,12 @@ public abstract class OperationMode {
             AppInstance.init();
             // Initialize early to load in parallel
             PlatformInit.init(false);
+            ThreadHelper.runAsync(() -> {
+                PlatformInit.init(true);
+                PlatformThread.runLaterIfNeededBlocking(() -> {
+                    AppMainWindow.initEmpty(OperationMode.getStartupMode() == XPipeDaemonMode.GUI);
+                });
+            });
             TrackEvent.info("Finished initial setup");
         } catch (Throwable ex) {
             ErrorEvent.fromThrowable(ex).term().handle();

@@ -68,7 +68,7 @@ public class ThreadHelper {
 
     @SafeVarargs
     @SneakyThrows
-    public static void loadParallel(boolean terminal, FailableRunnable<Throwable>... r) {
+    public static void load(boolean terminal, FailableRunnable<Throwable>... r) {
         var latch = new CountDownLatch(r.length);
         for (var i = 0; i < r.length; i++) {
             var runnable = r[i];

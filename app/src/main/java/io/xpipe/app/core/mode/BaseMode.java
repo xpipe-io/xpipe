@@ -5,7 +5,6 @@ import io.xpipe.app.beacon.BlobManager;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.file.BrowserLocalFileSystem;
 import io.xpipe.app.browser.icon.BrowserIconManager;
-import io.xpipe.app.comp.base.AppLayoutComp;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.*;
@@ -59,7 +58,7 @@ public class BaseMode extends OperationMode {
         AppAvCheck.check();
         AppJavaOptionsCheck.check();
         AppSid.init();
-        ThreadHelper.loadParallel(true, () -> {
+        ThreadHelper.load(true, () -> {
             LocalShell.init();
             AppShellCheck.check();
             AppRosettaCheck.check();

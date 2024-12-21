@@ -17,19 +17,34 @@ import java.util.concurrent.CountDownLatch;
 public class PlatformInit {
 
     private static final CountDownLatch latch = new CountDownLatch(2);
+    private static Thread loadingThread;
+    private static Throwable error;
 
     @SneakyThrows
     public static synchronized void init(boolean wait) {
         // Already finished
         if (latch.getCount() == 0) {
+            if (error != null) {
+                throw error;
+            }
+
             return;
         }
 
         // Another thread is loading
         if (latch.getCount() == 1) {
+            if (Thread.currentThread() == loadingThread) {
+                return;
+            }
+
             if (wait) {
                 latch.await();
             }
+
+            if (error != null) {
+                throw error;
+            }
+
             return;
         }
 
@@ -38,14 +53,19 @@ public class PlatformInit {
         }
 
         ThreadHelper.runAsync(() -> {
+            loadingThread = Thread.currentThread();
             initSync();
+            loadingThread = null;
         });
         if (wait) {
+            if (error != null) {
+                throw error;
+            }
             latch.await();
         }
     }
 
-    private static synchronized void initSync() {
+    private static void initSync() {
         try {
             TrackEvent.info("Platform init started");
             ModifiedStage.init();
@@ -65,13 +85,10 @@ public class PlatformInit {
                 ThreadHelper.sleep(100);
             }
             NativeBridge.init();
-            PlatformThread.runLaterIfNeededBlocking(() -> {
-                AppMainWindow.initEmpty(OperationMode.getStartupMode() == XPipeDaemonMode.GUI);
-            });
             TrackEvent.info("Platform init finished");
             latch.countDown();
         } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t).term().handle();
+            error = t;
             latch.countDown();
         }
     }
