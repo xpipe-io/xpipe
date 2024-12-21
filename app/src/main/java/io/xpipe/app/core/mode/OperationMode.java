@@ -4,6 +4,7 @@ import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppDebugModeCheck;
 import io.xpipe.app.core.check.AppTempCheck;
+import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.LocalShell;
@@ -101,6 +102,7 @@ public abstract class OperationMode {
             });
 
             TrackEvent.info("Initial setup");
+            AppMainWindow.loadingText("initializingApp");
             AppProperties.init(args);
             AppTempCheck.check();
             AppLogs.init();
@@ -365,6 +367,10 @@ public abstract class OperationMode {
             }
 
             newMode.onSwitchTo();
+            if (newMode != GUI && AppMainWindow.getInstance().getStage().isShowing()) {
+                GUI.onSwitchTo();
+                newMode = GUI;
+            }
             CURRENT = newMode;
         } catch (Throwable ex) {
             ErrorEvent.fromThrowable(ex).terminal(true).build().handle();

@@ -28,9 +28,11 @@ public class UpdateCheckComp extends SimpleComp {
                 XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate()));
     }
 
-    private void performUpdateAndRestart() {
-        XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheckSilent(false, false);
-        UpdateAvailableAlert.showIfNeeded();
+    private void showAlert() {
+        ThreadHelper.runFailableAsync(() -> {
+            XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheckSilent(false, false);
+            UpdateAvailableAlert.showIfNeeded();
+        });
     }
 
     private void refresh() {
@@ -83,7 +85,7 @@ public class UpdateCheckComp extends SimpleComp {
         return new TileButtonComp(name, description, graphic, actionEvent -> {
                     actionEvent.consume();
                     if (updateReady.getValue()) {
-                        performUpdateAndRestart();
+                        showAlert();
                         return;
                     }
 

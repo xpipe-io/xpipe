@@ -58,6 +58,6 @@ public class UpdateAvailableAlert {
         modal.addButton(new ModalButton("install",() -> {
             uh.executeUpdateAndClose();
         },false,true));
-        AppDialog.show(modal);
+        AppDialog.showAndWait(modal);
     }
 }

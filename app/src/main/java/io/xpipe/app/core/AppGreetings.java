@@ -6,7 +6,6 @@ import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.resources.AppResources;
 
 import javafx.beans.property.SimpleBooleanProperty;
@@ -14,7 +13,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.Modality;
 
 import java.nio.file.Files;
 import java.util.List;
@@ -100,11 +98,12 @@ public class AppGreetings {
             layout.setPrefHeight(600);
             return layout;
         }));
+        modal.persist();
         modal.addButton(ModalButton.quit());
         modal.addButton(ModalButton.confirm(() -> {
             AppCache.update("legalAccepted", true);
         })).augment(button -> button.disableProperty().bind(accepted.not()));
-        AppDialog.show(modal);
+        AppDialog.showAndWait(modal);
 
         if (!AppCache.getBoolean("legalAccepted", false)) {
             OperationMode.halt(1);

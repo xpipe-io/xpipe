@@ -51,6 +51,7 @@ public class BaseMode extends OperationMode {
         // if (true) throw new IllegalStateException();
 
         TrackEvent.info("Initializing base mode components ...");
+        AppMainWindow.loadingText("initializingApp");
         LicenseProvider.get().init();
         AppCertutilCheck.check();
         AppBundledToolsCheck.check();
@@ -68,15 +69,19 @@ public class BaseMode extends OperationMode {
         }, () -> {
             // Initialize beacon server as we should be prepared for git askpass commands
             AppBeaconServer.init();
+            AppMainWindow.loadingText("loadingGit");
             DataStorageSyncHandler.getInstance().init();
             DataStorageSyncHandler.getInstance().retrieveSyncedData();
+            AppMainWindow.loadingText("loadingSettings");
             AppPrefs.initSharedRemote();
+            AppMainWindow.loadingText("loadingConnections");
             DataStorage.init();
             StoreViewState.init();
             AppLayoutModel.init();
             PlatformInit.init(true);
             PlatformThread.runLaterIfNeededBlocking(() -> {
                 AppGreetings.showIfNeeded();
+                AppMainWindow.loadingText("renderingContent");
                 AppMainWindow.initContent();
             });
         }, () -> {
@@ -114,7 +119,13 @@ public class BaseMode extends OperationMode {
 
     @Override
     public void finalTeardown() throws Exception {
-        TrackEvent.info("Background mode shutdown started");
+        TrackEvent.info("Base mode shutdown started");
+        BrowserLocalFileSystem.reset();
+        StoreViewState.reset();
+        AppLayoutModel.reset();
+        AppTheme.reset();
+        PlatformState.teardown();
+
         BrowserFullSessionModel.DEFAULT.reset();
         SshLocalBridge.reset();
         StoreViewState.reset();
@@ -130,6 +141,6 @@ public class BaseMode extends OperationMode {
         BlobManager.reset();
         FileBridge.reset();
         AppBeaconServer.reset();
-        TrackEvent.info("Background mode shutdown finished");
+        TrackEvent.info("Base mode shutdown finished");
     }
 }

@@ -25,15 +25,11 @@ public abstract class PlatformMode extends OperationMode {
     @Override
     public void onSwitchTo() throws Throwable {
         OperationMode.BACKGROUND.onSwitchTo();
-
         if (loaded) {
             return;
         }
-
-        TrackEvent.info("Platform mode initial setup");
         PlatformInit.init(true);
         loaded = true;
-        TrackEvent.info("Platform mode startup finished");
     }
 
     @Override

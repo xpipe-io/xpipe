@@ -1,25 +1,18 @@
 package io.xpipe.app.core.window;
 
-import io.xpipe.app.comp.base.DialogComp;
 import io.xpipe.app.comp.base.ModalOverlay;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.PlatformInit;
+import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.control.Alert;
-import javafx.stage.Stage;
+import javafx.util.Duration;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
-import java.util.Optional;
-import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 
 public class AppDialog {
 
@@ -28,7 +21,9 @@ public class AppDialog {
 
     private static void showMainWindow() {
         PlatformInit.init(true);
-        AppMainWindow.initEmpty();
+        PlatformThread.runLaterIfNeededBlocking(() -> {
+            AppMainWindow.initEmpty(true);
+        });
     }
 
     private static void closeDialog() {
@@ -41,32 +36,27 @@ public class AppDialog {
         }
     }
 
-    @SneakyThrows
-    public static void show(ModalOverlay o) {
+    public static void showAndWait(ModalOverlay o) {
         showMainWindow();
-
         if (!Platform.isFxApplicationThread()) {
-            CountDownLatch latch = new CountDownLatch(1);
-            Platform.runLater(() -> {
-                try {
-                    modalOverlay.setValue(o);
-                } finally {
-                    latch.countDown();
-                }
+            PlatformThread.runLaterIfNeededBlocking(() -> {
+                modalOverlay.setValue(o);
             });
-            latch.await();
             waitForClose();
-            try {
-                latch.await();
-            } catch (InterruptedException ignored) {
-            }
+            ThreadHelper.sleep(200);
         } else {
-            modalOverlay.setValue(o);
             var key = new Object();
-            modalOverlay.addListener((observable, oldValue, newValue) -> {
-                if (oldValue == o && newValue == null) {
-                    Platform.exitNestedEventLoop(key, null);
-                }
+            PlatformThread.runLaterIfNeededBlocking(() -> {
+                modalOverlay.setValue(o);
+                modalOverlay.addListener((observable, oldValue, newValue) -> {
+                    if (oldValue == o && newValue == null) {
+                        var transition = new PauseTransition(Duration.millis(200));
+                        transition.setOnFinished(e -> {
+                            Platform.exitNestedEventLoop(key, null);
+                        });
+                        transition.play();
+                    }
+                });
             });
             Platform.enterNestedEventLoop(key);
             waitForClose();

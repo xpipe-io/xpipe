@@ -65,11 +65,9 @@ public class PlatformInit {
                 ThreadHelper.sleep(100);
             }
             NativeBridge.init();
-            if (OperationMode.getStartupMode() == XPipeDaemonMode.GUI) {
-                PlatformThread.runLaterIfNeededBlocking(() -> {
-                    AppMainWindow.initEmpty();
-                });
-            }
+            PlatformThread.runLaterIfNeededBlocking(() -> {
+                AppMainWindow.initEmpty(OperationMode.getStartupMode() == XPipeDaemonMode.GUI);
+            });
             TrackEvent.info("Platform init finished");
             latch.countDown();
         } catch (Throwable t) {

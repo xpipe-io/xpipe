@@ -37,12 +37,9 @@ public class GuiMode extends PlatformMode {
     @Override
     public void onSwitchTo() throws Throwable {
         super.onSwitchTo();
-        AppPtbCheck.check();
-    }
-
-    @Override
-    public void finalTeardown() throws Throwable {
-        BrowserLocalFileSystem.reset();
-        super.finalTeardown();
+        PlatformThread.runLaterIfNeededBlocking(() -> {
+            AppMainWindow.getInstance().show();
+            AppPtbCheck.check();
+        });
     }
 }

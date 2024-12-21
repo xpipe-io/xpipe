@@ -144,8 +144,8 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                         (StoreSection e) -> {
                             return StoreSection.customSection(e, false).apply(GrowAugment.create(true, false));
                         },
-                        false)
-                .minHeight(0)
+                        false);
+        content.minHeight(0)
                 .hgrow();
 
         var expanded = Bindings.createBooleanBinding(

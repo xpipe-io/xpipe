@@ -54,14 +54,19 @@ public class AppMainWindow {
     private volatile Instant lastUpdate;
 
     @Getter
-    private final Property<Region> loadedContent = new SimpleObjectProperty<>();
+    private static final Property<Region> loadedContent = new SimpleObjectProperty<>();
+    @Getter
+    private static final Property<String> loadingText = new SimpleObjectProperty<>();
 
     public AppMainWindow(Stage stage) {
         this.stage = stage;
     }
 
-    public static synchronized void initEmpty() {
+    public static synchronized void initEmpty(boolean show) {
         if (INSTANCE != null) {
+            if (show) {
+                INSTANCE.show();
+            }
             return;
         }
 
@@ -100,9 +105,14 @@ public class AppMainWindow {
         INSTANCE.initializeWindow(state);
         INSTANCE.setupListeners();
         INSTANCE.windowActive.set(true);
-        TrackEvent.debug("Window set to active");
 
-        INSTANCE.show();
+        if (show) {
+            INSTANCE.show();
+        }
+    }
+
+    public static void loadingText(String key) {
+        loadingText.setValue(key != null && AppI18n.get() != null ? AppI18n.get(key) : "...");
     }
 
     public ObservableDoubleValue displayScale() {
@@ -114,14 +124,10 @@ public class AppMainWindow {
     }
 
     public static synchronized void initContent() {
-        if (INSTANCE == null) {
-            initEmpty();
-        }
-
+        AppDialog.waitForClose();
         var content = new AppLayoutComp();
         var region = content.createRegion();
-        AppDialog.waitForClose();
-        INSTANCE.loadedContent.setValue(region);
+        loadedContent.setValue(region);
     }
 
     private static ObservableValue<String> createTitle() {
@@ -142,7 +148,7 @@ public class AppMainWindow {
                 AppPrefs.get().language()));
     }
 
-    private void show() {
+    public void show() {
         stage.show();
         if (OsType.getLocal() == OsType.WINDOWS) {
             NativeWinWindowControl.MAIN_WINDOW = new NativeWinWindowControl(stage);

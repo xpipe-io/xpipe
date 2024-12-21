@@ -1,9 +1,11 @@
 package io.xpipe.app.comp.base;
 
+import atlantafx.base.controls.ModalPaneSkin;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.util.NodeHelper;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.application.Platform;
@@ -81,6 +83,13 @@ public class ModalOverlayComp extends SimpleComp {
                 if (newValue != null) {
                     var modalBox = toBox(newValue);
                     modal.show(modalBox);
+                    modal.setPersistent(newValue.isPersistent());
+                    if (newValue.isPersistent()) {
+                        var closeButton = modalBox.lookup(".close-button");
+                        if (closeButton != null) {
+                            closeButton.setVisible(false);
+                        }
+                    }
 
                     //                if (newValue.isFinishOnEnter()) {
                     //                    modalBox.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
@@ -105,7 +114,14 @@ public class ModalOverlayComp extends SimpleComp {
         var current = overlayContent.getValue();
         if (current != null) {
             var modalBox = toBox(current);
+            modal.setPersistent(current.isPersistent());
             modal.show(modalBox);
+            if (current.isPersistent()) {
+                var closeButton = modalBox.lookup(".close-button");
+                if (closeButton != null) {
+                    closeButton.setVisible(false);
+                }
+            }
             modalBox.requestFocus();
         }
 

@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
 import lombok.With;
+import lombok.experimental.NonFinal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ public class ModalOverlay {
     }
 
     public static ModalOverlay of(String titleKey, Comp<?> content, Comp<?> graphic) {
-        return new ModalOverlay(titleKey,content,graphic, new ArrayList<>());
+        return new ModalOverlay(titleKey,content,graphic, new ArrayList<>(), false);
     }
 
     public ModalOverlay withDefaultButtons(Runnable action) {
@@ -39,9 +40,15 @@ public class ModalOverlay {
     @Singular
     List<ModalButton> buttons;
 
+    @NonFinal
+    boolean persistent;
+
     public ModalButton addButton(ModalButton button) {
         buttons.add(button);
         return button;
     }
 
+    public void persist() {
+        persistent = true;
+    }
 }

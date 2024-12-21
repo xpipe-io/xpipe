@@ -35,6 +35,7 @@ public class MultiContentComp extends SimpleComp {
 
         for (Map.Entry<Comp<?>, ObservableValue<Boolean>> e : content.entrySet()) {
             var r = e.getKey().createRegion();
+            PlatformThread.runNestedLoopIteration();
             e.getValue().subscribe(val -> {
                 PlatformThread.runLaterIfNeeded(() -> {
                     r.setManaged(val);
