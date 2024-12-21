@@ -1,6 +1,7 @@
 package io.xpipe.app.comp.base;
 
 import io.xpipe.app.core.mode.OperationMode;
+import javafx.beans.property.Property;
 import javafx.scene.control.Button;
 import lombok.Value;
 import lombok.experimental.NonFinal;
@@ -40,6 +41,10 @@ public class ModalButton {
         return new ModalButton("cancel", null, true, false);
     }
 
+    public static ModalButton skip() {
+        return new ModalButton("skip", null, true, false);
+    }
+
     public static ModalButton confirm(Runnable action) {
         return new ModalButton("confirm", action, true, true);
     }
@@ -51,5 +56,11 @@ public class ModalButton {
     public ModalButton augment(Consumer<Button> augment) {
         this.augment = augment;
         return this;
+    }
+
+    public static Runnable toggle(Property<Boolean> prop) {
+        return () -> {
+            prop.setValue(true);
+        };
     }
 }

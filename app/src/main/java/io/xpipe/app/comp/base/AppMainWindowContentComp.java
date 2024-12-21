@@ -32,9 +32,9 @@ public class AppMainWindowContentComp extends SimpleComp {
         var overlay = AppDialog.getModalOverlay();
         var loaded = AppMainWindow.getLoadedContent();
         var bg = Comp.of(() -> {
-            var loadingIcon = new ImageView(AppImages.image("logo/logo.png"));
-            loadingIcon.setFitWidth(32);
-            loadingIcon.setFitHeight(32);
+            var loadingIcon = new ImageView();
+            loadingIcon.setFitWidth(40);
+            loadingIcon.setFitHeight(40);
 
             var anim = Animations.pulse(loadingIcon, 1.1);
             anim.setRate(0.85);
@@ -42,10 +42,9 @@ public class AppMainWindowContentComp extends SimpleComp {
             anim.play();
 
             // This allows for assigning logos even if AppImages has not been initialized yet
-            var dir = "img/logo/full";
+            var dir = "img/logo/";
             AppResources.with(AppResources.XPIPE_MODULE, dir, path -> {
-                var size = 64;
-                loadingIcon.setImage(AppImages.loadImage(path.resolve("logo_" + size + "x" + size + ".png")));
+                loadingIcon.setImage(AppImages.loadImage(path.resolve("loading.png")));
             });
 
             var text = new LabelComp(AppMainWindow.getLoadingText());

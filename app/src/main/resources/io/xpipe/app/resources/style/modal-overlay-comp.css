@@ -1,4 +1,6 @@
 .modal-overlay-comp .modal-box {
+    -fx-border-width: 1;
+    -fx-border-color: -color-border-default;
     -fx-border-radius: 4;
     -fx-background-radius: 6;
 }
@@ -8,5 +10,9 @@
     -fx-border-width: 1px;
     -fx-border-radius: 2px;
     -fx-background-radius: 2px;
+}
+
+.root:dark .modal-overlay-comp.modal-pane {
+    -color-modal-pane-overlay: rgba(0, 0, 0, 0.4);
 }
 

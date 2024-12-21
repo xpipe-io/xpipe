@@ -80,7 +80,7 @@ public class BaseMode extends OperationMode {
             PlatformInit.init(true);
             PlatformThread.runLaterIfNeededBlocking(() -> {
                 AppGreetings.showIfNeeded();
-                AppMainWindow.loadingText("renderingContent");
+                AppMainWindow.loadingText("initializingApp");
                 AppMainWindow.initContent();
             });
         }, () -> {

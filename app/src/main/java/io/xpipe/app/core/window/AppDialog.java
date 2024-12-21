@@ -1,5 +1,6 @@
 package io.xpipe.app.core.window;
 
+import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.util.PlatformInit;
 import io.xpipe.app.util.PlatformThread;

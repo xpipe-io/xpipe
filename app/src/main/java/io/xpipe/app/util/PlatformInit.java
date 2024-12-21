@@ -82,7 +82,7 @@ public class PlatformInit {
                 Application.launch(App.class);
             });
             while (App.getApp() == null) {
-                ThreadHelper.sleep(100);
+                ThreadHelper.sleep(10);
             }
             NativeBridge.init();
             TrackEvent.info("Platform init finished");
