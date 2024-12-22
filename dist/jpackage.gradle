@@ -94,10 +94,10 @@ jlink {
             icon = "$rootDir/dist/logo/logo.ico"
             appVersion = rootProject.canonicalVersionString
         } else if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
-            icon = "$rootDir/logo/logo.png"
+            icon = "$rootDir/dist/logo/logo.png"
             appVersion = rootProject.canonicalVersionString
         } else {
-            icon = "$rootDir/logo/logo.icns"
+            icon = "$rootDir/dist/logo/logo.icns"
             resourceDir = file("${project.layout.buildDirectory.get()}/macos_resources")
             appVersion = macVersion
         }
