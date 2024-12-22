@@ -67,6 +67,7 @@ public class AppMainWindowContentComp extends SimpleComp {
                     var fade = Animations.fadeIn(region, Duration.millis(elapsed.toMillis() / 2.5));
                     fade.play();
                     pane.getChildren().remove(vbox);
+                    pane.getStyleClass().remove("background");
                 }
             });
 

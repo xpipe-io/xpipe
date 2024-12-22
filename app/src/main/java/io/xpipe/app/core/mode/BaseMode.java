@@ -61,6 +61,7 @@ public class BaseMode extends OperationMode {
         AppAvCheck.check();
         AppJavaOptionsCheck.check();
         AppSid.init();
+        AppPtbCheck.check();
 
         var imagesLoaded = new CountDownLatch(1);
         var browserLoaded = new CountDownLatch(1);

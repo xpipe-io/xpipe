@@ -14,6 +14,8 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -73,6 +75,26 @@ public class ModalOverlayComp extends SimpleComp {
             }
         });
 
+
+        modal.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                var ov = overlayContent.getValue();
+                if (ov != null) {
+                    var def = ov.getButtons().stream().filter(modalButton -> modalButton.isDefaultButton()).findFirst();
+                    if (def.isPresent()) {
+                        var mb = def.get();
+                        if (mb.getAction() != null) {
+                            mb.getAction().run();
+                        }
+                        if (mb.isClose()) {
+                            overlayContent.setValue(null);
+                        }
+                        event.consume();
+                    }
+                }
+            }
+        });
+
         overlayContent.addListener((observable, oldValue, newValue) -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 if (oldValue != null && newValue == null && modal.isDisplay()) {
@@ -90,16 +112,6 @@ public class ModalOverlayComp extends SimpleComp {
                             closeButton.setVisible(false);
                         }
                     }
-
-                    //                if (newValue.isFinishOnEnter()) {
-                    //                    modalBox.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-                    //                        if (event.getCode() == KeyCode.ENTER) {
-                    //                            newValue.getOnFinish().run();
-                    //                            overlayContent.setValue(null);
-                    //                            event.consume();
-                    //                        }
-                    //                    });
-                    //                }
 
                     // Wait 2 pulses before focus so that the scene can be assigned to r
                     Platform.runLater(() -> {

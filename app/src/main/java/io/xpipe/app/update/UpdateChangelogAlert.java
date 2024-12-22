@@ -1,14 +1,22 @@
 package io.xpipe.app.update;
 
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.MarkdownComp;
+import io.xpipe.app.comp.base.ModalButton;
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.Hyperlinks;
 
+import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -40,18 +48,12 @@ public class UpdateChangelogAlert {
         }
         shown = true;
 
-        AppWindowHelper.showAlert(
-                alert -> {
-                    alert.setTitle(AppI18n.get("updateChangelogAlertTitle"));
-                    alert.setAlertType(Alert.AlertType.NONE);
-                    alert.initModality(Modality.NONE);
-
-                    var markdown = new MarkdownComp(update.getRawDescription(), s -> s).createRegion();
-                    alert.getDialogPane().setContent(markdown);
-
-                    alert.getButtonTypes().add(new ButtonType(AppI18n.get("ok"), ButtonBar.ButtonData.OK_DONE));
-                    ((Stage) alert.getDialogPane().getScene().getWindow()).setAlwaysOnTop(true);
-                },
-                r -> r.filter(b -> b.getButtonData().isDefaultButton()).ifPresent(t -> {}));
+        var comp = Comp.of(() -> {
+            var markdown = new MarkdownComp(update.getRawDescription(), s -> s).createRegion();
+            return markdown;
+        });
+        var modal = ModalOverlay.of("updateChangelogAlertTitle", comp.prefWidth(600), null);
+        modal.addButton(ModalButton.ok());
+        AppDialog.showAndWait(modal);
     }
 }

@@ -39,7 +39,6 @@ public class GuiMode extends PlatformMode {
         super.onSwitchTo();
         PlatformThread.runLaterIfNeededBlocking(() -> {
             AppMainWindow.getInstance().show();
-            AppPtbCheck.check();
         });
     }
 }

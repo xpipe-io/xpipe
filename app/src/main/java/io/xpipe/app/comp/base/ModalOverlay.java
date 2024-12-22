@@ -20,7 +20,7 @@ public class ModalOverlay {
     }
 
     public static ModalOverlay of(String titleKey, Comp<?> content, Comp<?> graphic) {
-        return new ModalOverlay(titleKey,content,graphic, new ArrayList<>(), false);
+        return new ModalOverlay(titleKey, content,graphic, new ArrayList<>(), false);
     }
 
     public ModalOverlay withDefaultButtons(Runnable action) {

@@ -260,18 +260,10 @@ public abstract class OperationMode {
             OperationMode.halt(0);
         };
 
-        if (Platform.isFxApplicationThread() || !Thread.currentThread().isDaemon()) {
-            exec.run();
-        } else {
-            // Creates separate non daemon thread to force execution after shutdown even if current thread is a daemon
-            var t = new Thread(exec);
-            t.setDaemon(false);
-            t.start();
-            try {
-                t.join();
-            } catch (InterruptedException ignored) {
-            }
-        }
+        // Creates separate non daemon thread to force execution after shutdown even if current thread is a daemon
+        var t = new Thread(exec);
+        t.setDaemon(false);
+        t.start();
     }
 
     public static void halt(int code) {

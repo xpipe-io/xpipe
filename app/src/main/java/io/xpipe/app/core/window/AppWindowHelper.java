@@ -44,11 +44,21 @@ import java.util.function.Supplier;
 
 public class AppWindowHelper {
 
-    public static Node alertContentText(String s) {
+    public static Region alertContentText(String s) {
         return alertContentText(s, 450);
     }
 
-    public static Node alertContentText(String s, int width) {
+    public static Comp<?> dialogText(String s) {
+        return Comp.of(() -> {
+            var text = new Text(s);
+            text.setWrappingWidth(450);
+            AppFont.medium(text);
+            var sp = new StackPane(text);
+            return sp;
+        }).prefWidth(450);
+    }
+
+    public static Region alertContentText(String s, int width) {
         var text = new Text(s);
         text.setWrappingWidth(width);
         AppFont.medium(text);
