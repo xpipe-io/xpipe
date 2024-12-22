@@ -368,7 +368,7 @@ public abstract class OperationMode {
             }
 
             newMode.onSwitchTo();
-            if (newMode != GUI && AppMainWindow.getInstance().getStage().isShowing()) {
+            if (newMode != GUI && AppMainWindow.getInstance() != null && AppMainWindow.getInstance().getStage().isShowing()) {
                 GUI.onSwitchTo();
                 newMode = GUI;
             }
