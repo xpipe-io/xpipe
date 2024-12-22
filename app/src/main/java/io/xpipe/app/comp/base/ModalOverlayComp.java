@@ -154,7 +154,7 @@ public class ModalOverlayComp extends SimpleComp {
             overlayContent.setValue(null);
             event.consume();
         });
-        r.maxHeightProperty().bind(pane.heightProperty().subtract(250));
+        r.maxHeightProperty().bind(pane.heightProperty().subtract(200));
 
         content.prefWidthProperty().bind(modalBox.widthProperty());
         modalBox.setMinWidth(100);

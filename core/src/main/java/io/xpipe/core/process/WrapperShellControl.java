@@ -27,6 +27,11 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
+    public ShellView view() {
+        return parent.view();
+    }
+
+    @Override
     public ShellCapabilities getCapabilities() {
         return parent.getCapabilities();
     }

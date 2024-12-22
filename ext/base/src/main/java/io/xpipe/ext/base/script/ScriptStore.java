@@ -8,10 +8,7 @@ import io.xpipe.app.util.ShellTemp;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellInitCommand;
-import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.EnabledStoreState;
-import io.xpipe.core.store.FileNames;
-import io.xpipe.core.store.StatefulDataStore;
+import io.xpipe.core.store.*;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -139,10 +136,10 @@ public abstract class ScriptStore implements DataStore, StatefulDataStore<Enable
                     .makeFileSystemCompatible(
                             scriptStore.get().getName().toLowerCase(Locale.ROOT).replaceAll(" ", "_"));
             var scriptFile = FileNames.join(targetDir, fileName + "." + d.getScriptFileEnding());
-            d.createScriptTextFileWriteCommand(proc, content, scriptFile).execute();
+            proc.view().writeScriptFile(new FilePath(scriptFile), content);
         }
 
-        d.createTextFileWriteCommand(proc, String.valueOf(hash), hashFile).execute();
+        proc.view().writeTextFile(new FilePath(hashFile), String.valueOf(hash));
         return targetDir;
     }
 

@@ -112,10 +112,7 @@ public class ScriptHelper {
                 .tag("content", content)
                 .handle();
 
-        processControl
-                .getShellDialect()
-                .createScriptTextFileWriteCommand(processControl, content, file.toString())
-                .execute();
+        processControl.view().writeScriptFile(file,content);
         return file;
     }
 

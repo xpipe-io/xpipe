@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.XPipeInstallation;
 
 import java.nio.file.Files;
@@ -65,18 +66,11 @@ public class DesktopShortcuts {
             pc.executeSimpleCommand(pc.getShellDialect().getMkdirsCommand(base + "/Contents/Resources"));
 
             var macExec = base + "/Contents/MacOS/" + name;
-            pc.getShellDialect()
-                    .createScriptTextFileWriteCommand(pc, content, macExec)
-                    .execute();
+            pc.view().writeScriptFile(new FilePath(macExec), content);
             pc.executeSimpleCommand("chmod ugo+x \"" + macExec + "\"");
 
-            pc.getShellDialect()
-                    .createTextFileWriteCommand(pc, "APPL????", base + "/Contents/PkgInfo")
-                    .execute();
-            pc.getShellDialect()
-                    .createTextFileWriteCommand(
-                            pc,
-                            """
+            pc.view().writeTextFile(new FilePath(base + "/Contents/PkgInfo"), "APPL????");
+            pc.view().writeTextFile(new FilePath(base + "/Contents/Info.plist"), """
                                                     <?xml version="1.0" encoding="UTF-8"?>
                                                     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
                                                     <plist version="1.0">
@@ -85,9 +79,7 @@ public class DesktopShortcuts {
                                                     	<string>icon.icns</string>
                                                     </dict>
                                                     </plist>
-                                                    """,
-                            base + "/Contents/Info.plist")
-                    .execute();
+                                                    """);
             pc.executeSimpleCommand("cp \"" + icon + "\" \"" + base + "/Contents/Resources/icon.icns\"");
         }
         return base;

@@ -6,6 +6,7 @@ import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.beacon.api.FsScriptExchange;
 
 import com.sun.net.httpserver.HttpExchange;
+import io.xpipe.core.store.FilePath;
 import lombok.SneakyThrows;
 
 import java.nio.charset.StandardCharsets;
@@ -21,10 +22,7 @@ public class FsScriptExchangeImpl extends FsScriptExchange {
             data = new String(in.readAllBytes(), StandardCharsets.UTF_8);
         }
         var file = ScriptHelper.getExecScriptFile(shell.getControl());
-        shell.getControl()
-                .getShellDialect()
-                .createScriptTextFileWriteCommand(shell.getControl(), data, file.toString())
-                .execute();
+        shell.getControl().view().writeScriptFile(file, data);
         return Response.builder().path(file).build();
     }
 }

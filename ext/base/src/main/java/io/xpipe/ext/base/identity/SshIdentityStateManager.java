@@ -10,6 +10,7 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileNames;
+import io.xpipe.core.store.FilePath;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -118,9 +119,7 @@ public class SshIdentityStateManager {
         if (sc.getOsType() == OsType.WINDOWS) {
             if (!content.contains("enable-win32-openssh-support")) {
                 content += "\nenable-win32-openssh-support\n";
-                sc.getShellDialect()
-                        .createTextFileWriteCommand(sc, content, confFile)
-                        .execute();
+                sc.view().writeTextFile(new FilePath(confFile), content);
                 // reloadagent does not work correctly, so kill it
                 handleWindowsGpgAgentStop(sc);
             }
@@ -128,9 +127,7 @@ public class SshIdentityStateManager {
         } else {
             if (!content.contains("enable-ssh-support")) {
                 content += "\nenable-ssh-support\n";
-                sc.getShellDialect()
-                        .createTextFileWriteCommand(sc, content, confFile)
-                        .execute();
+                sc.view().writeTextFile(new FilePath(confFile), content);
                 sc.executeSimpleCommand(CommandBuilder.of().add("gpg-connect-agent", "reloadagent", "/bye"));
             } else {
                 sc.executeSimpleCommand(CommandBuilder.of().add("gpg-connect-agent", "/bye"));

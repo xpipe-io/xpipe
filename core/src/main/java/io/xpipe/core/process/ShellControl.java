@@ -18,6 +18,8 @@ import java.util.function.Function;
 
 public interface ShellControl extends ProcessControl {
 
+    ShellView view();
+
     ShellCapabilities getCapabilities();
 
     Optional<ShellControl> getParentControl();

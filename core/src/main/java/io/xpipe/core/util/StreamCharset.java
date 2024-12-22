@@ -1,5 +1,6 @@
 package io.xpipe.core.util;
 
+import com.fasterxml.jackson.databind.util.ArrayBuilders;
 import lombok.Value;
 
 import java.io.ByteArrayInputStream;
@@ -182,6 +183,19 @@ public class StreamCharset {
         }
 
         return new InputStreamReader(stream, charset);
+    }
+
+    public byte[] toBytes(String s) {
+        var raw = s.getBytes(charset);
+        if (hasByteOrderMark()) {
+            var bom = getByteOrderMark();
+            var r = new byte[raw.length + bom.length];
+            System.arraycopy(bom, 0, r, 0, bom.length);
+            System.arraycopy(raw, 0, r, bom.length, raw.length);
+            return r;
+        } else {
+            return raw;
+        }
     }
 
     @Override
