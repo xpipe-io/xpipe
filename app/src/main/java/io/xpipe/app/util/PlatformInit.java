@@ -8,6 +8,7 @@ import io.xpipe.app.core.window.ModifiedStage;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.XPipeDaemonMode;
 import javafx.application.Application;
 import lombok.SneakyThrows;
@@ -66,6 +67,11 @@ public class PlatformInit {
     }
 
     private static void initSync() {
+        if (AppProperties.get().isAotTrainMode() && OsType.getLocal() == OsType.LINUX) {
+            latch.countDown();
+            return;
+        }
+
         try {
             TrackEvent.info("Platform init started");
             ModifiedStage.init();

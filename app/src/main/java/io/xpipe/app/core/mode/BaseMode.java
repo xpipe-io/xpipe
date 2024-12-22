@@ -104,6 +104,7 @@ public class BaseMode extends OperationMode {
         }, () -> {
             BrowserIconManager.loadIfNecessary();
         }, () -> {
+            ThreadHelper.sleep(500);
             BrowserLocalFileSystem.init();
         });
         ActionProvider.initProviders();
