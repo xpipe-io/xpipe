@@ -43,7 +43,7 @@ public class StoreIntroComp extends SimpleComp {
         var scanPane = new StackPane(scanButton);
         scanPane.setAlignment(Pos.CENTER);
 
-        var img = PrettyImageHelper.ofFixedSize("graphics/Wave.svg", 80, 141).createRegion();
+        var img = PrettyImageHelper.ofSpecificFixedSize("graphics/Wave.svg", 80, 144).createRegion();
         var text = new VBox(title, introDesc);
         text.setSpacing(5);
         text.setAlignment(Pos.CENTER_LEFT);

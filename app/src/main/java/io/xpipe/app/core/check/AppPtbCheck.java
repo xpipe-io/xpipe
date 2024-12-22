@@ -9,6 +9,9 @@ import io.xpipe.app.core.window.AppWindowHelper;
 public class AppPtbCheck {
 
     public static void check() {
+        if (!AppProperties.get().isStaging()) {
+            return;
+        }
 
         if (AppProperties.get().isAotTrainMode()) {
             return;

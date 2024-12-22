@@ -63,6 +63,13 @@ public class BaseMode extends OperationMode {
         AppSid.init();
         AppPtbCheck.check();
 
+        // If we downloaded an update, and decided to no longer automatically update, don't remind us!
+        // You can still update manually in the about tab
+        if (AppPrefs.get().automaticallyUpdate().get()
+                || AppPrefs.get().checkForSecurityUpdates().get()) {
+            UpdateAvailableAlert.showIfNeeded();
+        }
+
         var imagesLoaded = new CountDownLatch(1);
         var browserLoaded = new CountDownLatch(1);
         ThreadHelper.load(
@@ -98,6 +105,7 @@ public class BaseMode extends OperationMode {
                     PlatformThread.runLaterIfNeededBlocking(() -> {
                         AppMainWindow.initContent();
                     });
+                    UpdateChangelogAlert.showIfNeeded();
                 },
                 () -> {
                     AppFileWatcher.init();
@@ -111,15 +119,6 @@ public class BaseMode extends OperationMode {
                     AppImages.init();
                     SystemIcons.init();
                     imagesLoaded.countDown();
-                },
-                () -> {
-                    // If we downloaded an update, and decided to no longer automatically update, don't remind us!
-                    // You can still update manually in the about tab
-                    if (AppPrefs.get().automaticallyUpdate().get()
-                            || AppPrefs.get().checkForSecurityUpdates().get()) {
-                        UpdateAvailableAlert.showIfNeeded();
-                    }
-                    UpdateChangelogAlert.showIfNeeded();
                 },
                 () -> {
                     BrowserIconManager.loadIfNecessary();

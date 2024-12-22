@@ -6,9 +6,9 @@
    id="Layer_1"
    x="0px"
    y="0px"
-   width="229.97421"
-   height="406.61072"
-   viewBox="0 0 229.97421 406.61073"
+   width="225.34041"
+   height="405.79431"
+   viewBox="0 0 225.34041 405.79432"
    enable-background="new 0 0 612 793"
    xml:space="preserve"
    sodipodi:docname="Wave-dark.svg"
@@ -27,12 +27,12 @@
    bordercolor="#666666"
    borderopacity="1.0"
    inkscape:pageshadow="2"
-   inkscape:pageopacity="1"
+   inkscape:pageopacity="0"
    inkscape:pagecheckerboard="0"
    showgrid="false"
-   inkscape:zoom="2.1614124"
-   inkscape:cx="198.25"
-   inkscape:cy="264.17911"
+   inkscape:zoom="1.0807062"
+   inkscape:cx="257.70186"
+   inkscape:cy="144.35006"
    inkscape:window-width="1920"
    inkscape:window-height="1017"
    inkscape:window-x="-8"
@@ -41,7 +41,7 @@
    inkscape:current-layer="g28" />
 <g
    id="g28"
-   transform="translate(-188.00066,-191.89914)">
+   transform="translate(-188.02943,-193.47308)">
 	<defs
    id="defs3">
 		<rect
@@ -69,12 +69,18 @@
    d="m 238.84,237.41 c 8.42,17.64 2.73,140.83 -7.13,184.1 -9.87,43.27 -19.73,98.28 -22.03,144.58 -1.01,19.73 2.01,27.5 14.9,27.5 22.75,0 51.62,-47.95 87.91,-46.87 36.29,1.08 47.81,55.01 64.8,54.65 16.99,-0.36 30.67,-6.27 30.82,-58.75 0.5,-156.75 -130.9,-283.76 -169.27,-305.21 z"
    id="path8"
    style="stroke:#ffffff;stroke-width:4;stroke-miterlimit:6.49123;stroke-dasharray:none;stroke-opacity:1"
-   transform="matrix(1,0,0,0.98812626,0,2.3022175)" />
+   transform="matrix(0.97977228,0,0,0.98618656,3.8316025,4.2301068)"
+   inkscape:export-filename="C:\Projects\xpipe\xpipex\app\src\main\resources\io\xpipe\app\resources\img\graphics\Wave-288-dark.png"
+   inkscape:export-xdpi="68.163544"
+   inkscape:export-ydpi="68.163544" />
 	
 		<path
-   style="stroke:#ffffff;stroke-width:3.97618;stroke-miterlimit:6.49123;stroke-dasharray:none;stroke-opacity:1"
-   d="m 352.81,360.61656 c 7.99,13.30019 28.37,3.05331 29.23,-11.95633 0.87,-15.00964 -1.36,-33.93226 -11.23,-34.6437 -9.86,-0.71145 -16.92,-10.46426 -26.78,-11.17571 -9.87,-0.71145 -20.45,9.04136 -25.06,-3.91298 -4.61,-12.94446 12.39,-18.42855 25.06,-20.48385 -11.31,-11.17572 -17.93,-23.55694 -22.9,-36.43222 -4.97,-12.87529 -8.64,-24.68241 5.26,-29.73272 13.89,-5.05921 12.74,20.90874 28.65,32.7959 -4.68,-17.49971 -6.4,-24.76243 -6.04,-34.93026 0.36,-10.1777 -0.36,-17.93448 14.25,-15.93847 14.62,1.98613 8.28,32.01529 19.66,44.24829 3.45,-11.59072 5.54,-26.32368 13.89,-32.37101 8.36,-6.04734 27.36,-6.18568 15.27,18.64594 -12.1,24.82173 3.53,38.27013 -0.15,57.83503 -3.67,19.5649 -15.04,16.00764 -19.94,28.60626 -4.9,12.58873 2.88,41.26415 -6.34,54.13943 -9.21,12.87529 -10.87,32.72674 -4.89,48.517 -18.36,-16.9266 -27.94,-53.2106 -27.94,-53.2106 z"
-   id="path10" />
+   style="stroke:#ffffff;stroke-width:3.9319;stroke-miterlimit:6.49123;stroke-dasharray:none;stroke-opacity:1"
+   d="m 349.50506,361.84108 c 7.82837,13.27408 27.79614,3.04732 28.63875,-11.93286 0.8524,-14.98017 -1.3325,-33.86565 -11.00285,-34.57569 -9.66056,-0.71006 -16.57774,-10.44373 -26.2383,-11.15378 -9.67034,-0.71005 -20.03634,9.02361 -24.55308,-3.9053 -4.51676,-12.91904 12.13937,-18.39237 24.55308,-20.44364 -11.08122,-11.15378 -17.56732,-23.51069 -22.43679,-36.3607 -4.86946,-12.85002 -8.46523,-24.63396 5.1536,-29.67435 13.60905,-5.04928 12.48231,20.86769 28.07048,32.73151 -4.58533,-17.46535 -6.27054,-24.71382 -5.91782,-34.86168 0.35272,-10.15773 -0.35272,-17.89928 13.96175,-15.90719 14.32427,1.98224 8.11252,31.95244 19.26233,44.16143 3.38022,-11.56797 5.42793,-26.272 13.60903,-32.30747 8.1909,-6.03546 26.80657,-6.17353 14.96113,18.60934 -11.85525,24.77301 3.45859,38.19501 -0.14697,57.72151 -3.59577,19.52649 -14.73577,15.97622 -19.53666,28.5501 -4.80088,12.56402 2.82175,41.18315 -6.21176,54.03316 -9.0237,12.85001 -10.65011,32.66249 -4.79109,48.42175 -17.98861,-16.89337 -27.37483,-53.10614 -27.37483,-53.10614 z"
+   id="path10"
+   inkscape:export-filename="C:\Projects\xpipe\xpipex\app\src\main\resources\io\xpipe\app\resources\img\graphics\Wave-288-dark.png"
+   inkscape:export-xdpi="68.163544"
+   inkscape:export-ydpi="68.163544" />
 	<path
    clip-path="url(#SVGID_2_)"
    fill-rule="evenodd"
@@ -83,7 +89,10 @@
    id="path12"
    style="stroke:#ffffff;stroke-width:4;stroke-miterlimit:6.49123;stroke-dasharray:none;stroke-opacity:1"
    sodipodi:nodetypes="ccscscscc"
-   transform="matrix(1,0,0,0.98812626,0,2.3022175)" />
+   transform="matrix(0.97977228,0,0,0.98618656,3.8316025,4.2301068)"
+   inkscape:export-filename="C:\Projects\xpipe\xpipex\app\src\main\resources\io\xpipe\app\resources\img\graphics\Wave-288-dark.png"
+   inkscape:export-xdpi="68.163544"
+   inkscape:export-ydpi="68.163544" />
 	<path
    clip-path="url(#SVGID_2_)"
    fill-rule="evenodd"
@@ -91,11 +100,17 @@
    fill="#ffffff"
    d="m 248.27,398.98 c -5.62,27.5 -40.68,181.08 -22.83,183.02 17.86,1.94 43.28,-47.52 84.96,-47.16 41.69,0.36 58.11,55.44 68.26,55.08 10.15,-0.36 16.85,3.6 17.93,-58.46 1.08,-62.07 -36.79,-141.41 -59.19,-176.33 -30.38,1.94 -63.14,26.28 -89.13,43.85 z"
    id="path14"
-   transform="matrix(1,0,0,0.98812626,0,2.3022175)" />
+   transform="matrix(0.97977228,0,0,0.98618656,3.8316025,4.2301068)"
+   inkscape:export-filename="C:\Projects\xpipe\xpipex\app\src\main\resources\io\xpipe\app\resources\img\graphics\Wave-288-dark.png"
+   inkscape:export-xdpi="68.163544"
+   inkscape:export-ydpi="68.163544" />
 	<g
    clip-path="url(#SVGID_2_)"
    id="g22"
-   transform="matrix(1,0,0,0.98812626,0,2.3022175)">
+   transform="matrix(0.97977228,0,0,0.98618656,3.8316025,4.2301068)"
+   inkscape:export-filename="C:\Projects\xpipe\xpipex\app\src\main\resources\io\xpipe\app\resources\img\graphics\Wave-288-dark.png"
+   inkscape:export-xdpi="68.163544"
+   inkscape:export-ydpi="68.163544">
 		<defs
    id="defs17">
 			<path
@@ -122,7 +137,10 @@
    stroke-miterlimit="11.4737"
    d="m 283.04,408.91 c 21.53,0.65 43.49,-15.48 44.14,-38.95 0.65,-23.47 -19.01,-32.54 -36,-31.54 -16.99,1.01 -41.47,15.63 -41.98,34.49 -0.5,18.87 12.32,35.35 33.84,36 z"
    id="path24"
-   transform="matrix(1,0,0,0.98812626,0,2.3022175)" />
+   transform="matrix(0.97977228,0,0,0.98618656,3.8316025,4.2301068)"
+   inkscape:export-filename="C:\Projects\xpipe\xpipex\app\src\main\resources\io\xpipe\app\resources\img\graphics\Wave-288-dark.png"
+   inkscape:export-xdpi="68.163544"
+   inkscape:export-ydpi="68.163544" />
 	<path
    clip-path="url(#SVGID_2_)"
    fill-rule="evenodd"
@@ -130,14 +148,23 @@
    fill="#ffffff"
    d="m 271.38,355.62 c 6.18,-4.46 12.96,-5.601 14.96,-2.88 2.021,2.88 -1.28,8.8 -7.34,13.26 -6.04,4.46 -12.66,5.76 -14.82,2.88 -2.02,-2.74 1.14,-8.78 7.2,-13.26 z"
    id="path26"
-   transform="matrix(1,0,0,0.98812626,0,2.3022175)" />
+   transform="matrix(0.97977228,0,0,0.98618656,3.8316025,4.2301068)"
+   inkscape:export-filename="C:\Projects\xpipe\xpipex\app\src\main\resources\io\xpipe\app\resources\img\graphics\Wave-288-dark.png"
+   inkscape:export-xdpi="68.163544"
+   inkscape:export-ydpi="68.163544" />
 <path
-   style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.994046px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-   d="m 350.17466,360.25353 c 11.91599,11.27923 18.7233,32.19813 25.88745,46.04977 l 5.30095,13.44208 -18.48399,-23.43678 -14.39461,-32.16495"
+   style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.982975px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+   d="m 346.92302,361.47876 c 11.67496,11.25709 18.34458,32.13492 25.36381,45.95938 l 5.19373,13.41569 -18.1101,-23.39078 -14.10345,-32.10181"
    id="path3198"
-   sodipodi:nodetypes="ccccc" /><path
-   style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.994046px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-   d="m 240.97588,372.50291 -3.55896,19.11834 -9.64272,47.68171 -0.96165,16.88488 16.16587,-42.09962 5.23441,-38.7919 z"
+   sodipodi:nodetypes="ccccc"
+   inkscape:export-filename="C:\Projects\xpipe\xpipex\app\src\main\resources\io\xpipe\app\resources\img\graphics\Wave-288-dark.png"
+   inkscape:export-xdpi="68.163544"
+   inkscape:export-ydpi="68.163544" /><path
+   style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.982975px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+   d="m 239.93309,373.7041 -3.48697,19.08081 -9.44767,47.5881 -0.94219,16.85174 15.83886,-42.01697 5.12854,-38.71576 z"
    id="path5151"
-   sodipodi:nodetypes="ccccccc" /></g>
+   sodipodi:nodetypes="ccccccc"
+   inkscape:export-filename="C:\Projects\xpipe\xpipex\app\src\main\resources\io\xpipe\app\resources\img\graphics\Wave-288-dark.png"
+   inkscape:export-xdpi="68.163544"
+   inkscape:export-ydpi="68.163544" /></g>
 </svg>

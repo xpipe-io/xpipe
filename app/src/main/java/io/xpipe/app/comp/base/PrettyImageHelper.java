@@ -12,8 +12,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableValue;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class PrettyImageHelper {
 
@@ -35,7 +38,7 @@ public class PrettyImageHelper {
         return Optional.empty();
     }
 
-    private static ObservableValue<String> rasterizedImageIfExistsScaled(String img, int height) {
+    private static ObservableValue<String> rasterizedImageIfExistsScaled(String img, int height, int... availableSizes) {
         ObservableDoubleValue obs = AppMainWindow.getInstance() != null
                 ? AppMainWindow.getInstance().displayScale()
                 : new SimpleDoubleProperty(1.0);
@@ -49,11 +52,11 @@ public class PrettyImageHelper {
                         return rasterizedImageIfExists(img, height).orElse(null);
                     }
 
-                    var sizes = List.of(16, 24, 40, 80);
                     var mult = Math.round(obs.get() * height);
                     var base = FileNames.getBaseName(img);
-                    var available = sizes.stream()
+                    var available = IntStream.of(availableSizes)
                             .filter(integer -> AppImages.hasNormalImage(base + "-" + integer + ".png"))
+                            .boxed()
                             .toList();
                     var closest = available.stream()
                             .filter(integer -> integer >= mult)
@@ -78,8 +81,13 @@ public class PrettyImageHelper {
         }
 
         var binding = BindingsHelper.flatMap(img, s -> {
-            return rasterizedImageIfExistsScaled(s, h);
+            return rasterizedImageIfExistsScaled(s, h, 16, 24, 40, 80);
         });
         return new PrettyImageComp(binding, w, h);
+    }
+
+    public static Comp<?> ofSpecificFixedSize(String img, int w, int h) {
+        var b =  rasterizedImageIfExistsScaled(img, h, h, h * 2);
+        return new PrettyImageComp(b, w, h);
     }
 }
