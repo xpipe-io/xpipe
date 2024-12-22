@@ -21,6 +21,7 @@ import javafx.scene.layout.VBox;
 import atlantafx.base.controls.ModalPane;
 import atlantafx.base.layout.ModalBox;
 import atlantafx.base.theme.Styles;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 public class ModalOverlayComp extends SimpleComp {
 
@@ -141,7 +142,7 @@ public class ModalOverlayComp extends SimpleComp {
             }
         });
         content.setSpacing(25);
-        content.setPadding(new Insets(25));
+        content.setPadding(new Insets(13, 25, 25, 25));
 
         var buttonBar = new ButtonBar();
         for (var mb : newValue.getButtons()) {

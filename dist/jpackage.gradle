@@ -91,13 +91,13 @@ jlink {
         imageOutputDir = file("$distDir/jpackage")
         imageName = 'xpiped'
         if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
-            icon = "logo/logo.ico"
+            icon = "$rootDir/dist/logo/logo.ico"
             appVersion = rootProject.canonicalVersionString
         } else if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
-            icon = "logo/logo.png"
+            icon = "$rootDir/logo/logo.png"
             appVersion = rootProject.canonicalVersionString
         } else {
-            icon = "logo/logo.icns"
+            icon = "$rootDir/logo/logo.icns"
             resourceDir = file("${project.layout.buildDirectory.get()}/macos_resources")
             appVersion = macVersion
         }

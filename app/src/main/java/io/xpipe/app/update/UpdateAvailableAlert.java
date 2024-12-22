@@ -39,7 +39,6 @@ public class UpdateAvailableAlert {
             Region region;
             if (updaterContent != null) {
                 var stack = new StackPane(updaterContent);
-                stack.setPadding(new Insets(18));
                 var box = new VBox(markdown, stack);
                 box.setFillWidth(true);
                 box.setPadding(Insets.EMPTY);
