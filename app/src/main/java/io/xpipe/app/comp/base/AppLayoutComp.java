@@ -38,7 +38,6 @@ public class AppLayoutComp extends Comp<CompStructure<Pane>> {
                                 },
                                 model.getSelected())));
         var multi = new MultiContentComp(map);
-        multi.styleClass("background");
 
         var pane = new BorderPane();
         var sidebar = new SideMenuBarComp(model.getSelected(), model.getEntries());

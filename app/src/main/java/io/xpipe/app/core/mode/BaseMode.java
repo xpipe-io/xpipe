@@ -8,6 +8,7 @@ import io.xpipe.app.browser.icon.BrowserIconManager;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.*;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataStoreProviders;
@@ -25,6 +26,8 @@ import io.xpipe.app.update.UpdateAvailableAlert;
 import io.xpipe.app.update.UpdateChangelogAlert;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.*;
+
+import java.util.concurrent.CountDownLatch;
 
 public class BaseMode extends OperationMode {
 
@@ -58,6 +61,9 @@ public class BaseMode extends OperationMode {
         AppAvCheck.check();
         AppJavaOptionsCheck.check();
         AppSid.init();
+
+        var imagesLoaded = new CountDownLatch(1);
+        var browserLoaded = new CountDownLatch(1);
         ThreadHelper.load(true, () -> {
             LocalShell.init();
             AppShellCheck.check();
@@ -80,7 +86,12 @@ public class BaseMode extends OperationMode {
             PlatformInit.init(true);
             PlatformThread.runLaterIfNeededBlocking(() -> {
                 AppGreetings.showIfNeeded();
+                AppDialog.waitForClose();
                 AppMainWindow.loadingText("initializingApp");
+            });
+            imagesLoaded.await();
+            browserLoaded.await();
+            PlatformThread.runLaterIfNeededBlocking(() -> {
                 AppMainWindow.initContent();
             });
         }, () -> {
@@ -93,6 +104,7 @@ public class BaseMode extends OperationMode {
             PlatformInit.init(true);
             AppImages.init();
             SystemIcons.init();
+            imagesLoaded.countDown();
         }, () -> {
             // If we downloaded an update, and decided to no longer automatically update, don't remind us!
             // You can still update manually in the about tab
@@ -103,9 +115,9 @@ public class BaseMode extends OperationMode {
             UpdateChangelogAlert.showIfNeeded();
         }, () -> {
             BrowserIconManager.loadIfNecessary();
-        }, () -> {
-            ThreadHelper.sleep(500);
             BrowserLocalFileSystem.init();
+            BrowserFullSessionModel.init();
+            browserLoaded.countDown();
         });
         ActionProvider.initProviders();
         DataStoreProviders.init();

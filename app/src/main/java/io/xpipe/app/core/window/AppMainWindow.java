@@ -124,7 +124,6 @@ public class AppMainWindow {
     }
 
     public static synchronized void initContent() {
-        AppDialog.waitForClose();
         var content = new AppLayoutComp();
         var region = content.createRegion();
         loadedContent.setValue(region);

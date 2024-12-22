@@ -34,20 +34,14 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
 
     public static final BrowserFullSessionModel DEFAULT = new BrowserFullSessionModel();
 
-    static {
-        init();
-    }
-
     @SneakyThrows
-    private static void init() {
+    public static void init() {
         DEFAULT.openSync(new BrowserHistoryTabModel(DEFAULT), null);
         if (AppPrefs.get().pinLocalMachineOnStartup().get()) {
             var tab = new BrowserFileSystemTabModel(
                     DEFAULT, DataStorage.get().local().ref(), BrowserFileSystemTabModel.SelectionMode.ALL);
-            ThreadHelper.runFailableAsync(() -> {
                 DEFAULT.openSync(tab, null);
                 DEFAULT.pinTab(tab);
-            });
         }
     }
 

@@ -367,10 +367,12 @@ public abstract class OperationMode {
                 CURRENT.onSwitchFrom();
             }
 
-            newMode.onSwitchTo();
+            BACKGROUND.onSwitchTo();
             if (newMode != GUI && AppMainWindow.getInstance() != null && AppMainWindow.getInstance().getStage().isShowing()) {
                 GUI.onSwitchTo();
                 newMode = GUI;
+            } else {
+                newMode.onSwitchTo();
             }
             CURRENT = newMode;
         } catch (Throwable ex) {
