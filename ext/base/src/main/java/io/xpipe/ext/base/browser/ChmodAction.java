@@ -87,12 +87,14 @@ public class ChmodAction implements BrowserBranchAction {
         @Override
         public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             var permissions = new SimpleStringProperty();
-            var modal = ModalOverlay.of("chmodPermissions", Comp.of(() -> {
-                        var creationName = new TextField();
-                        creationName.textProperty().bindBidirectional(permissions);
-                        return creationName;
-                    })
-                    .prefWidth(350));
+            var modal = ModalOverlay.of(
+                    "chmodPermissions",
+                    Comp.of(() -> {
+                                var creationName = new TextField();
+                                creationName.textProperty().bindBidirectional(permissions);
+                                return creationName;
+                            })
+                            .prefWidth(350));
             modal.withDefaultButtons(() -> {
                 if (permissions.getValue() == null) {
                     return;
@@ -102,9 +104,8 @@ public class ChmodAction implements BrowserBranchAction {
                         CommandBuilder.of()
                                 .add("chmod", permissions.getValue())
                                 .addFiles(entries.stream()
-                                        .map(browserEntry -> browserEntry
-                                                .getRawFileEntry()
-                                                .getPath())
+                                        .map(browserEntry ->
+                                                browserEntry.getRawFileEntry().getPath())
                                         .toList()),
                         false);
             });

@@ -4,6 +4,7 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.util.FailableRunnable;
+
 import lombok.SneakyThrows;
 
 import java.util.concurrent.CountDownLatch;

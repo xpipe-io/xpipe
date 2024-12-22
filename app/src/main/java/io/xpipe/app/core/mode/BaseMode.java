@@ -65,61 +65,68 @@ public class BaseMode extends OperationMode {
 
         var imagesLoaded = new CountDownLatch(1);
         var browserLoaded = new CountDownLatch(1);
-        ThreadHelper.load(true, () -> {
-            LocalShell.init();
-            AppShellCheck.check();
-            AppRosettaCheck.check();
-            AppTestCommandCheck.check();
-            XPipeDistributionType.init();
-            AppPrefs.setLocalDefaultsIfNeeded();
-        }, () -> {
-            // Initialize beacon server as we should be prepared for git askpass commands
-            AppBeaconServer.init();
-            AppMainWindow.loadingText("loadingGit");
-            DataStorageSyncHandler.getInstance().init();
-            DataStorageSyncHandler.getInstance().retrieveSyncedData();
-            AppMainWindow.loadingText("loadingSettings");
-            AppPrefs.initSharedRemote();
-            AppMainWindow.loadingText("loadingConnections");
-            DataStorage.init();
-            StoreViewState.init();
-            AppLayoutModel.init();
-            PlatformInit.init(true);
-            PlatformThread.runLaterIfNeededBlocking(() -> {
-                AppGreetings.showIfNeeded();
-                AppDialog.waitForClose();
-                AppMainWindow.loadingText("initializingApp");
-            });
-            imagesLoaded.await();
-            browserLoaded.await();
-            PlatformThread.runLaterIfNeededBlocking(() -> {
-                AppMainWindow.initContent();
-            });
-        }, () -> {
-            AppFileWatcher.init();
-            FileBridge.init();
-            BlobManager.init();
-            TerminalView.init();
-            TerminalLauncherManager.init();
-        }, () -> {
-            PlatformInit.init(true);
-            AppImages.init();
-            SystemIcons.init();
-            imagesLoaded.countDown();
-        }, () -> {
-            // If we downloaded an update, and decided to no longer automatically update, don't remind us!
-            // You can still update manually in the about tab
-            if (AppPrefs.get().automaticallyUpdate().get()
-                    || AppPrefs.get().checkForSecurityUpdates().get()) {
-                UpdateAvailableAlert.showIfNeeded();
-            }
-            UpdateChangelogAlert.showIfNeeded();
-        }, () -> {
-            BrowserIconManager.loadIfNecessary();
-            BrowserLocalFileSystem.init();
-            BrowserFullSessionModel.init();
-            browserLoaded.countDown();
-        });
+        ThreadHelper.load(
+                true,
+                () -> {
+                    LocalShell.init();
+                    AppShellCheck.check();
+                    AppRosettaCheck.check();
+                    AppTestCommandCheck.check();
+                    XPipeDistributionType.init();
+                    AppPrefs.setLocalDefaultsIfNeeded();
+                },
+                () -> {
+                    // Initialize beacon server as we should be prepared for git askpass commands
+                    AppBeaconServer.init();
+                    AppMainWindow.loadingText("loadingGit");
+                    DataStorageSyncHandler.getInstance().init();
+                    DataStorageSyncHandler.getInstance().retrieveSyncedData();
+                    AppMainWindow.loadingText("loadingSettings");
+                    AppPrefs.initSharedRemote();
+                    AppMainWindow.loadingText("loadingConnections");
+                    DataStorage.init();
+                    StoreViewState.init();
+                    AppLayoutModel.init();
+                    PlatformInit.init(true);
+                    PlatformThread.runLaterIfNeededBlocking(() -> {
+                        AppGreetings.showIfNeeded();
+                        AppDialog.waitForClose();
+                        AppMainWindow.loadingText("initializingApp");
+                    });
+                    imagesLoaded.await();
+                    browserLoaded.await();
+                    PlatformThread.runLaterIfNeededBlocking(() -> {
+                        AppMainWindow.initContent();
+                    });
+                },
+                () -> {
+                    AppFileWatcher.init();
+                    FileBridge.init();
+                    BlobManager.init();
+                    TerminalView.init();
+                    TerminalLauncherManager.init();
+                },
+                () -> {
+                    PlatformInit.init(true);
+                    AppImages.init();
+                    SystemIcons.init();
+                    imagesLoaded.countDown();
+                },
+                () -> {
+                    // If we downloaded an update, and decided to no longer automatically update, don't remind us!
+                    // You can still update manually in the about tab
+                    if (AppPrefs.get().automaticallyUpdate().get()
+                            || AppPrefs.get().checkForSecurityUpdates().get()) {
+                        UpdateAvailableAlert.showIfNeeded();
+                    }
+                    UpdateChangelogAlert.showIfNeeded();
+                },
+                () -> {
+                    BrowserIconManager.loadIfNecessary();
+                    BrowserLocalFileSystem.init();
+                    BrowserFullSessionModel.init();
+                    browserLoaded.countDown();
+                });
         ActionProvider.initProviders();
         DataStoreProviders.init();
 

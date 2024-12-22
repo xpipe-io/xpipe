@@ -112,7 +112,7 @@ public class ScriptHelper {
                 .tag("content", content)
                 .handle();
 
-        processControl.view().writeScriptFile(file,content);
+        processControl.view().writeScriptFile(file, content);
         return file;
     }
 

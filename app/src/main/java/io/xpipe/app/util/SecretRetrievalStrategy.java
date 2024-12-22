@@ -5,11 +5,11 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorageSecret;
 import io.xpipe.core.util.InPlaceSecretValue;
+import io.xpipe.core.util.ValidationException;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.core.util.ValidationException;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;

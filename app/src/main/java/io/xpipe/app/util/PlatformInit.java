@@ -2,15 +2,12 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppGpuCheck;
-import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.core.window.ModifiedStage;
-import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
-
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.util.XPipeDaemonMode;
+
 import javafx.application.Application;
+
 import lombok.SneakyThrows;
 
 import java.util.concurrent.CountDownLatch;

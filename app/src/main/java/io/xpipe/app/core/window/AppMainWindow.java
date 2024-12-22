@@ -55,6 +55,7 @@ public class AppMainWindow {
 
     @Getter
     private static final Property<Region> loadedContent = new SimpleObjectProperty<>();
+
     @Getter
     private static final Property<String> loadingText = new SimpleObjectProperty<>();
 
@@ -268,7 +269,6 @@ public class AppMainWindow {
                 event.consume();
             }
         });
-
 
         if (OsType.getLocal().equals(OsType.LINUX) || OsType.getLocal().equals(OsType.MACOS)) {
             stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {

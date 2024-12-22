@@ -6,6 +6,7 @@ import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.SecretRetrievalStrategyHelper;
 
 import javafx.beans.property.*;
+
 import lombok.Builder;
 import lombok.Value;
 
@@ -13,13 +14,18 @@ import lombok.Value;
 @Builder
 public class IdentityChoice {
 
-    public static OptionsBuilder ssh(Property<DataStoreEntryRef<ShellStore>> gateway, ObjectProperty<IdentityValue> identity, boolean requireUser) {
-        var i = new IdentityChoice(gateway, identity, requireUser, requireUser, true,true,"identityChoice", "passwordAuthentication");
+    public static OptionsBuilder ssh(
+            Property<DataStoreEntryRef<ShellStore>> gateway,
+            ObjectProperty<IdentityValue> identity,
+            boolean requireUser) {
+        var i = new IdentityChoice(
+                gateway, identity, requireUser, requireUser, true, true, "identityChoice", "passwordAuthentication");
         return i.build();
     }
 
     public static OptionsBuilder container(ObjectProperty<IdentityValue> identity) {
-        var i = new IdentityChoice(null, identity, true, false,false, false,"customUsername", "customUsernamePassword");
+        var i = new IdentityChoice(
+                null, identity, true, false, false, false, "customUsername", "customUsernamePassword");
         return i.build();
     }
 

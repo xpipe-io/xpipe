@@ -5,8 +5,8 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.util.ModuleHelper;
-
 import io.xpipe.core.util.XPipeDaemonMode;
+
 import lombok.Getter;
 import lombok.Value;
 
@@ -149,7 +149,8 @@ public class AppProperties {
         aotTrainMode = Optional.ofNullable(System.getProperty("io.xpipe.app.aotTrainMode"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
-        explicitMode = XPipeDaemonMode.getIfPresent(System.getProperty("io.xpipe.app.mode")).orElse(null);
+        explicitMode = XPipeDaemonMode.getIfPresent(System.getProperty("io.xpipe.app.mode"))
+                .orElse(null);
     }
 
     private static boolean isJUnitTest() {

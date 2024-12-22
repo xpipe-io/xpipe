@@ -1,19 +1,17 @@
 package io.xpipe.app.core.window;
 
-import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.util.PlatformInit;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.util.Duration;
-import lombok.Getter;
-import lombok.SneakyThrows;
 
-import java.util.concurrent.CountDownLatch;
+import lombok.Getter;
 
 public class AppDialog {
 

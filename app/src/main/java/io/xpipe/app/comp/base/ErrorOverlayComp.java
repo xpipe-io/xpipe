@@ -40,10 +40,11 @@ public class ErrorOverlayComp extends SimpleComp {
                     return l;
                 });
                 var overlay = ModalOverlay.of("error", comp, Comp.of(() -> {
-                    var graphic = new FontIcon("mdomz-warning");
-                    graphic.setIconColor(Color.RED);
-                    return new StackPane(graphic);
-                })).withDefaultButtons();
+                            var graphic = new FontIcon("mdomz-warning");
+                            graphic.setIconColor(Color.RED);
+                            return new StackPane(graphic);
+                        }))
+                        .withDefaultButtons();
                 content.set(overlay);
             });
         });

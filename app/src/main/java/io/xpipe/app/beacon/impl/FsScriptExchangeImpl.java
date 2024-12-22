@@ -6,7 +6,6 @@ import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.beacon.api.FsScriptExchange;
 
 import com.sun.net.httpserver.HttpExchange;
-import io.xpipe.core.store.FilePath;
 import lombok.SneakyThrows;
 
 import java.nio.charset.StandardCharsets;

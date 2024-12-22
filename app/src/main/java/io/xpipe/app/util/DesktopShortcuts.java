@@ -70,7 +70,10 @@ public class DesktopShortcuts {
             pc.executeSimpleCommand("chmod ugo+x \"" + macExec + "\"");
 
             pc.view().writeTextFile(new FilePath(base + "/Contents/PkgInfo"), "APPL????");
-            pc.view().writeTextFile(new FilePath(base + "/Contents/Info.plist"), """
+            pc.view()
+                    .writeTextFile(
+                            new FilePath(base + "/Contents/Info.plist"),
+                            """
                                                     <?xml version="1.0" encoding="UTF-8"?>
                                                     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
                                                     <plist version="1.0">

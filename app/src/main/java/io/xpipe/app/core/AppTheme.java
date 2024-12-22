@@ -48,36 +48,37 @@ public class AppTheme {
                 return;
             }
 
-            root.pseudoClassStateChanged(PseudoClass.getPseudoClass(OsType.getLocal().getId()), true);
-                if (AppPrefs.get() == null) {
-                    var def = Theme.getDefaultLightTheme();
-                    root.getStyleClass().add(def.getCssId());
-                    root.pseudoClassStateChanged(LIGHT, true);
-                    root.pseudoClassStateChanged(DARK, false);
-                    root.pseudoClassStateChanged(PRETTY, true);
-                    root.pseudoClassStateChanged(PERFORMANCE, false);
+            root.pseudoClassStateChanged(
+                    PseudoClass.getPseudoClass(OsType.getLocal().getId()), true);
+            if (AppPrefs.get() == null) {
+                var def = Theme.getDefaultLightTheme();
+                root.getStyleClass().add(def.getCssId());
+                root.pseudoClassStateChanged(LIGHT, true);
+                root.pseudoClassStateChanged(DARK, false);
+                root.pseudoClassStateChanged(PRETTY, true);
+                root.pseudoClassStateChanged(PERFORMANCE, false);
+                return;
+            }
+
+            AppPrefs.get().theme.subscribe(t -> {
+                Theme.ALL.forEach(theme -> root.getStyleClass().remove(theme.getCssId()));
+                if (t == null) {
                     return;
                 }
 
-                AppPrefs.get().theme.subscribe(t -> {
-                    Theme.ALL.forEach(theme -> root.getStyleClass().remove(theme.getCssId()));
-                    if (t == null) {
-                        return;
-                    }
+                root.getStyleClass().add(t.getCssId());
+                stage.getScene().getStylesheets().addAll(t.getAdditionalStylesheets());
+                root.pseudoClassStateChanged(LIGHT, !t.isDark());
+                root.pseudoClassStateChanged(DARK, t.isDark());
+            });
+            AppPrefs.get().theme.addListener((observable, oldValue, newValue) -> {
+                stage.getScene().getStylesheets().removeAll(oldValue.getAdditionalStylesheets());
+            });
 
-                    root.getStyleClass().add(t.getCssId());
-                    stage.getScene().getStylesheets().addAll(t.getAdditionalStylesheets());
-                    root.pseudoClassStateChanged(LIGHT, !t.isDark());
-                    root.pseudoClassStateChanged(DARK, t.isDark());
-                });
-                AppPrefs.get().theme.addListener((observable, oldValue, newValue) -> {
-                    stage.getScene().getStylesheets().removeAll(oldValue.getAdditionalStylesheets());
-                });
-
-                AppPrefs.get().performanceMode().subscribe(val -> {
-                    root.pseudoClassStateChanged(PRETTY, !val);
-                    root.pseudoClassStateChanged(PERFORMANCE, val);
-                });
+            AppPrefs.get().performanceMode().subscribe(val -> {
+                root.pseudoClassStateChanged(PRETTY, !val);
+                root.pseudoClassStateChanged(PERFORMANCE, val);
+            });
         });
     }
 

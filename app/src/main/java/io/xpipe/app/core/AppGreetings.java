@@ -66,7 +66,7 @@ public class AppGreetings {
         var read = new SimpleBooleanProperty();
         var accepted = new SimpleBooleanProperty();
 
-        var modal = ModalOverlay.of("greetingsAlertTitle",Comp.of(() -> {
+        var modal = ModalOverlay.of("greetingsAlertTitle", Comp.of(() -> {
             var content = List.of(createIntroduction(), createEula());
             var accordion = new Accordion(content.toArray(TitledPane[]::new));
             accordion.setExpandedPane(content.get(0));
@@ -101,8 +101,9 @@ public class AppGreetings {
         modal.persist();
         modal.addButton(ModalButton.quit());
         modal.addButton(ModalButton.confirm(() -> {
-            AppCache.update("legalAccepted", true);
-        })).augment(button -> button.disableProperty().bind(accepted.not()));
+                    AppCache.update("legalAccepted", true);
+                }))
+                .augment(button -> button.disableProperty().bind(accepted.not()));
         AppDialog.showAndWait(modal);
 
         if (!AppCache.getBoolean("legalAccepted", false)) {

@@ -6,6 +6,7 @@ import io.xpipe.core.process.OsType;
 
 import javafx.scene.Node;
 import javafx.scene.text.Font;
+
 import org.kordamp.ikonli.javafx.IkonResolver;
 
 import java.nio.file.FileVisitResult;

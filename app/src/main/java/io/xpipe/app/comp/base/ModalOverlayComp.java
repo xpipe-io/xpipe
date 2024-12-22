@@ -23,7 +23,6 @@ import javafx.scene.layout.VBox;
 import atlantafx.base.controls.ModalPane;
 import atlantafx.base.layout.ModalBox;
 import atlantafx.base.theme.Styles;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 public class ModalOverlayComp extends SimpleComp {
 
@@ -75,12 +74,13 @@ public class ModalOverlayComp extends SimpleComp {
             }
         });
 
-
         modal.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.ENTER) {
                 var ov = overlayContent.getValue();
                 if (ov != null) {
-                    var def = ov.getButtons().stream().filter(modalButton -> modalButton.isDefaultButton()).findFirst();
+                    var def = ov.getButtons().stream()
+                            .filter(modalButton -> modalButton.isDefaultButton())
+                            .findFirst();
                     if (def.isPresent()) {
                         var mb = def.get();
                         if (mb.getAction() != null) {
@@ -185,21 +185,27 @@ public class ModalOverlayComp extends SimpleComp {
     }
 
     private ObservableDoubleValue modalBoxWidth(ModalPane pane, Region r) {
-        return Bindings.createDoubleBinding(() -> {
-            var max = pane.getWidth() - 50;
-            if (r.getPrefWidth() != Region.USE_COMPUTED_SIZE) {
-                return Math.min(max, r.getPrefWidth() + 50);
-            }
-            return max;
-        }, pane.widthProperty(), r.prefWidthProperty());
+        return Bindings.createDoubleBinding(
+                () -> {
+                    var max = pane.getWidth() - 50;
+                    if (r.getPrefWidth() != Region.USE_COMPUTED_SIZE) {
+                        return Math.min(max, r.getPrefWidth() + 50);
+                    }
+                    return max;
+                },
+                pane.widthProperty(),
+                r.prefWidthProperty());
     }
 
-
     private ObservableDoubleValue modalBoxHeight(ModalPane pane, Region content) {
-        return Bindings.createDoubleBinding(() -> {
-            var max = pane.getHeight() - 50;
-            return Math.min(max, content.getHeight());
-        }, pane.heightProperty(), content.prefHeightProperty(), content.heightProperty());
+        return Bindings.createDoubleBinding(
+                () -> {
+                    var max = pane.getHeight() - 50;
+                    return Math.min(max, content.getHeight());
+                },
+                pane.heightProperty(),
+                content.prefHeightProperty(),
+                content.heightProperty());
     }
 
     private Button toButton(ModalButton mb) {

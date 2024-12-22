@@ -1,8 +1,10 @@
 package io.xpipe.app.comp.base;
 
 import io.xpipe.app.core.mode.OperationMode;
+
 import javafx.beans.property.Property;
 import javafx.scene.control.Button;
+
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
@@ -50,7 +52,13 @@ public class ModalButton {
     }
 
     public static ModalButton quit() {
-        return new ModalButton("quit", () -> {OperationMode.halt(1);}, true, false);
+        return new ModalButton(
+                "quit",
+                () -> {
+                    OperationMode.halt(1);
+                },
+                true,
+                false);
     }
 
     public ModalButton augment(Consumer<Button> augment) {

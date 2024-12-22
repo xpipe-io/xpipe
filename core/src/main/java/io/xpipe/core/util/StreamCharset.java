@@ -1,6 +1,5 @@
 package io.xpipe.core.util;
 
-import com.fasterxml.jackson.databind.util.ArrayBuilders;
 import lombok.Value;
 
 import java.io.ByteArrayInputStream;

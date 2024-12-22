@@ -59,12 +59,14 @@ public class NewItemAction implements BrowserAction, BrowserBranchAction {
                     @Override
                     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         var name = new SimpleStringProperty();
-                        var modal = ModalOverlay.of("newFile",                                                                                                 Comp.of(() -> {
-                                    var creationName = new TextField();
-                                    creationName.textProperty().bindBidirectional(name);
-                                    return creationName;
-                                })
-                                .prefWidth(350));
+                        var modal = ModalOverlay.of(
+                                "newFile",
+                                Comp.of(() -> {
+                                            var creationName = new TextField();
+                                            creationName.textProperty().bindBidirectional(name);
+                                            return creationName;
+                                        })
+                                        .prefWidth(350));
                         modal.withDefaultButtons(() -> {
                             model.createFileAsync(name.getValue());
                         });
@@ -86,12 +88,14 @@ public class NewItemAction implements BrowserAction, BrowserBranchAction {
                     @Override
                     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         var name = new SimpleStringProperty();
-                        var modal = ModalOverlay.of("newDirectory",                                                                                                 Comp.of(() -> {
-                                    var creationName = new TextField();
-                                    creationName.textProperty().bindBidirectional(name);
-                                    return creationName;
-                                })
-                                .prefWidth(350));
+                        var modal = ModalOverlay.of(
+                                "newDirectory",
+                                Comp.of(() -> {
+                                            var creationName = new TextField();
+                                            creationName.textProperty().bindBidirectional(name);
+                                            return creationName;
+                                        })
+                                        .prefWidth(350));
                         modal.withDefaultButtons(() -> {
                             model.createDirectoryAsync(name.getValue());
                         });
@@ -114,7 +118,8 @@ public class NewItemAction implements BrowserAction, BrowserBranchAction {
                     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         var linkName = new SimpleStringProperty();
                         var target = new SimpleStringProperty();
-                        var modal = ModalOverlay.of("base.newLink",
+                        var modal = ModalOverlay.of(
+                                "base.newLink",
                                 new OptionsBuilder()
                                         .name("linkName")
                                         .addString(linkName)

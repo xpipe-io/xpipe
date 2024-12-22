@@ -18,7 +18,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -50,12 +49,13 @@ public class AppWindowHelper {
 
     public static Comp<?> dialogText(String s) {
         return Comp.of(() -> {
-            var text = new Text(s);
-            text.setWrappingWidth(450);
-            AppFont.medium(text);
-            var sp = new StackPane(text);
-            return sp;
-        }).prefWidth(450);
+                    var text = new Text(s);
+                    text.setWrappingWidth(450);
+                    AppFont.medium(text);
+                    var sp = new StackPane(text);
+                    return sp;
+                })
+                .prefWidth(450);
     }
 
     public static Region alertContentText(String s, int width) {

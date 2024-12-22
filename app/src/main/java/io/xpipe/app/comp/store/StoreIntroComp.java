@@ -2,7 +2,6 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
-import io.xpipe.app.comp.base.PrettySvgComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
@@ -10,7 +9,6 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ScanAlert;
 import io.xpipe.core.process.OsType;
 
-import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;

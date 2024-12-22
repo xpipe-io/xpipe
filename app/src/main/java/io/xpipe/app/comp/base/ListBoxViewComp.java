@@ -15,6 +15,7 @@ import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+
 import lombok.Setter;
 
 import java.util.ArrayList;

@@ -22,7 +22,11 @@ public class PasswdFile {
     private final Map<Integer, String> users = new LinkedHashMap<>();
 
     public OptionalInt getUidForUserIfPresent(String name) {
-        var found = users.entrySet().stream().filter(e -> e.getValue().equals(name)).findFirst().map(e -> e.getKey()).orElse(null);
+        var found = users.entrySet().stream()
+                .filter(e -> e.getValue().equals(name))
+                .findFirst()
+                .map(e -> e.getKey())
+                .orElse(null);
         return found != null ? OptionalInt.of(found) : OptionalInt.empty();
     }
 

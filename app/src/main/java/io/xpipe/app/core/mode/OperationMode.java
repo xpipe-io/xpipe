@@ -360,7 +360,9 @@ public abstract class OperationMode {
             }
 
             BACKGROUND.onSwitchTo();
-            if (newMode != GUI && AppMainWindow.getInstance() != null && AppMainWindow.getInstance().getStage().isShowing()) {
+            if (newMode != GUI
+                    && AppMainWindow.getInstance() != null
+                    && AppMainWindow.getInstance().getStage().isShowing()) {
                 GUI.onSwitchTo();
                 newMode = GUI;
             } else {

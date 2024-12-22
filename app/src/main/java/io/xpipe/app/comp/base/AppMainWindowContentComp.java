@@ -1,27 +1,22 @@
 package io.xpipe.app.comp.base;
 
-import atlantafx.base.controls.RingProgressIndicator;
-import atlantafx.base.util.Animations;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.util.PlatformThread;
-import io.xpipe.core.process.OsType;
+
 import javafx.animation.Animation;
-import javafx.animation.Timeline;
-import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.util.Duration;
+
+import atlantafx.base.util.Animations;
 
 import java.time.Instant;
 

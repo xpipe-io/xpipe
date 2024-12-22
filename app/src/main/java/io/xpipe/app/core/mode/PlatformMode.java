@@ -2,16 +2,9 @@ package io.xpipe.app.core.mode;
 
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.*;
-import io.xpipe.app.core.check.AppGpuCheck;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.resources.AppImages;
-import io.xpipe.app.update.UpdateAvailableAlert;
 import io.xpipe.app.util.PlatformInit;
 import io.xpipe.app.util.PlatformState;
-import io.xpipe.app.util.ThreadHelper;
-
-import javafx.application.Application;
 
 public abstract class PlatformMode extends OperationMode {
 

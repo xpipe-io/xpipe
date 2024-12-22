@@ -113,12 +113,14 @@ public abstract class BaseCompressAction implements BrowserAction, BrowserBranch
         @Override
         public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             var name = new SimpleStringProperty(directory ? entries.getFirst().getFileName() : null);
-            var modal = ModalOverlay.of("base.archiveName",                                                         Comp.of(() -> {
-                        var creationName = new TextField();
-                        creationName.textProperty().bindBidirectional(name);
-                        return creationName;
-                    })
-                    .prefWidth(350));
+            var modal = ModalOverlay.of(
+                    "base.archiveName",
+                    Comp.of(() -> {
+                                var creationName = new TextField();
+                                creationName.textProperty().bindBidirectional(name);
+                                return creationName;
+                            })
+                            .prefWidth(350));
             modal.withDefaultButtons(() -> {
                 var fixedName = name.getValue();
                 if (fixedName == null) {

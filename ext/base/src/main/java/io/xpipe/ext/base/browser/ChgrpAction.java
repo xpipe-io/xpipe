@@ -89,11 +89,14 @@ public class ChgrpAction implements BrowserBranchAction {
         @Override
         public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             var group = new SimpleStringProperty();
-            var modal = ModalOverlay.of("groupName", Comp.of(() -> {
-                var creationName = new TextField();
-                creationName.textProperty().bindBidirectional(group);
-                return creationName;
-            }).prefWidth(350));
+            var modal = ModalOverlay.of(
+                    "groupName",
+                    Comp.of(() -> {
+                                var creationName = new TextField();
+                                creationName.textProperty().bindBidirectional(group);
+                                return creationName;
+                            })
+                            .prefWidth(350));
             modal.withDefaultButtons(() -> {
                 if (group.getValue() == null) {
                     return;
@@ -103,9 +106,8 @@ public class ChgrpAction implements BrowserBranchAction {
                         CommandBuilder.of()
                                 .add("chgrp", group.getValue())
                                 .addFiles(entries.stream()
-                                        .map(browserEntry -> browserEntry
-                                                .getRawFileEntry()
-                                                .getPath())
+                                        .map(browserEntry ->
+                                                browserEntry.getRawFileEntry().getPath())
                                         .toList()),
                         false);
             });

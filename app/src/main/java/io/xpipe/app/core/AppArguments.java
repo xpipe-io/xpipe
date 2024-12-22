@@ -4,6 +4,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.LogErrorHandler;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.util.XPipeDaemonMode;
+
 import lombok.Value;
 import picocli.CommandLine;
 
@@ -28,7 +29,7 @@ public class AppArguments {
         var rawArgs = Arrays.asList(args);
         var resolvedArgs = Arrays.asList(parseProperties(args));
         var command = LauncherCommand.resolveLauncher(resolvedArgs.toArray(String[]::new));
-        return new AppArguments(rawArgs, resolvedArgs,command.mode,command.inputs);
+        return new AppArguments(rawArgs, resolvedArgs, command.mode, command.inputs);
     }
 
     private static String[] parseProperties(String[] args) {
@@ -68,7 +69,10 @@ public class AppArguments {
         XPipeDaemonMode mode;
 
         public static LauncherCommand resolveLauncher(String[] args) {
-            TrackEvent.builder().type("debug").message("Received arguments: " + Arrays.asList(args)).handle();
+            TrackEvent.builder()
+                    .type("debug")
+                    .message("Received arguments: " + Arrays.asList(args))
+                    .handle();
 
             var cmd = new CommandLine(new LauncherCommand());
             cmd.setExecutionExceptionHandler((ex, commandLine, parseResult) -> {
@@ -96,7 +100,9 @@ public class AppArguments {
                 cmd.parseArgs(args);
             } catch (Throwable t) {
                 // Fix serialization issues with exception class
-                var converted = t instanceof CommandLine.UnmatchedArgumentException u ? new IllegalArgumentException(u.getMessage()) : t;
+                var converted = t instanceof CommandLine.UnmatchedArgumentException u
+                        ? new IllegalArgumentException(u.getMessage())
+                        : t;
                 var e = ErrorEvent.fromThrowable(converted).term().build();
                 // Print error in case we launched from the command-line
                 new LogErrorHandler().handle(e);

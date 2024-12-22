@@ -50,13 +50,21 @@ public class UpdateAvailableAlert {
             return region;
         });
         var modal = ModalOverlay.of("updateReadyAlertTitle", comp.prefWidth(600), null);
-        modal.addButton(new ModalButton("ignore",null,true,false));
-        modal.addButton(new ModalButton("checkOutUpdate",() -> {
-            Hyperlinks.open(uh.getPreparedUpdate().getValue().getReleaseUrl());
-        },false,false));
-        modal.addButton(new ModalButton("install",() -> {
-            uh.executeUpdateAndClose();
-        },false,true));
+        modal.addButton(new ModalButton("ignore", null, true, false));
+        modal.addButton(new ModalButton(
+                "checkOutUpdate",
+                () -> {
+                    Hyperlinks.open(uh.getPreparedUpdate().getValue().getReleaseUrl());
+                },
+                false,
+                false));
+        modal.addButton(new ModalButton(
+                "install",
+                () -> {
+                    uh.executeUpdateAndClose();
+                },
+                false,
+                true));
         AppDialog.showAndWait(modal);
     }
 }

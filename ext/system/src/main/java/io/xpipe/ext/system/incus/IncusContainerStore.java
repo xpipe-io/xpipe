@@ -81,15 +81,17 @@ public class IncusContainerStore
                             .start()) {
                         var passwd = PasswdFile.parse(temp);
                         uid = passwd.getUidForUserIfPresent(identity.unwrap().getUsername())
-                                .orElseThrow(() -> new IllegalArgumentException("User " + identity.unwrap().getUsername() + " not found"));
+                                .orElseThrow(() -> new IllegalArgumentException(
+                                        "User " + identity.unwrap().getUsername() + " not found"));
                     }
                 }
 
                 var sc = new IncusCommandView(parent).exec(containerName, uid);
                 sc.withSourceStore(IncusContainerStore.this);
                 if (identity != null && identity.unwrap().getPassword() != null) {
-                    sc.setElevationHandler(
-                            new BaseElevationHandler(IncusContainerStore.this, identity.unwrap().getPassword()).orElse(sc.getElevationHandler()));
+                    sc.setElevationHandler(new BaseElevationHandler(
+                                    IncusContainerStore.this, identity.unwrap().getPassword())
+                            .orElse(sc.getElevationHandler()));
                 }
                 sc.withShellStateInit(IncusContainerStore.this);
                 sc.onStartupFail(throwable -> {

@@ -87,12 +87,14 @@ public class ChownAction implements BrowserBranchAction {
         @Override
         public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             var user = new SimpleStringProperty();
-            var modal = ModalOverlay.of("userName",                             Comp.of(() -> {
-                        var creationName = new TextField();
-                        creationName.textProperty().bindBidirectional(user);
-                        return creationName;
-                    })
-                    .prefWidth(350));
+            var modal = ModalOverlay.of(
+                    "userName",
+                    Comp.of(() -> {
+                                var creationName = new TextField();
+                                creationName.textProperty().bindBidirectional(user);
+                                return creationName;
+                            })
+                            .prefWidth(350));
             modal.withDefaultButtons(() -> {
                 if (user.getValue() == null) {
                     return;
@@ -102,9 +104,8 @@ public class ChownAction implements BrowserBranchAction {
                         CommandBuilder.of()
                                 .add("chown", user.getValue())
                                 .addFiles(entries.stream()
-                                        .map(browserEntry -> browserEntry
-                                                .getRawFileEntry()
-                                                .getPath())
+                                        .map(browserEntry ->
+                                                browserEntry.getRawFileEntry().getPath())
                                         .toList()),
                         false);
             });
