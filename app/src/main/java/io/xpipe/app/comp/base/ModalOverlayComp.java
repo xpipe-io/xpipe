@@ -7,6 +7,7 @@ import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.PlatformThread;
 
+import io.xpipe.core.process.OsType;
 import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -44,8 +45,8 @@ public class ModalOverlayComp extends SimpleComp {
     protected Region createSimple() {
         var bgRegion = background.createRegion();
         var modal = new ModalPane();
-        modal.setInTransitionFactory(node -> fadeInDelyed(node));
-        modal.setOutTransitionFactory(node -> Animations.fadeOut(node, Duration.millis(200)));
+        modal.setInTransitionFactory(OsType.getLocal() == OsType.LINUX ? null : node -> fadeInDelyed(node));
+        modal.setOutTransitionFactory(OsType.getLocal() == OsType.LINUX ? null : node -> Animations.fadeOut(node, Duration.millis(200)));
         modal.focusedProperty().addListener((observable, oldValue, newValue) -> {
             var c = modal.getContent();
             if (newValue && c != null) {

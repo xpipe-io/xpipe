@@ -8,6 +8,7 @@ import io.xpipe.core.process.OsType;
 
 import javafx.application.Application;
 
+import lombok.Getter;
 import lombok.SneakyThrows;
 
 import java.util.concurrent.CountDownLatch;
@@ -16,6 +17,8 @@ public class PlatformInit {
 
     private static final CountDownLatch latch = new CountDownLatch(2);
     private static Thread loadingThread;
+
+    @Getter
     private static Throwable error;
 
     @SneakyThrows

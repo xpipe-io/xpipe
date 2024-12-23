@@ -7,7 +7,6 @@
 }
 
 .error-handler-comp .details {
-    -fx-padding: 0 1.5em 1.0em 1.5em;
     -fx-background-color: transparent;
 }
 

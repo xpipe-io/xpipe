@@ -171,6 +171,7 @@ public class ErrorHandlerComp extends SimpleComp {
         if (event.getThrowable() != null) {
             content.getChildren().add(new Separator(Orientation.HORIZONTAL));
             var details = createDetails();
+            AppFont.medium(details);
             layout.setBottom(details);
         }
 
