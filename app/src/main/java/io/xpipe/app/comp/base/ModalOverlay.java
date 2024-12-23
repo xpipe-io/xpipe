@@ -2,10 +2,8 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
 
-import lombok.Builder;
-import lombok.Singular;
-import lombok.Value;
-import lombok.With;
+import io.xpipe.app.util.LabelGraphic;
+import lombok.*;
 import lombok.experimental.NonFinal;
 
 import java.util.ArrayList;
@@ -20,8 +18,8 @@ public class ModalOverlay {
         return of(titleKey, content, null);
     }
 
-    public static ModalOverlay of(String titleKey, Comp<?> content, Comp<?> graphic) {
-        return new ModalOverlay(titleKey, content, graphic, new ArrayList<>(), false);
+    public static ModalOverlay of(String titleKey, Comp<?> content, LabelGraphic graphic) {
+        return new ModalOverlay(titleKey, content, graphic, new ArrayList<>(), false, null);
     }
 
     public ModalOverlay withDefaultButtons(Runnable action) {
@@ -36,13 +34,17 @@ public class ModalOverlay {
 
     String titleKey;
     Comp<?> content;
-    Comp<?> graphic;
+    LabelGraphic graphic;
 
     @Singular
     List<ModalButton> buttons;
 
     @NonFinal
     boolean persistent;
+
+    @NonFinal
+    @Setter
+    Runnable onClose;
 
     public ModalButton addButton(ModalButton button) {
         buttons.add(button);

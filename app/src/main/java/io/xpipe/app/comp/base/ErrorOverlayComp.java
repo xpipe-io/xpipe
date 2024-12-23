@@ -2,6 +2,7 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.property.Property;
@@ -39,7 +40,7 @@ public class ErrorOverlayComp extends SimpleComp {
                     l.setEditable(false);
                     return l;
                 });
-                var overlay = ModalOverlay.of("error", comp, Comp.of(() -> {
+                var overlay = ModalOverlay.of("error", comp, new LabelGraphic.NodeGraphic(() -> {
                             var graphic = new FontIcon("mdomz-warning");
                             graphic.setIconColor(Color.RED);
                             return new StackPane(graphic);

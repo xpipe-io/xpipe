@@ -1,16 +1,19 @@
 package io.xpipe.app.comp.base;
 
+import atlantafx.base.util.Animations;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.PlatformThread;
 
+import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Label;
@@ -23,6 +26,9 @@ import javafx.scene.layout.VBox;
 import atlantafx.base.controls.ModalPane;
 import atlantafx.base.layout.ModalBox;
 import atlantafx.base.theme.Styles;
+import javafx.util.Duration;
+
+import java.util.Objects;
 
 public class ModalOverlayComp extends SimpleComp {
 
@@ -38,6 +44,8 @@ public class ModalOverlayComp extends SimpleComp {
     protected Region createSimple() {
         var bgRegion = background.createRegion();
         var modal = new ModalPane();
+        modal.setInTransitionFactory(node -> fadeInDelyed(node));
+        modal.setOutTransitionFactory(node -> Animations.fadeOut(node, Duration.millis(200)));
         modal.focusedProperty().addListener((observable, oldValue, newValue) -> {
             var c = modal.getContent();
             if (newValue && c != null) {
@@ -70,7 +78,8 @@ public class ModalOverlayComp extends SimpleComp {
 
         modal.displayProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
-                modal.hide(true);
+                overlayContent.setValue(null);
+                bgRegion.setDisable(false);
             }
         });
 
@@ -97,55 +106,53 @@ public class ModalOverlayComp extends SimpleComp {
 
         overlayContent.addListener((observable, oldValue, newValue) -> {
             PlatformThread.runLaterIfNeeded(() -> {
-                if (oldValue != null && newValue == null && modal.isDisplay()) {
-                    modal.hide(true);
-                    return;
+                if (oldValue != null && modal.isDisplay()) {
+                    modal.hide(false);
+                    var runnable = oldValue.getOnClose();
+                    if (runnable != null) {
+                        runnable.run();
+                    }
                 }
 
                 if (newValue != null) {
-                    var modalBox = toBox(modal, newValue);
-                    modal.show(modalBox);
-                    modal.setPersistent(newValue.isPersistent());
-                    if (newValue.isPersistent()) {
-                        var closeButton = modalBox.lookup(".close-button");
-                        if (closeButton != null) {
-                            closeButton.setVisible(false);
-                        }
-                    }
-
-                    // Wait 2 pulses before focus so that the scene can be assigned to r
-                    Platform.runLater(() -> {
-                        Platform.runLater(() -> {
-                            modalBox.requestFocus();
-                        });
-                    });
+                    showModalBox(modal, newValue);
                 }
             });
         });
 
         var current = overlayContent.getValue();
         if (current != null) {
-            var modalBox = toBox(modal, current);
-            modal.setPersistent(current.isPersistent());
-            modal.show(modalBox);
-            if (current.isPersistent()) {
-                var closeButton = modalBox.lookup(".close-button");
-                if (closeButton != null) {
-                    closeButton.setVisible(false);
-                }
-            }
-            modalBox.requestFocus();
+            showModalBox(modal, current);
         }
 
         return pane;
     }
 
+    private void showModalBox(ModalPane modal, ModalOverlay overlay) {
+        var modalBox = toBox(modal, overlay);
+        modal.setPersistent(overlay.isPersistent());
+        modal.show(modalBox);
+        if (overlay.isPersistent()) {
+            var closeButton = modalBox.lookup(".close-button");
+            if (closeButton != null) {
+                closeButton.setVisible(false);
+            }
+        }
+
+        // Wait 2 pulses before focus so that the scene can be assigned to r
+        Platform.runLater(() -> {
+            Platform.runLater(() -> {
+                modalBox.requestFocus();
+            });
+        });
+    }
+
     private ModalBox toBox(ModalPane pane, ModalOverlay newValue) {
         var l = new Label(
                 AppI18n.get(newValue.getTitleKey()),
-                newValue.getGraphic() != null ? newValue.getGraphic().createRegion() : null);
-        l.setGraphicTextGap(6);
-        AppFont.normal(l);
+                newValue.getGraphic() != null ? newValue.getGraphic().createGraphicNode() : null);
+        l.setGraphicTextGap(8);
+        AppFont.header(l);
         var r = newValue.getContent().createRegion();
         var content = new VBox(l, r);
         content.focusedProperty().addListener((o, old, n) -> {
@@ -226,5 +233,27 @@ public class ModalOverlayComp extends SimpleComp {
             event.consume();
         });
         return button;
+    }
+
+    private Timeline fadeInDelyed(Node node) {
+        var t = new Timeline(
+                new KeyFrame(Duration.ZERO,
+                        new KeyValue(node.opacityProperty(), 0.01)
+                ),
+        new KeyFrame(Duration.millis(50),
+                new KeyValue(node.opacityProperty(), 0.01, Animations.EASE)
+                ),
+                new KeyFrame(Duration.millis(150),
+                        new KeyValue(node.opacityProperty(), 1, Animations.EASE)
+                )
+        );
+
+        t.statusProperty().addListener((obs, old, val) -> {
+            if (val == Animation.Status.STOPPED) {
+                node.setOpacity(1);
+            }
+        });
+
+        return t;
     }
 }

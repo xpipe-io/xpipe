@@ -25,8 +25,10 @@ public class AppDialog {
         });
     }
 
-    private static void closeDialog() {
-        modalOverlay.setValue(null);
+    public static void closeDialog(ModalOverlay overlay) {
+        if (modalOverlay.get() == overlay) {
+            modalOverlay.setValue(null);
+        }
     }
 
     public static void waitForClose() {
