@@ -8,6 +8,7 @@ import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.util.PlatformThread;
 
+import io.xpipe.core.process.OsType;
 import javafx.animation.Animation;
 import javafx.geometry.Pos;
 import javafx.scene.image.ImageView;
@@ -31,10 +32,12 @@ public class AppMainWindowContentComp extends SimpleComp {
             loadingIcon.setFitWidth(40);
             loadingIcon.setFitHeight(40);
 
-            var anim = Animations.pulse(loadingIcon, 1.1);
-            anim.setRate(0.85);
-            anim.setCycleCount(Animation.INDEFINITE);
-            anim.play();
+            if (OsType.getLocal() != OsType.LINUX) {
+                var anim = Animations.pulse(loadingIcon, 1.1);
+                anim.setRate(0.85);
+                anim.setCycleCount(Animation.INDEFINITE);
+                anim.play();
+            }
 
             // This allows for assigning logos even if AppImages has not been initialized yet
             var dir = "img/logo/";
