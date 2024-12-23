@@ -138,28 +138,27 @@ public class BaseMode extends OperationMode {
 
     @Override
     public void finalTeardown() throws Exception {
-        TrackEvent.info("Base mode shutdown started");
+        TrackEvent.withInfo("Base mode shutdown started").build();
+        // In order of importance for shutdown signals that might kill us before we finish
+        DataStorage.reset();
+        DataStorageSyncHandler.getInstance().reset();
+        SshLocalBridge.reset();
+        BrowserFullSessionModel.DEFAULT.reset();
+        LocalShell.reset();
         BrowserLocalFileSystem.reset();
+        ProcessControlProvider.get().reset();
+        AppPrefs.reset();
+        AppBeaconServer.reset();
         StoreViewState.reset();
         AppLayoutModel.reset();
         AppTheme.reset();
         PlatformState.teardown();
-
-        BrowserFullSessionModel.DEFAULT.reset();
-        SshLocalBridge.reset();
-        StoreViewState.reset();
         DataStoreProviders.reset();
-        DataStorage.reset();
-        AppPrefs.reset();
-        DataStorageSyncHandler.getInstance().reset();
-        LocalShell.reset();
-        ProcessControlProvider.get().reset();
         AppResources.reset();
         AppExtensionManager.reset();
         AppDataLock.unlock();
         BlobManager.reset();
         FileBridge.reset();
-        AppBeaconServer.reset();
         TrackEvent.info("Base mode shutdown finished");
     }
 }
