@@ -3,6 +3,7 @@ package io.xpipe.app.util;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.DialogComp;
 import io.xpipe.app.comp.base.ListSelectorComp;
+import io.xpipe.app.comp.base.ModalOverlayContentComp;
 import io.xpipe.app.comp.store.StoreChoiceComp;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppI18n;
@@ -19,6 +20,7 @@ import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -30,21 +32,18 @@ import java.util.function.Function;
 
 import static javafx.scene.layout.Priority.ALWAYS;
 
-class ScanDialog extends DialogComp {
+class ScanDialog extends ModalOverlayContentComp {
 
     private final DataStoreEntryRef<ShellStore> initialStore;
     private final BiFunction<DataStoreEntry, ShellControl, List<ScanProvider.ScanOpportunity>> applicable;
-    private final Stage window;
     private final ObjectProperty<DataStoreEntryRef<ShellStore>> entry;
     private final ListProperty<ScanProvider.ScanOpportunity> selected =
             new SimpleListProperty<>(FXCollections.observableArrayList());
     private final BooleanProperty busy = new SimpleBooleanProperty();
 
     ScanDialog(
-            Stage window,
             DataStoreEntryRef<ShellStore> entry,
             BiFunction<DataStoreEntry, ShellControl, List<ScanProvider.ScanOpportunity>> applicable) {
-        this.window = window;
         this.initialStore = entry;
         this.entry = new SimpleObjectProperty<>(entry);
         this.applicable = applicable;
@@ -55,7 +54,6 @@ class ScanDialog extends DialogComp {
         return busy;
     }
 
-    @Override
     protected void finish() {
         ThreadHelper.runFailableAsync(() -> {
             if (entry.get() == null) {
@@ -63,7 +61,8 @@ class ScanDialog extends DialogComp {
             }
 
             Platform.runLater(() -> {
-                window.close();
+                var modal = getModalOverlay();
+                modal.close();
             });
 
             BooleanScope.executeExclusive(busy, () -> {
@@ -91,48 +90,6 @@ class ScanDialog extends DialogComp {
         });
     }
 
-    @Override
-    protected void discard() {}
-
-    @Override
-    protected Comp<?> pane(Comp<?> content) {
-        return content;
-    }
-
-    @Override
-    public Comp<?> content() {
-        StackPane stackPane = new StackPane();
-        stackPane.getStyleClass().add("scan-list");
-
-        var b = new OptionsBuilder()
-                .name("scanAlertChoiceHeader")
-                .description("scanAlertChoiceHeaderDescription")
-                .addComp(new StoreChoiceComp<>(
-                                StoreChoiceComp.Mode.OTHER,
-                                null,
-                                entry,
-                                ShellStore.class,
-                                store1 -> true,
-                                StoreViewState.get().getAllConnectionsCategory())
-                        .disable(new SimpleBooleanProperty(initialStore != null)))
-                .name("scanAlertHeader")
-                .description("scanAlertHeaderDescription")
-                .addComp(Comp.of(() -> stackPane).vgrow())
-                .buildComp()
-                .prefWidth(500)
-                .prefHeight(680)
-                .apply(struc -> {
-                    VBox.setVgrow(struc.get().getChildren().get(1), ALWAYS);
-                })
-                .padding(new Insets(5, 20, 20, 20));
-
-        entry.subscribe(newValue -> {
-            onUpdate(newValue, stackPane);
-        });
-
-        return b;
-    }
-
     private void onUpdate(DataStoreEntryRef<ShellStore> newValue, StackPane stackPane) {
         selected.clear();
         stackPane.getChildren().clear();
@@ -147,7 +104,10 @@ class ScanDialog extends DialogComp {
                 var a = applicable.apply(entry.get().get(), sc);
                 Platform.runLater(() -> {
                     if (a == null) {
-                        window.close();
+                        var modal = getModalOverlay();
+                        if (modal != null) {
+                            modal.close();
+                        }
                         return;
                     }
 
@@ -173,5 +133,38 @@ class ScanDialog extends DialogComp {
                 });
             });
         });
+    }
+
+    @Override
+    protected Region createSimple() {
+        StackPane stackPane = new StackPane();
+        stackPane.getStyleClass().add("scan-list");
+
+        var b = new OptionsBuilder()
+                .name("scanAlertChoiceHeader")
+                .description("scanAlertChoiceHeaderDescription")
+                .addComp(new StoreChoiceComp<>(
+                        StoreChoiceComp.Mode.OTHER,
+                        null,
+                        entry,
+                        ShellStore.class,
+                        store1 -> true,
+                        StoreViewState.get().getAllConnectionsCategory())
+                        .disable(new SimpleBooleanProperty(initialStore != null)))
+                .name("scanAlertHeader")
+                .description("scanAlertHeaderDescription")
+                .addComp(Comp.of(() -> stackPane).vgrow())
+                .buildComp()
+                .prefWidth(500)
+                .prefHeight(680)
+                .apply(struc -> {
+                    VBox.setVgrow(struc.get().getChildren().get(1), ALWAYS);
+                });
+
+        entry.subscribe(newValue -> {
+            onUpdate(newValue, stackPane);
+        });
+
+        return b.createRegion();
     }
 }

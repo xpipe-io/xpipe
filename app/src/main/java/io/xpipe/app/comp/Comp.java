@@ -96,7 +96,9 @@ public abstract class Comp<S extends CompStructure<?>> {
     public void focusOnShow() {
         onSceneAssign(struc -> {
             Platform.runLater(() -> {
-                struc.get().requestFocus();
+                Platform.runLater(() -> {
+                    struc.get().requestFocus();
+                });
             });
         });
     }

@@ -1,6 +1,8 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.comp.base.DialogComp;
+import io.xpipe.app.comp.base.ModalButton;
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.ext.ScanProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEvent;
@@ -63,8 +65,11 @@ public class ScanAlert {
     private static void show(
             DataStoreEntry initialStore,
             BiFunction<DataStoreEntry, ShellControl, List<ScanProvider.ScanOpportunity>> applicable) {
-        DialogComp.showWindow(
-                "scanAlertTitle",
-                stage -> new ScanDialog(stage, initialStore != null ? initialStore.ref() : null, applicable));
+        var comp = new ScanDialog(initialStore != null ? initialStore.ref() : null, applicable);
+        var modal = ModalOverlay.of("scanAlertTitle", comp);
+        modal.addButton(ModalButton.ok(() -> {
+            comp.finish();
+        }));
+        modal.showAndWait();
     }
 }

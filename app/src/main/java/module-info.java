@@ -91,6 +91,7 @@ open module io.xpipe.app {
     // For debugging
     requires jdk.jdwp.agent;
     requires java.net.http;
+    requires org.bouncycastle.provider;
 
     uses TerminalLauncher;
     uses io.xpipe.app.ext.ActionProvider;

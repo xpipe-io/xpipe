@@ -28,6 +28,7 @@ import atlantafx.base.controls.ModalPane;
 import atlantafx.base.layout.ModalBox;
 import atlantafx.base.theme.Styles;
 import javafx.util.Duration;
+import org.bouncycastle.math.raw.Mod;
 
 import java.util.Objects;
 
@@ -89,10 +90,10 @@ public class ModalOverlayComp extends SimpleComp {
                 var ov = overlayContent.getValue();
                 if (ov != null) {
                     var def = ov.getButtons().stream()
-                            .filter(modalButton -> modalButton.isDefaultButton())
+                            .filter(modalButton -> modalButton instanceof ModalButton mb && mb.isDefaultButton())
                             .findFirst();
                     if (def.isPresent()) {
-                        var mb = def.get();
+                        var mb = (ModalButton) def.get();
                         if (mb.getAction() != null) {
                             mb.getAction().run();
                         }
@@ -109,6 +110,9 @@ public class ModalOverlayComp extends SimpleComp {
             PlatformThread.runLaterIfNeeded(() -> {
                 if (oldValue != null && modal.isDisplay()) {
                     modal.hide(false);
+                    if (oldValue.getContent() instanceof ModalOverlayContentComp mocc) {
+                        mocc.onClose();
+                    }
                     var runnable = oldValue.getOnClose();
                     if (runnable != null) {
                         runnable.run();
@@ -116,6 +120,9 @@ public class ModalOverlayComp extends SimpleComp {
                 }
 
                 if (newValue != null) {
+                    if (newValue.getContent() instanceof ModalOverlayContentComp mocc) {
+                        mocc.setModalOverlay(newValue);
+                    }
                     showModalBox(modal, newValue);
                 }
             });
@@ -148,13 +155,14 @@ public class ModalOverlayComp extends SimpleComp {
         });
     }
 
-    private ModalBox toBox(ModalPane pane, ModalOverlay newValue) {
+    private Region toBox(ModalPane pane, ModalOverlay newValue) {
         var l = new Label(
                 AppI18n.get(newValue.getTitleKey()),
                 newValue.getGraphic() != null ? newValue.getGraphic().createGraphicNode() : null);
         l.setGraphicTextGap(8);
         AppFont.header(l);
-        var r = newValue.getContent().createRegion();
+
+        Region r = newValue.getContent().createRegion();
         var content = new VBox(l, r);
         content.focusedProperty().addListener((o, old, n) -> {
             if (n) {
@@ -163,12 +171,26 @@ public class ModalOverlayComp extends SimpleComp {
         });
         content.setSpacing(25);
         content.setPadding(new Insets(13, 25, 25, 25));
+        content.prefHeightProperty().bind(Bindings.createDoubleBinding(() -> {
+            if (r.getPrefHeight() != Region.USE_COMPUTED_SIZE) {
+                return r.getPrefHeight() + 50;
+            }
 
-        var buttonBar = new ButtonBar();
-        for (var mb : newValue.getButtons()) {
-            buttonBar.getButtons().add(toButton(mb));
+            return Region.USE_COMPUTED_SIZE;
+        }, r.heightProperty(), r.prefHeightProperty()));
+
+        if (newValue.getButtons().size() > 0) {
+            var buttonBar = new ButtonBar();
+            for (var o : newValue.getButtons()) {
+                var node = o instanceof ModalButton mb ? toButton(mb) : ((Comp<?>) o).createRegion();
+                buttonBar.getButtons().add(node);
+                ButtonBar.setButtonUniformSize(node, o instanceof ModalButton);
+                if (o instanceof ModalButton) {
+                    node.prefHeightProperty().bind(buttonBar.heightProperty());
+                }
+            }
+            content.getChildren().add(buttonBar);
         }
-        content.getChildren().add(buttonBar);
 
         var modalBox = new ModalBox(content);
         modalBox.setOnClose(event -> {
@@ -189,6 +211,15 @@ public class ModalOverlayComp extends SimpleComp {
                 content.requestFocus();
             }
         });
+
+        if (newValue.getContent() instanceof ModalOverlayContentComp mocc) {
+            var busy = mocc.busy();
+            if (busy != null) {
+                var loading = LoadingOverlayComp.noProgress(Comp.of(() -> modalBox), busy);
+                return loading.createRegion();
+            }
+        }
+
         return modalBox;
     }
 
@@ -209,15 +240,20 @@ public class ModalOverlayComp extends SimpleComp {
         return Bindings.createDoubleBinding(
                 () -> {
                     var max = pane.getHeight() - 50;
+                    if (content.getPrefHeight() != Region.USE_COMPUTED_SIZE) {
+                        return Math.min(max, content.getPrefHeight());
+                    }
+
                     return Math.min(max, content.getHeight());
                 },
                 pane.heightProperty(),
+                pane.prefHeightProperty(),
                 content.prefHeightProperty(),
                 content.heightProperty());
     }
 
     private Button toButton(ModalButton mb) {
-        var button = new Button(AppI18n.get(mb.getKey()));
+        var button = new Button(mb.getKey() != null ? AppI18n.get(mb.getKey()) : null);
         if (mb.isDefaultButton()) {
             button.getStyleClass().add(Styles.ACCENT);
         }

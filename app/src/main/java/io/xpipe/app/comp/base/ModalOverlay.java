@@ -2,6 +2,7 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
 
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.util.LabelGraphic;
 import lombok.*;
 import lombok.experimental.NonFinal;
@@ -37,7 +38,7 @@ public class ModalOverlay {
     LabelGraphic graphic;
 
     @Singular
-    List<ModalButton> buttons;
+    List<Object> buttons;
 
     @NonFinal
     boolean persistent;
@@ -51,7 +52,19 @@ public class ModalOverlay {
         return button;
     }
 
+    public void addButtonBarComp(Comp<?> comp) {
+        buttons.add(comp);
+    }
+
     public void persist() {
         persistent = true;
+    }
+
+    public void showAndWait() {
+        AppDialog.showAndWait(this);
+    }
+
+    public void close() {
+        AppDialog.closeDialog(this);
     }
 }

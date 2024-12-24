@@ -1,9 +1,12 @@
 package io.xpipe.app.comp.store;
 
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.comp.base.PrettyImageHelper;
+import io.xpipe.app.comp.base.*;
 import io.xpipe.app.resources.SystemIcon;
 
+import io.xpipe.app.resources.SystemIcons;
+import io.xpipe.app.util.Hyperlinks;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -13,6 +16,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.theme.Tweaks;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.ArrayList;
 import java.util.Collection;

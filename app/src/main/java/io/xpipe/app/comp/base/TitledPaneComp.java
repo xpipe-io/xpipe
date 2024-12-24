@@ -28,17 +28,6 @@ public class TitledPaneComp extends Comp<CompStructure<TitledPane>> {
         tp.getStyleClass().add("titled-pane-comp");
         tp.setExpanded(false);
         tp.setAnimated(false);
-        AtomicInteger minimizedSize = new AtomicInteger();
-        tp.expandedProperty().addListener((c, o, n) -> {
-            if (n) {
-                if (minimizedSize.get() == 0) {
-                    minimizedSize.set((int) tp.getHeight());
-                }
-                tp.setPrefHeight(height);
-            } else {
-                tp.setPrefHeight(minimizedSize.get());
-            }
-        });
         return new SimpleCompStructure<>(tp);
     }
 }

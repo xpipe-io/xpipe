@@ -10,6 +10,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.util.LicenseRequiredException;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
@@ -161,7 +162,7 @@ public class ErrorHandlerComp extends SimpleComp {
         content.getChildren().addAll(actionBox);
         content.getStyleClass().add("top");
         content.setFillWidth(true);
-        content.setPrefHeight(Region.USE_COMPUTED_SIZE);
+        content.setMinHeight(Region.USE_PREF_SIZE);
 
         var layout = new BorderPane();
         layout.setCenter(content);
