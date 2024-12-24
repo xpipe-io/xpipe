@@ -7,8 +7,6 @@ import io.xpipe.app.comp.SimpleCompStructure;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TitledPane;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 public class TitledPaneComp extends Comp<CompStructure<TitledPane>> {
 
     private final ObservableValue<String> name;

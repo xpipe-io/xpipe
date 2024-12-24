@@ -1,7 +1,6 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.DialogComp;
 import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.comp.base.ModalOverlayContentComp;
 import io.xpipe.app.comp.store.StoreChoiceComp;
@@ -19,11 +18,9 @@ import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.geometry.Insets;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -144,12 +141,12 @@ class ScanDialog extends ModalOverlayContentComp {
                 .name("scanAlertChoiceHeader")
                 .description("scanAlertChoiceHeaderDescription")
                 .addComp(new StoreChoiceComp<>(
-                        StoreChoiceComp.Mode.OTHER,
-                        null,
-                        entry,
-                        ShellStore.class,
-                        store1 -> true,
-                        StoreViewState.get().getAllConnectionsCategory())
+                                StoreChoiceComp.Mode.OTHER,
+                                null,
+                                entry,
+                                ShellStore.class,
+                                store1 -> true,
+                                StoreViewState.get().getAllConnectionsCategory())
                         .disable(new SimpleBooleanProperty(initialStore != null)))
                 .name("scanAlertHeader")
                 .description("scanAlertHeaderDescription")

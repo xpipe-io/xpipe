@@ -1,16 +1,15 @@
 package io.xpipe.app.issue;
 
-import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
-import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.PlatformInit;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.PlatformThread;
+
 import javafx.scene.paint.Color;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.concurrent.atomic.AtomicReference;

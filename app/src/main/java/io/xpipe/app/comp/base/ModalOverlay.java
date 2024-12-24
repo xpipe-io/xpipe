@@ -1,9 +1,9 @@
 package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
-
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.util.LabelGraphic;
+
 import lombok.*;
 import lombok.experimental.NonFinal;
 

@@ -7,8 +7,8 @@ import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.util.PlatformThread;
-
 import io.xpipe.core.process.OsType;
+
 import javafx.animation.Animation;
 import javafx.geometry.Pos;
 import javafx.scene.image.ImageView;

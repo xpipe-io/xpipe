@@ -12,11 +12,8 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableValue;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class PrettyImageHelper {
 
@@ -38,7 +35,8 @@ public class PrettyImageHelper {
         return Optional.empty();
     }
 
-    private static ObservableValue<String> rasterizedImageIfExistsScaled(String img, int height, int... availableSizes) {
+    private static ObservableValue<String> rasterizedImageIfExistsScaled(
+            String img, int height, int... availableSizes) {
         ObservableDoubleValue obs = AppMainWindow.getInstance() != null
                 ? AppMainWindow.getInstance().displayScale()
                 : new SimpleDoubleProperty(1.0);
@@ -87,7 +85,7 @@ public class PrettyImageHelper {
     }
 
     public static Comp<?> ofSpecificFixedSize(String img, int w, int h) {
-        var b =  rasterizedImageIfExistsScaled(img, h, h, h * 2);
+        var b = rasterizedImageIfExistsScaled(img, h, h, h * 2);
         return new PrettyImageComp(b, w, h);
     }
 }

@@ -1,10 +1,7 @@
 package io.xpipe.app.core.mode;
 
-import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.*;
-import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.PlatformInit;
-import io.xpipe.app.util.PlatformState;
 
 public abstract class PlatformMode extends OperationMode {
 

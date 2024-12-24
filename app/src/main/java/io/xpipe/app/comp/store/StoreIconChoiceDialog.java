@@ -22,6 +22,7 @@ public class StoreIconChoiceDialog {
 
     private final ObjectProperty<SystemIcon> selected = new SimpleObjectProperty<>();
     private final DataStoreEntry entry;
+
     @Getter
     private final ModalOverlay overlay;
 
@@ -35,20 +36,29 @@ public class StoreIconChoiceDialog {
         var filter = new FilterComp(filterText).grow(true, false);
         filter.focusOnShow();
         var github = new ButtonComp(null, new FontIcon("mdi2g-github"), () -> {
-            Hyperlinks.open(Hyperlinks.SELFHST_ICONS);
-        }).grow(false, true);
-        var modal = ModalOverlay.of("chooseCustomIcon", new StoreIconChoiceComp(selected, SystemIcons.getSystemIcons(), 5, filterText, () -> {
-            finish();
-        }).prefWidth(600));
+                    Hyperlinks.open(Hyperlinks.SELFHST_ICONS);
+                })
+                .grow(false, true);
+        var modal = ModalOverlay.of(
+                "chooseCustomIcon",
+                new StoreIconChoiceComp(selected, SystemIcons.getSystemIcons(), 5, filterText, () -> {
+                            finish();
+                        })
+                        .prefWidth(600));
         modal.addButtonBarComp(github);
         modal.addButtonBarComp(filter);
-        modal.addButton(new ModalButton("clear",() -> {
-            selected.setValue(null);
-            finish();
-        }, true,false));
+        modal.addButton(new ModalButton(
+                "clear",
+                () -> {
+                    selected.setValue(null);
+                    finish();
+                },
+                true,
+                false));
         modal.addButton(ModalButton.ok(() -> {
-            finish();
-        })).augment(button -> button.disableProperty().bind(selected.isNull()));
+                    finish();
+                }))
+                .augment(button -> button.disableProperty().bind(selected.isNull()));
         return modal;
     }
 

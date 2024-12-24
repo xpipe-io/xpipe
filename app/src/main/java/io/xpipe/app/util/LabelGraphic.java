@@ -66,7 +66,6 @@ public abstract class LabelGraphic {
         }
     }
 
-
     @Value
     @EqualsAndHashCode(callSuper = true)
     public static class NodeGraphic extends LabelGraphic {

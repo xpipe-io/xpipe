@@ -1,8 +1,9 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
+
 import javafx.beans.value.ObservableValue;
+
 import lombok.Getter;
 
 public abstract class ModalOverlayContentComp extends SimpleComp {

@@ -1,13 +1,12 @@
 package io.xpipe.app.comp.base;
 
-import atlantafx.base.util.Animations;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.PlatformThread;
-
 import io.xpipe.core.process.OsType;
+
 import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -23,14 +22,12 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 import atlantafx.base.controls.ModalPane;
 import atlantafx.base.layout.ModalBox;
 import atlantafx.base.theme.Styles;
-import javafx.util.Duration;
-import org.bouncycastle.math.raw.Mod;
-
-import java.util.Objects;
+import atlantafx.base.util.Animations;
 
 public class ModalOverlayComp extends SimpleComp {
 
@@ -47,7 +44,8 @@ public class ModalOverlayComp extends SimpleComp {
         var bgRegion = background.createRegion();
         var modal = new ModalPane();
         modal.setInTransitionFactory(OsType.getLocal() == OsType.LINUX ? null : node -> fadeInDelyed(node));
-        modal.setOutTransitionFactory(OsType.getLocal() == OsType.LINUX ? null : node -> Animations.fadeOut(node, Duration.millis(200)));
+        modal.setOutTransitionFactory(
+                OsType.getLocal() == OsType.LINUX ? null : node -> Animations.fadeOut(node, Duration.millis(200)));
         modal.focusedProperty().addListener((observable, oldValue, newValue) -> {
             var c = modal.getContent();
             if (newValue && c != null) {
@@ -171,13 +169,17 @@ public class ModalOverlayComp extends SimpleComp {
         });
         content.setSpacing(25);
         content.setPadding(new Insets(13, 25, 25, 25));
-        content.prefHeightProperty().bind(Bindings.createDoubleBinding(() -> {
-            if (r.getPrefHeight() != Region.USE_COMPUTED_SIZE) {
-                return r.getPrefHeight() + 50;
-            }
+        content.prefHeightProperty()
+                .bind(Bindings.createDoubleBinding(
+                        () -> {
+                            if (r.getPrefHeight() != Region.USE_COMPUTED_SIZE) {
+                                return r.getPrefHeight() + 50;
+                            }
 
-            return Region.USE_COMPUTED_SIZE;
-        }, r.heightProperty(), r.prefHeightProperty()));
+                            return Region.USE_COMPUTED_SIZE;
+                        },
+                        r.heightProperty(),
+                        r.prefHeightProperty()));
 
         if (newValue.getButtons().size() > 0) {
             var buttonBar = new ButtonBar();
@@ -274,16 +276,9 @@ public class ModalOverlayComp extends SimpleComp {
 
     private Timeline fadeInDelyed(Node node) {
         var t = new Timeline(
-                new KeyFrame(Duration.ZERO,
-                        new KeyValue(node.opacityProperty(), 0.01)
-                ),
-        new KeyFrame(Duration.millis(50),
-                new KeyValue(node.opacityProperty(), 0.01, Animations.EASE)
-                ),
-                new KeyFrame(Duration.millis(150),
-                        new KeyValue(node.opacityProperty(), 1, Animations.EASE)
-                )
-        );
+                new KeyFrame(Duration.ZERO, new KeyValue(node.opacityProperty(), 0.01)),
+                new KeyFrame(Duration.millis(50), new KeyValue(node.opacityProperty(), 0.01, Animations.EASE)),
+                new KeyFrame(Duration.millis(150), new KeyValue(node.opacityProperty(), 1, Animations.EASE)));
 
         t.statusProperty().addListener((obs, old, val) -> {
             if (val == Animation.Status.STOPPED) {

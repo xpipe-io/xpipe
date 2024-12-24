@@ -1,6 +1,5 @@
 package io.xpipe.app.issue;
 
-import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.ButtonComp;
@@ -10,7 +9,6 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.util.LicenseRequiredException;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
@@ -21,15 +19,10 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 
 import lombok.Getter;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static atlantafx.base.theme.Styles.ACCENT;
 import static atlantafx.base.theme.Styles.BUTTON_OUTLINED;
@@ -38,6 +31,7 @@ public class ErrorHandlerComp extends SimpleComp {
 
     private final ErrorEvent event;
     private final Runnable closeDialogAction;
+
     @Getter
     private final Property<ErrorAction> takenAction = new SimpleObjectProperty<>();
 

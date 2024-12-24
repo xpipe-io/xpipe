@@ -1,6 +1,5 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.comp.base.DialogComp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.ext.ScanProvider;
