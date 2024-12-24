@@ -48,6 +48,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     private final BooleanProperty inOverview = new SimpleBooleanProperty();
     private final Property<BrowserTransferProgress> progress = new SimpleObjectProperty<>();
     private final ObservableList<UUID> terminalRequests = FXCollections.observableArrayList();
+    private final BooleanProperty transferCancelled = new SimpleBooleanProperty();
     private FileSystem fileSystem;
     private BrowserFileSystemSavedState savedState;
     private BrowserFileSystemCache cache;
@@ -148,6 +149,14 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         if (s.isPresent()) {
             s.get().start();
         }
+    }
+
+    public void killTransfer() {
+        if (fileSystem == null) {
+            return;
+        }
+
+        transferCancelled.set(true);
     }
 
     public void withShell(FailableConsumer<ShellControl, Exception> c, boolean refresh) {
@@ -392,7 +401,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
 
                 startIfNeeded();
                 var op = BrowserFileTransferOperation.ofLocal(
-                        entry, files, BrowserFileTransferMode.COPY, true, progress::setValue);
+                        entry, files, BrowserFileTransferMode.COPY, true, progress::setValue, transferCancelled);
                 op.execute();
                 refreshSync();
             });
@@ -412,7 +421,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                 }
 
                 startIfNeeded();
-                var op = new BrowserFileTransferOperation(target, files, mode, true, progress::setValue);
+                var op = new BrowserFileTransferOperation(target, files, mode, true, progress::setValue, transferCancelled);
                 op.execute();
                 refreshSync();
             });

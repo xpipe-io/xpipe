@@ -67,6 +67,11 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
+    public void closeStdout() throws IOException {
+        parent.closeStdout();
+    }
+
+    @Override
     public List<UUID> getExitUuids() {
         return parent.getExitUuids();
     }

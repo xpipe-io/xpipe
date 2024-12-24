@@ -34,6 +34,8 @@ public interface ShellControl extends ProcessControl {
 
     void setElevationHandler(ElevationHandler ref);
 
+    void closeStdout() throws IOException;
+
     List<UUID> getExitUuids();
 
     void setWorkingDirectory(WorkingDirectoryFunction workingDirectory);
