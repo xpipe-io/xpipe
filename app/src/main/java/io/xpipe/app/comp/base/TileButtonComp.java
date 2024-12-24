@@ -1,5 +1,6 @@
 package io.xpipe.app.comp.base;
 
+import atlantafx.base.controls.Spacer;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.core.AppFont;
@@ -13,6 +14,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import lombok.*;
@@ -30,6 +32,9 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
 
     @Setter
     private double iconSize = 0.55;
+
+    @Setter
+    private Comp<?> right;
 
     public TileButtonComp(String nameKey, String descriptionKey, String icon, Consumer<ActionEvent> action) {
         this.name = AppI18n.observable(nameKey);
@@ -54,7 +59,9 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
         var bt = new Button();
         bt.getStyleClass().add("tile-button-comp");
         bt.setOnAction(e -> {
-            action.accept(e);
+            if (action != null) {
+                action.accept(e);
+            }
         });
 
         var header = new Label();
@@ -69,6 +76,11 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
         var fi = new FontIconComp(icon).createStructure();
         var pane = fi.getPane();
         var hbox = new HBox(pane, text);
+        Region rightRegion = right != null ? right.createRegion() : null;
+        if (rightRegion != null) {
+            hbox.getChildren().add(new Spacer());
+            hbox.getChildren().add(rightRegion);
+        }
         hbox.setSpacing(8);
         pane.prefWidthProperty()
                 .bind(Bindings.createDoubleBinding(
@@ -91,6 +103,7 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
                 .content(hbox)
                 .name(header)
                 .description(desc)
+                .right(rightRegion)
                 .build();
     }
 
@@ -102,6 +115,7 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
         FontIcon graphic;
         Label name;
         Label description;
+        Region right;
 
         @Override
         public Button get() {

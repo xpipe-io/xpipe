@@ -47,17 +47,6 @@ public class AppWindowHelper {
         return alertContentText(s, 450);
     }
 
-    public static Comp<?> dialogText(String s) {
-        return Comp.of(() -> {
-                    var text = new Text(s);
-                    text.setWrappingWidth(450);
-                    AppFont.medium(text);
-                    var sp = new StackPane(text);
-                    return sp;
-                })
-                .prefWidth(450);
-    }
-
     public static Region alertContentText(String s, int width) {
         var text = new Text(s);
         text.setWrappingWidth(width);

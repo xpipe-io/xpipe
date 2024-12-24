@@ -226,13 +226,17 @@ public abstract class OperationMode {
         return ALL;
     }
 
+    public static void startNewInstance() throws Exception {
+        var loc = AppProperties.get().isDevelopmentEnvironment()
+                ? XPipeInstallation.getLocalDefaultInstallationBasePath()
+                : XPipeInstallation.getCurrentInstallationBasePath().toString();
+        var exec = XPipeInstallation.createExternalAsyncLaunchCommand(loc, XPipeDaemonMode.GUI, "", true);
+        LocalShell.getShell().executeSimpleCommand(exec);
+    }
+
     public static void restart() {
         OperationMode.executeAfterShutdown(() -> {
-            var loc = AppProperties.get().isDevelopmentEnvironment()
-                    ? XPipeInstallation.getLocalDefaultInstallationBasePath()
-                    : XPipeInstallation.getCurrentInstallationBasePath().toString();
-            var exec = XPipeInstallation.createExternalAsyncLaunchCommand(loc, XPipeDaemonMode.GUI, "", true);
-            LocalShell.getShell().executeSimpleCommand(exec);
+            startNewInstance();
         });
     }
 

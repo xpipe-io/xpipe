@@ -1,6 +1,11 @@
 package io.xpipe.app.core.window;
 
+import atlantafx.base.layout.ModalBox;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
+import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.PlatformInit;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
@@ -9,9 +14,13 @@ import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import lombok.Getter;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AppDialog {
 
@@ -62,5 +71,26 @@ public class AppDialog {
             Platform.enterNestedEventLoop(key);
             waitForClose();
         }
+    }
+
+    public static Comp<?> dialogText(String s) {
+        return Comp.of(() -> {
+                    var text = new Text(s);
+                    text.setWrappingWidth(450);
+                    AppFont.medium(text);
+                    var sp = new StackPane(text);
+                    return sp;
+                })
+                .prefWidth(450);
+    }
+
+    public static boolean confirm(String translationKey) {
+        var confirmed = new AtomicBoolean(false);
+        var content = dialogText(AppI18n.get(translationKey + "Content"));
+        var modal = ModalOverlay.of(translationKey + "Title", content);
+        modal.addButton(ModalButton.cancel());
+        modal.addButton(ModalButton.ok(() -> confirmed.set(true)));
+        showAndWait(modal);
+        return confirmed.get();
     }
 }
