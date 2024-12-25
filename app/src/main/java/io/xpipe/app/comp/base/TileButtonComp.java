@@ -1,6 +1,5 @@
 package io.xpipe.app.comp.base;
 
-import atlantafx.base.controls.Spacer;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.core.AppFont;
@@ -17,6 +16,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
+import atlantafx.base.controls.Spacer;
 import lombok.*;
 import org.kordamp.ikonli.javafx.FontIcon;
 

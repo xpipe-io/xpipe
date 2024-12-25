@@ -421,7 +421,8 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                 }
 
                 startIfNeeded();
-                var op = new BrowserFileTransferOperation(target, files, mode, true, progress::setValue, transferCancelled);
+                var op = new BrowserFileTransferOperation(
+                        target, files, mode, true, progress::setValue, transferCancelled);
                 op.execute();
                 refreshSync();
             });

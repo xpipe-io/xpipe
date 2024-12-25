@@ -64,7 +64,9 @@ public class AppMainWindow {
     }
 
     public static void init(boolean show) {
-        if (INSTANCE != null && INSTANCE.getStage() != null && (!show || INSTANCE.getStage().isShowing())) {
+        if (INSTANCE != null
+                && INSTANCE.getStage() != null
+                && (!show || INSTANCE.getStage().isShowing())) {
             return;
         }
 

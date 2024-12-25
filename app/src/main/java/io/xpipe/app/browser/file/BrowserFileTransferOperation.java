@@ -2,6 +2,7 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.store.*;
+
 import javafx.beans.property.BooleanProperty;
 
 import java.io.*;
@@ -30,8 +31,8 @@ public class BrowserFileTransferOperation {
             List<FileEntry> files,
             BrowserFileTransferMode transferMode,
             boolean checkConflicts,
-            Consumer<BrowserTransferProgress> progress, BooleanProperty cancelled
-    ) {
+            Consumer<BrowserTransferProgress> progress,
+            BooleanProperty cancelled) {
         this.target = target;
         this.files = files;
         this.transferMode = transferMode;
@@ -226,7 +227,8 @@ public class BrowserFileTransferOperation {
                 var newFile =
                         targetFile.getParent().join(matcher.group(1) + " (" + (number + 1) + ")." + matcher.group(3));
                 return newFile.toString();
-            } catch (NumberFormatException ignored) {}
+            } catch (NumberFormatException ignored) {
+            }
         }
 
         var noExt = targetFile.getFileName().equals(targetFile.getExtension());
@@ -438,7 +440,8 @@ public class BrowserFileTransferOperation {
         if (!same) {
             var sourceShell = sourceFs.getShell().orElseThrow();
             var targetShell = targetFs.getShell().orElseThrow();
-            return !sourceShell.getStdout().isClosed() && !targetShell.getStdin().isClosed();
+            return !sourceShell.getStdout().isClosed()
+                    && !targetShell.getStdin().isClosed();
         } else {
             return true;
         }

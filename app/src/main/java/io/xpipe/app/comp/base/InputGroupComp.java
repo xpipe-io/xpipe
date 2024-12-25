@@ -1,10 +1,12 @@
 package io.xpipe.app.comp.base;
 
-import atlantafx.base.layout.InputGroup;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
+
 import javafx.geometry.Pos;
+
+import atlantafx.base.layout.InputGroup;
 
 import java.util.List;
 

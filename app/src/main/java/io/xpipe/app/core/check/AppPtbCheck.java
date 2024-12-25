@@ -4,7 +4,6 @@ import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.core.window.AppWindowHelper;
 
 public class AppPtbCheck {
 

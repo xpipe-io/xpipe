@@ -33,11 +33,10 @@ public class IncusCommandView extends CommandViewBase {
                 // Sadly the socket location changes based on the installation type, and we can't dynamically query the
                 // path
                 return !shellControl
-                        .command(
-                                "test -S /var/lib/incus/unix.socket && test -w /var/lib/incus/unix.socket || " +
-                                        "test -S /var/snap/incus/common/incus/unix.socket && test -w /var/snap/incus/common/incus/unix.socket || " +
-                                "test -S /var/snap/incus/common/incus/unix.socket.user && test -w /var/snap/incus/common/incus/unix.socket.user || " +
-                                        "test -S /var/lib/incus/unix.socket.user && test -w /var/lib/incus/unix.socket.user")
+                        .command("test -S /var/lib/incus/unix.socket && test -w /var/lib/incus/unix.socket || "
+                                + "test -S /var/snap/incus/common/incus/unix.socket && test -w /var/snap/incus/common/incus/unix.socket || "
+                                + "test -S /var/snap/incus/common/incus/unix.socket.user && test -w /var/snap/incus/common/incus/unix.socket.user || "
+                                + "test -S /var/lib/incus/unix.socket.user && test -w /var/lib/incus/unix.socket.user")
                         .executeAndCheck();
             }
         };

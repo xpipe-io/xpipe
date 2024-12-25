@@ -1,6 +1,5 @@
 package io.xpipe.app.core.window;
 
-import atlantafx.base.layout.ModalBox;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;

@@ -1,17 +1,10 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.comp.base.ModalOverlayComp;
-import io.xpipe.app.comp.base.TooltipAugment;
-import io.xpipe.app.core.window.AppWindowHelper;
-import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.PlatformThread;
-import io.xpipe.app.util.Translatable;
-import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.XPipeInstallation;
 
 import javafx.beans.binding.Bindings;
@@ -19,7 +12,6 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 
-import lombok.SneakyThrows;
 import lombok.Value;
 import org.apache.commons.io.FilenameUtils;
 
@@ -116,7 +108,11 @@ public class AppI18n {
 
     public String getKey(String s) {
         var key = s;
-        if (s.startsWith("app.") || s.startsWith("base.") || s.startsWith("proc.") || s.startsWith("uacc.") || s.startsWith("system.")) {
+        if (s.startsWith("app.")
+                || s.startsWith("base.")
+                || s.startsWith("proc.")
+                || s.startsWith("uacc.")
+                || s.startsWith("system.")) {
             key = key.substring(key.indexOf(".") + 1);
         }
         return key;
@@ -178,35 +174,35 @@ public class AppI18n {
 
         var translations = new HashMap<String, String>();
         {
-        var basePath = XPipeInstallation.getLangPath().resolve("strings");
-        AtomicInteger fileCounter = new AtomicInteger();
-        AtomicInteger lineCounter = new AtomicInteger();
-        Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                if (!matchesLocale(file, l)) {
+            var basePath = XPipeInstallation.getLangPath().resolve("strings");
+            AtomicInteger fileCounter = new AtomicInteger();
+            AtomicInteger lineCounter = new AtomicInteger();
+            Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                    if (!matchesLocale(file, l)) {
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    if (!file.getFileName().toString().endsWith(".properties")) {
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    fileCounter.incrementAndGet();
+                    try (var in = Files.newInputStream(file)) {
+                        var props = new Properties();
+                        props.load(new InputStreamReader(in, StandardCharsets.UTF_8));
+                        props.forEach((key, value) -> {
+                            translations.put(key.toString(), value.toString());
+                            lineCounter.incrementAndGet();
+                        });
+                    } catch (IOException ex) {
+                        ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
+                    }
                     return FileVisitResult.CONTINUE;
                 }
-
-                if (!file.getFileName().toString().endsWith(".properties")) {
-                    return FileVisitResult.CONTINUE;
-                }
-
-                fileCounter.incrementAndGet();
-                try (var in = Files.newInputStream(file)) {
-                    var props = new Properties();
-                    props.load(new InputStreamReader(in, StandardCharsets.UTF_8));
-                    props.forEach((key, value) -> {
-                        translations.put(key.toString(), value.toString());
-                        lineCounter.incrementAndGet();
-                    });
-                } catch (IOException ex) {
-                    ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
-                }
-                return FileVisitResult.CONTINUE;
-            }
-        });
-    }
+            });
+        }
 
         var markdownDocumentations = new HashMap<String, String>();
         {

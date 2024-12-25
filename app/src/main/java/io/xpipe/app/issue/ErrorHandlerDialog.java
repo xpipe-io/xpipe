@@ -6,7 +6,6 @@ import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.PlatformInit;
 import io.xpipe.app.util.PlatformState;
-import io.xpipe.app.util.PlatformThread;
 
 import javafx.scene.paint.Color;
 
