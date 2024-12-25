@@ -121,7 +121,7 @@ public class AppInstaller {
             }
 
             private String getCmdCommand(String file, String logFile, String exec, boolean systemWide) {
-                var args = systemWide ? "ALLUSERS=1" : "";
+                var args = "DISABLEROLLBACK=1" + (systemWide ? " ALLUSERS=1" : "");
                 return String.format(
                         """
                         echo Installing %s ...
@@ -136,8 +136,8 @@ public class AppInstaller {
             }
 
             private String getPowershellCommand(String file, String logFile, String exec, boolean systemWide) {
-                var property = systemWide ? " ALLUSERS=1" : "";
-                var startProcessProperty = systemWide ? ", ALLUSERS=1" : "";
+                var property = "DISABLEROLLBACK=1" + (systemWide ? " ALLUSERS=1" : "");
+                var startProcessProperty = ", DISABLEROLLBACK=1" + (systemWide ? ", ALLUSERS=1" : "");
                 return String.format(
                         """
                         echo Installing %s ...
