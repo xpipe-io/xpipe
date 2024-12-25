@@ -87,31 +87,6 @@ public class AppI18n {
         return s;
     }
 
-    @SneakyThrows
-    private static String getCallerModuleName() {
-        var callers = CallingClass.INSTANCE.getCallingClasses();
-        for (Class<?> caller : callers) {
-            if (caller.isSynthetic()) {
-                continue;
-            }
-
-            if (caller.equals(CallingClass.class)
-                    || caller.equals(ModuleHelper.class)
-                    || caller.equals(ModalOverlayComp.class)
-                    || caller.equals(AppI18n.class)
-                    || caller.equals(TooltipAugment.class)
-                    || caller.equals(PrefsChoiceValue.class)
-                    || caller.equals(Translatable.class)
-                    || caller.equals(AppWindowHelper.class)
-                    || caller.equals(OptionsBuilder.class)) {
-                continue;
-            }
-            var split = caller.getModule().getName().split("\\.");
-            return split[split.length - 1];
-        }
-        return "";
-    }
-
     private void load() throws Exception {
         if (english == null) {
             english = load(Locale.ENGLISH);
@@ -141,8 +116,8 @@ public class AppI18n {
 
     public String getKey(String s) {
         var key = s;
-        if (!s.contains(".")) {
-            key = getCallerModuleName() + "." + s;
+        if (s.startsWith("app.") || s.startsWith("base.") || s.startsWith("proc.") || s.startsWith("uacc.") || s.startsWith("system.")) {
+            key = key.substring(key.indexOf(".") + 1);
         }
         return key;
     }
@@ -177,6 +152,10 @@ public class AppI18n {
     }
 
     public String getMarkdownDocumentation(String name) {
+        if (name.contains(":")) {
+            name = name.substring(name.indexOf(":") + 1);
+        }
+
         if (currentLanguage.getValue() != null
                 && currentLanguage.getValue().getMarkdownDocumentations().containsKey(name)) {
             var localisedString =
@@ -194,68 +173,44 @@ public class AppI18n {
         return "";
     }
 
-    private Path getModuleLangPath(String module) {
-        return XPipeInstallation.getLangPath().resolve(module);
-    }
-
     private LoadedTranslations load(Locale l) throws Exception {
         TrackEvent.info("Loading translations ...");
 
         var translations = new HashMap<String, String>();
-        for (var module : AppExtensionManager.getInstance().getContentModules()) {
-            var basePath = getModuleLangPath(FilenameUtils.getExtension(module.getName()))
-                    .resolve("strings");
-            if (!Files.exists(basePath)) {
-                continue;
-            }
-
-            AtomicInteger fileCounter = new AtomicInteger();
-            AtomicInteger lineCounter = new AtomicInteger();
-            var simpleName = FilenameUtils.getExtension(module.getName());
-            String defaultPrefix = simpleName.equals("app") ? "app." : simpleName + ".";
-            Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                    if (!matchesLocale(file, l)) {
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    if (!file.getFileName().toString().endsWith(".properties")) {
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    fileCounter.incrementAndGet();
-                    try (var in = Files.newInputStream(file)) {
-                        var props = new Properties();
-                        props.load(new InputStreamReader(in, StandardCharsets.UTF_8));
-                        props.forEach((key, value) -> {
-                            var hasPrefix = key.toString().contains(".");
-                            var usedPrefix = hasPrefix ? "" : defaultPrefix;
-                            translations.put(usedPrefix + key, value.toString());
-                            lineCounter.incrementAndGet();
-                        });
-                    } catch (IOException ex) {
-                        ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
-                    }
+        {
+        var basePath = XPipeInstallation.getLangPath().resolve("strings");
+        AtomicInteger fileCounter = new AtomicInteger();
+        AtomicInteger lineCounter = new AtomicInteger();
+        Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                if (!matchesLocale(file, l)) {
                     return FileVisitResult.CONTINUE;
                 }
-            });
 
-            TrackEvent.withDebug("Loading translations for module " + simpleName)
-                    .tag("fileCount", fileCounter.get())
-                    .tag("lineCount", lineCounter.get())
-                    .handle();
-        }
+                if (!file.getFileName().toString().endsWith(".properties")) {
+                    return FileVisitResult.CONTINUE;
+                }
+
+                fileCounter.incrementAndGet();
+                try (var in = Files.newInputStream(file)) {
+                    var props = new Properties();
+                    props.load(new InputStreamReader(in, StandardCharsets.UTF_8));
+                    props.forEach((key, value) -> {
+                        translations.put(key.toString(), value.toString());
+                        lineCounter.incrementAndGet();
+                    });
+                } catch (IOException ex) {
+                    ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        });
+    }
 
         var markdownDocumentations = new HashMap<String, String>();
-        for (var module : AppExtensionManager.getInstance().getContentModules()) {
-            var basePath = getModuleLangPath(FilenameUtils.getExtension(module.getName()))
-                    .resolve("texts");
-            if (!Files.exists(basePath)) {
-                continue;
-            }
-
-            var moduleName = FilenameUtils.getExtension(module.getName());
+        {
+            var basePath = XPipeInstallation.getLangPath().resolve("texts");
             Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
@@ -271,9 +226,7 @@ public class AppI18n {
                             .toString()
                             .substring(0, file.getFileName().toString().lastIndexOf("_"));
                     try (var in = Files.newInputStream(file)) {
-                        var usedPrefix = moduleName + ":";
-                        markdownDocumentations.put(
-                                usedPrefix + name, new String(in.readAllBytes(), StandardCharsets.UTF_8));
+                        markdownDocumentations.put(name, new String(in.readAllBytes(), StandardCharsets.UTF_8));
                     } catch (IOException ex) {
                         ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
                     }
@@ -291,14 +244,5 @@ public class AppI18n {
         Locale locale;
         Map<String, String> translations;
         Map<String, String> markdownDocumentations;
-    }
-
-    @SuppressWarnings("removal")
-    public static class CallingClass extends SecurityManager {
-        public static final CallingClass INSTANCE = new CallingClass();
-
-        public Class<?>[] getCallingClasses() {
-            return getClassContext();
-        }
     }
 }
