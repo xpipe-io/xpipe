@@ -126,7 +126,7 @@ project.ext {
     authors = 'Christopher Schnick'
     javafxVersion = '24-ea+15'
     platformName = getPlatformName()
-    languages = ["en", "nl", "es", "fr", "de", "it", "pt", "ru", "ja", "zh", "tr", "da"]
+    languages = ["en", "nl", "es", "fr", "de", "it", "pt", "ru", "ja", "zh", "tr", "da", "id", "sv"]
     jvmRunArgs = [
             "--add-opens", "java.base/java.lang=io.xpipe.app",
             "--add-opens", "java.base/java.lang=io.xpipe.core",
