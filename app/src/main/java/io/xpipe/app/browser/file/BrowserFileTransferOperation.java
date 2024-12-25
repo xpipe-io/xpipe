@@ -420,9 +420,27 @@ public class BrowserFileTransferOperation {
                 break;
             }
 
+            if (!checkTransferValidity()) {
+                killStreams();
+                break;
+            }
+
             outputStream.write(buffer, 0, read);
             transferred.addAndGet(read);
             updateProgress(new BrowserTransferProgress(sourceFile.getName(), transferred.get(), total.get(), start));
+        }
+    }
+
+    private boolean checkTransferValidity() {
+        var sourceFs = files.getFirst().getFileSystem();
+        var targetFs = target.getFileSystem();
+        var same = files.getFirst().getFileSystem().equals(target.getFileSystem());
+        if (!same) {
+            var sourceShell = sourceFs.getShell().orElseThrow();
+            var targetShell = targetFs.getShell().orElseThrow();
+            return !sourceShell.getStdout().isClosed() && !targetShell.getStdin().isClosed();
+        } else {
+            return true;
         }
     }
 
