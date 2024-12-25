@@ -34,7 +34,10 @@ public class IncusCommandView extends CommandViewBase {
                 // path
                 return !shellControl
                         .command(
-                                "test -S /var/lib/incus/unix.socket && test -w /var/lib/incus/unix.socket || test -S /var/snap/incus/common/incus/unix.socket && test -w /var/snap/incus/common/incus/unix.socket")
+                                "test -S /var/lib/incus/unix.socket && test -w /var/lib/incus/unix.socket || " +
+                                        "test -S /var/snap/incus/common/incus/unix.socket && test -w /var/snap/incus/common/incus/unix.socket || " +
+                                "test -S /var/snap/incus/common/incus/unix.socket.user && test -w /var/snap/incus/common/incus/unix.socket.user || " +
+                                        "test -S /var/lib/incus/unix.socket.user && test -w /var/lib/incus/unix.socket.user")
                         .executeAndCheck();
             }
         };
