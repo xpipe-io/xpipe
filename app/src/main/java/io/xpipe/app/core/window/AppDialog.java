@@ -29,9 +29,7 @@ public class AppDialog {
 
     private static void showMainWindow() {
         PlatformInit.init(true);
-        PlatformThread.runLaterIfNeededBlocking(() -> {
-            AppMainWindow.initEmpty(true);
-        });
+        AppMainWindow.init(true);
     }
 
     public static void closeDialog(ModalOverlay overlay) {
@@ -48,6 +46,7 @@ public class AppDialog {
 
     public static void showAndWait(ModalOverlay o) {
         showMainWindow();
+        waitForClose();
         if (!Platform.isFxApplicationThread()) {
             PlatformThread.runLaterIfNeededBlocking(() -> {
                 modalOverlay.setValue(o);
@@ -70,6 +69,40 @@ public class AppDialog {
             });
             Platform.enterNestedEventLoop(key);
             waitForClose();
+        }
+    }
+
+    public static void show(ModalOverlay o, boolean wait, boolean replaceExisting) {
+        showMainWindow();
+        if (!replaceExisting) {
+            waitForClose();
+        }
+        if (!Platform.isFxApplicationThread()) {
+            PlatformThread.runLaterIfNeededBlocking(() -> {
+                modalOverlay.setValue(o);
+            });
+            waitForClose();
+            ThreadHelper.sleep(200);
+        } else {
+            var key = new Object();
+            PlatformThread.runLaterIfNeededBlocking(() -> {
+                modalOverlay.setValue(o);
+                modalOverlay.addListener((observable, oldValue, newValue) -> {
+                    if (oldValue == o && newValue == null) {
+                        var transition = new PauseTransition(Duration.millis(200));
+                        transition.setOnFinished(e -> {
+                            if (wait) {
+                                Platform.exitNestedEventLoop(key, null);
+                            }
+                        });
+                        transition.play();
+                    }
+                });
+            });
+            if (wait) {
+                Platform.enterNestedEventLoop(key);
+                waitForClose();
+            }
         }
     }
 

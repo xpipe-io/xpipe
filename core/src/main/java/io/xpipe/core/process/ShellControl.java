@@ -18,6 +18,21 @@ import java.util.function.Function;
 
 public interface ShellControl extends ProcessControl {
 
+    void writeLine(String line) throws IOException;
+
+    void writeLine(String line, boolean log) throws IOException;
+
+    void write(byte[] b) throws IOException;
+
+    @Override
+    LocalProcessInputStream getStdout();
+
+    @Override
+    LocalProcessOutputStream getStdin();
+
+    @Override
+    LocalProcessInputStream getStderr();
+
     ShellView view();
 
     ShellCapabilities getCapabilities();

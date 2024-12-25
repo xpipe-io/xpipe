@@ -63,7 +63,17 @@ public class AppMainWindow {
         this.stage = stage;
     }
 
-    public static synchronized void initEmpty(boolean show) {
+    public static void init(boolean show) {
+        if (INSTANCE != null && INSTANCE.getStage() != null && (!show || INSTANCE.getStage().isShowing())) {
+            return;
+        }
+
+        PlatformThread.runLaterIfNeededBlocking(() -> {
+            initEmpty(show);
+        });
+    }
+
+    private static synchronized void initEmpty(boolean show) {
         if (INSTANCE != null) {
             if (show) {
                 INSTANCE.show();

@@ -43,7 +43,7 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
             AppProperties.init();
             AppExtensionManager.init(false);
             PlatformInit.init(true);
-            ErrorHandlerDialog.show(event);
+            ErrorHandlerDialog.showAndWait(event);
         } catch (Throwable r) {
             event.clearAttachments();
             handleWithSecondaryException(event, r);

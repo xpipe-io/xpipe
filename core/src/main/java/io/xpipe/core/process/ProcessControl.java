@@ -21,17 +21,11 @@ public interface ProcessControl extends AutoCloseable {
 
     void closeStdin() throws IOException;
 
-    boolean isStdinClosed();
+    boolean isAnyStreamClosed();
 
     boolean isRunning();
 
     ShellDialect getShellDialect();
-
-    void writeLine(String line) throws IOException;
-
-    void writeLine(String line, boolean log) throws IOException;
-
-    void write(byte[] b) throws IOException;
 
     @Override
     void close() throws Exception;

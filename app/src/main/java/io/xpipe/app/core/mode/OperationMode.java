@@ -113,9 +113,7 @@ public abstract class OperationMode {
             PlatformInit.init(false);
             ThreadHelper.runAsync(() -> {
                 PlatformInit.init(true);
-                PlatformThread.runLaterIfNeededBlocking(() -> {
-                    AppMainWindow.initEmpty(OperationMode.getStartupMode() == XPipeDaemonMode.GUI);
-                });
+                AppMainWindow.init(OperationMode.getStartupMode() == XPipeDaemonMode.GUI);
             });
             TrackEvent.info("Finished initial setup");
         } catch (Throwable ex) {
@@ -270,10 +268,14 @@ public abstract class OperationMode {
         t.start();
     }
 
+    private static final Object HALT_LOCK = new Object();
+
     public static void halt(int code) {
-        TrackEvent.info("Halting now!");
-        AppLogs.teardown();
-        Runtime.getRuntime().halt(code);
+        synchronized (HALT_LOCK) {
+            TrackEvent.info("Halting now!");
+            AppLogs.teardown();
+            Runtime.getRuntime().halt(code);
+        }
     }
 
     public static void onWindowClose() {
