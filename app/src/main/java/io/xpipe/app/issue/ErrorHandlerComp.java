@@ -158,8 +158,8 @@ public class ErrorHandlerComp extends SimpleComp {
         content.setFillWidth(true);
         content.setMinHeight(Region.USE_PREF_SIZE);
 
-        var layout = new BorderPane();
-        layout.setCenter(content);
+        var layout = new VBox();
+        layout.getChildren().add(content);
         layout.getStyleClass().add("error-handler-comp");
         layout.getStyleClass().add("background");
 
@@ -167,7 +167,8 @@ public class ErrorHandlerComp extends SimpleComp {
             content.getChildren().add(new Separator(Orientation.HORIZONTAL));
             var details = createDetails();
             AppFont.medium(details);
-            layout.setBottom(details);
+            layout.getChildren().add(details);
+            layout.prefHeightProperty().bind(content.heightProperty().add(65).add(details.prefHeightProperty()));
         }
 
         return layout;

@@ -56,6 +56,14 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
             }
         }
 
+        public void focus() {
+            try (ShellControl pc = LocalShell.getShell().start()) {
+                pc.command(String.format("open -a \"%s.app\"", applicationName)).execute();
+            } catch (Exception e) {
+                ErrorEvent.fromThrowable(e).handle();
+            }
+        }
+
         @Override
         public boolean isSelectable() {
             return OsType.getLocal().equals(OsType.MACOS);

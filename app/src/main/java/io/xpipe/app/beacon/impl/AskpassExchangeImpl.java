@@ -1,5 +1,7 @@
 package io.xpipe.app.beacon.impl;
 
+import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.app.util.AskpassAlert;
 import io.xpipe.app.util.SecretManager;
@@ -8,6 +10,7 @@ import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.AskpassExchange;
 
 import com.sun.net.httpserver.HttpExchange;
+import io.xpipe.core.process.OsType;
 
 public class AskpassExchangeImpl extends AskpassExchange {
 
@@ -58,9 +61,17 @@ public class AskpassExchangeImpl extends AskpassExchange {
         }
 
         var control = term.get().controllable();
-        control.ifPresent(controllableTerminalSession -> {
-            controllableTerminalSession.focus();
-        });
+        if (control.isPresent()) {
+            control.get().focus();
+        } else {
+            if (OsType.getLocal() == OsType.MACOS) {
+                // Just focus the app, this is correct most of the time
+                var terminalType = AppPrefs.get().terminalType().getValue();
+                if (terminalType instanceof ExternalApplicationType.MacApplication m) {
+                    m.focus();
+                }
+            }
+        }
     }
 
     @Override
