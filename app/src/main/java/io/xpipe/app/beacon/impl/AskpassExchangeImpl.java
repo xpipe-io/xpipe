@@ -53,8 +53,7 @@ public class AskpassExchangeImpl extends AskpassExchange {
         }
 
         var term = TerminalView.get().getTerminalInstances().stream()
-                .filter(instance ->
-                        instance.getTerminalProcess().equals(found.get().getTerminal()))
+                .filter(instance -> instance.equals(found.get().getTerminal()))
                 .findFirst();
         if (term.isEmpty()) {
             return;
