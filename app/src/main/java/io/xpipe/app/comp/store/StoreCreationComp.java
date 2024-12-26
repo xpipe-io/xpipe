@@ -2,10 +2,7 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.augment.GrowAugment;
-import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.DialogComp;
-import io.xpipe.app.comp.base.ErrorOverlayComp;
-import io.xpipe.app.comp.base.PopupMenuButtonComp;
+import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.ext.DataStoreCreationCategory;
@@ -31,13 +28,16 @@ import javafx.geometry.Orientation;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import atlantafx.base.controls.Spacer;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import net.synedra.validatorfx.GraphicDecorationStackPane;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 import java.util.Objects;
@@ -55,7 +55,7 @@ public class StoreCreationComp extends DialogComp {
     Predicate<DataStoreProvider> filter;
     BooleanProperty busy = new SimpleBooleanProperty();
     Property<Validator> validator = new SimpleObjectProperty<>(new SimpleValidator());
-    Property<String> messageProp = new SimpleStringProperty();
+    Property<ModalOverlay> messageProp = new SimpleObjectProperty<>();
     BooleanProperty finished = new SimpleBooleanProperty();
     ObservableValue<DataStoreEntry> entry;
     BooleanProperty changedSinceError = new SimpleBooleanProperty();
@@ -353,12 +353,7 @@ public class StoreCreationComp extends DialogComp {
                     .getFirst()
                     .getText();
             TrackEvent.info(msg);
-            var newMessage = msg;
-            // Temporary fix for equal error message not showing up again
-            if (Objects.equals(newMessage, messageProp.getValue())) {
-                newMessage = newMessage + " ";
-            }
-            messageProp.setValue(newMessage);
+            messageProp.setValue(createErrorOverlay(msg));
             changedSinceError.setValue(false);
             return;
         }
@@ -382,11 +377,7 @@ public class StoreCreationComp extends DialogComp {
                 }
 
                 var newMessage = ExceptionConverter.convertMessage(ex);
-                // Temporary fix for equal error message not showing up again
-                if (Objects.equals(newMessage, messageProp.getValue())) {
-                    newMessage = newMessage + " ";
-                }
-                messageProp.setValue(newMessage);
+                messageProp.setValue(createErrorOverlay(newMessage));
                 changedSinceError.setValue(false);
 
                 ErrorEvent.fromThrowable(ex).omit().handle();
@@ -404,7 +395,24 @@ public class StoreCreationComp extends DialogComp {
     @Override
     protected Comp<?> pane(Comp<?> content) {
         var back = super.pane(content);
-        return new ErrorOverlayComp(back, messageProp);
+        return new ModalOverlayComp(back, messageProp);
+    }
+
+    private ModalOverlay createErrorOverlay(String message) {
+        var comp = Comp.of(() -> {
+            var l = new TextArea();
+            l.setText(message);
+            l.setWrapText(true);
+            l.getStyleClass().add("error-overlay-comp");
+            l.setEditable(false);
+            return l;
+        });
+        var overlay = ModalOverlay.of("error", comp, new LabelGraphic.NodeGraphic(() -> {
+                    var graphic = new FontIcon("mdomz-warning");
+                    graphic.setIconColor(Color.RED);
+                    return new StackPane(graphic);
+                }));
+        return overlay;
     }
 
     @Override

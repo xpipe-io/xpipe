@@ -2,7 +2,7 @@
     -fx-border-width: 1;
     -fx-border-color: -color-border-default;
     -fx-border-radius: 4;
-    -fx-background-radius: 6;
+    -fx-background-radius: 4;
 }
 
 .modal-overlay-comp .modal-box .button {

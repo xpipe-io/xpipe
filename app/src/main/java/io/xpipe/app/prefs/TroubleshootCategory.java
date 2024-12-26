@@ -1,9 +1,13 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.base.ModalButton;
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.TileButtonComp;
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.UserReportComp;
 import io.xpipe.app.terminal.ExternalTerminalType;
@@ -101,7 +105,11 @@ public class TroubleshootCategory extends AppPrefsCategory {
                 .separator()
                 .addComp(
                         new TileButtonComp("clearCaches", "clearCachesDescription", "mdi2t-trash-can-outline", e -> {
-                                    ClearCacheAlert.show();
+                                    var modal = ModalOverlay.of("clearCachesAlertTitle", AppDialog.dialogTextKey("clearCachesAlertContent"));
+                                    modal.addButton(ModalButton.ok(() -> {
+                                        AppCache.clear();
+                                    }));
+                                    modal.show();
                                     e.consume();
                                 })
                                 .grow(true, false),

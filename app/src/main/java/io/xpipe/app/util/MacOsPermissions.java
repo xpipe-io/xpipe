@@ -46,22 +46,22 @@ public class MacOsPermissions {
                             return;
                         }
 
-                        AppWindowHelper.showAlert(
-                                a -> {
-                                    a.setAlertType(Alert.AlertType.INFORMATION);
-                                    a.setTitle(AppI18n.get("permissionsAlertTitle"));
-                                    a.setHeaderText(AppI18n.get("permissionsAlertHeader"));
-                                    a.getDialogPane()
-                                            .setContent(AppWindowHelper.alertContentText(
-                                                    AppI18n.get("permissionsAlertContent")));
-                                    a.getButtonTypes().clear();
-                                    a.getButtonTypes().add(ButtonType.CANCEL);
-                                    alert.set(a);
-                                },
-                                buttonType -> {
-                                    alert.get().close();
-                                    state.set(false);
-                                });
+//                        AppWindowHelper.showAlert(
+//                                a -> {
+//                                    a.setAlertType(Alert.AlertType.INFORMATION);
+//                                    a.setTitle(AppI18n.get("permissionsAlertTitle"));
+//                                    a.setHeaderText(AppI18n.get("permissionsAlertHeader"));
+//                                    a.getDialogPane()
+//                                            .setContent(AppWindowHelper.alertContentText(
+//                                                    AppI18n.get("permissionsAlertContent")));
+//                                    a.getButtonTypes().clear();
+//                                    a.getButtonTypes().add(ButtonType.CANCEL);
+//                                    alert.set(a);
+//                                },
+//                                buttonType -> {
+//                                    alert.get().close();
+//                                    state.set(false);
+//                                });
                     });
                     ThreadHelper.sleep(1000);
                 }

@@ -1,7 +1,10 @@
 package io.xpipe.app.issue;
 
+import io.xpipe.app.comp.base.ModalButton;
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.Hyperlinks;
@@ -74,24 +77,10 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
         try {
             var rel = XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheck(false, false);
             if (rel != null && rel.isUpdate()) {
-                var update = AppWindowHelper.showBlockingAlert(alert -> {
-                            alert.setAlertType(Alert.AlertType.INFORMATION);
-                            alert.setTitle(AppI18n.get("updateAvailableTitle"));
-                            alert.setHeaderText(AppI18n.get("updateAvailableHeader", rel.getVersion()));
-                            alert.getDialogPane()
-                                    .setContent(
-                                            AppWindowHelper.alertContentText(AppI18n.get("updateAvailableContent")));
-                            alert.getButtonTypes().clear();
-                            alert.getButtonTypes()
-                                    .add(new ButtonType(AppI18n.get("checkOutUpdate"), ButtonBar.ButtonData.YES));
-                            alert.getButtonTypes().add(new ButtonType(AppI18n.get("ignore"), ButtonBar.ButtonData.NO));
-                        })
-                        .map(buttonType -> buttonType.getButtonData().isDefaultButton())
-                        .orElse(false);
-                if (update) {
-                    Hyperlinks.open(rel.getReleaseUrl());
-                    ThreadHelper.sleep(1000);
-                }
+                var updateModal = ModalOverlay.of("updateAvailableTitle", AppDialog.dialogTextKey("updateAvailableContent"));
+                updateModal.addButton(new ModalButton("checkOutUpdate", () -> Hyperlinks.open(rel.getReleaseUrl()), false, true));
+                updateModal.addButton(new ModalButton("ignore",null, true, false));
+                AppDialog.showAndWait(updateModal);
             }
         } catch (Throwable t) {
             var event = ErrorEvent.fromThrowable(t).build();

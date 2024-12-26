@@ -138,7 +138,7 @@ public class ModalOverlayComp extends SimpleComp {
         var modalBox = toBox(modal, overlay);
         modal.setPersistent(overlay.isPersistent());
         modal.show(modalBox);
-        if (overlay.isPersistent()) {
+        if (overlay.isPersistent() || overlay.getTitleKey() == null) {
             var closeButton = modalBox.lookup(".close-button");
             if (closeButton != null) {
                 closeButton.setVisible(false);
@@ -154,21 +154,16 @@ public class ModalOverlayComp extends SimpleComp {
     }
 
     private Region toBox(ModalPane pane, ModalOverlay newValue) {
-        var l = new Label(
-                AppI18n.get(newValue.getTitleKey()),
-                newValue.getGraphic() != null ? newValue.getGraphic().createGraphicNode() : null);
-        l.setGraphicTextGap(8);
-        AppFont.header(l);
-
         Region r = newValue.getContent().createRegion();
-        var content = new VBox(l, r);
+
+        var content = new VBox(r);
         content.focusedProperty().addListener((o, old, n) -> {
             if (n) {
                 r.requestFocus();
             }
         });
         content.setSpacing(25);
-        content.setPadding(new Insets(13, 25, 25, 25));
+        content.setPadding(new Insets(13, 27, 20, 27));
         content.prefHeightProperty()
                 .bind(Bindings.createDoubleBinding(
                         () -> {
@@ -180,6 +175,17 @@ public class ModalOverlayComp extends SimpleComp {
                         },
                         r.heightProperty(),
                         r.prefHeightProperty()));
+
+        if (newValue.getTitleKey() != null) {
+            var l = new Label(
+                    AppI18n.get(newValue.getTitleKey()),
+                    newValue.getGraphic() != null ? newValue.getGraphic().createGraphicNode() : null);
+            l.setGraphicTextGap(8);
+            AppFont.header(l);
+            content.getChildren().addFirst(l);
+        } else {
+            content.getChildren().addFirst(Comp.vspacer(0).createRegion());
+        }
 
         if (newValue.getButtons().size() > 0) {
             var buttonBar = new ButtonBar();
@@ -194,7 +200,14 @@ public class ModalOverlayComp extends SimpleComp {
             content.getChildren().add(buttonBar);
         }
 
-        var modalBox = new ModalBox(content);
+        var modalBox = new ModalBox(content) {
+
+            @Override
+            protected void setCloseButtonPosition() {
+                setTopAnchor(closeButton, 10d);
+                setRightAnchor(closeButton, 19d);
+            }
+        };
         modalBox.setOnClose(event -> {
             overlayContent.setValue(null);
             event.consume();

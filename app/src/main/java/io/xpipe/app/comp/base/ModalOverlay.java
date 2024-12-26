@@ -60,6 +60,10 @@ public class ModalOverlay {
         persistent = true;
     }
 
+    public void show() {
+        AppDialog.show(this, false, true);
+    }
+
     public void showAndWait() {
         AppDialog.showAndWait(this);
     }

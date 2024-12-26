@@ -1,11 +1,9 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.HorizontalComp;
-import io.xpipe.app.comp.base.MarkdownComp;
-import io.xpipe.app.comp.base.TextFieldComp;
+import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.util.OptionsBuilder;
@@ -33,20 +31,11 @@ public class SyncCategory extends AppPrefsCategory {
     }
 
     private static void showHelpAlert() {
-        AppWindowHelper.showAlert(
-                alert -> {
-                    alert.setTitle(AppI18n.get("gitVault"));
-                    alert.setAlertType(Alert.AlertType.NONE);
-
-                    var activated = AppI18n.get().getMarkdownDocumentation("app:vault");
-                    var markdown = new MarkdownComp(activated, s -> s)
-                            .prefWidth(550)
-                            .prefHeight(550)
-                            .createRegion();
-                    alert.getDialogPane().setContent(markdown);
-                    alert.getButtonTypes().add(ButtonType.OK);
-                },
-                buttonType -> {});
+        var md = AppI18n.get().getMarkdownDocumentation("vault");
+        var markdown = new MarkdownComp(md, s -> s).prefWidth(600);
+        var modal = ModalOverlay.of(null, markdown);
+        modal.addButton(ModalButton.ok());
+        AppDialog.showAndWait(modal);
     }
 
     public Comp<?> create() {

@@ -72,6 +72,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
                         },
                         grid.widthProperty()));
         var notes = new StoreNotesComp(getWrapper()).createRegion();
+        var userIcon = createUserIcon().createRegion();
 
         if (showIcon) {
             var storeIcon = createIcon(28, 24);
@@ -94,7 +95,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         grid.getColumnConstraints().addAll(nameCC);
 
         var active = new StoreActiveComp(getWrapper()).createRegion();
-        var nameBox = new HBox(name, notes);
+        var nameBox = new HBox(name, userIcon, notes);
         getWrapper().getSessionActive().subscribe(aBoolean -> {
             if (!aBoolean) {
                 nameBox.getChildren().remove(active);

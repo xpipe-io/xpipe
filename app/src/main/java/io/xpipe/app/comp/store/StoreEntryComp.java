@@ -23,6 +23,7 @@ import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.*;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
@@ -173,6 +174,16 @@ public abstract class StoreEntryComp extends SimpleComp {
         name.apply(struc -> struc.get().setTextOverrun(OverrunStyle.CENTER_ELLIPSIS));
         name.styleClass("name");
         return name;
+    }
+
+    protected Comp<?> createUserIcon() {
+        var button = new IconButtonComp("mdi2a-account");
+        button.disable(new SimpleBooleanProperty(true));
+        button.hide(Bindings.createBooleanBinding(() -> {
+            var cat = getWrapper().getCategory().getValue();
+            return cat.getRoot().equals(StoreViewState.get().getAllIdentitiesCategory()) || !getWrapper().getEntry().isPerUserStore();
+        },getWrapper().getStore()));
+        return button;
     }
 
     protected Node createIcon(int w, int h) {

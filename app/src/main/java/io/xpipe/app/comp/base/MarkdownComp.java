@@ -15,7 +15,9 @@ import io.xpipe.app.util.ShellTemp;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
@@ -79,10 +81,10 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
         var wv = new WebView();
         wv.getEngine().setJavaScriptEnabled(false);
         wv.setContextMenuEnabled(false);
+        wv.setPageFill(Color.TRANSPARENT);
         wv.getEngine()
                 .setUserDataDirectory(
                         AppProperties.get().getDataDir().resolve("webview").toFile());
-        wv.setPageFill(Color.TRANSPARENT);
         var theme = AppPrefs.get() != null
                         && AppPrefs.get().theme.getValue() != null
                         && AppPrefs.get().theme.getValue().isDark()
@@ -98,6 +100,16 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
                 wv.getEngine().load(contentUrl.toString());
             }
         });
+
+        // Fix initial scrollbar size
+        wv.lookupAll(".scroll-bar").stream()
+                .findFirst()
+                .ifPresent(node -> {
+                    Region region = (Region) node;
+                    region.setMinWidth(0);
+                    region.setPrefWidth(7);
+                    region.setMaxWidth(7);
+                });
 
         wv.getStyleClass().add("markdown-comp");
         addLinkHandler(wv.getEngine());

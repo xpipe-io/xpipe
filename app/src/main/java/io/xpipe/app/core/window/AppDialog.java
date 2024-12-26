@@ -105,6 +105,10 @@ public class AppDialog {
         }
     }
 
+    public static Comp<?> dialogTextKey(String s) {
+        return dialogText(AppI18n.get(s));
+    }
+
     public static Comp<?> dialogText(String s) {
         return Comp.of(() -> {
                     var text = new Text(s);
@@ -118,7 +122,7 @@ public class AppDialog {
 
     public static boolean confirm(String translationKey) {
         var confirmed = new AtomicBoolean(false);
-        var content = dialogText(AppI18n.get(translationKey + "Content"));
+        var content = dialogTextKey(AppI18n.get(translationKey + "Content"));
         var modal = ModalOverlay.of(translationKey + "Title", content);
         modal.addButton(ModalButton.cancel());
         modal.addButton(ModalButton.ok(() -> confirmed.set(true)));
