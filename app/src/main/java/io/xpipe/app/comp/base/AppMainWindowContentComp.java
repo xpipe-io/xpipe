@@ -48,7 +48,7 @@ public class AppMainWindowContentComp extends SimpleComp {
                 loadingIcon.setImage(AppImages.loadImage(path.resolve("loading.png")));
             });
 
-            var version = new LabelComp("XPipe " + AppProperties.get().getVersion());
+            var version = new LabelComp((AppProperties.get().isStaging() ? "XPipe PTB" : "XPipe") + " " + AppProperties.get().getVersion());
             version.apply(struc -> {
                 AppFont.setSize(struc.get(), 1);
                 struc.get().setOpacity(0.6);

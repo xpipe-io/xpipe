@@ -53,7 +53,6 @@ public interface NetworkTunnelStore extends DataStore {
                     sessions.isEmpty() ? remotePort : sessions.getLast().getLocalPort();
             var t = current.createTunnelSession(
                     currentLocalPort, currentRemotePort, current == this ? address : "localhost");
-            t.start();
             sessions.add(t);
         } while ((current = (NetworkTunnelStore) current.getNetworkParent()) != null);
 

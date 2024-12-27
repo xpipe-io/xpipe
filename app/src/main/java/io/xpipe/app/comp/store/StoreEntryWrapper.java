@@ -52,6 +52,7 @@ public class StoreEntryWrapper {
     private final BooleanProperty sessionActive = new SimpleBooleanProperty();
     private final Property<DataStore> store = new SimpleObjectProperty<>();
     private final Property<String> information = new SimpleStringProperty();
+    private final BooleanProperty perUser = new SimpleBooleanProperty();
 
     public StoreEntryWrapper(DataStoreEntry entry) {
         this.entry = entry;
@@ -183,6 +184,7 @@ public class StoreEntryWrapper {
                 .getCategoryWrapper(DataStorage.get()
                         .getStoreCategoryIfPresent(entry.getCategoryUuid())
                         .orElseThrow()));
+        perUser.setValue(!category.getValue().getRoot().equals(StoreViewState.get().getAllIdentitiesCategory()) && entry.isPerUserStore());
 
         if (!entry.getValidity().isUsable()) {
             summary.setValue(null);

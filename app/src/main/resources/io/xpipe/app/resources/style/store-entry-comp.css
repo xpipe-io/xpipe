@@ -32,6 +32,10 @@
     -fx-text-fill: #851908;
 }
 
+.store-entry-grid .user-icon .ikonli-font-icon {
+    -fx-icon-color: #5b2cffff;
+}
+
 .store-entry-grid:incomplete .icon {
     -fx-opacity: 0.5;
 }
@@ -161,6 +165,10 @@
 
 .store-entry-section-comp .list-box-view-comp .list-box-content {
     -fx-spacing: 0.2em;
+}
+
+.root .store-entry-section-comp.color-box.vertical-comp:per-user {
+    -fx-border-color: #5b2cffcc;
 }
 
 /* Light sub backgrounds */

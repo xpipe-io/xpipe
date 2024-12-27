@@ -178,11 +178,13 @@ public abstract class StoreEntryComp extends SimpleComp {
 
     protected Comp<?> createUserIcon() {
         var button = new IconButtonComp("mdi2a-account");
-        button.disable(new SimpleBooleanProperty(true));
-        button.hide(Bindings.createBooleanBinding(() -> {
-            var cat = getWrapper().getCategory().getValue();
-            return cat.getRoot().equals(StoreViewState.get().getAllIdentitiesCategory()) || !getWrapper().getEntry().isPerUserStore();
-        },getWrapper().getStore()));
+        button.styleClass("user-icon");
+        button.tooltipKey("personalConnection");
+        button.apply(struc -> {
+            AppFont.medium(struc.get());
+            struc.get().setOpacity(1.0);
+        });
+        button.hide(getWrapper().getPerUser());
         return button;
     }
 

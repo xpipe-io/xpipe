@@ -42,7 +42,7 @@ public class AppPrefsSidebarComp extends SimpleComp {
                 })
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        var restartButton = new ButtonComp(AppI18n.observable("restart"), new FontIcon("mdi2r-restart"), () -> {
+        var restartButton = new ButtonComp(AppI18n.observable("restartApp"), new FontIcon("mdi2r-restart"), () -> {
             OperationMode.restart();
         });
         restartButton.grow(true, false);

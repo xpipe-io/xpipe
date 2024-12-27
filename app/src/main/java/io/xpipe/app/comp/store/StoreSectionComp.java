@@ -191,6 +191,10 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                         }
                         struc.get().getStyleClass().setAll(newList);
                     });
+
+                    section.getWrapper().getPerUser().subscribe(val -> {
+                        struc.get().pseudoClassStateChanged(PseudoClass.getPseudoClass("per-user"), val);
+                    });
                 })
                 .createStructure();
     }

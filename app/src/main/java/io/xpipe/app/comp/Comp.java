@@ -97,7 +97,9 @@ public abstract class Comp<S extends CompStructure<?>> {
         onSceneAssign(struc -> {
             Platform.runLater(() -> {
                 Platform.runLater(() -> {
-                    struc.get().requestFocus();
+                    Platform.runLater(() -> {
+                        struc.get().requestFocus();
+                    });
                 });
             });
         });

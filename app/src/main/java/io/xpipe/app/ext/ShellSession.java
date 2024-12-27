@@ -29,7 +29,11 @@ public class ShellSession extends Session {
         try {
             shellControl.start();
         } catch (Exception ex) {
-            stop();
+            try {
+                stop();
+            } catch (Exception stopEx) {
+                ex.addSuppressed(stopEx);
+            }
             throw ex;
         }
     }
