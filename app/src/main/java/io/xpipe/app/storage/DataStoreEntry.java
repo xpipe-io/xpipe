@@ -563,8 +563,10 @@ public class DataStoreEntry extends StorageElement {
         }
 
         if (newStore == null) {
+            var changed = store != null;
             store = null;
             validity = Validity.LOAD_FAILED;
+            notifyUpdate(false, changed);
             return;
         }
 
@@ -575,12 +577,16 @@ public class DataStoreEntry extends StorageElement {
             return;
         }
 
+        var newPerUser = false;
+        try {
+            newPerUser = newStore instanceof UserScopeStore u && u.isPerUser();
+        } catch (Exception ignored) {}
+        var perUserChanged = isPerUserStore() != newPerUser;
         if (!newStore.equals(store)) {
             store = newStore;
         }
         validity = Validity.COMPLETE;
-        // Don't count this as modification as this is done always
-        notifyUpdate(false, false);
+        notifyUpdate(false, perUserChanged);
     }
 
     public void initializeEntry() {

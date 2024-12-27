@@ -32,12 +32,14 @@ public abstract class AesSecretValue extends EncryptedSecretValue {
         super(b);
     }
 
-    protected abstract int getIterationCount();
-
     protected byte[] getNonce(int numBytes) {
         byte[] nonce = new byte[numBytes];
         new SecureRandom().nextBytes(nonce);
         return nonce;
+    }
+
+    protected String getAlgorithm() {
+        return "AES/GCM/NoPadding";
     }
 
     protected abstract SecretKey getSecretKey() throws InvalidKeySpecException;

@@ -26,11 +26,6 @@ public class PasswordLockSecretValue extends AesSecretValue {
     }
 
     @Override
-    protected int getIterationCount() {
-        return 8192;
-    }
-
-    @Override
     protected SecretKey getSecretKey() {
         var handler = DataStorageUserHandler.getInstance();
         return handler != null ? handler.getEncryptionKey() : null;

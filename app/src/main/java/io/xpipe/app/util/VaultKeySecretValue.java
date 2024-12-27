@@ -27,11 +27,6 @@ public class VaultKeySecretValue extends AesSecretValue {
     }
 
     @Override
-    protected int getIterationCount() {
-        return 8192;
-    }
-
-    @Override
     protected SecretKey getSecretKey() throws InvalidKeySpecException {
         return DataStorage.get().getVaultKey();
     }

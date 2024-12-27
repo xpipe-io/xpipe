@@ -5,14 +5,33 @@ import io.xpipe.core.store.DataStore;
 import lombok.NonNull;
 import lombok.Value;
 
-@Value
+import java.util.Objects;
+
 public class DataStoreEntryRef<T extends DataStore> {
 
     @NonNull
-    DataStoreEntry entry;
+    private final DataStoreEntry entry;
 
     public DataStoreEntryRef(@NonNull DataStoreEntry entry) {
         this.entry = entry;
+    }
+
+    @Override
+    public int hashCode() {
+        return entry.getUuid().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof DataStoreEntryRef<?> that)) {
+            return false;
+        }
+        return Objects.equals(entry.getUuid(), that.entry.getUuid());
+    }
+
+    @Override
+    public String toString() {
+        return entry.getUuid().toString();
     }
 
     public void checkComplete() throws Throwable {

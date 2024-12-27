@@ -9,6 +9,7 @@ public class Hyperlinks {
     public static final String GITHUB = "https://github.com/xpipe-io/xpipe";
     public static final String GITHUB_PTB = "https://github.com/xpipe-io/xpipe-ptb";
     public static final String GITHUB_LATEST = "https://github.com/xpipe-io/xpipe/releases/latest";
+    public static final String GITHUB_PYTHON_API = "https://github.com/xpipe-io/xpipe-python-api";
     public static final String PRIVACY = "https://docs.xpipe.io/privacy-policy";
     public static final String EULA = "https://docs.xpipe.io/end-user-license-agreement";
     public static final String SECURITY = "https://docs.xpipe.io/security";

@@ -1,7 +1,10 @@
 package io.xpipe.app.comp.base;
 
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.resources.AppImages;
@@ -29,8 +32,8 @@ public class AppMainWindowContentComp extends SimpleComp {
         var loaded = AppMainWindow.getLoadedContent();
         var bg = Comp.of(() -> {
             var loadingIcon = new ImageView();
-            loadingIcon.setFitWidth(40);
-            loadingIcon.setFitHeight(40);
+            loadingIcon.setFitWidth(64);
+            loadingIcon.setFitHeight(64);
 
             if (OsType.getLocal() != OsType.LINUX) {
                 var anim = Animations.pulse(loadingIcon, 1.1);
@@ -45,9 +48,18 @@ public class AppMainWindowContentComp extends SimpleComp {
                 loadingIcon.setImage(AppImages.loadImage(path.resolve("loading.png")));
             });
 
+            var version = new LabelComp("XPipe " + AppProperties.get().getVersion());
+            version.apply(struc -> {
+                AppFont.setSize(struc.get(), 1);
+                struc.get().setOpacity(0.6);
+            });
+
             var text = new LabelComp(AppMainWindow.getLoadingText());
-            var vbox = new VBox(loadingIcon, text.createRegion());
-            vbox.setSpacing(15);
+            text.apply(struc -> {
+                struc.get().setOpacity(0.8);
+            });
+
+            var vbox = new VBox(Comp.vspacer().createRegion(), loadingIcon, Comp.vspacer(19).createRegion(), version.createRegion(), Comp.vspacer().createRegion(), text.createRegion(), Comp.vspacer(20).createRegion());
             vbox.setAlignment(Pos.CENTER);
 
             var pane = new StackPane(vbox);

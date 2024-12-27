@@ -52,7 +52,6 @@ public class InPlaceSecretValue extends AesSecretValue {
         return new InPlaceSecretValue(b);
     }
 
-    @Override
     protected int getIterationCount() {
         return 2048;
     }

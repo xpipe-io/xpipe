@@ -155,7 +155,7 @@ public class AppJacksonModule extends SimpleModule {
 
             jgen.writeStartObject();
             jgen.writeFieldName("storeId");
-            jgen.writeString(value.getEntry().getUuid().toString());
+            jgen.writeString(value.get().getUuid().toString());
             jgen.writeEndObject();
         }
     }

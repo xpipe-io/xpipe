@@ -97,11 +97,11 @@ public class BaseMode extends OperationMode {
                     PlatformInit.init(true);
                     PlatformThread.runLaterIfNeededBlocking(() -> {
                         AppGreetings.showIfNeeded();
-                        AppDialog.waitForClose();
                         AppMainWindow.loadingText("initializingApp");
                     });
                     imagesLoaded.await();
                     browserLoaded.await();
+                    AppDialog.waitForClose();
                     PlatformThread.runLaterIfNeededBlocking(() -> {
                         AppMainWindow.initContent();
                     });

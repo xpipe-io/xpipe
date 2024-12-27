@@ -194,7 +194,7 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                 Bindings.createStringBinding(
                         () -> {
                             var val = selected.getValue();
-                            return val != null ? toName(val.getEntry()) : null;
+                            return val != null ? toName(val.get()) : null;
                         },
                         selected),
                 () -> {});

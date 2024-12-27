@@ -219,7 +219,7 @@ public class ModalOverlayComp extends SimpleComp {
         modalBox.setMinHeight(100);
         modalBox.prefWidthProperty().bind(modalBoxWidth(pane, r));
         modalBox.maxWidthProperty().bind(modalBox.prefWidthProperty());
-        modalBox.prefHeightProperty().bind(modalBoxHeight(pane, modalBox, content));
+        modalBox.prefHeightProperty().bind(modalBoxHeight(pane, content));
         modalBox.setMaxHeight(Region.USE_PREF_SIZE);
         modalBox.focusedProperty().addListener((o, old, n) -> {
             if (n) {
@@ -251,10 +251,10 @@ public class ModalOverlayComp extends SimpleComp {
                 r.prefWidthProperty());
     }
 
-    private ObservableDoubleValue modalBoxHeight(ModalPane pane, ModalBox box, Region content) {
+    private ObservableDoubleValue modalBoxHeight(ModalPane pane, Region content) {
         return Bindings.createDoubleBinding(
                 () -> {
-                    var max = pane.getHeight() - 50;
+                    var max = pane.getHeight() - 20;
                     if (content.getPrefHeight() != Region.USE_COMPUTED_SIZE) {
                         return Math.min(max, content.getPrefHeight());
                     }
@@ -263,9 +263,6 @@ public class ModalOverlayComp extends SimpleComp {
                 },
                 pane.heightProperty(),
                 pane.prefHeightProperty(),
-                box.heightProperty(),
-                box.prefHeightProperty(),
-                box.maxHeightProperty(),
                 content.prefHeightProperty(),
                 content.heightProperty(),
                 content.maxHeightProperty());

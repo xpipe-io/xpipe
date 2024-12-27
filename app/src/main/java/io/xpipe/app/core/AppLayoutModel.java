@@ -121,18 +121,24 @@ public class AppLayoutModel {
                         null,
                         () -> Hyperlinks.open(Hyperlinks.DISCORD),
                         null),
-                new Entry(
-                        AppI18n.observable("api"),
-                        new LabelGraphic.IconGraphic("mdi2c-code-json"),
-                        null,
-                        () -> Hyperlinks.open(
-                                "http://localhost:" + AppBeaconServer.get().getPort()),
-                        null),
+//                new Entry(
+//                        AppI18n.observable("api"),
+//                        new LabelGraphic.IconGraphic("mdi2c-code-json"),
+//                        null,
+//                        () -> Hyperlinks.open(
+//                                "http://localhost:" + AppBeaconServer.get().getPort()),
+//                        null),
                 new Entry(
                         AppI18n.observable("webtop"),
                         new LabelGraphic.IconGraphic("mdi2d-desktop-mac"),
                         null,
                         () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
+                        null),
+                new Entry(
+                        AppI18n.observable("pythonApi"),
+                        new LabelGraphic.IconGraphic("mdi2l-language-python"),
+                        null,
+                        () -> Hyperlinks.open(Hyperlinks.GITHUB_PYTHON_API),
                         null)));
 
         return l;

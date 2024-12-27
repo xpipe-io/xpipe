@@ -576,7 +576,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                         fullSessionModel.splitTab(
                                 this, new BrowserTerminalDockTabModel(browserModel, this, terminalRequests));
                     }
-                    TerminalLauncher.open(entry.getEntry(), name, directory, processControl, uuid, !dock);
+                    TerminalLauncher.open(entry.get(), name, directory, processControl, uuid, !dock);
 
                     // Restart connection as we will have to start it anyway, so we speed it up by doing it preemptively
                     startIfNeeded();
