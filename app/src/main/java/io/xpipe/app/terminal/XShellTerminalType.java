@@ -1,6 +1,8 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.comp.base.MarkdownComp;
+import io.xpipe.app.comp.base.ModalButton;
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppWindowHelper;
@@ -14,6 +16,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 
@@ -84,24 +88,14 @@ public class XShellTerminalType extends ExternalTerminalType.WindowsType {
 
         var b = SshLocalBridge.get();
         var keyName = b.getIdentityKey().getFileName().toString();
-        var r = AppWindowHelper.showBlockingAlert(alert -> {
-            alert.setTitle(AppI18n.get("xshellSetup"));
-            alert.setAlertType(Alert.AlertType.NONE);
-
-            var activated =
-                    AppI18n.get().getMarkdownDocumentation("app:xshellSetup").formatted(b.getIdentityKey(), keyName);
-            var markdown = new MarkdownComp(activated, s -> s)
-                    .prefWidth(450)
-                    .prefHeight(400)
-                    .createRegion();
-            alert.getDialogPane().setContent(markdown);
-
-            alert.getButtonTypes().add(new ButtonType(AppI18n.get("ok"), ButtonBar.ButtonData.OK_DONE));
-        });
-        r.filter(buttonType -> buttonType.getButtonData().isDefaultButton());
-        r.ifPresent(buttonType -> {
+        var activated = AppI18n.get()
+                .getMarkdownDocumentation("app:xshellSetup")
+                .formatted(b.getIdentityKey(), keyName);
+        var modal = ModalOverlay.of("xshellSetup", new MarkdownComp(activated, s -> s).prefWidth(450));
+        modal.addButton(ModalButton.ok(() -> {
             AppCache.update("xshellSetup", true);
-        });
-        return r.isPresent();
+        }));
+        modal.showAndWait();
+        return AppCache.getBoolean("xshellSetup", false);
     }
 }

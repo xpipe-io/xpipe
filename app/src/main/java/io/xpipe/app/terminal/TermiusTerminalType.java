@@ -1,6 +1,9 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.comp.base.MarkdownComp;
+import io.xpipe.app.comp.base.ModalButton;
+import io.xpipe.app.comp.base.ModalOverlay;
+import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppWindowHelper;
@@ -92,25 +95,14 @@ public class TermiusTerminalType implements ExternalTerminalType {
 
         var b = SshLocalBridge.get();
         var keyContent = Files.readString(b.getIdentityKey());
-        var r = AppWindowHelper.showBlockingAlert(alert -> {
-            alert.setTitle(AppI18n.get("termiusSetup"));
-            alert.setAlertType(Alert.AlertType.NONE);
-
-            var activated = AppI18n.get()
-                    .getMarkdownDocumentation("app:termiusSetup")
-                    .formatted(b.getIdentityKey(), keyContent);
-            var markdown = new MarkdownComp(activated, s -> s)
-                    .prefWidth(450)
-                    .prefHeight(450)
-                    .createRegion();
-            alert.getDialogPane().setContent(markdown);
-
-            alert.getButtonTypes().add(new ButtonType(AppI18n.get("ok"), ButtonBar.ButtonData.OK_DONE));
-        });
-        r.filter(buttonType -> buttonType.getButtonData().isDefaultButton());
-        r.ifPresent(buttonType -> {
+        var activated = AppI18n.get()
+                .getMarkdownDocumentation("app:termiusSetup")
+                .formatted(b.getIdentityKey(), keyContent);
+        var modal = ModalOverlay.of("termiusSetup", new MarkdownComp(activated, s -> s).prefWidth(450));
+        modal.addButton(ModalButton.ok(() -> {
             AppCache.update("termiusSetup", true);
-        });
-        return r.isPresent();
+        }));
+        modal.showAndWait();
+        return AppCache.getBoolean("termiusSetup", false);
     }
 }

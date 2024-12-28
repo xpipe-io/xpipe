@@ -146,10 +146,6 @@ project.ext {
             "-Djavafx.preloader=io.xpipe.app.core.AppPreloader",
             "-Djdk.virtualThreadScheduler.parallelism=8"
     ]
-    // Disable this on Windows for now as it requires Windows 10+
-    if (org.gradle.internal.os.OperatingSystem.current().isLinux() || org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
-        jvmRunArgs += ['-XX:+UseZGC']
-    }
     if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
         jvmRunArgs += ["-Dapple.awt.application.appearance=system"]
     }

@@ -334,12 +334,6 @@ public abstract class OperationMode {
             OperationMode.halt(hasError ? 1 : 0);
         });
         thread.start();
-
-        try {
-            thread.join();
-        } catch (InterruptedException ignored) {
-            OperationMode.halt(1);
-        }
     }
 
     private static synchronized void set(OperationMode newMode) {
