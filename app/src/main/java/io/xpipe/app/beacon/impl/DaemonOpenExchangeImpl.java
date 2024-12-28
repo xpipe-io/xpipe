@@ -29,4 +29,9 @@ public class DaemonOpenExchangeImpl extends DaemonOpenExchange {
     public boolean requiresEnabledApi() {
         return false;
     }
+
+    @Override
+    public boolean requiresCompletedStartup() {
+        return false;
+    }
 }
