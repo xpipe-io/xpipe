@@ -105,15 +105,6 @@ public class AppWindowHelper {
         return stage;
     }
 
-    public static void showAlert(Consumer<Alert> c, Consumer<Optional<ButtonType>> bt) {
-        ThreadHelper.runAsync(() -> {
-            var r = showBlockingAlert(c);
-            if (bt != null) {
-                bt.accept(r);
-            }
-        });
-    }
-
     public static void setContent(Alert alert, String s) {
         alert.getDialogPane().setMinWidth(505);
         alert.getDialogPane().setPrefWidth(505);
