@@ -7,6 +7,8 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.WorkingDirectoryFunction;
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.FixedChildStore;
 import io.xpipe.core.store.StatefulDataStore;
 import io.xpipe.ext.base.identity.IdentityValue;
@@ -75,18 +77,20 @@ public class IncusContainerStore
             @Override
             public ShellControl control(ShellControl parent) throws Exception {
                 Integer uid = null;
+                FilePath homeDir = null;
                 if (identity != null && identity.unwrap().getUsername() != null) {
                     try (var temp = new IncusCommandView(parent)
-                            .exec(containerName, null)
+                            .exec(containerName, null, null)
                             .start()) {
                         var passwd = PasswdFile.parse(temp);
                         uid = passwd.getUidForUserIfPresent(identity.unwrap().getUsername())
                                 .orElseThrow(() -> new IllegalArgumentException(
                                         "User " + identity.unwrap().getUsername() + " not found"));
+                        homeDir = temp.view().userHome();
                     }
                 }
 
-                var sc = new IncusCommandView(parent).exec(containerName, uid);
+                var sc = new IncusCommandView(parent).exec(containerName, uid, homeDir);
                 sc.withSourceStore(IncusContainerStore.this);
                 if (identity != null && identity.unwrap().getPassword() != null) {
                     sc.setElevationHandler(new BaseElevationHandler(

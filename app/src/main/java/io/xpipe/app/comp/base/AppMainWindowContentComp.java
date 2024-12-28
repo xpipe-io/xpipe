@@ -78,11 +78,13 @@ public class AppMainWindowContentComp extends SimpleComp {
                     PlatformThread.runNestedLoopIteration();
                     var started = Instant.now();
                     pane.getChildren().add(region);
-                    region.setOpacity(0);
-                    PlatformThread.runNestedLoopIteration();
-                    var elapsed = java.time.Duration.between(started, Instant.now());
-                    var fade = Animations.fadeIn(region, Duration.millis(elapsed.toMillis() / 2.5));
-                    fade.play();
+                    if (OsType.getLocal() != OsType.LINUX) {
+                        region.setOpacity(0);
+                        PlatformThread.runNestedLoopIteration();
+                        var elapsed = java.time.Duration.between(started, Instant.now());
+                        var fade = Animations.fadeIn(region, Duration.millis(elapsed.toMillis() / 2.5));
+                        fade.play();
+                    }
                     pane.getChildren().remove(vbox);
                     pane.getStyleClass().remove("background");
                 }

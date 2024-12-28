@@ -7,6 +7,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.CommandViewBase;
 import io.xpipe.core.process.*;
 
+import io.xpipe.core.store.FilePath;
 import lombok.NonNull;
 
 import java.util.*;
@@ -138,33 +139,36 @@ public class IncusCommandView extends CommandViewBase {
         }
     }
 
-    public ShellControl exec(String container, Integer uid) {
+    public ShellControl exec(String container, Integer uid, FilePath dir) {
         return shellControl
-                .subShell(createOpenFunction(container, uid, false), createOpenFunction(container, uid, true))
+                .subShell(createOpenFunction(container, uid, dir, false), createOpenFunction(container, uid, dir, true))
                 .withErrorFormatter(IncusCommandView::formatErrorMessage)
                 .withExceptionConverter(IncusCommandView::convertException)
                 .elevated(requiresElevation());
     }
 
-    private ShellOpenFunction createOpenFunction(String containerName, Integer uid, boolean terminal) {
+    private ShellOpenFunction createOpenFunction(String containerName, Integer uid, FilePath dir, boolean terminal) {
         return new ShellOpenFunction() {
             @Override
             public CommandBuilder prepareWithoutInitCommand() {
-                return execCommand(containerName, uid, terminal)
+                return execCommand(containerName, uid, dir, terminal)
                         .add(ShellDialects.SH.getLaunchCommand().loginCommand());
             }
 
             @Override
             public CommandBuilder prepareWithInitCommand(@NonNull String command) {
-                return execCommand(containerName, uid, terminal).add(command);
+                return execCommand(containerName, uid, dir, terminal).add(command);
             }
         };
     }
 
-    public CommandBuilder execCommand(String containerName, Integer uid, boolean terminal) {
+    public CommandBuilder execCommand(String containerName, Integer uid, FilePath dir, boolean terminal) {
         var c = CommandBuilder.of().add("incus", "exec", terminal ? "-t" : "-T");
         if (uid != null) {
             c.add("--user").add(uid.toString());
+        }
+        if (dir != null) {
+            c.add("--cwd").addFile(dir);
         }
         return c.addQuoted(containerName).add("--");
     }

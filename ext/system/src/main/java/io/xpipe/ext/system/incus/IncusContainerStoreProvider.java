@@ -49,7 +49,7 @@ public class IncusContainerStoreProvider implements ShellStoreProvider {
                     in a host shell of `%s` to open a shell into the container.
                     """,
                 new IncusCommandView(null)
-                        .execCommand(c.getContainerName(), null, true)
+                        .execCommand(c.getContainerName(), null, null, true)
                         .buildSimple(),
                 c.getInstall().getStore().getHost().get().getName());
     }

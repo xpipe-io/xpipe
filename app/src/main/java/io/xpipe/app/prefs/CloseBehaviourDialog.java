@@ -5,15 +5,12 @@ import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppCache;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.ext.PrefsChoiceValue;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.control.Alert;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
@@ -21,7 +18,7 @@ import javafx.scene.layout.VBox;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class CloseBehaviourAlert {
+public class CloseBehaviourDialog {
 
     public static boolean showIfNeeded() {
         if (OperationMode.isInShutdown()) {

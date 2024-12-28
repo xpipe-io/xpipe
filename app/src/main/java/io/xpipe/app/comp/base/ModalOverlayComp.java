@@ -13,15 +13,18 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 import atlantafx.base.controls.ModalPane;
@@ -54,6 +57,7 @@ public class ModalOverlayComp extends SimpleComp {
         });
         modal.getStyleClass().add("modal-overlay-comp");
         var pane = new StackPane(bgRegion, modal);
+        pane.setAlignment(Pos.CENTER);
         pane.setPickOnBounds(false);
         pane.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
@@ -164,17 +168,6 @@ public class ModalOverlayComp extends SimpleComp {
         });
         content.setSpacing(25);
         content.setPadding(new Insets(13, 27, 20, 27));
-        content.prefHeightProperty()
-                .bind(Bindings.createDoubleBinding(
-                        () -> {
-                            if (r.getPrefHeight() != Region.USE_COMPUTED_SIZE) {
-                                return r.getPrefHeight() + 50;
-                            }
-
-                            return Region.USE_COMPUTED_SIZE;
-                        },
-                        r.heightProperty(),
-                        r.prefHeightProperty()));
 
         if (newValue.getTitleKey() != null) {
             var l = new Label(

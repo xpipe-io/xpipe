@@ -13,6 +13,7 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class AskpassAlert {
@@ -20,6 +21,7 @@ public class AskpassAlert {
     public static SecretQueryResult queryRaw(String prompt, InPlaceSecretValue secretValue) {
         var prop = new SimpleObjectProperty<>(secretValue);
         var r = AppWindowHelper.showBlockingAlert(alert -> {
+                    alert.initModality(Modality.NONE);
                     alert.setTitle(AppI18n.get("askpassAlertTitle"));
                     alert.setHeaderText(prompt);
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);

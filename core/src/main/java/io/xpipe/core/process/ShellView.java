@@ -33,4 +33,8 @@ public class ShellView {
             inputStream.transferTo(out);
         }
     }
+
+    public FilePath userHome() throws Exception {
+        return new FilePath(shellControl.getOsType().getUserHomeDirectory(shellControl));
+    }
 }

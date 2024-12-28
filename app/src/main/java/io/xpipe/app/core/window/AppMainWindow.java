@@ -7,7 +7,7 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.prefs.CloseBehaviourAlert;
+import io.xpipe.app.prefs.CloseBehaviourDialog;
 import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.LicenseProvider;
@@ -262,7 +262,7 @@ public class AppMainWindow {
         });
 
         stage.setOnCloseRequest(e -> {
-            if (!CloseBehaviourAlert.showIfNeeded()) {
+            if (!CloseBehaviourDialog.showIfNeeded()) {
                 e.consume();
                 return;
             }

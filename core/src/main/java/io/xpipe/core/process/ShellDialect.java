@@ -16,6 +16,8 @@ import java.util.stream.Stream;
 
 public interface ShellDialect {
 
+    String unsetEnvironmentVariableCommand(String var);
+
     ShellCapabilities determineCapabilities();
 
     CommandBuilder launchAsnyc(CommandBuilder cmd);
