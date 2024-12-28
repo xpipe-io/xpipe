@@ -184,7 +184,7 @@ public abstract class StoreEntryComp extends SimpleComp {
             AppFont.medium(struc.get());
             struc.get().setOpacity(1.0);
         });
-        button.hide(getWrapper().getPerUser());
+        button.hide(Bindings.not(getWrapper().getPerUser()));
         return button;
     }
 

@@ -1,12 +1,14 @@
 package io.xpipe.app.issue;
 
 import io.xpipe.app.comp.base.ModalOverlay;
+import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.PlatformInit;
 import io.xpipe.app.util.PlatformState;
 
+import javafx.application.Platform;
 import javafx.scene.paint.Color;
 
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -19,6 +21,12 @@ public class ErrorHandlerDialog {
         if (PlatformState.getCurrent() == PlatformState.EXITED || event.isOmitted()) {
             ErrorAction.ignore().handle(event);
             return;
+        }
+
+        // There might be unfortunate freezes when there are errors on the platform
+        // thread on startup
+        if (Platform.isFxApplicationThread() && OperationMode.isInStartup()) {
+            ErrorAction.ignore().handle(event);
         }
 
         try {

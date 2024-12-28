@@ -68,6 +68,9 @@ public class DataStoreEntry extends StorageElement {
     String notes;
 
     @NonFinal
+    String lastWrittenNotes;
+
+    @NonFinal
     Order explicitOrder;
 
     @NonFinal
@@ -209,7 +212,8 @@ public class DataStoreEntry extends StorageElement {
         var entryFile = dir.resolve("entry.json");
         var storeFile = dir.resolve("store.json");
         var stateFile = dir.resolve("state.json");
-        var notesFile = dir.resolve("notes.md");
+        var normalNotesFile = dir.resolve("notes.md");
+        var encryptedNotesFile = dir.resolve("notes.json");
         if (!Files.exists(entryFile) || !Files.exists(storeFile)) {
             return Optional.empty();
         }
@@ -282,8 +286,13 @@ public class DataStoreEntry extends StorageElement {
         }
 
         String notes = null;
-        if (Files.exists(notesFile)) {
-            notes = Files.readString(notesFile);
+        if (Files.exists(normalNotesFile)) {
+            notes = Files.readString(normalNotesFile);
+        }
+        if (Files.exists(encryptedNotesFile)) {
+            var node = DataStorageNode.readPossiblyEncryptedNode(mapper.readTree(encryptedNotesFile.toFile()));
+            var mdNode = node.getContentNode().get("markdown");
+            notes = mdNode != null ? mdNode.asText() : null;
         }
         if (notes != null && notes.isBlank()) {
             notes = null;
@@ -439,17 +448,19 @@ public class DataStoreEntry extends StorageElement {
         }
 
         ObjectMapper mapper = JacksonMapper.getDefault();
+
         ObjectNode obj = JsonNodeFactory.instance.objectNode();
-        ObjectNode stateObj = JsonNodeFactory.instance.objectNode();
         obj.put("uuid", uuid.toString());
         obj.put("name", name);
         obj.put("categoryUuid", categoryUuid.toString());
         obj.set("color", mapper.valueToTree(color));
         obj.set("icon", mapper.valueToTree(icon));
+        obj.set("configuration", mapper.valueToTree(configuration));
+
+        ObjectNode stateObj = JsonNodeFactory.instance.objectNode();
         stateObj.put("lastUsed", lastUsed.toString());
         stateObj.put("lastModified", lastModified.toString());
         stateObj.set("persistentState", storePersistentStateNode);
-        obj.set("configuration", mapper.valueToTree(configuration));
         stateObj.put("expanded", expanded);
         stateObj.set("order", mapper.valueToTree(explicitOrder));
 
@@ -461,12 +472,28 @@ public class DataStoreEntry extends StorageElement {
         Files.writeString(directory.resolve("state.json"), stateString);
         Files.writeString(directory.resolve("entry.json"), entryString);
         Files.writeString(directory.resolve("store.json"), storeString);
-        var notesFile = directory.resolve("notes.md");
-        if (Files.exists(notesFile) && notes == null) {
-            Files.delete(notesFile);
-        } else if (notes != null) {
-            Files.writeString(notesFile, notes);
+
+        var encryptNotes = storeNode.isEncrypted();
+        var normalNotesFile = directory.resolve("notes.md");
+        var encryptedNotesFile = directory.resolve("notes.json");
+        if (Files.exists(normalNotesFile) && (notes == null || encryptNotes)) {
+            Files.delete(normalNotesFile);
         }
+        if (Files.exists(encryptedNotesFile) && (notes == null || !encryptNotes)) {
+            Files.delete(encryptedNotesFile);
+        }
+        if (notes != null && encryptNotes) {
+            var notesNode = JsonNodeFactory.instance.objectNode();
+            notesNode.put("markdown", notes);
+            var storageNode = DataStorageNode.encryptNodeIfNeeded(new DataStorageNode(
+                    notesNode,storeNode.isPerUser(), storeNode.isAvailableForUser(), storeNode.isEncrypted()));
+            var string = mapper.writeValueAsString(storageNode);
+            Files.writeString(encryptedNotesFile, string);
+        } else if (notes != null) {
+            Files.writeString(normalNotesFile, notes);
+        }
+        lastWrittenNotes = notes;
+
         dirty = false;
     }
 

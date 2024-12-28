@@ -78,16 +78,16 @@ public class DataStorageNode {
                 (AppPrefs.get() != null && AppPrefs.get().encryptAllVaultData().get())
                         || (node.isPerUser() && node.hasAccess());
         if (!encrypt) {
-            return node.getStoreNode();
+            return node.getContentNode();
         }
 
         var writer = new CharArrayWriter();
         JsonFactory f = new JsonFactory();
         try (JsonGenerator g = f.createGenerator(writer).setPrettyPrinter(new DefaultPrettyPrinter())) {
-            JacksonMapper.getDefault().writeTree(g, node.getStoreNode());
+            JacksonMapper.getDefault().writeTree(g, node.getContentNode());
         } catch (IOException e) {
             ErrorEvent.fromThrowable(e).build().handle();
-            return node.getStoreNode();
+            return node.getContentNode();
         }
 
         var newContent = writer.toCharArray();
@@ -97,11 +97,11 @@ public class DataStorageNode {
     }
 
     public DataStore parseStore() throws JsonProcessingException {
-        if (storeNode == null) {
+        if (contentNode == null) {
             return null;
         }
 
-        return JacksonMapper.getDefault().treeToValue(getStoreNode(), DataStore.class);
+        return JacksonMapper.getDefault().treeToValue(getContentNode(), DataStore.class);
     }
 
     public boolean hasAccess() {
@@ -123,7 +123,7 @@ public class DataStorageNode {
         }
     }
 
-    JsonNode storeNode;
+    JsonNode contentNode;
     boolean perUser;
     boolean availableForUser;
     boolean encrypted;
