@@ -61,7 +61,7 @@ public class ModalOverlay {
     }
 
     public void show() {
-        AppDialog.show(this, false, true);
+        AppDialog.show(this, false);
     }
 
     public void showAndWait() {

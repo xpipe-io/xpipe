@@ -86,7 +86,7 @@ public class AppMainWindow {
         var stage = App.getApp().getStage();
         INSTANCE = new AppMainWindow(stage);
 
-        var content = new AppMainWindowContentComp().createRegion();
+        var content = new AppMainWindowContentComp(stage).createRegion();
         content.opacityProperty()
                 .bind(Bindings.createDoubleBinding(
                         () -> {

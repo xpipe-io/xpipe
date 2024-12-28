@@ -13,11 +13,14 @@ import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
 
 import javafx.animation.Animation;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ListChangeListener;
 import javafx.geometry.Pos;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import atlantafx.base.util.Animations;
@@ -25,6 +28,10 @@ import atlantafx.base.util.Animations;
 import java.time.Instant;
 
 public class AppMainWindowContentComp extends SimpleComp {
+
+    private final Stage stage;
+
+    public AppMainWindowContentComp(Stage stage) {this.stage = stage;}
 
     @Override
     protected Region createSimple() {
@@ -81,9 +88,21 @@ public class AppMainWindowContentComp extends SimpleComp {
                 }
             });
 
+            overlay.addListener((ListChangeListener<? super ModalOverlay>) c -> {
+                if (c.next() && c.wasAdded()) {
+                    stage.requestFocus();
+                }
+            });
+
+            loaded.addListener((observable, oldValue, newValue) -> {
+                if (newValue != null) {
+                    stage.requestFocus();
+                }
+            });
+
             return pane;
         });
-        var modal = new ModalOverlayComp(bg, overlay);
+        var modal = new ModalOverlayStackComp(bg, overlay);
         return modal.createRegion();
     }
 }

@@ -57,6 +57,6 @@ public class ErrorHandlerDialog {
             }
         });
 
-        AppDialog.show(modal.get(), true, false);
+        AppDialog.show(modal.get(), true);
     }
 }

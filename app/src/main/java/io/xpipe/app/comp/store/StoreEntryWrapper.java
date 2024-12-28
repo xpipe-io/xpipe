@@ -173,17 +173,15 @@ public class StoreEntryWrapper {
         notes.setValue(new StoreNotes(entry.getNotes(), entry.getNotes()));
         customIcon.setValue(entry.getIcon());
         iconFile.setValue(entry.getEffectiveIconFile());
-
         busy.setValue(entry.getBusyCounter().get() != 0);
         deletable.setValue(entry.getConfiguration().isDeletable());
         sessionActive.setValue(entry.getStore() instanceof SingletonSessionStore<?> ss
                 && entry.getStore() instanceof ShellStore
                 && ss.isSessionRunning());
-
-        category.setValue(StoreViewState.get()
-                .getCategoryWrapper(DataStorage.get()
-                        .getStoreCategoryIfPresent(entry.getCategoryUuid())
-                        .orElseThrow()));
+        category.setValue(StoreViewState.get().getCategories().getList().stream()
+                .filter(storeCategoryWrapper -> storeCategoryWrapper.getCategory().getUuid()
+                        .equals(entry.getCategoryUuid())).findFirst().orElse(StoreViewState.get()
+                .getAllConnectionsCategory()));
         perUser.setValue(!category.getValue().getRoot().equals(StoreViewState.get().getAllIdentitiesCategory()) && entry.isPerUserStore());
 
         if (!entry.getValidity().isUsable()) {
