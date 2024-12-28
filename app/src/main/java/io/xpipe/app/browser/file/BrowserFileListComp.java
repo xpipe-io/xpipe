@@ -287,6 +287,7 @@ public final class BrowserFileListComp extends SimpleComp {
                         fileList.getSelection().add(browserEntry);
                     }
                 });
+                fileList.getSelection().removeIf(browserEntry -> !c.getList().contains(browserEntry));
             }
         });
 
