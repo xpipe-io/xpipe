@@ -36,8 +36,6 @@ public abstract class OperationMode {
     @Getter
     private static boolean inShutdownHook;
 
-    private static boolean windowRequested;
-
     private static OperationMode CURRENT = null;
 
     public static OperationMode map(XPipeDaemonMode mode) {
@@ -122,10 +120,6 @@ public abstract class OperationMode {
     }
 
     public static XPipeDaemonMode getStartupMode() {
-        if (windowRequested) {
-            return XPipeDaemonMode.GUI;
-        }
-
         var arg = AppProperties.get().getArguments().getModeArg();
         if (arg != null) {
             return arg;

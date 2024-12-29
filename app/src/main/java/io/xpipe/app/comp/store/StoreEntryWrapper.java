@@ -93,7 +93,7 @@ public class StoreEntryWrapper {
     }
 
     public boolean isInStorage() {
-        return DataStorage.get().getStoreEntries().contains(entry);
+        return DataStorage.get() != null && DataStorage.get().getStoreEntries().contains(entry);
     }
 
     public void editDialog() {

@@ -8,6 +8,7 @@ import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.PlatformInit;
+import io.xpipe.app.util.ThreadHelper;
 
 public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHandler {
 
@@ -28,6 +29,7 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
             ErrorAction.ignore().handle(event);
         })) {
             // Exit if we couldn't initialize the GUI
+            ThreadHelper.sleep(1000);
             OperationMode.halt(1);
             return;
         }
@@ -51,6 +53,7 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
             handleProbableUpdate();
         }
 
+        ThreadHelper.sleep(1000);
         OperationMode.halt(1);
     }
 
@@ -60,6 +63,7 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
         var second = ErrorEvent.fromThrowable(t).build();
         log.handle(second);
         ErrorAction.ignore().handle(second);
+        ThreadHelper.sleep(1000);
         OperationMode.halt(1);
     }
 
@@ -82,6 +86,7 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
             var event = ErrorEvent.fromThrowable(t).build();
             log.handle(event);
             ErrorAction.ignore().handle(event);
+            ThreadHelper.sleep(1000);
             OperationMode.halt(1);
         }
     }

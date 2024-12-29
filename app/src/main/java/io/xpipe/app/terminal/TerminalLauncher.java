@@ -29,7 +29,8 @@ public class TerminalLauncher {
                     new TerminalInitScriptConfig(
                             title,
                             type.shouldClear()
-                                    && AppPrefs.get().clearTerminalOnInit().get(),
+                                    && AppPrefs.get().clearTerminalOnInit().get()
+                                    && !AppPrefs.get().developerPrintInitFiles().get(),
                             TerminalInitFunction.none()),
                     true);
             var config = new TerminalLaunchConfiguration(null, title, title, true, script, sc.getShellDialect());
@@ -66,7 +67,8 @@ public class TerminalLauncher {
                 adjustedTitle,
                 !log
                         && type.shouldClear()
-                        && AppPrefs.get().clearTerminalOnInit().get(),
+                        && AppPrefs.get().clearTerminalOnInit().get()
+                        && !AppPrefs.get().developerPrintInitFiles().get(),
                 cc instanceof ShellControl ? type.additionalInitCommands() : TerminalInitFunction.none());
         var config = TerminalLaunchConfiguration.create(request, entry, cleanTitle, adjustedTitle, preferTabs);
         var latch = TerminalLauncherManager.submitAsync(request, cc, terminalConfig, directory);
