@@ -38,7 +38,7 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
                 .nameAndDescription("username")
                 .addString(user)
                 .name("passwordAuthentication")
-                .description("passwordDescription")
+                .description("passwordAuthenticationDescription")
                 .sub(SecretRetrievalStrategyHelper.comp(pass, true), pass)
                 .nonNull()
                 .name("keyAuthentication")

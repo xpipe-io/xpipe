@@ -146,9 +146,10 @@ project.ext {
             "-Djavafx.preloader=io.xpipe.app.core.AppPreloader",
             "-Djdk.virtualThreadScheduler.parallelism=8"
     ]
-    if (org.gradle.internal.os.OperatingSystem.current().isLinux() || org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
-        jvmRunArgs += ['-Xms350m', '-XX:MinHeapFreeRatio=20', '-XX:MaxHeapFreeRatio=30']
-    }
+
+    // GC config
+    jvmRunArgs += ['-Xms350m', '-XX:MinHeapFreeRatio=20', '-XX:MaxHeapFreeRatio=30'];
+
     if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
         jvmRunArgs += ["-Dapple.awt.application.appearance=system"]
     }
