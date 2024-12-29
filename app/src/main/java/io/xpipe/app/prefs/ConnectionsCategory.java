@@ -14,9 +14,12 @@ public class ConnectionsCategory extends AppPrefsCategory {
     @Override
     protected Comp<?> create() {
         var prefs = AppPrefs.get();
-        var options = new OptionsBuilder().addTitle("localShell").sub(
-                new OptionsBuilder().pref(prefs.useLocalFallbackShell).addToggle(prefs.useLocalFallbackShell)).addTitle("connections").sub(
-                new OptionsBuilder().pref(prefs.condenseConnectionDisplay)
+        var options = new OptionsBuilder()
+                .addTitle("localShell")
+                .sub(new OptionsBuilder().pref(prefs.useLocalFallbackShell).addToggle(prefs.useLocalFallbackShell))
+                .addTitle("connections")
+                .sub(new OptionsBuilder()
+                        .pref(prefs.condenseConnectionDisplay)
                         .addToggle(prefs.condenseConnectionDisplay)
                         .pref(prefs.showChildCategoriesInParentCategory)
                         .addToggle(prefs.showChildCategoriesInParentCategory)
@@ -25,14 +28,12 @@ public class ConnectionsCategory extends AppPrefsCategory {
                         .pref(prefs.requireDoubleClickForConnections)
                         .addToggle(prefs.requireDoubleClickForConnections));
         if (OsType.getLocal() == OsType.WINDOWS) {
-            options
-                    .addTitle("sshConfiguration")
+            options.addTitle("sshConfiguration")
                     .sub(new OptionsBuilder()
                             .pref(prefs.useBundledTools)
                             .addToggle(prefs.useBundledTools)
                             .addComp(prefs.getCustomComp("x11WslInstance")));
         }
-        return options
-                .buildComp();
+        return options.buildComp();
     }
 }

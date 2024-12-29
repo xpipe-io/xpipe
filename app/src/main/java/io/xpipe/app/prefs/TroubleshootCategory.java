@@ -105,7 +105,9 @@ public class TroubleshootCategory extends AppPrefsCategory {
                 .separator()
                 .addComp(
                         new TileButtonComp("clearCaches", "clearCachesDescription", "mdi2t-trash-can-outline", e -> {
-                                    var modal = ModalOverlay.of("clearCachesAlertTitle", AppDialog.dialogTextKey("clearCachesAlertContent"));
+                                    var modal = ModalOverlay.of(
+                                            "clearCachesAlertTitle",
+                                            AppDialog.dialogTextKey("clearCachesAlertContent"));
                                     modal.addButton(ModalButton.ok(() -> {
                                         AppCache.clear();
                                     }));

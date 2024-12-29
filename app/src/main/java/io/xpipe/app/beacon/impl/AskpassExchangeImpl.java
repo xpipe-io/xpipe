@@ -8,9 +8,9 @@ import io.xpipe.app.util.SecretManager;
 import io.xpipe.app.util.SecretQueryState;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.AskpassExchange;
+import io.xpipe.core.process.OsType;
 
 import com.sun.net.httpserver.HttpExchange;
-import io.xpipe.core.process.OsType;
 
 public class AskpassExchangeImpl extends AskpassExchange {
 

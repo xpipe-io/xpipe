@@ -3,7 +3,6 @@ package io.xpipe.app.util;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FilePath;
@@ -71,7 +70,8 @@ public class ShellTemp {
         var systemTemp = proc.getSystemTemporaryDirectory();
         if (!d.directoryExists(proc, systemTemp.toString()).executeAndCheck()
                 || !checkDirectoryPermissions(proc, systemTemp.toString())) {
-            throw ErrorEvent.expected(new IOException("No permissions to access system temporary directory %s".formatted(systemTemp)));
+            throw ErrorEvent.expected(
+                    new IOException("No permissions to access system temporary directory %s".formatted(systemTemp)));
         }
 
         // We don't do this anymore, we hope that all the legacy directories have been cleared now

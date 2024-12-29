@@ -23,7 +23,6 @@ import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.*;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;

@@ -4,7 +4,6 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.ThreadHelper;
@@ -13,8 +12,6 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.theme.Styles;

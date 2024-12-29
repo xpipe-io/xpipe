@@ -7,7 +7,6 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.WorkingDirectoryFunction;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.FixedChildStore;
 import io.xpipe.core.store.StatefulDataStore;

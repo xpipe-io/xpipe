@@ -15,7 +15,6 @@ import io.xpipe.app.util.ShellTemp;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -102,14 +101,12 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
         });
 
         // Fix initial scrollbar size
-        wv.lookupAll(".scroll-bar").stream()
-                .findFirst()
-                .ifPresent(node -> {
-                    Region region = (Region) node;
-                    region.setMinWidth(0);
-                    region.setPrefWidth(7);
-                    region.setMaxWidth(7);
-                });
+        wv.lookupAll(".scroll-bar").stream().findFirst().ifPresent(node -> {
+            Region region = (Region) node;
+            region.setMinWidth(0);
+            region.setPrefWidth(7);
+            region.setMaxWidth(7);
+        });
 
         wv.getStyleClass().add("markdown-comp");
         addLinkHandler(wv.getEngine());

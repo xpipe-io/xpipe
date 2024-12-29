@@ -63,7 +63,6 @@ public class SessionChain extends NetworkTunnelSession {
                     ex.addSuppressed(e);
                 }
             }
-
         }
         if (ex != null) {
             throw ex;

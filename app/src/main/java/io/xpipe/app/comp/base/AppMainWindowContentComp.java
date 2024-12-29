@@ -1,6 +1,5 @@
 package io.xpipe.app.comp.base;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppFont;
@@ -13,7 +12,6 @@ import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
 
 import javafx.animation.Animation;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Pos;
 import javafx.scene.image.ImageView;
@@ -31,7 +29,9 @@ public class AppMainWindowContentComp extends SimpleComp {
 
     private final Stage stage;
 
-    public AppMainWindowContentComp(Stage stage) {this.stage = stage;}
+    public AppMainWindowContentComp(Stage stage) {
+        this.stage = stage;
+    }
 
     @Override
     protected Region createSimple() {
@@ -55,7 +55,8 @@ public class AppMainWindowContentComp extends SimpleComp {
                 loadingIcon.setImage(AppImages.loadImage(path.resolve("loading.png")));
             });
 
-            var version = new LabelComp((AppProperties.get().isStaging() ? "XPipe PTB" : "XPipe") + " " + AppProperties.get().getVersion());
+            var version = new LabelComp((AppProperties.get().isStaging() ? "XPipe PTB" : "XPipe") + " "
+                    + AppProperties.get().getVersion());
             version.apply(struc -> {
                 AppFont.setSize(struc.get(), 1);
                 struc.get().setOpacity(0.6);
@@ -66,7 +67,14 @@ public class AppMainWindowContentComp extends SimpleComp {
                 struc.get().setOpacity(0.8);
             });
 
-            var vbox = new VBox(Comp.vspacer().createRegion(), loadingIcon, Comp.vspacer(19).createRegion(), version.createRegion(), Comp.vspacer().createRegion(), text.createRegion(), Comp.vspacer(20).createRegion());
+            var vbox = new VBox(
+                    Comp.vspacer().createRegion(),
+                    loadingIcon,
+                    Comp.vspacer(19).createRegion(),
+                    version.createRegion(),
+                    Comp.vspacer().createRegion(),
+                    text.createRegion(),
+                    Comp.vspacer(20).createRegion());
             vbox.setAlignment(Pos.CENTER);
 
             var pane = new StackPane(vbox);

@@ -32,26 +32,27 @@ public class CloseBehaviourDialog {
 
         Property<CloseBehaviour> prop =
                 new SimpleObjectProperty<>(AppPrefs.get().closeBehaviour().getValue());
-        var content = new VerticalComp(List.of(AppDialog.dialogTextKey("closeBehaviourAlertTitleHeader"), Comp.of(() -> {
-            ToggleGroup group = new ToggleGroup();
-            var vb = new VBox();
-            vb.setSpacing(7);
-            for (var cb : PrefsChoiceValue.getSupported(CloseBehaviour.class)) {
-                RadioButton rb = new RadioButton(cb.toTranslatedString().getValue());
-                rb.setToggleGroup(group);
-                rb.selectedProperty().addListener((c, o, n) -> {
-                    if (n) {
-                        prop.setValue(cb);
+        var content =
+                new VerticalComp(List.of(AppDialog.dialogTextKey("closeBehaviourAlertTitleHeader"), Comp.of(() -> {
+                    ToggleGroup group = new ToggleGroup();
+                    var vb = new VBox();
+                    vb.setSpacing(7);
+                    for (var cb : PrefsChoiceValue.getSupported(CloseBehaviour.class)) {
+                        RadioButton rb = new RadioButton(cb.toTranslatedString().getValue());
+                        rb.setToggleGroup(group);
+                        rb.selectedProperty().addListener((c, o, n) -> {
+                            if (n) {
+                                prop.setValue(cb);
+                            }
+                        });
+                        if (prop.getValue().equals(cb)) {
+                            rb.setSelected(true);
+                        }
+                        vb.getChildren().add(rb);
+                        vb.setMinHeight(130);
                     }
-                });
-                if (prop.getValue().equals(cb)) {
-                    rb.setSelected(true);
-                }
-                vb.getChildren().add(rb);
-                vb.setMinHeight(130);
-            }
-            return vb;
-        })));
+                    return vb;
+                })));
         var oked = new AtomicBoolean();
         var modal = ModalOverlay.of("closeBehaviourAlertTitle", content);
         modal.addButton(ModalButton.cancel());

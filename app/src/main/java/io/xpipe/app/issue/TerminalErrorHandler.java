@@ -5,15 +5,9 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.PlatformInit;
-import io.xpipe.app.util.ThreadHelper;
-
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
 
 public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHandler {
 
@@ -77,9 +71,11 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
         try {
             var rel = XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheck(false, false);
             if (rel != null && rel.isUpdate()) {
-                var updateModal = ModalOverlay.of("updateAvailableTitle", AppDialog.dialogTextKey("updateAvailableContent"));
-                updateModal.addButton(new ModalButton("checkOutUpdate", () -> Hyperlinks.open(rel.getReleaseUrl()), false, true));
-                updateModal.addButton(new ModalButton("ignore",null, true, false));
+                var updateModal =
+                        ModalOverlay.of("updateAvailableTitle", AppDialog.dialogTextKey("updateAvailableContent"));
+                updateModal.addButton(
+                        new ModalButton("checkOutUpdate", () -> Hyperlinks.open(rel.getReleaseUrl()), false, true));
+                updateModal.addButton(new ModalButton("ignore", null, true, false));
                 AppDialog.showAndWait(updateModal);
             }
         } catch (Throwable t) {

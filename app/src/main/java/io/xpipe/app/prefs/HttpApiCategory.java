@@ -23,8 +23,9 @@ public class HttpApiCategory extends AppPrefsCategory {
                         .pref(prefs.enableHttpApi)
                         .addToggle(prefs.enableHttpApi)
                         .nameAndDescription("openApiDocs")
-                        .addComp(new ButtonComp(AppI18n.observable("openApiDocsButton"),() -> {
-                            Hyperlinks.open("http://localhost:" + AppBeaconServer.get().getPort());
+                        .addComp(new ButtonComp(AppI18n.observable("openApiDocsButton"), () -> {
+                            Hyperlinks.open(
+                                    "http://localhost:" + AppBeaconServer.get().getPort());
                         }))
                         .pref(prefs.apiKey)
                         .addString(prefs.apiKey)

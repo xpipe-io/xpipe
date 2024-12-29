@@ -486,7 +486,7 @@ public class DataStoreEntry extends StorageElement {
             var notesNode = JsonNodeFactory.instance.objectNode();
             notesNode.put("markdown", notes);
             var storageNode = DataStorageNode.encryptNodeIfNeeded(new DataStorageNode(
-                    notesNode,storeNode.isPerUser(), storeNode.isAvailableForUser(), storeNode.isEncrypted()));
+                    notesNode, storeNode.isPerUser(), storeNode.isAvailableForUser(), storeNode.isEncrypted()));
             var string = mapper.writeValueAsString(storageNode);
             Files.writeString(encryptedNotesFile, string);
         } else if (notes != null) {
@@ -607,7 +607,8 @@ public class DataStoreEntry extends StorageElement {
         var newPerUser = false;
         try {
             newPerUser = newStore instanceof UserScopeStore u && u.isPerUser();
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         var perUserChanged = isPerUserStore() != newPerUser;
         if (!newStore.equals(store)) {
             store = newStore;

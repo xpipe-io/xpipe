@@ -179,10 +179,13 @@ public class StoreEntryWrapper {
                 && entry.getStore() instanceof ShellStore
                 && ss.isSessionRunning());
         category.setValue(StoreViewState.get().getCategories().getList().stream()
-                .filter(storeCategoryWrapper -> storeCategoryWrapper.getCategory().getUuid()
-                        .equals(entry.getCategoryUuid())).findFirst().orElse(StoreViewState.get()
-                .getAllConnectionsCategory()));
-        perUser.setValue(!category.getValue().getRoot().equals(StoreViewState.get().getAllIdentitiesCategory()) && entry.isPerUserStore());
+                .filter(storeCategoryWrapper ->
+                        storeCategoryWrapper.getCategory().getUuid().equals(entry.getCategoryUuid()))
+                .findFirst()
+                .orElse(StoreViewState.get().getAllConnectionsCategory()));
+        perUser.setValue(
+                !category.getValue().getRoot().equals(StoreViewState.get().getAllIdentitiesCategory())
+                        && entry.isPerUserStore());
 
         if (!entry.getValidity().isUsable()) {
             summary.setValue(null);

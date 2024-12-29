@@ -40,7 +40,6 @@ import net.synedra.validatorfx.GraphicDecorationStackPane;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -408,10 +407,10 @@ public class StoreCreationComp extends DialogComp {
             return l;
         });
         var overlay = ModalOverlay.of("error", comp, new LabelGraphic.NodeGraphic(() -> {
-                    var graphic = new FontIcon("mdomz-warning");
-                    graphic.setIconColor(Color.RED);
-                    return new StackPane(graphic);
-                }));
+            var graphic = new FontIcon("mdomz-warning");
+            graphic.setIconColor(Color.RED);
+            return new StackPane(graphic);
+        }));
         return overlay;
     }
 

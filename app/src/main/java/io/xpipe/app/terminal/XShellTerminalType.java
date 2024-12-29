@@ -5,19 +5,12 @@ import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.SshLocalBridge;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.process.CommandBuilder;
 
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 
@@ -88,9 +81,8 @@ public class XShellTerminalType extends ExternalTerminalType.WindowsType {
 
         var b = SshLocalBridge.get();
         var keyName = b.getIdentityKey().getFileName().toString();
-        var activated = AppI18n.get()
-                .getMarkdownDocumentation("app:xshellSetup")
-                .formatted(b.getIdentityKey(), keyName);
+        var activated =
+                AppI18n.get().getMarkdownDocumentation("app:xshellSetup").formatted(b.getIdentityKey(), keyName);
         var modal = ModalOverlay.of("xshellSetup", new MarkdownComp(activated, s -> s).prefWidth(450));
         modal.addButton(ModalButton.ok(() -> {
             AppCache.update("xshellSetup", true);
