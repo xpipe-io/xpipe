@@ -50,7 +50,7 @@ public class ScriptHelper {
 
         // We just apply the profile files always, as we can't be sure that they definitely have been applied.
         // Especially if we launch something that is not the system default shell
-        var applyCommand = t.applyInitFileCommand();
+        var applyCommand = t.applyInitFileCommand(processControl);
         if (applyCommand != null) {
             content += nl + applyCommand + nl;
         }

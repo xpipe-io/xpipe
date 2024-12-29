@@ -82,10 +82,12 @@ public class IncusContainerStore
                             .exec(containerName, null, null)
                             .start()) {
                         var passwd = PasswdFile.parse(temp);
-                        uid = passwd.getUidForUserIfPresent(identity.unwrap().getUsername())
+                        var username = identity.unwrap().getUsername();
+                        uid = passwd.getUidForUserIfPresent(username)
                                 .orElseThrow(() -> new IllegalArgumentException(
-                                        "User " + identity.unwrap().getUsername() + " not found"));
-                        homeDir = temp.view().userHome();
+                                        "User " + username + " not found"));
+                        homeDir = temp.command("eval echo ~" +username).readStdoutIfPossible().filter(s -> !s.isBlank())
+                                .map(FilePath::new).orElse(null);
                     }
                 }
 

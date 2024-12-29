@@ -59,7 +59,9 @@ public class DeveloperCategory extends AppPrefsCategory {
                 .apply(struc -> struc.get().setFillHeight(true));
         var sub = new OptionsBuilder()
                 .nameAndDescription("developerDisableUpdateVersionCheck")
-                .addToggle(prefs.developerDisableUpdateVersionCheck);
+                .addToggle(prefs.developerDisableUpdateVersionCheck)
+                .nameAndDescription("developerPrintInitFiles")
+                .addToggle(prefs.developerPrintInitFiles);
         if (AppProperties.get().isDevelopmentEnvironment()) {
             sub.nameAndDescription("developerForceSshTty").addToggle(prefs.developerForceSshTty);
         }

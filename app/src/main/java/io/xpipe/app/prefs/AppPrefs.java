@@ -136,6 +136,8 @@ public class AppPrefs {
             mapLocal(new SimpleBooleanProperty(false), "developerDisableUpdateVersionCheck", Boolean.class, false);
     final BooleanProperty developerForceSshTty =
             mapLocal(new SimpleBooleanProperty(false), "developerForceSshTty", Boolean.class, false);
+    final BooleanProperty developerPrintInitFiles =
+            mapLocal(new SimpleBooleanProperty(false), "developerPrintInitFiles", Boolean.class, false);
 
     final ObjectProperty<SupportedLocale> language = mapLocal(
             new SimpleObjectProperty<>(SupportedLocale.getEnglish()), "language", SupportedLocale.class, false);
@@ -175,6 +177,10 @@ public class AppPrefs {
             mapVaultShared(new SimpleStringProperty(UUID.randomUUID().toString()), "apiKey", String.class, true);
     final BooleanProperty disableApiAuthentication =
             mapLocal(new SimpleBooleanProperty(false), "disableApiAuthentication", Boolean.class, false);
+
+    public ObservableBooleanValue developerPrintInitFiles() {
+        return developerPrintInitFiles;
+    }
 
     public ObservableBooleanValue checkForSecurityUpdates() {
         return checkForSecurityUpdates;
