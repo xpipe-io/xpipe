@@ -148,37 +148,37 @@ public class LxdCommandView extends CommandViewBase {
         }
     }
 
-    public ShellControl exec(String container, Integer uid, FilePath dir, ShellDialect shell) {
+    public ShellControl exec(String container, String user) {
         return shellControl
-                .subShell(createOpenFunction(container, uid, dir, shell, false), createOpenFunction(container, uid,dir, shell, true))
+                .subShell(createOpenFunction(container, user, false), createOpenFunction(container, user, true))
                 .withErrorFormatter(LxdCommandView::formatErrorMessage)
                 .withExceptionConverter(LxdCommandView::convertException)
                 .elevated(requiresElevation());
     }
 
-    private ShellOpenFunction createOpenFunction(String containerName, Integer uid, FilePath dir, ShellDialect shell, boolean terminal) {
+    private ShellOpenFunction createOpenFunction(String containerName, String user, boolean terminal) {
         return new ShellOpenFunction() {
             @Override
             public CommandBuilder prepareWithoutInitCommand() {
-                return execCommand(containerName, uid, dir, terminal)
-                        .add(shell.getLaunchCommand().loginCommand());
+                var b = execCommand(containerName, terminal).add("su", "-l");
+                if (user != null) {
+                    b.addQuoted(user);
+                }
+                return b;
             }
 
             @Override
             public CommandBuilder prepareWithInitCommand(@NonNull String command) {
-                return execCommand(containerName, uid, dir , terminal).add(command);
+                var b = execCommand(containerName, terminal).add("su", "-l");
+                if (user != null) {
+                    b.addQuoted(user);
+                }
+                return b.add("--session-command").addLiteral(command);
             }
         };
     }
-
-    public CommandBuilder execCommand(String containerName, Integer uid, FilePath dir, boolean terminal) {
+    public CommandBuilder execCommand(String containerName, boolean terminal) {
         var c = CommandBuilder.of().add("lxc", "exec", terminal ? "-t" : "-T");
-        if (uid != null) {
-            c.add("--user").add(uid.toString());
-        }
-        if (dir != null) {
-            c.add("--cwd").addFile(dir);
-        }
         return c.addQuoted(containerName).add("--");
     }
 }

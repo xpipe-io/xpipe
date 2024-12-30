@@ -48,7 +48,7 @@ public class LxdContainerStoreProvider implements ShellStoreProvider {
                     in a host shell of `%s` to open a shell into the container.
                     """,
                 new LxdCommandView(null)
-                        .execCommand(lxd.getContainerName(), null, null,true)
+                        .execCommand(lxd.getContainerName(),true)
                         .buildSimple(),
                 lxd.getCmd().getStore().getHost().get().getName());
     }
