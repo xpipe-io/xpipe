@@ -7,6 +7,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.CommandViewBase;
 import io.xpipe.core.process.*;
 
+import io.xpipe.core.store.FilePath;
 import lombok.NonNull;
 
 import java.util.*;
@@ -86,12 +87,40 @@ public class LxdCommandView extends CommandViewBase {
                 .readStdoutOrThrow();
     }
 
+    public String queryContainerState(String containerName) throws Exception {
+        var states = listContainersAndStates();
+        return states.getOrDefault(containerName, "?");
+    }
+
+    public void start(String containerName) throws Exception {
+        build(commandBuilder -> commandBuilder.add("start").addQuoted(containerName))
+                .execute();
+    }
+
+    public void stop(String containerName) throws Exception {
+        build(commandBuilder -> commandBuilder.add("stop").addQuoted(containerName))
+                .execute();
+    }
+
+    public void pause(String containerName) throws Exception {
+        build(commandBuilder -> commandBuilder.add("pause").addQuoted(containerName))
+                .execute();
+    }
+
+    public CommandControl console(String containerName) throws Exception {
+        return build(commandBuilder -> commandBuilder.add("console").addQuoted(containerName));
+    }
+
+    public CommandControl configEdit(String containerName) throws Exception {
+        return build(commandBuilder -> commandBuilder.add("config", "edit").addQuoted(containerName));
+    }
+
     public List<DataStoreEntryRef<LxdContainerStore>> listContainers(DataStoreEntryRef<LxdCmdStore> store)
             throws Exception {
         return listContainersAndStates().entrySet().stream()
                 .map(s -> {
                     boolean running = s.getValue().toLowerCase(Locale.ROOT).equals("running");
-                    var c = new LxdContainerStore(store, s.getKey());
+                    var c = LxdContainerStore.builder().cmd(store).containerName(s.getKey()).build();
                     var entry = DataStoreEntry.createNew(c.getContainerName(), c);
                     entry.setStorePersistentState(ContainerStoreState.builder()
                             .containerState(s.getValue())
@@ -119,33 +148,37 @@ public class LxdCommandView extends CommandViewBase {
         }
     }
 
-    public ShellControl exec(String container) {
+    public ShellControl exec(String container, Integer uid, FilePath dir, ShellDialect shell) {
         return shellControl
-                .subShell(createOpenFunction(container, false), createOpenFunction(container, true))
+                .subShell(createOpenFunction(container, uid, dir, shell, false), createOpenFunction(container, uid,dir, shell, true))
                 .withErrorFormatter(LxdCommandView::formatErrorMessage)
                 .withExceptionConverter(LxdCommandView::convertException)
                 .elevated(requiresElevation());
     }
 
-    private ShellOpenFunction createOpenFunction(String containerName, boolean terminal) {
+    private ShellOpenFunction createOpenFunction(String containerName, Integer uid, FilePath dir, ShellDialect shell, boolean terminal) {
         return new ShellOpenFunction() {
             @Override
             public CommandBuilder prepareWithoutInitCommand() {
-                return execCommand(containerName, terminal)
-                        .add(ShellDialects.SH.getLaunchCommand().loginCommand());
+                return execCommand(containerName, uid, dir, terminal)
+                        .add(shell.getLaunchCommand().loginCommand());
             }
 
             @Override
             public CommandBuilder prepareWithInitCommand(@NonNull String command) {
-                return execCommand(containerName, terminal).add(command);
+                return execCommand(containerName, uid, dir , terminal).add(command);
             }
         };
     }
 
-    public CommandBuilder execCommand(String containerName, boolean terminal) {
-        return CommandBuilder.of()
-                .add("lxc", "exec", terminal ? "-t" : "-T")
-                .addQuoted(containerName)
-                .add("--");
+    public CommandBuilder execCommand(String containerName, Integer uid, FilePath dir, boolean terminal) {
+        var c = CommandBuilder.of().add("lxc", "exec", terminal ? "-t" : "-T");
+        if (uid != null) {
+            c.add("--user").add(uid.toString());
+        }
+        if (dir != null) {
+            c.add("--cwd").addFile(dir);
+        }
+        return c.addQuoted(containerName).add("--");
     }
 }

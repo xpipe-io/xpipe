@@ -139,20 +139,20 @@ public class IncusCommandView extends CommandViewBase {
         }
     }
 
-    public ShellControl exec(String container, Integer uid, FilePath dir) {
+    public ShellControl exec(String container, Integer uid, FilePath dir, ShellDialect shell) {
         return shellControl
-                .subShell(createOpenFunction(container, uid, dir, false), createOpenFunction(container, uid, dir, true))
+                .subShell(createOpenFunction(container, uid, dir, false, shell), createOpenFunction(container, uid, dir, true, shell))
                 .withErrorFormatter(IncusCommandView::formatErrorMessage)
                 .withExceptionConverter(IncusCommandView::convertException)
                 .elevated(requiresElevation());
     }
 
-    private ShellOpenFunction createOpenFunction(String containerName, Integer uid, FilePath dir, boolean terminal) {
+    private ShellOpenFunction createOpenFunction(String containerName, Integer uid, FilePath dir, boolean terminal, ShellDialect shell) {
         return new ShellOpenFunction() {
             @Override
             public CommandBuilder prepareWithoutInitCommand() {
                 return execCommand(containerName, uid, dir, terminal)
-                        .add(ShellDialects.SH.getLaunchCommand().loginCommand());
+                        .add(shell.getLaunchCommand().loginCommand());
             }
 
             @Override

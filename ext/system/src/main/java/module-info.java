@@ -6,6 +6,7 @@ import io.xpipe.ext.system.incus.IncusContainerStoreProvider;
 import io.xpipe.ext.system.incus.IncusInstallStoreProvider;
 import io.xpipe.ext.system.incus.IncusScanProvider;
 import io.xpipe.ext.system.lxd.LxdCmdStoreProvider;
+import io.xpipe.ext.system.lxd.LxdContainerActionMenu;
 import io.xpipe.ext.system.lxd.LxdContainerStoreProvider;
 import io.xpipe.ext.system.lxd.LxdScanProvider;
 import io.xpipe.ext.system.podman.PodmanCmdStoreProvider;
@@ -36,5 +37,6 @@ open module io.xpipe.ext.system {
             PodmanCmdStoreProvider;
     provides ActionProvider with
             IncusContainerActionMenu,
+            LxdContainerActionMenu,
             PodmanContainerActionMenu;
 }

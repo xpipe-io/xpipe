@@ -7,6 +7,8 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.ShellDialect;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.FixedChildStore;
 import io.xpipe.core.store.StatefulDataStore;
@@ -77,10 +79,11 @@ public class IncusContainerStore
             public ShellControl control(ShellControl parent) throws Exception {
                 Integer uid = null;
                 FilePath homeDir = null;
-                if (identity != null && identity.unwrap().getUsername() != null) {
-                    try (var temp = new IncusCommandView(parent)
-                            .exec(containerName, null, null)
-                            .start()) {
+                ShellDialect shell;
+                try (var temp = new IncusCommandView(parent)
+                        .exec(containerName, null, null, ShellDialects.SH)
+                        .start()) {
+                    if (identity != null && identity.unwrap().getUsername() != null) {
                         var passwd = PasswdFile.parse(temp);
                         var username = identity.unwrap().getUsername();
                         uid = passwd.getUidForUserIfPresent(username)
@@ -89,9 +92,10 @@ public class IncusContainerStore
                         homeDir = temp.command("eval echo ~" +username).readStdoutIfPossible().filter(s -> !s.isBlank())
                                 .map(FilePath::new).orElse(null);
                     }
+                    shell = CommandSupport.isInPath(temp, "bash") ? ShellDialects.BASH : ShellDialects.SH;
                 }
 
-                var sc = new IncusCommandView(parent).exec(containerName, uid, homeDir);
+                var sc = new IncusCommandView(parent).exec(containerName, uid, homeDir, shell);
                 sc.withSourceStore(IncusContainerStore.this);
                 if (identity != null && identity.unwrap().getPassword() != null) {
                     sc.setElevationHandler(new BaseElevationHandler(

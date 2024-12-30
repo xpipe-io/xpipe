@@ -12,8 +12,10 @@ import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.ShellStoreFormat;
 import io.xpipe.app.util.SimpleValidator;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.ext.base.identity.IdentityChoice;
 import io.xpipe.ext.base.store.ShellStoreProvider;
 
+import io.xpipe.ext.system.incus.IncusContainerStore;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -46,7 +48,7 @@ public class LxdContainerStoreProvider implements ShellStoreProvider {
                     in a host shell of `%s` to open a shell into the container.
                     """,
                 new LxdCommandView(null)
-                        .execCommand(lxd.getContainerName(), true)
+                        .execCommand(lxd.getContainerName(), null, null,true)
                         .buildSimple(),
                 lxd.getCmd().getStore().getHost().get().getName());
     }
@@ -59,8 +61,8 @@ public class LxdContainerStoreProvider implements ShellStoreProvider {
 
     @Override
     public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
-        var val = new SimpleValidator();
         LxdContainerStore st = (LxdContainerStore) store.getValue();
+        var identity = new SimpleObjectProperty<>(st.getIdentity());
 
         var q = new OptionsBuilder()
                 .name("host")
@@ -73,8 +75,18 @@ public class LxdContainerStoreProvider implements ShellStoreProvider {
                 .description("lxdContainerDescription")
                 .addString(new SimpleObjectProperty<>(st.getContainerName()), false)
                 .disable()
-                .buildComp();
-        return new GuiDialog(q, val);
+                .sub(IdentityChoice.container(identity), identity)
+                .bind(
+                        () -> {
+                            return LxdContainerStore.builder()
+                                    .containerName(st.getContainerName())
+                                    .cmd(st.getCmd())
+                                    .identity(identity.getValue())
+                                    .build();
+                        },
+                        store)
+                .buildDialog();
+        return q;
     }
 
     @Override
@@ -86,7 +98,8 @@ public class LxdContainerStoreProvider implements ShellStoreProvider {
 
     @Override
     public ObservableValue<String> informationString(StoreSection section) {
-        return ShellStoreFormat.shellStore(section, (ContainerStoreState s) -> s.getContainerState());
+        return ShellStoreFormat.shellStore(
+                section, (ContainerStoreState s) -> DataStoreFormatter.capitalize(s.getContainerState()));
     }
 
     @Override
