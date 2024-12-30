@@ -6,7 +6,7 @@ import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.util.ScanAlert;
+import io.xpipe.app.util.ScanDialog;
 import io.xpipe.core.process.OsType;
 
 import javafx.geometry.Insets;
@@ -38,7 +38,7 @@ public class StoreIntroComp extends SimpleComp {
 
         var scanButton = new Button(null, new FontIcon("mdi2m-magnify"));
         scanButton.textProperty().bind(AppI18n.observable("detectConnections"));
-        scanButton.setOnAction(event -> ScanAlert.showAsync(DataStorage.get().local()));
+        scanButton.setOnAction(event -> ScanDialog.showAsync(DataStorage.get().local()));
         scanButton.setDefaultButton(true);
         var scanPane = new StackPane(scanButton);
         scanPane.setAlignment(Pos.CENTER);

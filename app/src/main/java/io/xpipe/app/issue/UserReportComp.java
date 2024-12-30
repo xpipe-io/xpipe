@@ -59,7 +59,7 @@ public class UserReportComp extends SimpleComp {
 
     private Comp<?> createAttachments() {
         var list = new ListSelectorComp<>(
-                        event.getAttachments(),
+                        FXCollections.observableList(event.getAttachments()),
                         file -> {
                             if (file.equals(AppLogs.get().getSessionLogsDirectory())) {
                                 return AppI18n.get("logFilesAttachment");
@@ -69,7 +69,7 @@ public class UserReportComp extends SimpleComp {
                         },
                         includedDiagnostics,
                         file -> false,
-                        false)
+                () -> false)
                 .styleClass("attachment-list");
         return new TitledPaneComp(AppI18n.observable("additionalErrorAttachments"), list, 100)
                 .apply(struc -> struc.get().setExpanded(true))

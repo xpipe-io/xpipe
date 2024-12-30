@@ -29,10 +29,16 @@ public class ModalOverlayStackComp extends SimpleComp {
     private Comp<?> buildModalOverlay(Comp<?> current, int index) {
         var prop = new SimpleObjectProperty<ModalOverlay>();
         modalOverlay.subscribe(() -> {
+            var ex = prop.get();
+            // Don't shift just for an index change
+            if (ex != null && modalOverlay.contains(ex)) {
+                return;
+            }
+
             prop.set(modalOverlay.size() > index ? modalOverlay.get(index) : null);
         });
         prop.addListener((observable, oldValue, newValue) -> {
-            if (newValue == null) {
+            if (newValue == null && modalOverlay.indexOf(oldValue) == index) {
                 modalOverlay.remove(oldValue);
             }
         });

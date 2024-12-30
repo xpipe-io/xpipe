@@ -146,7 +146,7 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
             }
         };
         var selectedExecTypes = new SimpleListProperty<>(FXCollections.observableList(selectedStart));
-        var selectorComp = new ListSelectorComp<>(vals, name, selectedExecTypes, v -> false, false);
+        var selectorComp = new ListSelectorComp<>(FXCollections.observableList(vals), name, selectedExecTypes, v -> false, () -> false);
 
         return new OptionsBuilder()
                 .name("snippets")

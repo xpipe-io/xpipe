@@ -301,10 +301,10 @@ public interface SshIdentityStrategy {
                         var file = getFile(sc);
                         var dir = FileNames.getParent(file);
                         if (sc.getOsType() == OsType.WINDOWS) {
-                            var path = CommandSupport.getPath(sc);
+                            var path = sc.view().getPath();
                             builder.fixedEnvrironment("PATH", dir + ";" + path);
                         } else {
-                            var path = CommandSupport.getLibraryPath(sc);
+                            var path = sc.view().getLibraryPath();
                             builder.fixedEnvrironment("LD_LIBRARY_PATH", dir + ":" + path);
                         }
                     })
@@ -348,10 +348,10 @@ public interface SshIdentityStrategy {
                 var file = getFile();
                 var dir = FileNames.getParent(file);
                 if (sc.getOsType() == OsType.WINDOWS) {
-                    var path = CommandSupport.getPath(sc);
+                    var path = sc.view().getPath();
                     builder.fixedEnvrironment("PATH", dir + ";" + path);
                 } else {
-                    var path = CommandSupport.getLibraryPath(sc);
+                    var path = sc.view().getLibraryPath();
                     builder.fixedEnvrironment("LD_LIBRARY_PATH", dir + ":" + path);
                 }
             });

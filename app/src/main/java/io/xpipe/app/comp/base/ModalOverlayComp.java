@@ -117,6 +117,9 @@ public class ModalOverlayComp extends SimpleComp {
                     if (runnable != null) {
                         runnable.run();
                     }
+                    if (oldValue.getContent() instanceof ModalOverlayContentComp mocc) {
+                        mocc.setModalOverlay(null);
+                    }
                 }
 
                 if (newValue != null) {
@@ -146,13 +149,6 @@ public class ModalOverlayComp extends SimpleComp {
                 closeButton.setVisible(false);
             }
         }
-
-        // Wait 2 pulses before focus so that the scene can be assigned to r
-        Platform.runLater(() -> {
-            Platform.runLater(() -> {
-                modalBox.requestFocus();
-            });
-        });
     }
 
     private Region toBox(ModalPane pane, ModalOverlay newValue) {

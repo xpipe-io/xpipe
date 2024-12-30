@@ -3,6 +3,7 @@ package io.xpipe.core.process;
 import io.xpipe.core.store.FilePath;
 
 import java.io.InputStream;
+import java.util.Optional;
 
 public class ShellView {
 
@@ -44,5 +45,39 @@ public class ShellView {
 
     public String user() throws Exception {
         return getDialect().printUsernameCommand(shellControl).readStdoutOrThrow();
+    }
+
+
+    public String getPath() throws Exception {
+        var path = shellControl.command(shellControl.getShellDialect().getPrintEnvironmentVariableCommand("PATH"))
+                .readStdoutOrThrow();
+        return path;
+    }
+
+    public String getLibraryPath() throws Exception {
+        var path = shellControl.command(shellControl.getShellDialect().getPrintEnvironmentVariableCommand("LD_LIBRARY_PATH"))
+                .readStdoutOrThrow();
+        return path;
+    }
+
+    public boolean isRoot() throws Exception {
+        if (shellControl.getOsType() == OsType.WINDOWS) {
+            return false;
+        }
+
+        var isRoot = shellControl.executeSimpleBooleanCommand("test \"${EUID:-$(id -u)}\" -eq 0");
+        return isRoot;
+    }
+
+    public Optional<String> findProgram(String name) throws Exception {
+        var out = shellControl
+                .command(shellControl.getShellDialect().getWhichCommand(name))
+                .readStdoutIfPossible();
+        return out.flatMap(s -> s.lines().findFirst()).map(String::trim);
+    }
+
+    public boolean isInPath(String executable) throws Exception {
+        return shellControl.executeSimpleBooleanCommand(
+                shellControl.getShellDialect().getWhichCommand(executable));
     }
 }

@@ -5,7 +5,7 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.ScanAlert;
+import io.xpipe.app.util.ScanDialog;
 import io.xpipe.core.process.ShellTtyState;
 import io.xpipe.core.process.SystemState;
 
@@ -69,7 +69,7 @@ public class ScanStoreAction implements ActionProvider {
         @Override
         public void execute() {
             if (entry == null || entry.getStore() instanceof ShellStore) {
-                ScanAlert.showForShellStore(entry);
+                ScanDialog.showForShellStore(entry);
             }
         }
     }

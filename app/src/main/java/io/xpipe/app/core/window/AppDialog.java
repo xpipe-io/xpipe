@@ -33,7 +33,9 @@ public class AppDialog {
     }
 
     public static void closeDialog(ModalOverlay overlay) {
-        modalOverlay.remove(overlay);
+        PlatformThread.runLaterIfNeeded(() -> {
+            modalOverlay.remove(overlay);
+        });
     }
 
     public static void waitForClose() {

@@ -4,7 +4,7 @@ import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProviders;
-import io.xpipe.app.util.ScanAlert;
+import io.xpipe.app.util.ScanDialog;
 
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
@@ -22,7 +22,7 @@ public class StoreCreationMenu {
         automatically.setGraphic(new FontIcon("mdi2e-eye-plus-outline"));
         automatically.textProperty().bind(AppI18n.observable("addAutomatically"));
         automatically.setOnAction(event -> {
-            ScanAlert.showAsync(null);
+            ScanDialog.showAsync(null);
             event.consume();
         });
         menu.getItems().add(automatically);

@@ -234,7 +234,7 @@ public class StoreCreationComp extends DialogComp {
                                 && AppPrefs.get()
                                         .openConnectionSearchWindowOnConnectionCreation()
                                         .get()) {
-                            ScanAlert.showAsync(e);
+                            ScanDialog.showAsync(e);
                         }
 
                         if (selectCategory) {
