@@ -77,25 +77,8 @@ public class IncusContainerStore
 
             @Override
             public ShellControl control(ShellControl parent) throws Exception {
-                Integer uid = null;
-                FilePath homeDir = null;
-                ShellDialect shell;
-                try (var temp = new IncusCommandView(parent)
-                        .exec(containerName, null, null, ShellDialects.SH)
-                        .start()) {
-                    if (identity != null && identity.unwrap().getUsername() != null) {
-                        var passwd = PasswdFile.parse(temp);
-                        var username = identity.unwrap().getUsername();
-                        uid = passwd.getUidForUserIfPresent(username)
-                                .orElseThrow(() -> new IllegalArgumentException(
-                                        "User " + username + " not found"));
-                        homeDir = temp.command("eval echo ~" +username).readStdoutIfPossible().filter(s -> !s.isBlank())
-                                .map(FilePath::new).orElse(null);
-                    }
-                    shell = CommandSupport.isInPath(temp, "bash") ? ShellDialects.BASH : ShellDialects.SH;
-                }
-
-                var sc = new IncusCommandView(parent).exec(containerName, uid, homeDir, shell);
+                var user = identity != null ? identity.unwrap().getUsername() : null;
+                var sc = new IncusCommandView(parent).exec(containerName, user);
                 sc.withSourceStore(IncusContainerStore.this);
                 if (identity != null && identity.unwrap().getPassword() != null) {
                     sc.setElevationHandler(new BaseElevationHandler(
