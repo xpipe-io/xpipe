@@ -7,17 +7,14 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellDialect;
-import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.FixedChildStore;
 import io.xpipe.core.store.StatefulDataStore;
-
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.ext.base.identity.IdentityValue;
 import io.xpipe.ext.base.store.PauseableStore;
 import io.xpipe.ext.base.store.StartableStore;
 import io.xpipe.ext.base.store.StoppableStore;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;
@@ -31,7 +28,13 @@ import java.util.OptionalInt;
 @Jacksonized
 @Value
 @AllArgsConstructor
-public class LxdContainerStore implements ShellStore, FixedChildStore, StatefulDataStore<ContainerStoreState>, StartableStore, StoppableStore, PauseableStore {
+public class LxdContainerStore
+        implements ShellStore,
+                FixedChildStore,
+                StatefulDataStore<ContainerStoreState>,
+                StartableStore,
+                StoppableStore,
+                PauseableStore {
 
     private final DataStoreEntryRef<LxdCmdStore> cmd;
     private final String containerName;
@@ -73,7 +76,7 @@ public class LxdContainerStore implements ShellStore, FixedChildStore, StatefulD
                 var base = new LxdCommandView(parent).exec(containerName, user);
                 if (identity != null && identity.unwrap().getPassword() != null) {
                     base.setElevationHandler(new BaseElevationHandler(
-                            LxdContainerStore.this, identity.unwrap().getPassword())
+                                    LxdContainerStore.this, identity.unwrap().getPassword())
                             .orElse(base.getElevationHandler()));
                 }
                 return base.withSourceStore(LxdContainerStore.this)
@@ -101,7 +104,6 @@ public class LxdContainerStore implements ShellStore, FixedChildStore, StatefulD
             }
         };
     }
-
 
     private void refreshContainerState(ShellControl sc) throws Exception {
         var state = getState();

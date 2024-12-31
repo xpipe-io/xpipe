@@ -9,11 +9,8 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellTtyState;
 import io.xpipe.core.process.SystemState;
-import javafx.collections.ObservableList;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BiFunction;
+import javafx.collections.ObservableList;
 
 public class ScanDialog {
 
@@ -34,7 +31,11 @@ public class ScanDialog {
         var action = new ScanDialogAction() {
 
             @Override
-            public boolean scan(ObservableList<ScanProvider.ScanOpportunity> all, ObservableList<ScanProvider.ScanOpportunity> selected, DataStoreEntry entry, ShellControl sc) {
+            public boolean scan(
+                    ObservableList<ScanProvider.ScanOpportunity> all,
+                    ObservableList<ScanProvider.ScanOpportunity> selected,
+                    DataStoreEntry entry,
+                    ShellControl sc) {
                 if (!sc.canHaveSubshells()) {
                     return false;
                 }
@@ -69,9 +70,7 @@ public class ScanDialog {
         show(initial, action);
     }
 
-    private static void show(
-            DataStoreEntry initialStore,
-            ScanDialogAction action) {
+    private static void show(DataStoreEntry initialStore, ScanDialogAction action) {
         var comp = new ScanDialogComp(initialStore != null ? initialStore.ref() : null, action);
         var modal = ModalOverlay.of("scanAlertTitle", comp);
         modal.addButton(ModalButton.ok(() -> {

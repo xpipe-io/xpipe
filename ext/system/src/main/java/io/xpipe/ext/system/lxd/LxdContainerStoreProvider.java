@@ -10,12 +10,10 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.ShellStoreFormat;
-import io.xpipe.app.util.SimpleValidator;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.ext.base.identity.IdentityChoice;
 import io.xpipe.ext.base.store.ShellStoreProvider;
 
-import io.xpipe.ext.system.incus.IncusContainerStore;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -48,7 +46,7 @@ public class LxdContainerStoreProvider implements ShellStoreProvider {
                     in a host shell of `%s` to open a shell into the container.
                     """,
                 new LxdCommandView(null)
-                        .execCommand(lxd.getContainerName(),true)
+                        .execCommand(lxd.getContainerName(), true)
                         .buildSimple(),
                 lxd.getCmd().getStore().getHost().get().getName());
     }

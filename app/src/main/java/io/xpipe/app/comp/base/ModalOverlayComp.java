@@ -8,7 +8,6 @@ import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
 
 import javafx.animation.*;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableDoubleValue;
@@ -162,7 +161,7 @@ public class ModalOverlayComp extends SimpleComp {
         });
         content.setSpacing(25);
         content.setPadding(new Insets(13, 27, 20, 27));
-        
+
         if (newValue.getTitleKey() != null) {
             var l = new Label(
                     AppI18n.get(newValue.getTitleKey()),

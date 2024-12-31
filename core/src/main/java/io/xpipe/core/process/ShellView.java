@@ -40,22 +40,25 @@ public class ShellView {
     }
 
     public boolean fileExists(FilePath path) throws Exception {
-        return getDialect().createFileExistsCommand(shellControl, path.toString()).executeAndCheck();
+        return getDialect()
+                .createFileExistsCommand(shellControl, path.toString())
+                .executeAndCheck();
     }
 
     public String user() throws Exception {
         return getDialect().printUsernameCommand(shellControl).readStdoutOrThrow();
     }
 
-
     public String getPath() throws Exception {
-        var path = shellControl.command(shellControl.getShellDialect().getPrintEnvironmentVariableCommand("PATH"))
+        var path = shellControl
+                .command(shellControl.getShellDialect().getPrintEnvironmentVariableCommand("PATH"))
                 .readStdoutOrThrow();
         return path;
     }
 
     public String getLibraryPath() throws Exception {
-        var path = shellControl.command(shellControl.getShellDialect().getPrintEnvironmentVariableCommand("LD_LIBRARY_PATH"))
+        var path = shellControl
+                .command(shellControl.getShellDialect().getPrintEnvironmentVariableCommand("LD_LIBRARY_PATH"))
                 .readStdoutOrThrow();
         return path;
     }

@@ -2,8 +2,8 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppI18n;
-
 import io.xpipe.app.util.PlatformThread;
+
 import javafx.beans.property.ListProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
@@ -18,7 +18,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;

@@ -7,6 +7,7 @@ import io.xpipe.ext.base.store.StorePauseAction;
 import io.xpipe.ext.base.store.StoreRestartAction;
 import io.xpipe.ext.base.store.StoreStartAction;
 import io.xpipe.ext.base.store.StoreStopAction;
+
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;

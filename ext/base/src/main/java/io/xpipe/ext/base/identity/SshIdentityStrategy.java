@@ -3,7 +3,6 @@ package io.xpipe.ext.base.identity;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.SecretRetrievalStrategy;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.process.CommandBuilder;

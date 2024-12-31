@@ -6,7 +6,6 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.CommandViewBase;
 import io.xpipe.core.process.*;
-import io.xpipe.core.store.FilePath;
 
 import lombok.NonNull;
 

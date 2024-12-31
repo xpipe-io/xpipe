@@ -10,9 +10,7 @@ import io.xpipe.app.ext.ScanProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.core.process.ShellControl;
 
 import javafx.application.Platform;
 import javafx.beans.property.*;
@@ -23,8 +21,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static javafx.scene.layout.Priority.ALWAYS;
@@ -40,9 +36,7 @@ class ScanDialogComp extends ModalOverlayContentComp {
             new SimpleListProperty<>(FXCollections.observableArrayList());
     private final BooleanProperty busy = new SimpleBooleanProperty();
 
-    ScanDialogComp(
-            DataStoreEntryRef<ShellStore> entry,
-            ScanDialogAction action) {
+    ScanDialogComp(DataStoreEntryRef<ShellStore> entry, ScanDialogAction action) {
         this.initialStore = entry;
         this.entry = new SimpleObjectProperty<>(entry);
         this.action = action;
@@ -153,13 +147,14 @@ class ScanDialogComp extends ModalOverlayContentComp {
             }
 
             var suffix = LicenseProvider.get().getFeature(s.getLicensedFeatureId());
-            return n
-                    + suffix.getDescriptionSuffix()
-                    .map(d -> " (" + d + ")")
-                    .orElse("");
+            return n + suffix.getDescriptionSuffix().map(d -> " (" + d + ")").orElse("");
         };
         var r = new ListSelectorComp<>(
-                available, nameFunc, selected, scanOperation -> scanOperation.isDisabled(), () -> available.size() > 3)
+                        available,
+                        nameFunc,
+                        selected,
+                        scanOperation -> scanOperation.isDisabled(),
+                        () -> available.size() > 3)
                 .createRegion();
         stackPane.getChildren().add(r);
 

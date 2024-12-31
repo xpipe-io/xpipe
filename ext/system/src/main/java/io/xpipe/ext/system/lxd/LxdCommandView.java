@@ -7,7 +7,6 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.CommandViewBase;
 import io.xpipe.core.process.*;
 
-import io.xpipe.core.store.FilePath;
 import lombok.NonNull;
 
 import java.util.*;
@@ -120,7 +119,10 @@ public class LxdCommandView extends CommandViewBase {
         return listContainersAndStates().entrySet().stream()
                 .map(s -> {
                     boolean running = s.getValue().toLowerCase(Locale.ROOT).equals("running");
-                    var c = LxdContainerStore.builder().cmd(store).containerName(s.getKey()).build();
+                    var c = LxdContainerStore.builder()
+                            .cmd(store)
+                            .containerName(s.getKey())
+                            .build();
                     var entry = DataStoreEntry.createNew(c.getContainerName(), c);
                     entry.setStorePersistentState(ContainerStoreState.builder()
                             .containerState(s.getValue())
@@ -177,6 +179,7 @@ public class LxdCommandView extends CommandViewBase {
             }
         };
     }
+
     public CommandBuilder execCommand(String containerName, boolean terminal) {
         var c = CommandBuilder.of().add("lxc", "exec", terminal ? "-t" : "-T");
         return c.addQuoted(containerName).add("--");
