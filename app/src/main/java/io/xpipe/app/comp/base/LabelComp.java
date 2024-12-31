@@ -20,6 +20,10 @@ public class LabelComp extends Comp<CompStructure<Label>> {
     private final ObservableValue<String> text;
     private final ObservableValue<LabelGraphic> graphic;
 
+    public LabelComp(String text, LabelGraphic graphic) {
+        this(new SimpleStringProperty(text), new SimpleObjectProperty<>(graphic));
+    }
+
     public LabelComp(String text) {
         this(new SimpleStringProperty(text));
     }

@@ -77,6 +77,6 @@ public class ScanDialog {
         modal.addButton(ModalButton.ok(() -> {
             comp.finish();
         }));
-        modal.showAndWait();
+        modal.show();
     }
 }

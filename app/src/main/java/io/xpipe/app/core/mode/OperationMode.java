@@ -7,6 +7,7 @@ import io.xpipe.app.core.check.AppTempCheck;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.prefs.CloseBehaviour;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.FailableRunnable;
@@ -273,21 +274,21 @@ public abstract class OperationMode {
     }
 
     public static void onWindowClose() {
-        if (AppPrefs.get() == null) {
-            return;
+        CloseBehaviour action;
+        if (AppPrefs.get() != null && !isInStartup() && !isInShutdown()) {
+            action = AppPrefs.get().closeBehaviour().getValue();
+        } else {
+            action = CloseBehaviour.QUIT;
         }
-
-        var action = AppPrefs.get().closeBehaviour().getValue();
         ThreadHelper.runAsync(() -> {
             action.run();
         });
     }
 
     public static void shutdown(boolean inShutdownHook, boolean hasError) {
-        // We can receive shutdown events while we are still starting up
-        // In that case ignore them until we are finished
         if (isInStartup()) {
-            return;
+            TrackEvent.info("Received shutdown request while in startup. Halting ...");
+            OperationMode.halt(1);
         }
 
         // In case we are stuck while in shutdown, instantly exit this application

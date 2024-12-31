@@ -101,7 +101,7 @@ public class BaseMode extends OperationMode {
                     });
                     imagesLoaded.await();
                     browserLoaded.await();
-                    AppDialog.waitForClose();
+                    AppDialog.waitForAllDialogsClose();
                     PlatformThread.runLaterIfNeededBlocking(() -> {
                         AppMainWindow.initContent();
                     });

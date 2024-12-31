@@ -42,6 +42,6 @@ public class UpdateChangelogAlert {
         });
         var modal = ModalOverlay.of("updateChangelogAlertTitle", comp.prefWidth(600), null);
         modal.addButton(ModalButton.ok());
-        AppDialog.showAndWait(modal);
+        AppDialog.show(modal);
     }
 }

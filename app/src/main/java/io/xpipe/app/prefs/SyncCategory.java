@@ -32,7 +32,7 @@ public class SyncCategory extends AppPrefsCategory {
         var markdown = new MarkdownComp(md, s -> s).prefWidth(600);
         var modal = ModalOverlay.of(null, markdown);
         modal.addButton(ModalButton.ok());
-        AppDialog.showAndWait(modal);
+        AppDialog.show(modal);
     }
 
     public Comp<?> create() {

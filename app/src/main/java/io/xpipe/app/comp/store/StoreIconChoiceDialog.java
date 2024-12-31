@@ -17,7 +17,7 @@ public class StoreIconChoiceDialog {
 
     public static void show(DataStoreEntry entry) {
         var dialog = new StoreIconChoiceDialog(entry);
-        dialog.getOverlay().showAndWait();
+        dialog.getOverlay().show();
     }
 
     private final ObjectProperty<SystemIcon> selected = new SimpleObjectProperty<>();

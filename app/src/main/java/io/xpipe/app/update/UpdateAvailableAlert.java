@@ -65,6 +65,6 @@ public class UpdateAvailableAlert {
                 },
                 false,
                 true));
-        AppDialog.showAndWait(modal);
+        AppDialog.show(modal);
     }
 }

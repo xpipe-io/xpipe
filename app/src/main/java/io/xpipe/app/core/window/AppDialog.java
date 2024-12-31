@@ -38,10 +38,20 @@ public class AppDialog {
         });
     }
 
-    public static void waitForClose() {
+    public static void waitForAllDialogsClose() {
         while (!modalOverlay.isEmpty()) {
             ThreadHelper.sleep(10);
         }
+    }
+
+    private static void waitForDialogClose(ModalOverlay overlay) {
+        while (modalOverlay.contains(overlay)) {
+            ThreadHelper.sleep(10);
+        }
+    }
+
+    public static void show(ModalOverlay o) {
+        show(o, false);
     }
 
     public static void showAndWait(ModalOverlay o) {
@@ -54,7 +64,7 @@ public class AppDialog {
             PlatformThread.runLaterIfNeededBlocking(() -> {
                 modalOverlay.add(o);
             });
-            waitForClose();
+            waitForDialogClose(o);
             ThreadHelper.sleep(200);
         } else {
             var key = new Object();
@@ -78,7 +88,7 @@ public class AppDialog {
             });
             if (wait) {
                 Platform.enterNestedEventLoop(key);
-                waitForClose();
+                waitForDialogClose(o);
             }
         }
     }
