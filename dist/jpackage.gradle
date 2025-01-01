@@ -92,7 +92,7 @@ jlink {
         imageName = 'xpiped'
         if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
             icon = "$rootDir/dist/logo/logo.ico"
-            appVersion = rootProject.canonicalVersionString
+            appVersion = org.gradle.internal.os.OperatingSystem.current().isWindows() ? windowsSchemaCanonicalVersion : rootProject.canonicalVersionString
         } else if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
             icon = "$rootDir/dist/logo/logo.png"
             appVersion = rootProject.canonicalVersionString

@@ -169,6 +169,16 @@ project.ext {
     deeplApiKey = findProperty('DEEPL_API_KEY')
     customJavaFxPath = null
     bundleCds = ci && fullVersion
+    windowsSchemaCanonicalVersion = getWindowsSchemaCanonicalVersion()
+}
+
+def getWindowsSchemaCanonicalVersion() {
+    def v = canonicalVersionString;
+    def last = versionReleaseNumber == 1 ? 0 : versionReleaseNumber - 1
+    if (v.split("\\.").length == 2) {
+        v = v + ".0"
+    }
+    return v + "." + last;
 }
 
 if (org.gradle.internal.os.OperatingSystem.current() == org.gradle.internal.os.OperatingSystem.LINUX) {
