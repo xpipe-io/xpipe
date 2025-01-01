@@ -170,13 +170,20 @@ public class AppProperties {
         }
     }
 
-    public static void logPassedProperties() {
+    public void logArguments() {
         TrackEvent.withInfo("Loaded properties")
-                .tag("version", INSTANCE.version)
-                .tag("build", INSTANCE.build)
-                .tag("dataDir", INSTANCE.dataDir)
-                .tag("fullVersion", INSTANCE.fullVersion)
-                .build();
+                .tag("version", version)
+                .tag("build", build)
+                .tag("dataDir", dataDir)
+                .tag("fullVersion", fullVersion)
+                .handle();
+
+        TrackEvent.withInfo("Received arguments")
+                .tag("raw", arguments.getRawArgs())
+                .tag("resolved", arguments.getResolvedArgs())
+                .tag("resolvedCommand", arguments.getOpenArgs())
+                .tag("resolvedMode", arguments.getModeArg())
+                .handle();
 
         for (var e : System.getProperties().entrySet()) {
             if (e.getKey().toString().contains("io.xpipe")) {

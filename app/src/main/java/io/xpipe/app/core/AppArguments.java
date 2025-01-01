@@ -29,12 +29,6 @@ public class AppArguments {
         var rawArgs = Arrays.asList(args);
         var resolvedArgs = Arrays.asList(parseProperties(args));
         var command = LauncherCommand.resolveLauncher(resolvedArgs.toArray(String[]::new));
-        TrackEvent.withInfo("Received arguments")
-                .tag("raw", rawArgs)
-                .tag("resolved", resolvedArgs)
-                .tag("resolvedCommand", command.inputs)
-                .tag("resolvedMode",command.mode)
-                .handle();
         return new AppArguments(rawArgs, resolvedArgs, command.mode, command.inputs);
     }
 
