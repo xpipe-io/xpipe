@@ -22,8 +22,9 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.terminal.TerminalLauncherManager;
 import io.xpipe.app.terminal.TerminalView;
-import io.xpipe.app.update.UpdateAvailableAlert;
+import io.xpipe.app.update.UpdateAvailableDialog;
 import io.xpipe.app.update.UpdateChangelogAlert;
+import io.xpipe.app.update.UpdateNagDialog;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.*;
 
@@ -67,7 +68,9 @@ public class BaseMode extends OperationMode {
         // You can still update manually in the about tab
         if (AppPrefs.get().automaticallyUpdate().get()
                 || AppPrefs.get().checkForSecurityUpdates().get()) {
-            UpdateAvailableAlert.showIfNeeded();
+            UpdateAvailableDialog.showIfNeeded();
+        } else {
+            UpdateNagDialog.showIfNeeded();
         }
 
         var imagesLoaded = new CountDownLatch(1);

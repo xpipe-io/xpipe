@@ -13,7 +13,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
-public class UpdateAvailableAlert {
+public class UpdateAvailableDialog {
 
     public static void showIfNeeded() {
         UpdateHandler uh = XPipeDistributionType.get().getUpdateHandler();
