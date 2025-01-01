@@ -1,7 +1,6 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.Main;
-import io.xpipe.app.core.launcher.LauncherInput;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -58,7 +57,7 @@ public class AppDesktopIntegration {
 
                 // URL open operations have to be handled in a special way on macOS!
                 Desktop.getDesktop().setOpenURIHandler(e -> {
-                    LauncherInput.handle(List.of(e.getURI().toString()));
+                    AppOpenArguments.handle(List.of(e.getURI().toString()));
                 });
 
                 // Do it this way to prevent IDE inspections from complaining

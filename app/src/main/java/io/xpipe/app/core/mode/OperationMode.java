@@ -154,6 +154,7 @@ public abstract class OperationMode {
 
         switchToSyncOrThrow(map(getStartupMode()));
         inStartup = false;
+        AppOpenArguments.init();
     }
 
     public static void switchToAsync(OperationMode newMode) {

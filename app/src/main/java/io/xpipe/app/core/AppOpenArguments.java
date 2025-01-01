@@ -1,12 +1,11 @@
-package io.xpipe.app.core.launcher;
+package io.xpipe.app.core;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
-import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.storage.DataStorage;
-
 import lombok.Value;
 
 import java.net.URI;
@@ -16,9 +15,29 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class LauncherInput {
+public class AppOpenArguments {
 
-    public static void handle(List<String> arguments) {
+    private static final List<String> bufferedArguments = new ArrayList<>();
+
+    public static synchronized void init() {
+        handleImpl(bufferedArguments);
+        bufferedArguments.clear();
+    }
+
+    public static synchronized void handle(List<String> arguments) {
+        if (OperationMode.isInShutdown()) {
+            return;
+        }
+
+        if (OperationMode.isInStartup()) {
+            bufferedArguments.addAll(arguments);
+            return;
+        }
+
+        handleImpl(arguments);
+    }
+
+    private static synchronized void handleImpl(List<String> arguments) {
         if (arguments.size() == 0) {
             return;
         }
@@ -28,7 +47,7 @@ public abstract class LauncherInput {
         var all = new ArrayList<ActionProvider.Action>();
         arguments.forEach(s -> {
             try {
-                all.addAll(of(s));
+                all.addAll(parseActions(s));
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).omit().handle();
             }
@@ -49,7 +68,7 @@ public abstract class LauncherInput {
         });
     }
 
-    public static List<ActionProvider.Action> of(String input) {
+    public static List<ActionProvider.Action> parseActions(String input) {
         if (input.startsWith("\"") && input.endsWith("\"")) {
             input = input.substring(1, input.length() - 1);
         }

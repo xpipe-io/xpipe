@@ -1,6 +1,5 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.core.launcher.LauncherInput;
 import io.xpipe.app.core.window.AppDialog;
 
 import javafx.scene.input.Clipboard;
@@ -25,7 +24,7 @@ public class AppActionLinkDetector {
     }
 
     public static void handle(String content, boolean showAlert) {
-        var detected = LauncherInput.of(content);
+        var detected = AppOpenArguments.parseActions(content);
         if (detected.size() == 0) {
             return;
         }
@@ -34,7 +33,7 @@ public class AppActionLinkDetector {
             return;
         }
 
-        LauncherInput.handle(List.of(content));
+        AppOpenArguments.handle(List.of(content));
     }
 
     public static void detectOnFocus() {

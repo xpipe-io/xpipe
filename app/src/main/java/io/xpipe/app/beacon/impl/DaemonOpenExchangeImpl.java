@@ -1,6 +1,6 @@
 package io.xpipe.app.beacon.impl;
 
-import io.xpipe.app.core.launcher.LauncherInput;
+import io.xpipe.app.core.AppOpenArguments;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.util.PlatformInit;
 import io.xpipe.beacon.BeaconServerException;
@@ -20,7 +20,7 @@ public class DaemonOpenExchangeImpl extends DaemonOpenExchange {
 
             OperationMode.switchToAsync(OperationMode.GUI);
         } else {
-            LauncherInput.handle(msg.getArguments());
+            AppOpenArguments.handle(msg.getArguments());
         }
         return Response.builder().build();
     }
