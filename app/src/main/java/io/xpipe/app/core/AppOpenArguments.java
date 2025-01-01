@@ -30,6 +30,7 @@ public class AppOpenArguments {
         }
 
         if (OperationMode.isInStartup()) {
+            TrackEvent.withDebug("Buffering open arguments").elements(arguments).handle();
             bufferedArguments.addAll(arguments);
             return;
         }
