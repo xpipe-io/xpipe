@@ -5,9 +5,9 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.window.AppDialog;
 
-public class AppPtbCheck {
+public class PtbDialog {
 
-    public static void check() {
+    public static void showIfNeeded() {
         if (!AppProperties.get().isStaging()) {
             return;
         }

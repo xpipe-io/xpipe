@@ -121,6 +121,11 @@ public abstract class OperationMode {
     }
 
     public static XPipeDaemonMode getStartupMode() {
+        if (AppMainWindow.getInstance() != null
+                && AppMainWindow.getInstance().getStage().isShowing()) {
+            return XPipeDaemonMode.GUI;
+        }
+
         var arg = AppProperties.get().getArguments().getModeArg();
         if (arg != null) {
             return arg;

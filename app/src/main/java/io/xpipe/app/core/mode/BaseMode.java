@@ -27,6 +27,7 @@ import io.xpipe.app.update.UpdateChangelogAlert;
 import io.xpipe.app.update.UpdateNagDialog;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.*;
+import io.xpipe.core.util.XPipeDaemonMode;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -62,7 +63,10 @@ public class BaseMode extends OperationMode {
         AppAvCheck.check();
         AppJavaOptionsCheck.check();
         AppSid.init();
-        AppPtbCheck.check();
+
+        if (OperationMode.getStartupMode() == XPipeDaemonMode.GUI) {
+            PtbDialog.showIfNeeded();
+        }
 
         // If we downloaded an update, and decided to no longer automatically update, don't remind us!
         // You can still update manually in the about tab
