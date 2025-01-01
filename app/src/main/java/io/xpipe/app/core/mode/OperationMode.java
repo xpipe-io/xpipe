@@ -366,7 +366,7 @@ public abstract class OperationMode {
                 return;
             }
 
-            if (CURRENT != null) {
+            if (CURRENT != null && CURRENT != BACKGROUND) {
                 CURRENT.onSwitchFrom();
             }
 
