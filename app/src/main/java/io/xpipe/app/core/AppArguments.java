@@ -29,6 +29,12 @@ public class AppArguments {
         var rawArgs = Arrays.asList(args);
         var resolvedArgs = Arrays.asList(parseProperties(args));
         var command = LauncherCommand.resolveLauncher(resolvedArgs.toArray(String[]::new));
+        TrackEvent.withInfo("Received arguments")
+                .tag("raw", rawArgs)
+                .tag("resolved", resolvedArgs)
+                .tag("resolvedCommand", command.inputs)
+                .tag("resolvedMode",command.mode)
+                .handle();
         return new AppArguments(rawArgs, resolvedArgs, command.mode, command.inputs);
     }
 
@@ -69,11 +75,6 @@ public class AppArguments {
         XPipeDaemonMode mode;
 
         public static LauncherCommand resolveLauncher(String[] args) {
-            TrackEvent.builder()
-                    .type("debug")
-                    .message("Received arguments: " + Arrays.asList(args))
-                    .handle();
-
             var cmd = new CommandLine(new LauncherCommand());
             cmd.setExecutionExceptionHandler((ex, commandLine, parseResult) -> {
                 var event = ErrorEvent.fromThrowable(ex).term().build();

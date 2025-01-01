@@ -121,24 +121,33 @@ public abstract class OperationMode {
     }
 
     public static XPipeDaemonMode getStartupMode() {
+        var event = TrackEvent.withInfo("Startup mode determined");
         if (AppMainWindow.getInstance() != null
                 && AppMainWindow.getInstance().getStage().isShowing()) {
+            event.tag("mode", "gui").tag("reason", "windowShowing").handle();
             return XPipeDaemonMode.GUI;
         }
 
         var arg = AppProperties.get().getArguments().getModeArg();
         if (arg != null) {
+            event.tag("mode", arg.getDisplayName()).tag("reason", "modeArgPassed").handle();
             return arg;
         }
 
         var prop = AppProperties.get().getExplicitMode();
         if (prop != null) {
+            event.tag("mode", prop.getDisplayName()).tag("reason", "modePropertyPassed").handle();
             return prop;
         }
 
-        return AppPrefs.get() != null
-                ? AppPrefs.get().startupBehaviour().getValue().getMode()
-                : XPipeDaemonMode.GUI;
+        if (AppPrefs.get() != null) {
+            var pref = AppPrefs.get().startupBehaviour().getValue().getMode();
+            event.tag("mode", pref.getDisplayName()).tag("reason", "prefSetting").handle();
+            return pref;
+        }
+
+        event.tag("mode", "gui").tag("reason", "fallback").handle();
+        return XPipeDaemonMode.GUI;
     }
 
     @SneakyThrows
@@ -157,7 +166,8 @@ public abstract class OperationMode {
             return;
         }
 
-        switchToSyncOrThrow(map(getStartupMode()));
+        var startupMode = getStartupMode();
+        switchToSyncOrThrow(map(startupMode));
         inStartup = false;
         AppOpenArguments.init();
     }
