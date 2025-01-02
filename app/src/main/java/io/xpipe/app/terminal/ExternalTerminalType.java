@@ -316,6 +316,34 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     .addFile(configuration.getScriptFile());
         }
     };
+    ExternalTerminalType GHOSTTY = new SimplePathType("app.ghostty", "ghostty", true) {
+        @Override
+        public String getWebsite() {
+            return "https://ghostty.org";
+        }
+
+        @Override
+        public boolean isRecommended() {
+            return true;
+        }
+
+        @Override
+        public boolean supportsColoredTitle() {
+            return true;
+        }
+
+        @Override
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.TABBED;
+        }
+
+        @Override
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
+            return CommandBuilder.of()
+                    .add("-e")
+                    .addFile(configuration.getScriptFile());
+        }
+    };
     ExternalTerminalType GUAKE = new SimplePathType("app.guake", "guake", true) {
 
         @Override
@@ -561,6 +589,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             AlacrittyTerminalType.ALACRITTY_LINUX,
             WezTerminalType.WEZTERM_LINUX,
             KittyTerminalType.KITTY_LINUX,
+            GHOSTTY,
             TERMINATOR,
             TERMINOLOGY,
             XFCE,
