@@ -63,10 +63,10 @@ public class FixedServiceStoreProvider extends AbstractServiceStoreProvider {
                                 StoreViewState.get().getAllConnectionsCategory()),
                         host)
                 .nonNull()
-                .nameAndDescription("serviceLocalPort")
-                .addInteger(localPort)
                 .sub(ServiceProtocolTypeHelper.choice(serviceProtocolType), serviceProtocolType)
                 .nonNull()
+                .nameAndDescription("serviceLocalPort")
+                .addInteger(localPort)
                 .bind(
                         () -> {
                             return FixedServiceStore.builder()

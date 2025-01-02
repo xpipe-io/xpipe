@@ -46,10 +46,10 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
                 .nameAndDescription("serviceRemotePort")
                 .addInteger(remotePort)
                 .nonNull()
-                .nameAndDescription("serviceLocalPort")
-                .addInteger(localPort)
                 .sub(ServiceProtocolTypeHelper.choice(serviceProtocolType), serviceProtocolType)
                 .nonNull()
+                .nameAndDescription("serviceLocalPort")
+                .addInteger(localPort)
                 .bind(
                         () -> {
                             return CustomServiceStore.builder()
