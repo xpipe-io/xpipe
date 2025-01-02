@@ -86,8 +86,8 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
                         r.heightProperty()));
         loading.prefHeightProperty().bind(loading.prefWidthProperty());
 
-        stack.prefWidthProperty().bind(r.widthProperty());
-        stack.prefHeightProperty().bind(r.heightProperty());
+        stack.prefWidthProperty().bind(r.prefWidthProperty());
+        stack.prefHeightProperty().bind(r.prefHeightProperty());
 
         return new SimpleCompStructure<>(stack);
     }

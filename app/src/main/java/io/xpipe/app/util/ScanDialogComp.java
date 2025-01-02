@@ -55,7 +55,9 @@ class ScanDialogComp extends ModalOverlayContentComp {
 
             Platform.runLater(() -> {
                 var modal = getModalOverlay();
-                modal.close();
+                if (modal != null) {
+                    modal.close();
+                }
             });
 
             BooleanScope.executeExclusive(busy, () -> {

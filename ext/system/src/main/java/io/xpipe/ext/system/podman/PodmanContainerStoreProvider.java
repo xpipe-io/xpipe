@@ -32,18 +32,6 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
                 || s.getCmd().getStore().getState().isShowNonRunning();
     }
 
-    public void onParentRefresh(DataStoreEntry entry) {
-        var wasExpanded =
-                entry.isExpanded() && DataStorage.get().getStoreChildren(entry).size() > 0;
-        DataStorage.get()
-                .addStoreIfNotPresent(
-                        "Services",
-                        FixedServiceGroupStore.builder().parent(entry.ref()).build());
-        if (!wasExpanded) {
-            entry.setExpanded(false);
-        }
-    }
-
     @Override
     public boolean shouldShowScan() {
         return false;

@@ -93,7 +93,8 @@ open module io.xpipe.ext.base {
             EditScriptStoreAction,
             BrowseStoreAction,
             ScanStoreAction,
-            ChangeStoreIconAction;
+            ChangeStoreIconAction,
+            ServiceRefreshAction;
     provides DataStoreProvider with
             FixedServiceGroupStoreProvider,
             CustomServiceGroupStoreProvider,
