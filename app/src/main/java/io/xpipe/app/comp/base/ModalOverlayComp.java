@@ -167,7 +167,7 @@ public class ModalOverlayComp extends SimpleComp {
                     AppI18n.get(newValue.getTitleKey()),
                     newValue.getGraphic() != null ? newValue.getGraphic().createGraphicNode() : null);
             l.setGraphicTextGap(8);
-            AppFont.header(l);
+            AppFont.normal(l);
             content.getChildren().addFirst(l);
         } else {
             content.getChildren().addFirst(Comp.vspacer(0).createRegion());
@@ -184,6 +184,7 @@ public class ModalOverlayComp extends SimpleComp {
                 }
             }
             content.getChildren().add(buttonBar);
+            AppFont.small(buttonBar);
         }
 
         var modalBox = new ModalBox(content) {
