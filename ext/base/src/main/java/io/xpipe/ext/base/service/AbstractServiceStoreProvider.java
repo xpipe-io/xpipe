@@ -107,16 +107,18 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
         return Bindings.createStringBinding(
                 () -> {
                     var desc = s.getLocalPort() != null
-                            ? "localhost:" + s.getLocalPort() + " <- " + s.getRemotePort()
+                            ? "localhost:" + s.getLocalPort() + " <- :" + s.getRemotePort()
                             : s.isSessionRunning()
-                                    ? "localhost:" + s.getSession().getLocalPort() + " <- " + s.getRemotePort()
+                                    ? "localhost:" + s.getSession().getLocalPort() + " <- :" + s.getRemotePort()
                                     : AppI18n.get("remotePort", s.getRemotePort());
+                    var type = s.getServiceProtocolType() != null && !(s.getServiceProtocolType() instanceof ServiceProtocolType.None) ?
+                            AppI18n.get(s.getServiceProtocolType().getTranslationKey()) : null;
                     var state = !s.requiresTunnel()
                             ? null
                             : s.isSessionRunning()
                                     ? AppI18n.get("active")
                                     : s.isSessionEnabled() ? AppI18n.get("starting") : AppI18n.get("inactive");
-                    return new ShellStoreFormat(null, desc, state).format();
+                    return new ShellStoreFormat(null, desc, type, state).format();
                 },
                 section.getWrapper().getCache(),
                 AppPrefs.get().language());

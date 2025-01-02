@@ -25,7 +25,7 @@ public abstract class AbstractServiceStore implements SingletonSessionStore<Netw
 
     private final Integer remotePort;
     private final Integer localPort;
-    private final String path;
+    private final ServiceProtocolType serviceProtocolType;
 
     public boolean licenseRequired() {
         return true;
@@ -36,6 +36,7 @@ public abstract class AbstractServiceStore implements SingletonSessionStore<Netw
         Validators.nonNull(getHost());
         Validators.isType(getHost(), NetworkTunnelStore.class);
         Validators.nonNull(remotePort);
+        Validators.nonNull(serviceProtocolType);
     }
 
     public boolean requiresTunnel() {

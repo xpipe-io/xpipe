@@ -11,7 +11,6 @@ import io.xpipe.core.store.NetworkTunnelStore;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 
 import java.util.List;
 
@@ -31,10 +30,9 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
     public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
         CustomServiceStore st = store.getValue().asNeeded();
         var host = new SimpleObjectProperty<>(st.getHost());
-        var path = new SimpleStringProperty(st.getPath());
         var localPort = new SimpleObjectProperty<>(st.getLocalPort());
         var remotePort = new SimpleObjectProperty<>(st.getRemotePort());
-
+        var serviceProtocolType = new SimpleObjectProperty<>(st.getServiceProtocolType());
         var q = new OptionsBuilder()
                 .nameAndDescription("serviceHost")
                 .addComp(
@@ -50,15 +48,15 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
                 .nonNull()
                 .nameAndDescription("serviceLocalPort")
                 .addInteger(localPort)
-                .nameAndDescription("servicePath")
-                .addString(path)
+                .sub(ServiceProtocolTypeHelper.choice(serviceProtocolType), serviceProtocolType)
+                .nonNull()
                 .bind(
                         () -> {
                             return CustomServiceStore.builder()
                                     .host(host.get())
                                     .localPort(localPort.get())
                                     .remotePort(remotePort.get())
-                                    .path(path.get())
+                                    .serviceProtocolType(serviceProtocolType.get())
                                     .build();
                         },
                         store);
