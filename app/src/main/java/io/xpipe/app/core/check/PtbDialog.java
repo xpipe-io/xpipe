@@ -23,8 +23,8 @@ public class PtbDialog {
                 + " You will have to install and launch the normal XPipe release for that.");
         var modal = ModalOverlay.of("ptbNotice", content);
         modal.persist();
-        modal.addButton(ModalButton.ok());
         modal.addButton(ModalButton.quit());
+        modal.addButton(ModalButton.ok());
         AppDialog.showAndWait(modal);
     }
 }

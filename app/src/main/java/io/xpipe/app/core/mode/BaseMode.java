@@ -103,7 +103,7 @@ public class BaseMode extends OperationMode {
                     AppLayoutModel.init();
                     PlatformInit.init(true);
                     PlatformThread.runLaterIfNeededBlocking(() -> {
-                        AppGreetings.showIfNeeded();
+                        AppGreetingsDialog.showIfNeeded();
                         AppMainWindow.loadingText("initializingApp");
                     });
                     imagesLoaded.await();

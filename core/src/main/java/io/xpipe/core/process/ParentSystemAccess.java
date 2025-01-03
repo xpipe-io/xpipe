@@ -33,6 +33,11 @@ public interface ParentSystemAccess {
             public String translateToLocalSystemPath(String path) {
                 throw new UnsupportedOperationException();
             }
+
+            @Override
+            public boolean isIdentity() {
+                return false;
+            }
         };
     }
 
@@ -66,6 +71,11 @@ public interface ParentSystemAccess {
             @Override
             public String translateToLocalSystemPath(String path) {
                 return path;
+            }
+
+            @Override
+            public boolean isIdentity() {
+                return true;
             }
         };
     }
@@ -101,6 +111,11 @@ public interface ParentSystemAccess {
             public String translateToLocalSystemPath(String path) throws Exception {
                 return a1.translateToLocalSystemPath(a2.translateToLocalSystemPath(path));
             }
+
+            @Override
+            public boolean isIdentity() {
+                return a1.isIdentity() && a2.isIdentity();
+            }
         };
     }
 
@@ -119,4 +134,6 @@ public interface ParentSystemAccess {
     String translateFromLocalSystemPath(String path) throws Exception;
 
     String translateToLocalSystemPath(String path) throws Exception;
+
+    boolean isIdentity();
 }

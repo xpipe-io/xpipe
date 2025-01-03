@@ -18,7 +18,7 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
-public class AppGreetings {
+public class AppGreetingsDialog {
 
     public static TitledPane createIntroduction() {
         var tp = new TitledPane();
@@ -30,6 +30,7 @@ public class AppGreetings {
         AppResources.with(AppResources.XPIPE_MODULE, "misc/welcome.md", file -> {
             var md = Files.readString(file);
             var markdown = new MarkdownComp(md, UnaryOperator.identity()).createRegion();
+            markdown.setPadding(new Insets(20));
             tp.setContent(markdown);
         });
 
@@ -46,6 +47,7 @@ public class AppGreetings {
         AppResources.with(AppResources.XPIPE_MODULE, "misc/eula.md", file -> {
             var md = Files.readString(file);
             var markdown = new MarkdownComp(md, UnaryOperator.identity()).createRegion();
+            markdown.setPadding(new Insets(20));
             tp.setContent(markdown);
         });
 
@@ -54,7 +56,7 @@ public class AppGreetings {
 
     public static void showIfNeeded() {
         boolean set = AppCache.getBoolean("legalAccepted", false);
-        if (set || AppProperties.get().isDevelopmentEnvironment()) {
+        if (set || AppProperties.get().isDevelopmentEnvironment() || AppProperties.get().isTest()) {
             return;
         }
 
@@ -66,7 +68,7 @@ public class AppGreetings {
         var read = new SimpleBooleanProperty();
         var accepted = new SimpleBooleanProperty();
 
-        var modal = ModalOverlay.of("greetingsAlertTitle", Comp.of(() -> {
+        var modal = ModalOverlay.of(Comp.of(() -> {
             var content = List.of(createIntroduction(), createEula());
             var accordion = new Accordion(content.toArray(TitledPane[]::new));
             accordion.setExpandedPane(content.get(0));
@@ -91,7 +93,6 @@ public class AppGreetings {
                     .createRegion();
 
             var layout = new BorderPane();
-            layout.setPadding(new Insets(20));
             layout.setCenter(accordion);
             layout.setBottom(acceptanceBox);
             layout.setPrefWidth(600);

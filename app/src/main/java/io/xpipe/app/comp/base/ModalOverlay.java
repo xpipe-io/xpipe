@@ -15,6 +15,10 @@ import java.util.List;
 @Builder(toBuilder = true)
 public class ModalOverlay {
 
+    public static ModalOverlay of(Comp<?> content) {
+        return of(null, content, null);
+    }
+
     public static ModalOverlay of(String titleKey, Comp<?> content) {
         return of(titleKey, content, null);
     }

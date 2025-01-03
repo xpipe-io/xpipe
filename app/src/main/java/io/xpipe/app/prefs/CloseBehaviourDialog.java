@@ -1,10 +1,12 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.PrefsChoiceValue;
@@ -32,8 +34,12 @@ public class CloseBehaviourDialog {
 
         Property<CloseBehaviour> prop =
                 new SimpleObjectProperty<>(AppPrefs.get().closeBehaviour().getValue());
+        var label = new LabelComp(AppI18n.observable("closeBehaviourAlertTitleHeader" ));
+        label.apply(struc -> {
+            struc.get().setWrapText(true);
+        });
         var content =
-                new VerticalComp(List.of(AppDialog.dialogTextKey("closeBehaviourAlertTitleHeader"), Comp.of(() -> {
+                new VerticalComp(List.of(label, Comp.of(() -> {
                     ToggleGroup group = new ToggleGroup();
                     var vb = new VBox();
                     vb.setSpacing(7);
@@ -49,10 +55,9 @@ public class CloseBehaviourDialog {
                             rb.setSelected(true);
                         }
                         vb.getChildren().add(rb);
-                        vb.setMinHeight(130);
                     }
                     return vb;
-                })));
+                }))).spacing(15).prefWidth(500);
         var oked = new AtomicBoolean();
         var modal = ModalOverlay.of("closeBehaviourAlertTitle", content);
         modal.addButton(ModalButton.cancel());

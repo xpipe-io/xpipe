@@ -108,9 +108,9 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                     var modal = ModalOverlay.of(
                                             "clearCachesAlertTitle",
                                             AppDialog.dialogTextKey("clearCachesAlertContent"));
-                                    modal.addButton(ModalButton.ok(() -> {
+                                    modal.withDefaultButtons(() -> {
                                         AppCache.clear();
-                                    }));
+                                    });
                                     modal.show();
                                     e.consume();
                                 })
