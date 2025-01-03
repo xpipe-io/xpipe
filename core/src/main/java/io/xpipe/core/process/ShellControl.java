@@ -230,7 +230,7 @@ public interface ShellControl extends ProcessControl {
 
     default <T> T enforceDialect(@NonNull ShellDialect type, FailableFunction<ShellControl, T, Exception> sc)
             throws Exception {
-        if (isRunning() && getShellDialect().equals(type)) {
+        if (type.equals(getShellDialect())) {
             return sc.apply(this);
         } else {
             try (var sub = subShell(type).start()) {

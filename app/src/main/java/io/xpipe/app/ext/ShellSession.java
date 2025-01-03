@@ -20,7 +20,7 @@ public class ShellSession extends Session {
     }
 
     public void start() throws Exception {
-        if (shellControl.isRunning()) {
+        if (shellControl.isRunning(true)) {
             return;
         } else {
             stop();
@@ -60,7 +60,7 @@ public class ShellSession extends Session {
     }
 
     public boolean isRunning() {
-        return shellControl.isRunning();
+        return shellControl.isRunning(true);
     }
 
     public void stop() throws Exception {

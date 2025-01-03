@@ -201,8 +201,8 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public boolean isRunning() {
-        return parent.isRunning();
+    public boolean isRunning(boolean refresh) {
+        return parent.isRunning(true);
     }
 
     @Override

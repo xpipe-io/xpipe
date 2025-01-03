@@ -23,7 +23,7 @@ public interface ProcessControl extends AutoCloseable {
 
     boolean isAnyStreamClosed();
 
-    boolean isRunning();
+    boolean isRunning(boolean refresh);
 
     ShellDialect getShellDialect();
 

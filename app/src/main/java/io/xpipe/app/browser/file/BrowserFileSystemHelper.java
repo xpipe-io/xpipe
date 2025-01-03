@@ -51,7 +51,7 @@ public class BrowserFileSystemHelper {
         }
 
         var shell = model.getFileSystem().getShell();
-        if (shell.isEmpty() || !shell.get().isRunning()) {
+        if (shell.isEmpty() || !shell.get().isRunning(true)) {
             return path;
         }
 
