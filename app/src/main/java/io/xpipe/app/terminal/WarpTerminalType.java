@@ -2,10 +2,8 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.TerminalInitFunction;
-import io.xpipe.core.util.FailableFunction;
 
 public class WarpTerminalType extends ExternalTerminalType.MacOsType {
 
@@ -50,18 +48,6 @@ public class WarpTerminalType extends ExternalTerminalType.MacOsType {
                         .add("open", "-a")
                         .addQuoted("Warp.app")
                         .addFile(configuration.getScriptFile()));
-    }
-
-    @Override
-    public FailableFunction<TerminalLaunchConfiguration, String, Exception> remoteLaunchCommand(
-            ShellDialect systemDialect) {
-        return launchConfiguration -> {
-            var toExecute = CommandBuilder.of()
-                    .add("open", "-a")
-                    .addQuoted("Warp.app")
-                    .addFile(launchConfiguration.getScriptFile());
-            return toExecute.buildSimple();
-        };
     }
 
     @Override

@@ -5,7 +5,6 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.*;
-import io.xpipe.core.util.FailableFunction;
 
 import lombok.Getter;
 
@@ -613,11 +612,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             MACOS_TERMINAL,
             TERMIUS);
 
-    List<ExternalTerminalType> ALL = getTypes(OsType.getLocal(), false, true);
+    List<ExternalTerminalType> ALL = getTypes(OsType.getLocal(), true);
 
-    List<ExternalTerminalType> ALL_ON_ALL_PLATFORMS = getTypes(null, false, true);
+    List<ExternalTerminalType> ALL_ON_ALL_PLATFORMS = getTypes(null, true);
 
-    static List<ExternalTerminalType> getTypes(OsType osType, boolean remote, boolean custom) {
+    static List<ExternalTerminalType> getTypes(OsType osType, boolean custom) {
         var all = new ArrayList<ExternalTerminalType>();
         if (osType == null || osType.equals(OsType.WINDOWS)) {
             all.addAll(WINDOWS_TERMINALS);
@@ -627,9 +626,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
         if (osType == null || osType.equals(OsType.MACOS)) {
             all.addAll(MACOS_TERMINALS);
-        }
-        if (remote) {
-            all.removeIf(externalTerminalType -> externalTerminalType.remoteLaunchCommand(null) == null);
         }
         // Prefer recommended
         all.sort(Comparator.comparingInt(o -> (o.isRecommended() ? -1 : 0)));
@@ -690,11 +686,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     default void launch(TerminalLaunchConfiguration configuration) throws Exception {}
 
-    default FailableFunction<TerminalLaunchConfiguration, String, Exception> remoteLaunchCommand(
-            ShellDialect systemDialect) {
-        return null;
-    }
-
     abstract class WindowsType extends ExternalApplicationType.WindowsType implements ExternalTerminalType {
 
         public WindowsType(String id, String executable) {
@@ -745,19 +736,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             var args = toCommand(configuration);
             launch(configuration.getColoredTitle(), args);
-        }
-
-        @Override
-        public FailableFunction<TerminalLaunchConfiguration, String, Exception> remoteLaunchCommand(
-                ShellDialect systemDialect) {
-            return launchConfiguration -> {
-                var args = toCommand(launchConfiguration);
-                args.add(0, executable);
-                if (explicitlyAsync) {
-                    args = systemDialect.launchAsnyc(args);
-                }
-                return args.buildSimple();
-            };
         }
 
         protected abstract CommandBuilder toCommand(TerminalLaunchConfiguration configuration) throws Exception;

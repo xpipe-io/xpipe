@@ -4,8 +4,6 @@ import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellDialect;
-import io.xpipe.core.util.FailableFunction;
 
 public class GnomeTerminalType extends ExternalTerminalType.PathCheckType implements TrackableTerminalType {
 
@@ -50,16 +48,4 @@ public class GnomeTerminalType extends ExternalTerminalType.PathCheckType implem
         }
     }
 
-    @Override
-    public FailableFunction<TerminalLaunchConfiguration, String, Exception> remoteLaunchCommand(
-            ShellDialect systemDialect) {
-        return launchConfiguration -> {
-            var toExecute = CommandBuilder.of()
-                    .add(executable, "-v", "--title")
-                    .addQuoted(launchConfiguration.getColoredTitle())
-                    .add("--")
-                    .addFile(launchConfiguration.getScriptFile());
-            return toExecute.buildSimple();
-        };
-    }
 }
