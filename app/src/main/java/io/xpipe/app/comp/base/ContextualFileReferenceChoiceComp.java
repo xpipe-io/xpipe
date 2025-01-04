@@ -101,7 +101,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
             try {
                 var source = Path.of(currentPath.trim());
                 var dataDir = DataStorage.get().getDataDir();
-                var target = dataDir.resolve(sync.getTargetLocation().apply(source));
+                var target = sync.getTargetLocation().apply(source);
                 if (Files.exists(source)) {
                     var shouldCopy = AppWindowHelper.showConfirmationAlert(
                             "confirmGitShareTitle", "confirmGitShareHeader", "confirmGitShareContent");
