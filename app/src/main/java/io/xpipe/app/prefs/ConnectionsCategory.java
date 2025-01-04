@@ -15,8 +15,6 @@ public class ConnectionsCategory extends AppPrefsCategory {
     protected Comp<?> create() {
         var prefs = AppPrefs.get();
         var options = new OptionsBuilder()
-                .addTitle("localShell")
-                .sub(new OptionsBuilder().pref(prefs.useLocalFallbackShell).addToggle(prefs.useLocalFallbackShell))
                 .addTitle("connections")
                 .sub(new OptionsBuilder()
                         .pref(prefs.condenseConnectionDisplay)
@@ -26,7 +24,9 @@ public class ConnectionsCategory extends AppPrefsCategory {
                         .pref(prefs.openConnectionSearchWindowOnConnectionCreation)
                         .addToggle(prefs.openConnectionSearchWindowOnConnectionCreation)
                         .pref(prefs.requireDoubleClickForConnections)
-                        .addToggle(prefs.requireDoubleClickForConnections));
+                        .addToggle(prefs.requireDoubleClickForConnections))
+                .addTitle("localShell")
+                .sub(new OptionsBuilder().pref(prefs.useLocalFallbackShell).addToggle(prefs.useLocalFallbackShell));
         if (OsType.getLocal() == OsType.WINDOWS) {
             options.addTitle("sshConfiguration")
                     .sub(new OptionsBuilder()

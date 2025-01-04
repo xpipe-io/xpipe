@@ -3,8 +3,11 @@ package io.xpipe.app.core.check;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.process.ProcessOutputException;
 
+import io.xpipe.core.process.ShellDialect;
+import io.xpipe.core.process.ShellDialects;
 import lombok.Value;
 
 import java.util.Optional;
@@ -81,14 +84,15 @@ public abstract class AppShellChecker {
     }
 
     private Optional<FailureResult> selfTestErrorCheck() {
-        try (var command = LocalShell.getShell().command("echo test").complex().start()) {
-            var out = command.readStdoutOrThrow();
+        try (var sc = LocalShell.getShell().start()) {
+            var script = ScriptHelper.createExecScript(sc, "echo test");
+            var out = sc.command(sc.getShellDialect().runScriptCommand(sc,script.toString())).readStdoutOrThrow();
             if (!out.equals("test")) {
                 return Optional.of(new FailureResult(
                         "Expected output \"test\", got output \"" + out + "\" when running test script", true));
             }
         } catch (ProcessOutputException ex) {
-            return Optional.of(new FailureResult(ex.getOutput() != null ? ex.getOutput() : ex.toString(), true));
+            return Optional.of(new FailureResult(ex.getOutput() != null ? ex.getOutput() : ex.getMessage(), true));
         } catch (Throwable t) {
             return Optional.of(new FailureResult(t.getMessage() != null ? t.getMessage() : t.toString(), false));
         }

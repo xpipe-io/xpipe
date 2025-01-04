@@ -57,7 +57,8 @@ public class BaseMode extends OperationMode {
         TrackEvent.info("Initializing base mode components ...");
         AppMainWindow.loadingText("initializingApp");
         LicenseProvider.get().init();
-        AppCertutilCheck.check();
+        // We no longer need this
+        // AppCertutilCheck.check();
         AppBundledToolsCheck.check();
         AppHomebrewCoreutilsCheck.check();
         AppAvCheck.check();
@@ -79,11 +80,13 @@ public class BaseMode extends OperationMode {
 
         var imagesLoaded = new CountDownLatch(1);
         var browserLoaded = new CountDownLatch(1);
+        var shellLoaded = new CountDownLatch(1);
         ThreadHelper.load(
                 true,
                 () -> {
                     LocalShell.init();
                     AppShellCheck.check();
+                    shellLoaded.countDown();
                     AppRosettaCheck.check();
                     AppTestCommandCheck.check();
                     XPipeDistributionType.init();
@@ -92,6 +95,7 @@ public class BaseMode extends OperationMode {
                 () -> {
                     // Initialize beacon server as we should be prepared for git askpass commands
                     AppBeaconServer.init();
+                    shellLoaded.await();
                     AppMainWindow.loadingText("loadingGit");
                     DataStorageSyncHandler.getInstance().init();
                     DataStorageSyncHandler.getInstance().retrieveSyncedData();

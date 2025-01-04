@@ -60,6 +60,7 @@ public class AppAvCheck {
         }));
         modal.addButton(ModalButton.quit());
         modal.addButton(ModalButton.ok());
+        modal.showAndWait();
     }
 
     @Getter
