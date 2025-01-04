@@ -1,19 +1,11 @@
 package io.xpipe.app.update;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppCache;
-import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.Hyperlinks;
-import javafx.geometry.Insets;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -27,11 +19,12 @@ public class UpdateNagDialog {
             return;
         }
 
-        if (AppPrefs.get().checkForSecurityUpdates().get() || AppPrefs.get().automaticallyUpdate().getValue()) {
+        if (AppPrefs.get().checkForSecurityUpdates().get()
+                || AppPrefs.get().automaticallyUpdate().getValue()) {
             return;
         }
 
-        Instant lastCheck = AppCache.getNonNull("lastUpdateNag", Instant.class,null);
+        Instant lastCheck = AppCache.getNonNull("lastUpdateNag", Instant.class, null);
         if (lastCheck == null) {
             AppCache.update("lastUpdateNag", Instant.now());
             return;

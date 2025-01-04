@@ -56,7 +56,9 @@ public class AppGreetingsDialog {
 
     public static void showIfNeeded() {
         boolean set = AppCache.getBoolean("legalAccepted", false);
-        if (set || AppProperties.get().isDevelopmentEnvironment() || AppProperties.get().isTest()) {
+        if (set
+                || AppProperties.get().isDevelopmentEnvironment()
+                || AppProperties.get().isTest()) {
             return;
         }
 

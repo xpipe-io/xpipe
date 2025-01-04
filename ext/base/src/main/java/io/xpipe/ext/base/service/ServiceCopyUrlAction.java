@@ -55,7 +55,9 @@ public class ServiceCopyUrlAction implements ActionProvider {
         @Override
         public void execute() throws Exception {
             serviceStore.startSessionIfNeeded();
-            var l = serviceStore.requiresTunnel() ? serviceStore.getSession().getLocalPort() : serviceStore.getRemotePort();
+            var l = serviceStore.requiresTunnel()
+                    ? serviceStore.getSession().getLocalPort()
+                    : serviceStore.getRemotePort();
             var base = "localhost:" + l;
             var full = serviceStore.getServiceProtocolType().formatUrl(base);
             ClipboardHelper.copyUrl(full);

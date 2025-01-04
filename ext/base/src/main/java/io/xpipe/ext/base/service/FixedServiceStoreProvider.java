@@ -6,10 +6,10 @@ import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.NetworkTunnelStore;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -80,5 +80,4 @@ public class FixedServiceStoreProvider extends AbstractServiceStoreProvider {
                         store);
         return q.buildDialog();
     }
-
 }

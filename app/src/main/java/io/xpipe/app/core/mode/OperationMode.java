@@ -130,19 +130,25 @@ public abstract class OperationMode {
 
         var arg = AppProperties.get().getArguments().getModeArg();
         if (arg != null) {
-            event.tag("mode", arg.getDisplayName()).tag("reason", "modeArgPassed").handle();
+            event.tag("mode", arg.getDisplayName())
+                    .tag("reason", "modeArgPassed")
+                    .handle();
             return arg;
         }
 
         var prop = AppProperties.get().getExplicitMode();
         if (prop != null) {
-            event.tag("mode", prop.getDisplayName()).tag("reason", "modePropertyPassed").handle();
+            event.tag("mode", prop.getDisplayName())
+                    .tag("reason", "modePropertyPassed")
+                    .handle();
             return prop;
         }
 
         if (AppPrefs.get() != null) {
             var pref = AppPrefs.get().startupBehaviour().getValue().getMode();
-            event.tag("mode", pref.getDisplayName()).tag("reason", "prefSetting").handle();
+            event.tag("mode", pref.getDisplayName())
+                    .tag("reason", "prefSetting")
+                    .handle();
             return pref;
         }
 

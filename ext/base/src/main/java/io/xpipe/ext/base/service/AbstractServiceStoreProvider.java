@@ -111,8 +111,10 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
                             : s.isSessionRunning()
                                     ? "localhost:" + s.getSession().getLocalPort() + " <- :" + s.getRemotePort()
                                     : AppI18n.get("remotePort", s.getRemotePort());
-                    var type = s.getServiceProtocolType() != null && !(s.getServiceProtocolType() instanceof ServiceProtocolType.None) ?
-                            AppI18n.get(s.getServiceProtocolType().getTranslationKey()) : null;
+                    var type = s.getServiceProtocolType() != null
+                                    && !(s.getServiceProtocolType() instanceof ServiceProtocolType.None)
+                            ? AppI18n.get(s.getServiceProtocolType().getTranslationKey())
+                            : null;
                     var state = !s.requiresTunnel()
                             ? null
                             : s.isSessionRunning()

@@ -27,7 +27,8 @@ public class UpdateCheckComp extends SimpleComp {
                             != null;
                 },
                 XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate()));
-        checking = PlatformThread.sync(XPipeDistributionType.get().getUpdateHandler().getBusy());
+        checking = PlatformThread.sync(
+                XPipeDistributionType.get().getUpdateHandler().getBusy());
     }
 
     private void showAlert() {
@@ -67,7 +68,8 @@ public class UpdateCheckComp extends SimpleComp {
 
                     return AppI18n.get("checkForUpdates");
                 },
-                updateReady, checking);
+                updateReady,
+                checking);
         var description = Bindings.createStringBinding(
                 () -> {
                     if (checking.getValue()) {
@@ -82,7 +84,8 @@ public class UpdateCheckComp extends SimpleComp {
 
                     return AppI18n.get("checkForUpdatesDescription");
                 },
-                updateReady, checking);
+                updateReady,
+                checking);
         var graphic = Bindings.createObjectBinding(
                 () -> {
                     if (updateReady.getValue()) {

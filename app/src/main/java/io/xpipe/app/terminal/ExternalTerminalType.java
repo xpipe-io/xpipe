@@ -339,9 +339,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
-            return CommandBuilder.of()
-                    .add("-e")
-                    .addFile(configuration.getScriptFile());
+            return CommandBuilder.of().add("-e").addFile(configuration.getScriptFile());
         }
     };
     ExternalTerminalType GUAKE = new SimplePathType("app.guake", "guake", true) {

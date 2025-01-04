@@ -8,7 +8,6 @@ import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.PrefsChoiceValue;
 
 import javafx.beans.property.Property;
@@ -34,12 +33,11 @@ public class CloseBehaviourDialog {
 
         Property<CloseBehaviour> prop =
                 new SimpleObjectProperty<>(AppPrefs.get().closeBehaviour().getValue());
-        var label = new LabelComp(AppI18n.observable("closeBehaviourAlertTitleHeader" ));
+        var label = new LabelComp(AppI18n.observable("closeBehaviourAlertTitleHeader"));
         label.apply(struc -> {
             struc.get().setWrapText(true);
         });
-        var content =
-                new VerticalComp(List.of(label, Comp.of(() -> {
+        var content = new VerticalComp(List.of(label, Comp.of(() -> {
                     ToggleGroup group = new ToggleGroup();
                     var vb = new VBox();
                     vb.setSpacing(7);
@@ -57,7 +55,9 @@ public class CloseBehaviourDialog {
                         vb.getChildren().add(rb);
                     }
                     return vb;
-                }))).spacing(15).prefWidth(500);
+                })))
+                .spacing(15)
+                .prefWidth(500);
         var oked = new AtomicBoolean();
         var modal = ModalOverlay.of("closeBehaviourAlertTitle", content);
         modal.addButton(ModalButton.cancel());

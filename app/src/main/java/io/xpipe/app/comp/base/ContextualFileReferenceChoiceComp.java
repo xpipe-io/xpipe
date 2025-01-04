@@ -9,7 +9,6 @@ import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.ContextualFileReference;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.FileSystemStore;
@@ -109,7 +108,8 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                     }
 
                     var handler = DataStorageSyncHandler.getInstance();
-                    var syncedTarget = handler.addDataFile(source, target, sync.getPerUser().test(source));
+                    var syncedTarget = handler.addDataFile(
+                            source, target, sync.getPerUser().test(source));
                     Platform.runLater(() -> {
                         filePath.setValue(syncedTarget.toString());
                     });

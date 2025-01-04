@@ -2,7 +2,6 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.LogErrorHandler;
-import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.util.XPipeDaemonMode;
 
 import lombok.Value;

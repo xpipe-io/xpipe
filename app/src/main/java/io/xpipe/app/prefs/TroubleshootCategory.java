@@ -1,7 +1,6 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.AppCache;

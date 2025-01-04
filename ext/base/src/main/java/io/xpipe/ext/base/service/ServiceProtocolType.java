@@ -1,19 +1,19 @@
 package io.xpipe.ext.base.service;
 
+import io.xpipe.app.util.Hyperlinks;
+
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.ext.base.identity.SshIdentityStrategy;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = ServiceProtocolType.None.class),
-        @JsonSubTypes.Type(value = ServiceProtocolType.Http.class),
-        @JsonSubTypes.Type(value = ServiceProtocolType.Https.class)
+    @JsonSubTypes.Type(value = ServiceProtocolType.None.class),
+    @JsonSubTypes.Type(value = ServiceProtocolType.Http.class),
+    @JsonSubTypes.Type(value = ServiceProtocolType.Https.class)
 })
 public interface ServiceProtocolType {
 
@@ -22,7 +22,6 @@ public interface ServiceProtocolType {
     public abstract void open(String url);
 
     public abstract String getTranslationKey();
-
 
     @JsonTypeName("none")
     @Value
