@@ -39,7 +39,7 @@ public class AppAvCheck {
             return;
         }
 
-        var modal = ModalOverlay.of("antivirusNoticeTitle", Comp.of(() -> {
+        var modal = ModalOverlay.of(Comp.of(() -> {
             AtomicReference<Region> markdown = new AtomicReference<>();
             AppResources.with(AppResources.XPIPE_MODULE, "misc/antivirus.md", file -> {
                 markdown.set(new MarkdownComp(Files.readString(file), s -> {
