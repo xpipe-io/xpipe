@@ -39,6 +39,11 @@ public class ServiceRefreshAction implements ActionProvider {
             public String getIcon(DataStoreEntryRef<FixedServiceCreatorStore> store) {
                 return "mdi2w-web";
             }
+
+            @Override
+            public boolean isApplicable(DataStoreEntryRef<FixedServiceCreatorStore> o) {
+                return o.getStore().allowManualServicesRefresh();
+            }
         };
     }
 

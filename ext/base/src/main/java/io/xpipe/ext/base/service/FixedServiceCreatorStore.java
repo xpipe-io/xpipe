@@ -7,5 +7,9 @@ import java.util.List;
 
 public interface FixedServiceCreatorStore extends DataStore {
 
+    default boolean allowManualServicesRefresh() {
+        return true;
+    }
+
     List<? extends DataStoreEntryRef<? extends AbstractServiceStore>> createFixedServices() throws Exception;
 }
