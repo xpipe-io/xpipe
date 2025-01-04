@@ -3,6 +3,7 @@ package io.xpipe.ext.base.service;
 import io.xpipe.app.comp.store.StoreChoiceComp;
 import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.comp.store.StoreViewState;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -34,12 +35,6 @@ public class FixedServiceStoreProvider extends AbstractServiceStoreProvider {
     @Override
     public List<String> getPossibleNames() {
         return List.of("fixedService");
-    }
-
-    @Override
-    public ObservableValue<String> informationString(StoreSection section) {
-        FixedServiceStore s = section.getWrapper().getEntry().getStore().asNeeded();
-        return new SimpleStringProperty("Port " + s.getRemotePort());
     }
 
     @Override

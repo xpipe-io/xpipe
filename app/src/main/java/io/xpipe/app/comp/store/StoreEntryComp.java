@@ -138,11 +138,7 @@ public abstract class StoreEntryComp extends SimpleComp {
 
         var loading = LoadingOverlayComp.noProgress(
                 Comp.of(() -> button),
-                getWrapper().getEntry().getValidity().isUsable()
-                        ? getWrapper()
-                                .getBusy()
-                                .or(getWrapper().getEntry().getProvider().busy(getWrapper()))
-                        : getWrapper().getBusy());
+                getWrapper().getEffectiveBusy());
         AppFont.normal(button);
         return loading.createRegion();
     }

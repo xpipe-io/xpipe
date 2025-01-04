@@ -32,17 +32,6 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     }
 
     @Override
-    public ActionProvider.Action launchAction(DataStoreEntry store) {
-        return new ActionProvider.Action() {
-            @Override
-            public void execute() throws Exception {
-                AbstractServiceStore s = store.getStore().asNeeded();
-                s.startSessionIfNeeded();
-            }
-        };
-    }
-
-    @Override
     public DataStoreEntry getSyntheticParent(DataStoreEntry store) {
         AbstractServiceStore s = store.getStore().asNeeded();
         return DataStorage.get()
@@ -106,11 +95,7 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
         AbstractServiceStore s = section.getWrapper().getEntry().getStore().asNeeded();
         return Bindings.createStringBinding(
                 () -> {
-                    var desc = s.getLocalPort() != null
-                            ? "localhost:" + s.getLocalPort() + " <- :" + s.getRemotePort()
-                            : s.isSessionRunning()
-                                    ? "localhost:" + s.getSession().getLocalPort() + " <- :" + s.getRemotePort()
-                                    : AppI18n.get("remotePort", s.getRemotePort());
+                    var desc = formatService(s);
                     var type = s.getServiceProtocolType() != null
                                     && !(s.getServiceProtocolType() instanceof ServiceProtocolType.None)
                             ? AppI18n.get(s.getServiceProtocolType().getTranslationKey())
@@ -124,6 +109,15 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
                 },
                 section.getWrapper().getCache(),
                 AppPrefs.get().language());
+    }
+
+    protected String formatService(AbstractServiceStore s) {
+        var desc = s.getLocalPort() != null
+                ? "localhost:" + s.getLocalPort() + " <- :" + s.getRemotePort()
+                : s.isSessionRunning()
+                ? "localhost:" + s.getSession().getLocalPort() + " <- :" + s.getRemotePort()
+                : AppI18n.get("servicePort", s.getRemotePort());
+        return desc;
     }
 
     @Override

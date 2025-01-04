@@ -14,7 +14,9 @@ import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.SingletonSessionStore;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 
@@ -53,6 +55,9 @@ public class StoreEntryWrapper {
     private final Property<DataStore> store = new SimpleObjectProperty<>();
     private final Property<String> information = new SimpleStringProperty();
     private final BooleanProperty perUser = new SimpleBooleanProperty();
+
+    private boolean effectiveBusyProviderBound = false;
+    private final BooleanProperty effectiveBusy = new SimpleBooleanProperty();
 
     public StoreEntryWrapper(DataStoreEntry entry) {
         this.entry = entry;
@@ -146,6 +151,12 @@ public class StoreEntryWrapper {
             name.setValue(entry.getName());
         }
 
+        if (effectiveBusyProviderBound && !getValidity().getValue().isUsable()) {
+            this.effectiveBusyProviderBound = false;
+            this.effectiveBusy.unbind();
+            this.effectiveBusy.bind(busy);
+        }
+
         var storeChanged = store.getValue() != entry.getStore();
         store.setValue(entry.getStore());
         if (storeChanged || !information.isBound()) {
@@ -228,6 +239,16 @@ public class StoreEntryWrapper {
             } catch (Exception ex) {
                 ErrorEvent.fromThrowable(ex).handle();
             }
+        }
+
+        if (!effectiveBusyProviderBound && getValidity().getValue().isUsable()) {
+            this.effectiveBusyProviderBound = true;
+            this.effectiveBusy.unbind();
+            this.effectiveBusy.bind(busy.or(getEntry().getProvider().busy(this)));
+        }
+
+        if (!this.effectiveBusy.isBound() && !getValidity().getValue().isUsable()) {
+            this.effectiveBusy.bind(busy);
         }
     }
 
