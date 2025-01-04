@@ -24,6 +24,14 @@ import java.util.List;
 
 public class PodmanContainerStoreProvider implements ShellStoreProvider {
 
+    public void onParentRefresh(DataStoreEntry entry) {
+        var services = FixedServiceGroupStore.builder().parent(entry.ref()).build();
+        var servicesEntry = DataStorage.get().getStoreEntryIfPresent(services, false);
+        if (servicesEntry.isPresent()) {
+            DataStorage.get().refreshChildren(servicesEntry.get());
+        }
+    }
+
     @Override
     public boolean shouldShow(StoreEntryWrapper w) {
         PodmanContainerStore s = w.getEntry().getStore().asNeeded();

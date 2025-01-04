@@ -100,7 +100,6 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
 
             try {
                 var source = Path.of(currentPath.trim());
-                var dataDir = DataStorage.get().getDataDir();
                 var target = sync.getTargetLocation().apply(source);
                 if (Files.exists(source)) {
                     var shouldCopy = AppWindowHelper.showConfirmationAlert(
@@ -110,9 +109,9 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                     }
 
                     var handler = DataStorageSyncHandler.getInstance();
-                    handler.addDataFile(source, target, sync.getPerUser().test(source));
+                    var syncedTarget = handler.addDataFile(source, target, sync.getPerUser().test(source));
                     Platform.runLater(() -> {
-                        filePath.setValue(target.toString());
+                        filePath.setValue(syncedTarget.toString());
                     });
                 }
             } catch (Exception e) {

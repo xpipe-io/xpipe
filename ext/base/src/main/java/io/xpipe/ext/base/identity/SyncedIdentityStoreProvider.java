@@ -60,7 +60,6 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                 .name("passwordAuthentication")
                 .description("passwordAuthenticationDescription")
                 .sub(SecretRetrievalStrategyHelper.comp(pass, true), pass)
-                .nonNull()
                 .name("keyAuthentication")
                 .description("keyAuthenticationDescription")
                 .longDescription("base:sshKey")
