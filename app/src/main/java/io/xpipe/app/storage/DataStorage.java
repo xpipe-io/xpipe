@@ -32,6 +32,12 @@ import javax.crypto.SecretKey;
 
 public abstract class DataStorage {
 
+    protected static SecretKey secretKey;
+
+    public static SecretKey getSecretKey() {
+        return get() != null ? get().getVaultKey() : secretKey;
+    }
+
     public static final UUID ALL_CONNECTIONS_CATEGORY_UUID = UUID.fromString("bfb0b51a-e7a3-4ce4-8878-8d4cb5828d6c");
     public static final UUID ALL_SCRIPTS_CATEGORY_UUID = UUID.fromString("19024cf9-d192-41a9-88a6-a22694cf716a");
     public static final UUID PREDEFINED_SCRIPTS_CATEGORY_UUID = UUID.fromString("5faf1d71-0efc-4293-8b70-299406396973");

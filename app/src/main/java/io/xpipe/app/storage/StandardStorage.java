@@ -483,11 +483,13 @@ public class StandardStorage extends DataStorage {
             var s = Files.readString(file);
             var id = new String(Base64.getDecoder().decode(s), StandardCharsets.UTF_8);
             vaultKey = EncryptionKey.getVaultSecretKey(id);
+            secretKey = vaultKey;
         } else {
             FileUtils.forceMkdir(dir.toFile());
             var id = UUID.randomUUID().toString();
             Files.writeString(file, Base64.getEncoder().encodeToString(id.getBytes(StandardCharsets.UTF_8)));
             vaultKey = EncryptionKey.getVaultSecretKey(id);
+            secretKey = vaultKey;
         }
     }
 

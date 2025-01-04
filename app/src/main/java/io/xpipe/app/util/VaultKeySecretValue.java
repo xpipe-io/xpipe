@@ -28,7 +28,7 @@ public class VaultKeySecretValue extends AesSecretValue {
 
     @Override
     protected SecretKey getSecretKey() throws InvalidKeySpecException {
-        return DataStorage.get().getVaultKey();
+        return DataStorage.getSecretKey();
     }
 
     @Override
