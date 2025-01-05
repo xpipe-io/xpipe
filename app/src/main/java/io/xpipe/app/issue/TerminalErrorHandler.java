@@ -29,7 +29,8 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
             ErrorAction.ignore().handle(event);
         })) {
             // Exit if we couldn't initialize the GUI
-            ThreadHelper.sleep(1000);
+            // Wait a bit to the beacon the ability to respond to any open requests with an error
+            ThreadHelper.sleep(3000);
             OperationMode.halt(1);
             return;
         }

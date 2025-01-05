@@ -64,6 +64,7 @@ public class BaseMode extends OperationMode {
         AppAvCheck.check();
         AppJavaOptionsCheck.check();
         AppSid.init();
+        AppBeaconServer.init();
 
         if (OperationMode.getStartupMode() == XPipeDaemonMode.GUI) {
             PtbDialog.showIfNeeded();
@@ -93,8 +94,6 @@ public class BaseMode extends OperationMode {
                     AppPrefs.setLocalDefaultsIfNeeded();
                 },
                 () -> {
-                    // Initialize beacon server as we should be prepared for git askpass commands
-                    AppBeaconServer.init();
                     shellLoaded.await();
                     AppMainWindow.loadingText("loadingGit");
                     DataStorageSyncHandler.getInstance().init();

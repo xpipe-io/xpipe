@@ -45,8 +45,14 @@ public interface IdentityValue {
             if (requirePassword) {
                 Validators.nonNull(identityStore.getPassword());
             }
+            if (identityStore.getPassword() != null) {
+                identityStore.getPassword().checkComplete();
+            }
             if (requireKey) {
                 Validators.nonNull(identityStore.getSshIdentity());
+            }
+            if (identityStore.getSshIdentity() != null) {
+                identityStore.getSshIdentity().checkComplete();
             }
         }
 
@@ -80,8 +86,14 @@ public interface IdentityValue {
             if (requirePassword) {
                 Validators.nonNull(ref.getStore().getPassword());
             }
+            if (ref.getStore().getPassword() != null) {
+                ref.getStore().getPassword().checkComplete();
+            }
             if (requireKey) {
                 Validators.nonNull(ref.getStore().getSshIdentity());
+            }
+            if (ref.getStore().getSshIdentity() != null) {
+                ref.getStore().getSshIdentity().checkComplete();
             }
         }
 
