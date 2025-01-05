@@ -92,6 +92,10 @@
     -fx-cursor: hand;
 }
 
+.intro .button {
+    -fx-padding: 6 10;
+}
+
 .root:pretty:light .store-active-comp .dot {
     -fx-fill: radial-gradient(radius 180%, rgb(30, 180, 30, 0.6), rgb(20, 120, 20, 0.65), rgb(37, 200, 37, 0.6));
 }
