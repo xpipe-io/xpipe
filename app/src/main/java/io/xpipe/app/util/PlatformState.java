@@ -15,6 +15,7 @@ import lombok.Setter;
 import org.apache.commons.lang3.SystemUtils;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
 public enum PlatformState {
@@ -61,6 +62,16 @@ public enum PlatformState {
         }
     }
 
+    private static String getErrorMessage(String message) {
+        var header = message != null ? message + "\n\n" : "Failed to load graphics support\n\n";
+        var msg = header
+                + "Please note that XPipe is a desktop application that should be run on your local workstation."
+                + " It is able to provide the full functionality for all integrations via remote server connections, e.g. via SSH."
+                + " You don't have to install XPipe on any system like a server, a WSL distribution, a hypervisor, etc.,"
+                + " to have full access to that system, a shell connection to it is enough for XPipe to work from your local machine.";
+        return msg;
+    }
+
     private static void initPlatform() {
         if (current == EXITED) {
             lastError = new IllegalStateException("Platform has already exited");
@@ -79,20 +90,12 @@ public enum PlatformState {
             // Catch more than just the headless exception in case the graphics environment initialization completely
             // fails
         } catch (HeadlessException h) {
-            var msg = (OsType.getLocal().equals(OsType.LINUX)
-                            ? "No DISPLAY variable was set or no headful library support was found."
-                            : "The application does not have desktop access, but this program performed an operation which requires it.")
-                    + "\n\n"
-                    + "Please note that XPipe is a desktop application that should be run on your local workstation."
-                    + " It is able to provide the full functionality for all integrations via remote server connections, e.g. via SSH."
-                    + " You don't have to install XPipe on any system like a server, a WSL distribution, a hypervisor, etc.,"
-                    + " to have full access to that system, a shell connection to it is enough for XPipe to work from your local machine.";
+            var msg = getErrorMessage(h.getMessage());
             PlatformState.setCurrent(PlatformState.EXITED);
             expectedError = true;
-            lastError = new UnsupportedOperationException(msg);
+            lastError = new UnsupportedOperationException(msg, h);
             return;
         } catch (Throwable t) {
-            TrackEvent.warn(t.getMessage());
             PlatformState.setCurrent(PlatformState.EXITED);
             lastError = t;
             return;
@@ -147,9 +150,10 @@ public enum PlatformState {
                 PlatformState.setCurrent(PlatformState.RUNNING);
             } else {
                 // Platform initialization has failed in this case
+                var msg = getErrorMessage(t.getMessage());
+                var ex = new UnsupportedOperationException(msg, t);
                 PlatformState.setCurrent(PlatformState.EXITED);
-                TrackEvent.error(t.getMessage());
-                lastError = t;
+                lastError = ex;
                 return;
             }
         }
@@ -158,8 +162,9 @@ public enum PlatformState {
             // This can fail if the found system fonts can somehow not be loaded
             Font.getDefault();
         } catch (Throwable e) {
-            var ex = new IllegalStateException("Unable to load fonts. Do you have valid font packages installed?", e);
+            var ex = new IllegalStateException("Unable to load fonts. Do you have a valid font package installed?", e);
             lastError = ex;
+            PlatformState.setCurrent(PlatformState.EXITED);
             return;
         }
     }
