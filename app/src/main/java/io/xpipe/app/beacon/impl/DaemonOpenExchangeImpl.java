@@ -16,9 +16,12 @@ public class DaemonOpenExchangeImpl extends DaemonOpenExchange {
     @Override
     public Object handle(HttpExchange exchange, Request msg) throws BeaconServerException {
         if (msg.getArguments().isEmpty()) {
-            var err = PlatformInit.getError();
-            if (err != null) {
-                throw new BeaconServerException(err);
+            try {
+                // At this point we are already loading this on another thread
+                // so this call will only perform the waiting
+                PlatformInit.init(true);
+            } catch (Throwable t) {
+                throw new BeaconServerException(t);
             }
 
             // The open command is used as a default opener on Linux

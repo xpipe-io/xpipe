@@ -84,7 +84,7 @@ public class PasswordManagerCategory extends AppPrefsCategory {
         };
 
         var docsLinkProperty = new SimpleStringProperty();
-        var docsLinkButton = new ButtonComp(AppI18n.observable("documentation"), () -> {
+        var docsLinkButton = new ButtonComp(AppI18n.observable("documentation"), new FontIcon("mdi2h-help-circle-outline"), () -> {
            var l = docsLinkProperty.get();
            if (l != null) {
                Hyperlinks.open(l);
