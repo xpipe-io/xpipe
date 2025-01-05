@@ -59,13 +59,13 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                 .addString(user)
                 .name("passwordAuthentication")
                 .description("passwordAuthenticationDescription")
-                .sub(SecretRetrievalStrategyHelper.comp(pass, true), pass)
+                .sub(SecretRetrievalStrategyHelper.comp(pass, true, true), pass)
                 .name("keyAuthentication")
                 .description("keyAuthenticationDescription")
                 .longDescription("base:sshKey")
                 .sub(
                         SshIdentityStrategyHelper.identity(
-                                new SimpleObjectProperty<>(), identity, true, path -> perUser.get()),
+                                new SimpleObjectProperty<>(), identity, path -> perUser.get(),true, true),
                         identity)
                 .check(val -> Validator.create(val, AppI18n.observable("keyNotSynced"), identity, i -> {
                     var wrong = i instanceof SshIdentityStrategy.File f

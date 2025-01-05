@@ -48,8 +48,9 @@ public class SshIdentityStrategyHelper {
     private static OptionsBuilder fileIdentity(
             Property<DataStoreEntryRef<ShellStore>> proxy,
             Property<SshIdentityStrategy.File> fileProperty,
+            Predicate<Path> perUserFile,
             boolean allowSync,
-            Predicate<Path> perUserFile) {
+            boolean allowUserSecretKey) {
         var keyPath = new SimpleStringProperty(
                 fileProperty.getValue() != null && fileProperty.getValue().getFile() != null
                         ? fileProperty.getValue().getFile().toAbsoluteFilePath(null)
@@ -72,7 +73,7 @@ public class SshIdentityStrategyHelper {
                 .nonNull()
                 .name("keyPassword")
                 .description("sshConfigHost.identityPassphraseDescription")
-                .sub(SecretRetrievalStrategyHelper.comp(keyPasswordProperty, true), keyPasswordProperty)
+                .sub(SecretRetrievalStrategyHelper.comp(keyPasswordProperty, true, allowUserSecretKey), keyPasswordProperty)
                 .nonNull()
                 .bind(
                         () -> {
@@ -85,8 +86,9 @@ public class SshIdentityStrategyHelper {
     public static OptionsBuilder identity(
             Property<DataStoreEntryRef<ShellStore>> proxy,
             Property<SshIdentityStrategy> strategyProperty,
+            Predicate<Path> perUserFile,
             boolean allowSync,
-            Predicate<Path> perUserFile) {
+            boolean allowUserSecretKey) {
         SshIdentityStrategy strat = strategyProperty.getValue();
         var file = new SimpleObjectProperty<>(
                 strat instanceof SshIdentityStrategy.File f
@@ -101,7 +103,7 @@ public class SshIdentityStrategyHelper {
 
         var map = new LinkedHashMap<ObservableValue<String>, OptionsBuilder>();
         map.put(AppI18n.observable("base.none"), new OptionsBuilder());
-        map.put(AppI18n.observable("base.keyFile"), fileIdentity(proxy, file, allowSync, perUserFile));
+        map.put(AppI18n.observable("base.keyFile"), fileIdentity(proxy, file, perUserFile, allowSync, allowUserSecretKey));
         map.put(AppI18n.observable("base.sshAgent"), agent(agent));
         map.put(AppI18n.observable("base.pageant"), new OptionsBuilder());
         map.put(gpgFeature.suffixObservable("base.gpgAgent"), new OptionsBuilder());

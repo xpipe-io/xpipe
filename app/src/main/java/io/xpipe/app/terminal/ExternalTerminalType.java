@@ -422,7 +422,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public boolean supportsColoredTitle() {
-            return true;
+            return false;
         }
 
         @Override

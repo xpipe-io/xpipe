@@ -39,11 +39,11 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
                 .addString(user)
                 .name("passwordAuthentication")
                 .description("passwordAuthenticationDescription")
-                .sub(SecretRetrievalStrategyHelper.comp(pass, true), pass)
+                .sub(SecretRetrievalStrategyHelper.comp(pass, true, true), pass)
                 .name("keyAuthentication")
                 .description("keyAuthenticationDescription")
                 .longDescription("base:sshKey")
-                .sub(SshIdentityStrategyHelper.identity(new SimpleObjectProperty<>(), identity, false, null), identity)
+                .sub(SshIdentityStrategyHelper.identity(new SimpleObjectProperty<>(), identity, null,false, true), identity)
                 .bind(
                         () -> {
                             return LocalIdentityStore.builder()

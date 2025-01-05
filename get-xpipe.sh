@@ -107,17 +107,21 @@ install() {
       DEBIAN_FRONTEND=noninteractive sudo apt install "$file"
     elif [ -x "$(command -v zypper)" ]; then
       info "Installing file $file with zypper"
+      sudo rpm --import https://xpipe.io/signatures/crschnick.asc
       sudo zypper refresh
       sudo zypper install "$file"
     elif [ -x "$(command -v dnf)" ]; then
       info "Installing file $file with dnf"
+      sudo rpm --import https://xpipe.io/signatures/crschnick.asc
       sudo dnf install --refresh "$file"
     elif [ -x "$(command -v yum)" ]; then
       info "Installing file $file with yum"
+      sudo rpm --import https://xpipe.io/signatures/crschnick.asc
       sudo yum clean expire-cache
       sudo yum install "$file"
     else
       info "Installing file $file with rpm"
+      sudo rpm --import https://xpipe.io/signatures/crschnick.asc
       sudo rpm -U -v --force "$file"
     fi
     ;;
@@ -222,7 +226,7 @@ if [ "$(uname -s)" = "Linux" ]; then
   fi
 
   if ! [ -x "$(command -v apt)" ] && ! [ -x "$(command -v rpm)" ] && ! [ -x "$(command -v pacman)" ]; then
-    info "Installation is not supported on this system (no apt, rpm, pacman). Can you try a portable version of $product_name?"
+    info "Installation is not supported on this system (no apt, rpm, zypper, dnf, yum, pacman). Can you try a portable version of $product_name?"
     info "https://github.com/xpipe-io/xpipe#portable"
     exit 1
   fi

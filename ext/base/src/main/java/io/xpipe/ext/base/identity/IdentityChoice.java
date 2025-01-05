@@ -60,7 +60,7 @@ public class IdentityChoice {
                 .addComp(new IdentitySelectComp(ref, user, pass, identityStrategy, allowCustomUserInput), user)
                 .nonNullIf(inPlaceSelected.and(new SimpleBooleanProperty(requireUserInput)))
                 .nameAndDescription(passwordChoiceTranslationKey)
-                .sub(SecretRetrievalStrategyHelper.comp(pass, true), pass)
+                .sub(SecretRetrievalStrategyHelper.comp(pass, true, true), pass)
                 .nonNullIf(inPlaceSelected.and(new SimpleBooleanProperty(requirePassword)))
                 .disable(refSelected)
                 .hide(refSelected)
@@ -71,8 +71,9 @@ public class IdentityChoice {
                         SshIdentityStrategyHelper.identity(
                                 gateway != null ? gateway : new SimpleObjectProperty<>(),
                                 identityStrategy,
+                                null,
                                 false,
-                                null),
+                                true),
                         identityStrategy)
                 .nonNullIf(inPlaceSelected.and(new SimpleBooleanProperty(keyInput)))
                 .disable(refSelected)

@@ -22,7 +22,7 @@ import java.util.List;
 
 public class SecretRetrievalStrategyHelper {
 
-    private static OptionsBuilder inPlace(Property<SecretRetrievalStrategy.InPlace> p) {
+    private static OptionsBuilder inPlace(Property<SecretRetrievalStrategy.InPlace> p, boolean allowUserSecretKey) {
         var original = p.getValue() != null ? p.getValue().getValue() : null;
         var secretProperty = new SimpleObjectProperty<>(
                 p.getValue() != null && p.getValue().getValue() != null
@@ -37,8 +37,9 @@ public class SecretRetrievalStrategyHelper {
                             var changed = !Arrays.equals(
                                     newSecret != null ? newSecret.getSecret() : new char[0],
                                     original != null ? original.getSecret() : new char[0]);
-                            return new SecretRetrievalStrategy.InPlace(
-                                    changed ? DataStorageSecret.ofCurrentSecret(secretProperty.getValue()) : original);
+                            var val = changed ? (allowUserSecretKey ? DataStorageSecret.ofCurrentSecret(secretProperty.getValue()) :
+                                    DataStorageSecret.ofSecret(secretProperty.getValue(), EncryptionToken.ofVaultKey())) : original;
+                            return new SecretRetrievalStrategy.InPlace(val);
                         },
                         p);
     }
@@ -85,7 +86,7 @@ public class SecretRetrievalStrategyHelper {
                         p);
     }
 
-    public static OptionsBuilder comp(Property<SecretRetrievalStrategy> s, boolean allowNone) {
+    public static OptionsBuilder comp(Property<SecretRetrievalStrategy> s, boolean allowNone, boolean allowUserSecretKey) {
         SecretRetrievalStrategy strat = s.getValue();
         var inPlace = new SimpleObjectProperty<>(strat instanceof SecretRetrievalStrategy.InPlace i ? i : null);
         var passwordManager =
@@ -96,7 +97,7 @@ public class SecretRetrievalStrategyHelper {
         if (allowNone) {
             map.put(AppI18n.observable("app.none"), new OptionsBuilder());
         }
-        map.put(AppI18n.observable("app.password"), inPlace(inPlace));
+        map.put(AppI18n.observable("app.password"), inPlace(inPlace, allowUserSecretKey));
         map.put(AppI18n.observable("app.passwordManager"), passwordManager(passwordManager));
         map.put(AppI18n.observable("app.customCommand"), customCommand(customCommand));
         map.put(AppI18n.observable("app.prompt"), new OptionsBuilder());
