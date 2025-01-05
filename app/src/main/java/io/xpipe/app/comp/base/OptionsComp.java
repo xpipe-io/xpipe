@@ -82,7 +82,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                 }
 
                 if (entry.longDescriptionSource() != null) {
-                    var markDown = new MarkdownComp(entry.longDescriptionSource(), s -> s)
+                    var markDown = new MarkdownComp(entry.longDescriptionSource(), s -> s, true)
                             .apply(struc -> struc.get().setMaxWidth(500))
                             .apply(struc -> struc.get().setMaxHeight(400));
                     var popover = new Popover(markDown.createRegion());

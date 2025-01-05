@@ -174,6 +174,11 @@ public abstract class UpdateHandler {
         try (var ignored = new BooleanScope(busy).start()) {
             event("Performing update download ...");
             prepareUpdateImpl();
+
+            // Show available update in PTB more aggressively
+            if (AppProperties.get().isStaging() && preparedUpdate.getValue() != null) {
+                UpdateAvailableDialog.showIfNeeded();
+            }
         }
     }
 

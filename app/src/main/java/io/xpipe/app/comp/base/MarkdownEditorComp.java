@@ -40,7 +40,7 @@ public class MarkdownEditorComp extends Comp<MarkdownEditorComp.Structure> {
 
     @Override
     public Structure createBase() {
-        var markdown = new MarkdownComp(value, s -> s).createRegion();
+        var markdown = new MarkdownComp(value, s -> s, true).createRegion();
         var editButton = createOpenButton();
         var pane = new AnchorPane(markdown, editButton);
         pane.setPickOnBounds(false);

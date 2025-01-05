@@ -51,7 +51,7 @@ public class AppAvCheck {
                                     AppProperties.get().getVersion(),
                                     AppProperties.get().getVersion(),
                                     t.getName());
-                        })
+                        }, false)
                         .prefWidth(550)
                         .prefHeight(600)
                         .createRegion());

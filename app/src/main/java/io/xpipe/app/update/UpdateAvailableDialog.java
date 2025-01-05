@@ -33,7 +33,7 @@ public class UpdateAvailableDialog {
         var u = uh.getPreparedUpdate().getValue();
 
         var comp = Comp.of(() -> {
-            var markdown = new MarkdownComp(u.getBody() != null ? u.getBody() : "", s -> s).createRegion();
+            var markdown = new MarkdownComp(u.getBody() != null ? u.getBody() : "", s -> s, false).createRegion();
             var updaterContent = uh.createInterface();
 
             Region region;

@@ -37,7 +37,7 @@ public class UpdateChangelogAlert {
         shown = true;
 
         var comp = Comp.of(() -> {
-            var markdown = new MarkdownComp(update.getRawDescription(), s -> s).createRegion();
+            var markdown = new MarkdownComp(update.getRawDescription(), s -> s, false).createRegion();
             return markdown;
         });
         var modal = ModalOverlay.of("updateChangelogAlertTitle", comp.prefWidth(600), null);

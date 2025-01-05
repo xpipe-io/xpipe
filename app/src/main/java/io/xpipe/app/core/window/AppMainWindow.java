@@ -311,12 +311,16 @@ public class AppMainWindow {
 
     private void applyState(WindowState state) {
         if (state != null) {
-            stage.setX(state.windowX);
-            stage.setY(state.windowY);
-            stage.setWidth(state.windowWidth);
-            stage.setHeight(state.windowHeight);
-            stage.setMaximized(state.maximized);
-
+            if (state.maximized) {
+                stage.setMaximized(true);
+                stage.setWidth(1280);
+                stage.setHeight(720);
+            } else {
+                stage.setX(state.windowX);
+                stage.setY(state.windowY);
+                stage.setWidth(state.windowWidth);
+                stage.setHeight(state.windowHeight);
+            }
             TrackEvent.debug("Window loaded saved bounds");
         } else if (!AppProperties.get().isShowcase()) {
             stage.setWidth(1280);

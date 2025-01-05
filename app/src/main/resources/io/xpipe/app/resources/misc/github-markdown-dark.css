@@ -24,6 +24,10 @@ body.standalone {
     word-wrap: break-word;
 }
 
+body.padded .markdown-body {
+    padding: 1.5em 8px 1.5em 1.5em;
+}
+
 .markdown-body .octicon {
     display: inline-block;
     fill: currentColor;

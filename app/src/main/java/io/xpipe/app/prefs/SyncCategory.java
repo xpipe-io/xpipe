@@ -29,7 +29,7 @@ public class SyncCategory extends AppPrefsCategory {
 
     private static void showHelpAlert() {
         var md = AppI18n.get().getMarkdownDocumentation("vault");
-        var markdown = new MarkdownComp(md, s -> s).prefWidth(600);
+        var markdown = new MarkdownComp(md, s -> s, true).prefWidth(600);
         var modal = ModalOverlay.of(markdown);
         modal.addButton(ModalButton.ok());
         AppDialog.show(modal);

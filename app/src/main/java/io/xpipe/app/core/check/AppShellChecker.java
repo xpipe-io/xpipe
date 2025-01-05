@@ -85,8 +85,10 @@ public abstract class AppShellChecker {
 
     private Optional<FailureResult> selfTestErrorCheck() {
         try (var sc = LocalShell.getShell().start()) {
-            var script = ScriptHelper.createExecScript(sc, "echo test");
-            var out = sc.command(sc.getShellDialect().runScriptCommand(sc,script.toString())).readStdoutOrThrow();
+            var scriptFile = ScriptHelper.getExecScriptFile(sc);
+            var scriptContent = sc.getShellDialect().prepareScriptContent("echo test");
+            sc.view().writeScriptFile(scriptFile, scriptContent);
+            var out = sc.command(sc.getShellDialect().runScriptCommand(sc, scriptFile.toString())).readStdoutOrThrow();
             if (!out.equals("test")) {
                 return Optional.of(new FailureResult(
                         "Expected output \"test\", got output \"" + out + "\" when running test script", true));

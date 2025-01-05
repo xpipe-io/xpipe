@@ -91,7 +91,7 @@ public class TermiusTerminalType implements ExternalTerminalType {
         var keyContent = Files.readString(b.getIdentityKey());
         var activated =
                 AppI18n.get().getMarkdownDocumentation("app:termiusSetup").formatted(b.getIdentityKey(), keyContent);
-        var modal = ModalOverlay.of("termiusSetup", new MarkdownComp(activated, s -> s).prefWidth(450));
+        var modal = ModalOverlay.of("termiusSetup", new MarkdownComp(activated, s -> s, false).prefWidth(450));
         modal.addButton(ModalButton.ok(() -> {
             AppCache.update("termiusSetup", true);
         }));

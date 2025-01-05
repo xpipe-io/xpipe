@@ -190,8 +190,8 @@ public class StoreCategoryWrapper {
         if (original.equals("Synced")) {
             return AppI18n.get("synced");
         }
-        if (original.equals("Predefined")) {
-            return AppI18n.get("predefined");
+        if (original.equals("Predefined") || original.equals("Samples")) {
+            return AppI18n.get("samples");
         }
         if (original.equals("Custom")) {
             return AppI18n.get("custom");

@@ -83,7 +83,7 @@ public class XShellTerminalType extends ExternalTerminalType.WindowsType {
         var keyName = b.getIdentityKey().getFileName().toString();
         var activated =
                 AppI18n.get().getMarkdownDocumentation("app:xshellSetup").formatted(b.getIdentityKey(), keyName);
-        var modal = ModalOverlay.of("xshellSetup", new MarkdownComp(activated, s -> s).prefWidth(450));
+        var modal = ModalOverlay.of("xshellSetup", new MarkdownComp(activated, s -> s, false).prefWidth(450));
         modal.addButton(ModalButton.ok(() -> {
             AppCache.update("xshellSetup", true);
         }));

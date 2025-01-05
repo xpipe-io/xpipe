@@ -55,9 +55,7 @@ public class SshIdentityStrategyHelper {
                         ? fileProperty.getValue().getFile().toAbsoluteFilePath(null)
                         : null);
         fileProperty.addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                keyPath.setValue(newValue.getFile().toAbsoluteFilePath(null));
-            }
+            keyPath.setValue(newValue != null && newValue.getFile() != null ? newValue.getFile().toAbsoluteFilePath(null) : null);
         });
         var keyPasswordProperty = new SimpleObjectProperty<>(
                 fileProperty.getValue() != null ? fileProperty.getValue().getPassword() : null);

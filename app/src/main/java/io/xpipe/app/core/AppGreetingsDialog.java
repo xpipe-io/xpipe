@@ -29,8 +29,7 @@ public class AppGreetingsDialog {
 
         AppResources.with(AppResources.XPIPE_MODULE, "misc/welcome.md", file -> {
             var md = Files.readString(file);
-            var markdown = new MarkdownComp(md, UnaryOperator.identity()).createRegion();
-            markdown.setPadding(new Insets(20));
+            var markdown = new MarkdownComp(md, UnaryOperator.identity(), true).createRegion();
             tp.setContent(markdown);
         });
 
@@ -46,8 +45,7 @@ public class AppGreetingsDialog {
 
         AppResources.with(AppResources.XPIPE_MODULE, "misc/eula.md", file -> {
             var md = Files.readString(file);
-            var markdown = new MarkdownComp(md, UnaryOperator.identity()).createRegion();
-            markdown.setPadding(new Insets(20));
+            var markdown = new MarkdownComp(md, UnaryOperator.identity(), true).createRegion();
             tp.setContent(markdown);
         });
 

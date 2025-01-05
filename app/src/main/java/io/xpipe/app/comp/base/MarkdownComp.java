@@ -34,15 +34,18 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
 
     private final ObservableValue<String> markdown;
     private final UnaryOperator<String> htmlTransformation;
+    private final boolean bodyPadding;
 
-    public MarkdownComp(String markdown, UnaryOperator<String> htmlTransformation) {
+    public MarkdownComp(String markdown, UnaryOperator<String> htmlTransformation, boolean bodyPadding) {
         this.markdown = new SimpleStringProperty(markdown);
         this.htmlTransformation = htmlTransformation;
+        this.bodyPadding = bodyPadding;
     }
 
-    public MarkdownComp(ObservableValue<String> markdown, UnaryOperator<String> htmlTransformation) {
+    public MarkdownComp(ObservableValue<String> markdown, UnaryOperator<String> htmlTransformation, boolean bodyPadding) {
         this.markdown = markdown;
         this.htmlTransformation = htmlTransformation;
+        this.bodyPadding = bodyPadding;
     }
 
     private static Path TEMP;
@@ -62,7 +65,7 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
             return file;
         }
 
-        var html = MarkdownHelper.toHtml(markdown, s -> s, htmlTransformation, null);
+        var html = MarkdownHelper.toHtml(markdown, s -> s, htmlTransformation, bodyPadding ? "padded" : null);
         try {
             // Workaround for https://bugs.openjdk.org/browse/JDK-8199014
             FileUtils.forceMkdir(file.getParent().toFile());

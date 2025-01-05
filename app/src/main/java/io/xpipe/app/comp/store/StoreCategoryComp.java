@@ -265,6 +265,7 @@ public class StoreCategoryComp extends SimpleComp {
         del.setOnAction(event -> {
             category.delete();
         });
+        del.setDisable(!DataStorage.get().canDeleteStoreCategory(category.getCategory()));
         contextMenu.getItems().add(del);
 
         return contextMenu;

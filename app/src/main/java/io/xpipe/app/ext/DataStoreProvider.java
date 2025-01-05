@@ -126,7 +126,7 @@ public interface DataStoreProvider {
                     }
                 },
                 store);
-        return new MarkdownComp(content, s -> s)
+        return new MarkdownComp(content, s -> s, true)
                 .apply(struc -> struc.get().setPrefWidth(450))
                 .apply(struc -> struc.get().setPrefHeight(250));
     }
