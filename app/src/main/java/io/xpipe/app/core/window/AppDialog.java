@@ -64,7 +64,9 @@ public class AppDialog {
             PlatformThread.runLaterIfNeededBlocking(() -> {
                 modalOverlay.add(o);
             });
-            waitForDialogClose(o);
+            if (wait) {
+                waitForDialogClose(o);
+            }
             ThreadHelper.sleep(200);
         } else {
             var key = new Object();
