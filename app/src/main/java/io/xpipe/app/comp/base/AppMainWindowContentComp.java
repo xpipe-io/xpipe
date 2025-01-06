@@ -42,8 +42,8 @@ public class AppMainWindowContentComp extends SimpleComp {
             loadingIcon.setFitWidth(64);
             loadingIcon.setFitHeight(64);
 
+            var anim = Animations.pulse(loadingIcon, 1.1);
             if (OsType.getLocal() != OsType.LINUX) {
-                var anim = Animations.pulse(loadingIcon, 1.1);
                 anim.setRate(0.85);
                 anim.setCycleCount(Animation.INDEFINITE);
                 anim.play();
@@ -81,18 +81,13 @@ public class AppMainWindowContentComp extends SimpleComp {
             pane.setAlignment(Pos.CENTER);
             pane.getStyleClass().add("background");
 
-            loaded.subscribe(region -> {
-                if (region != null) {
+            loaded.subscribe(struc -> {
+                if (struc != null) {
                     PlatformThread.runNestedLoopIteration();
-                    var started = Instant.now();
-                    pane.getChildren().add(region);
-                    if (OsType.getLocal() != OsType.LINUX) {
-                        region.setOpacity(0);
-                        PlatformThread.runNestedLoopIteration();
-                        var elapsed = java.time.Duration.between(started, Instant.now());
-                        var fade = Animations.fadeIn(region, Duration.millis(elapsed.toMillis() / 2.5));
-                        fade.play();
-                    }
+                    struc.prepareAddition();
+                    anim.stop();
+                    pane.getChildren().add(struc.get());
+                    struc.show();
                     pane.getChildren().remove(vbox);
                     pane.getStyleClass().remove("background");
                 }

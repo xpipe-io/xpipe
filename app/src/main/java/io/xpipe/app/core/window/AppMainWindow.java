@@ -54,7 +54,7 @@ public class AppMainWindow {
     private volatile Instant lastUpdate;
 
     @Getter
-    private static final Property<Region> loadedContent = new SimpleObjectProperty<>();
+    private static final Property<AppLayoutComp.Structure> loadedContent = new SimpleObjectProperty<>();
 
     @Getter
     private static final Property<String> loadingText = new SimpleObjectProperty<>();
@@ -138,8 +138,8 @@ public class AppMainWindow {
 
     public static synchronized void initContent() {
         var content = new AppLayoutComp();
-        var region = content.createRegion();
-        loadedContent.setValue(region);
+        var s = content.createStructure();
+        loadedContent.setValue(s);
     }
 
     private static ObservableValue<String> createTitle() {

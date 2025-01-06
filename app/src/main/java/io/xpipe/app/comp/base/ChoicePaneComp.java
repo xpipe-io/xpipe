@@ -92,5 +92,11 @@ public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
         return new SimpleCompStructure<>(vbox);
     }
 
-    public record Entry(ObservableValue<String> name, Comp<?> comp) {}
+    public record Entry(ObservableValue<String> name, Comp<?> comp) {
+
+        @Override
+        public int hashCode() {
+            return name.hashCode();
+        }
+    }
 }

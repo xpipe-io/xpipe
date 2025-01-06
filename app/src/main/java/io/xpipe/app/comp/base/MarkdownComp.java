@@ -59,7 +59,13 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
             return null;
         }
 
-        var hash = markdown.hashCode();
+        int hash;
+        // Rebuild files for updates in case the css have been changed
+        if (AppProperties.get().isImage()) {
+            hash = markdown.hashCode() + AppProperties.get().getVersion().hashCode();
+        } else {
+            hash = markdown.hashCode();
+        }
         var file = TEMP.resolve("md-" + hash + ".html");
         if (Files.exists(file)) {
             return file;

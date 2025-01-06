@@ -7,6 +7,7 @@ import io.xpipe.core.process.OsType;
 import javafx.scene.Node;
 import javafx.scene.text.Font;
 
+import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.javafx.IkonResolver;
 
 import java.nio.file.FileVisitResult;
@@ -48,9 +49,12 @@ public class AppFont {
     }
 
     public static void init() {
-        // Load ikonli font
-        IkonResolver.getInstance();
-        TrackEvent.info("Loading fonts ...");
+        // Load ikonli fonts
+        TrackEvent.info("Loading ikonli fonts ...");
+        new FontIcon("mdi2s-stop");
+        new FontIcon("mdi2m-magnify");
+
+        TrackEvent.info("Loading bundled fonts ...");
         AppResources.with(
                 AppResources.XPIPE_MODULE,
                 "fonts",

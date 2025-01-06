@@ -75,8 +75,8 @@ public abstract class DataStorage {
     @Setter
     protected DataStoreCategory selectedCategory;
 
-    private final Map<DataStore, DataStoreEntry> storeEntryMapCache =
-            Collections.synchronizedMap(new IdentityHashMap<>());
+    private final Map<DataStore, DataStoreEntry> identityStoreEntryMapCache = new IdentityHashMap<>();
+    private final Map<DataStore, DataStoreEntry> storeEntryMapCache = new HashMap<>();
 
     public DataStorage() {
         var prefsDir = AppPrefs.get().storageDirectory().getValue();
@@ -372,6 +372,15 @@ public abstract class DataStorage {
             listeners.forEach(storageListener -> storageListener.onStoreRemove(toRemove));
         }
 
+        if (entry.getStore() != null) {
+            synchronized (identityStoreEntryMapCache) {
+                identityStoreEntryMapCache.remove(entry.getStore());
+            }
+            synchronized (storeEntryMapCache) {
+                storeEntryMapCache.remove(entry.getStore());
+            }
+        }
+
         entry.applyChanges(newEntry);
         entry.initializeEntry();
 
@@ -580,6 +589,12 @@ public abstract class DataStorage {
 
         c.forEach(entry -> entry.finalizeEntry());
         this.storeEntriesSet.removeAll(c);
+        synchronized (identityStoreEntryMapCache) {
+            identityStoreEntryMapCache.remove(e.getStore());
+        }
+        synchronized (storeEntryMapCache) {
+            storeEntryMapCache.remove(e.getStore());
+        }
         this.listeners.forEach(l -> l.onStoreRemove(c.toArray(DataStoreEntry[]::new)));
         refreshEntries();
         saveAsync();
@@ -600,6 +615,12 @@ public abstract class DataStorage {
         for (var td : toDelete) {
             td.finalizeEntry();
             this.storeEntriesSet.remove(td);
+            synchronized (identityStoreEntryMapCache) {
+                identityStoreEntryMapCache.remove(td.getStore());
+            }
+            synchronized (storeEntryMapCache) {
+                storeEntryMapCache.remove(td.getStore());
+            }
             var parent = getDefaultDisplayParent(td);
             parent.ifPresent(p -> p.setChildrenCache(null));
         }
@@ -728,12 +749,17 @@ public abstract class DataStorage {
     public void deleteStoreEntry(@NonNull DataStoreEntry store) {
         store.finalizeEntry();
         this.storeEntries.remove(store);
+        synchronized (identityStoreEntryMapCache) {
+            identityStoreEntryMapCache.remove(store.getStore());
+        }
+        synchronized (storeEntryMapCache) {
+            storeEntryMapCache.remove(store.getStore());
+        }
         getDefaultDisplayParent(store).ifPresent(p -> p.setChildrenCache(null));
         this.listeners.forEach(l -> l.onStoreRemove(store));
         refreshEntries();
         saveAsync();
     }
-
 
     public boolean canDeleteStoreCategory(@NonNull DataStoreCategory cat) {
         if (cat.getParentCategory() == null) {
@@ -851,7 +877,7 @@ public abstract class DataStorage {
         try {
             var provider = entry.getProvider();
             return Optional.ofNullable(provider.getDisplayParent(entry))
-                    .filter(dataStoreEntry -> storeEntriesSet.contains(dataStoreEntry));
+                    .filter(dataStoreEntry -> storeEntries.get(dataStoreEntry) != null);
         } catch (Exception ex) {
             return Optional.empty();
         }
@@ -954,6 +980,13 @@ public abstract class DataStorage {
 
     public Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull DataStore store, boolean identityOnly) {
         if (identityOnly) {
+            synchronized (identityStoreEntryMapCache) {
+                var found = identityStoreEntryMapCache.get(store);
+                if (found != null) {
+                    return Optional.of(found);
+                }
+            }
+        } else {
             synchronized (storeEntryMapCache) {
                 var found = storeEntryMapCache.get(store);
                 if (found != null) {
@@ -972,6 +1005,10 @@ public abstract class DataStorage {
                 .findFirst();
         if (found.isPresent()) {
             if (identityOnly) {
+                synchronized (identityStoreEntryMapCache) {
+                    identityStoreEntryMapCache.put(store, found.get());
+                }
+            } else {
                 synchronized (storeEntryMapCache) {
                     storeEntryMapCache.put(store, found.get());
                 }

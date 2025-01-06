@@ -3,6 +3,7 @@ package io.xpipe.app.core;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.prefs.SupportedLocale;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.util.XPipeInstallation;
@@ -83,6 +84,11 @@ public class AppI18n {
         if (english == null) {
             english = load(Locale.ENGLISH);
             Locale.setDefault(Locale.ENGLISH);
+
+            // Load bundled JDK locale resources
+            SupportedLocale.ALL.forEach(supportedLocale -> {
+                supportedLocale.getLocale().getDisplayName();
+            });
         }
 
         if (currentLanguage.getValue() == null && PlatformState.getCurrent() == PlatformState.RUNNING) {
