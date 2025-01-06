@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.process.CountDown;
 import io.xpipe.core.process.ElevationHandler;
 import io.xpipe.core.process.ShellControl;
@@ -39,6 +40,10 @@ public class BaseElevationHandler implements ElevationHandler {
 
     @Override
     public SecretReference getSecretRef() {
-        return password != null && password.expectsQuery() ? new SecretReference(dataStore) : null;
+        var id = DataStorage.get().getStoreEntryIfPresent(dataStore, true)
+                .or(() -> {
+                    return DataStorage.get().getStoreEntryInProgressIfPresent(dataStore);
+                }).map(e -> e.getUuid()).orElse(UUID.randomUUID());
+        return password != null && password.expectsQuery() ? new SecretReference(id, 0) : null;
     }
 }

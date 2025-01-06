@@ -22,7 +22,7 @@ public interface Validator {
                 .dependsOn("val", s)
                 .withMethod(c -> {
                     if (c.get("val") == null) {
-                        c.error(AppI18n.get("app.mustNotBeEmpty", name != null ? name.getValue() : "null"));
+                        c.error(AppI18n.get("app.mustNotBeEmpty", name != null ? name.getValue() : AppI18n.get("value")));
                     }
                 })
                 .immediate();
@@ -35,7 +35,7 @@ public interface Validator {
                 .dependsOn("if", checkIf)
                 .withMethod(c -> {
                     if (Boolean.TRUE.equals(c.get("if")) && c.get("val") == null) {
-                        c.error(AppI18n.get("app.mustNotBeEmpty", name != null ? name.getValue() : "null"));
+                        c.error(AppI18n.get("app.mustNotBeEmpty", name != null ? name.getValue() : AppI18n.get("value")));
                     }
                 })
                 .immediate();
@@ -46,7 +46,7 @@ public interface Validator {
                 .dependsOn("val", s)
                 .withMethod(c -> {
                     if (((ObservableList<?>) c.get("val")).size() == 0) {
-                        c.error(AppI18n.get("app.mustNotBeEmpty", name != null ? name.getValue() : "null"));
+                        c.error(AppI18n.get("app.mustNotBeEmpty", name != null ? name.getValue() : AppI18n.get("value")));
                     }
                 })
                 .immediate();

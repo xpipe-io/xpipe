@@ -1074,18 +1074,12 @@ public abstract class DataStorage {
             return forStoreIdentity.get();
         }
 
-        var uuid = UuidHelper.generateFromObject(parent.getUuid(), name);
-        var found = getStoreEntryIfPresent(uuid);
-        if (found.isPresent()) {
-            return found.get();
-        }
-
         var forStore = getStoreEntryIfPresent(store, false);
         if (forStore.isPresent()) {
             return forStore.get();
         }
 
-        return DataStoreEntry.createNew(uuid, parent.getCategoryUuid(), name, store);
+        return DataStoreEntry.createNew(UUID.randomUUID(), parent.getCategoryUuid(), name, store);
     }
 
     public DataStoreEntry getStoreEntry(UUID id) {

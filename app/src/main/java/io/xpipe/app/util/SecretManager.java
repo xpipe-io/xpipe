@@ -86,8 +86,7 @@ public class SecretManager {
         }
     }
 
-    public static synchronized void clearAll(Object store) {
-        var id = UuidHelper.generateFromObject(store);
+    public static synchronized void clearAll(UUID id) {
         secrets.entrySet()
                 .removeIf(secretReferenceSecretValueEntry ->
                         secretReferenceSecretValueEntry.getKey().getSecretId().equals(id));
