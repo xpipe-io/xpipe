@@ -35,7 +35,7 @@ public class FileReference {
         return new FileReference(DataStorage.get().local().ref(), p);
     }
 
-    public final boolean isLocal() {
+    public boolean isLocal() {
         return fileSystem.getStore() instanceof LocalStore;
     }
 }

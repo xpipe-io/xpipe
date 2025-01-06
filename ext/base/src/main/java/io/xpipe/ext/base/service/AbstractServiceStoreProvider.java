@@ -3,7 +3,6 @@ package io.xpipe.ext.base.service;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.store.*;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.ext.SingletonSessionStoreProvider;
@@ -115,8 +114,8 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
         var desc = s.getLocalPort() != null
                 ? "localhost:" + s.getLocalPort() + " <- :" + s.getRemotePort()
                 : s.isSessionRunning()
-                ? "localhost:" + s.getSession().getLocalPort() + " <- :" + s.getRemotePort()
-                : AppI18n.get("servicePort", s.getRemotePort());
+                        ? "localhost:" + s.getSession().getLocalPort() + " <- :" + s.getRemotePort()
+                        : AppI18n.get("servicePort", s.getRemotePort());
         return desc;
     }
 

@@ -106,11 +106,11 @@ public class LxdCommandView extends CommandViewBase {
                 .execute();
     }
 
-    public CommandControl console(String containerName) throws Exception {
+    public CommandControl console(String containerName) {
         return build(commandBuilder -> commandBuilder.add("console").addQuoted(containerName));
     }
 
-    public CommandControl configEdit(String containerName) throws Exception {
+    public CommandControl configEdit(String containerName) {
         return build(commandBuilder -> commandBuilder.add("config", "edit").addQuoted(containerName));
     }
 

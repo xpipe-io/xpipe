@@ -585,11 +585,11 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         });
     }
 
-    public void backSync(int i) throws Exception {
+    public void backSync(int i) {
         cdSync(history.back(i));
     }
 
-    public void forthSync(int i) throws Exception {
+    public void forthSync(int i) {
         cdSync(history.forth(i));
     }
 

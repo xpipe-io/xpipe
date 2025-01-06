@@ -53,7 +53,7 @@ public class ServiceRefreshAction implements ActionProvider {
         DataStoreEntryRef<FixedServiceCreatorStore> ref;
 
         @Override
-        public void execute() throws Exception {
+        public void execute() {
             ref.get().setExpanded(true);
             var e = DataStorage.get()
                     .addStoreIfNotPresent(

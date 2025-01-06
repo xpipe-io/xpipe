@@ -16,9 +16,9 @@ import lombok.extern.jackson.Jacksonized;
 @JsonTypeName("desktopApplication")
 public class DesktopApplicationStore implements DataStore {
 
-    private final DataStoreEntryRef<DesktopBaseStore> desktop;
-    private final String path;
-    private final String arguments;
+    DataStoreEntryRef<DesktopBaseStore> desktop;
+    String path;
+    String arguments;
 
     @Override
     public void checkComplete() throws Throwable {

@@ -4,7 +4,6 @@ import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.*;
-import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileInfo;

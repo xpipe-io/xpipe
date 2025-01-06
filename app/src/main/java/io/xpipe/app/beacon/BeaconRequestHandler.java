@@ -193,7 +193,7 @@ public class BeaconRequestHandler<T> implements HttpHandler {
                         && method.getParameters()[0].getType().equals(byte[].class))
                 .findFirst()
                 .orElseThrow();
-        setMethod.invoke(b, s);
+        setMethod.invoke(b, (Object) s);
 
         var m = b.getClass().getDeclaredMethod("build");
         m.setAccessible(true);

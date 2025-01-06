@@ -45,8 +45,8 @@ public class PodmanContainerStore
                 SelfReferentialStore,
                 ContainerImageStore {
 
-    private final DataStoreEntryRef<PodmanCmdStore> cmd;
-    private final String containerName;
+    DataStoreEntryRef<PodmanCmdStore> cmd;
+    String containerName;
 
     @Override
     public String getImageName() {

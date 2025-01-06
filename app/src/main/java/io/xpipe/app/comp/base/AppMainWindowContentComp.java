@@ -19,11 +19,8 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 import atlantafx.base.util.Animations;
-
-import java.time.Instant;
 
 public class AppMainWindowContentComp extends SimpleComp {
 

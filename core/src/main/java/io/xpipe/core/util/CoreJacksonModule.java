@@ -137,7 +137,7 @@ public class CoreJacksonModule extends SimpleModule {
         public ShellDialect deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             JsonNode tree = JacksonMapper.getDefault().readTree(p);
             if (tree.isObject()) {
-                var t = (JsonNode) tree.get("type");
+                var t = tree.get("type");
                 if (t == null) {
                     return null;
                 }

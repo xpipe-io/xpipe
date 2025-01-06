@@ -18,7 +18,7 @@ public class LxdScanProvider extends ScanProvider {
     }
 
     @Override
-    public void scan(DataStoreEntry entry, ShellControl sc) throws Throwable {
+    public void scan(DataStoreEntry entry, ShellControl sc) {
         var e = DataStorage.get()
                 .addStoreIfNotPresent(
                         entry,

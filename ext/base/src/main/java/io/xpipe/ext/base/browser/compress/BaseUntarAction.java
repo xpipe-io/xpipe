@@ -36,7 +36,7 @@ public class BaseUntarAction implements BrowserApplicationPathAction, BrowserLea
     }
 
     @Override
-    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) throws Exception {
+    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         model.runAsync(
                 () -> {
                     ShellControl sc = model.getFileSystem().getShell().orElseThrow();

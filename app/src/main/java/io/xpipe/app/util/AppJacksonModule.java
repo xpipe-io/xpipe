@@ -87,7 +87,7 @@ public class AppJacksonModule extends SimpleModule {
 
             // Preserve same output if not changed
             if (value.getOriginalNode() != null && !value.requiresRewrite()) {
-                tree.set("secret", (JsonNode) value.getOriginalNode());
+                tree.set("secret", value.getOriginalNode());
                 jgen.writeTree(tree);
                 return;
             }

@@ -56,7 +56,10 @@ public class SshIdentityStrategyHelper {
                         ? fileProperty.getValue().getFile().toAbsoluteFilePath(null)
                         : null);
         fileProperty.addListener((observable, oldValue, newValue) -> {
-            keyPath.setValue(newValue != null && newValue.getFile() != null ? newValue.getFile().toAbsoluteFilePath(null) : null);
+            keyPath.setValue(
+                    newValue != null && newValue.getFile() != null
+                            ? newValue.getFile().toAbsoluteFilePath(null)
+                            : null);
         });
         var keyPasswordProperty = new SimpleObjectProperty<>(
                 fileProperty.getValue() != null ? fileProperty.getValue().getPassword() : null);
@@ -73,7 +76,9 @@ public class SshIdentityStrategyHelper {
                 .nonNull()
                 .name("keyPassword")
                 .description("sshConfigHost.identityPassphraseDescription")
-                .sub(SecretRetrievalStrategyHelper.comp(keyPasswordProperty, true, allowUserSecretKey), keyPasswordProperty)
+                .sub(
+                        SecretRetrievalStrategyHelper.comp(keyPasswordProperty, true, allowUserSecretKey),
+                        keyPasswordProperty)
                 .nonNull()
                 .bind(
                         () -> {
@@ -103,7 +108,9 @@ public class SshIdentityStrategyHelper {
 
         var map = new LinkedHashMap<ObservableValue<String>, OptionsBuilder>();
         map.put(AppI18n.observable("base.none"), new OptionsBuilder());
-        map.put(AppI18n.observable("base.keyFile"), fileIdentity(proxy, file, perUserFile, allowSync, allowUserSecretKey));
+        map.put(
+                AppI18n.observable("base.keyFile"),
+                fileIdentity(proxy, file, perUserFile, allowSync, allowUserSecretKey));
         map.put(AppI18n.observable("base.sshAgent"), agent(agent));
         map.put(AppI18n.observable("base.pageant"), new OptionsBuilder());
         map.put(gpgFeature.suffixObservable("base.gpgAgent"), new OptionsBuilder());

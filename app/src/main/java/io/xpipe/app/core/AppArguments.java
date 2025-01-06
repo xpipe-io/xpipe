@@ -107,7 +107,7 @@ public class AppArguments {
         }
 
         @Override
-        public Integer call() throws Exception {
+        public Integer call() {
             return 0;
         }
     }

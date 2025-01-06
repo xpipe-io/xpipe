@@ -73,7 +73,7 @@ public class IncusContainerStore
             }
 
             @Override
-            public ShellControl control(ShellControl parent) throws Exception {
+            public ShellControl control(ShellControl parent) {
                 var user = identity != null ? identity.unwrap().getUsername() : null;
                 var sc = new IncusCommandView(parent).exec(containerName, user);
                 sc.withSourceStore(IncusContainerStore.this);

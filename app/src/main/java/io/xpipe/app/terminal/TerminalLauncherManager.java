@@ -34,8 +34,7 @@ public class TerminalLauncherManager {
     }
 
     public static CountDownLatch submitAsync(
-            UUID request, ProcessControl processControl, TerminalInitScriptConfig config, String directory)
-            throws BeaconClientException {
+            UUID request, ProcessControl processControl, TerminalInitScriptConfig config, String directory) {
         synchronized (entries) {
             var req = entries.get(request);
             if (req == null) {

@@ -28,7 +28,7 @@ public class ShellStoreFormat {
                     var def = Boolean.TRUE.equals(s.getSetDefault()) ? AppI18n.get("default") : null;
                     var name = DataStoreFormatter.join(
                             (includeOsName ? formattedOsName(s.getOsName()) : null), s.getShellName());
-                    return new ShellStoreFormat(null, name, new String[] {def}).format();
+                    return new ShellStoreFormat(null, name, def).format();
                 },
                 AppPrefs.get().language(),
                 section.getWrapper().getPersistentState());
@@ -46,28 +46,27 @@ public class ShellStoreFormat {
                     return new ShellStoreFormat(
                                     LicenseProvider.get().checkOsName(s.getOsName()),
                                     formattedOsName(s.getOsName()),
-                                    new String[] {info})
+                                    info)
                             .format();
                 }
 
                 if (s.getShellDialect().equals(ShellDialects.NO_INTERACTION)) {
-                    return new ShellStoreFormat(null, null, new String[] {info}).format();
+                    return new ShellStoreFormat(null, null, info).format();
                 }
 
                 return new ShellStoreFormat(
                                 LicenseProvider.get()
                                         .getFeature(s.getShellDialect().getLicenseFeatureId()),
                                 s.getShellDialect().getDisplayName(),
-                                new String[] {info})
+                                info)
                         .format();
             }
 
             return new ShellStoreFormat(
                             LicenseProvider.get().checkOsName(s.getOsName()),
                             formattedOsName(s.getOsName()),
-                            new String[] {
-                                s.getTtyState() != null && s.getTtyState() != ShellTtyState.NONE ? "TTY" : null, info
-                            })
+                            s.getTtyState() != null && s.getTtyState() != ShellTtyState.NONE ? "TTY" : null,
+                            info)
                     .format();
         });
     }

@@ -14,9 +14,7 @@ import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.SingletonSessionStore;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 

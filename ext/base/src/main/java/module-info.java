@@ -5,6 +5,7 @@ import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.ext.base.action.*;
 import io.xpipe.ext.base.browser.*;
 import io.xpipe.ext.base.browser.compress.*;
+import io.xpipe.ext.base.desktop.DesktopApplicationStoreProvider;
 import io.xpipe.ext.base.identity.*;
 import io.xpipe.ext.base.script.*;
 import io.xpipe.ext.base.service.*;
@@ -12,7 +13,6 @@ import io.xpipe.ext.base.store.StorePauseAction;
 import io.xpipe.ext.base.store.StoreRestartAction;
 import io.xpipe.ext.base.store.StoreStartAction;
 import io.xpipe.ext.base.store.StoreStopAction;
-import io.xpipe.ext.base.desktop.DesktopApplicationStoreProvider;
 
 open module io.xpipe.ext.base {
     exports io.xpipe.ext.base;

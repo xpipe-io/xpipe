@@ -204,8 +204,8 @@ public abstract class BaseCompressAction implements BrowserAction, BrowserBranch
             var base = new FilePath(model.getCurrentDirectory().getPath());
             var target = base.join(fileName);
             var command = CommandBuilder.of().add("zip", "-r", "-");
-            for (int i = 0; i < entries.size(); i++) {
-                var rel = new FilePath(entries.get(i).getRawFileEntry().getPath())
+            for (BrowserEntry entry : entries) {
+                var rel = new FilePath(entry.getRawFileEntry().getPath())
                         .relativize(base)
                         .toUnix();
                 if (directory) {
@@ -261,8 +261,8 @@ public abstract class BaseCompressAction implements BrowserAction, BrowserBranch
                     .add("a")
                     .add("-r")
                     .addFile(target);
-            for (int i = 0; i < entries.size(); i++) {
-                var rel = new FilePath(entries.get(i).getRawFileEntry().getPath()).relativize(base);
+            for (BrowserEntry entry : entries) {
+                var rel = new FilePath(entry.getRawFileEntry().getPath()).relativize(base);
                 if (directory) {
                     command.addQuoted(".\\" + rel.toDirectory().toWindows() + "*");
                 } else {

@@ -23,7 +23,7 @@ public class LocalStore implements NetworkTunnelStore, ShellStore, StatefulDataS
     public ShellControlFunction shellFunction() {
         return new ShellControlFunction() {
             @Override
-            public ShellControl control() throws Exception {
+            public ShellControl control() {
                 var pc = ProcessControlProvider.get().createLocalProcessControl(true);
                 pc.withSourceStore(LocalStore.this);
                 pc.withShellStateInit(LocalStore.this);
@@ -39,7 +39,7 @@ public class LocalStore implements NetworkTunnelStore, ShellStore, StatefulDataS
     }
 
     @Override
-    public NetworkTunnelSession createTunnelSession(int localPort, int remotePort, String address) throws Exception {
+    public NetworkTunnelSession createTunnelSession(int localPort, int remotePort, String address) {
         throw new UnsupportedOperationException();
     }
 }

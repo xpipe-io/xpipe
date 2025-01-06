@@ -30,7 +30,7 @@ public abstract class BaseUnzipWindowsAction implements BrowserLeafAction {
     }
 
     @Override
-    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) throws Exception {
+    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         model.runAsync(
                 () -> {
                     var sc = model.getFileSystem().getShell().orElseThrow();

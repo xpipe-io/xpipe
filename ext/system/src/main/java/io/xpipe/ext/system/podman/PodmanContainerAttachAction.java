@@ -16,7 +16,7 @@ public class PodmanContainerAttachAction implements ActionProvider {
             @Override
             public Action createAction(DataStoreEntryRef<PodmanContainerStore> store) {
                 return () -> {
-                    var d = (PodmanContainerStore) store.getStore();
+                    var d = store.getStore();
                     var view = d.commandView(
                             d.getCmd().getStore().getHost().getStore().getOrStartSession());
                     TerminalLauncher.open(store.get().getName(), view.attach(d.getContainerName()));

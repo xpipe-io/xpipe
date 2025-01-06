@@ -37,8 +37,12 @@ public class SecretRetrievalStrategyHelper {
                             var changed = !Arrays.equals(
                                     newSecret != null ? newSecret.getSecret() : new char[0],
                                     original != null ? original.getSecret() : new char[0]);
-                            var val = changed ? (allowUserSecretKey ? DataStorageSecret.ofCurrentSecret(secretProperty.getValue()) :
-                                    DataStorageSecret.ofSecret(secretProperty.getValue(), EncryptionToken.ofVaultKey())) : original;
+                            var val = changed
+                                    ? (allowUserSecretKey
+                                            ? DataStorageSecret.ofCurrentSecret(secretProperty.getValue())
+                                            : DataStorageSecret.ofSecret(
+                                                    secretProperty.getValue(), EncryptionToken.ofVaultKey()))
+                                    : original;
                             return new SecretRetrievalStrategy.InPlace(val);
                         },
                         p);
@@ -86,7 +90,8 @@ public class SecretRetrievalStrategyHelper {
                         p);
     }
 
-    public static OptionsBuilder comp(Property<SecretRetrievalStrategy> s, boolean allowNone, boolean allowUserSecretKey) {
+    public static OptionsBuilder comp(
+            Property<SecretRetrievalStrategy> s, boolean allowNone, boolean allowUserSecretKey) {
         SecretRetrievalStrategy strat = s.getValue();
         var inPlace = new SimpleObjectProperty<>(strat instanceof SecretRetrievalStrategy.InPlace i ? i : null);
         var passwordManager =

@@ -21,7 +21,7 @@ public class WorkspaceCreationAlert {
         });
     }
 
-    private static void show() throws Exception {
+    private static void show() {
         var name = new SimpleObjectProperty<>("New workspace");
         var path = new SimpleObjectProperty<>(AppProperties.get().getDataDir());
         var content = new OptionsBuilder()

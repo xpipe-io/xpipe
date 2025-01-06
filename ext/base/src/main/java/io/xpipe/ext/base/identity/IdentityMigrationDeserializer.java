@@ -1,8 +1,6 @@
 package io.xpipe.ext.base.identity;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.deser.std.DelegatingDeserializer;
@@ -30,17 +28,16 @@ public class IdentityMigrationDeserializer extends DelegatingDeserializer {
     }
 
     @Override
-    public Object deserialize(JsonParser p, DeserializationContext ctxt, Object intoValue)
-            throws IOException, JsonProcessingException {
+    public Object deserialize(JsonParser p, DeserializationContext ctxt, Object intoValue) throws IOException {
         return super.deserialize(restructure(p), ctxt, intoValue);
     }
 
     public Object deserializeWithType(JsonParser jp, DeserializationContext ctxt, TypeDeserializer typeDeserializer)
-            throws IOException, JsonProcessingException {
+            throws IOException {
         return super.deserializeWithType(restructure(jp), ctxt, typeDeserializer);
     }
 
-    public JsonParser restructure(JsonParser p) throws IOException, JsonParseException {
+    public JsonParser restructure(JsonParser p) throws IOException {
         var node = p.readValueAsTree();
         if (!node.isObject()) {
             return p;

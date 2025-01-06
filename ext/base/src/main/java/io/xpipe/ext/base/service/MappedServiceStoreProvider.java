@@ -1,20 +1,16 @@
 package io.xpipe.ext.base.service;
 
 import io.xpipe.app.comp.store.StoreChoiceComp;
-import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.comp.store.StoreViewState;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.NetworkTunnelStore;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 
 import java.util.List;
 
@@ -35,8 +31,9 @@ public class MappedServiceStoreProvider extends FixedServiceStoreProvider {
         var desc = s.getLocalPort() != null
                 ? "localhost:" + s.getLocalPort() + " <- :" + m.getRemotePort() + " <- :" + m.getContainerPort()
                 : s.isSessionRunning()
-                ? "localhost:" + s.getSession().getLocalPort() + " <- :" + m.getRemotePort() + " <- :" + m.getContainerPort()
-                : ":" + m.getRemotePort() + " <- :" + m.getContainerPort();
+                        ? "localhost:" + s.getSession().getLocalPort() + " <- :" + m.getRemotePort() + " <- :"
+                                + m.getContainerPort()
+                        : ":" + m.getRemotePort() + " <- :" + m.getContainerPort();
         return desc;
     }
 
@@ -44,7 +41,6 @@ public class MappedServiceStoreProvider extends FixedServiceStoreProvider {
     public List<Class<?>> getStoreClasses() {
         return List.of(MappedServiceStore.class);
     }
-
 
     @Override
     public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {

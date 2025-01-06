@@ -28,7 +28,7 @@ public class AppAvCheck {
         return Optional.empty();
     }
 
-    public static void check() throws Throwable {
+    public static void check() {
         // Only show this on first launch on windows
         if (OsType.getLocal() != OsType.WINDOWS || !AppProperties.get().isInitialLaunch()) {
             return;
@@ -42,16 +42,19 @@ public class AppAvCheck {
         var modal = ModalOverlay.of(Comp.of(() -> {
             AtomicReference<Region> markdown = new AtomicReference<>();
             AppResources.with(AppResources.XPIPE_MODULE, "misc/antivirus.md", file -> {
-                markdown.set(new MarkdownComp(Files.readString(file), s -> {
-                            var t = found.get();
-                            return s.formatted(
-                                    t.getName(),
-                                    t.getName(),
-                                    t.getDescription(),
-                                    AppProperties.get().getVersion(),
-                                    AppProperties.get().getVersion(),
-                                    t.getName());
-                        }, false)
+                markdown.set(new MarkdownComp(
+                                Files.readString(file),
+                                s -> {
+                                    var t = found.get();
+                                    return s.formatted(
+                                            t.getName(),
+                                            t.getName(),
+                                            t.getDescription(),
+                                            AppProperties.get().getVersion(),
+                                            AppProperties.get().getVersion(),
+                                            t.getName());
+                                },
+                                false)
                         .prefWidth(550)
                         .prefHeight(600)
                         .createRegion());

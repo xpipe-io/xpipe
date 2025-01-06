@@ -1,6 +1,5 @@
 package io.xpipe.app.core.mode;
 
-import io.xpipe.app.core.*;
 import io.xpipe.app.util.PlatformInit;
 
 public abstract class PlatformMode extends OperationMode {

@@ -6,8 +6,6 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.process.ProcessOutputException;
 
-import io.xpipe.core.process.ShellDialect;
-import io.xpipe.core.process.ShellDialects;
 import lombok.Value;
 
 import java.util.Optional;
@@ -88,7 +86,8 @@ public abstract class AppShellChecker {
             var scriptFile = ScriptHelper.getExecScriptFile(sc);
             var scriptContent = sc.getShellDialect().prepareScriptContent("echo test");
             sc.view().writeScriptFile(scriptFile, scriptContent);
-            var out = sc.command(sc.getShellDialect().runScriptCommand(sc, scriptFile.toString())).readStdoutOrThrow();
+            var out = sc.command(sc.getShellDialect().runScriptCommand(sc, scriptFile.toString()))
+                    .readStdoutOrThrow();
             if (!out.equals("test")) {
                 return Optional.of(new FailureResult(
                         "Expected output \"test\", got output \"" + out + "\" when running test script", true));

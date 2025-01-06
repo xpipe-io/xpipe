@@ -47,5 +47,4 @@ public class GnomeTerminalType extends ExternalTerminalType.PathCheckType implem
             pc.executeSimpleCommand(toExecute);
         }
     }
-
 }

@@ -52,13 +52,17 @@ public class PasswordManagerCategory extends AppPrefsCategory {
             choices.add(new Choice(
                     externalPasswordManagerTemplate.getId(),
                     externalPasswordManagerTemplate.getTemplate(),
-                        externalPasswordManagerTemplate.getDocsLink(),
+                    externalPasswordManagerTemplate.getDocsLink(),
                     ExternalPasswordManager.COMMAND));
         });
         ExternalPasswordManager.ALL.stream()
                 .filter(externalPasswordManager -> externalPasswordManager != ExternalPasswordManager.COMMAND)
                 .forEach(externalPasswordManager -> {
-                    choices.add(new Choice(externalPasswordManager.getId(), null, externalPasswordManager.getDocsLink(), externalPasswordManager));
+                    choices.add(new Choice(
+                            externalPasswordManager.getId(),
+                            null,
+                            externalPasswordManager.getDocsLink(),
+                            externalPasswordManager));
                 });
 
         var prefs = AppPrefs.get();
@@ -84,12 +88,13 @@ public class PasswordManagerCategory extends AppPrefsCategory {
         };
 
         var docsLinkProperty = new SimpleStringProperty();
-        var docsLinkButton = new ButtonComp(AppI18n.observable("documentation"), new FontIcon("mdi2h-help-circle-outline"), () -> {
-           var l = docsLinkProperty.get();
-           if (l != null) {
-               Hyperlinks.open(l);
-           }
-        });
+        var docsLinkButton =
+                new ButtonComp(AppI18n.observable("documentation"), new FontIcon("mdi2h-help-circle-outline"), () -> {
+                    var l = docsLinkProperty.get();
+                    if (l != null) {
+                        Hyperlinks.open(l);
+                    }
+                });
         docsLinkButton.disable(docsLinkProperty.isNull());
 
         var command = new IntegratedTextAreaComp(

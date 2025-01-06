@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 @Value
 public class LxdCmdStore implements FixedHierarchyStore, StatefulDataStore<LxdCmdStore.State>, SelfReferentialStore {
 
-    private final DataStoreEntryRef<ShellStore> host;
+    DataStoreEntryRef<ShellStore> host;
 
     public LxdCmdStore(DataStoreEntryRef<ShellStore> host) {
         this.host = host;

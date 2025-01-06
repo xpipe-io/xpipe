@@ -12,5 +12,5 @@ public class StubShellControl extends WrapperShellControl {
     }
 
     @Override
-    public void close() throws Exception {}
+    public void close() {}
 }

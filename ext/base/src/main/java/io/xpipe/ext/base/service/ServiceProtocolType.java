@@ -17,17 +17,17 @@ import lombok.extern.jackson.Jacksonized;
 })
 public interface ServiceProtocolType {
 
-    public abstract String formatUrl(String base);
+    String formatUrl(String base);
 
-    public abstract void open(String url);
+    void open(String url);
 
-    public abstract String getTranslationKey();
+    String getTranslationKey();
 
     @JsonTypeName("none")
     @Value
     @Jacksonized
     @Builder
-    public static class None implements ServiceProtocolType {
+    class None implements ServiceProtocolType {
 
         @Override
         public String formatUrl(String base) {
@@ -47,7 +47,7 @@ public interface ServiceProtocolType {
     @Value
     @Jacksonized
     @Builder
-    public static class Http implements ServiceProtocolType {
+    class Http implements ServiceProtocolType {
 
         String path;
 
@@ -75,7 +75,7 @@ public interface ServiceProtocolType {
     @Value
     @Jacksonized
     @Builder
-    public static class Https implements ServiceProtocolType {
+    class Https implements ServiceProtocolType {
 
         String path;
 

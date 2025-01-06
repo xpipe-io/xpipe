@@ -71,7 +71,7 @@ public class RdpConfig {
     }
 
     public RdpConfig withRemoved(String key) {
-        var map = new LinkedHashMap<String, TypedValue>(content);
+        var map = new LinkedHashMap<>(content);
         map.remove(key);
         return new RdpConfig(map);
     }

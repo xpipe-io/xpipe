@@ -42,7 +42,8 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
         this.bodyPadding = bodyPadding;
     }
 
-    public MarkdownComp(ObservableValue<String> markdown, UnaryOperator<String> htmlTransformation, boolean bodyPadding) {
+    public MarkdownComp(
+            ObservableValue<String> markdown, UnaryOperator<String> htmlTransformation, boolean bodyPadding) {
         this.markdown = markdown;
         this.htmlTransformation = htmlTransformation;
         this.bodyPadding = bodyPadding;

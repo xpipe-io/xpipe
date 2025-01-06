@@ -36,8 +36,8 @@ public class LxdContainerStore
                 StoppableStore,
                 PauseableStore {
 
-    private final DataStoreEntryRef<LxdCmdStore> cmd;
-    private final String containerName;
+    DataStoreEntryRef<LxdCmdStore> cmd;
+    String containerName;
     IdentityValue identity;
 
     @Override
@@ -71,7 +71,7 @@ public class LxdContainerStore
             }
 
             @Override
-            public ShellControl control(ShellControl parent) throws Exception {
+            public ShellControl control(ShellControl parent) {
                 var user = identity != null ? identity.unwrap().getUsername() : null;
                 var base = new LxdCommandView(parent).exec(containerName, user);
                 if (identity != null && identity.unwrap().getPassword() != null) {

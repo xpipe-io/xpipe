@@ -7,8 +7,8 @@ import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
-
 import io.xpipe.app.util.PlatformThread;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
@@ -73,7 +73,8 @@ public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
         return new Structure(pane, multiR, sidebarR, new ArrayList<>(multiR.getChildren()));
     }
 
-    public static record Structure(BorderPane pane, StackPane stack, Region sidebar, List<Node> children) implements CompStructure<BorderPane> {
+    public record Structure(BorderPane pane, StackPane stack, Region sidebar, List<Node> children)
+            implements CompStructure<BorderPane> {
 
         public void prepareAddition() {
             stack.getChildren().clear();

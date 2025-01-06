@@ -26,7 +26,7 @@ public final class BrowserHistoryTabModel extends BrowserSessionTab {
     }
 
     @Override
-    public void init() throws Exception {}
+    public void init() {}
 
     @Override
     public void close() {}

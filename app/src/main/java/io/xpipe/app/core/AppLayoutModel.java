@@ -39,7 +39,7 @@ public class AppLayoutModel {
     public AppLayoutModel(SavedState savedState) {
         this.savedState = savedState;
         this.entries = createEntryList();
-        this.selected = new SimpleObjectProperty<>(entries.get(0));
+        this.selected = new SimpleObjectProperty<>(entries.getFirst());
     }
 
     public static AppLayoutModel get() {
@@ -73,7 +73,7 @@ public class AppLayoutModel {
     }
 
     public void selectConnections() {
-        selected.setValue(entries.get(0));
+        selected.setValue(entries.getFirst());
     }
 
     private List<Entry> createEntryList() {

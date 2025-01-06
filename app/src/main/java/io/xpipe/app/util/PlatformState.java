@@ -3,7 +3,6 @@ package io.xpipe.app.util;
 import io.xpipe.app.core.check.AppSystemFontCheck;
 import io.xpipe.app.core.window.ModifiedStage;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
 
@@ -15,7 +14,6 @@ import lombok.Setter;
 import org.apache.commons.lang3.SystemUtils;
 
 import java.awt.*;
-import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
 public enum PlatformState {

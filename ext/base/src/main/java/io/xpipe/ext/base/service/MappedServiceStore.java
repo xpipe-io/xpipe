@@ -15,7 +15,7 @@ import lombok.extern.jackson.Jacksonized;
 @JsonTypeName("mappedService")
 public class MappedServiceStore extends FixedServiceStore {
 
-    private final int containerPort;
+    int containerPort;
 
     @Override
     public boolean licenseRequired() {

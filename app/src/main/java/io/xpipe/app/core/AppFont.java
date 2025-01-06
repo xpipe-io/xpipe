@@ -8,7 +8,6 @@ import javafx.scene.Node;
 import javafx.scene.text.Font;
 
 import org.kordamp.ikonli.javafx.FontIcon;
-import org.kordamp.ikonli.javafx.IkonResolver;
 
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;

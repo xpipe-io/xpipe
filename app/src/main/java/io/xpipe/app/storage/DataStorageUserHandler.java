@@ -20,7 +20,7 @@ public interface DataStorageUserHandler {
 
     SecretKey getEncryptionKey();
 
-    public Comp<?> createOverview();
+    Comp<?> createOverview();
 
     String getActiveUser();
 }

@@ -1,9 +1,7 @@
 package io.xpipe.ext.base.service;
 
 import io.xpipe.app.comp.store.StoreChoiceComp;
-import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.comp.store.StoreViewState;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -13,8 +11,6 @@ import io.xpipe.core.store.NetworkTunnelStore;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 
 import java.util.List;
 

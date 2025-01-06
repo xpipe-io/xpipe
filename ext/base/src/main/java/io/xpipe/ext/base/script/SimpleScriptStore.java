@@ -31,12 +31,12 @@ import java.util.stream.Collectors;
 @ToString(callSuper = true)
 public class SimpleScriptStore extends ScriptStore implements ShellInitCommand.Terminal, SelfReferentialStore {
 
-    private final ShellDialect minimumDialect;
-    private final String commands;
-    private final boolean initScript;
-    private final boolean shellScript;
-    private final boolean fileScript;
-    private final boolean runnableScript;
+    ShellDialect minimumDialect;
+    String commands;
+    boolean initScript;
+    boolean shellScript;
+    boolean fileScript;
+    boolean runnableScript;
 
     public String getCommands() {
         return commands != null ? commands : "";

@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 public class PodmanCmdStore
         implements FixedHierarchyStore, StatefulDataStore<PodmanCmdStore.State>, SelfReferentialStore {
 
-    private final DataStoreEntryRef<ShellStore> host;
+    DataStoreEntryRef<ShellStore> host;
 
     public PodmanCmdStore(DataStoreEntryRef<ShellStore> host) {
         this.host = host;

@@ -177,8 +177,8 @@ public abstract class DataStorage {
         }
 
         if (getStoreCategoryIfPresent(PREDEFINED_SCRIPTS_CATEGORY_UUID).isEmpty()) {
-            var cat = DataStoreCategory.createNew(
-                    ALL_SCRIPTS_CATEGORY_UUID, PREDEFINED_SCRIPTS_CATEGORY_UUID, "Samples");
+            var cat =
+                    DataStoreCategory.createNew(ALL_SCRIPTS_CATEGORY_UUID, PREDEFINED_SCRIPTS_CATEGORY_UUID, "Samples");
             cat.setDirectory(categoriesDir.resolve(PREDEFINED_SCRIPTS_CATEGORY_UUID.toString()));
             storeCategories.add(cat);
         }
@@ -296,7 +296,7 @@ public abstract class DataStorage {
                 && storeCategories.stream()
                         .filter(dataStoreCategory ->
                                 !dataStoreCategory.getUuid().equals(SYNCED_IDENTITIES_CATEGORY_UUID))
-                        .allMatch(dataStoreCategory -> !shouldSync(dataStoreCategory))) {
+                        .noneMatch(dataStoreCategory -> shouldSync(dataStoreCategory))) {
             return false;
         }
 
@@ -454,10 +454,9 @@ public abstract class DataStorage {
         e.incrementBusyCounter();
         List<? extends DataStoreEntryRef<? extends FixedChildStore>> newChildren;
         try {
-            newChildren = ((FixedHierarchyStore) h)
-                    .listChildren().stream()
-                            .filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null)
-                            .toList();
+            newChildren = h.listChildren().stream()
+                    .filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null)
+                    .toList();
         } catch (Exception ex) {
             if (throwOnFail) {
                 throw ex;
@@ -766,9 +765,11 @@ public abstract class DataStorage {
             return false;
         }
 
-        if (cat.getUuid().equals(DEFAULT_CATEGORY_UUID) || cat.getUuid().equals(PREDEFINED_SCRIPTS_CATEGORY_UUID) || cat.getUuid().equals(
-                LOCAL_IDENTITIES_CATEGORY_UUID) || cat.getUuid().equals(CUSTOM_SCRIPTS_CATEGORY_UUID) || cat.getUuid().equals(
-                SYNCED_IDENTITIES_CATEGORY_UUID)) {
+        if (cat.getUuid().equals(DEFAULT_CATEGORY_UUID)
+                || cat.getUuid().equals(PREDEFINED_SCRIPTS_CATEGORY_UUID)
+                || cat.getUuid().equals(LOCAL_IDENTITIES_CATEGORY_UUID)
+                || cat.getUuid().equals(CUSTOM_SCRIPTS_CATEGORY_UUID)
+                || cat.getUuid().equals(SYNCED_IDENTITIES_CATEGORY_UUID)) {
             return false;
         }
 
