@@ -81,7 +81,12 @@ public interface SshIdentityStrategy {
     }
 
     @JsonTypeName("pageant")
+    @Value
+    @Jacksonized
+    @Builder
     class Pageant implements SshIdentityStrategy {
+
+        boolean forwardAgent;
 
         @Override
         public void prepareParent(ShellControl parent) throws Exception {
@@ -110,6 +115,9 @@ public interface SshIdentityStrategy {
 
                 return null;
             });
+            if (forwardAgent) {
+                builder.add(1, "-A");
+            }
         }
 
         private String getPageantWindowsPipe(ShellControl parent) throws Exception {
@@ -228,7 +236,7 @@ public interface SshIdentityStrategy {
     @JsonTypeName("gpgAgent")
     class GpgAgent implements SshIdentityStrategy {
 
-        private static final Set<UUID> startedSystems = new HashSet<>();
+        boolean forwardAgent;
 
         @Override
         public void prepareParent(ShellControl parent) throws Exception {
@@ -246,6 +254,9 @@ public interface SshIdentityStrategy {
                 var r = sc.executeSimpleStringCommand("gpgconf --list-dirs agent-ssh-socket");
                 return r;
             });
+            if (forwardAgent) {
+                builder.add(1, "-A");
+            }
         }
     }
 
@@ -359,13 +370,21 @@ public interface SshIdentityStrategy {
     }
 
     @JsonTypeName("otherExternal")
+    @Value
+    @Jacksonized
+    @Builder
     class OtherExternal implements SshIdentityStrategy {
+
+        boolean forwardAgent;
 
         @Override
         public void prepareParent(ShellControl parent) {}
 
         @Override
         public void buildCommand(CommandBuilder builder) {
+            if (forwardAgent) {
+                builder.add(1, "-A");
+            }
             builder.add("-oIdentitiesOnly=no");
         }
     }

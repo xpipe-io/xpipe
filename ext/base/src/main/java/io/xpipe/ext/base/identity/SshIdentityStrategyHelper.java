@@ -32,6 +32,48 @@ public class SshIdentityStrategyHelper {
                         p);
     }
 
+    private static OptionsBuilder gpgAgent(Property<SshIdentityStrategy.GpgAgent> p) {
+        var forward =
+                new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
+        return new OptionsBuilder()
+                .nameAndDescription("forwardAgent")
+                .addToggle(forward)
+                .nonNull()
+                .bind(
+                        () -> {
+                            return new SshIdentityStrategy.GpgAgent(forward.get());
+                        },
+                        p);
+    }
+
+    private static OptionsBuilder pageant(Property<SshIdentityStrategy.Pageant> p) {
+        var forward =
+                new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
+        return new OptionsBuilder()
+                .nameAndDescription("forwardAgent")
+                .addToggle(forward)
+                .nonNull()
+                .bind(
+                        () -> {
+                            return new SshIdentityStrategy.Pageant(forward.get());
+                        },
+                        p);
+    }
+
+    private static OptionsBuilder otherExternal(Property<SshIdentityStrategy.OtherExternal> p) {
+        var forward =
+                new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
+        return new OptionsBuilder()
+                .nameAndDescription("forwardAgent")
+                .addToggle(forward)
+                .nonNull()
+                .bind(
+                        () -> {
+                            return new SshIdentityStrategy.OtherExternal(forward.get());
+                        },
+                        p);
+    }
+
     private static OptionsBuilder customPkcs11Library(Property<SshIdentityStrategy.CustomPkcs11Library> p) {
         var file = new SimpleStringProperty(p.getValue() != null ? p.getValue().getFile() : null);
         return new OptionsBuilder()
@@ -100,6 +142,9 @@ public class SshIdentityStrategyHelper {
         var customPkcs11 =
                 new SimpleObjectProperty<>(strat instanceof SshIdentityStrategy.CustomPkcs11Library f ? f : null);
         var agent = new SimpleObjectProperty<>(strat instanceof SshIdentityStrategy.SshAgent a ? a : null);
+        var pageant = new SimpleObjectProperty<>(strat instanceof SshIdentityStrategy.Pageant a ? a : null);
+        var gpgAgent = new SimpleObjectProperty<>(strat instanceof SshIdentityStrategy.GpgAgent a ? a : null);
+        var otherExternal = new SimpleObjectProperty<>(strat instanceof SshIdentityStrategy.OtherExternal a ? a : null);
 
         var gpgFeature = LicenseProvider.get().getFeature("gpgAgent");
         var pkcs11Feature = LicenseProvider.get().getFeature("pkcs11Identity");
@@ -110,11 +155,11 @@ public class SshIdentityStrategyHelper {
                 AppI18n.observable("base.keyFile"),
                 fileIdentity(proxy, file, perUserFile, allowSync));
         map.put(AppI18n.observable("base.sshAgent"), agent(agent));
-        map.put(AppI18n.observable("base.pageant"), new OptionsBuilder());
-        map.put(gpgFeature.suffixObservable("base.gpgAgent"), new OptionsBuilder());
+        map.put(AppI18n.observable("base.pageant"), pageant(pageant));
+        map.put(gpgFeature.suffixObservable("base.gpgAgent"), gpgAgent(gpgAgent));
         map.put(pkcs11Feature.suffixObservable("base.yubikeyPiv"), new OptionsBuilder());
         map.put(pkcs11Feature.suffixObservable("base.customPkcs11Library"), customPkcs11Library(customPkcs11));
-        map.put(AppI18n.observable("base.otherExternal"), new OptionsBuilder());
+        map.put(AppI18n.observable("base.otherExternal"), otherExternal(otherExternal));
         var identityMethodSelected = new SimpleIntegerProperty(
                 strat instanceof SshIdentityStrategy.None
                         ? 0
@@ -148,11 +193,11 @@ public class SshIdentityStrategyHelper {
                                 case 0 -> new SimpleObjectProperty<>(new SshIdentityStrategy.None());
                                 case 1 -> file;
                                 case 2 -> agent;
-                                case 3 -> new SimpleObjectProperty<>(new SshIdentityStrategy.Pageant());
-                                case 4 -> new SimpleObjectProperty<>(new SshIdentityStrategy.GpgAgent());
+                                case 3 -> pageant;
+                                case 4 -> gpgAgent;
                                 case 5 -> new SimpleObjectProperty<>(new SshIdentityStrategy.YubikeyPiv());
                                 case 6 -> customPkcs11;
-                                case 7 -> new SimpleObjectProperty<>(new SshIdentityStrategy.OtherExternal());
+                                case 7 -> otherExternal;
                                 default -> new SimpleObjectProperty<>();
                             };
                         },
