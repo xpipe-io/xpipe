@@ -19,8 +19,8 @@ import lombok.extern.jackson.Jacksonized;
 @ToString(callSuper = true)
 public class LocalIdentityStore extends IdentityStore {
 
-    EncryptedValue.CurrentKey<SecretRetrievalStrategy> password;
-    EncryptedValue.CurrentKey<SshIdentityStrategy> sshIdentity;
+    EncryptedValue<SecretRetrievalStrategy> password;
+    EncryptedValue<SshIdentityStrategy> sshIdentity;
 
     @Override
     public SecretRetrievalStrategy getPassword() {

@@ -15,7 +15,6 @@ import lombok.extern.jackson.Jacksonized;
 
 @SuperBuilder
 @JsonTypeName("syncedIdentity")
-@Jacksonized
 @Value
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)

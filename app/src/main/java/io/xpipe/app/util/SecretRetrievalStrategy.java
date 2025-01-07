@@ -49,7 +49,6 @@ public interface SecretRetrievalStrategy {
     @JsonTypeName("inPlace")
     @Builder
     @Value
-    @Jacksonized
     class InPlace implements SecretRetrievalStrategy {
 
         InPlaceSecretValue value;

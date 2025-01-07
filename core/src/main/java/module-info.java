@@ -3,6 +3,7 @@ import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.util.CoreJacksonModule;
 import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.core.util.ModuleLayerLoader;
+import io.xpipe.core.util.JacksonExtension;
 
 open module io.xpipe.core {
     exports io.xpipe.core.store;
@@ -22,6 +23,7 @@ open module io.xpipe.core {
     uses io.xpipe.core.util.DataStateProvider;
     uses ModuleLayerLoader;
     uses ShellDialect;
+    uses JacksonExtension;
 
     provides ModuleLayerLoader with
             JacksonMapper.Loader,

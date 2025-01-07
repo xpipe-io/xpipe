@@ -56,9 +56,30 @@ public class JacksonMapper {
 
         @Override
         public void init(ModuleLayer layer) {
-            List<Module> MODULES = findModules(layer);
-            INSTANCE.registerModules(MODULES);
+            List<Module> modules = findModules(layer);
+            INSTANCE.registerModules(modules);
+            var extensions = findExtensions(layer);
+            for (var extension : extensions) {
+                var mod = new SimpleModule();
+                if (extension instanceof JsonSerializer<?> s) {
+                    add(mod, extension.getType(),s);
+                }
+                if (extension instanceof JsonDeserializer<?> d) {
+                    add(mod, extension.getType(), d);
+                }
+                INSTANCE.registerModule(mod);
+            }
             init = true;
+        }
+
+        @SuppressWarnings("unchecked")
+        private <T> void add(SimpleModule mod, Class<?> c, JsonSerializer<?> s) {
+            mod.addSerializer((Class<T>) c, (JsonSerializer<T>) s);
+        }
+
+        @SuppressWarnings("unchecked")
+        private <T> void add(SimpleModule mod, Class<?> c, JsonDeserializer<?> s) {
+            mod.addDeserializer((Class<T>) c, (JsonDeserializer<T>) s);
         }
     }
 
@@ -70,6 +91,17 @@ public class JacksonMapper {
             modules.add(module);
         }
         return modules;
+    }
+
+
+    private static List<JacksonExtension> findExtensions(ModuleLayer layer) {
+        ArrayList<JacksonExtension> exts = new ArrayList<>();
+        ServiceLoader<JacksonExtension> loader =
+                layer != null ? ServiceLoader.load(layer, JacksonExtension.class) : ServiceLoader.load(JacksonExtension.class);
+        for (JacksonExtension module : loader) {
+            exts.add(module);
+        }
+        return exts;
     }
 
     /**

@@ -1,6 +1,9 @@
 package io.xpipe.app.util;
 
+import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
+import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
+import com.fasterxml.jackson.databind.jsontype.impl.AsPropertyTypeDeserializer;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.storage.*;
@@ -31,7 +34,11 @@ public class AppJacksonModule extends SimpleModule {
         addSerializer(ExternalTerminalType.class, new ExternalTerminalTypeSerializer());
         addDeserializer(ExternalTerminalType.class, new ExternalTerminalTypeDeserializer());
         addSerializer(EncryptedValue.class, new EncryptedValueSerializer());
-        addDeserializer(EncryptedValue.class, new EncryptedValueDeserializer());
+        addDeserializer(EncryptedValue.class, new EncryptedValueDeserializer<>());
+        addSerializer(EncryptedValue.CurrentKey.class, new EncryptedValueSerializer());
+        addDeserializer(EncryptedValue.CurrentKey.class, new EncryptedValueDeserializer<>());
+        addSerializer(EncryptedValue.VaultKey.class, new EncryptedValueSerializer());
+        addDeserializer(EncryptedValue.VaultKey.class, new EncryptedValueDeserializer<>());
 
         context.addSerializers(_serializers);
         context.addDeserializers(_deserializers);
@@ -86,28 +93,48 @@ public class AppJacksonModule extends SimpleModule {
     }
 
     @SuppressWarnings("all")
-    public static class EncryptedValueDeserializer extends JsonDeserializer<EncryptedValue> implements ContextualDeserializer {
+    public static class EncryptedValueDeserializer<T extends EncryptedValue<?>> extends JsonDeserializer<T> implements ContextualDeserializer {
 
         private boolean useCurrentSecretKey;
         private Class<?> type;
 
         @Override
+        @SuppressWarnings("unchecked")
         public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) throws JsonMappingException {
+            var deserializer = new EncryptedValueDeserializer();
+            if (property == null) {
+                return deserializer;
+            }
+
             JavaType wrapperType = property.getType();
             JavaType valueType = wrapperType.containedType(0);
-            var deserializer = new EncryptedValueDeserializer();
             var useCurrentSecretKey = !wrapperType.equals(SimpleType.constructUnsafe(EncryptedValue.VaultKey.class));
             deserializer.useCurrentSecretKey = useCurrentSecretKey;
             deserializer.type = valueType.getRawClass();
             return deserializer;
         }
 
+        public Object deserializeWithType(JsonParser jp, DeserializationContext ctxt, TypeDeserializer typeDeserializer)
+                throws IOException {
+            var type = ((AsPropertyTypeDeserializer) typeDeserializer).baseType();
+            JavaType wrapperType = type;
+            JavaType valueType = wrapperType.containedType(0);
+            var useCurrentSecretKey = !wrapperType.equals(SimpleType.constructUnsafe(EncryptedValue.VaultKey.class));
+            return get(jp, valueType.getRawClass(), useCurrentSecretKey);
+        }
+
         @Override
-        public EncryptedValue<?> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+        @SuppressWarnings("unchecked")
+        public T deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            return (T) get(p,type, useCurrentSecretKey);
+        }
+
+        private EncryptedValue get(JsonParser p, Class<?> type, boolean useCurrentSecretKey) throws IOException {
             Object value;
-            var secret = DataStorageSecret.deserialize(JacksonMapper.getDefault().readTree(p));
+            JsonNode tree = JacksonMapper.getDefault().readTree(p);
+            var secret = DataStorageSecret.deserialize(tree);
             if (secret == null) {
-                var raw = JacksonMapper.getDefault().readValue(p, type);
+                var raw = JacksonMapper.getDefault().treeToValue(tree, type);
                 if (raw != null) {
                     value = raw;
                 } else {

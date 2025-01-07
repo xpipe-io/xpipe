@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.storage.DataStorageSecret;
 import io.xpipe.app.storage.DataStorageUserHandler;
+import io.xpipe.core.store.DataStoreState;
 import io.xpipe.core.util.JacksonMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,6 +19,11 @@ import lombok.SneakyThrows;
         @JsonSubTypes.Type(value = EncryptedValue.CurrentKey.class),
 })
 public abstract class EncryptedValue<T> {
+
+    @SneakyThrows
+    public static <T> EncryptedValue<T> of(T value, boolean current) {
+        return current ? CurrentKey.of(value) : VaultKey.of(value);
+    }
 
     private final T value;
     private final DataStorageSecret secret;
