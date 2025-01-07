@@ -4,6 +4,7 @@ import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.*;
+import io.xpipe.app.util.EncryptedValue;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.SecretRetrievalStrategyHelper;
 import io.xpipe.core.store.DataStore;
@@ -39,19 +40,19 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
                 .addString(user)
                 .name("passwordAuthentication")
                 .description("passwordAuthenticationDescription")
-                .sub(SecretRetrievalStrategyHelper.comp(pass, true, true), pass)
+                .sub(SecretRetrievalStrategyHelper.comp(pass, true), pass)
                 .name("keyAuthentication")
                 .description("keyAuthenticationDescription")
                 .longDescription("base:sshKey")
                 .sub(
-                        SshIdentityStrategyHelper.identity(new SimpleObjectProperty<>(), identity, null, false, true),
+                        SshIdentityStrategyHelper.identity(new SimpleObjectProperty<>(), identity, null, false),
                         identity)
                 .bind(
                         () -> {
                             return LocalIdentityStore.builder()
                                     .username(user.get())
-                                    .password(pass.get())
-                                    .sshIdentity(identity.get())
+                                    .password(EncryptedValue.CurrentKey.of(pass.get()))
+                                    .sshIdentity(EncryptedValue.CurrentKey.of(identity.get()))
                                     .build();
                         },
                         store)

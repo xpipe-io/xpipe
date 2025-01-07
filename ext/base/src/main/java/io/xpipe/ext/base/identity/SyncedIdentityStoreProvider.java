@@ -5,6 +5,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.*;
+import io.xpipe.app.util.EncryptedValue;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.SecretRetrievalStrategyHelper;
 import io.xpipe.app.util.Validator;
@@ -59,13 +60,13 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                 .addString(user)
                 .name("passwordAuthentication")
                 .description("passwordAuthenticationDescription")
-                .sub(SecretRetrievalStrategyHelper.comp(pass, true, true), pass)
+                .sub(SecretRetrievalStrategyHelper.comp(pass, true), pass)
                 .name("keyAuthentication")
                 .description("keyAuthenticationDescription")
                 .longDescription("base:sshKey")
                 .sub(
                         SshIdentityStrategyHelper.identity(
-                                new SimpleObjectProperty<>(), identity, path -> perUser.get(), true, true),
+                                new SimpleObjectProperty<>(), identity, path -> perUser.get(), true),
                         identity)
                 .check(val -> Validator.create(val, AppI18n.observable("keyNotSynced"), identity, i -> {
                     var wrong = i instanceof SshIdentityStrategy.File f
@@ -83,8 +84,8 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                         () -> {
                             return SyncedIdentityStore.builder()
                                     .username(user.get())
-                                    .password(pass.get())
-                                    .sshIdentity(identity.get())
+                                    .password(perUser.get() ? EncryptedValue.CurrentKey.of(pass.get()) : EncryptedValue.VaultKey.of(pass.get()))
+                                    .sshIdentity(perUser.get() ? EncryptedValue.CurrentKey.of(identity.get()) : EncryptedValue.VaultKey.of(identity.get()))
                                     .perUser(perUser.get())
                                     .build();
                         },

@@ -52,9 +52,9 @@ public interface SecretRetrievalStrategy {
     @Jacksonized
     class InPlace implements SecretRetrievalStrategy {
 
-        DataStorageSecret value;
+        InPlaceSecretValue value;
 
-        public InPlace(DataStorageSecret value) {
+        public InPlace(InPlaceSecretValue value) {
             this.value = value;
         }
 
@@ -69,7 +69,7 @@ public interface SecretRetrievalStrategy {
                 @Override
                 public SecretQueryResult query(String prompt) {
                     return new SecretQueryResult(
-                            value != null ? value.getInternalSecret() : InPlaceSecretValue.of(""),
+                            value,
                             SecretQueryState.NORMAL);
                 }
 

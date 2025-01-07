@@ -22,11 +22,11 @@ import java.util.List;
 
 public class SecretRetrievalStrategyHelper {
 
-    private static OptionsBuilder inPlace(Property<SecretRetrievalStrategy.InPlace> p, boolean allowUserSecretKey) {
+    private static OptionsBuilder inPlace(Property<SecretRetrievalStrategy.InPlace> p) {
         var original = p.getValue() != null ? p.getValue().getValue() : null;
         var secretProperty = new SimpleObjectProperty<>(
                 p.getValue() != null && p.getValue().getValue() != null
-                        ? p.getValue().getValue().getInternalSecret().inPlace()
+                        ? p.getValue().getValue()
                         : null);
         return new OptionsBuilder()
                 .addComp(new SecretFieldComp(secretProperty, true), secretProperty)
@@ -38,10 +38,7 @@ public class SecretRetrievalStrategyHelper {
                                     newSecret != null ? newSecret.getSecret() : new char[0],
                                     original != null ? original.getSecret() : new char[0]);
                             var val = changed
-                                    ? (allowUserSecretKey
-                                            ? DataStorageSecret.ofCurrentSecret(secretProperty.getValue())
-                                            : DataStorageSecret.ofSecret(
-                                                    secretProperty.getValue(), EncryptionToken.ofVaultKey()))
+                                    ? secretProperty.getValue()
                                     : original;
                             return new SecretRetrievalStrategy.InPlace(val);
                         },
@@ -91,7 +88,7 @@ public class SecretRetrievalStrategyHelper {
     }
 
     public static OptionsBuilder comp(
-            Property<SecretRetrievalStrategy> s, boolean allowNone, boolean allowUserSecretKey) {
+            Property<SecretRetrievalStrategy> s, boolean allowNone) {
         SecretRetrievalStrategy strat = s.getValue();
         var inPlace = new SimpleObjectProperty<>(strat instanceof SecretRetrievalStrategy.InPlace i ? i : null);
         var passwordManager =
@@ -102,7 +99,7 @@ public class SecretRetrievalStrategyHelper {
         if (allowNone) {
             map.put(AppI18n.observable("app.none"), new OptionsBuilder());
         }
-        map.put(AppI18n.observable("app.password"), inPlace(inPlace, allowUserSecretKey));
+        map.put(AppI18n.observable("app.password"), inPlace(inPlace));
         map.put(AppI18n.observable("app.passwordManager"), passwordManager(passwordManager));
         map.put(AppI18n.observable("app.customCommand"), customCommand(customCommand));
         map.put(AppI18n.observable("app.prompt"), new OptionsBuilder());

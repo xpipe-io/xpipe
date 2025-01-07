@@ -1,6 +1,9 @@
 package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.ext.UserScopeStore;
+import io.xpipe.app.util.EncryptedValue;
+import io.xpipe.app.util.SecretRetrievalStrategy;
+import io.xpipe.app.util.Validators;
 import io.xpipe.core.util.ValidationException;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -18,7 +21,19 @@ import lombok.extern.jackson.Jacksonized;
 @ToString(callSuper = true)
 public class SyncedIdentityStore extends IdentityStore implements UserScopeStore {
 
+    EncryptedValue<SecretRetrievalStrategy> password;
+    EncryptedValue<SshIdentityStrategy> sshIdentity;
     boolean perUser;
+
+    @Override
+    public SecretRetrievalStrategy getPassword() {
+        return password != null ? password.getValue() : null;
+    }
+
+    @Override
+    public SshIdentityStrategy getSshIdentity() {
+        return sshIdentity != null ? sshIdentity.getValue() : null;
+    }
 
     @Override
     public void checkComplete() throws Throwable {

@@ -15,6 +15,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.EncryptedValue;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.SecretRetrievalStrategy;
 
@@ -63,13 +64,13 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
             var id = canSync
                     ? SyncedIdentityStore.builder()
                             .username(inPlaceUser.getValue())
-                            .password(password.getValue())
-                            .sshIdentity(identityStrategy.getValue())
+                            .password(EncryptedValue.VaultKey.of(password.getValue()))
+                            .sshIdentity(EncryptedValue.VaultKey.of(identityStrategy.getValue()))
                             .build()
                     : LocalIdentityStore.builder()
                             .username(inPlaceUser.getValue())
-                            .password(password.getValue())
-                            .sshIdentity(identityStrategy.getValue())
+                            .password(EncryptedValue.CurrentKey.of(password.getValue()))
+                            .sshIdentity(EncryptedValue.CurrentKey.of(identityStrategy.getValue()))
                             .build();
             StoreCreationComp.showCreation(
                     id,

@@ -1,5 +1,8 @@
 package io.xpipe.app.prefs;
 
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.SimpleType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
@@ -551,8 +554,7 @@ public class AppPrefs {
     private <T> T loadValue(AppPrefsStorageHandler handler, Mapping value) {
         T def = (T) value.getProperty().getValue();
         Property<T> property = (Property<T>) value.getProperty();
-        Class<T> clazz = (Class<T>) value.getValueClass();
-        var val = handler.loadObject(value.getKey(), clazz, def);
+        var val = handler.loadObject(value.getKey(), value.getValueType(), def);
         property.setValue(val);
         return val;
     }
@@ -607,19 +609,38 @@ public class AppPrefs {
 
         String key;
         Property<?> property;
-        Class<?> valueClass;
+        JavaType valueType;
         boolean vaultSpecific;
         boolean requiresRestart;
         String licenseFeatureId;
 
         public Mapping(
-                String key, Property<?> property, Class<?> valueClass, boolean vaultSpecific, boolean requiresRestart) {
+                String key, Property<?> property, Class<?> valueType, boolean vaultSpecific, boolean requiresRestart) {
             this.key = key;
             this.property = property;
-            this.valueClass = valueClass;
+            this.valueType = SimpleType.constructUnsafe(valueType);
             this.vaultSpecific = vaultSpecific;
             this.requiresRestart = requiresRestart;
             this.licenseFeatureId = null;
+        }
+
+        public Mapping(
+                String key, Property<?> property, JavaType valueType, boolean vaultSpecific, boolean requiresRestart) {
+            this.key = key;
+            this.property = property;
+            this.valueType = valueType;
+            this.vaultSpecific = vaultSpecific;
+            this.requiresRestart = requiresRestart;
+            this.licenseFeatureId = null;
+        }
+
+
+        public static class MappingBuilder {
+
+            MappingBuilder valueClass(Class<?> clazz) {
+                this.valueType(TypeFactory.defaultInstance().constructType(clazz));
+                return this;
+            }
         }
     }
 
@@ -627,8 +648,8 @@ public class AppPrefs {
     private class PrefsHandlerImpl implements PrefsHandler {
 
         @Override
-        public <T> void addSetting(String id, Class<T> c, Property<T> property, Comp<?> comp, boolean requiresRestart) {
-            var m = new Mapping(id, property, c, false, requiresRestart);
+        public <T> void addSetting(String id, JavaType t, Property<T> property, Comp<?> comp, boolean requiresRestart) {
+            var m = new Mapping(id, property, t, false, requiresRestart);
             customEntries.put(m, comp);
             mapping.add(m);
         }

@@ -71,8 +71,6 @@ public class IdentityMigrationDeserializer extends DelegatingDeserializer {
             identityStore.put("type", "localIdentity");
             if (user != null && user.isTextual()) {
                 identityStore.set("username", user);
-            } else {
-                int a = 0;
             }
             identityStore.set("password", password);
             identityStore.set("sshIdentity", identity);

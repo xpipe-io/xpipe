@@ -21,7 +21,7 @@ public interface IdentityValue {
         return new InPlace(identityStore);
     }
 
-    void checkComplete(boolean requireUser, boolean requirePassword, boolean requireKey) throws Throwable;
+    void checkComplete(boolean requireUser) throws Throwable;
 
     IdentityStore unwrap();
 
@@ -36,24 +36,12 @@ public interface IdentityValue {
         LocalIdentityStore identityStore;
 
         @Override
-        public void checkComplete(boolean requireUser, boolean requirePassword, boolean requireKey) throws Throwable {
+        public void checkComplete(boolean requireUser) throws Throwable {
             Validators.nonNull(identityStore);
-            identityStore.checkComplete();
             if (requireUser) {
                 Validators.nonNull(identityStore.getUsername());
             }
-            if (requirePassword) {
-                Validators.nonNull(identityStore.getPassword());
-            }
-            if (identityStore.getPassword() != null) {
-                identityStore.getPassword().checkComplete();
-            }
-            if (requireKey) {
-                Validators.nonNull(identityStore.getSshIdentity());
-            }
-            if (identityStore.getSshIdentity() != null) {
-                identityStore.getSshIdentity().checkComplete();
-            }
+            identityStore.checkComplete();
         }
 
         @Override
@@ -76,25 +64,13 @@ public interface IdentityValue {
         DataStoreEntryRef<IdentityStore> ref;
 
         @Override
-        public void checkComplete(boolean requireUser, boolean requirePassword, boolean requireKey) throws Throwable {
+        public void checkComplete(boolean requireUser) throws Throwable {
             Validators.nonNull(ref);
             Validators.isType(ref, IdentityStore.class);
-            ref.getStore().checkComplete();
             if (requireUser) {
                 Validators.nonNull(ref.getStore().getUsername());
             }
-            if (requirePassword) {
-                Validators.nonNull(ref.getStore().getPassword());
-            }
-            if (ref.getStore().getPassword() != null) {
-                ref.getStore().getPassword().checkComplete();
-            }
-            if (requireKey) {
-                Validators.nonNull(ref.getStore().getSshIdentity());
-            }
-            if (ref.getStore().getSshIdentity() != null) {
-                ref.getStore().getSshIdentity().checkComplete();
-            }
+            ref.getStore().checkComplete();
         }
 
         @Override

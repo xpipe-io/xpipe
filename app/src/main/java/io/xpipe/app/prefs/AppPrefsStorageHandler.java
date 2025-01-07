@@ -1,5 +1,6 @@
 package io.xpipe.app.prefs;
 
+import com.fasterxml.jackson.databind.JavaType;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
@@ -16,6 +17,7 @@ import org.apache.commons.io.FileUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import static io.xpipe.app.ext.PrefsChoiceValue.getAll;
 import static io.xpipe.app.ext.PrefsChoiceValue.getSupported;
@@ -77,7 +79,7 @@ public class AppPrefsStorageHandler {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T loadObject(String id, Class<T> type, T defaultObject) {
+    public <T> T loadObject(String id, JavaType type, T defaultObject) {
         var tree = getContent(id);
         if (tree == null) {
             TrackEvent.withDebug("Preferences value not found")
@@ -87,10 +89,10 @@ public class AppPrefsStorageHandler {
             return defaultObject;
         }
 
-        if (PrefsChoiceValue.class.isAssignableFrom(type)) {
-            var all = getAll(type);
+        if (PrefsChoiceValue.class.isAssignableFrom(type.getRawClass())) {
+            List<T> all = (List<T>) getAll(type.getRawClass());
             if (all != null) {
-                Class<PrefsChoiceValue> cast = (Class<PrefsChoiceValue>) type;
+                Class<PrefsChoiceValue> cast = (Class<PrefsChoiceValue>) type.getRawClass();
                 var in = tree.asText();
                 var found = all.stream()
                         .filter(t -> ((PrefsChoiceValue) t).getId().equalsIgnoreCase(in))

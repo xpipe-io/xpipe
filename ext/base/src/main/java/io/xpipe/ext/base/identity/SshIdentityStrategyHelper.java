@@ -49,8 +49,7 @@ public class SshIdentityStrategyHelper {
             Property<DataStoreEntryRef<ShellStore>> proxy,
             Property<SshIdentityStrategy.File> fileProperty,
             Predicate<Path> perUserFile,
-            boolean allowSync,
-            boolean allowUserSecretKey) {
+            boolean allowSync) {
         var keyPath = new SimpleStringProperty(
                 fileProperty.getValue() != null && fileProperty.getValue().getFile() != null
                         ? fileProperty.getValue().getFile().toAbsoluteFilePath(null)
@@ -77,7 +76,7 @@ public class SshIdentityStrategyHelper {
                 .name("keyPassword")
                 .description("sshConfigHost.identityPassphraseDescription")
                 .sub(
-                        SecretRetrievalStrategyHelper.comp(keyPasswordProperty, true, allowUserSecretKey),
+                        SecretRetrievalStrategyHelper.comp(keyPasswordProperty, true),
                         keyPasswordProperty)
                 .nonNull()
                 .bind(
@@ -92,8 +91,7 @@ public class SshIdentityStrategyHelper {
             Property<DataStoreEntryRef<ShellStore>> proxy,
             Property<SshIdentityStrategy> strategyProperty,
             Predicate<Path> perUserFile,
-            boolean allowSync,
-            boolean allowUserSecretKey) {
+            boolean allowSync) {
         SshIdentityStrategy strat = strategyProperty.getValue();
         var file = new SimpleObjectProperty<>(
                 strat instanceof SshIdentityStrategy.File f
@@ -110,7 +108,7 @@ public class SshIdentityStrategyHelper {
         map.put(AppI18n.observable("base.none"), new OptionsBuilder());
         map.put(
                 AppI18n.observable("base.keyFile"),
-                fileIdentity(proxy, file, perUserFile, allowSync, allowUserSecretKey));
+                fileIdentity(proxy, file, perUserFile, allowSync));
         map.put(AppI18n.observable("base.sshAgent"), agent(agent));
         map.put(AppI18n.observable("base.pageant"), new OptionsBuilder());
         map.put(gpgFeature.suffixObservable("base.gpgAgent"), new OptionsBuilder());

@@ -391,9 +391,7 @@ public class StandardStorage extends DataStorage {
         }
 
         deleteLeftovers();
-        if (dispose) {
-            dataStorageUserHandler.save();
-        }
+        dataStorageUserHandler.save();
         dataStorageSyncHandler.afterStorageSave();
         if (dispose) {
             disposed = true;

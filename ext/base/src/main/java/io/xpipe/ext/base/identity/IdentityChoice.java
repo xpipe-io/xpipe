@@ -2,6 +2,7 @@ package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.EncryptedValue;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.SecretRetrievalStrategyHelper;
 
@@ -58,10 +59,10 @@ public class IdentityChoice {
         var options = new OptionsBuilder()
                 .nameAndDescription(userChoiceTranslationKey)
                 .addComp(new IdentitySelectComp(ref, user, pass, identityStrategy, allowCustomUserInput), user)
-                .nonNullIf(inPlaceSelected.and(new SimpleBooleanProperty(requireUserInput)))
+                .nonNullIf(inPlaceSelected)
                 .nameAndDescription(passwordChoiceTranslationKey)
-                .sub(SecretRetrievalStrategyHelper.comp(pass, true, true), pass)
-                .nonNullIf(inPlaceSelected.and(new SimpleBooleanProperty(requirePassword)))
+                .sub(SecretRetrievalStrategyHelper.comp(pass, true), pass)
+                .nonNullIf(inPlaceSelected)
                 .disable(refSelected)
                 .hide(refSelected)
                 .name("keyAuthentication")
@@ -72,8 +73,7 @@ public class IdentityChoice {
                                 gateway != null ? gateway : new SimpleObjectProperty<>(),
                                 identityStrategy,
                                 null,
-                                false,
-                                true),
+                                false),
                         identityStrategy)
                 .nonNullIf(inPlaceSelected.and(new SimpleBooleanProperty(keyInput)))
                 .disable(refSelected)
@@ -89,8 +89,8 @@ public class IdentityChoice {
                                 return IdentityValue.InPlace.builder()
                                         .identityStore(LocalIdentityStore.builder()
                                                 .username(user.get())
-                                                .password(pass.get())
-                                                .sshIdentity(identityStrategy.get())
+                                                .password(EncryptedValue.CurrentKey.of(pass.get()))
+                                                .sshIdentity(EncryptedValue.CurrentKey.of(identityStrategy.get()))
                                                 .build())
                                         .build();
                             }

@@ -1,20 +1,19 @@
 package io.xpipe.app.util;
 
+import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
+import com.fasterxml.jackson.databind.type.SimpleType;
 import io.xpipe.app.ext.LocalStore;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.terminal.ExternalTerminalType;
-import io.xpipe.core.util.EncryptedSecretValue;
 import io.xpipe.core.util.JacksonMapper;
-import io.xpipe.core.util.SecretValue;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import java.io.CharArrayReader;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -29,10 +28,10 @@ public class AppJacksonModule extends SimpleModule {
         addDeserializer(DataStoreEntryRef.class, new DataStoreEntryRefDeserializer());
         addSerializer(ContextualFileReference.class, new LocalFileReferenceSerializer());
         addDeserializer(ContextualFileReference.class, new LocalFileReferenceDeserializer());
-        addSerializer(DataStorageSecret.class, new DataStoreSecretSerializer());
-        addDeserializer(DataStorageSecret.class, new DataStoreSecretDeserializer());
         addSerializer(ExternalTerminalType.class, new ExternalTerminalTypeSerializer());
         addDeserializer(ExternalTerminalType.class, new ExternalTerminalTypeDeserializer());
+        addSerializer(EncryptedValue.class, new EncryptedValueSerializer());
+        addDeserializer(EncryptedValue.class, new EncryptedValueDeserializer());
 
         context.addSerializers(_serializers);
         context.addDeserializers(_deserializers);
@@ -76,69 +75,49 @@ public class AppJacksonModule extends SimpleModule {
         }
     }
 
-    public static class DataStoreSecretSerializer extends JsonSerializer<DataStorageSecret> {
+    @SuppressWarnings("all")
+    public static class EncryptedValueSerializer extends JsonSerializer<EncryptedValue> {
 
         @Override
-        public void serialize(DataStorageSecret value, JsonGenerator jgen, SerializerProvider provider)
+        public void serialize(EncryptedValue value, JsonGenerator jgen, SerializerProvider provider)
                 throws IOException {
-            var mapper = JacksonMapper.getDefault();
-            var tree = JsonNodeFactory.instance.objectNode();
-            tree.set("encryptedToken", mapper.valueToTree(value.getEncryptedToken()));
-
-            // Preserve same output if not changed
-            if (value.getOriginalNode() != null && !value.requiresRewrite()) {
-                tree.set("secret", value.getOriginalNode());
-                jgen.writeTree(tree);
-                return;
-            }
-
-            // Reencrypt
-            var val = value.rewrite();
-            tree.set("secret", val);
-            jgen.writeTree(tree);
+            value.getSecret().serialize(jgen, value.allowUserSecretKey());
         }
     }
 
-    public static class DataStoreSecretDeserializer extends JsonDeserializer<DataStorageSecret> {
+    @SuppressWarnings("all")
+    public static class EncryptedValueDeserializer extends JsonDeserializer<EncryptedValue> implements ContextualDeserializer {
+
+        private boolean useCurrentSecretKey;
+        private Class<?> type;
 
         @Override
-        public DataStorageSecret deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            var tree = JacksonMapper.getDefault().readTree(p);
-            if (!tree.isObject()) {
-                return null;
-            }
+        public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) throws JsonMappingException {
+            JavaType wrapperType = property.getType();
+            JavaType valueType = wrapperType.containedType(0);
+            var deserializer = new EncryptedValueDeserializer();
+            var useCurrentSecretKey = !wrapperType.equals(SimpleType.constructUnsafe(EncryptedValue.VaultKey.class));
+            deserializer.useCurrentSecretKey = useCurrentSecretKey;
+            deserializer.type = valueType.getRawClass();
+            return deserializer;
+        }
 
-            var legacy = JacksonMapper.getDefault().treeToValue(tree, EncryptedSecretValue.class);
-            if (legacy != null) {
-                // Don't cache legacy node
-                return new DataStorageSecret(EncryptionToken.ofVaultKey(), null, legacy.inPlace());
-            }
-
-            var obj = (ObjectNode) tree;
-            if (!obj.has("secret")) {
-                return null;
-            }
-
-            var secretTree = obj.required("secret");
-            var secret = JacksonMapper.getDefault().treeToValue(secretTree, SecretValue.class);
+        @Override
+        public EncryptedValue<?> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            Object value;
+            var secret = DataStorageSecret.deserialize(JacksonMapper.getDefault().readTree(p));
             if (secret == null) {
-                return null;
-            }
-
-            var hadLock = AppPrefs.get().getLockCrypt().get() != null
-                    && !AppPrefs.get().getLockCrypt().get().isEmpty();
-            var tokenNode = obj.get("encryptedToken");
-            var token =
-                    tokenNode != null ? JacksonMapper.getDefault().treeToValue(tokenNode, EncryptionToken.class) : null;
-            if (token == null) {
-                var migrateToUser = hadLock;
-                if (migrateToUser && DataStorageUserHandler.getInstance().getActiveUser() == null) {
+                var raw = JacksonMapper.getDefault().readValue(p, type);
+                if (raw != null) {
+                    value = raw;
+                } else {
                     return null;
                 }
-                token = migrateToUser ? EncryptionToken.ofUser() : EncryptionToken.ofVaultKey();
+            } else {
+                value = JacksonMapper.getDefault().readValue(new CharArrayReader(secret.getSecret()), type);
             }
-
-            return new DataStorageSecret(token, secretTree, secret);
+            var perUser = useCurrentSecretKey || secret.getEncryptedToken().isUser();
+            return perUser ? new EncryptedValue.CurrentKey<>(value, secret) : new EncryptedValue.VaultKey<>(value, secret);
         }
     }
 

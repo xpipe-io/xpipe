@@ -45,7 +45,7 @@ public class DataStorageNode {
         }
 
         try {
-            var secret = JacksonMapper.getDefault().treeToValue(node, DataStorageSecret.class);
+            var secret = DataStorageSecret.deserialize(node);
             if (secret == null) {
                 return new DataStorageNode(node, false, true, false);
             }

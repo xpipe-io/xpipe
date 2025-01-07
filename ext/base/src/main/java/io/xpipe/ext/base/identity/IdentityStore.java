@@ -16,16 +16,16 @@ import lombok.experimental.SuperBuilder;
 public abstract class IdentityStore implements SelfReferentialStore, DataStore {
 
     String username;
-    SecretRetrievalStrategy password;
-    SshIdentityStrategy sshIdentity;
+
+    public abstract SecretRetrievalStrategy getPassword();
+
+    public abstract SshIdentityStrategy getSshIdentity();
 
     @Override
     public void checkComplete() throws Throwable {
-        if (password != null) {
-            password.checkComplete();
-        }
-        if (sshIdentity != null) {
-            sshIdentity.checkComplete();
-        }
+        Validators.nonNull(getPassword());
+        Validators.nonNull(getSshIdentity());
+        getPassword().checkComplete();
+        getSshIdentity().checkComplete();
     }
 }

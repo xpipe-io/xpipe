@@ -7,6 +7,7 @@ import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
+import io.xpipe.app.util.EncryptedValue;
 import javafx.beans.value.ObservableValue;
 
 import lombok.Value;
@@ -58,8 +59,9 @@ public class LocalIdentityConvertAction implements ActionProvider {
             var st = ref.getStore();
             var synced = SyncedIdentityStore.builder()
                     .username(st.getUsername())
-                    .password(st.getPassword())
-                    .sshIdentity(st.getSshIdentity())
+                    .password(EncryptedValue.VaultKey.of(st.getPassword()))
+                    .sshIdentity(EncryptedValue.VaultKey.of(st.getSshIdentity()))
+                    .perUser(false)
                     .build();
             StoreCreationComp.showCreation(synced, DataStoreCreationCategory.IDENTITY, dataStoreEntry -> {}, true);
         }
