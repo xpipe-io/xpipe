@@ -126,7 +126,7 @@ install() {
     fi
     ;;
   Darwin)
-    sudo installer -verboseR -allowUntrusted -pkg "$file" -target /
+    sudo installer -verboseR -pkg "$file" -target /
     ;;
   *)
     exit 1

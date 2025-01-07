@@ -251,8 +251,8 @@ public class AppInstaller {
                         """
                                            runinstaller() {
                                                echo "Installing downloaded .pkg installer ..."
-                                               echo "+ sudo installer -verboseR -allowUntrusted -pkg \\"%s\\" -target /"
-                                               sudo installer -verboseR -allowUntrusted -pkg "%s" -target / || return 1
+                                               echo "+ sudo installer -verboseR -pkg \\"%s\\" -target /"
+                                               sudo installer -verboseR -pkg "%s" -target / || return 1
                                                %s open || return 1
                                            }
 
