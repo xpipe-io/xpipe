@@ -108,7 +108,9 @@ public class ModalOverlayComp extends SimpleComp {
         overlayContent.addListener((observable, oldValue, newValue) -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 if (oldValue != null && modal.isDisplay()) {
-                    modal.hide(false);
+                    if (newValue == null) {
+                        modal.hide(false);
+                    }
                     if (oldValue.getContent() instanceof ModalOverlayContentComp mocc) {
                         mocc.onClose();
                     }

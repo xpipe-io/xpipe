@@ -4,8 +4,11 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.Region;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ModalOverlayStackComp extends SimpleComp {
 
@@ -27,18 +30,22 @@ public class ModalOverlayStackComp extends SimpleComp {
     }
 
     private Comp<?> buildModalOverlay(Comp<?> current, int index) {
-        var prop = new SimpleObjectProperty<ModalOverlay>();
-        modalOverlay.subscribe(() -> {
+        AtomicInteger currentIndex = new AtomicInteger(index);
+        var prop = new SimpleObjectProperty<>(modalOverlay.size() > index ? modalOverlay.get(index) : null);
+        modalOverlay.addListener((ListChangeListener<? super ModalOverlay>) c -> {
             var ex = prop.get();
             // Don't shift just for an index change
             if (ex != null && modalOverlay.contains(ex)) {
+                currentIndex.set(modalOverlay.indexOf(ex));
                 return;
+            } else {
+                currentIndex.set(index);
             }
 
             prop.set(modalOverlay.size() > index ? modalOverlay.get(index) : null);
         });
         prop.addListener((observable, oldValue, newValue) -> {
-            if (newValue == null && modalOverlay.indexOf(oldValue) == index) {
+            if (newValue == null && modalOverlay.indexOf(oldValue) == currentIndex.get()) {
                 modalOverlay.remove(oldValue);
             }
         });

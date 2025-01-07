@@ -128,7 +128,7 @@ public class BrowserStatusBarComp extends SimpleComp {
         var progressComp = new LabelComp(text)
                 .styleClass("progress")
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
-                .prefWidth(180);
+                .hgrow();
         return progressComp;
     }
 

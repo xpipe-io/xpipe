@@ -34,7 +34,9 @@ public class AppDialog {
 
     public static void closeDialog(ModalOverlay overlay) {
         PlatformThread.runLaterIfNeeded(() -> {
-            modalOverlay.remove(overlay);
+            synchronized (modalOverlay) {
+                modalOverlay.remove(overlay);
+            }
         });
     }
 
@@ -62,7 +64,9 @@ public class AppDialog {
         showMainWindow();
         if (!Platform.isFxApplicationThread()) {
             PlatformThread.runLaterIfNeededBlocking(() -> {
-                modalOverlay.add(o);
+                synchronized (modalOverlay) {
+                    modalOverlay.add(o);
+                }
             });
             if (wait) {
                 waitForDialogClose(o);
@@ -71,22 +75,24 @@ public class AppDialog {
         } else {
             var key = new Object();
             PlatformThread.runLaterIfNeededBlocking(() -> {
-                modalOverlay.add(o);
-                modalOverlay.addListener(new ListChangeListener<>() {
-                    @Override
-                    public void onChanged(Change<? extends ModalOverlay> c) {
-                        if (!c.getList().contains(o)) {
-                            var transition = new PauseTransition(Duration.millis(200));
-                            transition.setOnFinished(e -> {
-                                if (wait) {
-                                    Platform.exitNestedEventLoop(key, null);
-                                }
-                            });
-                            transition.play();
-                            modalOverlay.removeListener(this);
+                synchronized (modalOverlay) {
+                    modalOverlay.add(o);
+                    modalOverlay.addListener(new ListChangeListener<>() {
+                        @Override
+                        public void onChanged(Change<? extends ModalOverlay> c) {
+                            if (!c.getList().contains(o)) {
+                                var transition = new PauseTransition(Duration.millis(200));
+                                transition.setOnFinished(e -> {
+                                    if (wait) {
+                                        Platform.exitNestedEventLoop(key, null);
+                                    }
+                                });
+                                transition.play();
+                                modalOverlay.removeListener(this);
+                            }
                         }
-                    }
-                });
+                    });
+                }
             });
             if (wait) {
                 Platform.enterNestedEventLoop(key);
