@@ -53,7 +53,8 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                 firstComp = compRegion;
             }
 
-            if (entry.name() != null && entry.description() != null) {
+            var showVertical = (entry.name() != null && (entry.description() != null || entry.comp() instanceof SimpleTitledPaneComp));
+            if (showVertical) {
                 var line = new VBox();
                 line.prefWidthProperty().bind(pane.widthProperty());
                 line.setSpacing(5);
@@ -70,56 +71,59 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                 }
                 line.getChildren().add(name);
 
-                var description = new Label();
-                description.setWrapText(true);
-                description.getStyleClass().add("description");
-                description.textProperty().bind(entry.description());
-                description.setAlignment(Pos.CENTER_LEFT);
-                description.setMinHeight(Region.USE_PREF_SIZE);
-                if (compRegion != null) {
-                    description.visibleProperty().bind(PlatformThread.sync(compRegion.visibleProperty()));
-                    description.managedProperty().bind(PlatformThread.sync(compRegion.managedProperty()));
-                }
-
-                if (entry.longDescriptionSource() != null) {
-                    var markDown = new MarkdownComp(entry.longDescriptionSource(), s -> s, true)
-                            .apply(struc -> struc.get().setMaxWidth(500))
-                            .apply(struc -> struc.get().setMaxHeight(400));
-                    var popover = new Popover(markDown.createRegion());
-                    popover.setCloseButtonEnabled(false);
-                    popover.setHeaderAlwaysVisible(false);
-                    popover.setDetachable(true);
-                    AppFont.small(popover.getContentNode());
-
-                    var extendedDescription = new Button("... ?");
-                    extendedDescription.setMinWidth(Region.USE_PREF_SIZE);
-                    extendedDescription.getStyleClass().add(Styles.BUTTON_OUTLINED);
-                    extendedDescription.getStyleClass().add(Styles.ACCENT);
-                    extendedDescription.getStyleClass().add("long-description");
-                    extendedDescription.setAccessibleText("Help");
-                    AppFont.normal(extendedDescription);
-                    extendedDescription.setOnAction(e -> {
-                        popover.show(extendedDescription);
-                        e.consume();
-                    });
-
-                    var descriptionBox = new HBox(description, new Spacer(Orientation.HORIZONTAL), extendedDescription);
-                    descriptionBox.setSpacing(5);
-                    HBox.setHgrow(descriptionBox, Priority.ALWAYS);
-                    descriptionBox.setAlignment(Pos.CENTER_LEFT);
-                    line.getChildren().add(descriptionBox);
-
+                if (entry.description() != null) {
+                    var description = new Label();
+                    description.setWrapText(true);
+                    description.getStyleClass().add("description");
+                    description.textProperty().bind(entry.description());
+                    description.setAlignment(Pos.CENTER_LEFT);
+                    description.setMinHeight(Region.USE_PREF_SIZE);
                     if (compRegion != null) {
-                        descriptionBox.visibleProperty().bind(PlatformThread.sync(compRegion.visibleProperty()));
-                        descriptionBox.managedProperty().bind(PlatformThread.sync(compRegion.managedProperty()));
+                        description.visibleProperty().bind(PlatformThread.sync(compRegion.visibleProperty()));
+                        description.managedProperty().bind(PlatformThread.sync(compRegion.managedProperty()));
                     }
-                } else {
-                    line.getChildren().add(description);
+
+                    if (entry.longDescriptionSource() != null) {
+                        var markDown = new MarkdownComp(entry.longDescriptionSource(), s -> s, true).apply(struc -> struc.get().setMaxWidth(500))
+                                .apply(struc -> struc.get().setMaxHeight(400));
+                        var popover = new Popover(markDown.createRegion());
+                        popover.setCloseButtonEnabled(false);
+                        popover.setHeaderAlwaysVisible(false);
+                        popover.setDetachable(true);
+                        AppFont.small(popover.getContentNode());
+
+                        var extendedDescription = new Button("... ?");
+                        extendedDescription.setMinWidth(Region.USE_PREF_SIZE);
+                        extendedDescription.getStyleClass().add(Styles.BUTTON_OUTLINED);
+                        extendedDescription.getStyleClass().add(Styles.ACCENT);
+                        extendedDescription.getStyleClass().add("long-description");
+                        extendedDescription.setAccessibleText("Help");
+                        AppFont.normal(extendedDescription);
+                        extendedDescription.setOnAction(e -> {
+                            popover.show(extendedDescription);
+                            e.consume();
+                        });
+
+                        var descriptionBox = new HBox(description, new Spacer(Orientation.HORIZONTAL), extendedDescription);
+                        descriptionBox.setSpacing(5);
+                        HBox.setHgrow(descriptionBox, Priority.ALWAYS);
+                        descriptionBox.setAlignment(Pos.CENTER_LEFT);
+                        line.getChildren().add(descriptionBox);
+
+                        if (compRegion != null) {
+                            descriptionBox.visibleProperty().bind(PlatformThread.sync(compRegion.visibleProperty()));
+                            descriptionBox.managedProperty().bind(PlatformThread.sync(compRegion.managedProperty()));
+                        }
+                    } else {
+                        line.getChildren().add(description);
+                    }
                 }
 
                 if (compRegion != null) {
                     compRegion.accessibleTextProperty().bind(name.textProperty());
-                    compRegion.accessibleHelpProperty().bind(description.textProperty());
+                    if (entry.description() != null) {
+                        compRegion.accessibleHelpProperty().bind(PlatformThread.sync(entry.description()));
+                    }
                     line.getChildren().add(compRegion);
                 }
 

@@ -61,6 +61,8 @@ public class AppProperties {
 
     XPipeDaemonMode explicitMode;
 
+    String devLoginPassword;
+
     public AppProperties(String[] args) {
         var appDir = Path.of(System.getProperty("user.dir")).resolve("app");
         Path propsFile = appDir.resolve("dev.properties");
@@ -99,6 +101,8 @@ public class AppProperties {
         staging = Optional.ofNullable(System.getProperty("io.xpipe.app.staging"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
+        devLoginPassword = Optional.ofNullable(System.getProperty("io.xpipe.app.loginPassword"))
+                .orElse(null);
         useVirtualThreads = Optional.ofNullable(System.getProperty("io.xpipe.app.useVirtualThreads"))
                 .map(Boolean::parseBoolean)
                 .orElse(true);
