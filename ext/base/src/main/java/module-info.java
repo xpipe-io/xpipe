@@ -107,5 +107,4 @@ open module io.xpipe.ext.base {
             ScriptGroupStoreProvider;
     provides DataStorageExtensionProvider with
             ScriptDataStorageProvider;
-    provides JacksonExtension with SyncedIdentityStoreDeserializer;
 }

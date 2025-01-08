@@ -101,7 +101,7 @@ public class EncryptionToken {
             return isVault;
         }
 
-        var key = DataStorage.getSecretKey();
+        var key = DataStorage.get().getVaultKey();
         var s = decode(key);
         return (isVault = s.equals("xpipe"));
     }

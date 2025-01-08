@@ -56,6 +56,10 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
         return Bindings.createObjectBinding(
                 () -> {
                     var current = selectedEntry.getValue();
+                    if (current == null) {
+                        return null;
+                    }
+
                     if (!current.isCloseable()) {
                         return null;
                     }

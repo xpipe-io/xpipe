@@ -18,10 +18,13 @@ import lombok.extern.jackson.Jacksonized;
 @Value
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
+@Jacksonized
 public class SyncedIdentityStore extends IdentityStore implements UserScopeStore {
 
-    EncryptedValue<SecretRetrievalStrategy> password;
-    EncryptedValue<SshIdentityStrategy> sshIdentity;
+    // We can encrypt it with only the vault key as
+    // per user stores are additionally encrypted on the entry level
+    EncryptedValue.VaultKey<SecretRetrievalStrategy> password;
+    EncryptedValue.VaultKey<SshIdentityStrategy> sshIdentity;
     boolean perUser;
 
     @Override

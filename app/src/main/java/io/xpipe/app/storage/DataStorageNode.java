@@ -93,7 +93,7 @@ public class DataStorageNode {
         var newContent = writer.toCharArray();
         var token = node.isPerUser() ? EncryptionToken.ofUser() : EncryptionToken.ofVaultKey();
         var secret = DataStorageSecret.ofSecret(InPlaceSecretValue.of(newContent), token);
-        return JacksonMapper.getDefault().valueToTree(secret);
+        return secret.serialize(node.isPerUser());
     }
 
     public DataStore parseStore() throws JsonProcessingException {

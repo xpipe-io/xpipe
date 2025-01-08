@@ -13,7 +13,7 @@ import lombok.SneakyThrows;
 
 @AllArgsConstructor
 @Getter
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
 @JsonSubTypes({
         @JsonSubTypes.Type(value = EncryptedValue.VaultKey.class),
         @JsonSubTypes.Type(value = EncryptedValue.CurrentKey.class),

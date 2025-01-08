@@ -3,6 +3,7 @@ package io.xpipe.app.util;
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.jsontype.impl.AsPropertyTypeDeserializer;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import io.xpipe.app.ext.LocalStore;
@@ -88,7 +89,13 @@ public class AppJacksonModule extends SimpleModule {
         @Override
         public void serialize(EncryptedValue value, JsonGenerator jgen, SerializerProvider provider)
                 throws IOException {
-            value.getSecret().serialize(jgen, value.allowUserSecretKey());
+            jgen.writeTree(value.getSecret().serialize(value.allowUserSecretKey()));
+        }
+
+        @Override
+        public void serializeWithType(EncryptedValue value, JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer) throws
+                IOException {
+            gen.writeTree(value.getSecret().serialize(value.allowUserSecretKey()));
         }
     }
 
@@ -108,10 +115,20 @@ public class AppJacksonModule extends SimpleModule {
 
             JavaType wrapperType = property.getType();
             JavaType valueType = wrapperType.containedType(0);
-            var useCurrentSecretKey = !wrapperType.equals(SimpleType.constructUnsafe(EncryptedValue.VaultKey.class));
+            var useCurrentSecretKey = !wrapperType.getRawClass().equals(EncryptedValue.VaultKey.class);
             deserializer.useCurrentSecretKey = useCurrentSecretKey;
             deserializer.type = valueType.getRawClass();
             return deserializer;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public T deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            if (type == null) {
+                return null;
+            }
+
+            return (T) get(p,type, useCurrentSecretKey);
         }
 
         public Object deserializeWithType(JsonParser jp, DeserializationContext ctxt, TypeDeserializer typeDeserializer)
@@ -121,12 +138,6 @@ public class AppJacksonModule extends SimpleModule {
             JavaType valueType = wrapperType.containedType(0);
             var useCurrentSecretKey = !wrapperType.equals(SimpleType.constructUnsafe(EncryptedValue.VaultKey.class));
             return get(jp, valueType.getRawClass(), useCurrentSecretKey);
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public T deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            return (T) get(p,type, useCurrentSecretKey);
         }
 
         private EncryptedValue get(JsonParser p, Class<?> type, boolean useCurrentSecretKey) throws IOException {
@@ -143,7 +154,7 @@ public class AppJacksonModule extends SimpleModule {
             } else {
                 value = JacksonMapper.getDefault().readValue(new CharArrayReader(secret.getSecret()), type);
             }
-            var perUser = useCurrentSecretKey || secret.getEncryptedToken().isUser();
+            var perUser = useCurrentSecretKey;
             return perUser ? new EncryptedValue.CurrentKey<>(value, secret) : new EncryptedValue.VaultKey<>(value, secret);
         }
     }

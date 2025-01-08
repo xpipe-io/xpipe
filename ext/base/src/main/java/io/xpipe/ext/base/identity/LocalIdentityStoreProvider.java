@@ -41,12 +41,14 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
                 .name("passwordAuthentication")
                 .description("passwordAuthenticationDescription")
                 .sub(SecretRetrievalStrategyHelper.comp(pass, true), pass)
+                .nonNull()
                 .name("keyAuthentication")
                 .description("keyAuthenticationDescription")
                 .longDescription("base:sshKey")
                 .sub(
                         SshIdentityStrategyHelper.identity(new SimpleObjectProperty<>(), identity, null, false),
                         identity)
+                .nonNull()
                 .bind(
                         () -> {
                             return LocalIdentityStore.builder()

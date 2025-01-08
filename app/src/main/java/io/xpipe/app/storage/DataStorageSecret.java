@@ -134,7 +134,7 @@ public class DataStorageSecret {
         return originalNode;
     }
 
-    public void serialize(JsonGenerator jgen, boolean allowUserSecretKey) throws IOException {
+    public JsonNode serialize(boolean allowUserSecretKey) {
         var mapper = JacksonMapper.getDefault();
         var tree = JsonNodeFactory.instance.objectNode();
         tree.set("encryptedToken", mapper.valueToTree(getEncryptedToken()));
@@ -142,14 +142,13 @@ public class DataStorageSecret {
         // Preserve same output if not changed
         if (getOriginalNode() != null && !requiresRewrite(allowUserSecretKey)) {
             tree.set("secret", getOriginalNode());
-            jgen.writeTree(tree);
-            return;
+            return tree;
         }
 
         // Reencrypt
         var val = rewrite(allowUserSecretKey);
         tree.set("secret", val);
-        jgen.writeTree(tree);
+        return tree;
     }
 
     public char[] getSecret() {
