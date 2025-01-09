@@ -1,10 +1,10 @@
 # RDP-Desktop-Integration
 
-Du kannst diese RDP-Verbindung in XPipe nutzen, um Anwendungen und Skripte schnell zu starten. Aufgrund der Natur von RDP musst du jedoch die Liste der zugelassenen Remote-Anwendungen auf deinem Server bearbeiten, damit dies funktioniert. Außerdem ermöglicht diese Option die gemeinsame Nutzung von Laufwerken, um deine Skripte auf dem entfernten Server auszuführen.
+Du kannst diese RDP-Verbindung in XPipe nutzen, um Anwendungen und Skripte schnell zu starten. Aufgrund der Natur von RDP musst du jedoch die Liste der zugelassenen Fernanwendungen auf deinem Server bearbeiten, damit dies funktioniert.
 
-Du kannst auch darauf verzichten und einfach XPipe verwenden, um deinen RDP-Client zu starten, ohne die erweiterten Funktionen der Desktop-Integration zu nutzen.
+Du kannst dies aber auch nicht tun und XPipe einfach zum Starten deines RDP-Clients verwenden, ohne die erweiterten Funktionen der Desktop-Integration zu nutzen.
 
-## RDP allow lists
+## RDP-Zulassungslisten
 
 Ein RDP-Server verwendet das Konzept der Zulassen-Listen, um den Start von Anwendungen zu steuern. Das bedeutet, dass der direkte Start von Remote-Anwendungen fehlschlägt, es sei denn, die Zulassungsliste ist deaktiviert oder bestimmte Anwendungen wurden explizit in die Zulassungsliste aufgenommen.
 
@@ -35,4 +35,4 @@ Wenn du XPipe auch das Ausführen von Skripten und das Öffnen von Terminalsitzu
 
 ## Sicherheitsüberlegungen
 
-Das macht deinen Server in keiner Weise unsicher, denn du kannst dieselben Anwendungen immer manuell ausführen, wenn du eine RDP-Verbindung startest. Erlaubt-Listen sind eher dazu gedacht, Clients daran zu hindern, jede Anwendung ohne Benutzereingabe sofort auszuführen. Letzten Endes liegt es an dir, ob du XPipe in dieser Hinsicht vertraust. Du kannst diese Verbindung ganz einfach starten. Das ist nur dann sinnvoll, wenn du eine der erweiterten Desktop-Integrationsfunktionen von XPipe nutzen willst.
+Das macht deinen Server in keiner Weise unsicher, denn du kannst die gleichen Anwendungen immer manuell ausführen, wenn du eine RDP-Verbindung startest. Die Zulassen-Listen sollen eher verhindern, dass Clients ohne Benutzereingabe sofort jede Anwendung ausführen. Letzten Endes liegt es an dir, ob du XPipe in dieser Hinsicht vertraust. Du kannst diese Verbindung ganz einfach starten. Das ist nur dann sinnvoll, wenn du eine der erweiterten Desktop-Integrationsfunktionen von XPipe nutzen willst.

@@ -1,8 +1,8 @@
 # RDP skrivbordsintegration
 
-Du kan använda den här RDP-anslutningen i XPipe för att snabbt starta applikationer och skript. På grund av RDP:s natur måste du dock redigera listan över tillåtna fjärrprogram på din server för att detta ska fungera. Dessutom möjliggör det här alternativet enhetsdelning för att köra dina skript på din fjärrserver.
+Du kan använda den här RDP-anslutningen i XPipe för att snabbt starta applikationer och skript. På grund av RDP:s natur måste du dock redigera listan över tillåtna fjärrprogram på din server för att detta ska fungera.
 
-Du kan också välja att inte göra detta och bara använda XPipe för att starta din RDP-klient utan att använda några avancerade funktioner för skrivbordsintegration.
+Du kan också välja att inte göra detta och bara använda XPipe för att starta din RDP-klient utan att använda några avancerade skrivbordsintegrationsfunktioner.
 
 ## RDP tillåter listor
 
@@ -12,13 +12,13 @@ Du hittar inställningarna för listan över tillåtna program i registret för 
 
 ### Tillåter alla program
 
-Du kan inaktivera listan över tillåtna program så att alla fjärrprogram kan startas direkt från XPipe. För detta kan du köra följande kommando på din server i PowerShell: `Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList' -Name "fDisabledAllowList" -Value 1`.
+Du kan inaktivera listan över tillåtna program så att alla fjärranslutna program kan startas direkt från XPipe. För detta kan du köra följande kommando på din server i PowerShell: `Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList' -Name "fDisabledAllowList" -Value 1`.
 
 ### Lägga till tillåtna program
 
 Alternativt kan du också lägga till enskilda fjärrprogram i listan. Detta gör att du kan starta de listade applikationerna direkt från XPipe.
 
-Under nyckeln `Applications` i `TSAppAllowList` skapar du en ny nyckel med ett godtyckligt namn. Det enda kravet på namnet är att det är unikt inom barnen till "Applications"-nyckeln. Den nya nyckeln måste innehålla följande värden: `Name`, `Path` och `CommandLineSetting`. Du kan göra detta i PowerShell med följande kommandon:
+Under nyckeln `Applications` i `TSAppAllowList` skapar du en ny nyckel med ett godtyckligt namn. Det enda kravet på namnet är att det är unikt inom barnen till "Applications"-nyckeln. Den här nya nyckeln måste innehålla följande värden: `Name`, `Path` och `CommandLineSetting`. Du kan göra detta i PowerShell med följande kommandon:
 
 ```
 $appName="Anteckningar"

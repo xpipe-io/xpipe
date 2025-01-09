@@ -1,10 +1,10 @@
 # Integração do ambiente de trabalho RDP
 
-Podes utilizar esta ligação RDP no XPipe para lançar rapidamente aplicações e scripts. No entanto, devido à natureza do RDP, tens de editar a lista de permissões de aplicações remotas no teu servidor para que isto funcione. Além disso, esta opção permite a partilha de unidades para executar os teus scripts no teu servidor remoto.
+Podes utilizar esta ligação RDP no XPipe para lançar rapidamente aplicações e scripts. No entanto, devido à natureza do RDP, tens de editar a lista de permissões de aplicações remotas no teu servidor para que isto funcione.
 
-Também podes optar por não fazer isto e utilizar apenas o XPipe para lançar o cliente RDP sem utilizar quaisquer funcionalidades avançadas de integração do ambiente de trabalho.
+Também podes optar por não o fazer e utilizar apenas o XPipe para iniciar o teu cliente RDP sem utilizar quaisquer funcionalidades avançadas de integração de ambiente de trabalho.
 
-## Listas de permissões RDP
+## Listas de permissões de RDP
 
 Um servidor RDP usa o conceito de listas de permissão para lidar com lançamentos de aplicativos. Isso significa essencialmente que, a menos que a lista de permissões esteja desativada ou que aplicativos específicos tenham sido explicitamente adicionados à lista de permissões, o lançamento de qualquer aplicativo remoto diretamente falhará.
 
@@ -35,4 +35,4 @@ Se quiseres permitir que o XPipe também execute scripts e abra sessões de term
 
 ## Considerações de segurança
 
-Isto não torna o teu servidor inseguro de forma alguma, uma vez que podes sempre executar as mesmas aplicações manualmente quando inicias uma ligação RDP. As listas de permissão são mais destinadas a impedir que os clientes executem instantaneamente qualquer aplicativo sem a entrada do usuário. No final do dia, cabe-te a ti decidir se confias no XPipe para fazer isto. Podes iniciar esta ligação sem problemas, isto só é útil se quiseres utilizar qualquer uma das funcionalidades avançadas de integração de ambiente de trabalho no XPipe.
+Isto não torna o teu servidor inseguro de forma alguma, uma vez que podes sempre executar as mesmas aplicações manualmente quando inicias uma ligação RDP. As listas de permissão são mais destinadas a impedir que os clientes executem instantaneamente qualquer aplicativo sem a entrada do usuário. No final do dia, cabe-te a ti decidir se confias no XPipe para fazer isto. Podes iniciar esta ligação sem problemas, isto só é útil se quiseres utilizar qualquer uma das funcionalidades avançadas de integração de ambiente de trabalho do XPipe.

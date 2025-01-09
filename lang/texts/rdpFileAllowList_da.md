@@ -1,12 +1,12 @@
 # RDP desktop integration
 
-Du kan bruge denne RDP-forbindelse i XPipe til hurtigt at starte programmer og scripts. På grund af RDP's natur skal du dog redigere listen over tilladte fjernprogrammer på din server for at få det til at fungere. Desuden muliggør denne indstilling drevdeling for at udføre dine scripts på din fjernserver.
+Du kan bruge denne RDP-forbindelse i XPipe til hurtigt at starte programmer og scripts. Men på grund af RDP's natur skal du redigere listen over tilladte fjernprogrammer på din server for at få det til at fungere.
 
 Du kan også vælge ikke at gøre dette og bare bruge XPipe til at starte din RDP-klient uden at bruge nogen avancerede desktop-integrationsfunktioner.
 
-## RDP tillader lister
+## RDP tilladelseslister
 
-En RDP-server bruger begrebet tilladelseslister til at håndtere programstarter. Det betyder, at medmindre listen over tilladte programmer er deaktiveret, eller specifikke programmer eksplicit er blevet tilføjet listen over tilladte programmer, vil det ikke lykkes at starte fjernprogrammer direkte.
+En RDP-server bruger begrebet tilladelseslister til at håndtere programstart. Det betyder i bund og grund, at medmindre listen over tilladte programmer er deaktiveret, eller specifikke programmer eksplicit er tilføjet listen over tilladte programmer, vil det mislykkes at starte fjernprogrammer direkte.
 
 Du kan finde indstillingerne for tilladelseslisten i registreringsdatabasen på din server under `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList`.
 
@@ -16,7 +16,7 @@ Du kan deaktivere tilladelseslisten for at tillade, at alle fjernprogrammer star
 
 ### Tilføjelse af tilladte applikationer
 
-Alternativt kan du også tilføje individuelle fjernprogrammer til listen. Det giver dig mulighed for at starte de anførte programmer direkte fra XPipe.
+Alternativt kan du også tilføje individuelle fjernprogrammer til listen. Dette giver dig mulighed for at starte de listede programmer direkte fra XPipe.
 
 Under nøglen `Applications` i `TSAppAllowList` skal du oprette en ny nøgle med et vilkårligt navn. Det eneste krav til navnet er, at det er unikt inden for børn af "Applications"-nøglen. Denne nye nøgle skal have disse værdier: `Name`, `Path` og `CommandLineSetting`. Du kan gøre dette i PowerShell med følgende kommandoer:
 

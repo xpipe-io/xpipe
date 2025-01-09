@@ -135,6 +135,10 @@ public class DataStorageSecret {
     }
 
     public JsonNode serialize(boolean allowUserSecretKey) {
+        if (internalSecret == null) {
+            return null;
+        }
+
         var mapper = JacksonMapper.getDefault();
         var tree = JsonNodeFactory.instance.objectNode();
         tree.set("encryptedToken", mapper.valueToTree(getEncryptedToken()));
@@ -153,21 +157,5 @@ public class DataStorageSecret {
 
     public char[] getSecret() {
         return internalSecret != null ? internalSecret.getSecret() : new char[0];
-    }
-
-    @Override
-    public int hashCode() {
-        return Arrays.hashCode(getSecret());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof DataStorageSecret that)) {
-            return false;
-        }
-        return Arrays.equals(getSecret(), that.getSecret());
     }
 }

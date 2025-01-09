@@ -85,6 +85,11 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
+    public Optional<UUID> getSourceStoreId() {
+        return parent.getSourceStoreId();
+    }
+
+    @Override
     public ShellControl withSourceStore(DataStore store) {
         return parent.withSourceStore(store);
     }

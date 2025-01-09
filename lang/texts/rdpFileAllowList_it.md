@@ -1,14 +1,14 @@
 # Integrazione del desktop RDP
 
-Puoi utilizzare questa connessione RDP in XPipe per lanciare rapidamente applicazioni e script. Tuttavia, a causa della natura di RDP, devi modificare l'elenco dei permessi per le applicazioni remote sul tuo server affinché questo funzioni. Inoltre, questa opzione consente la condivisione delle unità per eseguire gli script sul server remoto.
+Puoi utilizzare questa connessione RDP in XPipe per lanciare rapidamente applicazioni e script. Tuttavia, a causa della natura di RDP, devi modificare l'elenco dei permessi per le applicazioni remote sul tuo server affinché questo funzioni.
 
-Puoi anche scegliere di non farlo e di utilizzare XPipe per lanciare il tuo client RDP senza utilizzare alcuna funzione avanzata di integrazione del desktop.
+Puoi anche scegliere di non farlo e di utilizzare XPipe per lanciare il tuo client RDP senza utilizzare alcuna funzione di integrazione desktop avanzata.
 
 ## Elenchi di permessi RDP
 
-Un server RDP utilizza il concetto di elenchi di permessi per gestire il lancio delle applicazioni. Questo significa essenzialmente che, a meno che l'elenco dei permessi non sia disabilitato o che non siano state aggiunte esplicitamente applicazioni specifiche all'elenco dei permessi, l'avvio diretto di qualsiasi applicazione remota fallirà.
+Un server RDP utilizza il concetto di elenchi di permessi per gestire l'avvio delle applicazioni. Questo significa essenzialmente che, a meno che l'elenco dei permessi non sia disabilitato o che non siano state aggiunte esplicitamente applicazioni specifiche all'elenco dei permessi, l'avvio diretto di qualsiasi applicazione remota fallirà.
 
-Puoi trovare le impostazioni dell'elenco di permessi nel registro del tuo server in `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList`.
+Puoi trovare le impostazioni dell'elenco di permessi nel registro di sistema del tuo server in `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList`.
 
 ### Consentire tutte le applicazioni
 
@@ -18,7 +18,7 @@ Puoi disabilitare l'elenco dei permessi per consentire l'avvio di tutte le appli
 
 In alternativa, puoi anche aggiungere singole applicazioni remote all'elenco. In questo modo potrai lanciare le applicazioni elencate direttamente da XPipe.
 
-Sotto la chiave `Applications` di `TSAppAllowList`, crea una nuova chiave con un nome arbitrario. L'unico requisito per il nome è che sia unico tra i figli della chiave "Applications". Questa nuova chiave deve contenere i seguenti valori: `Name`, `Path` e `CommandLineSetting`. Puoi farlo in PowerShell con i seguenti comandi:
+Sotto la chiave `Applicazioni` di `TSAppAllowList`, crea una nuova chiave con un nome arbitrario. L'unico requisito per il nome è che sia unico tra i figli della chiave "Applications". Questa nuova chiave deve contenere i seguenti valori: `Name`, `Path` e `CommandLineSetting`. Puoi farlo in PowerShell con i seguenti comandi:
 
 ```
 $appName="Notepad"
@@ -35,4 +35,4 @@ Se vuoi permettere a XPipe di eseguire anche script e aprire sessioni di termina
 
 ## Considerazioni sulla sicurezza
 
-Questo non rende il tuo server insicuro in alcun modo, poiché puoi sempre eseguire le stesse applicazioni manualmente quando avvii una connessione RDP. Gli elenchi di permessi servono più che altro a evitare che i client eseguano istantaneamente qualsiasi applicazione senza che l'utente la inserisca. In fin dei conti, sta a te decidere se fidarti di XPipe. Puoi lanciare questa connessione senza problemi, ma è utile solo se vuoi utilizzare le funzioni avanzate di integrazione del desktop di XPipe.
+Questo non rende il tuo server insicuro in alcun modo, poiché puoi sempre eseguire le stesse applicazioni manualmente quando avvii una connessione RDP. Gli elenchi di permessi servono più che altro a evitare che i client eseguano istantaneamente qualsiasi applicazione senza che l'utente la inserisca. In fin dei conti, dipende da te se ti fidi di XPipe in questo senso. Puoi lanciare questa connessione senza problemi, ma è utile solo se vuoi utilizzare le funzioni avanzate di integrazione del desktop di XPipe.

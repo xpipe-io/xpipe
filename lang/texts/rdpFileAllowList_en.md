@@ -1,6 +1,6 @@
 # RDP desktop integration
 
-You can use this RDP connection in XPipe to quickly launch applications and scripts. However, due to the nature of RDP, you have to edit the remote application allow list on your server for this to work. Furthermore, this option enables drive sharing to execute your scripts on your remote server.
+You can use this RDP connection in XPipe to quickly launch applications and scripts. However, due to the nature of RDP, you have to edit the remote application allow list on your server for this to work.
 
 You can also choose not to do this and just use XPipe to launch your RDP client without using any advanced desktop integration features.
 

@@ -7,9 +7,9 @@ import io.xpipe.app.storage.DataStorageSecret;
 import io.xpipe.app.storage.DataStorageUserHandler;
 import io.xpipe.core.store.DataStoreState;
 import io.xpipe.core.util.JacksonMapper;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.SneakyThrows;
+import lombok.*;
+
+import java.util.Objects;
 
 @AllArgsConstructor
 @Getter
@@ -30,7 +30,24 @@ public abstract class EncryptedValue<T> {
 
     public abstract boolean allowUserSecretKey();
 
+    public abstract EncryptedValue<T> withValue(T value);
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof EncryptedValue<?> that)) {
+            return false;
+        }
+        return Objects.equals(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(value);
+    }
+
     @JsonTypeName("current")
+    @EqualsAndHashCode(callSuper = true)
+    @ToString(callSuper = true)
     public static class CurrentKey<T> extends EncryptedValue<T> {
 
         public CurrentKey(T value, DataStorageSecret secret) {
@@ -50,9 +67,20 @@ public abstract class EncryptedValue<T> {
         public boolean allowUserSecretKey() {
             return true;
         }
+
+        @Override
+        public EncryptedValue<T> withValue(T value) {
+            if (value == this.getValue()) {
+                return this;
+            }
+
+            return of(value);
+        }
     }
 
     @JsonTypeName("vault")
+    @EqualsAndHashCode(callSuper = true)
+    @ToString(callSuper = true)
     public static class VaultKey<T> extends EncryptedValue<T> {
 
         public VaultKey(T value, DataStorageSecret secret) {
@@ -64,6 +92,15 @@ public abstract class EncryptedValue<T> {
             var s = JacksonMapper.getDefault().writeValueAsString(value);
             var secret = new VaultKeySecretValue(s.toCharArray());
             return new VaultKey<>(value, DataStorageSecret.ofSecret(secret, EncryptionToken.ofVaultKey()));
+        }
+
+        @Override
+        public EncryptedValue<T> withValue(T value) {
+            if (value == this.getValue()) {
+                return this;
+            }
+
+            return of(value);
         }
 
         @Override

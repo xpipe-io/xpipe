@@ -1,10 +1,10 @@
 # Integración de escritorio RDP
 
-Puedes utilizar esta conexión RDP en XPipe para lanzar rápidamente aplicaciones y scripts. Sin embargo, debido a la naturaleza de RDP, tienes que editar la lista de aplicaciones remotas permitidas en tu servidor para que esto funcione. Además, esta opción permite compartir unidades para ejecutar tus scripts en tu servidor remoto.
+Puedes utilizar esta conexión RDP en XPipe para lanzar rápidamente aplicaciones y scripts. Sin embargo, debido a la naturaleza de RDP, tienes que editar la lista de aplicaciones remotas permitidas en tu servidor para que esto funcione.
 
-También puedes optar por no hacer esto y simplemente utilizar XPipe para lanzar tu cliente RDP sin utilizar ninguna función avanzada de integración de escritorio.
+También puedes optar por no hacerlo y simplemente utilizar XPipe para lanzar tu cliente RDP sin utilizar ninguna función avanzada de integración de escritorio.
 
-## RDP permitir listas
+## Listas de permitidos RDP
 
 Un servidor RDP utiliza el concepto de listas permitidas para gestionar el lanzamiento de aplicaciones. Esto significa esencialmente que, a menos que la lista de permitidas esté desactivada o que se hayan añadido explícitamente aplicaciones específicas a la lista de permitidas, el lanzamiento directo de cualquier aplicación remota fallará.
 

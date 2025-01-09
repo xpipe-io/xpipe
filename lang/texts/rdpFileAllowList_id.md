@@ -1,10 +1,10 @@
 # Integrasi desktop RDP
 
-Anda dapat menggunakan koneksi RDP ini di XPipe untuk meluncurkan aplikasi dan skrip dengan cepat. Namun, karena sifat RDP, Anda harus mengedit daftar izin aplikasi jarak jauh di server Anda agar dapat berfungsi. Selain itu, opsi ini memungkinkan berbagi drive untuk menjalankan skrip Anda di server jarak jauh.
+Anda dapat menggunakan koneksi RDP ini di XPipe untuk meluncurkan aplikasi dan skrip dengan cepat. Namun, karena sifat RDP, Anda harus mengedit daftar izin aplikasi jarak jauh di server Anda agar dapat berfungsi.
 
 Anda juga bisa memilih untuk tidak melakukan hal ini dan hanya menggunakan XPipe untuk meluncurkan klien RDP Anda tanpa menggunakan fitur integrasi desktop tingkat lanjut.
 
-## Daftar yang mengizinkan RDP
+## Daftar izin RDP
 
 Server RDP menggunakan konsep daftar izin untuk menangani peluncuran aplikasi. Ini pada dasarnya berarti bahwa kecuali daftar izin dinonaktifkan atau aplikasi tertentu telah secara eksplisit ditambahkan ke dalam daftar izin, peluncuran aplikasi jarak jauh secara langsung akan gagal.
 

@@ -28,9 +28,9 @@ public class DesktopApplicationStore implements DataStore {
         Validators.nonNull(path);
     }
 
-    public String getFullCommand() {
+    public CommandBuilder getFullCommand() {
         var builder = CommandBuilder.of().addFile(path).add(arguments != null ? " " + arguments : "");
         builder = desktop.getStore().getUsedDesktopDialect().launchAsnyc(builder);
-        return builder.buildSimple();
+        return builder;
     }
 }

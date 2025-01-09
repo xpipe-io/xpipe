@@ -22,10 +22,7 @@ public class SshIdentityStateManager {
     private static final Map<UUID, RunningAgent> lastUsed = new HashMap<>();
 
     private static UUID getId(ShellControl sc) {
-        return sc.getSourceStore()
-                .flatMap(shellStore -> DataStorage.get()
-                        .getStoreEntryIfPresent(shellStore, true)
-                        .map(entry -> entry.getUuid()))
+        return sc.getSourceStoreId()
                 .orElse(UUID.randomUUID());
     }
 

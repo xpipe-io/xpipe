@@ -1,6 +1,6 @@
 # Integracja pulpitu RDP
 
-Możesz użyć tego połączenia RDP w XPipe, aby szybko uruchamiać aplikacje i skrypty. Jednak ze względu na charakter RDP, musisz edytować listę zezwoleń aplikacji zdalnych na swoim serwerze, aby to działało. Ponadto opcja ta umożliwia udostępnianie dysków w celu wykonywania skryptów na zdalnym serwerze.
+Możesz użyć tego połączenia RDP w XPipe, aby szybko uruchamiać aplikacje i skrypty. Jednak ze względu na charakter RDP, musisz edytować listę zezwoleń aplikacji zdalnych na serwerze, aby to działało.
 
 Możesz również tego nie robić i po prostu użyć XPipe do uruchomienia klienta RDP bez korzystania z zaawansowanych funkcji integracji pulpitu.
 
@@ -35,4 +35,4 @@ Jeśli chcesz zezwolić XPipe na uruchamianie skryptów i otwieranie sesji termi
 
 ## Względy bezpieczeństwa
 
-Nie sprawia to, że twój serwer jest w jakikolwiek sposób niezabezpieczony, ponieważ zawsze możesz uruchomić te same aplikacje ręcznie podczas uruchamiania połączenia RDP. Listy zezwoleń mają raczej na celu uniemożliwienie klientom natychmiastowego uruchamiania dowolnej aplikacji bez udziału użytkownika. Ostatecznie to od Ciebie zależy, czy zaufasz XPipe w tym zakresie. Możesz uruchomić to połączenie po wyjęciu z pudełka, jest to przydatne tylko wtedy, gdy chcesz korzystać z którejkolwiek z zaawansowanych funkcji integracji pulpitu w XPipe.
+Nie sprawia to, że twój serwer jest w jakikolwiek sposób niezabezpieczony, ponieważ zawsze możesz uruchomić te same aplikacje ręcznie podczas uruchamiania połączenia RDP. Listy zezwoleń mają raczej na celu uniemożliwienie klientom natychmiastowego uruchomienia dowolnej aplikacji bez udziału użytkownika. Ostatecznie to od Ciebie zależy, czy zaufasz XPipe w tym zakresie. Możesz uruchomić to połączenie po wyjęciu z pudełka, jest to przydatne tylko wtedy, gdy chcesz korzystać z którejkolwiek z zaawansowanych funkcji integracji pulpitu w XPipe.
