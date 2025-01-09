@@ -8,11 +8,13 @@ import io.xpipe.app.util.SecretRetrievalStrategyHelper;
 
 import javafx.beans.property.*;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 
 @Value
 @Builder
+@AllArgsConstructor
 public class IdentityChoice {
 
     public static OptionsBuilder ssh(
@@ -59,10 +61,10 @@ public class IdentityChoice {
         var options = new OptionsBuilder()
                 .nameAndDescription(userChoiceTranslationKey)
                 .addComp(new IdentitySelectComp(ref, user, pass, identityStrategy, allowCustomUserInput), user)
-                .nonNullIf(inPlaceSelected)
+                .nonNullIf(inPlaceSelected.and(new SimpleBooleanProperty(requireUserInput)))
                 .nameAndDescription(passwordChoiceTranslationKey)
                 .sub(SecretRetrievalStrategyHelper.comp(pass, true), pass)
-                .nonNullIf(inPlaceSelected)
+                .nonNullIf(inPlaceSelected.and(new SimpleBooleanProperty(requirePassword)))
                 .disable(refSelected)
                 .hide(refSelected)
                 .name("keyAuthentication")

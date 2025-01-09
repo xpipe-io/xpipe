@@ -82,6 +82,7 @@ public class BaseMode extends OperationMode {
         var imagesLoaded = new CountDownLatch(1);
         var browserLoaded = new CountDownLatch(1);
         var shellLoaded = new CountDownLatch(1);
+        var storageLoaded = new CountDownLatch(1);
         ThreadHelper.load(
                 true,
                 () -> {
@@ -102,6 +103,7 @@ public class BaseMode extends OperationMode {
                     AppPrefs.initSharedRemote();
                     AppMainWindow.loadingText("loadingConnections");
                     DataStorage.init();
+                    storageLoaded.countDown();
                     StoreViewState.init();
                     AppLayoutModel.init();
                     PlatformInit.init(true);
@@ -133,6 +135,7 @@ public class BaseMode extends OperationMode {
                 () -> {
                     BrowserIconManager.loadIfNecessary();
                     BrowserLocalFileSystem.init();
+                    storageLoaded.await();
                     BrowserFullSessionModel.init();
                     browserLoaded.countDown();
                 });
