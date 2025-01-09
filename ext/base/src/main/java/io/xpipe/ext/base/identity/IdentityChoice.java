@@ -1,11 +1,13 @@
 package io.xpipe.ext.base.identity;
 
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.EncryptedValue;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.SecretRetrievalStrategyHelper;
 
+import io.xpipe.app.util.Validator;
 import javafx.beans.property.*;
 
 import lombok.AllArgsConstructor;
@@ -92,7 +94,7 @@ public class IdentityChoice {
                                         .identityStore(LocalIdentityStore.builder()
                                                 .username(user.get())
                                                 .password(EncryptedValue.CurrentKey.of(pass.get()))
-                                                .sshIdentity(EncryptedValue.CurrentKey.of(identityStrategy.get()))
+                                                .sshIdentity(keyInput ? EncryptedValue.CurrentKey.of(identityStrategy.get()) : EncryptedValue.CurrentKey.of(new SshIdentityStrategy.None()))
                                                 .build())
                                         .build();
                             }

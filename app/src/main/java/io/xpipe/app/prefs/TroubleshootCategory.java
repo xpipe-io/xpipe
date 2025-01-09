@@ -5,6 +5,7 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppLogs;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.ErrorEvent;
@@ -14,15 +15,18 @@ import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.FileOpener;
 import io.xpipe.app.util.OptionsBuilder;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.util.XPipeInstallation;
 
 import com.sun.management.HotSpotDiagnosticMXBean;
 import lombok.SneakyThrows;
+import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
 
 import java.lang.management.ManagementFactory;
+import java.nio.file.Files;
 import javax.management.MBeanServer;
 
 public class TroubleshootCategory extends AppPrefsCategory {
@@ -99,6 +103,33 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                                     XPipeInstallation.getCurrentInstallationBasePath());
                                             e.consume();
                                         })
+                                .grow(true, false),
+                        null)
+                .separator()
+                .addComp(
+                        new TileButtonComp("clearUserData", "clearUserDataDescription", "mdi2t-trash-can-outline", e -> {
+                            var modal = ModalOverlay.of(
+                                    "clearUserDataTitle",
+                                    AppDialog.dialogTextKey("clearUserDataContent"));
+                            modal.withDefaultButtons(() -> {
+                                ThreadHelper.runFailableAsync(() -> {
+                                    var dir = AppProperties.get().getDataDir();
+                                    try (var stream = Files.list(dir)) {
+                                        var dirs = stream.toList();
+                                        for (var path : dirs) {
+                                            if (path.getFileName().toString().equals("logs") || path.getFileName().toString().equals("shell")) {
+                                                continue;
+                                            }
+
+                                            FileUtils.deleteQuietly(path.toFile());
+                                        }
+                                    }
+                                    OperationMode.halt(0);
+                                });
+                            });
+                            modal.show();
+                            e.consume();
+                        })
                                 .grow(true, false),
                         null)
                 .separator()

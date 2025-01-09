@@ -1,6 +1,8 @@
 package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.EncryptedValue;
+import io.xpipe.app.util.SecretRetrievalStrategy;
 import io.xpipe.app.util.Validators;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -17,8 +19,28 @@ import lombok.extern.jackson.Jacksonized;
 })
 public interface IdentityValue {
 
-    static IdentityValue of(LocalIdentityStore identityStore) {
+    static IdentityValue.InPlace of(LocalIdentityStore identityStore) {
         return new InPlace(identityStore);
+    }
+
+    static IdentityValue.InPlace empty() {
+        return of(null, null,null);
+    }
+
+    static IdentityValue.InPlace of(String user) {
+        return of(user, null,null);
+    }
+
+    static IdentityValue.InPlace of(String user, SecretRetrievalStrategy password) {
+        return of(user, password,null);
+    }
+
+    static IdentityValue.InPlace of(String user, SecretRetrievalStrategy password, SshIdentityStrategy sshIdentity) {
+        var s = LocalIdentityStore.builder().username(user)
+                .password(EncryptedValue.of(password != null ? password : new SecretRetrievalStrategy.None(), true))
+                .sshIdentity(EncryptedValue.of(sshIdentity != null ? sshIdentity : new SshIdentityStrategy.None(), true))
+                .build();
+        return of(s);
     }
 
     void checkComplete(boolean requireUser) throws Throwable;

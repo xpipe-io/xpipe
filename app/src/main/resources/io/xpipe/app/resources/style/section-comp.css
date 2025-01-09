@@ -24,6 +24,6 @@
     -fx-padding: 0 9 6 9;
 }
 
-.titled-pane > .title {
+.options-comp .titled-pane > .title {
     -fx-padding: 8 20 8 10;
 }

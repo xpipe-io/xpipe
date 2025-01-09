@@ -71,7 +71,7 @@ public abstract class AesSecretValue extends EncryptedSecretValue {
 
         SecretKey secretKey = getSecretKey();
         if (secretKey == null) {
-            return new byte[0];
+            throw new IllegalStateException("Missing secret key");
         }
 
         Cipher cipher = Cipher.getInstance(ENCRYPT_ALGO);
