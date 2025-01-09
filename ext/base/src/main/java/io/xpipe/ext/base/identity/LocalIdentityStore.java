@@ -31,4 +31,15 @@ public class LocalIdentityStore extends IdentityStore {
     public SshIdentityStrategy getSshIdentity() {
         return sshIdentity != null ? sshIdentity.getValue() : null;
     }
+
+    @Override
+    EncryptedValue<SecretRetrievalStrategy> getEncryptedPassword() {
+        return password;
+    }
+
+    @Override
+    EncryptedValue<SshIdentityStrategy> getEncryptedSshIdentity() {
+        return sshIdentity;
+    }
+
 }

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.storage.DataStorageSecret;
 import io.xpipe.app.storage.DataStorageUserHandler;
-import io.xpipe.core.store.DataStoreState;
 import io.xpipe.core.util.JacksonMapper;
 import lombok.*;
 
@@ -21,10 +20,15 @@ import java.util.Objects;
 public abstract class EncryptedValue<T> {
 
     @SneakyThrows
-    public static <T> EncryptedValue<T> of(T value, boolean current) {
-        return current ? CurrentKey.of(value) : VaultKey.of(value);
+    public static <T> EncryptedValue<T> of(T value) {
+        if (value == null) {
+            return null;
+        }
+
+        return CurrentKey.of(value);
     }
 
+    @NonNull
     private final T value;
     private final DataStorageSecret secret;
 
@@ -56,6 +60,10 @@ public abstract class EncryptedValue<T> {
 
         @SneakyThrows
         public static <T> CurrentKey<T> of(T value) {
+            if (value == null) {
+                return null;
+            }
+
             var handler = DataStorageUserHandler.getInstance();
             var s = JacksonMapper.getDefault().writeValueAsString(value);
             var secret = new VaultKeySecretValue(s.toCharArray());
@@ -69,7 +77,11 @@ public abstract class EncryptedValue<T> {
         }
 
         @Override
-        public EncryptedValue<T> withValue(T value) {
+        public EncryptedValue.CurrentKey<T> withValue(T value) {
+            if (value == null) {
+                return null;
+            }
+
             if (value == this.getValue()) {
                 return this;
             }
@@ -89,13 +101,21 @@ public abstract class EncryptedValue<T> {
 
         @SneakyThrows
         public static <T> VaultKey<T> of(T value) {
+            if (value == null) {
+                return null;
+            }
+
             var s = JacksonMapper.getDefault().writeValueAsString(value);
             var secret = new VaultKeySecretValue(s.toCharArray());
             return new VaultKey<>(value, DataStorageSecret.ofSecret(secret, EncryptionToken.ofVaultKey()));
         }
 
         @Override
-        public EncryptedValue<T> withValue(T value) {
+        public EncryptedValue.VaultKey<T> withValue(T value) {
+            if (value == null) {
+                return null;
+            }
+
             if (value == this.getValue()) {
                 return this;
             }

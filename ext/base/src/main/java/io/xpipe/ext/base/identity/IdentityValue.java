@@ -37,8 +37,8 @@ public interface IdentityValue {
 
     static IdentityValue.InPlace of(String user, SecretRetrievalStrategy password, SshIdentityStrategy sshIdentity) {
         var s = LocalIdentityStore.builder().username(user)
-                .password(EncryptedValue.of(password != null ? password : new SecretRetrievalStrategy.None(), true))
-                .sshIdentity(EncryptedValue.of(sshIdentity != null ? sshIdentity : new SshIdentityStrategy.None(), true))
+                .password(EncryptedValue.of(password != null ? password : new SecretRetrievalStrategy.None()))
+                .sshIdentity(EncryptedValue.of(sshIdentity != null ? sshIdentity : new SshIdentityStrategy.None()))
                 .build();
         return of(s);
     }

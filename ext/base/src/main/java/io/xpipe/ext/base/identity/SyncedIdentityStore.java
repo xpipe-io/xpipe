@@ -46,4 +46,14 @@ public class SyncedIdentityStore extends IdentityStore implements UserScopeStore
             }
         }
     }
+
+    @Override
+    EncryptedValue.VaultKey<SecretRetrievalStrategy> getEncryptedPassword() {
+        return password;
+    }
+
+    @Override
+    EncryptedValue.VaultKey<SshIdentityStrategy> getEncryptedSshIdentity() {
+        return sshIdentity;
+    }
 }

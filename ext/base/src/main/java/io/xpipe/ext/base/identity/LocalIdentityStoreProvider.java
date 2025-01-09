@@ -53,8 +53,8 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
                         () -> {
                             return LocalIdentityStore.builder()
                                     .username(user.get())
-                                    .password(EncryptedValue.CurrentKey.of(pass.get()))
-                                    .sshIdentity(EncryptedValue.CurrentKey.of(identity.get()))
+                                    .password(st.getEncryptedPassword() != null ? st.getEncryptedPassword().withValue(pass.get()) : EncryptedValue.of(pass.get()))
+                                    .sshIdentity(st.getEncryptedSshIdentity() != null ? st.getEncryptedSshIdentity().withValue(identity.get()) : EncryptedValue.of(identity.get()))
                                     .build();
                         },
                         store)

@@ -28,4 +28,8 @@ public abstract class IdentityStore implements SelfReferentialStore, DataStore {
         getPassword().checkComplete();
         getSshIdentity().checkComplete();
     }
+
+    abstract EncryptedValue<SecretRetrievalStrategy> getEncryptedPassword();
+
+    abstract EncryptedValue<SshIdentityStrategy> getEncryptedSshIdentity();
 }
