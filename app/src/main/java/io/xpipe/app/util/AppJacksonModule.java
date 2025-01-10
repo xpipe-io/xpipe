@@ -89,12 +89,22 @@ public class AppJacksonModule extends SimpleModule {
         @Override
         public void serialize(EncryptedValue value, JsonGenerator jgen, SerializerProvider provider)
                 throws IOException {
+            if (value.getValue() == null) {
+                jgen.writeNull();
+                return;
+            }
+
             jgen.writeTree(value.getSecret().serialize(value.allowUserSecretKey()));
         }
 
         @Override
         public void serializeWithType(EncryptedValue value, JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer) throws
                 IOException {
+            if (value.getValue() == null) {
+                gen.writeNull();
+                return;
+            }
+
             gen.writeTree(value.getSecret().serialize(value.allowUserSecretKey()));
         }
     }

@@ -61,7 +61,6 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                 .name("passwordAuthentication")
                 .description("passwordAuthenticationDescription")
                 .sub(SecretRetrievalStrategyHelper.comp(pass, true), pass)
-                .nonNull()
                 .name("keyAuthentication")
                 .description("keyAuthenticationDescription")
                 .longDescription("base:sshKey")
@@ -69,7 +68,6 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                         SshIdentityStrategyHelper.identity(
                                 new SimpleObjectProperty<>(), identity, path -> perUser.get(), true),
                         identity)
-                .nonNull()
                 .check(val -> Validator.create(val, AppI18n.observable("keyNotSynced"), identity, i -> {
                     var wrong = i instanceof SshIdentityStrategy.File f
                             && f.getFile() != null

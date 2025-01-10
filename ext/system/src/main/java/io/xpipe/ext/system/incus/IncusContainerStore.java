@@ -54,7 +54,7 @@ public class IncusContainerStore
         install.checkComplete();
         Validators.nonNull(containerName);
         if (identity != null) {
-            identity.checkComplete(false);
+            identity.checkComplete();
         }
     }
 

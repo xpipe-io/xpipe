@@ -162,8 +162,13 @@ public class StoreEntryWrapper {
                 var section = StoreViewState.get().getSectionForWrapper(this);
                 if (section.isPresent()) {
                     information.unbind();
-                    var binding = PlatformThread.sync(entry.getProvider().informationString(section.get()));
-                    information.bind(binding);
+                    try {
+                        var binding = PlatformThread.sync(entry.getProvider().informationString(section.get()));
+                        information.bind(binding);
+                    } catch (Exception e) {
+                        ErrorEvent.fromThrowable(e).handle();
+                        information.bind(new SimpleStringProperty());
+                    }
                 }
             }
         }

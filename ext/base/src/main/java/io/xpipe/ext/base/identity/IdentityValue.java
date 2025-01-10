@@ -8,6 +8,7 @@ import io.xpipe.app.util.Validators;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.core.util.ValidationException;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -43,11 +44,25 @@ public interface IdentityValue {
         return of(s);
     }
 
-    void checkComplete(boolean requireUser) throws Throwable;
+    void checkComplete() throws Throwable;
 
     IdentityStore unwrap();
 
     boolean isPerUser();
+
+    default void checkCompleteUser() throws ValidationException {
+        Validators.nonNull(unwrap().getUsername(), "Identity username");
+    }
+
+    default void checkCompletePassword() throws ValidationException {
+        Validators.nonNull(unwrap().getPassword(), "Identity password");
+        unwrap().getPassword().checkComplete();
+    }
+
+    default void checkCompleteSshIdentity() throws ValidationException {
+        Validators.nonNull(unwrap().getSshIdentity(), "Identity ssh auth");
+        unwrap().getSshIdentity().checkComplete();
+    }
 
     @JsonTypeName("inPlace")
     @Value
@@ -58,12 +73,8 @@ public interface IdentityValue {
         LocalIdentityStore identityStore;
 
         @Override
-        public void checkComplete(boolean requireUser) throws Throwable {
+        public void checkComplete() throws Throwable {
             Validators.nonNull(identityStore);
-            if (requireUser) {
-                Validators.nonNull(identityStore.getUsername());
-            }
-            identityStore.checkComplete();
         }
 
         @Override
@@ -86,13 +97,9 @@ public interface IdentityValue {
         DataStoreEntryRef<IdentityStore> ref;
 
         @Override
-        public void checkComplete(boolean requireUser) throws Throwable {
+        public void checkComplete() throws Throwable {
             Validators.nonNull(ref);
             Validators.isType(ref, IdentityStore.class);
-            if (requireUser) {
-                Validators.nonNull(ref.getStore().getUsername());
-            }
-            ref.getStore().checkComplete();
         }
 
         @Override

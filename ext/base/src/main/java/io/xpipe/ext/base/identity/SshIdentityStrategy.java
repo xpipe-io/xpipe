@@ -14,6 +14,7 @@ import io.xpipe.core.store.FileNames;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.core.util.ValidationException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
@@ -36,7 +37,7 @@ import java.util.UUID;
     @JsonSubTypes.Type(value = SshIdentityStrategy.OtherExternal.class)
 })
 public interface SshIdentityStrategy {
-    default void checkComplete() throws Exception {}
+    default void checkComplete() throws ValidationException {}
 
     void prepareParent(ShellControl parent) throws Exception;
 
@@ -158,7 +159,7 @@ public interface SshIdentityStrategy {
         ContextualFileReference file;
         SecretRetrievalStrategy password;
 
-        public void checkComplete() throws Exception {
+        public void checkComplete() throws ValidationException {
             Validators.nonNull(file);
             Validators.nonNull(password);
         }

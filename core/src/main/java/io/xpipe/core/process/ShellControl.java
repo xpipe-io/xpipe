@@ -59,10 +59,6 @@ public interface ShellControl extends ProcessControl {
 
     Optional<UUID> getSourceStoreId();
 
-    default UUID getSecretStoreId() {
-        return getSourceStoreId().orElse(UUID.randomUUID());
-    }
-
     ShellControl withSourceStore(DataStore store);
 
     List<ShellInitCommand> getInitCommands();

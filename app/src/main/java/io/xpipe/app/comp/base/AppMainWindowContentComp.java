@@ -21,6 +21,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import atlantafx.base.util.Animations;
+import javafx.stage.Window;
 
 public class AppMainWindowContentComp extends SimpleComp {
 
@@ -93,6 +94,12 @@ public class AppMainWindowContentComp extends SimpleComp {
             overlay.addListener((ListChangeListener<? super ModalOverlay>) c -> {
                 if (c.next() && c.wasAdded()) {
                     stage.requestFocus();
+
+                    // Close blocking modal windows
+                    var childWindows = Window.getWindows().stream().filter(window -> window instanceof Stage s && stage.equals(s.getOwner())).toList();
+                    childWindows.forEach(window -> {
+                        ((Stage) window).close();
+                    });
                 }
             });
 

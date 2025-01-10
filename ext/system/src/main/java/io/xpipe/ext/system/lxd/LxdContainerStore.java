@@ -52,7 +52,7 @@ public class LxdContainerStore
         cmd.checkComplete();
         Validators.nonNull(containerName);
         if (identity != null) {
-            identity.checkComplete(false);
+            identity.checkComplete();
         }
     }
 
