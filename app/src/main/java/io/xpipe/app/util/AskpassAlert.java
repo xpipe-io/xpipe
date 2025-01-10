@@ -15,6 +15,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 public class AskpassAlert {
 
@@ -57,6 +58,12 @@ public class AskpassAlert {
                                 return;
                             }
 
+                            var hasInternalFocus = Window.getWindows().stream().filter(window -> window != stage)
+                                    .anyMatch(window -> window instanceof Stage s && s.focusedProperty().get());
+                            if (hasInternalFocus) {
+                                return;
+                            }
+
                             if (lastRun == 0) {
                                 lastRun = now;
                                 return;
@@ -71,6 +78,7 @@ public class AskpassAlert {
                             if (!hasFocus) {
                                 regainedFocusCount++;
                             }
+
                             stage.requestFocus();
                             lastRun = now;
                         }

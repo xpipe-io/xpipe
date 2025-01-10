@@ -23,10 +23,12 @@ public abstract class IdentityStore implements SelfReferentialStore, DataStore {
 
     @Override
     public void checkComplete() throws Throwable {
-        Validators.nonNull(getPassword());
-        Validators.nonNull(getSshIdentity());
-        getPassword().checkComplete();
-        getSshIdentity().checkComplete();
+        if (getPassword() != null) {
+            getPassword().checkComplete();
+        }
+        if (getSshIdentity() != null) {
+            getSshIdentity().checkComplete();
+        }
     }
 
     abstract EncryptedValue<SecretRetrievalStrategy> getEncryptedPassword();

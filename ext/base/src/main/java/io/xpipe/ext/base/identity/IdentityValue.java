@@ -24,8 +24,12 @@ public interface IdentityValue {
         return new InPlace(identityStore);
     }
 
-    static IdentityValue.InPlace empty() {
-        return of(null, null,null);
+    static IdentityValue.InPlace none() {
+        var s = LocalIdentityStore.builder()
+                .password(EncryptedValue.of(new SecretRetrievalStrategy.None()))
+                .sshIdentity(EncryptedValue.of(new SshIdentityStrategy.None()))
+                .build();
+        return of(s);
     }
 
     static IdentityValue.InPlace of(String user) {
@@ -38,8 +42,8 @@ public interface IdentityValue {
 
     static IdentityValue.InPlace of(String user, SecretRetrievalStrategy password, SshIdentityStrategy sshIdentity) {
         var s = LocalIdentityStore.builder().username(user)
-                .password(EncryptedValue.of(password != null ? password : new SecretRetrievalStrategy.None()))
-                .sshIdentity(EncryptedValue.of(sshIdentity != null ? sshIdentity : new SshIdentityStrategy.None()))
+                .password(password != null ? EncryptedValue.of(password) : null)
+                .sshIdentity(sshIdentity != null ? EncryptedValue.of(sshIdentity) : null)
                 .build();
         return of(s);
     }

@@ -39,7 +39,7 @@ public class RdpConfig {
         }
 
         content.lines().forEach(s -> {
-            var split = s.split(":");
+            var split = s.split(":", 3);
             if (split.length < 2) {
                 return;
             }

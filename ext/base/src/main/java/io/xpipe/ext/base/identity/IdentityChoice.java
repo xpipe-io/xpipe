@@ -69,21 +69,14 @@ public class IdentityChoice {
                 .nonNullIf(inPlaceSelected.and(new SimpleBooleanProperty(requirePassword)))
                 .disable(refSelected)
                 .hide(refSelected)
-                .name("keyAuthentication")
-                .description("keyAuthenticationDescription")
-                .longDescription("base:sshKey")
-                .sub(
-                        SshIdentityStrategyHelper.identity(
-                                gateway != null ? gateway : new SimpleObjectProperty<>(),
-                                identityStrategy,
-                                null,
-                                false),
-                        identityStrategy)
-                .nonNullIf(inPlaceSelected.and(new SimpleBooleanProperty(keyInput)))
-                .disable(refSelected)
-                .hide(refSelected.or(new SimpleBooleanProperty(!keyInput)))
-                .addProperty(ref)
-                .bind(
+                .addProperty(ref);
+        if (keyInput) {
+                options.name("keyAuthentication").description("keyAuthenticationDescription").longDescription("base:sshKey").sub(
+                    SshIdentityStrategyHelper.identity(gateway != null ? gateway : new SimpleObjectProperty<>(), identityStrategy, null, false),
+                    identityStrategy).nonNullIf(inPlaceSelected).disable(refSelected).hide(
+                    refSelected);
+        }
+               options.bind(
                         () -> {
                             if (ref.get() != null) {
                                 return IdentityValue.Ref.builder()

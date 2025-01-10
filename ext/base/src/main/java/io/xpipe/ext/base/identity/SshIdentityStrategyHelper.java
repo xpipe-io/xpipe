@@ -186,7 +186,6 @@ public class SshIdentityStrategyHelper {
         return new OptionsBuilder()
                 .longDescription("base:sshKey")
                 .choice(identityMethodSelected, map)
-                .nonNull()
                 .bindChoice(
                         () -> {
                             return switch (identityMethodSelected.get()) {

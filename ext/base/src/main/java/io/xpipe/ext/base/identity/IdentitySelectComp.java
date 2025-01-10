@@ -26,6 +26,8 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.ListCell;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 
 import atlantafx.base.theme.Styles;
@@ -99,7 +101,8 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
             });
         });
 
-        return new SimpleCompStructure<>(layout.createStructure().get());
+        var structure = layout.createStructure();
+        return new SimpleCompStructure<>(structure.get());
     }
 
     private String formatName(DataStoreEntry storeEntry) {
@@ -190,6 +193,15 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                     AppPrefs.get().language(),
                     selectedReference);
             struc.get().promptTextProperty().bind(binding);
+        });
+        combo.apply(struc -> {
+            struc.get().addEventFilter(KeyEvent.KEY_PRESSED,event -> {
+                if (event.getCode() == KeyCode.ESCAPE && !allowUserInput) {
+                    selectedReference.setValue(null);
+                    prop.setValue(null);
+                    event.consume();
+                }
+            });
         });
         return combo;
     }

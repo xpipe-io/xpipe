@@ -52,7 +52,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
             }
 
             if (input.get("username").isEmpty()) {
-                return input;
+                //return input;
             }
 
             var pass = configuration.getPassword();
