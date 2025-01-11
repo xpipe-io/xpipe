@@ -132,6 +132,7 @@ open module io.xpipe.app {
             ConnectionInfoExchangeImpl,
             ConnectionRemoveExchangeImpl,
             ConnectionAddExchangeImpl,
+            CategoryAddExchangeImpl,
             ConnectionBrowseExchangeImpl,
             ConnectionTerminalExchangeImpl,
             ConnectionToggleExchangeImpl,

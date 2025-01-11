@@ -2,7 +2,6 @@ package io.xpipe.beacon.api;
 
 import io.xpipe.beacon.BeaconInterface;
 import io.xpipe.core.store.DataStore;
-
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -10,11 +9,11 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.util.UUID;
 
-public class ConnectionAddExchange extends BeaconInterface<ConnectionAddExchange.Request> {
+public class CategoryAddExchange extends BeaconInterface<CategoryAddExchange.Request> {
 
     @Override
     public String getPath() {
-        return "/connection/add";
+        return "/category/add";
     }
 
     @Jacksonized
@@ -25,12 +24,7 @@ public class ConnectionAddExchange extends BeaconInterface<ConnectionAddExchange
         String name;
 
         @NonNull
-        DataStore data;
-
-        @NonNull
-        Boolean validate;
-
-        UUID category;
+        UUID parent;
     }
 
     @Jacksonized
@@ -38,6 +32,6 @@ public class ConnectionAddExchange extends BeaconInterface<ConnectionAddExchange
     @Value
     public static class Response {
         @NonNull
-        UUID connection;
+        UUID category;
     }
 }

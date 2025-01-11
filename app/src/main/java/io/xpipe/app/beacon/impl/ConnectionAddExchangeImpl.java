@@ -18,6 +18,9 @@ public class ConnectionAddExchangeImpl extends ConnectionAddExchange {
         }
 
         var entry = DataStoreEntry.createNew(msg.getName(), msg.getData());
+        if (msg.getCategory() != null) {
+            entry.setCategoryUuid(msg.getCategory());
+        }
         try {
             DataStorage.get().addStoreEntryInProgress(entry);
             if (msg.getValidate()) {
