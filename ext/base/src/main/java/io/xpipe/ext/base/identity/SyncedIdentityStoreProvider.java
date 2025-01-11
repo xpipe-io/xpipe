@@ -108,7 +108,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
     @Override
     public DataStore defaultStore() {
         return SyncedIdentityStore.builder()
-                .perUser(DataStorageUserHandler.getInstance().getActiveUser() != null)
+                .perUser(false)
                 .build();
     }
 

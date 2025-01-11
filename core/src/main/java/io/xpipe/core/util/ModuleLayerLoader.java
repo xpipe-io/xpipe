@@ -20,6 +20,4 @@ public interface ModuleLayerLoader {
     }
 
     default void init(ModuleLayer layer) {}
-
-    default void reset() {}
 }
