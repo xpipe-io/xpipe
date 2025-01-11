@@ -30,6 +30,7 @@ public abstract class EncryptedValue<T> {
 
     @NonNull
     private final T value;
+    @NonNull
     private final DataStorageSecret secret;
 
     public abstract boolean allowUserSecretKey();

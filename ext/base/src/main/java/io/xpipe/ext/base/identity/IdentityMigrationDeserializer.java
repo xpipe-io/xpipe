@@ -39,8 +39,14 @@ public class IdentityMigrationDeserializer extends DelegatingDeserializer {
 
     public JsonParser restructure(JsonParser p) throws IOException {
         var node = p.readValueAsTree();
-        if (!node.isObject()) {
+        if (node == null) {
             return p;
+        }
+
+        if (!node.isObject()) {
+            var newJsonParser = new TreeTraversingParser((ObjectNode) node, p.getCodec());
+            newJsonParser.nextToken();
+            return newJsonParser;
         }
 
         migrate((ObjectNode) node);
