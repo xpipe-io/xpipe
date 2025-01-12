@@ -13,6 +13,7 @@ import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.resources.AppImages;
@@ -115,7 +116,11 @@ public class BaseMode extends OperationMode {
                     browserLoaded.await();
                     AppDialog.waitForAllDialogsClose();
                     PlatformThread.runLaterIfNeededBlocking(() -> {
-                        AppMainWindow.initContent();
+                        try {
+                            AppMainWindow.initContent();
+                        } catch (Throwable t) {
+                            ErrorEvent.fromThrowable(t).term().handle();
+                        }
                     });
                     UpdateChangelogAlert.showIfNeeded();
                 },

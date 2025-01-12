@@ -8,6 +8,7 @@ import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
 
+import io.xpipe.core.store.FileNames;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 
@@ -97,6 +98,10 @@ public class SshIdentityStrategyHelper {
                         ? fileProperty.getValue().getFile().toAbsoluteFilePath(null)
                         : null);
         fileProperty.addListener((observable, oldValue, newValue) -> {
+            if (keyPath.get() != null && newValue != null && !ContextualFileReference.of(keyPath.get()).equals(newValue.getFile())) {
+                return;
+            }
+
             keyPath.setValue(
                     newValue != null && newValue.getFile() != null
                             ? newValue.getFile().toAbsoluteFilePath(null)

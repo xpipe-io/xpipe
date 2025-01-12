@@ -16,6 +16,10 @@ public class PtbDialog {
             return;
         }
 
+        if (!AppProperties.get().isNewBuildSession()) {
+            return;
+        }
+
         var content = AppDialog.dialogText("You are running a PTB build of XPipe."
                 + " This version is unstable and might contain bugs."
                 + " You should not use it as a daily driver."

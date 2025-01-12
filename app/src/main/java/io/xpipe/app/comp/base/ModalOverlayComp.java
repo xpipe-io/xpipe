@@ -4,10 +4,12 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
 
 import javafx.animation.*;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableDoubleValue;
@@ -123,11 +125,18 @@ public class ModalOverlayComp extends SimpleComp {
                     }
                 }
 
-                if (newValue != null) {
-                    if (newValue.getContent() instanceof ModalOverlayContentComp mocc) {
-                        mocc.setModalOverlay(newValue);
+                try {
+                    if (newValue != null) {
+                        if (newValue.getContent() instanceof ModalOverlayContentComp mocc) {
+                            mocc.setModalOverlay(newValue);
+                        }
+                        showModalBox(modal, newValue);
                     }
-                    showModalBox(modal, newValue);
+                } catch (Throwable t) {
+                    AppLogs.get().logException(null,t);
+                    Platform.runLater(() -> {
+                        overlayContent.setValue(null);
+                    });
                 }
             });
         });

@@ -295,7 +295,7 @@ public class StoreCreationComp extends DialogComp {
     @Override
     protected List<Comp<?>> customButtons() {
         return List.of(
-                new ButtonComp(AppI18n.observable("skipValidation"), null, () -> {
+                new ButtonComp(AppI18n.observable("skipValidation"), () -> {
                             if (showInvalidConfirmAlert()) {
                                 commit(false);
                             } else {
@@ -303,7 +303,7 @@ public class StoreCreationComp extends DialogComp {
                             }
                         })
                         .visible(skippable),
-                new ButtonComp(AppI18n.observable("connect"), null, () -> {
+                new ButtonComp(AppI18n.observable("connect"), () -> {
                             var temp = DataStoreEntry.createTempWrapper(store.getValue());
                             var action = provider.getValue().launchAction(temp);
                             ThreadHelper.runFailableAsync(() -> {

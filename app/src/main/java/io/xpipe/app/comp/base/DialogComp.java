@@ -6,6 +6,7 @@ import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppWindowHelper;
 
+import io.xpipe.app.util.LabelGraphic;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
@@ -74,7 +75,7 @@ public abstract class DialogComp extends Comp<CompStructure<Region>> {
     }
 
     protected Comp<?> finishButton() {
-        return new ButtonComp(AppI18n.observable(finishKey()), null, this::finish)
+        return new ButtonComp(AppI18n.observable(finishKey()), this::finish)
                 .apply(struc -> struc.get().setDefaultButton(true))
                 .styleClass(Styles.ACCENT)
                 .styleClass("next");

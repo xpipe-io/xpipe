@@ -15,11 +15,13 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.DerivedObservableList;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -176,7 +178,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
                     return AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n;
                 },
                 AppPrefs.get().censorMode());
-        return new ButtonComp(name, null, () -> {
+        return new ButtonComp(name, () -> {
                     ThreadHelper.runAsync(() -> {
                         model.restoreStateAsync(e, disable);
                     });

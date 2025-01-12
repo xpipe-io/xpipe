@@ -16,9 +16,11 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.EncryptedValue;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.SecretRetrievalStrategy;
 
+import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
@@ -57,36 +59,56 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
     private final ObservableValue<SshIdentityStrategy> identityStrategy;
     private final boolean allowUserInput;
 
+    private void addNamedIdentity() {
+        var canSync = DataStorage.get()
+                .getStoreCategoryIfPresent(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID)
+                .isPresent();
+        var id = canSync
+                ? SyncedIdentityStore.builder()
+                .username(inPlaceUser.getValue())
+                .password(EncryptedValue.VaultKey.of(password.getValue()))
+                .sshIdentity(EncryptedValue.VaultKey.of(identityStrategy.getValue()))
+                .build()
+                : LocalIdentityStore.builder()
+                .username(inPlaceUser.getValue())
+                .password(EncryptedValue.CurrentKey.of(password.getValue()))
+                .sshIdentity(EncryptedValue.CurrentKey.of(identityStrategy.getValue()))
+                .build();
+        StoreCreationComp.showCreation(
+                id,
+                DataStoreCreationCategory.IDENTITY,
+                dataStoreEntry -> {
+                    PlatformThread.runLaterIfNeeded(() -> {
+                        applyRef(dataStoreEntry.ref());
+                    });
+                },
+                false);
+    }
+
+    private void editNamedIdentity() {
+        var id = selectedReference.get();
+        if (id == null) {
+            return;
+        }
+
+        StoreCreationComp.showEdit(id.get());
+    }
+
     @Override
     public CompStructure<HBox> createBase() {
-        var addButton = new ButtonComp(null, new FontIcon("mdi2a-account-multiple-plus"), () -> {
-            var canSync = DataStorage.get()
-                    .getStoreCategoryIfPresent(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID)
-                    .isPresent();
-            var id = canSync
-                    ? SyncedIdentityStore.builder()
-                            .username(inPlaceUser.getValue())
-                            .password(EncryptedValue.VaultKey.of(password.getValue()))
-                            .sshIdentity(EncryptedValue.VaultKey.of(identityStrategy.getValue()))
-                            .build()
-                    : LocalIdentityStore.builder()
-                            .username(inPlaceUser.getValue())
-                            .password(EncryptedValue.CurrentKey.of(password.getValue()))
-                            .sshIdentity(EncryptedValue.CurrentKey.of(identityStrategy.getValue()))
-                            .build();
-            StoreCreationComp.showCreation(
-                    id,
-                    DataStoreCreationCategory.IDENTITY,
-                    dataStoreEntry -> {
-                        PlatformThread.runLaterIfNeeded(() -> {
-                            applyRef(dataStoreEntry.ref());
-                        });
-                    },
-                    false);
+        ObservableValue<LabelGraphic> icon = Bindings.createObjectBinding(() -> {
+            return selectedReference.get() != null ? new LabelGraphic.IconGraphic("mdi2a-account-edit") :
+                    new LabelGraphic.IconGraphic("mdi2a-account-multiple-plus");
+        }, selectedReference);
+        var addButton = new ButtonComp(null, icon, () -> {
+            if (selectedReference.get() != null) {
+                editNamedIdentity();
+            } else {
+                addNamedIdentity();
+            }
         });
         addButton
                 .styleClass(Styles.RIGHT_PILL)
-                .disable(selectedReference.isNotNull())
                 .grow(false, true)
                 .tooltipKey("addReusableIdentity");
 

@@ -132,7 +132,7 @@ public class UserReportComp extends SimpleComp {
             });
             event1.consume();
         });
-        var sendButton = new ButtonComp(AppI18n.observable("sendReport"), null, this::send)
+        var sendButton = new ButtonComp(AppI18n.observable("sendReport"), this::send)
                 .apply(struc -> struc.get().setDefaultButton(true))
                 .createRegion();
         var spacer = new Region();

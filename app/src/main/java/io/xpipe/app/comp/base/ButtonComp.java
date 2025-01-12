@@ -3,6 +3,7 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.property.ObjectProperty;
@@ -13,14 +14,16 @@ import javafx.css.SizeUnits;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 @Getter
+@AllArgsConstructor
 public class ButtonComp extends Comp<CompStructure<Button>> {
 
     private final ObservableValue<String> name;
-    private final ObjectProperty<Node> graphic;
+    private final ObservableValue<LabelGraphic> graphic;
     private final Runnable listener;
 
     public ButtonComp(ObservableValue<String> name, Runnable listener) {
@@ -31,33 +34,39 @@ public class ButtonComp extends Comp<CompStructure<Button>> {
 
     public ButtonComp(ObservableValue<String> name, Node graphic, Runnable listener) {
         this.name = name;
-        this.graphic = new SimpleObjectProperty<>(graphic);
+        this.graphic = new SimpleObjectProperty<>(new LabelGraphic.NodeGraphic(() -> graphic));
         this.listener = listener;
-    }
-
-    public Node getGraphic() {
-        return graphic.get();
-    }
-
-    public ObjectProperty<Node> graphicProperty() {
-        return graphic;
     }
 
     @Override
     public CompStructure<Button> createBase() {
         var button = new Button(null);
         if (name != null) {
-            button.textProperty().bind(PlatformThread.sync(name));
-        }
-        var graphic = getGraphic();
-        if (graphic instanceof FontIcon f) {
-            // f.iconColorProperty().bind(button.textFillProperty());
-            button.fontProperty().subscribe(c -> {
-                f.setIconSize((int) new Size(c.getSize(), SizeUnits.PT).pixels());
+            name.subscribe(t -> {
+                PlatformThread.runLaterIfNeeded(() -> button.setText(t));
             });
         }
+        if (graphic != null) {
+            graphic.subscribe(t -> {
+                PlatformThread.runLaterIfNeeded(() -> {
+                    if (t == null) {
+                        return;
+                    }
 
-        button.setGraphic(getGraphic());
+                    var n = t.createGraphicNode();
+                    button.setGraphic(n);
+                    if (n instanceof FontIcon f && button.getFont() != null) {
+                        f.setIconSize((int) new Size(button.getFont().getSize(), SizeUnits.PT).pixels());
+                    }
+                });
+            });
+
+            button.fontProperty().subscribe(c -> {
+                if (button.getGraphic() instanceof FontIcon f) {
+                    f.setIconSize((int) new Size(c.getSize(), SizeUnits.PT).pixels());
+                }
+            });
+        }
         button.setOnAction(e -> getListener().run());
         button.getStyleClass().add("button-comp");
         return new SimpleCompStructure<>(button);

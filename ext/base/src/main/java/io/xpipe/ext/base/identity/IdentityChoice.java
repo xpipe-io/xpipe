@@ -72,7 +72,7 @@ public class IdentityChoice {
                 .addProperty(ref);
         if (keyInput) {
                 options.name("keyAuthentication").description("keyAuthenticationDescription").longDescription("base:sshKey").sub(
-                    SshIdentityStrategyHelper.identity(gateway != null ? gateway : new SimpleObjectProperty<>(), identityStrategy, null, false),
+                    SshIdentityStrategyHelper.identity(gateway != null ? gateway : new SimpleObjectProperty<>(), identityStrategy, path -> false, true),
                     identityStrategy).nonNullIf(inPlaceSelected).disable(refSelected).hide(
                     refSelected);
         }
