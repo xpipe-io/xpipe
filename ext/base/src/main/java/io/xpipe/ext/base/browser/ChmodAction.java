@@ -109,7 +109,7 @@ public class ChmodAction implements BrowserBranchAction {
                                         .toList()),
                         false);
             });
-            model.getOverlay().setValue(modal);
+            modal.show();
         }
 
         @Override

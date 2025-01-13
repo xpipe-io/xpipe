@@ -133,7 +133,7 @@ public abstract class BaseCompressAction implements BrowserAction, BrowserBranch
 
                 create(fixedName, model, entries);
             });
-            model.getOverlay().setValue(modal);
+            modal.show();
         }
 
         @Override

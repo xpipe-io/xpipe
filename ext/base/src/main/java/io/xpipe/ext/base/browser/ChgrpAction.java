@@ -111,7 +111,7 @@ public class ChgrpAction implements BrowserBranchAction {
                                         .toList()),
                         false);
             });
-            model.getOverlay().setValue(modal);
+            modal.show();
         }
 
         @Override

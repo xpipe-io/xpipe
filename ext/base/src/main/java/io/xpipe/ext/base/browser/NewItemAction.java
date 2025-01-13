@@ -70,7 +70,7 @@ public class NewItemAction implements BrowserAction, BrowserBranchAction {
                         modal.withDefaultButtons(() -> {
                             model.createFileAsync(name.getValue());
                         });
-                        model.getOverlay().setValue(modal);
+                        modal.show();
                     }
 
                     @Override
@@ -99,7 +99,7 @@ public class NewItemAction implements BrowserAction, BrowserBranchAction {
                         modal.withDefaultButtons(() -> {
                             model.createDirectoryAsync(name.getValue());
                         });
-                        model.getOverlay().setValue(modal);
+                        modal.show();
                     }
 
                     @Override
@@ -130,7 +130,7 @@ public class NewItemAction implements BrowserAction, BrowserBranchAction {
                         modal.withDefaultButtons(() -> {
                             model.createLinkAsync(linkName.getValue(), target.getValue());
                         });
-                        model.getOverlay().setValue(modal);
+                        modal.show();
                     }
 
                     @Override

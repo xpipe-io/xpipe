@@ -44,7 +44,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     private final BrowserFileListModel fileList;
     private final ReadOnlyObjectWrapper<String> currentPath = new ReadOnlyObjectWrapper<>();
     private final BrowserFileSystemHistory history = new BrowserFileSystemHistory();
-    private final Property<ModalOverlay> overlay = new SimpleObjectProperty<>();
     private final BooleanProperty inOverview = new SimpleBooleanProperty();
     private final Property<BrowserTransferProgress> progress = new SimpleObjectProperty<>();
     private final ObservableList<UUID> terminalRequests = FXCollections.observableArrayList();
