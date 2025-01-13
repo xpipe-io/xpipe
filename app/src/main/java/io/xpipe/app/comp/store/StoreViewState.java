@@ -240,13 +240,13 @@ public class StoreViewState {
             @Override
             public void onCategoryAdd(DataStoreCategory category) {
                 var l = new StoreCategoryWrapper(category);
-                l.update();
                 Platform.runLater(() -> {
                     // Don't update anything if we have already reset
                     if (INSTANCE == null) {
                         return;
                     }
 
+                    l.update();
                     synchronized (this) {
                         categories.getList().add(l);
                     }

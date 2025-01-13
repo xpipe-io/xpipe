@@ -24,4 +24,9 @@ public class ConnectionBrowseExchangeImpl extends ConnectionBrowseExchange {
         AppLayoutModel.get().selectBrowser();
         return Response.builder().build();
     }
+
+    @Override
+    public Object getSynchronizationObject() {
+        return DataStorage.get();
+    }
 }

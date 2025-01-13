@@ -21,4 +21,9 @@ public class ConnectionRefreshExchangeImpl extends ConnectionRefreshExchange {
         }
         return Response.builder().build();
     }
+
+    @Override
+    public Object getSynchronizationObject() {
+        return DataStorage.get();
+    }
 }

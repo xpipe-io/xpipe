@@ -24,4 +24,9 @@ public class ConnectionToggleExchangeImpl extends ConnectionToggleExchange {
         }
         return Response.builder().build();
     }
+
+    @Override
+    public Object getSynchronizationObject() {
+        return DataStorage.get();
+    }
 }

@@ -22,4 +22,9 @@ public class ConnectionTerminalExchangeImpl extends ConnectionTerminalExchange {
         TerminalLauncher.open(e, e.getName(), msg.getDirectory(), sc);
         return Response.builder().build();
     }
+
+    @Override
+    public Object getSynchronizationObject() {
+        return DataStorage.get();
+    }
 }

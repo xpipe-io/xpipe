@@ -56,19 +56,9 @@ public class ConnectionInfoExchangeImpl extends ConnectionInfoExchange {
         return Response.builder().infos(list).build();
     }
 
-    private Class<?> toWrapper(Class<?> clazz) {
-        if (!clazz.isPrimitive()) return clazz;
 
-        if (clazz == Integer.TYPE) return Integer.class;
-        if (clazz == Long.TYPE) return Long.class;
-        if (clazz == Boolean.TYPE) return Boolean.class;
-        if (clazz == Byte.TYPE) return Byte.class;
-        if (clazz == Character.TYPE) return Character.class;
-        if (clazz == Float.TYPE) return Float.class;
-        if (clazz == Double.TYPE) return Double.class;
-        if (clazz == Short.TYPE) return Short.class;
-        if (clazz == Void.TYPE) return Void.class;
-
-        return clazz;
+    @Override
+    public Object getSynchronizationObject() {
+        return DataStorage.get();
     }
 }

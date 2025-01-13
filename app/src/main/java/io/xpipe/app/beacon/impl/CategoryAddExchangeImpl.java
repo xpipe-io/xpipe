@@ -26,4 +26,9 @@ public class CategoryAddExchangeImpl extends CategoryAddExchange {
         DataStorage.get().addStoreCategory(cat);
         return Response.builder().category(cat.getUuid()).build();
     }
+
+    @Override
+    public Object getSynchronizationObject() {
+        return DataStorage.get();
+    }
 }

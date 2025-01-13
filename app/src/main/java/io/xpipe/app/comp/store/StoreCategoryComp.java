@@ -10,6 +10,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
+import io.xpipe.app.util.ClipboardHelper;
 import io.xpipe.app.util.ContextMenuHelper;
 import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.LabelGraphic;
@@ -194,6 +195,13 @@ public class StoreCategoryComp extends SimpleComp {
     private ContextMenu createContextMenu(Region text) {
         var contextMenu = ContextMenuHelper.create();
         AppFont.normal(contextMenu.getStyleableNode());
+
+        if (AppPrefs.get().enableHttpApi().get()) {
+            var copyId = new MenuItem(AppI18n.get("copyId"), new FontIcon("mdi2c-content-copy"));
+            copyId.setOnAction(event ->
+                    ClipboardHelper.copyText(category.getCategory().getUuid().toString()));
+            contextMenu.getItems().add(copyId);
+        }
 
         var newCategory = new MenuItem(AppI18n.get("newCategory"), new FontIcon("mdi2p-plus-thick"));
         newCategory.setOnAction(event -> {
