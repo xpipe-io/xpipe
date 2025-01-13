@@ -34,37 +34,12 @@ public class UpdateAvailableDialog {
 
         var comp = Comp.of(() -> {
             var markdown = new MarkdownComp(u.getBody() != null ? u.getBody() : "", s -> s, false).createRegion();
-            var updaterContent = uh.createInterface();
-
-            Region region;
-            if (updaterContent != null) {
-                var stack = new StackPane(updaterContent);
-                var box = new VBox(markdown, stack);
-                box.setFillWidth(true);
-                box.setPadding(Insets.EMPTY);
-                region = box;
-            } else {
-                region = markdown;
-            }
-
-            return region;
+            return markdown;
         });
         var modal = ModalOverlay.of("updateReadyAlertTitle", comp.prefWidth(600), null);
-        modal.addButton(new ModalButton("ignore", null, true, false));
-        modal.addButton(new ModalButton(
-                "checkOutUpdate",
-                () -> {
-                    Hyperlinks.open(uh.getPreparedUpdate().getValue().getReleaseUrl());
-                },
-                false,
-                false));
-        modal.addButton(new ModalButton(
-                "install",
-                () -> {
-                    uh.executeUpdateAndClose();
-                },
-                false,
-                true));
+        for (var action : uh.createActions()) {
+            modal.addButton(action);
+        }
         AppDialog.show(modal);
     }
 }

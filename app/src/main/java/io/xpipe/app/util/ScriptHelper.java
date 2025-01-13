@@ -113,17 +113,21 @@ public class ScriptHelper {
                 .handle();
 
         processControl.view().writeScriptFile(file, content);
+        file = fixScriptPermissions(processControl, file);
+        return file;
+    }
 
+    public static FilePath fixScriptPermissions(ShellControl processControl, FilePath file) throws Exception {
         // Check if file system has disabled execution in temp
         // This might happen in limited containers
         if (processControl.getOsType() == OsType.LINUX && processControl.getShellDialect() == ShellDialects.SH &&
                 !processControl.command(CommandBuilder.of().add("test", "-x").addFile(file)).executeAndCheck()) {
             var homeFile = processControl.view().userHome().join(file.getFileName());
             processControl.getShellDialect().getFileMoveCommand(processControl,file.toString(),homeFile.toString()).execute();
-            file = homeFile;
+            return homeFile;
+        } else {
+            return file;
         }
-
-        return file;
     }
 
     public static FilePath createRemoteAskpassScript(ShellControl parent, UUID requestId, String prefix)

@@ -1,5 +1,6 @@
 package io.xpipe.app.update;
 
+import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
@@ -24,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 
 @SuppressWarnings("InfiniteLoopStatement")
 @Getter
@@ -182,7 +184,7 @@ public abstract class UpdateHandler {
         }
     }
 
-    public abstract Region createInterface();
+    public abstract List<ModalButton> createActions();
 
     public void prepareUpdateImpl() {
         var changelogString =

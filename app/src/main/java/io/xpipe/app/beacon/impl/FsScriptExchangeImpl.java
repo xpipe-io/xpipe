@@ -22,6 +22,7 @@ public class FsScriptExchangeImpl extends FsScriptExchange {
         }
         var file = ScriptHelper.getExecScriptFile(shell.getControl());
         shell.getControl().view().writeScriptFile(file, data);
+        file = ScriptHelper.fixScriptPermissions(shell.getControl(), file);
         return Response.builder().path(file).build();
     }
 }

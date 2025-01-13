@@ -1,15 +1,19 @@
 package io.xpipe.app.update;
 
+import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 
+import io.xpipe.app.util.Hyperlinks;
 import javafx.scene.layout.Region;
 
 import org.kohsuke.github.GHRelease;
 
 import java.nio.file.Files;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GitHubUpdater extends UpdateHandler {
 
@@ -18,8 +22,24 @@ public class GitHubUpdater extends UpdateHandler {
     }
 
     @Override
-    public Region createInterface() {
-        return null;
+    public List<ModalButton> createActions() {
+        var list = new ArrayList<ModalButton>();
+        list.add(new ModalButton("ignore", null, true, false));
+        list.add(new ModalButton(
+                "checkOutUpdate",
+                () -> {
+                    Hyperlinks.open(getPreparedUpdate().getValue().getReleaseUrl());
+                },
+                false,
+                false));
+        list.add(new ModalButton(
+                "install",
+                () -> {
+                    executeUpdateAndClose();
+                },
+                false,
+                true));
+        return list;
     }
 
     public void prepareUpdateImpl() {
