@@ -54,7 +54,7 @@ public class AskpassAlert {
                                 return;
                             }
 
-                            if (regainedFocusCount >= 2) {
+                            if (regainedFocusCount >= 3) {
                                 return;
                             }
 
