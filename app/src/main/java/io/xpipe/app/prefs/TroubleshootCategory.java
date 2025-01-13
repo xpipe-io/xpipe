@@ -22,7 +22,6 @@ import io.xpipe.core.util.XPipeInstallation;
 
 import com.sun.management.HotSpotDiagnosticMXBean;
 import lombok.SneakyThrows;
-import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
 
 import java.lang.management.ManagementFactory;
@@ -107,29 +106,36 @@ public class TroubleshootCategory extends AppPrefsCategory {
                         null)
                 .separator()
                 .addComp(
-                        new TileButtonComp("clearUserData", "clearUserDataDescription", "mdi2t-trash-can-outline", e -> {
-                            var modal = ModalOverlay.of(
-                                    "clearUserDataTitle",
-                                    AppDialog.dialogTextKey("clearUserDataContent"));
-                            modal.withDefaultButtons(() -> {
-                                ThreadHelper.runFailableAsync(() -> {
-                                    var dir = AppProperties.get().getDataDir();
-                                    try (var stream = Files.list(dir)) {
-                                        var dirs = stream.toList();
-                                        for (var path : dirs) {
-                                            if (path.getFileName().toString().equals("logs") || path.getFileName().toString().equals("shell")) {
-                                                continue;
-                                            }
+                        new TileButtonComp(
+                                        "clearUserData", "clearUserDataDescription", "mdi2t-trash-can-outline", e -> {
+                                            var modal = ModalOverlay.of(
+                                                    "clearUserDataTitle",
+                                                    AppDialog.dialogTextKey("clearUserDataContent"));
+                                            modal.withDefaultButtons(() -> {
+                                                ThreadHelper.runFailableAsync(() -> {
+                                                    var dir =
+                                                            AppProperties.get().getDataDir();
+                                                    try (var stream = Files.list(dir)) {
+                                                        var dirs = stream.toList();
+                                                        for (var path : dirs) {
+                                                            if (path.getFileName()
+                                                                            .toString()
+                                                                            .equals("logs")
+                                                                    || path.getFileName()
+                                                                            .toString()
+                                                                            .equals("shell")) {
+                                                                continue;
+                                                            }
 
-                                            FileUtils.deleteQuietly(path.toFile());
-                                        }
-                                    }
-                                    OperationMode.halt(0);
-                                });
-                            });
-                            modal.show();
-                            e.consume();
-                        })
+                                                            FileUtils.deleteQuietly(path.toFile());
+                                                        }
+                                                    }
+                                                    OperationMode.halt(0);
+                                                });
+                                            });
+                                            modal.show();
+                                            e.consume();
+                                        })
                                 .grow(true, false),
                         null)
                 .separator()

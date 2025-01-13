@@ -10,7 +10,6 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FixedChildStore;
 import io.xpipe.core.store.StorePath;
-import io.xpipe.core.util.UuidHelper;
 
 import javafx.util.Pair;
 

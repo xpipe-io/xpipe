@@ -1,7 +1,5 @@
 package io.xpipe.core.util;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 

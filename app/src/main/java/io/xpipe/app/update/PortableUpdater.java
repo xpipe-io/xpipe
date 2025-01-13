@@ -1,12 +1,8 @@
 package io.xpipe.app.update;
 
-import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ModalButton;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.util.Hyperlinks;
-
-import javafx.scene.layout.Region;
 
 import org.kohsuke.github.GHRelease;
 

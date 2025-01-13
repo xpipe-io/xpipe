@@ -1,11 +1,12 @@
 package io.xpipe.app.util;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.storage.DataStorageSecret;
 import io.xpipe.app.storage.DataStorageUserHandler;
 import io.xpipe.core.util.JacksonMapper;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.*;
 
 import java.util.Objects;
@@ -14,8 +15,8 @@ import java.util.Objects;
 @Getter
 @JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = EncryptedValue.VaultKey.class),
-        @JsonSubTypes.Type(value = EncryptedValue.CurrentKey.class),
+    @JsonSubTypes.Type(value = EncryptedValue.VaultKey.class),
+    @JsonSubTypes.Type(value = EncryptedValue.CurrentKey.class),
 })
 public abstract class EncryptedValue<T> {
 
@@ -30,6 +31,7 @@ public abstract class EncryptedValue<T> {
 
     @NonNull
     private final T value;
+
     @NonNull
     private final DataStorageSecret secret;
 
@@ -68,8 +70,11 @@ public abstract class EncryptedValue<T> {
             var handler = DataStorageUserHandler.getInstance();
             var s = JacksonMapper.getDefault().writeValueAsString(value);
             var secret = new VaultKeySecretValue(s.toCharArray());
-            return new CurrentKey<>(value, DataStorageSecret.ofSecret(secret,
-                    handler.getActiveUser() != null ? EncryptionToken.ofUser() : EncryptionToken.ofVaultKey()));
+            return new CurrentKey<>(
+                    value,
+                    DataStorageSecret.ofSecret(
+                            secret,
+                            handler.getActiveUser() != null ? EncryptionToken.ofUser() : EncryptionToken.ofVaultKey()));
         }
 
         @Override

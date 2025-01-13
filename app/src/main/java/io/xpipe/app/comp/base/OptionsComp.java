@@ -53,7 +53,8 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                 firstComp = compRegion;
             }
 
-            var showVertical = (entry.name() != null && (entry.description() != null || entry.comp() instanceof SimpleTitledPaneComp));
+            var showVertical = (entry.name() != null
+                    && (entry.description() != null || entry.comp() instanceof SimpleTitledPaneComp));
             if (showVertical) {
                 var line = new VBox();
                 line.prefWidthProperty().bind(pane.widthProperty());
@@ -84,7 +85,8 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                     }
 
                     if (entry.longDescriptionSource() != null) {
-                        var markDown = new MarkdownComp(entry.longDescriptionSource(), s -> s, true).apply(struc -> struc.get().setMaxWidth(500))
+                        var markDown = new MarkdownComp(entry.longDescriptionSource(), s -> s, true)
+                                .apply(struc -> struc.get().setMaxWidth(500))
                                 .apply(struc -> struc.get().setMaxHeight(400));
                         var popover = new Popover(markDown.createRegion());
                         popover.setCloseButtonEnabled(false);
@@ -104,7 +106,8 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                             e.consume();
                         });
 
-                        var descriptionBox = new HBox(description, new Spacer(Orientation.HORIZONTAL), extendedDescription);
+                        var descriptionBox =
+                                new HBox(description, new Spacer(Orientation.HORIZONTAL), extendedDescription);
                         descriptionBox.setSpacing(5);
                         HBox.setHgrow(descriptionBox, Priority.ALWAYS);
                         descriptionBox.setAlignment(Pos.CENTER_LEFT);

@@ -6,7 +6,6 @@ import io.xpipe.app.comp.SimpleCompStructure;
 
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TitledPane;
-import javafx.scene.layout.Region;
 
 public class SimpleTitledPaneComp extends Comp<CompStructure<TitledPane>> {
 

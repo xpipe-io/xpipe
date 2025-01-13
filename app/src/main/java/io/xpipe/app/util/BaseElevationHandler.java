@@ -40,10 +40,13 @@ public class BaseElevationHandler implements ElevationHandler {
 
     @Override
     public SecretReference getSecretRef() {
-        var id = DataStorage.get().getStoreEntryIfPresent(dataStore, true)
+        var id = DataStorage.get()
+                .getStoreEntryIfPresent(dataStore, true)
                 .or(() -> {
                     return DataStorage.get().getStoreEntryInProgressIfPresent(dataStore);
-                }).map(e -> e.getUuid()).orElse(UUID.randomUUID());
+                })
+                .map(e -> e.getUuid())
+                .orElse(UUID.randomUUID());
         return password != null && password.expectsQuery() ? new SecretReference(id, 0) : null;
     }
 }

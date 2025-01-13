@@ -22,8 +22,7 @@ public interface ExternalPasswordManager extends PrefsChoiceValue {
 
         private static synchronized ShellControl getOrStartShell() throws Exception {
             if (SHELL == null) {
-                SHELL = ProcessControlProvider.get()
-                        .createLocalProcessControl(true);
+                SHELL = ProcessControlProvider.get().createLocalProcessControl(true);
             }
             SHELL.start();
             return SHELL;
@@ -41,9 +40,7 @@ public interface ExternalPasswordManager extends PrefsChoiceValue {
                 return null;
             }
 
-            try (var cc = getOrStartShell()
-                    .command(cmd)
-                    .start()) {
+            try (var cc = getOrStartShell().command(cmd).start()) {
                 var out = cc.readStdoutOrThrow();
 
                 // Dashlane fixes

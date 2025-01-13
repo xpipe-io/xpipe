@@ -1,16 +1,11 @@
 package io.xpipe.app.beacon.impl;
 
-import com.sun.net.httpserver.HttpExchange;
-import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
-import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.CategoryAddExchange;
-import io.xpipe.beacon.api.ConnectionAddExchange;
-import io.xpipe.core.util.ValidationException;
 
-import javax.sql.DataSource;
+import com.sun.net.httpserver.HttpExchange;
 
 public class CategoryAddExchangeImpl extends CategoryAddExchange {
 
@@ -20,8 +15,11 @@ public class CategoryAddExchangeImpl extends CategoryAddExchange {
             throw new BeaconClientException("Parent category with id " + msg.getParent() + " does not exist");
         }
 
-        if (DataStorage.get().getStoreCategories().stream().anyMatch(dataStoreCategory -> msg.getParent().equals(dataStoreCategory.getParentCategory()) && msg.getName().equals(dataStoreCategory.getName()))) {
-            throw new BeaconClientException("Category with name " + msg.getName() + " already exists in parent category");
+        if (DataStorage.get().getStoreCategories().stream()
+                .anyMatch(dataStoreCategory -> msg.getParent().equals(dataStoreCategory.getParentCategory())
+                        && msg.getName().equals(dataStoreCategory.getName()))) {
+            throw new BeaconClientException(
+                    "Category with name " + msg.getName() + " already exists in parent category");
         }
 
         var cat = DataStoreCategory.createNew(msg.getParent(), msg.getName());

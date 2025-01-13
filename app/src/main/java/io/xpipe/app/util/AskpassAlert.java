@@ -58,8 +58,10 @@ public class AskpassAlert {
                                 return;
                             }
 
-                            var hasInternalFocus = Window.getWindows().stream().filter(window -> window != stage)
-                                    .anyMatch(window -> window instanceof Stage s && s.focusedProperty().get());
+                            var hasInternalFocus = Window.getWindows().stream()
+                                    .filter(window -> window != stage)
+                                    .anyMatch(window -> window instanceof Stage s
+                                            && s.focusedProperty().get());
                             if (hasInternalFocus) {
                                 return;
                             }

@@ -4,7 +4,6 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.process.CountDown;
 import io.xpipe.core.util.SecretReference;
 import io.xpipe.core.util.SecretValue;
-import io.xpipe.core.util.UuidHelper;
 
 import java.util.*;
 

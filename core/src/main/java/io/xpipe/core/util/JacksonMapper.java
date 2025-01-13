@@ -62,7 +62,7 @@ public class JacksonMapper {
             for (var extension : extensions) {
                 var mod = new SimpleModule();
                 if (extension instanceof JsonSerializer<?> s) {
-                    add(mod, extension.getType(),s);
+                    add(mod, extension.getType(), s);
                 }
                 if (extension instanceof JsonDeserializer<?> d) {
                     add(mod, extension.getType(), d);
@@ -93,11 +93,11 @@ public class JacksonMapper {
         return modules;
     }
 
-
     private static List<JacksonExtension> findExtensions(ModuleLayer layer) {
         ArrayList<JacksonExtension> exts = new ArrayList<>();
-        ServiceLoader<JacksonExtension> loader =
-                layer != null ? ServiceLoader.load(layer, JacksonExtension.class) : ServiceLoader.load(JacksonExtension.class);
+        ServiceLoader<JacksonExtension> loader = layer != null
+                ? ServiceLoader.load(layer, JacksonExtension.class)
+                : ServiceLoader.load(JacksonExtension.class);
         for (JacksonExtension module : loader) {
             exts.add(module);
         }

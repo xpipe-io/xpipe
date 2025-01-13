@@ -1,8 +1,5 @@
 package io.xpipe.app.prefs;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.SimpleType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
@@ -22,6 +19,9 @@ import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableStringValue;
 import javafx.beans.value.ObservableValue;
 
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.SimpleType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -633,7 +633,6 @@ public class AppPrefs {
             this.requiresRestart = requiresRestart;
             this.licenseFeatureId = null;
         }
-
 
         public static class MappingBuilder {
 

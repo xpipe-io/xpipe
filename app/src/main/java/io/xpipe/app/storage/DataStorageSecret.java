@@ -1,9 +1,5 @@
 package io.xpipe.app.storage;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.EncryptionToken;
 import io.xpipe.app.util.PasswordLockSecretValue;
@@ -13,11 +9,12 @@ import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.core.util.SecretValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 @Value
 public class DataStorageSecret {
@@ -47,8 +44,7 @@ public class DataStorageSecret {
         var hadLock = AppPrefs.get().getLockCrypt().get() != null
                 && !AppPrefs.get().getLockCrypt().get().isEmpty();
         var tokenNode = obj.get("encryptedToken");
-        var token =
-                tokenNode != null ? JacksonMapper.getDefault().treeToValue(tokenNode, EncryptionToken.class) : null;
+        var token = tokenNode != null ? JacksonMapper.getDefault().treeToValue(tokenNode, EncryptionToken.class) : null;
         if (token == null) {
             var userToken = hadLock;
             if (userToken && DataStorageUserHandler.getInstance().getActiveUser() == null) {

@@ -20,7 +20,6 @@ import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.SecretRetrievalStrategy;
 
-import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
@@ -33,7 +32,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 
 import atlantafx.base.theme.Styles;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -65,15 +63,15 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                 .isPresent();
         var id = canSync
                 ? SyncedIdentityStore.builder()
-                .username(inPlaceUser.getValue())
-                .password(EncryptedValue.VaultKey.of(password.getValue()))
-                .sshIdentity(EncryptedValue.VaultKey.of(identityStrategy.getValue()))
-                .build()
+                        .username(inPlaceUser.getValue())
+                        .password(EncryptedValue.VaultKey.of(password.getValue()))
+                        .sshIdentity(EncryptedValue.VaultKey.of(identityStrategy.getValue()))
+                        .build()
                 : LocalIdentityStore.builder()
-                .username(inPlaceUser.getValue())
-                .password(EncryptedValue.CurrentKey.of(password.getValue()))
-                .sshIdentity(EncryptedValue.CurrentKey.of(identityStrategy.getValue()))
-                .build();
+                        .username(inPlaceUser.getValue())
+                        .password(EncryptedValue.CurrentKey.of(password.getValue()))
+                        .sshIdentity(EncryptedValue.CurrentKey.of(identityStrategy.getValue()))
+                        .build();
         StoreCreationComp.showCreation(
                 id,
                 DataStoreCreationCategory.IDENTITY,
@@ -96,10 +94,13 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
 
     @Override
     public CompStructure<HBox> createBase() {
-        ObservableValue<LabelGraphic> icon = Bindings.createObjectBinding(() -> {
-            return selectedReference.get() != null ? new LabelGraphic.IconGraphic("mdi2a-account-edit") :
-                    new LabelGraphic.IconGraphic("mdi2a-account-multiple-plus");
-        }, selectedReference);
+        ObservableValue<LabelGraphic> icon = Bindings.createObjectBinding(
+                () -> {
+                    return selectedReference.get() != null
+                            ? new LabelGraphic.IconGraphic("mdi2a-account-edit")
+                            : new LabelGraphic.IconGraphic("mdi2a-account-multiple-plus");
+                },
+                selectedReference);
         var addButton = new ButtonComp(null, icon, () -> {
             if (selectedReference.get() != null) {
                 editNamedIdentity();
@@ -107,10 +108,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                 addNamedIdentity();
             }
         });
-        addButton
-                .styleClass(Styles.RIGHT_PILL)
-                .grow(false, true)
-                .tooltipKey("addReusableIdentity");
+        addButton.styleClass(Styles.RIGHT_PILL).grow(false, true).tooltipKey("addReusableIdentity");
 
         var nodes = new ArrayList<Comp<?>>();
         nodes.add(createComboBox());
@@ -217,7 +215,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
             struc.get().promptTextProperty().bind(binding);
         });
         combo.apply(struc -> {
-            struc.get().addEventFilter(KeyEvent.KEY_PRESSED,event -> {
+            struc.get().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
                 if (event.getCode() == KeyCode.ESCAPE && !allowUserInput) {
                     selectedReference.setValue(null);
                     prop.setValue(null);

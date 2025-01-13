@@ -4,11 +4,11 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.EncryptedValue;
 import io.xpipe.app.util.SecretRetrievalStrategy;
 import io.xpipe.app.util.Validators;
+import io.xpipe.core.util.ValidationException;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.core.util.ValidationException;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -33,15 +33,16 @@ public interface IdentityValue {
     }
 
     static IdentityValue.InPlace of(String user) {
-        return of(user, null,null);
+        return of(user, null, null);
     }
 
     static IdentityValue.InPlace of(String user, SecretRetrievalStrategy password) {
-        return of(user, password,null);
+        return of(user, password, null);
     }
 
     static IdentityValue.InPlace of(String user, SecretRetrievalStrategy password, SshIdentityStrategy sshIdentity) {
-        var s = LocalIdentityStore.builder().username(user)
+        var s = LocalIdentityStore.builder()
+                .username(user)
                 .password(password != null ? EncryptedValue.of(password) : null)
                 .sshIdentity(sshIdentity != null ? EncryptedValue.of(sshIdentity) : null)
                 .build();

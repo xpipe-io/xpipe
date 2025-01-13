@@ -3,7 +3,6 @@ package io.xpipe.app.util;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataStorageSecret;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.ValidationException;
 
@@ -67,9 +66,7 @@ public interface SecretRetrievalStrategy {
             return new SecretQuery() {
                 @Override
                 public SecretQueryResult query(String prompt) {
-                    return new SecretQueryResult(
-                            value,
-                            SecretQueryState.NORMAL);
+                    return new SecretQueryResult(value, SecretQueryState.NORMAL);
                 }
 
                 @Override

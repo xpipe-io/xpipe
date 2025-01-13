@@ -1,9 +1,9 @@
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.util.CoreJacksonModule;
+import io.xpipe.core.util.JacksonExtension;
 import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.core.util.ModuleLayerLoader;
-import io.xpipe.core.util.JacksonExtension;
 
 open module io.xpipe.core {
     exports io.xpipe.core.store;

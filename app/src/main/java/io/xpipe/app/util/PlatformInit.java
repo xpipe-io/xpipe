@@ -85,9 +85,10 @@ public class PlatformInit {
 
             // Must not be called on platform thread
             // This will not finish until the platform exits, so we use a platform thread to not lose a virtual one
-            ThreadHelper.createPlatformThread("app-wait",false,() -> {
-                Application.launch(App.class);
-            }).start();
+            ThreadHelper.createPlatformThread("app-wait", false, () -> {
+                        Application.launch(App.class);
+                    })
+                    .start();
             while (App.getApp() == null) {
                 ThreadHelper.sleep(10);
             }

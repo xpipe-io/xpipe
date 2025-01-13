@@ -44,15 +44,20 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
                 .name("keyAuthentication")
                 .description("keyAuthenticationDescription")
                 .longDescription("base:sshKey")
-                .sub(
-                        SshIdentityStrategyHelper.identity(new SimpleObjectProperty<>(), identity, null, false),
-                        identity)
+                .sub(SshIdentityStrategyHelper.identity(new SimpleObjectProperty<>(), identity, null, false), identity)
                 .bind(
                         () -> {
                             return LocalIdentityStore.builder()
                                     .username(user.get())
-                                    .password(st.getEncryptedPassword() != null ? st.getEncryptedPassword().withValue(pass.get()) : EncryptedValue.of(pass.get()))
-                                    .sshIdentity(st.getEncryptedSshIdentity() != null ? st.getEncryptedSshIdentity().withValue(identity.get()) : EncryptedValue.of(identity.get()))
+                                    .password(
+                                            st.getEncryptedPassword() != null
+                                                    ? st.getEncryptedPassword().withValue(pass.get())
+                                                    : EncryptedValue.of(pass.get()))
+                                    .sshIdentity(
+                                            st.getEncryptedSshIdentity() != null
+                                                    ? st.getEncryptedSshIdentity()
+                                                            .withValue(identity.get())
+                                                    : EncryptedValue.of(identity.get()))
                                     .build();
                         },
                         store)

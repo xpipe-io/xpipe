@@ -84,8 +84,15 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                         () -> {
                             return SyncedIdentityStore.builder()
                                     .username(user.get())
-                                    .password(st.getEncryptedPassword() != null ? st.getEncryptedPassword().withValue(pass.get()) : EncryptedValue.VaultKey.of(pass.get()))
-                                    .sshIdentity(st.getEncryptedSshIdentity() != null ? st.getEncryptedSshIdentity().withValue(identity.get()) : EncryptedValue.VaultKey.of(identity.get()))
+                                    .password(
+                                            st.getEncryptedPassword() != null
+                                                    ? st.getEncryptedPassword().withValue(pass.get())
+                                                    : EncryptedValue.VaultKey.of(pass.get()))
+                                    .sshIdentity(
+                                            st.getEncryptedSshIdentity() != null
+                                                    ? st.getEncryptedSshIdentity()
+                                                            .withValue(identity.get())
+                                                    : EncryptedValue.VaultKey.of(identity.get()))
                                     .password(EncryptedValue.VaultKey.of(pass.get()))
                                     .sshIdentity(EncryptedValue.VaultKey.of(identity.get()))
                                     .perUser(perUser.get())
@@ -107,9 +114,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
 
     @Override
     public DataStore defaultStore() {
-        return SyncedIdentityStore.builder()
-                .perUser(false)
-                .build();
+        return SyncedIdentityStore.builder().perUser(false).build();
     }
 
     @Override

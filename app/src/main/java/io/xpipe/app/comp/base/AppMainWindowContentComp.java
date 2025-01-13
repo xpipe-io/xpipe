@@ -19,9 +19,9 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import atlantafx.base.util.Animations;
-import javafx.stage.Window;
 
 public class AppMainWindowContentComp extends SimpleComp {
 
@@ -96,7 +96,9 @@ public class AppMainWindowContentComp extends SimpleComp {
                     stage.requestFocus();
 
                     // Close blocking modal windows
-                    var childWindows = Window.getWindows().stream().filter(window -> window instanceof Stage s && stage.equals(s.getOwner())).toList();
+                    var childWindows = Window.getWindows().stream()
+                            .filter(window -> window instanceof Stage s && stage.equals(s.getOwner()))
+                            .toList();
                     childWindows.forEach(window -> {
                         ((Stage) window).close();
                     });

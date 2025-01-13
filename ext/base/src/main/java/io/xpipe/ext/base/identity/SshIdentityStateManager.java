@@ -2,7 +2,6 @@ package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.core.process.CommandBuilder;
@@ -22,8 +21,7 @@ public class SshIdentityStateManager {
     private static final Map<UUID, RunningAgent> lastUsed = new HashMap<>();
 
     private static UUID getId(ShellControl sc) {
-        return sc.getSourceStoreId()
-                .orElse(UUID.randomUUID());
+        return sc.getSourceStoreId().orElse(UUID.randomUUID());
     }
 
     private static void handleWindowsGpgAgentStop(ShellControl sc) throws Exception {

@@ -7,7 +7,6 @@ import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataStorageSecret;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -37,9 +36,7 @@ public class SecretRetrievalStrategyHelper {
                             var changed = !Arrays.equals(
                                     newSecret != null ? newSecret.getSecret() : new char[0],
                                     original != null ? original.getSecret() : new char[0]);
-                            var val = changed
-                                    ? secretProperty.getValue()
-                                    : original;
+                            var val = changed ? secretProperty.getValue() : original;
                             return new SecretRetrievalStrategy.InPlace(val);
                         },
                         p);
@@ -87,8 +84,7 @@ public class SecretRetrievalStrategyHelper {
                         p);
     }
 
-    public static OptionsBuilder comp(
-            Property<SecretRetrievalStrategy> s, boolean allowNone) {
+    public static OptionsBuilder comp(Property<SecretRetrievalStrategy> s, boolean allowNone) {
         SecretRetrievalStrategy strat = s.getValue();
         var inPlace = new SimpleObjectProperty<>(strat instanceof SecretRetrievalStrategy.InPlace i ? i : null);
         var passwordManager =

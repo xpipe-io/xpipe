@@ -1,9 +1,10 @@
 package io.xpipe.app.ext;
 
-import com.fasterxml.jackson.databind.JavaType;
 import io.xpipe.app.comp.Comp;
 
 import javafx.beans.property.Property;
+
+import com.fasterxml.jackson.databind.JavaType;
 
 public interface PrefsHandler {
 

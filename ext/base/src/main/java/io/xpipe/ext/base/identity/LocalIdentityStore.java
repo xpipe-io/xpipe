@@ -1,10 +1,9 @@
 package io.xpipe.ext.base.identity;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.util.EncryptedValue;
 import io.xpipe.app.util.SecretRetrievalStrategy;
-import io.xpipe.app.util.Validators;
-import io.xpipe.core.util.ValidationException;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
@@ -41,5 +40,4 @@ public class LocalIdentityStore extends IdentityStore {
     EncryptedValue<SshIdentityStrategy> getEncryptedSshIdentity() {
         return sshIdentity;
     }
-
 }

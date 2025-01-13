@@ -10,5 +10,4 @@ public interface DesktopBaseStore extends DataStore {
     void runDesktopApplication(String name, DesktopApplicationStore applicationStore) throws Exception;
 
     ShellDialect getUsedDesktopDialect();
-
 }

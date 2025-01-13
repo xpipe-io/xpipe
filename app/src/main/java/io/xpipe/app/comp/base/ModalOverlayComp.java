@@ -133,7 +133,7 @@ public class ModalOverlayComp extends SimpleComp {
                         showModalBox(modal, newValue);
                     }
                 } catch (Throwable t) {
-                    AppLogs.get().logException(null,t);
+                    AppLogs.get().logException(null, t);
                     Platform.runLater(() -> {
                         overlayContent.setValue(null);
                     });

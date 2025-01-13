@@ -1,13 +1,11 @@
 package io.xpipe.ext.base.identity;
 
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.EncryptedValue;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.SecretRetrievalStrategyHelper;
 
-import io.xpipe.app.util.Validator;
 import javafx.beans.property.*;
 
 import lombok.AllArgsConstructor;
@@ -71,28 +69,38 @@ public class IdentityChoice {
                 .hide(refSelected)
                 .addProperty(ref);
         if (keyInput) {
-                options.name("keyAuthentication").description("keyAuthenticationDescription").longDescription("base:sshKey").sub(
-                    SshIdentityStrategyHelper.identity(gateway != null ? gateway : new SimpleObjectProperty<>(), identityStrategy, path -> false, true),
-                    identityStrategy).nonNullIf(inPlaceSelected).disable(refSelected).hide(
-                    refSelected);
+            options.name("keyAuthentication")
+                    .description("keyAuthenticationDescription")
+                    .longDescription("base:sshKey")
+                    .sub(
+                            SshIdentityStrategyHelper.identity(
+                                    gateway != null ? gateway : new SimpleObjectProperty<>(),
+                                    identityStrategy,
+                                    path -> false,
+                                    true),
+                            identityStrategy)
+                    .nonNullIf(inPlaceSelected)
+                    .disable(refSelected)
+                    .hide(refSelected);
         }
-               options.bind(
-                        () -> {
-                            if (ref.get() != null) {
-                                return IdentityValue.Ref.builder()
-                                        .ref(ref.get())
-                                        .build();
-                            } else {
-                                return IdentityValue.InPlace.builder()
-                                        .identityStore(LocalIdentityStore.builder()
-                                                .username(user.get())
-                                                .password(EncryptedValue.CurrentKey.of(pass.get()))
-                                                .sshIdentity(keyInput ? EncryptedValue.CurrentKey.of(identityStrategy.get()) : EncryptedValue.CurrentKey.of(new SshIdentityStrategy.None()))
-                                                .build())
-                                        .build();
-                            }
-                        },
-                        identity);
+        options.bind(
+                () -> {
+                    if (ref.get() != null) {
+                        return IdentityValue.Ref.builder().ref(ref.get()).build();
+                    } else {
+                        return IdentityValue.InPlace.builder()
+                                .identityStore(LocalIdentityStore.builder()
+                                        .username(user.get())
+                                        .password(EncryptedValue.CurrentKey.of(pass.get()))
+                                        .sshIdentity(
+                                                keyInput
+                                                        ? EncryptedValue.CurrentKey.of(identityStrategy.get())
+                                                        : EncryptedValue.CurrentKey.of(new SshIdentityStrategy.None()))
+                                        .build())
+                                .build();
+                    }
+                },
+                identity);
         return options;
     }
 }

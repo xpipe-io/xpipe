@@ -2,8 +2,6 @@ import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataStorageExtensionProvider;
 import io.xpipe.app.ext.DataStoreProvider;
-import io.xpipe.app.ext.ScanProvider;
-import io.xpipe.core.util.JacksonExtension;
 import io.xpipe.ext.base.action.*;
 import io.xpipe.ext.base.browser.*;
 import io.xpipe.ext.base.browser.compress.*;

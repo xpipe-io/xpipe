@@ -4,9 +4,7 @@ import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
-
 import io.xpipe.app.util.Hyperlinks;
-import javafx.scene.layout.Region;
 
 import org.kohsuke.github.GHRelease;
 

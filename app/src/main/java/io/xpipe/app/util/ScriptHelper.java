@@ -120,10 +120,16 @@ public class ScriptHelper {
     public static FilePath fixScriptPermissions(ShellControl processControl, FilePath file) throws Exception {
         // Check if file system has disabled execution in temp
         // This might happen in limited containers
-        if (processControl.getOsType() == OsType.LINUX && processControl.getShellDialect() == ShellDialects.SH &&
-                !processControl.command(CommandBuilder.of().add("test", "-x").addFile(file)).executeAndCheck()) {
+        if (processControl.getOsType() == OsType.LINUX
+                && processControl.getShellDialect() == ShellDialects.SH
+                && !processControl
+                        .command(CommandBuilder.of().add("test", "-x").addFile(file))
+                        .executeAndCheck()) {
             var homeFile = processControl.view().userHome().join(file.getFileName());
-            processControl.getShellDialect().getFileMoveCommand(processControl,file.toString(),homeFile.toString()).execute();
+            processControl
+                    .getShellDialect()
+                    .getFileMoveCommand(processControl, file.toString(), homeFile.toString())
+                    .execute();
             return homeFile;
         } else {
             return file;

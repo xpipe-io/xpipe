@@ -15,13 +15,11 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.DerivedObservableList;
-import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;

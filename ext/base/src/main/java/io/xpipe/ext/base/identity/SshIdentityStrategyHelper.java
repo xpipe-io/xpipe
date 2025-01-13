@@ -8,7 +8,6 @@ import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
 
-import io.xpipe.core.store.FileNames;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 
@@ -98,7 +97,9 @@ public class SshIdentityStrategyHelper {
                         ? fileProperty.getValue().getFile().toAbsoluteFilePath(null)
                         : null);
         fileProperty.addListener((observable, oldValue, newValue) -> {
-            if (keyPath.get() != null && newValue != null && !ContextualFileReference.of(keyPath.get()).equals(newValue.getFile())) {
+            if (keyPath.get() != null
+                    && newValue != null
+                    && !ContextualFileReference.of(keyPath.get()).equals(newValue.getFile())) {
                 return;
             }
 
@@ -122,9 +123,7 @@ public class SshIdentityStrategyHelper {
                 .nonNull()
                 .name("keyPassword")
                 .description("sshConfigHost.identityPassphraseDescription")
-                .sub(
-                        SecretRetrievalStrategyHelper.comp(keyPasswordProperty, true),
-                        keyPasswordProperty)
+                .sub(SecretRetrievalStrategyHelper.comp(keyPasswordProperty, true), keyPasswordProperty)
                 .nonNull()
                 .bind(
                         () -> {
@@ -156,9 +155,7 @@ public class SshIdentityStrategyHelper {
 
         var map = new LinkedHashMap<ObservableValue<String>, OptionsBuilder>();
         map.put(AppI18n.observable("base.none"), new OptionsBuilder());
-        map.put(
-                AppI18n.observable("base.keyFile"),
-                fileIdentity(proxy, file, perUserFile, allowSync));
+        map.put(AppI18n.observable("base.keyFile"), fileIdentity(proxy, file, perUserFile, allowSync));
         map.put(AppI18n.observable("base.sshAgent"), agent(agent));
         map.put(AppI18n.observable("base.pageant"), pageant(pageant));
         map.put(gpgFeature.suffixObservable("base.gpgAgent"), gpgAgent(gpgAgent));

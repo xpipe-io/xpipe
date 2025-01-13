@@ -1,10 +1,5 @@
 package io.xpipe.app.util;
 
-import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
-import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
-import com.fasterxml.jackson.databind.jsontype.impl.AsPropertyTypeDeserializer;
-import com.fasterxml.jackson.databind.type.SimpleType;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.terminal.ExternalTerminalType;
@@ -14,8 +9,13 @@ import io.xpipe.core.util.JacksonMapper;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
+import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+import com.fasterxml.jackson.databind.jsontype.impl.AsPropertyTypeDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.type.SimpleType;
 
 import java.io.CharArrayReader;
 import java.io.IOException;
@@ -98,8 +98,9 @@ public class AppJacksonModule extends SimpleModule {
         }
 
         @Override
-        public void serializeWithType(EncryptedValue value, JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer) throws
-                IOException {
+        public void serializeWithType(
+                EncryptedValue value, JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer)
+                throws IOException {
             if (value.getValue() == null) {
                 gen.writeNull();
                 return;
@@ -110,7 +111,8 @@ public class AppJacksonModule extends SimpleModule {
     }
 
     @SuppressWarnings("all")
-    public static class EncryptedValueDeserializer<T extends EncryptedValue<?>> extends JsonDeserializer<T> implements ContextualDeserializer {
+    public static class EncryptedValueDeserializer<T extends EncryptedValue<?>> extends JsonDeserializer<T>
+            implements ContextualDeserializer {
 
         private boolean useCurrentSecretKeyIfPossible;
         private boolean forceCurrentSecretKey;
@@ -118,7 +120,8 @@ public class AppJacksonModule extends SimpleModule {
 
         @Override
         @SuppressWarnings("unchecked")
-        public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) throws JsonMappingException {
+        public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property)
+                throws JsonMappingException {
             var deserializer = new EncryptedValueDeserializer();
             if (property == null) {
                 return deserializer;
@@ -126,7 +129,8 @@ public class AppJacksonModule extends SimpleModule {
 
             JavaType wrapperType = property.getType();
             JavaType valueType = wrapperType.containedType(0);
-            deserializer.useCurrentSecretKeyIfPossible = !wrapperType.getRawClass().equals(EncryptedValue.VaultKey.class);
+            deserializer.useCurrentSecretKeyIfPossible =
+                    !wrapperType.getRawClass().equals(EncryptedValue.VaultKey.class);
             deserializer.forceCurrentSecretKey = wrapperType.getRawClass().equals(EncryptedValue.CurrentKey.class);
             deserializer.type = valueType.getRawClass();
             return deserializer;
@@ -139,7 +143,7 @@ public class AppJacksonModule extends SimpleModule {
                 return null;
             }
 
-            return (T) get(p,type, useCurrentSecretKeyIfPossible, forceCurrentSecretKey);
+            return (T) get(p, type, useCurrentSecretKeyIfPossible, forceCurrentSecretKey);
         }
 
         public Object deserializeWithType(JsonParser jp, DeserializationContext ctxt, TypeDeserializer typeDeserializer)
@@ -152,7 +156,9 @@ public class AppJacksonModule extends SimpleModule {
             return get(jp, valueType.getRawClass(), useCurrentSecretKey, forceCurrentSecretKey);
         }
 
-        private EncryptedValue get(JsonParser p, Class<?> type, boolean useCurrentSecretKey, boolean forceCurrentSecretKey) throws IOException {
+        private EncryptedValue get(
+                JsonParser p, Class<?> type, boolean useCurrentSecretKey, boolean forceCurrentSecretKey)
+                throws IOException {
             if (forceCurrentSecretKey && DataStorageUserHandler.getInstance().getActiveUser() == null) {
                 return null;
             }
@@ -166,8 +172,14 @@ public class AppJacksonModule extends SimpleModule {
                     value = raw;
                     var s = JacksonMapper.getDefault().writeValueAsString(value);
                     var internalSecret = InPlaceSecretValue.of(s.toCharArray());
-                    secret = DataStorageSecret.ofSecret(internalSecret, useCurrentSecretKey && DataStorageUserHandler.getInstance().getActiveUser() != null
-                            ? EncryptionToken.ofUser() : EncryptionToken.ofVaultKey());
+                    secret = DataStorageSecret.ofSecret(
+                            internalSecret,
+                            useCurrentSecretKey
+                                            && DataStorageUserHandler.getInstance()
+                                                            .getActiveUser()
+                                                    != null
+                                    ? EncryptionToken.ofUser()
+                                    : EncryptionToken.ofVaultKey());
                 } else {
                     return null;
                 }
@@ -179,7 +191,9 @@ public class AppJacksonModule extends SimpleModule {
                 value = JacksonMapper.getDefault().readValue(new CharArrayReader(secret.getSecret()), type);
             }
             var perUser = useCurrentSecretKey;
-            return perUser ? new EncryptedValue.CurrentKey<>(value, secret) : new EncryptedValue.VaultKey<>(value, secret);
+            return perUser
+                    ? new EncryptedValue.CurrentKey<>(value, secret)
+                    : new EncryptedValue.VaultKey<>(value, secret);
         }
     }
 
