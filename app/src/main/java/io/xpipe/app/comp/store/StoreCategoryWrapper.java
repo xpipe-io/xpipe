@@ -5,19 +5,24 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
+import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.collections.ListChangeListener;
 
+import javafx.collections.ObservableList;
 import lombok.Getter;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @Getter
 public class StoreCategoryWrapper {
@@ -29,11 +34,12 @@ public class StoreCategoryWrapper {
     private final Property<Instant> lastAccess;
     private final Property<StoreSortMode> sortMode;
     private final Property<Boolean> sync;
-    private final ObservableList<StoreCategoryWrapper> children;
-    private final ObservableList<StoreEntryWrapper> directContainedEntries;
-    private final ObservableList<StoreEntryWrapper> allContainedEntries;
+    private final DerivedObservableList<StoreCategoryWrapper> children;
+    private final DerivedObservableList<StoreEntryWrapper> directContainedEntries;
+    private final DerivedObservableList<StoreEntryWrapper> allContainedEntries;
     private final BooleanProperty expanded = new SimpleBooleanProperty();
     private final Property<DataColor> color = new SimpleObjectProperty<>();
+    private StoreCategoryWrapper cachedParent;
 
     public StoreCategoryWrapper(DataStoreCategory category) {
         var d = 0;
@@ -54,9 +60,9 @@ public class StoreCategoryWrapper {
         this.lastAccess = new SimpleObjectProperty<>(category.getLastAccess());
         this.sortMode = new SimpleObjectProperty<>(category.getSortMode());
         this.sync = new SimpleObjectProperty<>(category.isSync());
-        this.children = FXCollections.observableArrayList();
-        this.allContainedEntries = FXCollections.observableArrayList();
-        this.directContainedEntries = FXCollections.observableArrayList();
+        this.children = new DerivedObservableList<>(FXCollections.observableArrayList(), true);
+        this.allContainedEntries = new DerivedObservableList<>(FXCollections.observableArrayList(), true);
+        this.directContainedEntries = new DerivedObservableList<>(FXCollections.observableArrayList(), true);
         this.color.setValue(category.getColor());
         setupListeners();
     }
@@ -76,15 +82,32 @@ public class StoreCategoryWrapper {
     }
 
     public StoreCategoryWrapper getParent() {
-        return StoreViewState.get().getCategories().getList().stream()
-                .filter(storeCategoryWrapper ->
-                        storeCategoryWrapper.getCategory().getUuid().equals(category.getParentCategory()))
-                .findAny()
-                .orElse(null);
+        if (category.getParentCategory() == null) {
+            return null;
+        }
+
+        if (cachedParent == null) {
+            cachedParent = StoreViewState.get().getCategories().getList().stream()
+                    .filter(storeCategoryWrapper ->
+                            storeCategoryWrapper.getCategory().getUuid().equals(category.getParentCategory()))
+                    .findAny()
+                    .orElse(null);
+        }
+
+        return cachedParent;
     }
 
     public boolean contains(StoreEntryWrapper entry) {
-        return entry.getEntry().getCategoryUuid().equals(category.getUuid()) || allContainedEntries.contains(entry);
+        if (entry.getCategory().getValue() == this) {
+            return true;
+        }
+
+        for (var c : children.getList()) {
+            if (c.contains(entry)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void select() {
@@ -94,6 +117,9 @@ public class StoreCategoryWrapper {
     }
 
     public void delete() {
+        for (var c : children.getList()) {
+            c.delete();
+        }
         DataStorage.get().deleteStoreCategory(category);
     }
 
@@ -149,29 +175,35 @@ public class StoreCategoryWrapper {
         expanded.setValue(category.isExpanded());
         color.setValue(category.getColor());
 
-        directContainedEntries.setAll(StoreViewState.get().getAllEntries().getList().stream()
+        var allEntries = new ArrayList<>(StoreViewState.get().getAllEntries().getList());
+        directContainedEntries.setContent(allEntries.stream()
                 .filter(entry -> {
                     return entry.getEntry().getCategoryUuid().equals(category.getUuid());
                 })
                 .toList());
-        allContainedEntries.setAll(StoreViewState.get().getAllEntries().getList().stream()
+        allContainedEntries.setContent(allEntries.stream()
                 .filter(entry -> {
                     return entry.getEntry().getCategoryUuid().equals(category.getUuid())
                             || (AppPrefs.get()
                                             .showChildCategoriesInParentCategory()
                                             .get()
-                                    && children.stream()
+                                    && children.getList().stream()
                                             .anyMatch(storeCategoryWrapper -> storeCategoryWrapper.contains(entry)));
                 })
                 .toList());
-        children.setAll(StoreViewState.get().getCategories().getList().stream()
+
+        var oldSize = children.getList().size();
+        children.setContent(StoreViewState.get().getCategories().getList().stream()
                 .filter(storeCategoryWrapper -> getCategory()
                         .getUuid()
                         .equals(storeCategoryWrapper.getCategory().getParentCategory()))
                 .toList());
-        Optional.ofNullable(getParent()).ifPresent(storeCategoryWrapper -> {
-            storeCategoryWrapper.update();
-        });
+        var newSize = children.getList().size();
+        if (oldSize != newSize) {
+            Optional.ofNullable(getParent()).ifPresent(storeCategoryWrapper -> {
+                storeCategoryWrapper.update();
+            });
+        }
     }
 
     private String translatedName(String original) {

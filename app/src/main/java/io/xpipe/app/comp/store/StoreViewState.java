@@ -102,7 +102,7 @@ public class StoreViewState {
             var matchingCats = categories.getList().stream()
                     .filter(storeCategoryWrapper ->
                             storeCategoryWrapper.getRoot().equals(all))
-                    .filter(storeCategoryWrapper -> storeCategoryWrapper.getDirectContainedEntries().stream()
+                    .filter(storeCategoryWrapper -> storeCategoryWrapper.getDirectContainedEntries().getList().stream()
                             .anyMatch(wrapper -> wrapper.matchesFilter(newValue)))
                     .toList();
             if (matchingCats.size() == 1) {
@@ -285,9 +285,11 @@ public class StoreViewState {
 
             @Override
             public void onEntryCategoryChange(DataStoreCategory from, DataStoreCategory to) {
-                synchronized (this) {
-                    categories.getList().forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
-                }
+                Platform.runLater(() -> {
+                    synchronized (this) {
+                        categories.getList().forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
+                    }
+                });
             }
         });
     }
@@ -330,35 +332,37 @@ public class StoreViewState {
                     return 1;
                 }
 
-                if (o1.getParent() == null && o2.getParent() == null) {
+                var p1 = o1.getParent();
+                var p2 = o2.getParent();
+                if (p1 == null && p2 == null) {
                     return 0;
                 }
 
-                if (o1.getParent() == null) {
+                if (p1 == null) {
                     return -1;
                 }
 
-                if (o2.getParent() == null) {
+                if (p2 == null) {
                     return 1;
                 }
 
                 if (o1.getDepth() > o2.getDepth()) {
-                    if (o1.getParent() == o2) {
+                    if (p1 == o2) {
                         return 1;
                     }
 
-                    return compare(o1.getParent(), o2);
+                    return compare(p1, o2);
                 }
 
                 if (o1.getDepth() < o2.getDepth()) {
-                    if (o2.getParent() == o1) {
+                    if (p2 == o1) {
                         return -1;
                     }
 
-                    return compare(o1, o2.getParent());
+                    return compare(o1, p2);
                 }
 
-                var parent = compare(o1.getParent(), o2.getParent());
+                var parent = compare(p1, p2);
                 if (parent != 0) {
                     return parent;
                 }

@@ -54,7 +54,7 @@ public class DerivedObservableList<T> {
         }
     }
 
-    public void setContentNonUnique(List<? extends T> newList) {
+    private void setContentNonUnique(List<? extends T> newList) {
         var target = list;
         var targetSet = new HashSet<>(target);
         var newSet = new HashSet<>(newList);

@@ -66,11 +66,11 @@ public class StoreCategoryComp extends SimpleComp {
         var expandIcon = Bindings.createObjectBinding(
                 () -> {
                     var exp = category.getExpanded().get()
-                            && category.getChildren().size() > 0;
+                            && category.getChildren().getList().size() > 0;
                     return new LabelGraphic.IconGraphic(exp ? "mdal-keyboard_arrow_down" : "mdal-keyboard_arrow_right");
                 },
                 category.getExpanded(),
-                category.getChildren());
+                category.getChildren().getList());
         var expandButton = new IconButtonComp(expandIcon, () -> {
                     category.toggleExpanded();
                 })
@@ -80,7 +80,7 @@ public class StoreCategoryComp extends SimpleComp {
                     struc.get().setPadding(new Insets(-2, 0, 0, 0));
                     struc.get().setFocusTraversable(false);
                 })
-                .disable(Bindings.isEmpty(category.getChildren()))
+                .disable(Bindings.isEmpty(category.getChildren().getList()))
                 .styleClass("expand-button")
                 .tooltipKey("expand", new KeyCodeCombination(KeyCode.SPACE));
 
@@ -119,7 +119,7 @@ public class StoreCategoryComp extends SimpleComp {
                         }))
                 .styleClass("status-button");
 
-        var shownList = new DerivedObservableList<>(category.getAllContainedEntries(), true)
+        var shownList = new DerivedObservableList<>(category.getAllContainedEntries().getList(), true)
                 .filtered(
                         storeEntryWrapper -> {
                             return storeEntryWrapper.matchesFilter(
@@ -127,7 +127,7 @@ public class StoreCategoryComp extends SimpleComp {
                         },
                         StoreViewState.get().getFilterString())
                 .getList();
-        var count = new CountComp<>(shownList, category.getAllContainedEntries(), string -> "(" + string + ")");
+        var count = new CountComp<>(shownList, category.getAllContainedEntries().getList(), string -> "(" + string + ")");
         count.visible(Bindings.isNotEmpty(shownList));
 
         var showStatus = hover.or(new SimpleBooleanProperty(DataStorage.get().supportsSharing()))
@@ -163,7 +163,7 @@ public class StoreCategoryComp extends SimpleComp {
             });
         });
 
-        var l = category.getChildren()
+        var l = category.getChildren().getList()
                 .sorted(Comparator.comparing(storeCategoryWrapper ->
                         storeCategoryWrapper.nameProperty().getValue().toLowerCase(Locale.ROOT)));
         var children =
@@ -173,9 +173,9 @@ public class StoreCategoryComp extends SimpleComp {
         var hide = Bindings.createBooleanBinding(
                 () -> {
                     return !category.getExpanded().get()
-                            || category.getChildren().isEmpty();
+                            || category.getChildren().getList().isEmpty();
                 },
-                category.getChildren(),
+                category.getChildren().getList(),
                 category.getExpanded());
         var v = new VerticalComp(List.of(categoryButton, children.hide(hide)));
         v.styleClass("category");

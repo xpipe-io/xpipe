@@ -42,8 +42,8 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
 
     public ListBoxViewComp(
             ObservableList<T> shown, ObservableList<T> all, Function<T, Comp<?>> compFunction, boolean scrollBar) {
-        this.shown = PlatformThread.sync(shown);
-        this.all = PlatformThread.sync(all);
+        this.shown = shown;
+        this.all = all;
         this.compFunction = compFunction;
         this.scrollBar = scrollBar;
     }
