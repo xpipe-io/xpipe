@@ -1,5 +1,5 @@
 ---
-title: XPipe API Documentation v11.3
+title: XPipe API Documentation v14.0
 language_tabs:
   - javascript: JavaScript
   - python: Python
@@ -21,7 +21,7 @@ headingLevel: 2
 
 ---
 
-<h1 id="xpipe-api-documentation">XPipe API Documentation v11.3</h1>
+<h1 id="xpipe-api-documentation">XPipe API Documentation v14.0</h1>
 
 The XPipe API provides programmatic access to XPipe’s features.
 You can get started by either using this page as an API reference or alternatively import the OpenAPI definition file into your API client of choice:
@@ -830,6 +830,177 @@ curl -X POST http://localhost:21721/connection/add \
     "shell": "pwsh",
     "elevated": false
   }
+}
+'
+
+```
+
+</details>
+
+## Add new category
+
+<a id="opIdcategoryAd"></a>
+
+`POST /category/add`
+
+Creates a new empty category in the vault.
+
+New categories always need a parent as it's not allowed to create root categories.
+
+> Body parameter
+
+```json
+{
+  "name": "my category",
+  "parent": "97458c07-75c0-4f9d-a06e-92d8cdf67c40"
+}
+```
+
+<h3 id="add-new-category-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|body|body|[CategoryAddRequest](#schemacategoryaddrequest)|true|none|
+
+> Example responses
+
+> The request was successful. The category was added.
+
+```json
+{
+  "category": "36ad9716-a209-4f7f-9814-078d3349280c"
+}
+```
+
+> 400 Response
+
+```json
+{
+  "message": "string"
+}
+```
+
+<h3 id="add-new-category-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|The request was successful. The category was added.|[CategoryAddResponse](#schemacategoryaddresponse)|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request. Please check error message and your parameters.|[ClientErrorResponse](#schemaclienterrorresponse)|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Authorization failed. Please supply a `Bearer` token via the `Authorization` header.|None|
+|403|[Forbidden](https://tools.ietf.org/html/rfc7231#section-6.5.3)|Authorization failed. Please supply a valid `Bearer` token via the `Authorization` header.|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal error.|[ServerErrorResponse](#schemaservererrorresponse)|
+
+<aside class="warning">
+To perform this operation, you must be authenticated by means of one of the following methods:
+bearerAuth
+</aside>
+
+<details>
+
+<summary>Code samples</summary>
+
+```javascript
+const inputBody = '{
+  "name": "my category",
+  "parent": "97458c07-75c0-4f9d-a06e-92d8cdf67c40"
+}';
+const headers = {
+  'Content-Type':'application/json',
+  'Accept':'application/json',
+  'Authorization':'Bearer {access-token}'
+};
+
+fetch('http://localhost:21721/category/add',
+{
+  method: 'POST',
+  body: inputBody,
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```python
+import requests
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json',
+  'Authorization': 'Bearer {access-token}'
+}
+
+data = """
+{
+  "name": "my category",
+  "parent": "97458c07-75c0-4f9d-a06e-92d8cdf67c40"
+}
+"""
+r = requests.post('http://localhost:21721/category/add', headers = headers, data = data)
+
+print(r.json())
+
+```
+
+```java
+var uri = URI.create("http://localhost:21721/category/add");
+var client = HttpClient.newHttpClient();
+var request = HttpRequest
+        .newBuilder()
+        .uri(uri)
+        .header("Content-Type", "application/json")
+        .header("Accept", "application/json")
+        .header("Authorization", "Bearer {access-token}")
+        .POST(HttpRequest.BodyPublishers.ofString("""
+{
+  "name": "my category",
+  "parent": "97458c07-75c0-4f9d-a06e-92d8cdf67c40"
+}
+        """))
+        .build();
+var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+System.out.println(response.statusCode());
+System.out.println(response.body());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Content-Type": []string{"application/json"},
+        "Accept": []string{"application/json"},
+        "Authorization": []string{"Bearer {access-token}"},
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("POST", "http://localhost:21721/category/add", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+```shell
+# You can also use wget
+curl -X POST http://localhost:21721/category/add \
+  -H 'Content-Type: application/json' \  -H 'Accept: application/json' \  -H 'Authorization: Bearer {access-token}' \
+  --data '
+{
+  "name": "my category",
+  "parent": "97458c07-75c0-4f9d-a06e-92d8cdf67c40"
 }
 '
 
@@ -3314,7 +3485,8 @@ undefined
 {
   "name": "string",
   "data": {},
-  "validate": true
+  "validate": true,
+  "category": "string"
 }
 
 ```
@@ -3324,8 +3496,9 @@ undefined
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
 |name|string|true|none|The connection name|
-|data|object|true|none|The raw connection store data. Schemas for connection types are not documented but you can find the connection data of your existing connections in the xpipe vault.|
+|data|object|true|none|The raw connection store data. Schemas for connection types are not documented, but you can find the connection data of your existing connections in the xpipe vault.|
 |validate|boolean|true|none|Whether to perform a connection validation before adding it, i.e., probe the connection first. If validation is enabled and fails, the connection will not be added|
+|category|string|false|none|The category uuid to put the connection in. If not specified, the default category will be used|
 
 <h2 id="tocS_ConnectionAddResponse">ConnectionAddResponse</h2>
 
@@ -3346,6 +3519,48 @@ undefined
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
 |connection|string|true|none|The connection uuid|
+
+<h2 id="tocS_CategoryAddRequest">CategoryAddRequest</h2>
+
+<a id="schemacategoryaddrequest"></a>
+<a id="schema_CategoryAddRequest"></a>
+<a id="tocScategoryaddrequest"></a>
+<a id="tocscategoryaddrequest"></a>
+
+```json
+{
+  "name": "string",
+  "parent": "string"
+}
+
+```
+
+<h3>Properties</h3>
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|name|string|true|none|The category name|
+|parent|string|true|none|The parent category uuid to put the new category in|
+
+<h2 id="tocS_CategoryAddResponse">CategoryAddResponse</h2>
+
+<a id="schemacategoryaddresponse"></a>
+<a id="schema_CategoryAddResponse"></a>
+<a id="tocScategoryaddresponse"></a>
+<a id="tocscategoryaddresponse"></a>
+
+```json
+{
+  "category": "string"
+}
+
+```
+
+<h3>Properties</h3>
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|category|string|true|none|The category uuid|
 
 <h2 id="tocS_ConnectionRemoveRequest">ConnectionRemoveRequest</h2>
 
