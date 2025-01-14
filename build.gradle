@@ -174,7 +174,7 @@ project.ext {
 
 def getWindowsSchemaCanonicalVersion() {
     def v = canonicalVersionString;
-    def last = versionReleaseNumber == 1 ? 0 : versionReleaseNumber - 1
+    def last = isStage ? versionReleaseNumber : 0
     if (v.split("\\.").length == 2) {
         v = v + ".0"
     }

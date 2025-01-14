@@ -174,6 +174,10 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
 
     public void reset() {
         synchronized (BrowserFullSessionModel.this) {
+            if (globalPinnedTab.getValue() != null) {
+                globalPinnedTab.setValue(null);
+            }
+
             var all = new ArrayList<>(sessionEntries);
             for (var o : all) {
                 // Don't close busy connections gracefully
@@ -240,7 +244,7 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
         if (split != null) {
             split.close();
         }
-
+        previousTabs.remove(e);
         super.closeSync(e);
     }
 }

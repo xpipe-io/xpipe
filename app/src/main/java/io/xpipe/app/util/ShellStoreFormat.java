@@ -84,7 +84,7 @@ public class ShellStoreFormat {
     public String format() {
         var licenseReq =
                 licensedFeature != null ? licensedFeature.getDescriptionSuffix().orElse(null) : null;
-        var lic = licenseReq != null ? "[" + licenseReq + "+]" : null;
+        var lic = licenseReq != null ? "[" + licenseReq + "]" : null;
         var name = this.name;
         var state = getStates() != null
                 ? Arrays.stream(getStates())

@@ -17,7 +17,7 @@ public interface LicensedFeature {
     }
 
     default String suffix(String s) {
-        return getDescriptionSuffix().map(suffix -> s + " (" + suffix + "+)").orElse(s);
+        return getDescriptionSuffix().map(suffix -> s + " (" + suffix + ")").orElse(s);
     }
 
     String getId();
