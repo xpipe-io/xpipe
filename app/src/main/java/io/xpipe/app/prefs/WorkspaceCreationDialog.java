@@ -12,7 +12,7 @@ import io.xpipe.core.util.XPipeInstallation;
 
 import javafx.beans.property.SimpleObjectProperty;
 
-public class WorkspaceCreationAlert {
+public class WorkspaceCreationDialog {
 
     public static void showAsync() {
         LicenseProvider.get().getFeature("workspaces").throwIfUnsupported();

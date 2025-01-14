@@ -192,18 +192,14 @@ public class StoreCategoryWrapper {
                 })
                 .toList());
 
-        var oldSize = children.getList().size();
         children.setContent(StoreViewState.get().getCategories().getList().stream()
                 .filter(storeCategoryWrapper -> getCategory()
                         .getUuid()
                         .equals(storeCategoryWrapper.getCategory().getParentCategory()))
                 .toList());
-        var newSize = children.getList().size();
-        if (oldSize != newSize) {
-            Optional.ofNullable(getParent()).ifPresent(storeCategoryWrapper -> {
-                storeCategoryWrapper.update();
-            });
-        }
+        Optional.ofNullable(getParent()).ifPresent(storeCategoryWrapper -> {
+            storeCategoryWrapper.update();
+        });
     }
 
     private String translatedName(String original) {

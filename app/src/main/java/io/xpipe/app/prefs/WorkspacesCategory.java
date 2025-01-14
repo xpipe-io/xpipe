@@ -20,7 +20,7 @@ public class WorkspacesCategory extends AppPrefsCategory {
                 .sub(new OptionsBuilder()
                         .nameAndDescription("workspaceAdd")
                         .licenseRequirement("workspaces")
-                        .addComp(new ButtonComp(AppI18n.observable("addWorkspace"), WorkspaceCreationAlert::showAsync)))
+                        .addComp(new ButtonComp(AppI18n.observable("addWorkspace"), WorkspaceCreationDialog::showAsync)))
                 .disable(!LicenseProvider.get().getFeature("workspaces").isSupported())
                 .buildComp();
     }

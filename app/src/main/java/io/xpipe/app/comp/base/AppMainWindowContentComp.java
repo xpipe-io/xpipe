@@ -12,6 +12,7 @@ import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
 
 import javafx.animation.Animation;
+import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Pos;
 import javafx.scene.image.ImageView;
@@ -107,7 +108,9 @@ public class AppMainWindowContentComp extends SimpleComp {
 
             loaded.addListener((observable, oldValue, newValue) -> {
                 if (newValue != null) {
-                    stage.requestFocus();
+                    Platform.runLater(() -> {
+                        stage.requestFocus();
+                    });
                 }
             });
 
