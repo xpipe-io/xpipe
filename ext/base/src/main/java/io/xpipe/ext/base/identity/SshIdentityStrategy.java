@@ -45,6 +45,7 @@ public interface SshIdentityStrategy {
     }
 
     @JsonTypeName("none")
+    @Value
     class None implements SshIdentityStrategy {
 
         @Override

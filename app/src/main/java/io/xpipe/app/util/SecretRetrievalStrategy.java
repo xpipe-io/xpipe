@@ -88,6 +88,7 @@ public interface SecretRetrievalStrategy {
     }
 
     @JsonTypeName("prompt")
+    @Value
     class Prompt implements SecretRetrievalStrategy {
 
         @Override

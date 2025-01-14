@@ -1,5 +1,6 @@
 package io.xpipe.app.issue;
 
+import io.sentry.protocol.Geo;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
@@ -186,6 +187,7 @@ public class SentryErrorHandler implements ErrorHandler {
 
         var user = new User();
         user.setId(AppProperties.get().getUuid().toString());
+        user.setGeo(new Geo());
         s.setUser(user);
     }
 
