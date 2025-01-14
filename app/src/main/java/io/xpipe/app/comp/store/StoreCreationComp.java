@@ -9,7 +9,6 @@ import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.issue.ExceptionConverter;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
@@ -368,15 +367,19 @@ public class StoreCreationComp extends DialogComp {
                 entry.getValue().validateOrThrow();
                 commit(true);
             } catch (Throwable ex) {
+                String message;
                 if (ex instanceof ValidationException) {
                     ErrorEvent.expected(ex);
+                    message = ex.getMessage();
                 } else if (ex instanceof StackOverflowError) {
                     // Cycles in connection graphs can fail hard but are expected
                     ErrorEvent.expected(ex);
+                    message = "StackOverflowError";
+                } else {
+                    message = ex.getMessage();
                 }
 
-                var newMessage = ExceptionConverter.convertMessage(ex);
-                messageProp.setValue(createErrorOverlay(newMessage));
+                messageProp.setValue(createErrorOverlay(message));
                 changedSinceError.setValue(false);
 
                 ErrorEvent.fromThrowable(ex).omit().handle();

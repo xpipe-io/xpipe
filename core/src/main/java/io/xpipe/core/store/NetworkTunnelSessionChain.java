@@ -4,11 +4,11 @@ import io.xpipe.core.process.ShellControl;
 
 import java.util.List;
 
-public class SessionChain extends NetworkTunnelSession {
+public class NetworkTunnelSessionChain extends NetworkTunnelSession {
 
     private final List<NetworkTunnelSession> sessions;
 
-    public SessionChain(SessionListener listener, List<NetworkTunnelSession> sessions) {
+    public NetworkTunnelSessionChain(SessionListener listener, List<NetworkTunnelSession> sessions) {
         super(listener);
         this.sessions = sessions;
     }

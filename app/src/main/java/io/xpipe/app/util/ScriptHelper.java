@@ -125,7 +125,7 @@ public class ScriptHelper {
                 && !processControl
                         .command(CommandBuilder.of().add("test", "-x").addFile(file))
                         .executeAndCheck()) {
-            var homeFile = processControl.view().userHome().join(".xpipe").join(file.getFileName());
+            var homeFile = processControl.view().userHome().join(".xpipe", "scripts").join(file.getFileName());
             processControl.executeSimpleCommand(processControl.getShellDialect().getMkdirsCommand(homeFile.getParent().toString()));
             processControl
                     .getShellDialect()

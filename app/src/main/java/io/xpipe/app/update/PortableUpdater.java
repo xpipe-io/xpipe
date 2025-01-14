@@ -23,6 +23,10 @@ public class PortableUpdater extends UpdateHandler {
         list.add(new ModalButton(
                 "checkOutUpdate",
                 () -> {
+                    if (getPreparedUpdate().getValue() == null) {
+                        return;
+                    }
+
                     Hyperlinks.open(getPreparedUpdate().getValue().getReleaseUrl());
                 },
                 false,

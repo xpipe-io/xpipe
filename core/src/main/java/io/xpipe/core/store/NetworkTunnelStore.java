@@ -53,7 +53,7 @@ public interface NetworkTunnelStore extends DataStore {
                     sessions.isEmpty() ? remotePort : sessions.getLast().getLocalPort();
             var t = current.createTunnelSession(
                     currentLocalPort, currentRemotePort, current == this ? address : "localhost");
-            sessions.add(t);
+            sessions.addFirst(t);
         } while ((current = (NetworkTunnelStore) current.getNetworkParent()) != null);
 
         if (sessions.size() == 1) {
@@ -64,7 +64,7 @@ public interface NetworkTunnelStore extends DataStore {
             return null;
         }
 
-        return new SessionChain(running1 -> {}, sessions);
+        return new NetworkTunnelSessionChain(running1 -> {}, sessions);
     }
 
     default boolean isLast() {
