@@ -107,7 +107,7 @@ install() {
       DEBIAN_FRONTEND=noninteractive sudo apt install "$file"
     elif [ -x "$(command -v zypper)" ]; then
       info "Installing file $file with zypper"
-      sudo zypper install --no-gpg-checks "$file"
+      sudo zypper --no-gpg-checks --gpg-auto-import-keys install "$file"
     elif [ -x "$(command -v dnf)" ]; then
       info "Installing file $file with dnf"
       sudo rpm --import https://xpipe.io/signatures/crschnick.asc
