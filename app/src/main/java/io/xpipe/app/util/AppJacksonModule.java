@@ -188,7 +188,11 @@ public class AppJacksonModule extends SimpleModule {
                     return null;
                 }
 
-                value = JacksonMapper.getDefault().readValue(new CharArrayReader(secret.getSecret()), type);
+                var s = secret.getSecret();
+                if (s.length == 0) {
+                    return null;
+                }
+                value = JacksonMapper.getDefault().readValue(new CharArrayReader(s), type);
             }
             var perUser = useCurrentSecretKey;
             return perUser

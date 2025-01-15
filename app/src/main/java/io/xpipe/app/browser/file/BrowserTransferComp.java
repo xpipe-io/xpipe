@@ -13,6 +13,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.image.Image;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
@@ -20,6 +21,7 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Region;
 
+import javafx.scene.text.TextAlignment;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.File;
@@ -41,6 +43,8 @@ public class BrowserTransferComp extends SimpleComp {
         var background = new LabelComp(AppI18n.observable("transferDescription"))
                 .apply(struc -> struc.get().setGraphic(new FontIcon("mdi2d-download-outline")))
                 .apply(struc -> struc.get().setWrapText(true))
+                .apply(struc -> struc.get().setTextAlignment(TextAlignment.CENTER))
+                .apply(struc -> struc.get().setContentDisplay(ContentDisplay.TOP))
                 .visible(model.getEmpty());
         var backgroundStack = new StackComp(List.of(background))
                 .grow(true, true)

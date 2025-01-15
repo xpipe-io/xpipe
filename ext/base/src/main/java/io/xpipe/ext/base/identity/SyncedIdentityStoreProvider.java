@@ -1,21 +1,24 @@
 package io.xpipe.ext.base.identity;
 
+import atlantafx.base.theme.Styles;
+import io.xpipe.app.comp.base.ToggleSwitchComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.GuiDialog;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.*;
-import io.xpipe.app.util.EncryptedValue;
-import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.SecretRetrievalStrategyHelper;
-import io.xpipe.app.util.Validator;
+import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FileNames;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.geometry.HorizontalDirection;
+import javafx.scene.control.ContentDisplay;
 
 import java.nio.file.Path;
 import java.util.List;

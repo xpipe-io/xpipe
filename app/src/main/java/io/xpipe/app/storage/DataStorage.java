@@ -130,7 +130,7 @@ public abstract class DataStorage {
     public void forceRewrite() {
         TrackEvent.info("Starting forced storage rewrite");
         getStoreEntries().forEach(dataStoreEntry -> {
-            dataStoreEntry.reassignStore();
+            dataStoreEntry.reassignStoreNode();
         });
         TrackEvent.info("Finished forced storage rewrite");
     }

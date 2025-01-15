@@ -543,7 +543,7 @@ public class DataStoreEntry extends StorageElement {
         dirty = true;
     }
 
-    public void reassignStore() {
+    public void reassignStoreNode() {
         this.storeNode = this.storeNode.withStore(store);
         dirty = true;
     }

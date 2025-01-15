@@ -72,6 +72,10 @@ public class IdentityMigrationDeserializer extends DelegatingDeserializer {
             }
         }
 
+        if (user == null) {
+            user = containerNode.get("username");
+        }
+
         if (password != null && password.isObject() && identity != null && identity.isObject()) {
             var identityStore = JsonNodeFactory.instance.objectNode();
             identityStore.put("type", "localIdentity");
@@ -80,6 +84,19 @@ public class IdentityMigrationDeserializer extends DelegatingDeserializer {
             }
             identityStore.set("password", password);
             identityStore.set("sshIdentity", identity);
+
+            var inPlace = JsonNodeFactory.instance.objectNode();
+            inPlace.put("type", "inPlace");
+            inPlace.set("identityStore", identityStore);
+
+            containerNode.set("identity", inPlace);
+        } else if (password != null) {
+            var identityStore = JsonNodeFactory.instance.objectNode();
+            identityStore.put("type", "localIdentity");
+            if (user != null && user.isTextual()) {
+                identityStore.set("username", user);
+            }
+            identityStore.set("password", password);
 
             var inPlace = JsonNodeFactory.instance.objectNode();
             inPlace.put("type", "inPlace");

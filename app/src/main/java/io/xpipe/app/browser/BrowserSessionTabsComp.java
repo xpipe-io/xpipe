@@ -276,7 +276,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
         var cm = ContextMenuHelper.create();
 
         if (tabModel.isCloseable()) {
-            var unpin = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("unpinTab"));
+            var unpin = ContextMenuHelper.item(LabelGraphic.none(), "unpinTab");
             unpin.visibleProperty()
                     .bind(PlatformThread.sync(Bindings.createBooleanBinding(
                             () -> {
@@ -290,7 +290,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
             });
             cm.getItems().add(unpin);
 
-            var pin = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("pinTab"));
+            var pin = ContextMenuHelper.item(LabelGraphic.none(), "pinTab");
             pin.visibleProperty()
                     .bind(PlatformThread.sync(Bindings.createBooleanBinding(
                             () -> {
@@ -304,7 +304,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
             cm.getItems().add(pin);
         }
 
-        var select = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("selectTab"));
+        var select = ContextMenuHelper.item(LabelGraphic.none(), "selectTab");
         select.acceleratorProperty()
                 .bind(Bindings.createObjectBinding(
                         () -> {
@@ -325,7 +325,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
 
         cm.getItems().add(new SeparatorMenuItem());
 
-        var close = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("closeTab"));
+        var close = ContextMenuHelper.item(LabelGraphic.none(), "closeTab");
         close.setAccelerator(new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN));
         close.setOnAction(event -> {
             if (tab.isClosable()) {
@@ -335,7 +335,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
         });
         cm.getItems().add(close);
 
-        var closeOthers = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("closeOtherTabs"));
+        var closeOthers = ContextMenuHelper.item(LabelGraphic.none(), "closeOtherTabs");
         closeOthers.setOnAction(event -> {
             tabs.getTabs()
                     .removeAll(tabs.getTabs().stream()
@@ -345,7 +345,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
         });
         cm.getItems().add(closeOthers);
 
-        var closeLeft = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("closeLeftTabs"));
+        var closeLeft = ContextMenuHelper.item(LabelGraphic.none(), "closeLeftTabs");
         closeLeft.setOnAction(event -> {
             var index = tabs.getTabs().indexOf(tab);
             tabs.getTabs()
@@ -356,7 +356,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
         });
         cm.getItems().add(closeLeft);
 
-        var closeRight = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("closeRightTabs"));
+        var closeRight = ContextMenuHelper.item(LabelGraphic.none(), "closeRightTabs");
         closeRight.setOnAction(event -> {
             var index = tabs.getTabs().indexOf(tab);
             tabs.getTabs()
@@ -367,7 +367,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
         });
         cm.getItems().add(closeRight);
 
-        var closeAll = ContextMenuHelper.item(LabelGraphic.none(), AppI18n.get("closeAllTabs"));
+        var closeAll = ContextMenuHelper.item(LabelGraphic.none(), "closeAllTabs");
         closeAll.setAccelerator(
                 new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
         closeAll.setOnAction(event -> {
