@@ -1,6 +1,5 @@
 package io.xpipe.app.issue;
 
-import io.sentry.protocol.Geo;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
@@ -9,6 +8,7 @@ import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.LicenseProvider;
 
 import io.sentry.*;
+import io.sentry.protocol.Geo;
 import io.sentry.protocol.SentryId;
 import io.sentry.protocol.User;
 import org.apache.commons.io.FileUtils;

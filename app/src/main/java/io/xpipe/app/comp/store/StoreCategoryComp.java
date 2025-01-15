@@ -119,7 +119,8 @@ public class StoreCategoryComp extends SimpleComp {
                         }))
                 .styleClass("status-button");
 
-        var shownList = new DerivedObservableList<>(category.getAllContainedEntries().getList(), true)
+        var shownList = new DerivedObservableList<>(
+                        category.getAllContainedEntries().getList(), true)
                 .filtered(
                         storeEntryWrapper -> {
                             return storeEntryWrapper.matchesFilter(
@@ -127,7 +128,8 @@ public class StoreCategoryComp extends SimpleComp {
                         },
                         StoreViewState.get().getFilterString())
                 .getList();
-        var count = new CountComp<>(shownList, category.getAllContainedEntries().getList(), string -> "(" + string + ")");
+        var count =
+                new CountComp<>(shownList, category.getAllContainedEntries().getList(), string -> "(" + string + ")");
         count.visible(Bindings.isNotEmpty(shownList));
 
         var showStatus = hover.or(new SimpleBooleanProperty(DataStorage.get().supportsSharing()))
@@ -163,7 +165,8 @@ public class StoreCategoryComp extends SimpleComp {
             });
         });
 
-        var l = category.getChildren().getList()
+        var l = category.getChildren()
+                .getList()
                 .sorted(Comparator.comparing(storeCategoryWrapper ->
                         storeCategoryWrapper.nameProperty().getValue().toLowerCase(Locale.ROOT)));
         var children =

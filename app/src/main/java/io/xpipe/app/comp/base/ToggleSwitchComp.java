@@ -2,7 +2,6 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.PlatformThread;
@@ -13,7 +12,6 @@ import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Region;
 
 import atlantafx.base.controls.ToggleSwitch;
 import lombok.EqualsAndHashCode;

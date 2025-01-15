@@ -100,10 +100,10 @@ public class BeaconRequestHandler<T> implements HttpHandler {
             var sync = beaconInterface.getSynchronizationObject();
             if (sync != null) {
                 synchronized (sync) {
-                    response = beaconInterface.handle(exchange,object);
+                    response = beaconInterface.handle(exchange, object);
                 }
             } else {
-                response = beaconInterface.handle(exchange,object);
+                response = beaconInterface.handle(exchange, object);
             }
         } catch (BeaconClientException clientException) {
             ErrorEvent.fromThrowable(clientException).omit().expected().handle();

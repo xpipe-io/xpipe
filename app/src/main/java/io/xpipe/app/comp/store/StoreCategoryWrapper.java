@@ -12,17 +12,13 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 
-import javafx.collections.ObservableList;
 import lombok.Getter;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 @Getter
 public class StoreCategoryWrapper {

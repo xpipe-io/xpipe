@@ -9,8 +9,6 @@ import io.xpipe.core.util.ValidationException;
 
 import com.sun.net.httpserver.HttpExchange;
 
-import java.util.Optional;
-
 public class ConnectionAddExchangeImpl extends ConnectionAddExchange {
 
     @Override
@@ -20,7 +18,10 @@ public class ConnectionAddExchangeImpl extends ConnectionAddExchange {
             return Response.builder().connection(found.get().getUuid()).build();
         }
 
-        if (msg.getCategory() != null && DataStorage.get().getStoreCategoryIfPresent(msg.getCategory()).isEmpty()) {
+        if (msg.getCategory() != null
+                && DataStorage.get()
+                        .getStoreCategoryIfPresent(msg.getCategory())
+                        .isEmpty()) {
             throw new BeaconClientException("Category with id " + msg.getCategory() + " does not exist");
         }
 
@@ -48,7 +49,12 @@ public class ConnectionAddExchangeImpl extends ConnectionAddExchange {
 
         // Explicitly assign category
         if (msg.getCategory() != null) {
-            DataStorage.get().updateCategory(entry,DataStorage.get().getStoreCategoryIfPresent(msg.getCategory()).orElseThrow());
+            DataStorage.get()
+                    .updateCategory(
+                            entry,
+                            DataStorage.get()
+                                    .getStoreCategoryIfPresent(msg.getCategory())
+                                    .orElseThrow());
         }
 
         return Response.builder().connection(entry.getUuid()).build();

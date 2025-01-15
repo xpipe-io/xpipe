@@ -56,7 +56,6 @@ public class ConnectionInfoExchangeImpl extends ConnectionInfoExchange {
         return Response.builder().infos(list).build();
     }
 
-
     @Override
     public Object getSynchronizationObject() {
         return DataStorage.get();

@@ -9,7 +9,9 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppTheme;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.OptionsBuilder;
+import io.xpipe.core.process.OsType;
 
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Pos;
 import javafx.scene.control.Slider;
 
@@ -43,6 +45,7 @@ public class AppearanceCategory extends AppPrefsCategory {
                         .addToggle(prefs.performanceMode)
                         .pref(prefs.uiScale)
                         .addComp(new IntFieldComp(prefs.uiScale).maxWidth(100), prefs.uiScale)
+                        .hide(new SimpleBooleanProperty(OsType.getLocal() == OsType.MACOS))
                         .pref(prefs.useSystemFont)
                         .addToggle(prefs.useSystemFont)
                         .pref(prefs.censorMode)
