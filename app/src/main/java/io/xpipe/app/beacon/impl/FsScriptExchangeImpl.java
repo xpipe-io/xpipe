@@ -20,6 +20,7 @@ public class FsScriptExchangeImpl extends FsScriptExchange {
         try (var in = BlobManager.get().getBlob(msg.getBlob())) {
             data = new String(in.readAllBytes(), StandardCharsets.UTF_8);
         }
+        data = shell.getControl().getShellDialect().prepareScriptContent(data);
         var file = ScriptHelper.getExecScriptFile(shell.getControl());
         shell.getControl().view().writeScriptFile(file, data);
         file = ScriptHelper.fixScriptPermissions(shell.getControl(), file);
