@@ -48,6 +48,10 @@ public abstract class AesSecretValue extends EncryptedSecretValue {
     @SneakyThrows
     public byte[] encrypt(byte[] c) {
         SecretKey secretKey = getSecretKey();
+        if (secretKey == null) {
+            throw new IllegalStateException("Missing secret key");
+        }
+
         Cipher cipher = Cipher.getInstance(ENCRYPT_ALGO);
         var iv = getNonce(IV_LENGTH_BYTE);
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, new GCMParameterSpec(TAG_LENGTH_BIT, iv));
