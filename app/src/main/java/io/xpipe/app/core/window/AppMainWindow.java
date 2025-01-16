@@ -156,7 +156,7 @@ public class AppMainWindow {
                 },
                 u,
                 t,
-                AppPrefs.get().language()));
+                AppI18n.activeLanguage()));
     }
 
     public void show() {

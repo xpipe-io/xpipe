@@ -68,9 +68,9 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
         return CustomServiceStore.builder().build();
     }
 
-    @Override
-    public List<String> getPossibleNames() {
-        return List.of("customService");
+@Override
+     public String getId() {
+        return "customService";
     }
 
     @Override

@@ -107,7 +107,7 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
                     return new ShellStoreFormat(null, desc, type, state).format();
                 },
                 section.getWrapper().getCache(),
-                AppPrefs.get().language());
+                AppI18n.activeLanguage());
     }
 
     protected String formatService(AbstractServiceStore s) {

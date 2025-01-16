@@ -136,7 +136,7 @@ public class StoreCategoryWrapper {
             update();
         });
 
-        AppPrefs.get().language().addListener((observable, oldValue, newValue) -> {
+        AppI18n.activeLanguage().addListener((observable, oldValue, newValue) -> {
             update();
         });
 

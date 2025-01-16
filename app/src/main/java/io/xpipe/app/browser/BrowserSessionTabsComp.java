@@ -431,7 +431,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
                             },
                             tabModel.getName(),
                             global,
-                            AppPrefs.get().language(),
+                            AppI18n.activeLanguage(),
                             AppPrefs.get().censorMode()));
         } else {
             tab.textProperty().bind(tabModel.getName());

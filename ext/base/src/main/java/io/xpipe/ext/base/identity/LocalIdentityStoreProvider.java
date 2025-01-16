@@ -71,9 +71,9 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
         return AppI18n.get("localIdentity");
     }
 
-    @Override
-    public List<String> getPossibleNames() {
-        return List.of("localIdentity");
+@Override
+     public String getId() {
+        return "localIdentity";
     }
 
     @Override

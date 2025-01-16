@@ -18,9 +18,9 @@ public class FixedServiceGroupStoreProvider extends AbstractServiceGroupStorePro
         return s.getParent().get();
     }
 
-    @Override
-    public List<String> getPossibleNames() {
-        return List.of("fixedServiceGroup");
+@Override
+     public String getId() {
+        return "fixedServiceGroup";
     }
 
     @Override

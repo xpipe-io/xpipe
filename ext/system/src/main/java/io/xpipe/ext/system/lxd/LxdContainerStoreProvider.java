@@ -101,8 +101,8 @@ public class LxdContainerStoreProvider implements ShellStoreProvider {
     }
 
     @Override
-    public List<String> getPossibleNames() {
-        return List.of("lxd", "lxd_container");
+    public String getId() {
+        return "lxd";
     }
 
     @Override

@@ -260,11 +260,6 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
     }
 
     @Override
-    public List<String> getPossibleNames() {
-        return Identifiers.get("script");
-    }
-
-    @Override
     public String getId() {
         return "script";
     }
