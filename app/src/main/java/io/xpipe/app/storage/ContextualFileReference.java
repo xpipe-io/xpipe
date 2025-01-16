@@ -7,6 +7,7 @@ import io.xpipe.core.store.FileNames;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.Value;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -14,12 +15,13 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Value
 public class ContextualFileReference {
 
     private static String lastDataDir;
 
     @NonNull
-    private final String path;
+    String path;
 
     private static String getDataDir() {
         if (DataStorage.get() == null) {

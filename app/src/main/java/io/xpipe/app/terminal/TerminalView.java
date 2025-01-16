@@ -47,19 +47,15 @@ public class TerminalView {
         }
     }
 
-    public static interface Listener {
+    public interface Listener {
 
         default void onSessionOpened(ShellSession session) {}
-        ;
 
         default void onSessionClosed(ShellSession session) {}
-        ;
 
         default void onTerminalOpened(TerminalSession instance) {}
-        ;
 
         default void onTerminalClosed(TerminalSession instance) {}
-        ;
     }
 
     private final List<ShellSession> sessions = new ArrayList<>();

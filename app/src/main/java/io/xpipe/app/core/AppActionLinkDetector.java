@@ -1,9 +1,7 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.core.launcher.LauncherInput;
-import io.xpipe.app.core.window.AppWindowHelper;
+import io.xpipe.app.core.window.AppDialog;
 
-import javafx.scene.control.Alert;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 
@@ -26,7 +24,7 @@ public class AppActionLinkDetector {
     }
 
     public static void handle(String content, boolean showAlert) {
-        var detected = LauncherInput.of(content);
+        var detected = AppOpenArguments.parseActions(content);
         if (detected.size() == 0) {
             return;
         }
@@ -35,7 +33,7 @@ public class AppActionLinkDetector {
             return;
         }
 
-        LauncherInput.handle(List.of(content));
+        AppOpenArguments.handle(List.of(content));
     }
 
     public static void detectOnFocus() {
@@ -61,15 +59,6 @@ public class AppActionLinkDetector {
     }
 
     private static boolean showAlert() {
-        return AppWindowHelper.showBlockingAlert(alert -> {
-                    alert.setAlertType(Alert.AlertType.CONFIRMATION);
-                    alert.setTitle(AppI18n.get("clipboardActionDetectedTitle"));
-                    alert.setHeaderText(AppI18n.get("clipboardActionDetectedHeader"));
-                    alert.getDialogPane()
-                            .setContent(
-                                    AppWindowHelper.alertContentText(AppI18n.get("clipboardActionDetectedContent")));
-                })
-                .map(buttonType -> buttonType.getButtonData().isDefaultButton())
-                .orElse(false);
+        return AppDialog.confirm("clipboardActionDetected");
     }
 }

@@ -1,12 +1,8 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.window.AppWindowHelper;
-
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -46,22 +42,22 @@ public class MacOsPermissions {
                             return;
                         }
 
-                        AppWindowHelper.showAlert(
-                                a -> {
-                                    a.setAlertType(Alert.AlertType.INFORMATION);
-                                    a.setTitle(AppI18n.get("permissionsAlertTitle"));
-                                    a.setHeaderText(AppI18n.get("permissionsAlertHeader"));
-                                    a.getDialogPane()
-                                            .setContent(AppWindowHelper.alertContentText(
-                                                    AppI18n.get("permissionsAlertContent")));
-                                    a.getButtonTypes().clear();
-                                    a.getButtonTypes().add(ButtonType.CANCEL);
-                                    alert.set(a);
-                                },
-                                buttonType -> {
-                                    alert.get().close();
-                                    state.set(false);
-                                });
+                        //                        AppWindowHelper.showAlert(
+                        //                                a -> {
+                        //                                    a.setAlertType(Alert.AlertType.INFORMATION);
+                        //                                    a.setTitle(AppI18n.get("permissionsAlertTitle"));
+                        //                                    a.setHeaderText(AppI18n.get("permissionsAlertHeader"));
+                        //                                    a.getDialogPane()
+                        //                                            .setContent(AppWindowHelper.alertContentText(
+                        //                                                    AppI18n.get("permissionsAlertContent")));
+                        //                                    a.getButtonTypes().clear();
+                        //                                    a.getButtonTypes().add(ButtonType.CANCEL);
+                        //                                    alert.set(a);
+                        //                                },
+                        //                                buttonType -> {
+                        //                                    alert.get().close();
+                        //                                    state.set(false);
+                        //                                });
                     });
                     ThreadHelper.sleep(1000);
                 }

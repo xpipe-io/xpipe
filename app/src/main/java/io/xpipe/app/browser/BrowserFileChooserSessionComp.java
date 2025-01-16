@@ -30,6 +30,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import javafx.stage.Window;
+import javafx.stage.WindowEvent;
 
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -50,8 +52,14 @@ public class BrowserFileChooserSessionComp extends DialogComp {
     public static void openSingleFile(
             Supplier<DataStoreEntryRef<? extends FileSystemStore>> store, Consumer<FileReference> file, boolean save) {
         PlatformThread.runLaterIfNeeded(() -> {
+            var lastWindow = Window.getWindows().stream()
+                    .filter(window -> window.isFocused())
+                    .findFirst();
             var model = new BrowserFileChooserSessionModel(BrowserFileSystemTabModel.SelectionMode.SINGLE_FILE);
             DialogComp.showWindow(save ? "saveFileTitle" : "openFileTitle", stage -> {
+                stage.addEventFilter(WindowEvent.WINDOW_HIDDEN, event -> {
+                    lastWindow.ifPresent(window -> window.requestFocus());
+                });
                 var comp = new BrowserFileChooserSessionComp(stage, model);
                 comp.apply(struc -> struc.get().setPrefSize(1200, 700))
                         .apply(struc -> AppFont.normal(struc.get()))
@@ -116,7 +124,8 @@ public class BrowserFileChooserSessionComp extends DialogComp {
 
         var bookmarkTopBar = new BrowserConnectionListFilterComp();
         var bookmarksList = new BrowserConnectionListComp(
-                BindingsHelper.map(model.getSelectedEntry(), v -> v.getEntry().get()),
+                BindingsHelper.map(
+                        model.getSelectedEntry(), v -> v != null ? v.getEntry().get() : null),
                 applicable,
                 action,
                 bookmarkTopBar.getCategory(),

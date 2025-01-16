@@ -17,16 +17,16 @@ public enum SecretQueryState {
                 yield "None";
             }
             case CANCELLED -> {
-                yield "Operation was cancelled";
+                yield "Authentication operation was cancelled";
             }
             case NON_INTERACTIVE -> {
-                yield "Session is not interactive but required user input";
+                yield "Session is not interactive but required user input for authentication";
             }
             case FIXED_SECRET_WRONG -> {
-                yield "Provided secret is wrong";
+                yield "Authentication failed: Provided authentication secret is wrong";
             }
             case RETRIEVAL_FAILURE -> {
-                yield "Failed to retrieve secret";
+                yield "Failed to retrieve secret for authentication";
             }
         };
     }

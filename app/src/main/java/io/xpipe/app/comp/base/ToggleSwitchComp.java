@@ -1,6 +1,8 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompStructure;
+import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.PlatformThread;
 
@@ -10,7 +12,6 @@ import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Region;
 
 import atlantafx.base.controls.ToggleSwitch;
 import lombok.EqualsAndHashCode;
@@ -18,14 +19,14 @@ import lombok.Value;
 
 @Value
 @EqualsAndHashCode(callSuper = true)
-public class ToggleSwitchComp extends SimpleComp {
+public class ToggleSwitchComp extends Comp<CompStructure<ToggleSwitch>> {
 
     Property<Boolean> selected;
     ObservableValue<String> name;
     ObservableValue<LabelGraphic> graphic;
 
     @Override
-    protected Region createSimple() {
+    public CompStructure<ToggleSwitch> createBase() {
         var s = new ToggleSwitch();
         s.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.SPACE || event.getCode() == KeyCode.ENTER) {
@@ -52,6 +53,6 @@ public class ToggleSwitchComp extends SimpleComp {
                     .bind(PlatformThread.sync(graphic.map(labelGraphic -> labelGraphic.createGraphicNode())));
             s.pseudoClassStateChanged(PseudoClass.getPseudoClass("has-graphic"), true);
         }
-        return s;
+        return new SimpleCompStructure<>(s);
     }
 }

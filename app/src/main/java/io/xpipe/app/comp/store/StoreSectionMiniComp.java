@@ -46,7 +46,7 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
         var list = new ArrayList<Comp<?>>();
         BooleanProperty expanded;
         if (section.getWrapper() != null) {
-            var root = new ButtonComp(section.getWrapper().nameProperty(), () -> {})
+            var root = new ButtonComp(section.getWrapper().getShownName(), () -> {})
                     .apply(struc -> {
                         struc.get()
                                 .setGraphic(PrettyImageHelper.ofFixedSize(

@@ -13,17 +13,15 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Value;
+import atlantafx.base.controls.Spacer;
+import lombok.*;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.function.Consumer;
 
-@AllArgsConstructor
 @Getter
 public class TileButtonComp extends Comp<TileButtonComp.Structure> {
 
@@ -32,10 +30,27 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
     private final ObservableValue<String> icon;
     private final Consumer<ActionEvent> action;
 
+    @Setter
+    private double iconSize = 0.55;
+
+    @Setter
+    private Comp<?> right;
+
     public TileButtonComp(String nameKey, String descriptionKey, String icon, Consumer<ActionEvent> action) {
         this.name = AppI18n.observable(nameKey);
         this.description = AppI18n.observable(descriptionKey);
         this.icon = new SimpleStringProperty(icon);
+        this.action = action;
+    }
+
+    public TileButtonComp(
+            ObservableValue<String> name,
+            ObservableValue<String> description,
+            ObservableValue<String> icon,
+            Consumer<ActionEvent> action) {
+        this.name = name;
+        this.description = description;
+        this.icon = icon;
         this.action = action;
     }
 
@@ -44,7 +59,9 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
         var bt = new Button();
         bt.getStyleClass().add("tile-button-comp");
         bt.setOnAction(e -> {
-            action.accept(e);
+            if (action != null) {
+                action.accept(e);
+            }
         });
 
         var header = new Label();
@@ -59,6 +76,11 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
         var fi = new FontIconComp(icon).createStructure();
         var pane = fi.getPane();
         var hbox = new HBox(pane, text);
+        Region rightRegion = right != null ? right.createRegion() : null;
+        if (rightRegion != null) {
+            hbox.getChildren().add(new Spacer());
+            hbox.getChildren().add(rightRegion);
+        }
         hbox.setSpacing(8);
         pane.prefWidthProperty()
                 .bind(Bindings.createDoubleBinding(
@@ -72,7 +94,7 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
                         desc.heightProperty()));
         pane.prefHeightProperty().addListener((c, o, n) -> {
             var size = Math.min(n.intValue(), 100);
-            fi.getIcon().setIconSize((int) (size * 0.55));
+            fi.getIcon().setIconSize((int) (size * iconSize));
         });
         bt.setGraphic(hbox);
         return Structure.builder()
@@ -81,6 +103,7 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
                 .content(hbox)
                 .name(header)
                 .description(desc)
+                .right(rightRegion)
                 .build();
     }
 
@@ -92,6 +115,7 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
         FontIcon graphic;
         Label name;
         Label description;
+        Region right;
 
         @Override
         public Button get() {

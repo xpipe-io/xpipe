@@ -56,6 +56,11 @@ public class ConnectionQueryExchangeImpl extends ConnectionQueryExchange {
                 .build();
     }
 
+    @Override
+    public Object getSynchronizationObject() {
+        return DataStorage.get();
+    }
+
     private String toRegex(String pattern) {
         // https://stackoverflow.com/a/17369948/6477761
         StringBuilder sb = new StringBuilder(pattern.length());

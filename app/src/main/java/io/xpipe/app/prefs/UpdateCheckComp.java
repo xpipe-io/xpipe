@@ -3,7 +3,7 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.update.UpdateAvailableAlert;
+import io.xpipe.app.update.UpdateAvailableDialog;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
@@ -15,6 +15,7 @@ import javafx.scene.layout.Region;
 public class UpdateCheckComp extends SimpleComp {
 
     private final ObservableValue<Boolean> updateReady;
+    private final ObservableValue<Boolean> checking;
 
     public UpdateCheckComp() {
         updateReady = PlatformThread.sync(Bindings.createBooleanBinding(
@@ -26,11 +27,15 @@ public class UpdateCheckComp extends SimpleComp {
                             != null;
                 },
                 XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate()));
+        checking = PlatformThread.sync(
+                XPipeDistributionType.get().getUpdateHandler().getBusy());
     }
 
-    private void performUpdateAndRestart() {
-        XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheckSilent(false, false);
-        UpdateAvailableAlert.showIfNeeded();
+    private void showAlert() {
+        ThreadHelper.runFailableAsync(() -> {
+            XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheckSilent(false, false);
+            UpdateAvailableDialog.showIfNeeded();
+        });
     }
 
     private void refresh() {
@@ -44,6 +49,10 @@ public class UpdateCheckComp extends SimpleComp {
     protected Region createSimple() {
         var name = Bindings.createStringBinding(
                 () -> {
+                    if (checking.getValue()) {
+                        return AppI18n.get("checkingForUpdates");
+                    }
+
                     if (updateReady.getValue()) {
                         var prefix = XPipeDistributionType.get() == XPipeDistributionType.PORTABLE
                                 ? AppI18n.get("updateReadyPortable")
@@ -59,9 +68,14 @@ public class UpdateCheckComp extends SimpleComp {
 
                     return AppI18n.get("checkForUpdates");
                 },
-                updateReady);
+                updateReady,
+                checking);
         var description = Bindings.createStringBinding(
                 () -> {
+                    if (checking.getValue()) {
+                        return AppI18n.get("checkingForUpdatesDescription");
+                    }
+
                     if (updateReady.getValue()) {
                         return XPipeDistributionType.get() == XPipeDistributionType.PORTABLE
                                 ? AppI18n.get("updateReadyDescriptionPortable")
@@ -70,7 +84,8 @@ public class UpdateCheckComp extends SimpleComp {
 
                     return AppI18n.get("checkForUpdatesDescription");
                 },
-                updateReady);
+                updateReady,
+                checking);
         var graphic = Bindings.createObjectBinding(
                 () -> {
                     if (updateReady.getValue()) {
@@ -83,7 +98,7 @@ public class UpdateCheckComp extends SimpleComp {
         return new TileButtonComp(name, description, graphic, actionEvent -> {
                     actionEvent.consume();
                     if (updateReady.getValue()) {
-                        performUpdateAndRestart();
+                        showAlert();
                         return;
                     }
 
@@ -91,8 +106,7 @@ public class UpdateCheckComp extends SimpleComp {
                 })
                 .styleClass("update-button")
                 .grow(true, false)
-                .disable(PlatformThread.sync(
-                        XPipeDistributionType.get().getUpdateHandler().getBusy()))
+                .disable(checking)
                 .createRegion();
     }
 }

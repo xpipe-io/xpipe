@@ -7,6 +7,8 @@ import io.xpipe.core.process.OsType;
 import javafx.scene.Node;
 import javafx.scene.text.Font;
 
+import org.kordamp.ikonli.javafx.FontIcon;
+
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -46,7 +48,12 @@ public class AppFont {
     }
 
     public static void init() {
-        TrackEvent.info("Loading fonts ...");
+        // Load ikonli fonts
+        TrackEvent.info("Loading ikonli fonts ...");
+        new FontIcon("mdi2s-stop");
+        new FontIcon("mdi2m-magnify");
+
+        TrackEvent.info("Loading bundled fonts ...");
         AppResources.with(
                 AppResources.XPIPE_MODULE,
                 "fonts",

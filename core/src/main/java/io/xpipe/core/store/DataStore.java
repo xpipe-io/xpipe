@@ -1,15 +1,9 @@
 package io.xpipe.core.store;
 
-import io.xpipe.core.util.DataStateProvider;
-
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface DataStore {
-
-    default boolean isInStorage() {
-        return DataStateProvider.get().isInStorage(this);
-    }
 
     default boolean isComplete() {
         try {

@@ -30,8 +30,9 @@ public class ScriptHierarchy {
             while (true) {
                 var parent = DataStorage.get().getDefaultDisplayParent(current.get());
                 if (parent.isPresent()) {
-                    all.add(parent.get().ref());
-                    current = parent.get().ref();
+                    DataStoreEntryRef<ScriptStore> next = parent.get().ref();
+                    all.add(next);
+                    current = next;
                 } else {
                     break;
                 }
@@ -51,7 +52,7 @@ public class ScriptHierarchy {
                         return true;
                     }
 
-                    if (!include.test(check.get().ref())) {
+                    if (!include.test(check.asNeeded())) {
                         return false;
                     }
 
@@ -108,6 +109,6 @@ public class ScriptHierarchy {
     }
 
     public DataStoreEntryRef<SimpleScriptStore> getLeafBase() {
-        return base.get().ref();
+        return base.asNeeded();
     }
 }

@@ -7,7 +7,6 @@ import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataStoreSecret;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -26,18 +25,19 @@ public class SecretRetrievalStrategyHelper {
         var original = p.getValue() != null ? p.getValue().getValue() : null;
         var secretProperty = new SimpleObjectProperty<>(
                 p.getValue() != null && p.getValue().getValue() != null
-                        ? p.getValue().getValue().getInternalSecret()
+                        ? p.getValue().getValue()
                         : null);
         return new OptionsBuilder()
                 .addComp(new SecretFieldComp(secretProperty, true), secretProperty)
+                .nonNull()
                 .bind(
                         () -> {
                             var newSecret = secretProperty.get();
                             var changed = !Arrays.equals(
                                     newSecret != null ? newSecret.getSecret() : new char[0],
                                     original != null ? original.getSecret() : new char[0]);
-                            return new SecretRetrievalStrategy.InPlace(
-                                    changed ? new DataStoreSecret(secretProperty.getValue()) : original);
+                            var val = changed ? secretProperty.getValue() : original;
+                            return new SecretRetrievalStrategy.InPlace(val);
                         },
                         p);
     }
@@ -76,6 +76,7 @@ public class SecretRetrievalStrategyHelper {
         var content = new TextFieldComp(cmdProperty);
         return new OptionsBuilder()
                 .addComp(content, cmdProperty)
+                .nonNull()
                 .bind(
                         () -> {
                             return new SecretRetrievalStrategy.CustomCommand(cmdProperty.getValue());

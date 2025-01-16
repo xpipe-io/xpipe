@@ -9,6 +9,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.util.function.Supplier;
+
 public abstract class LabelGraphic {
 
     public static LabelGraphic none() {
@@ -61,6 +63,20 @@ public abstract class LabelGraphic {
         @Override
         public Node createGraphicNode() {
             return comp.styleClass("graphic").createRegion();
+        }
+    }
+
+    @Value
+    @EqualsAndHashCode(callSuper = true)
+    public static class NodeGraphic extends LabelGraphic {
+
+        Supplier<Node> node;
+
+        @Override
+        public Node createGraphicNode() {
+            var n = node.get();
+            n.getStyleClass().add("graphic");
+            return n;
         }
     }
 }

@@ -6,15 +6,18 @@ import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
+import io.xpipe.app.util.ClipboardHelper;
 import io.xpipe.app.util.ContextMenuHelper;
 import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.LabelGraphic;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -47,19 +50,27 @@ public class StoreCategoryComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var name = new LazyTextFieldComp(category.nameProperty())
-                .styleClass("name")
-                .createRegion();
+        var prop = new SimpleStringProperty(category.getName().getValue());
+        AppPrefs.get().censorMode().subscribe(aBoolean -> {
+            var n = category.getName().getValue();
+            prop.setValue(aBoolean ? "*".repeat(n.length()) : n);
+        });
+        prop.addListener((observable, oldValue, newValue) -> {
+            if (!AppPrefs.get().censorMode().get()) {
+                category.getName().setValue(newValue);
+            }
+        });
+        var name = new LazyTextFieldComp(prop).styleClass("name").createRegion();
         var showing = new SimpleBooleanProperty();
 
         var expandIcon = Bindings.createObjectBinding(
                 () -> {
                     var exp = category.getExpanded().get()
-                            && category.getChildren().size() > 0;
+                            && category.getChildren().getList().size() > 0;
                     return new LabelGraphic.IconGraphic(exp ? "mdal-keyboard_arrow_down" : "mdal-keyboard_arrow_right");
                 },
                 category.getExpanded(),
-                category.getChildren());
+                category.getChildren().getList());
         var expandButton = new IconButtonComp(expandIcon, () -> {
                     category.toggleExpanded();
                 })
@@ -69,7 +80,7 @@ public class StoreCategoryComp extends SimpleComp {
                     struc.get().setPadding(new Insets(-2, 0, 0, 0));
                     struc.get().setFocusTraversable(false);
                 })
-                .disable(Bindings.isEmpty(category.getChildren()))
+                .disable(Bindings.isEmpty(category.getChildren().getList()))
                 .styleClass("expand-button")
                 .tooltipKey("expand", new KeyCodeCombination(KeyCode.SPACE));
 
@@ -81,7 +92,10 @@ public class StoreCategoryComp extends SimpleComp {
                     }
 
                     if (!DataStorage.get().supportsSharing()
-                            || !category.getCategory().canShare()) {
+                            || (!category.getCategory().canShare()
+                                    && !category.getCategory()
+                                            .getUuid()
+                                            .equals(DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID))) {
                         return new LabelGraphic.IconGraphic("mdi2g-git");
                     }
 
@@ -93,7 +107,7 @@ public class StoreCategoryComp extends SimpleComp {
                 .apply(struc -> AppFont.small(struc.get()))
                 .apply(struc -> {
                     struc.get().setAlignment(Pos.CENTER);
-                    struc.get().setPadding(new Insets(0, 0, 7, 0));
+                    struc.get().setPadding(new Insets(0, 0, 0, 0));
                     struc.get().setFocusTraversable(false);
                     hover.bind(struc.get().hoverProperty());
                 })
@@ -105,7 +119,8 @@ public class StoreCategoryComp extends SimpleComp {
                         }))
                 .styleClass("status-button");
 
-        var shownList = new DerivedObservableList<>(category.getAllContainedEntries(), true)
+        var shownList = new DerivedObservableList<>(
+                        category.getAllContainedEntries().getList(), true)
                 .filtered(
                         storeEntryWrapper -> {
                             return storeEntryWrapper.matchesFilter(
@@ -113,7 +128,8 @@ public class StoreCategoryComp extends SimpleComp {
                         },
                         StoreViewState.get().getFilterString())
                 .getList();
-        var count = new CountComp<>(shownList, category.getAllContainedEntries(), string -> "(" + string + ")");
+        var count =
+                new CountComp<>(shownList, category.getAllContainedEntries().getList(), string -> "(" + string + ")");
         count.visible(Bindings.isNotEmpty(shownList));
 
         var showStatus = hover.or(new SimpleBooleanProperty(DataStorage.get().supportsSharing()))
@@ -134,7 +150,7 @@ public class StoreCategoryComp extends SimpleComp {
                 .styleClass("category-button")
                 .apply(struc -> hover.bind(struc.get().hoverProperty()))
                 .apply(struc -> focus.bind(struc.get().focusedProperty()))
-                .accessibleText(category.nameProperty())
+                .accessibleText(prop)
                 .grow(true, false);
         categoryButton.apply(new ContextMenuAugment<>(
                 mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY,
@@ -150,6 +166,7 @@ public class StoreCategoryComp extends SimpleComp {
         });
 
         var l = category.getChildren()
+                .getList()
                 .sorted(Comparator.comparing(storeCategoryWrapper ->
                         storeCategoryWrapper.nameProperty().getValue().toLowerCase(Locale.ROOT)));
         var children =
@@ -159,9 +176,9 @@ public class StoreCategoryComp extends SimpleComp {
         var hide = Bindings.createBooleanBinding(
                 () -> {
                     return !category.getExpanded().get()
-                            || category.getChildren().isEmpty();
+                            || category.getChildren().getList().isEmpty();
                 },
-                category.getChildren(),
+                category.getChildren().getList(),
                 category.getExpanded());
         var v = new VerticalComp(List.of(categoryButton, children.hide(hide)));
         v.styleClass("category");
@@ -181,6 +198,13 @@ public class StoreCategoryComp extends SimpleComp {
     private ContextMenu createContextMenu(Region text) {
         var contextMenu = ContextMenuHelper.create();
         AppFont.normal(contextMenu.getStyleableNode());
+
+        if (AppPrefs.get().enableHttpApi().get()) {
+            var copyId = new MenuItem(AppI18n.get("copyId"), new FontIcon("mdi2c-content-copy"));
+            copyId.setOnAction(event ->
+                    ClipboardHelper.copyText(category.getCategory().getUuid().toString()));
+            contextMenu.getItems().add(copyId);
+        }
 
         var newCategory = new MenuItem(AppI18n.get("newCategory"), new FontIcon("mdi2p-plus-thick"));
         newCategory.setOnAction(event -> {
@@ -252,6 +276,7 @@ public class StoreCategoryComp extends SimpleComp {
         del.setOnAction(event -> {
             category.delete();
         });
+        del.setDisable(!DataStorage.get().canDeleteStoreCategory(category.getCategory()));
         contextMenu.getItems().add(del);
 
         return contextMenu;

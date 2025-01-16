@@ -5,10 +5,13 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.HorizontalComp;
+import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.HumanReadableFormat;
+import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
@@ -36,7 +39,8 @@ public class BrowserStatusBarComp extends SimpleComp {
                 createProgressEstimateStatus(),
                 Comp.hspacer(),
                 createClipboardStatus(),
-                createSelectionStatus()));
+                createSelectionStatus(),
+                createKillButton()));
         bar.spacing(15);
         bar.styleClass("status-bar");
 
@@ -48,6 +52,33 @@ public class BrowserStatusBarComp extends SimpleComp {
         AppFont.small(r);
         simulateEmptyCell(r);
         return r;
+    }
+
+    private Comp<?> createKillButton() {
+        var button = new IconButtonComp("mdi2s-stop", () -> {
+            ThreadHelper.runAsync(() -> {
+                model.killTransfer();
+            });
+        });
+        button.accessibleText("Kill").tooltipKey("killTransfer");
+        var cancel = PlatformThread.sync(model.getTransferCancelled());
+        var hide = Bindings.createBooleanBinding(
+                () -> {
+                    if (model.getProgress().getValue() == null
+                            || model.getProgress().getValue().done()) {
+                        return true;
+                    }
+
+                    if (cancel.getValue()) {
+                        return true;
+                    }
+
+                    return false;
+                },
+                cancel,
+                model.getProgress());
+        button.hide(hide);
+        return button;
     }
 
     private Comp<?> createProgressEstimateStatus() {
@@ -97,7 +128,7 @@ public class BrowserStatusBarComp extends SimpleComp {
         var progressComp = new LabelComp(text)
                 .styleClass("progress")
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
-                .prefWidth(180);
+                .hgrow();
         return progressComp;
     }
 

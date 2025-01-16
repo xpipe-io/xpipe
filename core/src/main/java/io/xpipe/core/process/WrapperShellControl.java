@@ -7,8 +7,6 @@ import io.xpipe.core.util.FailableConsumer;
 import lombok.Getter;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +22,16 @@ public class WrapperShellControl implements ShellControl {
 
     public WrapperShellControl(ShellControl parent) {
         this.parent = parent;
+    }
+
+    @Override
+    public ShellView view() {
+        return parent.view();
+    }
+
+    @Override
+    public ShellCapabilities getCapabilities() {
+        return parent.getCapabilities();
     }
 
     @Override
@@ -57,6 +65,11 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
+    public void closeStdout() throws IOException {
+        parent.closeStdout();
+    }
+
+    @Override
     public List<UUID> getExitUuids() {
         return parent.getExitUuids();
     }
@@ -69,6 +82,11 @@ public class WrapperShellControl implements ShellControl {
     @Override
     public Optional<DataStore> getSourceStore() {
         return parent.getSourceStore();
+    }
+
+    @Override
+    public Optional<UUID> getSourceStoreId() {
+        return parent.getSourceStoreId();
     }
 
     @Override
@@ -183,13 +201,13 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public boolean isStdinClosed() {
-        return parent.isStdinClosed();
+    public boolean isAnyStreamClosed() {
+        return parent.isAnyStreamClosed();
     }
 
     @Override
-    public boolean isRunning() {
-        return parent.isRunning();
+    public boolean isRunning(boolean refresh) {
+        return parent.isRunning(true);
     }
 
     @Override
@@ -233,17 +251,17 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public InputStream getStdout() {
+    public LocalProcessInputStream getStdout() {
         return parent.getStdout();
     }
 
     @Override
-    public OutputStream getStdin() {
+    public LocalProcessOutputStream getStdin() {
         return parent.getStdin();
     }
 
     @Override
-    public InputStream getStderr() {
+    public LocalProcessInputStream getStderr() {
         return parent.getStderr();
     }
 

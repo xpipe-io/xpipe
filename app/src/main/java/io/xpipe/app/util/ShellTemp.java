@@ -3,6 +3,7 @@ package io.xpipe.app.util;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FilePath;
 
@@ -59,6 +60,12 @@ public class ShellTemp {
 
     public static void checkTempDirectory(ShellControl proc) throws Exception {
         var d = proc.getShellDialect();
+
+        // We only really need temp for cmd
+        // On various containers the temp might be not available, but we can make it work
+        if (!proc.isLocal() && proc.getShellDialect() != ShellDialects.CMD) {
+            return;
+        }
 
         var systemTemp = proc.getSystemTemporaryDirectory();
         if (!d.directoryExists(proc, systemTemp.toString()).executeAndCheck()

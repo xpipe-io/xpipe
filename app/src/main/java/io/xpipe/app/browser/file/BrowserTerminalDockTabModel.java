@@ -17,6 +17,7 @@ import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableBooleanValue;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 
 import java.util.Optional;
@@ -35,7 +36,7 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
             BrowserAbstractSessionModel<?> browserModel,
             BrowserSessionTab origin,
             ObservableList<UUID> terminalRequests) {
-        super(browserModel, AppI18n.get("terminal"));
+        super(browserModel);
         this.origin = origin;
         this.terminalRequests = terminalRequests;
     }
@@ -152,6 +153,11 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
             TerminalView.get().removeListener(listener);
         }
         dockModel.onClose();
+    }
+
+    @Override
+    public ObservableValue<String> getName() {
+        return AppI18n.observable("terminal");
     }
 
     @Override

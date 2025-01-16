@@ -49,10 +49,18 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
                                 "mdfind -literal 'kMDItemFSName = \"%s.app\"' -onlyin /Applications -onlyin ~/Applications -onlyin /System/Applications",
                                 applicationName))
                         .readStdoutIfPossible();
-                return out.isPresent() && !out.get().isBlank();
+                return out.isPresent() && !out.get().isBlank() && out.get().contains(applicationName + ".app");
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).handle();
                 return false;
+            }
+        }
+
+        public void focus() {
+            try (ShellControl pc = LocalShell.getShell().start()) {
+                pc.command(String.format("open -a \"%s.app\"", applicationName)).execute();
+            } catch (Exception e) {
+                ErrorEvent.fromThrowable(e).handle();
             }
         }
 

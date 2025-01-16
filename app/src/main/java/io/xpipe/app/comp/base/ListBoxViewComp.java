@@ -16,6 +16,8 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -35,10 +37,13 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
     private final int limit = Integer.MAX_VALUE;
     private final boolean scrollBar;
 
+    @Setter
+    private int platformPauseInterval = -1;
+
     public ListBoxViewComp(
             ObservableList<T> shown, ObservableList<T> all, Function<T, Comp<?>> compFunction, boolean scrollBar) {
-        this.shown = PlatformThread.sync(shown);
-        this.all = PlatformThread.sync(all);
+        this.shown = shown;
+        this.all = all;
         this.compFunction = compFunction;
         this.scrollBar = scrollBar;
     }
@@ -95,10 +100,17 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             // Clear cache of unused values
             cache.keySet().removeIf(t -> !all.contains(t));
 
+            final long[] lastPause = {System.currentTimeMillis()};
             // Create copy to reduce chances of concurrent modification
             var shownCopy = new ArrayList<>(shown);
             var newShown = shownCopy.stream()
                     .map(v -> {
+                        var elapsed = System.currentTimeMillis() - lastPause[0];
+                        if (platformPauseInterval != -1 && elapsed > platformPauseInterval) {
+                            PlatformThread.runNestedLoopIteration();
+                            lastPause[0] = System.currentTimeMillis();
+                        }
+
                         if (!cache.containsKey(v)) {
                             var comp = compFunction.apply(v);
                             cache.put(v, comp != null ? comp.createRegion() : null);

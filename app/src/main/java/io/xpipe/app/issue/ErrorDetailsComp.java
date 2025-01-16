@@ -24,7 +24,7 @@ public class ErrorDetailsComp extends SimpleComp {
             AppFont.verySmall(tf);
             tf.setWrapText(false);
             tf.setEditable(false);
-            tf.setPadding(new Insets(10));
+            tf.setPadding(new Insets(10, 0, 10, 0));
             return tf;
         }
 

@@ -5,6 +5,10 @@
 }
 */
 
+* {
+    -fx-icon-color: -color-fg-default;
+}
+
 .root:light, .root:dark {
     -fx-background-color: transparent;
 }
@@ -84,11 +88,16 @@
 
 .icon-browser .table-row-cell {
     -fx-cell-size: 80px;
+    -fx-background-color: transparent;
 }
 
 .icon-browser .table-row-cell .icon-label {
     -fx-padding: 15 0;
     -fx-cursor: hand;
+}
+
+.intro .button {
+    -fx-padding: 6 10;
 }
 
 .root:pretty:light .store-active-comp .dot {

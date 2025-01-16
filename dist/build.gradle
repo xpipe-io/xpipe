@@ -1,6 +1,6 @@
 
 plugins {
-    id 'org.beryx.jlink' version '3.0.1'
+    id 'org.beryx.jlink' version '3.1.1'
     id "org.asciidoctor.jvm.convert" version "4.0.3"
     id 'org.jreleaser' version '1.15.0'
     id("com.netflix.nebula.ospackage") version "11.10.0"
@@ -76,6 +76,7 @@ apply from: 'base.gradle'
 apply from: 'jpackage.gradle'
 
 if (rootProject.fullVersion) {
+    apply from: 'train.gradle'
     apply from: 'base_full.gradle'
     apply from: 'cli.gradle'
     apply from: 'portable.gradle'

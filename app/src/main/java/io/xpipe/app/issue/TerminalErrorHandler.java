@@ -1,15 +1,14 @@
 package io.xpipe.app.issue;
 
+import io.xpipe.app.comp.base.ModalButton;
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.core.window.AppWindowHelper;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.Hyperlinks;
+import io.xpipe.app.util.PlatformInit;
 import io.xpipe.app.util.ThreadHelper;
-
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
 
 public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHandler {
 
@@ -30,6 +29,8 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
             ErrorAction.ignore().handle(event);
         })) {
             // Exit if we couldn't initialize the GUI
+            // Wait a bit to the beacon the ability to respond to any open requests with an error
+            ThreadHelper.sleep(3000);
             OperationMode.halt(1);
             return;
         }
@@ -41,10 +42,8 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
         try {
             AppProperties.init();
             AppExtensionManager.init(false);
-            AppI18n.init();
-            AppStyle.init();
-            AppTheme.init();
-            ErrorHandlerComp.showAndTryWait(event, true);
+            PlatformInit.init(true);
+            ErrorHandlerDialog.showAndWait(event);
         } catch (Throwable r) {
             event.clearAttachments();
             handleWithSecondaryException(event, r);
@@ -55,6 +54,7 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
             handleProbableUpdate();
         }
 
+        ThreadHelper.sleep(1000);
         OperationMode.halt(1);
     }
 
@@ -64,6 +64,7 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
         var second = ErrorEvent.fromThrowable(t).build();
         log.handle(second);
         ErrorAction.ignore().handle(second);
+        ThreadHelper.sleep(1000);
         OperationMode.halt(1);
     }
 
@@ -75,29 +76,18 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
         try {
             var rel = XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheck(false, false);
             if (rel != null && rel.isUpdate()) {
-                var update = AppWindowHelper.showBlockingAlert(alert -> {
-                            alert.setAlertType(Alert.AlertType.INFORMATION);
-                            alert.setTitle(AppI18n.get("updateAvailableTitle"));
-                            alert.setHeaderText(AppI18n.get("updateAvailableHeader", rel.getVersion()));
-                            alert.getDialogPane()
-                                    .setContent(
-                                            AppWindowHelper.alertContentText(AppI18n.get("updateAvailableContent")));
-                            alert.getButtonTypes().clear();
-                            alert.getButtonTypes()
-                                    .add(new ButtonType(AppI18n.get("checkOutUpdate"), ButtonBar.ButtonData.YES));
-                            alert.getButtonTypes().add(new ButtonType(AppI18n.get("ignore"), ButtonBar.ButtonData.NO));
-                        })
-                        .map(buttonType -> buttonType.getButtonData().isDefaultButton())
-                        .orElse(false);
-                if (update) {
-                    Hyperlinks.open(rel.getReleaseUrl());
-                    ThreadHelper.sleep(1000);
-                }
+                var updateModal =
+                        ModalOverlay.of("updateAvailableTitle", AppDialog.dialogTextKey("updateAvailableContent"));
+                updateModal.addButton(
+                        new ModalButton("checkOutUpdate", () -> Hyperlinks.open(rel.getReleaseUrl()), false, true));
+                updateModal.addButton(new ModalButton("ignore", null, true, false));
+                AppDialog.showAndWait(updateModal);
             }
         } catch (Throwable t) {
             var event = ErrorEvent.fromThrowable(t).build();
             log.handle(event);
             ErrorAction.ignore().handle(event);
+            ThreadHelper.sleep(1000);
             OperationMode.halt(1);
         }
     }

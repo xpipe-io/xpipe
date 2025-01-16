@@ -6,6 +6,7 @@ import lombok.Getter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Getter
@@ -25,6 +26,17 @@ public enum XPipeDaemonMode {
     XPipeDaemonMode(String displayName, List<String> nameAlternatives) {
         this.displayName = displayName;
         this.nameAlternatives = nameAlternatives;
+    }
+
+    public static Optional<XPipeDaemonMode> getIfPresent(String name) {
+        if (name == null) {
+            return Optional.empty();
+        }
+
+        return Arrays.stream(XPipeDaemonMode.values())
+                .filter(xPipeDaemonMode ->
+                        xPipeDaemonMode.getNameAlternatives().contains(name.toLowerCase(Locale.ROOT)))
+                .findAny();
     }
 
     public static XPipeDaemonMode get(String name) {

@@ -93,6 +93,18 @@ public abstract class Comp<S extends CompStructure<?>> {
         }));
     }
 
+    public void focusOnShow() {
+        onSceneAssign(struc -> {
+            Platform.runLater(() -> {
+                Platform.runLater(() -> {
+                    Platform.runLater(() -> {
+                        struc.get().requestFocus();
+                    });
+                });
+            });
+        });
+    }
+
     public Comp<S> minWidth(double width) {
         return apply(struc -> struc.get().setMinWidth(width));
     }

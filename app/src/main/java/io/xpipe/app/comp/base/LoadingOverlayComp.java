@@ -18,8 +18,6 @@ import atlantafx.base.controls.RingProgressIndicator;
 
 public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
 
-    private static final double FPS = 30.0;
-    private static final double cycleDurationSeconds = 4.0;
     private final Comp<?> comp;
     private final ObservableValue<Boolean> showLoading;
     private final ObservableValue<Number> progress;
@@ -42,11 +40,6 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
         var loading = new RingProgressIndicator(0, false);
         loading.progressProperty().bind(progress);
         loading.visibleProperty().bind(Bindings.not(AppPrefs.get().performanceMode()));
-
-        //        var pane = new StackPane();
-        //        Parent node = new Indicator((int) (FPS * cycleDurationSeconds), 2.0).getNode();
-        //        pane.getChildren().add(node);
-        //        pane.setAlignment(Pos.CENTER);
 
         var loadingOverlay = new StackPane(loading);
         loadingOverlay.getStyleClass().add("loading-comp");
@@ -92,6 +85,9 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
                         },
                         r.heightProperty()));
         loading.prefHeightProperty().bind(loading.prefWidthProperty());
+
+        stack.prefWidthProperty().bind(r.prefWidthProperty());
+        stack.prefHeightProperty().bind(r.prefHeightProperty());
 
         return new SimpleCompStructure<>(stack);
     }

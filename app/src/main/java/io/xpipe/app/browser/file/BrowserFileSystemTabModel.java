@@ -5,7 +5,6 @@ import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.BrowserStoreSessionTab;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
@@ -44,10 +43,10 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     private final BrowserFileListModel fileList;
     private final ReadOnlyObjectWrapper<String> currentPath = new ReadOnlyObjectWrapper<>();
     private final BrowserFileSystemHistory history = new BrowserFileSystemHistory();
-    private final Property<ModalOverlayComp.OverlayContent> overlay = new SimpleObjectProperty<>();
     private final BooleanProperty inOverview = new SimpleBooleanProperty();
     private final Property<BrowserTransferProgress> progress = new SimpleObjectProperty<>();
     private final ObservableList<UUID> terminalRequests = FXCollections.observableArrayList();
+    private final BooleanProperty transferCancelled = new SimpleBooleanProperty();
     private FileSystem fileSystem;
     private BrowserFileSystemSavedState savedState;
     private BrowserFileSystemCache cache;
@@ -63,6 +62,14 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                 },
                 currentPath));
         fileList = new BrowserFileListModel(selectionMode, this);
+    }
+
+    public Optional<FileEntry> findFile(String path) {
+        return getFileList().getAll().getValue().stream()
+                .filter(browserEntry -> browserEntry.getFileName().equals(path)
+                        || browserEntry.getRawFileEntry().getPath().equals(path))
+                .findFirst()
+                .map(browserEntry -> browserEntry.getRawFileEntry());
     }
 
     @Override
@@ -140,6 +147,14 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         if (s.isPresent()) {
             s.get().start();
         }
+    }
+
+    public void killTransfer() {
+        if (fileSystem == null) {
+            return;
+        }
+
+        transferCancelled.set(true);
     }
 
     public void withShell(FailableConsumer<ShellControl, Exception> c, boolean refresh) {
@@ -384,7 +399,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
 
                 startIfNeeded();
                 var op = BrowserFileTransferOperation.ofLocal(
-                        entry, files, BrowserFileTransferMode.COPY, true, progress::setValue);
+                        entry, files, BrowserFileTransferMode.COPY, true, progress::setValue, transferCancelled);
                 op.execute();
                 refreshSync();
             });
@@ -404,7 +419,8 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                 }
 
                 startIfNeeded();
-                var op = new BrowserFileTransferOperation(target, files, mode, true, progress::setValue);
+                var op = new BrowserFileTransferOperation(
+                        target, files, mode, true, progress::setValue, transferCancelled);
                 op.execute();
                 refreshSync();
             });
@@ -463,10 +479,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     public void runCommandAsync(CommandBuilder command, boolean refresh) {
-        if (name == null || name.isBlank()) {
-            return;
-        }
-
         ThreadHelper.runFailableAsync(() -> {
             BooleanScope.executeExclusive(busy, () -> {
                 if (fileSystem == null) {
@@ -491,10 +503,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     public void runAsync(FailableRunnable<Exception> r, boolean refresh) {
-        if (name == null || name.isBlank()) {
-            return;
-        }
-
         ThreadHelper.runFailableAsync(() -> {
             BooleanScope.executeExclusive(busy, () -> {
                 if (fileSystem == null) {
@@ -566,7 +574,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                         fullSessionModel.splitTab(
                                 this, new BrowserTerminalDockTabModel(browserModel, this, terminalRequests));
                     }
-                    TerminalLauncher.open(entry.getEntry(), name, directory, processControl, uuid, !dock);
+                    TerminalLauncher.open(entry.get(), name, directory, processControl, uuid, !dock);
 
                     // Restart connection as we will have to start it anyway, so we speed it up by doing it preemptively
                     startIfNeeded();
@@ -575,11 +583,11 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         });
     }
 
-    public void backSync(int i) throws Exception {
+    public void backSync(int i) {
         cdSync(history.back(i));
     }
 
-    public void forthSync(int i) throws Exception {
+    public void forthSync(int i) {
         cdSync(history.forth(i));
     }
 

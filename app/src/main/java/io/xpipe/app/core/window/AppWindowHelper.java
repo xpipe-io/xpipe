@@ -8,7 +8,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.util.InputHelper;
-import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.util.PlatformInit;
 import io.xpipe.core.process.OsType;
 
 import javafx.application.Platform;
@@ -17,7 +17,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -30,6 +29,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import lombok.SneakyThrows;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
@@ -41,17 +42,25 @@ import java.util.function.Supplier;
 
 public class AppWindowHelper {
 
-    public static Node alertContentText(String s) {
+    public static Region alertContentText(String s) {
         return alertContentText(s, 450);
     }
 
-    public static Node alertContentText(String s, int width) {
+    public static Region alertContentText(String s, int width) {
         var text = new Text(s);
         text.setWrappingWidth(width);
         AppFont.medium(text);
         var sp = new StackPane(text);
         sp.setPadding(new Insets(5));
         return sp;
+    }
+
+    public static void addMaximizedPseudoClass(Stage stage) {
+        stage.getScene().rootProperty().subscribe(root -> {
+            stage.maximizedProperty().subscribe(v -> {
+                root.pseudoClassStateChanged(PseudoClass.getPseudoClass("maximized"), v);
+            });
+        });
     }
 
     public static void addIcons(Stage stage) {
@@ -95,15 +104,6 @@ public class AppWindowHelper {
         return stage;
     }
 
-    public static void showAlert(Consumer<Alert> c, Consumer<Optional<ButtonType>> bt) {
-        ThreadHelper.runAsync(() -> {
-            var r = showBlockingAlert(c);
-            if (bt != null) {
-                bt.accept(r);
-            }
-        });
-    }
-
     public static void setContent(Alert alert, String s) {
         alert.getDialogPane().setMinWidth(505);
         alert.getDialogPane().setPrefWidth(505);
@@ -134,7 +134,10 @@ public class AppWindowHelper {
                 .orElse(false);
     }
 
+    @SneakyThrows
     public static Optional<ButtonType> showBlockingAlert(Consumer<Alert> c) {
+        PlatformInit.init(true);
+
         Supplier<Alert> supplier = () -> {
             Alert a = AppWindowHelper.createEmptyAlert();
             AppFont.normal(a.getDialogPane());

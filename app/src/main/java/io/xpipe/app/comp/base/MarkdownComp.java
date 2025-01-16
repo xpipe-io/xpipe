@@ -16,6 +16,7 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
@@ -33,15 +34,19 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
 
     private final ObservableValue<String> markdown;
     private final UnaryOperator<String> htmlTransformation;
+    private final boolean bodyPadding;
 
-    public MarkdownComp(String markdown, UnaryOperator<String> htmlTransformation) {
+    public MarkdownComp(String markdown, UnaryOperator<String> htmlTransformation, boolean bodyPadding) {
         this.markdown = new SimpleStringProperty(markdown);
         this.htmlTransformation = htmlTransformation;
+        this.bodyPadding = bodyPadding;
     }
 
-    public MarkdownComp(ObservableValue<String> markdown, UnaryOperator<String> htmlTransformation) {
+    public MarkdownComp(
+            ObservableValue<String> markdown, UnaryOperator<String> htmlTransformation, boolean bodyPadding) {
         this.markdown = markdown;
         this.htmlTransformation = htmlTransformation;
+        this.bodyPadding = bodyPadding;
     }
 
     private static Path TEMP;
@@ -55,13 +60,19 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
             return null;
         }
 
-        var hash = markdown.hashCode();
+        int hash;
+        // Rebuild files for updates in case the css have been changed
+        if (AppProperties.get().isImage()) {
+            hash = markdown.hashCode() + AppProperties.get().getVersion().hashCode();
+        } else {
+            hash = markdown.hashCode();
+        }
         var file = TEMP.resolve("md-" + hash + ".html");
         if (Files.exists(file)) {
             return file;
         }
 
-        var html = MarkdownHelper.toHtml(markdown, s -> s, htmlTransformation, null);
+        var html = MarkdownHelper.toHtml(markdown, s -> s, htmlTransformation, bodyPadding ? "padded" : null);
         try {
             // Workaround for https://bugs.openjdk.org/browse/JDK-8199014
             FileUtils.forceMkdir(file.getParent().toFile());
@@ -79,10 +90,10 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
         var wv = new WebView();
         wv.getEngine().setJavaScriptEnabled(false);
         wv.setContextMenuEnabled(false);
+        wv.setPageFill(Color.TRANSPARENT);
         wv.getEngine()
                 .setUserDataDirectory(
                         AppProperties.get().getDataDir().resolve("webview").toFile());
-        wv.setPageFill(Color.TRANSPARENT);
         var theme = AppPrefs.get() != null
                         && AppPrefs.get().theme.getValue() != null
                         && AppPrefs.get().theme.getValue().isDark()
@@ -99,6 +110,14 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
             }
         });
 
+        // Fix initial scrollbar size
+        wv.lookupAll(".scroll-bar").stream().findFirst().ifPresent(node -> {
+            Region region = (Region) node;
+            region.setMinWidth(0);
+            region.setPrefWidth(7);
+            region.setMaxWidth(7);
+        });
+
         wv.getStyleClass().add("markdown-comp");
         addLinkHandler(wv.getEngine());
         return wv;
@@ -109,7 +128,7 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
                 .stateProperty()
                 .addListener((observable, oldValue, newValue) -> Platform.runLater(() -> {
                     String toBeopen = engine.getLoadWorker().getMessage().trim().replace("Loading ", "");
-                    if (toBeopen.contains("http://") || toBeopen.contains("https://")) {
+                    if (toBeopen.contains("http://") || toBeopen.contains("https://") || toBeopen.contains("mailto:")) {
                         engine.getLoadWorker().cancel();
                         Hyperlinks.open(toBeopen);
                     }

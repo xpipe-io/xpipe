@@ -31,6 +31,7 @@ public class StoreEntryListComp extends SimpleComp {
                     return custom;
                 },
                 true);
+        content.setPlatformPauseInterval(50);
         content.apply(struc -> {
             // Reset scroll
             StoreViewState.get().getActiveCategory().addListener((observable, oldValue, newValue) -> {
@@ -62,6 +63,22 @@ public class StoreEntryListComp extends SimpleComp {
                                     wrapper.getCategory().getValue().getRoot()))
                             .toList();
                     return initialCount == connections.size()
+                            && StoreViewState.get()
+                                    .getActiveCategory()
+                                    .getValue()
+                                    .getRoot()
+                                    .equals(allCat);
+                },
+                StoreViewState.get().getAllEntries().getList(),
+                StoreViewState.get().getActiveCategory());
+        var showIdentitiesIntro = Bindings.createBooleanBinding(
+                () -> {
+                    var allCat = StoreViewState.get().getAllIdentitiesCategory();
+                    var connections = StoreViewState.get().getAllEntries().getList().stream()
+                            .filter(wrapper -> allCat.equals(
+                                    wrapper.getCategory().getValue().getRoot()))
+                            .toList();
+                    return 0 == connections.size()
                             && StoreViewState.get()
                                     .getActiveCategory()
                                     .getValue()
@@ -123,6 +140,7 @@ public class StoreEntryListComp extends SimpleComp {
         map.put(createList(), showList);
         map.put(new StoreIntroComp(), showIntro);
         map.put(new StoreScriptsIntroComp(scriptsIntroShowing), showScriptsIntro);
+        map.put(new StoreIdentitiesIntroComp(), showIdentitiesIntro);
 
         return new MultiContentComp(map).createRegion();
     }

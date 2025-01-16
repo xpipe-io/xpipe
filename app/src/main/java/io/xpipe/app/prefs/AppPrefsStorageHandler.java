@@ -3,16 +3,21 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.util.JsonConfigHelper;
 import io.xpipe.core.util.JacksonMapper;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import org.apache.commons.io.FileUtils;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import static io.xpipe.app.ext.PrefsChoiceValue.getAll;
 import static io.xpipe.app.ext.PrefsChoiceValue.getSupported;
@@ -37,7 +42,19 @@ public class AppPrefsStorageHandler {
 
     private void loadIfNeeded() {
         if (content == null) {
-            content = JsonConfigHelper.readConfigObject(file);
+            if (Files.exists(file)) {
+                try {
+                    ObjectMapper o = JacksonMapper.getDefault();
+                    var read = o.readTree(Files.readAllBytes(file));
+                    content = read.isObject() ? (ObjectNode) read : null;
+                } catch (IOException e) {
+                    ErrorEvent.fromThrowable(e).handle();
+                }
+            }
+
+            if (content == null) {
+                content = JsonNodeFactory.instance.objectNode();
+            }
         }
     }
 
@@ -46,7 +63,12 @@ public class AppPrefsStorageHandler {
     }
 
     void save() {
-        JsonConfigHelper.writeConfig(file, content);
+        try {
+            FileUtils.forceMkdir(file.getParent().toFile());
+            JacksonMapper.getDefault().writeValue(file.toFile(), content);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void updateObject(String key, Object object) {
@@ -57,7 +79,7 @@ public class AppPrefsStorageHandler {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T loadObject(String id, Class<T> type, T defaultObject) {
+    public <T> T loadObject(String id, JavaType type, T defaultObject) {
         var tree = getContent(id);
         if (tree == null) {
             TrackEvent.withDebug("Preferences value not found")
@@ -67,10 +89,10 @@ public class AppPrefsStorageHandler {
             return defaultObject;
         }
 
-        if (PrefsChoiceValue.class.isAssignableFrom(type)) {
-            var all = getAll(type);
+        if (PrefsChoiceValue.class.isAssignableFrom(type.getRawClass())) {
+            List<T> all = (List<T>) getAll(type.getRawClass());
             if (all != null) {
-                Class<PrefsChoiceValue> cast = (Class<PrefsChoiceValue>) type;
+                Class<PrefsChoiceValue> cast = (Class<PrefsChoiceValue>) type.getRawClass();
                 var in = tree.asText();
                 var found = all.stream()
                         .filter(t -> ((PrefsChoiceValue) t).getId().equalsIgnoreCase(in))

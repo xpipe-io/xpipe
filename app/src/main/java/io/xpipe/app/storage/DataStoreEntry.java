@@ -2,6 +2,7 @@ package io.xpipe.app.storage;
 
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
+import io.xpipe.app.ext.UserScopeStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.resources.SystemIcons;
 import io.xpipe.app.util.ThreadHelper;
@@ -35,7 +36,7 @@ public class DataStoreEntry extends StorageElement {
 
     @NonFinal
     @Setter
-    JsonNode storeNode;
+    DataStorageNode storeNode;
 
     @Getter
     @NonFinal
@@ -67,6 +68,9 @@ public class DataStoreEntry extends StorageElement {
     String notes;
 
     @NonFinal
+    String lastWrittenNotes;
+
+    @NonFinal
     Order explicitOrder;
 
     @NonFinal
@@ -80,7 +84,7 @@ public class DataStoreEntry extends StorageElement {
             Instant lastUsed,
             Instant lastModified,
             DataStore store,
-            JsonNode storeNode,
+            DataStorageNode storeNode,
             boolean dirty,
             Validity validity,
             Configuration configuration,
@@ -118,7 +122,7 @@ public class DataStoreEntry extends StorageElement {
         this.store = store;
         this.explicitOrder = explicitOrder;
         this.icon = icon;
-        this.storeNode = null;
+        this.storeNode = DataStorageNode.fail();
         this.validity = Validity.INCOMPLETE;
         this.configuration = Configuration.defaultConfiguration();
         this.expanded = false;
@@ -147,8 +151,8 @@ public class DataStoreEntry extends StorageElement {
     @SneakyThrows
     public static DataStoreEntry createNew(
             @NonNull UUID uuid, @NonNull UUID categoryUuid, @NonNull String name, @NonNull DataStore store) {
-        var node = JacksonMapper.getDefault().valueToTree(store);
-        var storeFromNode = JacksonMapper.getDefault().treeToValue(node, DataStore.class);
+        var storeNode = DataStorageNode.ofNewStore(store);
+        var storeFromNode = storeNode.parseStore();
         var validity = storeFromNode == null
                 ? Validity.LOAD_FAILED
                 : store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE;
@@ -161,7 +165,7 @@ public class DataStoreEntry extends StorageElement {
                 Instant.now(),
                 Instant.now(),
                 storeFromNode,
-                node,
+                storeNode,
                 true,
                 validity,
                 Configuration.defaultConfiguration(),
@@ -208,7 +212,8 @@ public class DataStoreEntry extends StorageElement {
         var entryFile = dir.resolve("entry.json");
         var storeFile = dir.resolve("store.json");
         var stateFile = dir.resolve("state.json");
-        var notesFile = dir.resolve("notes.md");
+        var normalNotesFile = dir.resolve("notes.md");
+        var encryptedNotesFile = dir.resolve("notes.json");
         if (!Files.exists(entryFile) || !Files.exists(storeFile)) {
             return Optional.empty();
         }
@@ -281,16 +286,21 @@ public class DataStoreEntry extends StorageElement {
         }
 
         String notes = null;
-        if (Files.exists(notesFile)) {
-            notes = Files.readString(notesFile);
+        if (Files.exists(normalNotesFile)) {
+            notes = Files.readString(normalNotesFile);
+        }
+        if (Files.exists(encryptedNotesFile)) {
+            var node = DataStorageNode.readPossiblyEncryptedNode(mapper.readTree(encryptedNotesFile.toFile()));
+            var mdNode = node.getContentNode().get("markdown");
+            notes = mdNode != null ? mdNode.asText() : null;
         }
         if (notes != null && notes.isBlank()) {
             notes = null;
         }
 
-        // Store loading is prone to errors.
-        JsonNode storeNode = DataStorageEncryption.readPossiblyEncryptedNode(mapper.readTree(storeFile.toFile()));
-        var store = JacksonMapper.getDefault().treeToValue(storeNode, DataStore.class);
+        var fileNode = mapper.readTree(storeFile.toFile());
+        var node = DataStorageNode.readPossiblyEncryptedNode(fileNode);
+        var store = node.parseStore();
         return Optional.of(new DataStoreEntry(
                 dir,
                 uuid,
@@ -299,7 +309,7 @@ public class DataStoreEntry extends StorageElement {
                 lastUsed,
                 lastModified,
                 store,
-                storeNode,
+                node,
                 false,
                 store == null ? Validity.LOAD_FAILED : Validity.INCOMPLETE,
                 configuration,
@@ -332,6 +342,15 @@ public class DataStoreEntry extends StorageElement {
     @Override
     public String toString() {
         return getName();
+    }
+
+    public boolean isPerUserStore() {
+        var perUser = false;
+        try {
+            perUser = store instanceof UserScopeStore s && s.isPerUser();
+        } catch (Exception ignored) {
+        }
+        return perUser;
     }
 
     public void incrementBusyCounter() {
@@ -429,34 +448,52 @@ public class DataStoreEntry extends StorageElement {
         }
 
         ObjectMapper mapper = JacksonMapper.getDefault();
+
         ObjectNode obj = JsonNodeFactory.instance.objectNode();
-        ObjectNode stateObj = JsonNodeFactory.instance.objectNode();
         obj.put("uuid", uuid.toString());
         obj.put("name", name);
         obj.put("categoryUuid", categoryUuid.toString());
         obj.set("color", mapper.valueToTree(color));
         obj.set("icon", mapper.valueToTree(icon));
+        obj.set("configuration", mapper.valueToTree(configuration));
+
+        ObjectNode stateObj = JsonNodeFactory.instance.objectNode();
         stateObj.put("lastUsed", lastUsed.toString());
         stateObj.put("lastModified", lastModified.toString());
         stateObj.set("persistentState", storePersistentStateNode);
-        obj.set("configuration", mapper.valueToTree(configuration));
         stateObj.put("expanded", expanded);
         stateObj.set("order", mapper.valueToTree(explicitOrder));
 
         var entryString = mapper.writeValueAsString(obj);
         var stateString = mapper.writeValueAsString(stateObj);
-        var storeString = mapper.writeValueAsString(DataStorageEncryption.encryptNodeIfNeeded(storeNode));
+        var storeString = mapper.writeValueAsString(DataStorageNode.encryptNodeIfNeeded(storeNode));
 
         FileUtils.forceMkdir(directory.toFile());
         Files.writeString(directory.resolve("state.json"), stateString);
         Files.writeString(directory.resolve("entry.json"), entryString);
         Files.writeString(directory.resolve("store.json"), storeString);
-        var notesFile = directory.resolve("notes.md");
-        if (Files.exists(notesFile) && notes == null) {
-            Files.delete(notesFile);
-        } else if (notes != null) {
-            Files.writeString(notesFile, notes);
+
+        var encryptNotes = storeNode.isEncrypted();
+        var normalNotesFile = directory.resolve("notes.md");
+        var encryptedNotesFile = directory.resolve("notes.json");
+        if (Files.exists(normalNotesFile) && (notes == null || encryptNotes)) {
+            Files.delete(normalNotesFile);
         }
+        if (Files.exists(encryptedNotesFile) && (notes == null || !encryptNotes)) {
+            Files.delete(encryptedNotesFile);
+        }
+        if (notes != null && encryptNotes) {
+            var notesNode = JsonNodeFactory.instance.objectNode();
+            notesNode.put("markdown", notes);
+            var storageNode = DataStorageNode.encryptNodeIfNeeded(new DataStorageNode(
+                    notesNode, storeNode.isPerUser(), storeNode.isAvailableForUser(), storeNode.isEncrypted()));
+            var string = mapper.writeValueAsString(storageNode);
+            Files.writeString(encryptedNotesFile, string);
+        } else if (notes != null) {
+            Files.writeString(normalNotesFile, notes);
+        }
+        lastWrittenNotes = notes;
+
         dirty = false;
     }
 
@@ -492,8 +529,12 @@ public class DataStoreEntry extends StorageElement {
             return;
         }
 
+        if (!storeNode.hasAccess()) {
+            return;
+        }
+
         this.store = store;
-        this.storeNode = JacksonMapper.getDefault().valueToTree(store);
+        this.storeNode = this.storeNode.withStore(store);
         this.provider = DataStoreProviders.byStore(store);
         if (updateTime) {
             lastModified = Instant.now();
@@ -502,8 +543,8 @@ public class DataStoreEntry extends StorageElement {
         dirty = true;
     }
 
-    public void reassignStore() {
-        this.storeNode = JacksonMapper.getDefault().valueToTree(store);
+    public void reassignStoreNode() {
+        this.storeNode = this.storeNode.withStore(store);
         dirty = true;
     }
 
@@ -540,7 +581,7 @@ public class DataStoreEntry extends StorageElement {
 
         DataStore newStore;
         try {
-            newStore = JacksonMapper.getDefault().treeToValue(storeNode, DataStore.class);
+            newStore = storeNode.parseStore();
             // Check whether we have a provider as well
             DataStoreProviders.byStore(newStore);
         } catch (Throwable e) {
@@ -549,8 +590,10 @@ public class DataStoreEntry extends StorageElement {
         }
 
         if (newStore == null) {
+            var changed = store != null;
             store = null;
             validity = Validity.LOAD_FAILED;
+            notifyUpdate(false, changed);
             return;
         }
 
@@ -561,12 +604,17 @@ public class DataStoreEntry extends StorageElement {
             return;
         }
 
+        var newPerUser = false;
+        try {
+            newPerUser = newStore instanceof UserScopeStore u && u.isPerUser();
+        } catch (Exception ignored) {
+        }
+        var perUserChanged = isPerUserStore() != newPerUser;
         if (!newStore.equals(store)) {
             store = newStore;
         }
         validity = Validity.COMPLETE;
-        // Don't count this as modification as this is done always
-        notifyUpdate(false, false);
+        notifyUpdate(false, perUserChanged);
     }
 
     public void initializeEntry() {

@@ -2,8 +2,6 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.comp.base.SecretFieldComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppStyle;
-import io.xpipe.app.core.AppTheme;
 import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.core.util.InPlaceSecretValue;
 
@@ -15,20 +13,16 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 public class AskpassAlert {
 
     public static SecretQueryResult queryRaw(String prompt, InPlaceSecretValue secretValue) {
-        if (!PlatformState.initPlatformIfNeeded()) {
-            return new SecretQueryResult(null, SecretQueryState.CANCELLED);
-        }
-
-        AppStyle.init();
-        AppTheme.init();
-
         var prop = new SimpleObjectProperty<>(secretValue);
         var r = AppWindowHelper.showBlockingAlert(alert -> {
+                    alert.initModality(Modality.NONE);
                     alert.setTitle(AppI18n.get("askpassAlertTitle"));
                     alert.setHeaderText(prompt);
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
@@ -60,7 +54,15 @@ public class AskpassAlert {
                                 return;
                             }
 
-                            if (regainedFocusCount >= 2) {
+                            if (regainedFocusCount >= 3) {
+                                return;
+                            }
+
+                            var hasInternalFocus = Window.getWindows().stream()
+                                    .filter(window -> window != stage)
+                                    .anyMatch(window -> window instanceof Stage s
+                                            && s.focusedProperty().get());
+                            if (hasInternalFocus) {
                                 return;
                             }
 
@@ -78,6 +80,7 @@ public class AskpassAlert {
                             if (!hasFocus) {
                                 regainedFocusCount++;
                             }
+
                             stage.requestFocus();
                             lastRun = now;
                         }

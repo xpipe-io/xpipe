@@ -120,8 +120,8 @@ public class BrowserTransferModel {
             return;
         }
 
-        if (item.getOpenFileSystemModel() != null
-                && item.getOpenFileSystemModel().isClosed()) {
+        var itemModel = item.getOpenFileSystemModel();
+        if (itemModel == null || itemModel.isClosed()) {
             return;
         }
 
@@ -134,15 +134,16 @@ public class BrowserTransferModel {
                     progress -> {
                         // Don't update item progress to keep it as finished
                         if (progress == null) {
-                            item.getOpenFileSystemModel().getProgress().setValue(null);
+                            itemModel.getProgress().setValue(null);
                             return;
                         }
 
                         synchronized (item.getProgress()) {
                             item.getProgress().setValue(progress);
                         }
-                        item.getOpenFileSystemModel().getProgress().setValue(progress);
-                    });
+                        itemModel.getProgress().setValue(progress);
+                    },
+                    itemModel.getTransferCancelled());
             op.execute();
         } catch (Throwable t) {
             ErrorEvent.fromThrowable(t).handle();

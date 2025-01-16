@@ -13,7 +13,7 @@ public class StoreRestartAction implements ActionProvider {
 
     @Override
     public LeafDataStoreCallSite<?> getLeafDataStoreCallSite() {
-        return new LeafDataStoreCallSite<DataStore>() {
+        return new LeafDataStoreCallSite<>() {
 
             @Override
             public ActionProvider.Action createAction(DataStoreEntryRef<DataStore> store) {

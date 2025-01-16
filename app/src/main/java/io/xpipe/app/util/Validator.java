@@ -1,65 +1,69 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.core.util.FailableRunnable;
 
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 
 import net.synedra.validatorfx.Check;
 import net.synedra.validatorfx.ValidationResult;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.function.Predicate;
 
 public interface Validator {
 
-    static Check absolutePath(Validator v, ObservableValue<Path> s) {
-        return v.createCheck().dependsOn("val", s).withMethod(c -> {
-            if (c.get("val") == null || !((Path) c.get("val")).isAbsolute()) {
-                c.error(AppI18n.get("app.notAnAbsolutePath"));
-            }
-        });
-    }
-
-    static Check directory(Validator v, ObservableValue<Path> s) {
-        return v.createCheck().dependsOn("val", s).withMethod(c -> {
-            if (c.get("val") instanceof Path p && (!Files.exists(p) || !Files.isDirectory(p))) {
-                c.error(AppI18n.get("app.notADirectory"));
-            }
-        });
-    }
-
     static Check nonNull(Validator v, ObservableValue<String> name, ObservableValue<?> s) {
-        return v.createCheck().dependsOn("val", s).withMethod(c -> {
-            if (c.get("val") == null) {
-                c.error(AppI18n.get("app.mustNotBeEmpty", name != null ? name.getValue() : "null"));
-            }
-        });
+        return v.createCheck()
+                .dependsOn("val", s)
+                .withMethod(c -> {
+                    if (c.get("val") == null) {
+                        c.error(AppI18n.get(
+                                "app.mustNotBeEmpty", name != null ? name.getValue() : AppI18n.get("value")));
+                    }
+                })
+                .immediate();
+    }
+
+    static Check nonNullIf(
+            Validator v, ObservableValue<String> name, ObservableValue<?> s, ObservableValue<Boolean> checkIf) {
+        return v.createCheck()
+                .dependsOn("val", s)
+                .dependsOn("if", checkIf)
+                .withMethod(c -> {
+                    if (Boolean.TRUE.equals(c.get("if")) && c.get("val") == null) {
+                        c.error(AppI18n.get(
+                                "app.mustNotBeEmpty", name != null ? name.getValue() : AppI18n.get("value")));
+                    }
+                })
+                .immediate();
     }
 
     static Check nonEmpty(Validator v, ObservableValue<String> name, ReadOnlyListProperty<?> s) {
-        return v.createCheck().dependsOn("val", s).withMethod(c -> {
-            if (((ObservableList<?>) c.get("val")).size() == 0) {
-                c.error(AppI18n.get("app.mustNotBeEmpty", name != null ? name.getValue() : "null"));
-            }
-        });
+        return v.createCheck()
+                .dependsOn("val", s)
+                .withMethod(c -> {
+                    if (((ObservableList<?>) c.get("val")).size() == 0) {
+                        c.error(AppI18n.get(
+                                "app.mustNotBeEmpty", name != null ? name.getValue() : AppI18n.get("value")));
+                    }
+                })
+                .immediate();
     }
 
-    static Check exceptionWrapper(Validator v, ObservableValue<?> s, FailableRunnable<Exception> ex) {
-        return v.createCheck().dependsOn("val", s).withMethod(c -> {
-            if (c.get("val") == null) {
-                try {
-                    ex.run();
-                } catch (Exception e) {
-                    c.error(e.getMessage());
-                }
-            }
-        });
+    static <T> Check create(Validator v, ObservableValue<String> message, ReadOnlyProperty<T> s, Predicate<T> p) {
+        return v.createCheck()
+                .dependsOn("val", s)
+                .withMethod(c -> {
+                    if (!p.test(c.get("val"))) {
+                        c.error(message.getValue());
+                    }
+                })
+                .immediate();
     }
 
     Check createCheck();

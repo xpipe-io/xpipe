@@ -12,12 +12,12 @@ public interface LicensedFeature {
 
     ObservableValue<String> suffixObservable(ObservableValue<String> s);
 
-    public default ObservableValue<String> suffixObservable(String key) {
+    default ObservableValue<String> suffixObservable(String key) {
         return suffixObservable(AppI18n.observable(key));
     }
 
-    public default String suffix(String s) {
-        return getDescriptionSuffix().map(suffix -> s + " (" + suffix + "+)").orElse(s);
+    default String suffix(String s) {
+        return getDescriptionSuffix().map(suffix -> s + " (" + suffix + ")").orElse(s);
     }
 
     String getId();

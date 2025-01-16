@@ -6,7 +6,7 @@ import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.ModalOverlayComp;
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.core.process.CommandBuilder;
@@ -113,30 +113,27 @@ public abstract class BaseCompressAction implements BrowserAction, BrowserBranch
         @Override
         public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             var name = new SimpleStringProperty(directory ? entries.getFirst().getFileName() : null);
-            model.getOverlay()
-                    .setValue(new ModalOverlayComp.OverlayContent(
-                            "base.archiveName",
-                            Comp.of(() -> {
-                                        var creationName = new TextField();
-                                        creationName.textProperty().bindBidirectional(name);
-                                        return creationName;
-                                    })
-                                    .prefWidth(350),
-                            null,
-                            "finish",
-                            () -> {
-                                var fixedName = name.getValue();
-                                if (fixedName == null) {
-                                    return;
-                                }
+            var modal = ModalOverlay.of(
+                    "base.archiveName",
+                    Comp.of(() -> {
+                                var creationName = new TextField();
+                                creationName.textProperty().bindBidirectional(name);
+                                return creationName;
+                            })
+                            .prefWidth(350));
+            modal.withDefaultButtons(() -> {
+                var fixedName = name.getValue();
+                if (fixedName == null) {
+                    return;
+                }
 
-                                if (!fixedName.endsWith(getExtension())) {
-                                    fixedName = fixedName + "." + getExtension();
-                                }
+                if (!fixedName.endsWith(getExtension())) {
+                    fixedName = fixedName + "." + getExtension();
+                }
 
-                                create(fixedName, model, entries);
-                            },
-                            true));
+                create(fixedName, model, entries);
+            });
+            modal.show();
         }
 
         @Override
@@ -207,8 +204,8 @@ public abstract class BaseCompressAction implements BrowserAction, BrowserBranch
             var base = new FilePath(model.getCurrentDirectory().getPath());
             var target = base.join(fileName);
             var command = CommandBuilder.of().add("zip", "-r", "-");
-            for (int i = 0; i < entries.size(); i++) {
-                var rel = new FilePath(entries.get(i).getRawFileEntry().getPath())
+            for (BrowserEntry entry : entries) {
+                var rel = new FilePath(entry.getRawFileEntry().getPath())
                         .relativize(base)
                         .toUnix();
                 if (directory) {
@@ -264,8 +261,8 @@ public abstract class BaseCompressAction implements BrowserAction, BrowserBranch
                     .add("a")
                     .add("-r")
                     .addFile(target);
-            for (int i = 0; i < entries.size(); i++) {
-                var rel = new FilePath(entries.get(i).getRawFileEntry().getPath()).relativize(base);
+            for (BrowserEntry entry : entries) {
+                var rel = new FilePath(entry.getRawFileEntry().getPath()).relativize(base);
                 if (directory) {
                     command.addQuoted(".\\" + rel.toDirectory().toWindows() + "*");
                 } else {

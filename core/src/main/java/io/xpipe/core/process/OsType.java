@@ -113,7 +113,22 @@ public interface OsType {
 
         @Override
         public String getUserHomeDirectory(ShellControl pc) throws Exception {
-            return pc.executeSimpleStringCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("HOME"));
+            var r = pc.executeSimpleStringCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("HOME"));
+            if (r.isBlank()) {
+                var user = pc.view().user();
+                var eval = pc.command("eval echo ~" + user).readStdoutIfPossible();
+                if (eval.isPresent() && !eval.get().isBlank()) {
+                    return eval.get();
+                }
+
+                if (user.equals("root")) {
+                    return "/root";
+                } else {
+                    return "/home/" + user;
+                }
+            } else {
+                return r;
+            }
         }
 
         @Override

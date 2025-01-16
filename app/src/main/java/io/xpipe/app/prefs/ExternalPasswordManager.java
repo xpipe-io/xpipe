@@ -5,15 +5,33 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.process.ShellControl;
 
 import java.util.List;
 import java.util.stream.Stream;
 
 public interface ExternalPasswordManager extends PrefsChoiceValue {
 
+    String getDocsLink();
+
     String retrievePassword(String key);
 
     ExternalPasswordManager COMMAND = new ExternalPasswordManager() {
+
+        private static ShellControl SHELL;
+
+        private static synchronized ShellControl getOrStartShell() throws Exception {
+            if (SHELL == null) {
+                SHELL = ProcessControlProvider.get().createLocalProcessControl(true);
+            }
+            SHELL.start();
+            return SHELL;
+        }
+
+        @Override
+        public String getDocsLink() {
+            return null;
+        }
 
         @Override
         public String retrievePassword(String key) {
@@ -22,10 +40,7 @@ public interface ExternalPasswordManager extends PrefsChoiceValue {
                 return null;
             }
 
-            try (var cc = ProcessControlProvider.get()
-                    .createLocalProcessControl(true)
-                    .command(cmd)
-                    .start()) {
+            try (var cc = getOrStartShell().command(cmd).start()) {
                 var out = cc.readStdoutOrThrow();
 
                 // Dashlane fixes
@@ -55,6 +70,11 @@ public interface ExternalPasswordManager extends PrefsChoiceValue {
     ExternalPasswordManager WINDOWS_CREDENTIAL_MANAGER = new ExternalPasswordManager() {
 
         private boolean loaded = false;
+
+        @Override
+        public String getDocsLink() {
+            return "https://support.microsoft.com/en-us/windows/accessing-credential-manager-1b5c916a-6a16-889f-8581-fc16e8165ac0";
+        }
 
         @Override
         public synchronized String retrievePassword(String key) {

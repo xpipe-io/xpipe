@@ -3,6 +3,8 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.store.*;
 
+import javafx.beans.property.BooleanProperty;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,6 +22,7 @@ public class BrowserFileTransferOperation {
     private final BrowserFileTransferMode transferMode;
     private final boolean checkConflicts;
     private final Consumer<BrowserTransferProgress> progress;
+    private final BooleanProperty cancelled;
 
     BrowserAlerts.FileConflictChoice lastConflictChoice;
 
@@ -28,12 +31,14 @@ public class BrowserFileTransferOperation {
             List<FileEntry> files,
             BrowserFileTransferMode transferMode,
             boolean checkConflicts,
-            Consumer<BrowserTransferProgress> progress) {
+            Consumer<BrowserTransferProgress> progress,
+            BooleanProperty cancelled) {
         this.target = target;
         this.files = files;
         this.transferMode = transferMode;
         this.checkConflicts = checkConflicts;
         this.progress = progress;
+        this.cancelled = cancelled;
     }
 
     public static BrowserFileTransferOperation ofLocal(
@@ -41,7 +46,8 @@ public class BrowserFileTransferOperation {
             List<Path> files,
             BrowserFileTransferMode transferMode,
             boolean checkConflicts,
-            Consumer<BrowserTransferProgress> progress) {
+            Consumer<BrowserTransferProgress> progress,
+            BooleanProperty cancelled) {
         var entries = files.stream()
                 .map(path -> {
                     if (!Files.exists(path)) {
@@ -56,7 +62,7 @@ public class BrowserFileTransferOperation {
                 })
                 .filter(entry -> entry != null)
                 .toList();
-        return new BrowserFileTransferOperation(target, entries, transferMode, checkConflicts, progress);
+        return new BrowserFileTransferOperation(target, entries, transferMode, checkConflicts, progress, cancelled);
     }
 
     private void updateProgress(BrowserTransferProgress progress) {
@@ -112,11 +118,17 @@ public class BrowserFileTransferOperation {
         return BrowserAlerts.FileConflictChoice.REPLACE;
     }
 
+    private boolean cancelled() {
+        return cancelled.get();
+    }
+
     public void execute() throws Exception {
         if (files.isEmpty()) {
             updateProgress(null);
             return;
         }
+
+        cancelled.set(false);
 
         var same = files.getFirst().getFileSystem().equals(target.getFileSystem());
         var doesMove = transferMode == BrowserFileTransferMode.MOVE
@@ -129,6 +141,10 @@ public class BrowserFileTransferOperation {
 
         try {
             for (var file : files) {
+                if (cancelled()) {
+                    break;
+                }
+
                 if (same) {
                     handleSingleOnSameFileSystem(file);
                 } else {
@@ -138,6 +154,10 @@ public class BrowserFileTransferOperation {
 
             if (!same && doesMove) {
                 for (var file : files) {
+                    if (cancelled()) {
+                        break;
+                    }
+
                     deleteSingle(file);
                 }
             }
@@ -207,7 +227,7 @@ public class BrowserFileTransferOperation {
                 var newFile =
                         targetFile.getParent().join(matcher.group(1) + " (" + (number + 1) + ")." + matcher.group(3));
                 return newFile.toString();
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException ignored) {
             }
         }
 
@@ -242,6 +262,10 @@ public class BrowserFileTransferOperation {
             var baseRelative = FileNames.toDirectory(FileNames.getParent(source.getPath()));
             List<FileEntry> list = source.getFileSystem().listFilesRecursively(source.getPath());
             for (FileEntry fileEntry : list) {
+                if (cancelled()) {
+                    return;
+                }
+
                 var rel = FileNames.toUnix(FileNames.relativize(baseRelative, fileEntry.getPath()));
                 flatFiles.put(fileEntry, rel);
                 if (fileEntry.getKind() == FileKind.FILE) {
@@ -264,6 +288,10 @@ public class BrowserFileTransferOperation {
         var start = Instant.now();
         AtomicLong transferred = new AtomicLong();
         for (var e : flatFiles.entrySet()) {
+            if (cancelled()) {
+                return;
+            }
+
             var sourceFile = e.getKey();
             var fixedRelPath = new FilePath(e.getValue())
                     .fileSystemCompatible(
@@ -298,6 +326,10 @@ public class BrowserFileTransferOperation {
     private void transfer(
             FileEntry sourceFile, String targetFile, AtomicLong transferred, AtomicLong totalSize, Instant start)
             throws Exception {
+        if (cancelled()) {
+            return;
+        }
+
         InputStream inputStream = null;
         OutputStream outputStream = null;
         try {
@@ -377,7 +409,7 @@ public class BrowserFileTransferOperation {
             AtomicLong transferred,
             AtomicLong total,
             Instant start)
-            throws IOException {
+            throws Exception {
         // Initialize progress immediately prior to reading anything
         updateProgress(new BrowserTransferProgress(sourceFile.getName(), transferred.get(), total.get(), start));
 
@@ -385,9 +417,48 @@ public class BrowserFileTransferOperation {
         byte[] buffer = new byte[bs];
         int read;
         while ((read = inputStream.read(buffer, 0, bs)) > 0) {
+            if (cancelled()) {
+                killStreams();
+                break;
+            }
+
+            if (!checkTransferValidity()) {
+                killStreams();
+                break;
+            }
+
             outputStream.write(buffer, 0, read);
             transferred.addAndGet(read);
             updateProgress(new BrowserTransferProgress(sourceFile.getName(), transferred.get(), total.get(), start));
+        }
+    }
+
+    private boolean checkTransferValidity() {
+        var sourceFs = files.getFirst().getFileSystem();
+        var targetFs = target.getFileSystem();
+        var same = files.getFirst().getFileSystem().equals(target.getFileSystem());
+        if (!same) {
+            var sourceShell = sourceFs.getShell().orElseThrow();
+            var targetShell = targetFs.getShell().orElseThrow();
+            return !sourceShell.getStdout().isClosed()
+                    && !targetShell.getStdin().isClosed();
+        } else {
+            return true;
+        }
+    }
+
+    private void killStreams() throws Exception {
+        var sourceFs = files.getFirst().getFileSystem();
+        var targetFs = target.getFileSystem();
+        var same = files.getFirst().getFileSystem().equals(target.getFileSystem());
+        if (!same) {
+            var sourceShell = sourceFs.getShell().orElseThrow();
+            var targetShell = targetFs.getShell().orElseThrow();
+            try {
+                sourceShell.closeStdout();
+            } finally {
+                targetShell.closeStdin();
+            }
         }
     }
 }

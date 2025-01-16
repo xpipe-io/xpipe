@@ -8,6 +8,7 @@ import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.LicenseProvider;
 
 import io.sentry.*;
+import io.sentry.protocol.Geo;
 import io.sentry.protocol.SentryId;
 import io.sentry.protocol.User;
 import org.apache.commons.io.FileUtils;
@@ -186,6 +187,7 @@ public class SentryErrorHandler implements ErrorHandler {
 
         var user = new User();
         user.setId(AppProperties.get().getUuid().toString());
+        user.setGeo(new Geo());
         s.setUser(user);
     }
 

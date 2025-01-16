@@ -43,47 +43,43 @@ public class AppTheme {
     private static boolean init;
 
     public static void initThemeHandlers(Stage stage) {
-        Runnable r = () -> {
-            stage.getScene()
-                    .getRoot()
-                    .pseudoClassStateChanged(
-                            PseudoClass.getPseudoClass(OsType.getLocal().getId()), true);
+        stage.getScene().rootProperty().subscribe(root -> {
+            if (root == null) {
+                return;
+            }
+
+            root.pseudoClassStateChanged(
+                    PseudoClass.getPseudoClass(OsType.getLocal().getId()), true);
             if (AppPrefs.get() == null) {
                 var def = Theme.getDefaultLightTheme();
-                stage.getScene().getRoot().getStyleClass().add(def.getCssId());
-                stage.getScene().getRoot().pseudoClassStateChanged(LIGHT, true);
-                stage.getScene().getRoot().pseudoClassStateChanged(DARK, false);
+                root.getStyleClass().add(def.getCssId());
+                root.pseudoClassStateChanged(LIGHT, true);
+                root.pseudoClassStateChanged(DARK, false);
+                root.pseudoClassStateChanged(PRETTY, true);
+                root.pseudoClassStateChanged(PERFORMANCE, false);
                 return;
             }
 
             AppPrefs.get().theme.subscribe(t -> {
-                Theme.ALL.forEach(
-                        theme -> stage.getScene().getRoot().getStyleClass().remove(theme.getCssId()));
+                Theme.ALL.forEach(theme -> root.getStyleClass().remove(theme.getCssId()));
                 if (t == null) {
                     return;
                 }
 
-                stage.getScene().getRoot().getStyleClass().add(t.getCssId());
+                root.getStyleClass().add(t.getCssId());
                 stage.getScene().getStylesheets().addAll(t.getAdditionalStylesheets());
-                stage.getScene().getRoot().pseudoClassStateChanged(LIGHT, !t.isDark());
-                stage.getScene().getRoot().pseudoClassStateChanged(DARK, t.isDark());
+                root.pseudoClassStateChanged(LIGHT, !t.isDark());
+                root.pseudoClassStateChanged(DARK, t.isDark());
             });
             AppPrefs.get().theme.addListener((observable, oldValue, newValue) -> {
                 stage.getScene().getStylesheets().removeAll(oldValue.getAdditionalStylesheets());
             });
 
             AppPrefs.get().performanceMode().subscribe(val -> {
-                stage.getScene().getRoot().pseudoClassStateChanged(PRETTY, !val);
-                stage.getScene().getRoot().pseudoClassStateChanged(PERFORMANCE, val);
+                root.pseudoClassStateChanged(PRETTY, !val);
+                root.pseudoClassStateChanged(PERFORMANCE, val);
             });
-        };
-        if (stage.getOwner() != null) {
-            // If we set the theme pseudo classes earlier when the window is not shown
-            // they do not apply. Is this a bug in JavaFX?
-            Platform.runLater(r);
-        } else {
-            r.run();
-        }
+        });
     }
 
     public static void init() {

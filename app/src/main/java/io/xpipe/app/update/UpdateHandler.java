@@ -1,5 +1,6 @@
 package io.xpipe.app.update;
 
+import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
@@ -12,7 +13,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.layout.Region;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 
 @SuppressWarnings("InfiniteLoopStatement")
 @Getter
@@ -174,10 +175,15 @@ public abstract class UpdateHandler {
         try (var ignored = new BooleanScope(busy).start()) {
             event("Performing update download ...");
             prepareUpdateImpl();
+
+            // Show available update in PTB more aggressively
+            if (AppProperties.get().isStaging() && preparedUpdate.getValue() != null) {
+                UpdateAvailableDialog.showIfNeeded();
+            }
         }
     }
 
-    public abstract Region createInterface();
+    public abstract List<ModalButton> createActions();
 
     public void prepareUpdateImpl() {
         var changelogString =

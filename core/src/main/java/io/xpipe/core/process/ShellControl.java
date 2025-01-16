@@ -18,6 +18,25 @@ import java.util.function.Function;
 
 public interface ShellControl extends ProcessControl {
 
+    void writeLine(String line) throws IOException;
+
+    void writeLine(String line, boolean log) throws IOException;
+
+    void write(byte[] b) throws IOException;
+
+    @Override
+    LocalProcessInputStream getStdout();
+
+    @Override
+    LocalProcessOutputStream getStdin();
+
+    @Override
+    LocalProcessInputStream getStderr();
+
+    ShellView view();
+
+    ShellCapabilities getCapabilities();
+
     Optional<ShellControl> getParentControl();
 
     ShellTtyState getTtyState();
@@ -30,11 +49,15 @@ public interface ShellControl extends ProcessControl {
 
     void setElevationHandler(ElevationHandler ref);
 
+    void closeStdout() throws IOException;
+
     List<UUID> getExitUuids();
 
     void setWorkingDirectory(WorkingDirectoryFunction workingDirectory);
 
     Optional<DataStore> getSourceStore();
+
+    Optional<UUID> getSourceStoreId();
 
     ShellControl withSourceStore(DataStore store);
 
@@ -209,7 +232,7 @@ public interface ShellControl extends ProcessControl {
 
     default <T> T enforceDialect(@NonNull ShellDialect type, FailableFunction<ShellControl, T, Exception> sc)
             throws Exception {
-        if (isRunning() && getShellDialect().equals(type)) {
+        if (type.equals(getShellDialect())) {
             return sc.apply(this);
         } else {
             try (var sub = subShell(type).start()) {

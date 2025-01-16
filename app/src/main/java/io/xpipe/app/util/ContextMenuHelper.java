@@ -1,5 +1,7 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.core.AppI18n;
+
 import javafx.application.Platform;
 import javafx.geometry.Side;
 import javafx.scene.Node;
@@ -34,8 +36,10 @@ public class ContextMenuHelper {
         return contextMenu;
     }
 
-    public static MenuItem item(LabelGraphic graphic, String name) {
-        var i = new MenuItem(name, graphic.createGraphicNode());
+    public static MenuItem item(LabelGraphic graphic, String nameKey) {
+        var i = new MenuItem();
+        i.textProperty().bind(AppI18n.observable(nameKey));
+        i.setGraphic(graphic.createGraphicNode());
         return i;
     }
 

@@ -170,7 +170,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             return WINDOWS_EDITORS.stream()
                     .filter(PrefsChoiceValue::isAvailable)
                     .findFirst()
-                    .orElse(null);
+                    .orElse(NOTEPAD);
         }
 
         if (OsType.getLocal().equals(OsType.LINUX)) {
@@ -184,7 +184,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             return MACOS_EDITORS.stream()
                     .filter(PrefsChoiceValue::isAvailable)
                     .findFirst()
-                    .orElse(null);
+                    .orElse(TEXT_EDIT);
         }
 
         return null;

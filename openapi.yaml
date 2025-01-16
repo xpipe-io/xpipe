@@ -24,7 +24,7 @@ info:
   contact:
     name: XPipe - Contact us
     url: mailto:hello@xpipe.io
-  version: "13.0"
+  version: "14.0"
 externalDocs:
   description: XPipe - Plans and pricing
   url: https://xpipe.io/pricing
@@ -195,6 +195,43 @@ paths:
                 standard:
                   summary: Connection information
                   value: { "connection": "36ad9716-a209-4f7f-9814-078d3349280c" }
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /category/add:
+    post:
+      summary: Add new category
+      description: |
+        Creates a new empty category in the vault.
+        
+        New categories always need a parent as it's not allowed to create root categories.
+      operationId: categoryAd
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryAddRequest'
+            examples:
+              simple:
+                summary: Add new category
+                value: { "name": "my category", "parent": "97458c07-75c0-4f9d-a06e-92d8cdf67c40" }
+      responses:
+        '200':
+          description: The request was successful. The category was added.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryAddResponse'
+              examples:
+                standard:
+                  summary: Category information
+                  value: { "category": "36ad9716-a209-4f7f-9814-078d3349280c" }
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -844,10 +881,13 @@ components:
           description: The connection name
         data:
           type: object
-          description: The raw connection store data. Schemas for connection types are not documented but you can find the connection data of your existing connections in the xpipe vault.
+          description: The raw connection store data. Schemas for connection types are not documented, but you can find the connection data of your existing connections in the xpipe vault.
         validate:
           type: boolean
           description: Whether to perform a connection validation before adding it, i.e., probe the connection first. If validation is enabled and fails, the connection will not be added
+        category:
+          type: string
+          description: The category uuid to put the connection in. If not specified, the default category will be used
       required:
         - name
         - data
@@ -860,6 +900,26 @@ components:
           description: The connection uuid
       required:
         - connection
+    CategoryAddRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The category name
+        parent:
+          type: string
+          description: The parent category uuid to put the new category in
+      required:
+        - name
+        - parent
+    CategoryAddResponse:
+      type: object
+      properties:
+        category:
+          type: string
+          description: The category uuid
+      required:
+        - category
     ConnectionRemoveRequest:
       type: object
       properties:

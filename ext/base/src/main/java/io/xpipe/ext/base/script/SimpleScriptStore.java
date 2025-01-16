@@ -11,7 +11,9 @@ import io.xpipe.core.util.ValidationException;
 import io.xpipe.ext.base.SelfReferentialStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import lombok.Getter;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.Value;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -22,17 +24,19 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @SuperBuilder(toBuilder = true)
-@Getter
+@Value
 @Jacksonized
 @JsonTypeName("script")
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public class SimpleScriptStore extends ScriptStore implements ShellInitCommand.Terminal, SelfReferentialStore {
 
-    private final ShellDialect minimumDialect;
-    private final String commands;
-    private final boolean initScript;
-    private final boolean shellScript;
-    private final boolean fileScript;
-    private final boolean runnableScript;
+    ShellDialect minimumDialect;
+    String commands;
+    boolean initScript;
+    boolean shellScript;
+    boolean fileScript;
+    boolean runnableScript;
 
     public String getCommands() {
         return commands != null ? commands : "";

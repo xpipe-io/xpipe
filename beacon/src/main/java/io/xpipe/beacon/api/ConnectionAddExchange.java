@@ -29,6 +29,8 @@ public class ConnectionAddExchange extends BeaconInterface<ConnectionAddExchange
 
         @NonNull
         Boolean validate;
+
+        UUID category;
     }
 
     @Jacksonized

@@ -5,7 +5,7 @@ import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.ModalOverlayComp;
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
@@ -85,32 +85,33 @@ public class ChgrpAction implements BrowserBranchAction {
     }
 
     private static class Custom implements BrowserLeafAction {
+
         @Override
         public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             var group = new SimpleStringProperty();
-            model.getOverlay()
-                    .setValue(new ModalOverlayComp.OverlayContent(
-                            "groupName",
-                            Comp.of(() -> {
-                                        var creationName = new TextField();
-                                        creationName.textProperty().bindBidirectional(group);
-                                        return creationName;
-                                    })
-                                    .prefWidth(350),
-                            null,
-                            "finish",
-                            () -> {
-                                model.runCommandAsync(
-                                        CommandBuilder.of()
-                                                .add("chgrp", group.getValue())
-                                                .addFiles(entries.stream()
-                                                        .map(browserEntry -> browserEntry
-                                                                .getRawFileEntry()
-                                                                .getPath())
-                                                        .toList()),
-                                        false);
-                            },
-                            true));
+            var modal = ModalOverlay.of(
+                    "groupName",
+                    Comp.of(() -> {
+                                var creationName = new TextField();
+                                creationName.textProperty().bindBidirectional(group);
+                                return creationName;
+                            })
+                            .prefWidth(350));
+            modal.withDefaultButtons(() -> {
+                if (group.getValue() == null) {
+                    return;
+                }
+
+                model.runCommandAsync(
+                        CommandBuilder.of()
+                                .add("chgrp", group.getValue())
+                                .addFiles(entries.stream()
+                                        .map(browserEntry ->
+                                                browserEntry.getRawFileEntry().getPath())
+                                        .toList()),
+                        false);
+            });
+            modal.show();
         }
 
         @Override

@@ -4,10 +4,8 @@ import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.FileSystemStore;
-import io.xpipe.core.util.JacksonizedValue;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import lombok.Getter;
+import lombok.Value;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -16,11 +14,10 @@ import java.nio.file.Path;
 /**
  * Represents a file located on a file system.
  */
-@JsonTypeName("file")
 @SuperBuilder
 @Jacksonized
-@Getter
-public class FileReference extends JacksonizedValue {
+@Value
+public class FileReference {
 
     DataStoreEntryRef<? extends FileSystemStore> fileSystem;
     String path;
@@ -38,7 +35,7 @@ public class FileReference extends JacksonizedValue {
         return new FileReference(DataStorage.get().local().ref(), p);
     }
 
-    public final boolean isLocal() {
+    public boolean isLocal() {
         return fileSystem.getStore() instanceof LocalStore;
     }
 }

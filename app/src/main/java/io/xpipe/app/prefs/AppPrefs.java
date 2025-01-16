@@ -9,10 +9,8 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.update.XPipeDistributionType;
-import io.xpipe.app.util.PasswordLockSecretValue;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.ModuleHelper;
 
 import javafx.beans.property.*;
@@ -21,6 +19,9 @@ import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableStringValue;
 import javafx.beans.value.ObservableValue;
 
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.SimpleType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -48,8 +49,6 @@ public class AppPrefs {
             .valueClass(Boolean.class)
             .requiresRestart(true)
             .build());
-    final BooleanProperty dontAllowTerminalRestart =
-            mapVaultShared(new SimpleBooleanProperty(false), "dontAllowTerminalRestart", Boolean.class, false);
     final BooleanProperty enableHttpApi =
             mapVaultShared(new SimpleBooleanProperty(false), "enableHttpApi", Boolean.class, false);
     final BooleanProperty dontAutomaticallyStartVmSshServer =
@@ -140,6 +139,8 @@ public class AppPrefs {
             mapLocal(new SimpleBooleanProperty(false), "developerDisableUpdateVersionCheck", Boolean.class, false);
     final BooleanProperty developerForceSshTty =
             mapLocal(new SimpleBooleanProperty(false), "developerForceSshTty", Boolean.class, false);
+    final BooleanProperty developerPrintInitFiles =
+            mapLocal(new SimpleBooleanProperty(false), "developerPrintInitFiles", Boolean.class, false);
 
     final ObjectProperty<SupportedLocale> language = mapLocal(
             new SimpleObjectProperty<>(SupportedLocale.getEnglish()), "language", SupportedLocale.class, false);
@@ -157,6 +158,12 @@ public class AppPrefs {
         return editFilesWithDoubleClick;
     }
 
+    final BooleanProperty censorMode = mapLocal(new SimpleBooleanProperty(false), "censorMode", Boolean.class, false);
+
+    public ObservableBooleanValue censorMode() {
+        return censorMode;
+    }
+
     public ObservableBooleanValue requireDoubleClickForConnections() {
         return requireDoubleClickForConnections;
     }
@@ -166,9 +173,6 @@ public class AppPrefs {
     }
 
     @Getter
-    private final Property<InPlaceSecretValue> lockPassword = new SimpleObjectProperty<>();
-
-    @Getter
     private final StringProperty lockCrypt =
             mapVaultShared(new SimpleStringProperty(), "workspaceLock", String.class, true);
 
@@ -176,6 +180,10 @@ public class AppPrefs {
             mapVaultShared(new SimpleStringProperty(UUID.randomUUID().toString()), "apiKey", String.class, true);
     final BooleanProperty disableApiAuthentication =
             mapLocal(new SimpleBooleanProperty(false), "disableApiAuthentication", Boolean.class, false);
+
+    public ObservableBooleanValue developerPrintInitFiles() {
+        return developerPrintInitFiles;
+    }
 
     public ObservableBooleanValue checkForSecurityUpdates() {
         return checkForSecurityUpdates;
@@ -195,10 +203,6 @@ public class AppPrefs {
 
     public ObservableBooleanValue enableHttpApi() {
         return enableHttpApi;
-    }
-
-    public ObservableBooleanValue dontAllowTerminalRestart() {
-        return dontAllowTerminalRestart;
     }
 
     public ObservableBooleanValue pinLocalMachineOnStartup() {
@@ -230,14 +234,12 @@ public class AppPrefs {
                         new AppearanceCategory(),
                         new SyncCategory(),
                         new VaultCategory(),
-                        new PasswordManagerCategory(),
                         new TerminalCategory(),
                         new EditorCategory(),
                         new RdpCategory(),
-                        new SshCategory(),
-                        new LocalShellCategory(),
                         new ConnectionsCategory(),
                         new FileBrowserCategory(),
+                        new PasswordManagerCategory(),
                         new SecurityCategory(),
                         new HttpApiCategory(),
                         new WorkspacesCategory(),
@@ -388,41 +390,6 @@ public class AppPrefs {
 
     public ObservableValue<String> customEditorCommand() {
         return customEditorCommand;
-    }
-
-    public void changeLock(InPlaceSecretValue newLockPw) {
-        if (lockCrypt.get() == null && newLockPw == null) {
-            return;
-        }
-
-        if (newLockPw == null) {
-            lockPassword.setValue(null);
-            lockCrypt.setValue(null);
-            if (DataStorage.get() != null) {
-                DataStorage.get().forceRewrite();
-            }
-            return;
-        }
-
-        lockPassword.setValue(newLockPw);
-        lockCrypt.setValue(new PasswordLockSecretValue("xpipe".toCharArray()).getEncryptedValue());
-        if (DataStorage.get() != null) {
-            DataStorage.get().forceRewrite();
-        }
-    }
-
-    public boolean unlock(InPlaceSecretValue lockPw) {
-        lockPassword.setValue(lockPw);
-        var check = PasswordLockSecretValue.builder()
-                .encryptedValue(lockCrypt.get())
-                .build()
-                .getSecret();
-        if (!Arrays.equals(check, new char[] {'x', 'p', 'i', 'p', 'e'})) {
-            lockPassword.setValue(null);
-            return false;
-        } else {
-            return true;
-        }
     }
 
     public final ReadOnlyIntegerProperty editorReloadTimeout() {
@@ -587,8 +554,7 @@ public class AppPrefs {
     private <T> T loadValue(AppPrefsStorageHandler handler, Mapping value) {
         T def = (T) value.getProperty().getValue();
         Property<T> property = (Property<T>) value.getProperty();
-        Class<T> clazz = (Class<T>) value.getValueClass();
-        var val = handler.loadObject(value.getKey(), clazz, def);
+        var val = handler.loadObject(value.getKey(), value.getValueType(), def);
         property.setValue(val);
         return val;
     }
@@ -643,19 +609,37 @@ public class AppPrefs {
 
         String key;
         Property<?> property;
-        Class<?> valueClass;
+        JavaType valueType;
         boolean vaultSpecific;
         boolean requiresRestart;
         String licenseFeatureId;
 
         public Mapping(
-                String key, Property<?> property, Class<?> valueClass, boolean vaultSpecific, boolean requiresRestart) {
+                String key, Property<?> property, Class<?> valueType, boolean vaultSpecific, boolean requiresRestart) {
             this.key = key;
             this.property = property;
-            this.valueClass = valueClass;
+            this.valueType = SimpleType.constructUnsafe(valueType);
             this.vaultSpecific = vaultSpecific;
             this.requiresRestart = requiresRestart;
             this.licenseFeatureId = null;
+        }
+
+        public Mapping(
+                String key, Property<?> property, JavaType valueType, boolean vaultSpecific, boolean requiresRestart) {
+            this.key = key;
+            this.property = property;
+            this.valueType = valueType;
+            this.vaultSpecific = vaultSpecific;
+            this.requiresRestart = requiresRestart;
+            this.licenseFeatureId = null;
+        }
+
+        public static class MappingBuilder {
+
+            MappingBuilder valueClass(Class<?> clazz) {
+                this.valueType(TypeFactory.defaultInstance().constructType(clazz));
+                return this;
+            }
         }
     }
 
@@ -663,8 +647,8 @@ public class AppPrefs {
     private class PrefsHandlerImpl implements PrefsHandler {
 
         @Override
-        public <T> void addSetting(String id, Class<T> c, Property<T> property, Comp<?> comp, boolean requiresRestart) {
-            var m = new Mapping(id, property, c, false, requiresRestart);
+        public <T> void addSetting(String id, JavaType t, Property<T> property, Comp<?> comp, boolean requiresRestart) {
+            var m = new Mapping(id, property, t, false, requiresRestart);
             customEntries.put(m, comp);
             mapping.add(m);
         }

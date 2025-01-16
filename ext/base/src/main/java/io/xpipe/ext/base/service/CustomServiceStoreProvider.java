@@ -23,7 +23,7 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
 
     @Override
     public DataStoreCreationCategory getCreationCategory() {
-        return DataStoreCreationCategory.TUNNEL;
+        return DataStoreCreationCategory.SERVICE;
     }
 
     @Override
@@ -32,7 +32,7 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
         var host = new SimpleObjectProperty<>(st.getHost());
         var localPort = new SimpleObjectProperty<>(st.getLocalPort());
         var remotePort = new SimpleObjectProperty<>(st.getRemotePort());
-
+        var serviceProtocolType = new SimpleObjectProperty<>(st.getServiceProtocolType());
         var q = new OptionsBuilder()
                 .nameAndDescription("serviceHost")
                 .addComp(
@@ -46,6 +46,8 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
                 .nameAndDescription("serviceRemotePort")
                 .addInteger(remotePort)
                 .nonNull()
+                .sub(ServiceProtocolTypeHelper.choice(serviceProtocolType), serviceProtocolType)
+                .nonNull()
                 .nameAndDescription("serviceLocalPort")
                 .addInteger(localPort)
                 .bind(
@@ -54,6 +56,7 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
                                     .host(host.get())
                                     .localPort(localPort.get())
                                     .remotePort(remotePort.get())
+                                    .serviceProtocolType(serviceProtocolType.get())
                                     .build();
                         },
                         store);

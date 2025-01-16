@@ -97,7 +97,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         button.setPadding(Insets.EMPTY);
         button.setMaxWidth(5000);
         button.setFocusTraversable(true);
-        button.accessibleTextProperty().bind(getWrapper().nameProperty());
+        button.accessibleTextProperty().bind(getWrapper().getShownName());
         button.setOnAction(event -> {
             event.consume();
             ThreadHelper.runFailableAsync(() -> {
@@ -137,12 +137,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                 .augment(button);
 
         var loading = LoadingOverlayComp.noProgress(
-                Comp.of(() -> button),
-                getWrapper().getEntry().getValidity().isUsable()
-                        ? getWrapper()
-                                .getBusy()
-                                .or(getWrapper().getEntry().getProvider().busy(getWrapper()))
-                        : getWrapper().getBusy());
+                Comp.of(() -> button), getWrapper().getEffectiveBusy());
         AppFont.normal(button);
         return loading.createRegion();
     }
@@ -169,10 +164,22 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     protected Comp<?> createName() {
-        LabelComp name = new LabelComp(getWrapper().nameProperty());
+        LabelComp name = new LabelComp(getWrapper().getShownName());
         name.apply(struc -> struc.get().setTextOverrun(OverrunStyle.CENTER_ELLIPSIS));
         name.styleClass("name");
         return name;
+    }
+
+    protected Comp<?> createUserIcon() {
+        var button = new IconButtonComp("mdi2a-account");
+        button.styleClass("user-icon");
+        button.tooltipKey("personalConnection");
+        button.apply(struc -> {
+            AppFont.medium(struc.get());
+            struc.get().setOpacity(1.0);
+        });
+        button.hide(Bindings.not(getWrapper().getPerUser()));
+        return button;
     }
 
     protected Node createIcon(int w, int h) {
@@ -327,7 +334,8 @@ public abstract class StoreEntryComp extends SimpleComp {
             contextMenu.getItems().add(color);
         }
 
-        if (getWrapper().getEntry().getProvider() != null) {
+        if (getWrapper().getEntry().getProvider() != null
+                && getWrapper().getEntry().getProvider().canMoveCategories()) {
             var move = new Menu(AppI18n.get("moveTo"), new FontIcon("mdi2f-folder-move-outline"));
             StoreViewState.get()
                     .getSortedCategories(getWrapper().getCategory().getValue().getRoot())

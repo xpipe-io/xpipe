@@ -107,7 +107,7 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                     },
                     sec -> {
                         if (applicable.test(sec.getWrapper())) {
-                            selected.setValue(sec.getWrapper().getEntry().ref());
+                            this.selected.setValue(sec.getWrapper().getEntry().ref());
                             popover.hide();
                         }
                     });
@@ -193,9 +193,8 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
         var button = new ButtonComp(
                 Bindings.createStringBinding(
                         () -> {
-                            return selected.getValue() != null
-                                    ? toName(selected.getValue().getEntry())
-                                    : null;
+                            var val = selected.getValue();
+                            return val != null ? toName(val.get()) : null;
                         },
                         selected),
                 () -> {});
@@ -205,7 +204,12 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                     Comp<?> graphic = PrettyImageHelper.ofFixedSize(
                             Bindings.createStringBinding(
                                     () -> {
-                                        return selected.getValue().get().getEffectiveIconFile();
+                                        var val = selected.getValue();
+                                        if (val == null) {
+                                            return null;
+                                        }
+
+                                        return val.get().getEffectiveIconFile();
                                     },
                                     selected),
                             16,

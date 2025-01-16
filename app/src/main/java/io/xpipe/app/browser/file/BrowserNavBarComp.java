@@ -118,8 +118,10 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
         path.addListener((observable, oldValue, newValue) -> {
             ThreadHelper.runFailableAsync(() -> {
                 BooleanScope.executeExclusive(model.getBusy(), () -> {
-                    var changed = model.cdSyncOrRetry(newValue, true);
-                    changed.ifPresent(s -> Platform.runLater(() -> path.set(s)));
+                    var changed = model.cdSyncOrRetry(newValue != null && !newValue.isBlank() ? newValue : null, true);
+                    changed.ifPresent(s -> {
+                        Platform.runLater(() -> path.set(!s.isBlank() ? s : null));
+                    });
                 });
             });
         });
@@ -148,8 +150,6 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
                                             INVISIBLE, !val && !struc.get().isFocused());
                         });
                     });
-
-                    struc.get().setPromptText("Overview of " + model.getName());
                 })
                 .accessibleText("Current path");
         return pathBar;

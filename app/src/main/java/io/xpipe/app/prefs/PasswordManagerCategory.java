@@ -10,6 +10,7 @@ import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.util.BindingsHelper;
+import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -35,6 +36,7 @@ public class PasswordManagerCategory extends AppPrefsCategory {
     private static class Choice {
         String id;
         String template;
+        String docsLink;
         ExternalPasswordManager passwordManager;
     }
 
@@ -50,12 +52,17 @@ public class PasswordManagerCategory extends AppPrefsCategory {
             choices.add(new Choice(
                     externalPasswordManagerTemplate.getId(),
                     externalPasswordManagerTemplate.getTemplate(),
+                    externalPasswordManagerTemplate.getDocsLink(),
                     ExternalPasswordManager.COMMAND));
         });
         ExternalPasswordManager.ALL.stream()
                 .filter(externalPasswordManager -> externalPasswordManager != ExternalPasswordManager.COMMAND)
                 .forEach(externalPasswordManager -> {
-                    choices.add(new Choice(externalPasswordManager.getId(), null, externalPasswordManager));
+                    choices.add(new Choice(
+                            externalPasswordManager.getId(),
+                            null,
+                            externalPasswordManager.getDocsLink(),
+                            externalPasswordManager));
                 });
 
         var prefs = AppPrefs.get();
@@ -79,6 +86,16 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                 });
             });
         };
+
+        var docsLinkProperty = new SimpleStringProperty();
+        var docsLinkButton =
+                new ButtonComp(AppI18n.observable("documentation"), new FontIcon("mdi2h-help-circle-outline"), () -> {
+                    var l = docsLinkProperty.get();
+                    if (l != null) {
+                        Hyperlinks.open(l);
+                    }
+                });
+        docsLinkButton.disable(docsLinkProperty.isNull());
 
         var command = new IntegratedTextAreaComp(
                         prefs.passwordManagerCommand,
@@ -107,13 +124,17 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                 m.setOnAction(event -> {
                     AppPrefs.get().passwordManagerCommand.set(e.getTemplate());
                     AppPrefs.get().passwordManager.setValue(e.getPasswordManager());
+                    docsLinkProperty.set(e.getDocsLink());
                     event.consume();
                 });
                 cb.getItems().add(m);
             });
             return cb;
         });
-        var choice = new VerticalComp(List.of(templates, command)).apply(struc -> {
+        var top = new HorizontalComp(List.of(templates, docsLinkButton))
+                .spacing(10)
+                .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
+        var choice = new VerticalComp(List.of(top, command)).apply(struc -> {
             struc.get().setAlignment(Pos.CENTER_LEFT);
             struc.get().setSpacing(10);
         });

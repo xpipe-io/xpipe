@@ -2,32 +2,35 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class AppLayoutComp extends Comp<CompStructure<Pane>> {
+public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
 
     private final AppLayoutModel model = AppLayoutModel.get();
 
     @Override
-    public CompStructure<Pane> createBase() {
+    public Structure createBase() {
         Map<Comp<?>, ObservableValue<Boolean>> map = model.getEntries().stream()
                 .filter(entry -> entry.comp() != null)
                 .collect(Collectors.toMap(
@@ -67,6 +70,28 @@ public class AppLayoutComp extends Comp<CompStructure<Pane>> {
         });
         AppFont.normal(pane);
         pane.getStyleClass().add("layout");
-        return new SimpleCompStructure<>(pane);
+        return new Structure(pane, multiR, sidebarR, new ArrayList<>(multiR.getChildren()));
+    }
+
+    public record Structure(BorderPane pane, StackPane stack, Region sidebar, List<Node> children)
+            implements CompStructure<BorderPane> {
+
+        public void prepareAddition() {
+            stack.getChildren().clear();
+            sidebar.setDisable(true);
+        }
+
+        public void show() {
+            for (var child : children) {
+                stack.getChildren().add(child);
+                PlatformThread.runNestedLoopIteration();
+            }
+            sidebar.setDisable(false);
+        }
+
+        @Override
+        public BorderPane get() {
+            return pane;
+        }
     }
 }

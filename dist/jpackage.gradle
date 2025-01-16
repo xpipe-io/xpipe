@@ -30,6 +30,8 @@ application {
     mainClass = 'io.xpipe.app.Main'
 }
 
+def extModules = project.allExtensions
+
 dependencies {
     implementation project(':app')
     if (!useBundledJavaFx) {
@@ -73,6 +75,11 @@ jlink {
         addExtraModulePath(layout.projectDirectory.dir("jna/${platformName}/${arch}").toString())
     }
 
+    for (def extProject : extModules) {
+        def dir = "${extProject.buildDir}/libs_ext"
+        addExtraModulePath(dir)
+    }
+
     launcher {
         moduleName = 'io.xpipe.app'
         mainClassName = 'io.xpipe.app.Main'
@@ -84,13 +91,13 @@ jlink {
         imageOutputDir = file("$distDir/jpackage")
         imageName = 'xpiped'
         if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
-            icon = "logo/logo.ico"
-            appVersion = rootProject.canonicalVersionString
+            icon = "$rootDir/dist/logo/logo.ico"
+            appVersion = org.gradle.internal.os.OperatingSystem.current().isWindows() ? windowsSchemaCanonicalVersion : rootProject.canonicalVersionString
         } else if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
-            icon = "logo/logo.png"
+            icon = "$rootDir/dist/logo/logo.png"
             appVersion = rootProject.canonicalVersionString
         } else {
-            icon = "logo/logo.icns"
+            icon = "$rootDir/dist/logo/logo.icns"
             resourceDir = file("${project.layout.buildDirectory.get()}/macos_resources")
             appVersion = macVersion
         }
@@ -102,7 +109,6 @@ jlink {
 tasks.named('jlink').get().dependsOn(rootProject.getTasksByName("jar", true))
 
 def outputName = org.gradle.internal.os.OperatingSystem.current().isMacOsX() ? 'xpiped.app/Contents/Resources' : 'xpiped'
-def extModules = project.allExtensions.toList()
 task copyBundledExtensions(type: DefaultTask,
                            dependsOn: extModules.stream().map { it.getTasksByName('createExtOutput', true)[0] }.toList()) {
     doLast {

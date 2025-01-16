@@ -10,7 +10,6 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FixedChildStore;
 import io.xpipe.core.store.StorePath;
-import io.xpipe.core.util.UuidHelper;
 
 import javafx.util.Pair;
 
@@ -28,6 +27,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.crypto.SecretKey;
 
 public abstract class DataStorage {
 
@@ -37,6 +37,9 @@ public abstract class DataStorage {
     public static final UUID CUSTOM_SCRIPTS_CATEGORY_UUID = UUID.fromString("d3496db5-b709-41f9-abc0-ee0a660fbab9");
     public static final UUID DEFAULT_CATEGORY_UUID = UUID.fromString("97458c07-75c0-4f9d-a06e-92d8cdf67c40");
     public static final UUID LOCAL_ID = UUID.fromString("f0ec68aa-63f5-405c-b178-9a4454556d6b");
+    public static final UUID ALL_IDENTITIES_CATEGORY_UUID = UUID.fromString("23a5565d-b343-4ab2-abf4-48a5d12dda22");
+    public static final UUID LOCAL_IDENTITIES_CATEGORY_UUID = UUID.fromString("e784de4e-abea-4cb8-a839-fc557cd23097");
+    public static final UUID SYNCED_IDENTITIES_CATEGORY_UUID = UUID.fromString("69aa5040-28dc-451e-b4ff-1192ce5e1e3c");
 
     private static final String PERSIST_PROP = "io.xpipe.storage.persist";
 
@@ -65,8 +68,8 @@ public abstract class DataStorage {
     @Setter
     protected DataStoreCategory selectedCategory;
 
-    private final Map<DataStore, DataStoreEntry> storeEntryMapCache =
-            Collections.synchronizedMap(new IdentityHashMap<>());
+    private final Map<DataStore, DataStoreEntry> identityStoreEntryMapCache = new IdentityHashMap<>();
+    private final Map<DataStore, DataStoreEntry> storeEntryMapCache = new HashMap<>();
 
     public DataStorage() {
         var prefsDir = AppPrefs.get().storageDirectory().getValue();
@@ -106,7 +109,7 @@ public abstract class DataStorage {
         return INSTANCE;
     }
 
-    public abstract String getVaultKey();
+    public abstract SecretKey getVaultKey();
 
     public DataStoreCategory getDefaultConnectionsCategory() {
         return getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).orElseThrow();
@@ -120,10 +123,14 @@ public abstract class DataStorage {
         return getStoreCategoryIfPresent(ALL_SCRIPTS_CATEGORY_UUID).orElseThrow();
     }
 
+    public DataStoreCategory getAllIdentitiesCategory() {
+        return getStoreCategoryIfPresent(ALL_IDENTITIES_CATEGORY_UUID).orElseThrow();
+    }
+
     public void forceRewrite() {
         TrackEvent.info("Starting forced storage rewrite");
         getStoreEntries().forEach(dataStoreEntry -> {
-            dataStoreEntry.reassignStore();
+            dataStoreEntry.reassignStoreNode();
         });
         TrackEvent.info("Finished forced storage rewrite");
     }
@@ -163,8 +170,8 @@ public abstract class DataStorage {
         }
 
         if (getStoreCategoryIfPresent(PREDEFINED_SCRIPTS_CATEGORY_UUID).isEmpty()) {
-            var cat = DataStoreCategory.createNew(
-                    ALL_SCRIPTS_CATEGORY_UUID, PREDEFINED_SCRIPTS_CATEGORY_UUID, "Predefined");
+            var cat =
+                    DataStoreCategory.createNew(ALL_SCRIPTS_CATEGORY_UUID, PREDEFINED_SCRIPTS_CATEGORY_UUID, "Samples");
             cat.setDirectory(categoriesDir.resolve(PREDEFINED_SCRIPTS_CATEGORY_UUID.toString()));
             storeCategories.add(cat);
         }
@@ -173,6 +180,38 @@ public abstract class DataStorage {
             var cat = DataStoreCategory.createNew(ALL_SCRIPTS_CATEGORY_UUID, CUSTOM_SCRIPTS_CATEGORY_UUID, "Custom");
             cat.setDirectory(categoriesDir.resolve(CUSTOM_SCRIPTS_CATEGORY_UUID.toString()));
             storeCategories.add(cat);
+        }
+
+        var allIdentities = getStoreCategoryIfPresent(ALL_IDENTITIES_CATEGORY_UUID);
+        if (allIdentities.isEmpty()) {
+            var cat = DataStoreCategory.createNew(null, ALL_IDENTITIES_CATEGORY_UUID, "All identities");
+            cat.setDirectory(categoriesDir.resolve(ALL_IDENTITIES_CATEGORY_UUID.toString()));
+            storeCategories.add(cat);
+        } else {
+            allIdentities.get().setParentCategory(null);
+        }
+
+        var localIdentities = getStoreCategoryIfPresent(LOCAL_IDENTITIES_CATEGORY_UUID);
+        if (localIdentities.isEmpty()) {
+            var cat =
+                    DataStoreCategory.createNew(ALL_IDENTITIES_CATEGORY_UUID, LOCAL_IDENTITIES_CATEGORY_UUID, "Local");
+            cat.setDirectory(categoriesDir.resolve(LOCAL_IDENTITIES_CATEGORY_UUID.toString()));
+            storeCategories.add(cat);
+        } else {
+            localIdentities.get().setParentCategory(ALL_IDENTITIES_CATEGORY_UUID);
+        }
+
+        if (supportsSharing()) {
+            var sharedIdentities = getStoreCategoryIfPresent(SYNCED_IDENTITIES_CATEGORY_UUID);
+            if (sharedIdentities.isEmpty()) {
+                var cat = DataStoreCategory.createNew(
+                        ALL_IDENTITIES_CATEGORY_UUID, SYNCED_IDENTITIES_CATEGORY_UUID, "Synced");
+                cat.setDirectory(categoriesDir.resolve(SYNCED_IDENTITIES_CATEGORY_UUID.toString()));
+                cat.setSync(true);
+                storeCategories.add(cat);
+            } else {
+                sharedIdentities.get().setParentCategory(ALL_IDENTITIES_CATEGORY_UUID);
+            }
         }
 
         if (getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).isEmpty()) {
@@ -197,10 +236,15 @@ public abstract class DataStorage {
                 dataStoreCategory.setParentCategory(ALL_CONNECTIONS_CATEGORY_UUID);
             } else if (dataStoreCategory.getParentCategory() == null
                     && !dataStoreCategory.getUuid().equals(ALL_CONNECTIONS_CATEGORY_UUID)
-                    && !dataStoreCategory.getUuid().equals(ALL_SCRIPTS_CATEGORY_UUID)) {
+                    && !dataStoreCategory.getUuid().equals(ALL_SCRIPTS_CATEGORY_UUID)
+                    && !dataStoreCategory.getUuid().equals(ALL_IDENTITIES_CATEGORY_UUID)) {
                 dataStoreCategory.setParentCategory(ALL_CONNECTIONS_CATEGORY_UUID);
             }
         });
+    }
+
+    public Path getStorageDir() {
+        return dir;
     }
 
     protected Path getStoresDir() {
@@ -240,6 +284,15 @@ public abstract class DataStorage {
     public abstract boolean supportsSharing();
 
     public boolean shouldSync(DataStoreCategory category) {
+        // Don't sync lone identities category
+        if (category.getUuid().equals(SYNCED_IDENTITIES_CATEGORY_UUID)
+                && storeCategories.stream()
+                        .filter(dataStoreCategory ->
+                                !dataStoreCategory.getUuid().equals(SYNCED_IDENTITIES_CATEGORY_UUID))
+                        .noneMatch(dataStoreCategory -> shouldSync(dataStoreCategory))) {
+            return false;
+        }
+
         if (!category.canShare()) {
             return false;
         }
@@ -295,6 +348,11 @@ public abstract class DataStorage {
             newEntry.setStorePersistentState(updatedState);
         }
 
+        var icon = entry.getIcon();
+        if (icon != null && newEntry.getIcon() == null) {
+            newEntry.setIcon(icon, true);
+        }
+
         var oldParent = DataStorage.get().getDefaultDisplayParent(entry);
         var newParent = DataStorage.get().getDefaultDisplayParent(newEntry);
         var sameParent = Objects.equals(oldParent, newParent);
@@ -305,6 +363,15 @@ public abstract class DataStorage {
         if (!sameParent) {
             var toRemove = Stream.concat(Stream.of(entry), children.stream()).toArray(DataStoreEntry[]::new);
             listeners.forEach(storageListener -> storageListener.onStoreRemove(toRemove));
+        }
+
+        if (entry.getStore() != null) {
+            synchronized (identityStoreEntryMapCache) {
+                identityStoreEntryMapCache.remove(entry.getStore());
+            }
+            synchronized (storeEntryMapCache) {
+                storeEntryMapCache.remove(entry.getStore());
+            }
         }
 
         entry.applyChanges(newEntry);
@@ -380,10 +447,9 @@ public abstract class DataStorage {
         e.incrementBusyCounter();
         List<? extends DataStoreEntryRef<? extends FixedChildStore>> newChildren;
         try {
-            newChildren = ((FixedHierarchyStore) h)
-                    .listChildren().stream()
-                            .filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null)
-                            .toList();
+            newChildren = h.listChildren().stream()
+                    .filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null)
+                    .toList();
         } catch (Exception ex) {
             if (throwOnFail) {
                 throw ex;
@@ -500,8 +566,8 @@ public abstract class DataStorage {
         refreshEntries();
         saveAsync();
         e.getProvider().onChildrenRefresh(e);
-        toAdd.forEach(dataStoreEntryRef ->
-                dataStoreEntryRef.get().getProvider().onParentRefresh(dataStoreEntryRef.getEntry()));
+        toAdd.forEach(
+                dataStoreEntryRef -> dataStoreEntryRef.get().getProvider().onParentRefresh(dataStoreEntryRef.get()));
         toUpdate.forEach(dataStoreEntryRef ->
                 dataStoreEntryRef.getKey().getProvider().onParentRefresh(dataStoreEntryRef.getKey()));
         return !newChildren.isEmpty();
@@ -515,13 +581,19 @@ public abstract class DataStorage {
 
         c.forEach(entry -> entry.finalizeEntry());
         this.storeEntriesSet.removeAll(c);
+        synchronized (identityStoreEntryMapCache) {
+            identityStoreEntryMapCache.remove(e.getStore());
+        }
+        synchronized (storeEntryMapCache) {
+            storeEntryMapCache.remove(e.getStore());
+        }
         this.listeners.forEach(l -> l.onStoreRemove(c.toArray(DataStoreEntry[]::new)));
         refreshEntries();
         saveAsync();
     }
 
     public void deleteWithChildren(DataStoreEntry... entries) {
-        var toDelete = Arrays.stream(entries)
+        List<DataStoreEntry> toDelete = Arrays.stream(entries)
                 .flatMap(entry -> {
                     var c = getDeepStoreChildren(entry);
                     c.add(entry);
@@ -532,8 +604,19 @@ public abstract class DataStorage {
             return;
         }
 
-        toDelete.forEach(entry -> entry.finalizeEntry());
-        toDelete.forEach(this.storeEntriesSet::remove);
+        for (var td : toDelete) {
+            td.finalizeEntry();
+            this.storeEntriesSet.remove(td);
+            synchronized (identityStoreEntryMapCache) {
+                identityStoreEntryMapCache.remove(td.getStore());
+            }
+            synchronized (storeEntryMapCache) {
+                storeEntryMapCache.remove(td.getStore());
+            }
+            var parent = getDefaultDisplayParent(td);
+            parent.ifPresent(p -> p.setChildrenCache(null));
+        }
+
         this.listeners.forEach(l -> l.onStoreRemove(toDelete.toArray(DataStoreEntry[]::new)));
         refreshEntries();
         saveAsync();
@@ -658,18 +741,36 @@ public abstract class DataStorage {
     public void deleteStoreEntry(@NonNull DataStoreEntry store) {
         store.finalizeEntry();
         this.storeEntries.remove(store);
+        synchronized (identityStoreEntryMapCache) {
+            identityStoreEntryMapCache.remove(store.getStore());
+        }
+        synchronized (storeEntryMapCache) {
+            storeEntryMapCache.remove(store.getStore());
+        }
         getDefaultDisplayParent(store).ifPresent(p -> p.setChildrenCache(null));
         this.listeners.forEach(l -> l.onStoreRemove(store));
         refreshEntries();
         saveAsync();
     }
 
-    public void deleteStoreCategory(@NonNull DataStoreCategory cat) {
+    public boolean canDeleteStoreCategory(@NonNull DataStoreCategory cat) {
         if (cat.getParentCategory() == null) {
-            return;
+            return false;
         }
 
-        if (cat.getUuid().equals(DEFAULT_CATEGORY_UUID) || cat.getUuid().equals(PREDEFINED_SCRIPTS_CATEGORY_UUID)) {
+        if (cat.getUuid().equals(DEFAULT_CATEGORY_UUID)
+                || cat.getUuid().equals(PREDEFINED_SCRIPTS_CATEGORY_UUID)
+                || cat.getUuid().equals(LOCAL_IDENTITIES_CATEGORY_UUID)
+                || cat.getUuid().equals(CUSTOM_SCRIPTS_CATEGORY_UUID)
+                || cat.getUuid().equals(SYNCED_IDENTITIES_CATEGORY_UUID)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public void deleteStoreCategory(@NonNull DataStoreCategory cat) {
+        if (!canDeleteStoreCategory(cat)) {
             return;
         }
 
@@ -770,7 +871,7 @@ public abstract class DataStorage {
         try {
             var provider = entry.getProvider();
             return Optional.ofNullable(provider.getDisplayParent(entry))
-                    .filter(dataStoreEntry -> storeEntriesSet.contains(dataStoreEntry));
+                    .filter(dataStoreEntry -> storeEntries.get(dataStoreEntry) != null);
         } catch (Exception ex) {
             return Optional.empty();
         }
@@ -873,6 +974,13 @@ public abstract class DataStorage {
 
     public Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull DataStore store, boolean identityOnly) {
         if (identityOnly) {
+            synchronized (identityStoreEntryMapCache) {
+                var found = identityStoreEntryMapCache.get(store);
+                if (found != null) {
+                    return Optional.of(found);
+                }
+            }
+        } else {
             synchronized (storeEntryMapCache) {
                 var found = storeEntryMapCache.get(store);
                 if (found != null) {
@@ -891,6 +999,10 @@ public abstract class DataStorage {
                 .findFirst();
         if (found.isPresent()) {
             if (identityOnly) {
+                synchronized (identityStoreEntryMapCache) {
+                    identityStoreEntryMapCache.put(store, found.get());
+                }
+            } else {
                 synchronized (storeEntryMapCache) {
                     storeEntryMapCache.put(store, found.get());
                 }
@@ -955,18 +1067,12 @@ public abstract class DataStorage {
             return forStoreIdentity.get();
         }
 
-        var uuid = UuidHelper.generateFromObject(parent.getUuid(), name);
-        var found = getStoreEntryIfPresent(uuid);
-        if (found.isPresent()) {
-            return found.get();
-        }
-
         var forStore = getStoreEntryIfPresent(store, false);
         if (forStore.isPresent()) {
             return forStore.get();
         }
 
-        return DataStoreEntry.createNew(uuid, parent.getCategoryUuid(), name, store);
+        return DataStoreEntry.createNew(UUID.randomUUID(), parent.getCategoryUuid(), name, store);
     }
 
     public DataStoreEntry getStoreEntry(UUID id) {

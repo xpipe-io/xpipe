@@ -55,6 +55,7 @@ public class StoreViewState {
         INSTANCE = new StoreViewState();
         INSTANCE.updateContent();
         INSTANCE.initSections();
+        INSTANCE.updateContent();
         INSTANCE.initFilterJump();
     }
 
@@ -101,7 +102,7 @@ public class StoreViewState {
             var matchingCats = categories.getList().stream()
                     .filter(storeCategoryWrapper ->
                             storeCategoryWrapper.getRoot().equals(all))
-                    .filter(storeCategoryWrapper -> storeCategoryWrapper.getDirectContainedEntries().stream()
+                    .filter(storeCategoryWrapper -> storeCategoryWrapper.getDirectContainedEntries().getList().stream()
                             .anyMatch(wrapper -> wrapper.matchesFilter(newValue)))
                     .toList();
             if (matchingCats.size() == 1) {
@@ -239,13 +240,13 @@ public class StoreViewState {
             @Override
             public void onCategoryAdd(DataStoreCategory category) {
                 var l = new StoreCategoryWrapper(category);
-                l.update();
                 Platform.runLater(() -> {
                     // Don't update anything if we have already reset
                     if (INSTANCE == null) {
                         return;
                     }
 
+                    l.update();
                     synchronized (this) {
                         categories.getList().add(l);
                     }
@@ -284,21 +285,27 @@ public class StoreViewState {
 
             @Override
             public void onEntryCategoryChange(DataStoreCategory from, DataStoreCategory to) {
-                synchronized (this) {
-                    categories.getList().forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
-                }
+                Platform.runLater(() -> {
+                    synchronized (this) {
+                        categories.getList().forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
+                    }
+                });
             }
         });
     }
 
-    public Optional<StoreSection> getParentSectionForWrapper(StoreEntryWrapper wrapper) {
+    public Optional<StoreSection> getSectionForWrapper(StoreEntryWrapper wrapper) {
+        if (currentTopLevelSection == null) {
+            return Optional.empty();
+        }
+
         StoreSection current = getCurrentTopLevelSection();
         while (true) {
             var child = current.getAllChildren().getList().stream()
                     .filter(section -> section.getWrapper().equals(wrapper))
                     .findFirst();
             if (child.isPresent()) {
-                return Optional.of(current);
+                return child;
             }
 
             var traverse = current.getAllChildren().getList().stream()
@@ -325,35 +332,37 @@ public class StoreViewState {
                     return 1;
                 }
 
-                if (o1.getParent() == null && o2.getParent() == null) {
+                var p1 = o1.getParent();
+                var p2 = o2.getParent();
+                if (p1 == null && p2 == null) {
                     return 0;
                 }
 
-                if (o1.getParent() == null) {
+                if (p1 == null) {
                     return -1;
                 }
 
-                if (o2.getParent() == null) {
+                if (p2 == null) {
                     return 1;
                 }
 
                 if (o1.getDepth() > o2.getDepth()) {
-                    if (o1.getParent() == o2) {
+                    if (p1 == o2) {
                         return 1;
                     }
 
-                    return compare(o1.getParent(), o2);
+                    return compare(p1, o2);
                 }
 
                 if (o1.getDepth() < o2.getDepth()) {
-                    if (o2.getParent() == o1) {
+                    if (p2 == o1) {
                         return -1;
                     }
 
-                    return compare(o1, o2.getParent());
+                    return compare(o1, p2);
                 }
 
-                var parent = compare(o1.getParent(), o2.getParent());
+                var parent = compare(p1, p2);
                 if (parent != 0) {
                     return parent;
                 }
@@ -380,6 +389,14 @@ public class StoreViewState {
         return categories.getList().stream()
                 .filter(storeCategoryWrapper ->
                         storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    public StoreCategoryWrapper getAllIdentitiesCategory() {
+        return categories.getList().stream()
+                .filter(storeCategoryWrapper ->
+                        storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.ALL_IDENTITIES_CATEGORY_UUID))
                 .findFirst()
                 .orElseThrow();
     }

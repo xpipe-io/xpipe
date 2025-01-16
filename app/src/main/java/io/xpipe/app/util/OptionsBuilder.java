@@ -105,6 +105,21 @@ public class OptionsBuilder {
         return name(key).description(key + "Description");
     }
 
+    public OptionsBuilder subAdvanced(OptionsBuilder builder) {
+        name("advanced");
+        subExpandable("showAdvancedOptions", builder);
+        return this;
+    }
+
+    public OptionsBuilder subExpandable(String key, OptionsBuilder builder) {
+        sub(builder, null);
+        var subComp = this.comp;
+        var pane = new SimpleTitledPaneComp(AppI18n.observable(key), subComp, true);
+        pane.apply(struc -> struc.get().setExpanded(false));
+        this.comp = pane;
+        return this;
+    }
+
     public OptionsBuilder sub(OptionsBuilder builder) {
         return sub(builder, null);
     }
@@ -201,6 +216,12 @@ public class OptionsBuilder {
         var e = lastNameReference;
         var p = props.getLast();
         return check(Validator.nonNull(ownValidator, e, p));
+    }
+
+    public OptionsBuilder nonNullIf(ObservableValue<Boolean> b) {
+        var e = lastNameReference;
+        var p = props.getLast();
+        return check(Validator.nonNullIf(ownValidator, e, p, b));
     }
 
     public OptionsBuilder withValidator(Consumer<Validator> val) {

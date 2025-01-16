@@ -6,8 +6,7 @@ import io.xpipe.ext.base.action.*;
 import io.xpipe.ext.base.browser.*;
 import io.xpipe.ext.base.browser.compress.*;
 import io.xpipe.ext.base.desktop.DesktopApplicationStoreProvider;
-import io.xpipe.ext.base.desktop.DesktopCommandStoreProvider;
-import io.xpipe.ext.base.desktop.DesktopEnvironmentStoreProvider;
+import io.xpipe.ext.base.identity.*;
 import io.xpipe.ext.base.script.*;
 import io.xpipe.ext.base.service.*;
 import io.xpipe.ext.base.store.StorePauseAction;
@@ -22,6 +21,7 @@ open module io.xpipe.ext.base {
     exports io.xpipe.ext.base.store;
     exports io.xpipe.ext.base.desktop;
     exports io.xpipe.ext.base.service;
+    exports io.xpipe.ext.base.identity;
 
     requires java.desktop;
     requires io.xpipe.core;
@@ -74,14 +74,13 @@ open module io.xpipe.ext.base {
             JavapAction,
             JarAction;
     provides ActionProvider with
+            LocalIdentityConvertAction,
             SimpleScriptQuickEditAction,
             StoreStopAction,
             StoreStartAction,
             StorePauseAction,
             StoreRestartAction,
             ServiceOpenAction,
-            ServiceOpenHttpAction,
-            ServiceOpenHttpsAction,
             ServiceCopyUrlAction,
             CloneStoreAction,
             RefreshChildrenStoreAction,
@@ -92,7 +91,8 @@ open module io.xpipe.ext.base {
             EditScriptStoreAction,
             BrowseStoreAction,
             ScanStoreAction,
-            ChangeStoreIconAction;
+            ChangeStoreIconAction,
+            ServiceRefreshAction;
     provides DataStoreProvider with
             FixedServiceGroupStoreProvider,
             CustomServiceGroupStoreProvider,
@@ -100,9 +100,9 @@ open module io.xpipe.ext.base {
             MappedServiceStoreProvider,
             FixedServiceStoreProvider,
             SimpleScriptStoreProvider,
-            DesktopEnvironmentStoreProvider,
             DesktopApplicationStoreProvider,
-            DesktopCommandStoreProvider,
+            LocalIdentityStoreProvider,
+            SyncedIdentityStoreProvider,
             ScriptGroupStoreProvider;
     provides DataStorageExtensionProvider with
             ScriptDataStorageProvider;

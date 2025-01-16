@@ -2,12 +2,9 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.augment.GrowAugment;
-import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -33,18 +30,9 @@ public class DenseStoreEntryComp extends StoreEntryComp {
                 : Comp.empty();
         information.setGraphic(state.createRegion());
 
-        ObservableValue<String> info = new SimpleStringProperty();
+        var summary = getWrapper().getShownSummary();
         if (getWrapper().getEntry().getProvider() != null) {
-            try {
-                info = getWrapper().getEntry().getProvider().informationString(section);
-            } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).handle();
-            }
-        }
-        ObservableValue<String> finalInfo = info;
-
-        var summary = getWrapper().getSummary();
-        if (getWrapper().getEntry().getProvider() != null) {
+            var info = getWrapper().getShownInformation();
             information
                     .textProperty()
                     .bind(PlatformThread.sync(Bindings.createStringBinding(
@@ -53,10 +41,10 @@ public class DenseStoreEntryComp extends StoreEntryComp {
                                 var p = getWrapper().getEntry().getProvider();
                                 if (val != null && grid.isHover() && p.alwaysShowSummary()) {
                                     return val;
-                                } else if (finalInfo.getValue() == null && p.alwaysShowSummary()) {
+                                } else if (info.getValue() == null && p.alwaysShowSummary()) {
                                     return val;
                                 } else {
-                                    return finalInfo.getValue();
+                                    return info.getValue();
                                 }
                             },
                             grid.hoverProperty(),
@@ -84,6 +72,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
                         },
                         grid.widthProperty()));
         var notes = new StoreNotesComp(getWrapper()).createRegion();
+        var userIcon = createUserIcon().createRegion();
 
         if (showIcon) {
             var storeIcon = createIcon(28, 24);
@@ -106,7 +95,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         grid.getColumnConstraints().addAll(nameCC);
 
         var active = new StoreActiveComp(getWrapper()).createRegion();
-        var nameBox = new HBox(name, notes);
+        var nameBox = new HBox(name, userIcon, notes);
         getWrapper().getSessionActive().subscribe(aBoolean -> {
             if (!aBoolean) {
                 nameBox.getChildren().remove(active);

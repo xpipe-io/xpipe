@@ -1,6 +1,6 @@
 package io.xpipe.ext.base.action;
 
-import io.xpipe.app.comp.store.StoreIconChoiceDialogComp;
+import io.xpipe.app.comp.store.StoreIconChoiceDialog;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -53,7 +53,7 @@ public class ChangeStoreIconAction implements ActionProvider {
         @Override
         public void execute() {
             Platform.runLater(() -> {
-                StoreIconChoiceDialogComp.show(entry);
+                StoreIconChoiceDialog.show(entry);
             });
         }
     }

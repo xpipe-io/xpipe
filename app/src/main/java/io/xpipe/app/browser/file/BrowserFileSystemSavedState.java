@@ -65,7 +65,7 @@ public class BrowserFileSystemSavedState {
         return state;
     }
 
-    public void save() {
+    public synchronized void save() {
         if (model == null) {
             return;
         }
@@ -107,7 +107,7 @@ public class BrowserFileSystemSavedState {
         }
     }
 
-    private void updateRecent(String dir) {
+    private synchronized void updateRecent(String dir) {
         var without = FileNames.removeTrailingSlash(dir);
         var with = FileNames.toDirectory(dir);
         recentDirectories.removeIf(recentEntry ->

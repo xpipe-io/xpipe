@@ -4,13 +4,12 @@ import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppDebugModeCheck;
 import io.xpipe.app.core.check.AppTempCheck;
-import io.xpipe.app.core.launcher.LauncherCommand;
-import io.xpipe.app.core.window.ModifiedStage;
+import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.LocalShell;
-import io.xpipe.app.util.PlatformState;
-import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.prefs.CloseBehaviour;
+import io.xpipe.app.util.*;
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeInstallation;
@@ -18,18 +17,15 @@ import io.xpipe.core.util.XPipeInstallation;
 import javafx.application.Platform;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public abstract class OperationMode {
 
-    public static final String MODE_PROP = "io.xpipe.app.mode";
     public static final OperationMode BACKGROUND = new BaseMode();
     public static final OperationMode TRAY = new TrayMode();
     public static final OperationMode GUI = new GuiMode();
-    private static final Pattern PROPERTY_PATTERN = Pattern.compile("^-[DP](.+)=(.+)$");
     private static final List<OperationMode> ALL = List.of(BACKGROUND, TRAY, GUI);
 
     @Getter
@@ -67,28 +63,15 @@ public abstract class OperationMode {
         return null;
     }
 
-    private static String[] parseProperties(String[] args) {
-        List<String> newArgs = new ArrayList<>();
-        for (var a : args) {
-            var m = PROPERTY_PATTERN.matcher(a);
-            if (m.matches()) {
-                var k = m.group(1);
-                var v = m.group(2);
-                System.setProperty(k, v);
-            } else {
-                newArgs.add(a);
-            }
-        }
-        return newArgs.toArray(String[]::new);
-    }
-
     private static void setup(String[] args) {
         try {
-            // Register stage theming early to make it apply for any potential early popups
-            ModifiedStage.init();
-
             // Only for handling SIGTERM
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                // If we used System.exit(), we don't want to do this
+                if (OperationMode.isInShutdown()) {
+                    return;
+                }
+
                 TrackEvent.info("Received SIGTERM externally");
                 OperationMode.shutdown(true, false);
             }));
@@ -113,30 +96,86 @@ public abstract class OperationMode {
             });
 
             TrackEvent.info("Initial setup");
-            AppProperties.init();
+            AppMainWindow.loadingText("initializingApp");
+            AppProperties.init(args);
             AppTempCheck.check();
             AppLogs.init();
             AppDebugModeCheck.printIfNeeded();
-            AppProperties.logArguments(args);
             AppProperties.logSystemProperties();
-            AppProperties.logPassedProperties();
+            AppProperties.get().logArguments();
             AppExtensionManager.init(true);
             AppI18n.init();
             AppPrefs.initLocal();
             AppBeaconServer.setupPort();
+            AppInstance.init();
+            // Initialize early to load in parallel
+            PlatformInit.init(false);
+            ThreadHelper.runAsync(() -> {
+                PlatformInit.init(true);
+                AppMainWindow.init(OperationMode.getStartupMode() == XPipeDaemonMode.GUI);
+            });
             TrackEvent.info("Finished initial setup");
         } catch (Throwable ex) {
             ErrorEvent.fromThrowable(ex).term().handle();
         }
     }
 
+    public static XPipeDaemonMode getStartupMode() {
+        var event = TrackEvent.withInfo("Startup mode determined");
+        if (AppMainWindow.getInstance() != null
+                && AppMainWindow.getInstance().getStage().isShowing()) {
+            event.tag("mode", "gui").tag("reason", "windowShowing").handle();
+            return XPipeDaemonMode.GUI;
+        }
+
+        var arg = AppProperties.get().getArguments().getModeArg();
+        if (arg != null) {
+            event.tag("mode", arg.getDisplayName())
+                    .tag("reason", "modeArgPassed")
+                    .handle();
+            return arg;
+        }
+
+        var prop = AppProperties.get().getExplicitMode();
+        if (prop != null) {
+            event.tag("mode", prop.getDisplayName())
+                    .tag("reason", "modePropertyPassed")
+                    .handle();
+            return prop;
+        }
+
+        if (AppPrefs.get() != null) {
+            var pref = AppPrefs.get().startupBehaviour().getValue().getMode();
+            event.tag("mode", pref.getDisplayName())
+                    .tag("reason", "prefSetting")
+                    .handle();
+            return pref;
+        }
+
+        event.tag("mode", "gui").tag("reason", "fallback").handle();
+        return XPipeDaemonMode.GUI;
+    }
+
+    @SneakyThrows
     public static void init(String[] args) {
         inStartup = true;
-        var usedArgs = parseProperties(args);
         setup(args);
-        LauncherCommand.runLauncher(usedArgs);
-        AppDesktopIntegration.setupDesktopIntegrations();
+
+        if (AppProperties.get().isAotTrainMode()) {
+            OperationMode.switchToSyncOrThrow(BACKGROUND);
+            inStartup = false;
+            // Linux runners don't support graphics
+            if (OsType.getLocal() != OsType.LINUX) {
+                OperationMode.switchToSyncOrThrow(OperationMode.GUI);
+            }
+            OperationMode.shutdown(false, false);
+            return;
+        }
+
+        var startupMode = getStartupMode();
+        switchToSyncOrThrow(map(startupMode));
         inStartup = false;
+        AppOpenArguments.init();
     }
 
     public static void switchToAsync(OperationMode newMode) {
@@ -191,7 +230,6 @@ public abstract class OperationMode {
 
         if (newMode.equals(GUI) && GUI.isSupported()) {
             set(GUI);
-            App.getApp().focus();
         }
     }
 
@@ -203,13 +241,17 @@ public abstract class OperationMode {
         return ALL;
     }
 
+    public static void startNewInstance() throws Exception {
+        var loc = AppProperties.get().isDevelopmentEnvironment()
+                ? XPipeInstallation.getLocalDefaultInstallationBasePath()
+                : XPipeInstallation.getCurrentInstallationBasePath().toString();
+        var exec = XPipeInstallation.createExternalAsyncLaunchCommand(loc, XPipeDaemonMode.GUI, "", true);
+        LocalShell.getShell().executeSimpleCommand(exec);
+    }
+
     public static void restart() {
         OperationMode.executeAfterShutdown(() -> {
-            var loc = AppProperties.get().isDevelopmentEnvironment()
-                    ? XPipeInstallation.getLocalDefaultInstallationBasePath()
-                    : XPipeInstallation.getCurrentInstallationBasePath().toString();
-            var exec = XPipeInstallation.createExternalAsyncLaunchCommand(loc, XPipeDaemonMode.GUI, "", true);
-            LocalShell.getShell().executeSimpleCommand(exec);
+            startNewInstance();
         });
     }
 
@@ -237,42 +279,38 @@ public abstract class OperationMode {
             OperationMode.halt(0);
         };
 
-        if (Platform.isFxApplicationThread() || !Thread.currentThread().isDaemon()) {
-            exec.run();
-        } else {
-            // Creates separate non daemon thread to force execution after shutdown even if current thread is a daemon
-            var t = new Thread(exec);
-            t.setDaemon(false);
-            t.start();
-            try {
-                t.join();
-            } catch (InterruptedException ignored) {
-            }
-        }
+        // Creates separate non daemon thread to force execution after shutdown even if current thread is a daemon
+        var t = new Thread(exec);
+        t.setDaemon(false);
+        t.start();
     }
 
+    private static final Object HALT_LOCK = new Object();
+
     public static void halt(int code) {
-        TrackEvent.info("Halting now!");
-        AppLogs.teardown();
-        Runtime.getRuntime().halt(code);
+        synchronized (HALT_LOCK) {
+            TrackEvent.info("Halting now!");
+            AppLogs.teardown();
+            Runtime.getRuntime().halt(code);
+        }
     }
 
     public static void onWindowClose() {
-        if (AppPrefs.get() == null) {
-            return;
+        CloseBehaviour action;
+        if (AppPrefs.get() != null && !isInStartup() && !isInShutdown()) {
+            action = AppPrefs.get().closeBehaviour().getValue();
+        } else {
+            action = CloseBehaviour.QUIT;
         }
-
-        var action = AppPrefs.get().closeBehaviour().getValue();
         ThreadHelper.runAsync(() -> {
             action.run();
         });
     }
 
     public static void shutdown(boolean inShutdownHook, boolean hasError) {
-        // We can receive shutdown events while we are still starting up
-        // In that case ignore them until we are finished
         if (isInStartup()) {
-            return;
+            TrackEvent.info("Received shutdown request while in startup. Halting ...");
+            OperationMode.halt(1);
         }
 
         // In case we are stuck while in shutdown, instantly exit this application
@@ -294,6 +332,8 @@ public abstract class OperationMode {
             });
         }
 
+        TrackEvent.info("Starting shutdown ...");
+
         inShutdown = true;
         OperationMode.inShutdownHook = inShutdownHook;
         // Keep a non-daemon thread running
@@ -311,28 +351,7 @@ public abstract class OperationMode {
             OperationMode.halt(hasError ? 1 : 0);
         });
         thread.start();
-
-        try {
-            thread.join();
-        } catch (InterruptedException ignored) {
-            OperationMode.halt(1);
-        }
     }
-
-    //    public static synchronized void reload() {
-    //        ThreadHelper.create("reloader", false, () -> {
-    //                    try {
-    //                        switchTo(BACKGROUND);
-    //                        CURRENT.finalTeardown();
-    //                        CURRENT.onSwitchTo();
-    //                        switchTo(GUI);
-    //                    } catch (Throwable t) {
-    //                        ErrorEvent.fromThrowable(t).build().handle();
-    //                        OperationMode.halt(1);
-    //                    }
-    //                })
-    //                .start();
-    //    }
 
     private static synchronized void set(OperationMode newMode) {
         if (inShutdown) {
@@ -353,11 +372,19 @@ public abstract class OperationMode {
                 return;
             }
 
-            if (CURRENT != null) {
+            if (CURRENT != null && CURRENT != BACKGROUND) {
                 CURRENT.onSwitchFrom();
             }
 
-            newMode.onSwitchTo();
+            BACKGROUND.onSwitchTo();
+            if (newMode != GUI
+                    && AppMainWindow.getInstance() != null
+                    && AppMainWindow.getInstance().getStage().isShowing()) {
+                GUI.onSwitchTo();
+                newMode = GUI;
+            } else {
+                newMode.onSwitchTo();
+            }
             CURRENT = newMode;
         } catch (Throwable ex) {
             ErrorEvent.fromThrowable(ex).terminal(true).build().handle();

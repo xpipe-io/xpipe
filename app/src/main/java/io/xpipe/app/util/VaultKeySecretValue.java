@@ -9,7 +9,6 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-import java.security.spec.InvalidKeySpecException;
 import javax.crypto.SecretKey;
 
 @JsonTypeName("vault")
@@ -18,18 +17,17 @@ import javax.crypto.SecretKey;
 @EqualsAndHashCode(callSuper = true)
 public class VaultKeySecretValue extends AesSecretValue {
 
+    public VaultKeySecretValue(String encryptedValue) {
+        super(encryptedValue);
+    }
+
     public VaultKeySecretValue(char[] secret) {
         super(secret);
     }
 
     @Override
-    protected int getIterationCount() {
-        return 8192;
-    }
-
-    protected SecretKey getAESKey() throws InvalidKeySpecException {
-        var chars = DataStorage.get() != null ? DataStorage.get().getVaultKey().toCharArray() : new char[0];
-        return getSecretKey(chars);
+    protected SecretKey getSecretKey() {
+        return DataStorage.get() != null ? DataStorage.get().getVaultKey() : null;
     }
 
     @Override

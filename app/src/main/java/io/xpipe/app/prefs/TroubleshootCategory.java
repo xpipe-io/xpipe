@@ -1,9 +1,13 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.TileButtonComp;
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppLogs;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.UserReportComp;
 import io.xpipe.app.terminal.ExternalTerminalType;
@@ -11,9 +15,18 @@ import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.FileOpener;
 import io.xpipe.app.util.OptionsBuilder;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.util.XPipeInstallation;
+
+import com.sun.management.HotSpotDiagnosticMXBean;
+import lombok.SneakyThrows;
+import org.apache.commons.io.FileUtils;
+
+import java.lang.management.ManagementFactory;
+import java.nio.file.Files;
+import javax.management.MBeanServer;
 
 public class TroubleshootCategory extends AppPrefsCategory {
 
@@ -26,7 +39,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
     protected Comp<?> create() {
         OptionsBuilder b = new OptionsBuilder()
                 .addTitle("troubleshootingOptions")
-                .spacer(30)
+                .spacer(25)
                 .addComp(
                         new TileButtonComp("reportIssue", "reportIssueDescription", "mdal-bug_report", e -> {
                                     var event = ErrorEvent.fromMessage("User Report");
@@ -93,12 +106,71 @@ public class TroubleshootCategory extends AppPrefsCategory {
                         null)
                 .separator()
                 .addComp(
+                        new TileButtonComp(
+                                        "clearUserData", "clearUserDataDescription", "mdi2t-trash-can-outline", e -> {
+                                            var modal = ModalOverlay.of(
+                                                    "clearUserDataTitle",
+                                                    AppDialog.dialogTextKey("clearUserDataContent"));
+                                            modal.withDefaultButtons(() -> {
+                                                ThreadHelper.runFailableAsync(() -> {
+                                                    var dir =
+                                                            AppProperties.get().getDataDir();
+                                                    try (var stream = Files.list(dir)) {
+                                                        var dirs = stream.toList();
+                                                        for (var path : dirs) {
+                                                            if (path.getFileName()
+                                                                            .toString()
+                                                                            .equals("logs")
+                                                                    || path.getFileName()
+                                                                            .toString()
+                                                                            .equals("shell")) {
+                                                                continue;
+                                                            }
+
+                                                            FileUtils.deleteQuietly(path.toFile());
+                                                        }
+                                                    }
+                                                    OperationMode.halt(0);
+                                                });
+                                            });
+                                            modal.show();
+                                            e.consume();
+                                        })
+                                .grow(true, false),
+                        null)
+                .separator()
+                .addComp(
                         new TileButtonComp("clearCaches", "clearCachesDescription", "mdi2t-trash-can-outline", e -> {
-                                    ClearCacheAlert.show();
+                                    var modal = ModalOverlay.of(
+                                            "clearCachesAlertTitle",
+                                            AppDialog.dialogTextKey("clearCachesAlertContent"));
+                                    modal.withDefaultButtons(() -> {
+                                        AppCache.clear();
+                                    });
+                                    modal.show();
+                                    e.consume();
+                                })
+                                .grow(true, false),
+                        null)
+                .separator()
+                .addComp(
+                        new TileButtonComp("createHeapDump", "createHeapDumpDescription", "mdi2m-memory", e -> {
+                                    heapDump();
                                     e.consume();
                                 })
                                 .grow(true, false),
                         null);
         return b.buildComp();
+    }
+
+    @SneakyThrows
+    private static void heapDump() {
+        var file = DesktopHelper.getDesktopDirectory().resolve("xpipe.hprof");
+        FileUtils.deleteQuietly(file.toFile());
+        MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+        HotSpotDiagnosticMXBean mxBean = ManagementFactory.newPlatformMXBeanProxy(
+                server, "com.sun.management:type=HotSpotDiagnostic", HotSpotDiagnosticMXBean.class);
+        mxBean.dumpHeap(file.toString(), true);
+        DesktopHelper.browseFileInDirectory(file);
     }
 }

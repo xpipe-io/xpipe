@@ -312,7 +312,10 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
             browserActionMenu.show(menu.getStyleableNode(), Side.RIGHT, 0, 0);
             shownBrowserActionsMenu = browserActionMenu;
             Platform.runLater(() -> {
-                browserActionMenu.getItems().getFirst().getStyleableNode().requestFocus();
+                var items = browserActionMenu.getItems();
+                if (items.size() > 0) {
+                    items.getFirst().getStyleableNode().requestFocus();
+                }
             });
         }
     }

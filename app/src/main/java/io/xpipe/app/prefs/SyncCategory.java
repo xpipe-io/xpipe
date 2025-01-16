@@ -1,15 +1,10 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.HorizontalComp;
-import io.xpipe.app.comp.base.MarkdownComp;
-import io.xpipe.app.comp.base.TextFieldComp;
+import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.window.AppWindowHelper;
-import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.storage.DataStorageSyncHandler;
-import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -17,8 +12,6 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.theme.Styles;
@@ -35,20 +28,11 @@ public class SyncCategory extends AppPrefsCategory {
     }
 
     private static void showHelpAlert() {
-        AppWindowHelper.showAlert(
-                alert -> {
-                    alert.setTitle(AppI18n.get("gitVault"));
-                    alert.setAlertType(Alert.AlertType.NONE);
-
-                    var activated = AppI18n.get().getMarkdownDocumentation("app:vault");
-                    var markdown = new MarkdownComp(activated, s -> s)
-                            .prefWidth(550)
-                            .prefHeight(550)
-                            .createRegion();
-                    alert.getDialogPane().setContent(markdown);
-                    alert.getButtonTypes().add(ButtonType.OK);
-                },
-                buttonType -> {});
+        var md = AppI18n.get().getMarkdownDocumentation("vault");
+        var markdown = new MarkdownComp(md, s -> s, true).prefWidth(600);
+        var modal = ModalOverlay.of(markdown);
+        modal.addButton(ModalButton.ok());
+        AppDialog.show(modal);
     }
 
     public Comp<?> create() {
@@ -83,7 +67,7 @@ public class SyncCategory extends AppPrefsCategory {
         remoteRow.apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
 
         var builder = new OptionsBuilder();
-        builder.addTitle("sync")
+        builder.addTitle("gitSync")
                 .sub(new OptionsBuilder()
                         .pref(prefs.enableGitStorage)
                         .addToggle(prefs.enableGitStorage)
@@ -92,11 +76,7 @@ public class SyncCategory extends AppPrefsCategory {
                         .disable(prefs.enableGitStorage.not())
                         .addComp(testRow)
                         .disable(prefs.storageGitRemote.isNull().or(prefs.enableGitStorage.not()))
-                        .addComp(prefs.getCustomComp("gitVaultIdentityStrategy"))
-                        .nameAndDescription("openDataDir")
-                        .addComp(new ButtonComp(AppI18n.observable("openDataDirButton"), () -> {
-                            DesktopHelper.browsePathLocal(DataStorage.get().getDataDir());
-                        })));
+                        .addComp(prefs.getCustomComp("gitVaultIdentityStrategy")));
         return builder.buildComp();
     }
 }

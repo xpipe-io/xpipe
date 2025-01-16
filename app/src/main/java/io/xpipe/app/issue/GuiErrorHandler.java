@@ -41,7 +41,7 @@ public class GuiErrorHandler extends GuiErrorHandlerBase implements ErrorHandler
                 ErrorAction.ignore().handle(event);
             }
         } else {
-            ErrorHandlerComp.showAndTryWait(event, true);
+            ErrorHandlerDialog.showAndWait(event);
         }
     }
 }

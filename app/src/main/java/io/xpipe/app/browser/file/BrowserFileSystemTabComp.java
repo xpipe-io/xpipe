@@ -43,8 +43,7 @@ public class BrowserFileSystemTabComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var alertOverlay = new ModalOverlayComp(Comp.of(() -> createContent()), model.getOverlay());
-        return alertOverlay.createRegion();
+        return createContent();
     }
 
     private Region createContent() {

@@ -139,14 +139,13 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                         section.getWrapper().getExpanded(),
                         section.getAllChildren().getList());
         var content = new ListBoxViewComp<>(
-                        listSections.getList(),
-                        section.getAllChildren().getList(),
-                        (StoreSection e) -> {
-                            return StoreSection.customSection(e, false).apply(GrowAugment.create(true, false));
-                        },
-                        false)
-                .minHeight(0)
-                .hgrow();
+                listSections.getList(),
+                section.getAllChildren().getList(),
+                (StoreSection e) -> {
+                    return StoreSection.customSection(e, false).apply(GrowAugment.create(true, false));
+                },
+                false);
+        content.minHeight(0).hgrow();
 
         var expanded = Bindings.createBooleanBinding(
                 () -> {
@@ -191,6 +190,10 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                             newList.add("gray");
                         }
                         struc.get().getStyleClass().setAll(newList);
+                    });
+
+                    section.getWrapper().getPerUser().subscribe(val -> {
+                        struc.get().pseudoClassStateChanged(PseudoClass.getPseudoClass("per-user"), val);
                     });
                 })
                 .createStructure();

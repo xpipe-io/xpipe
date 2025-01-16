@@ -274,6 +274,18 @@ public class PlatformThread {
         return true;
     }
 
+    public static void runNestedLoopIteration() {
+        if (!Platform.canStartNestedEventLoop()) {
+            return;
+        }
+
+        var key = new Object();
+        Platform.runLater(() -> {
+            Platform.exitNestedEventLoop(key, null);
+        });
+        Platform.enterNestedEventLoop(key);
+    }
+
     public static void runLaterIfNeeded(Runnable r) {
         if (!canRunPlatform()) {
             return;

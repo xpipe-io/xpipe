@@ -3,17 +3,21 @@ package io.xpipe.app.util;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.terminal.ExternalTerminalType;
-import io.xpipe.core.util.EncryptedSecretValue;
+import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.JacksonMapper;
-import io.xpipe.core.util.SecretValue;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
+import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+import com.fasterxml.jackson.databind.jsontype.impl.AsPropertyTypeDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.type.SimpleType;
 
+import java.io.CharArrayReader;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -28,10 +32,14 @@ public class AppJacksonModule extends SimpleModule {
         addDeserializer(DataStoreEntryRef.class, new DataStoreEntryRefDeserializer());
         addSerializer(ContextualFileReference.class, new LocalFileReferenceSerializer());
         addDeserializer(ContextualFileReference.class, new LocalFileReferenceDeserializer());
-        addSerializer(DataStoreSecret.class, new DataStoreSecretSerializer());
-        addDeserializer(DataStoreSecret.class, new DataStoreSecretDeserializer());
         addSerializer(ExternalTerminalType.class, new ExternalTerminalTypeSerializer());
         addDeserializer(ExternalTerminalType.class, new ExternalTerminalTypeDeserializer());
+        addSerializer(EncryptedValue.class, new EncryptedValueSerializer());
+        addDeserializer(EncryptedValue.class, new EncryptedValueDeserializer<>());
+        addSerializer(EncryptedValue.CurrentKey.class, new EncryptedValueSerializer());
+        addDeserializer(EncryptedValue.CurrentKey.class, new EncryptedValueDeserializer<>());
+        addSerializer(EncryptedValue.VaultKey.class, new EncryptedValueSerializer());
+        addDeserializer(EncryptedValue.VaultKey.class, new EncryptedValueDeserializer<>());
 
         context.addSerializers(_serializers);
         context.addDeserializers(_deserializers);
@@ -75,56 +83,121 @@ public class AppJacksonModule extends SimpleModule {
         }
     }
 
-    public static class DataStoreSecretSerializer extends JsonSerializer<DataStoreSecret> {
+    @SuppressWarnings("all")
+    public static class EncryptedValueSerializer extends JsonSerializer<EncryptedValue> {
 
         @Override
-        public void serialize(DataStoreSecret value, JsonGenerator jgen, SerializerProvider provider)
+        public void serialize(EncryptedValue value, JsonGenerator jgen, SerializerProvider provider)
                 throws IOException {
-            // Preserve same output if not changed
-            if (value.getOriginalNode() != null && !value.requiresRewrite()) {
-                var tree = JsonNodeFactory.instance.objectNode();
-                tree.set("secret", (JsonNode) value.getOriginalNode());
-                jgen.writeTree(tree);
+            if (value.getValue() == null) {
+                jgen.writeNull();
                 return;
             }
 
-            // Reencrypt
-            var val = value.getOutputSecret();
-            var valTree = JacksonMapper.getDefault().valueToTree(val);
-            var tree = JsonNodeFactory.instance.objectNode();
-            tree.set("secret", valTree);
-            jgen.writeTree(tree);
-            value.rewrite(valTree);
+            jgen.writeTree(value.getSecret().serialize(value.allowUserSecretKey()));
+        }
+
+        @Override
+        public void serializeWithType(
+                EncryptedValue value, JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer)
+                throws IOException {
+            if (value.getValue() == null) {
+                gen.writeNull();
+                return;
+            }
+
+            gen.writeTree(value.getSecret().serialize(value.allowUserSecretKey()));
         }
     }
 
-    public static class DataStoreSecretDeserializer extends JsonDeserializer<DataStoreSecret> {
+    @SuppressWarnings("all")
+    public static class EncryptedValueDeserializer<T extends EncryptedValue<?>> extends JsonDeserializer<T>
+            implements ContextualDeserializer {
+
+        private boolean useCurrentSecretKeyIfPossible;
+        private boolean forceCurrentSecretKey;
+        private Class<?> type;
 
         @Override
-        public DataStoreSecret deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            var tree = JacksonMapper.getDefault().readTree(p);
-            if (!tree.isObject()) {
+        @SuppressWarnings("unchecked")
+        public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property)
+                throws JsonMappingException {
+            var deserializer = new EncryptedValueDeserializer();
+            if (property == null) {
+                return deserializer;
+            }
+
+            JavaType wrapperType = property.getType();
+            JavaType valueType = wrapperType.containedType(0);
+            deserializer.useCurrentSecretKeyIfPossible =
+                    !wrapperType.getRawClass().equals(EncryptedValue.VaultKey.class);
+            deserializer.forceCurrentSecretKey = wrapperType.getRawClass().equals(EncryptedValue.CurrentKey.class);
+            deserializer.type = valueType.getRawClass();
+            return deserializer;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public T deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            if (type == null) {
                 return null;
             }
 
-            var legacy = JacksonMapper.getDefault().treeToValue(tree, EncryptedSecretValue.class);
-            if (legacy != null) {
-                // Don't cache legacy node
-                return new DataStoreSecret(null, legacy.inPlace());
-            }
+            return (T) get(p, type, useCurrentSecretKeyIfPossible, forceCurrentSecretKey);
+        }
 
-            var obj = (ObjectNode) tree;
-            if (!obj.has("secret")) {
+        public Object deserializeWithType(JsonParser jp, DeserializationContext ctxt, TypeDeserializer typeDeserializer)
+                throws IOException {
+            var type = ((AsPropertyTypeDeserializer) typeDeserializer).baseType();
+            JavaType wrapperType = type;
+            JavaType valueType = wrapperType.containedType(0);
+            var useCurrentSecretKey = !wrapperType.equals(SimpleType.constructUnsafe(EncryptedValue.VaultKey.class));
+            var forceCurrentSecretKey = wrapperType.equals(SimpleType.constructUnsafe(EncryptedValue.CurrentKey.class));
+            return get(jp, valueType.getRawClass(), useCurrentSecretKey, forceCurrentSecretKey);
+        }
+
+        private EncryptedValue get(
+                JsonParser p, Class<?> type, boolean useCurrentSecretKey, boolean forceCurrentSecretKey)
+                throws IOException {
+            if (forceCurrentSecretKey && DataStorageUserHandler.getInstance().getActiveUser() == null) {
                 return null;
             }
 
-            var secretTree = obj.required("secret");
-            var secret = JacksonMapper.getDefault().treeToValue(secretTree, SecretValue.class);
+            Object value;
+            JsonNode tree = JacksonMapper.getDefault().readTree(p);
+            var secret = DataStorageSecret.deserialize(tree);
             if (secret == null) {
-                return null;
-            }
+                var raw = JacksonMapper.getDefault().treeToValue(tree, type);
+                if (raw != null) {
+                    value = raw;
+                    var s = JacksonMapper.getDefault().writeValueAsString(value);
+                    var internalSecret = InPlaceSecretValue.of(s.toCharArray());
+                    secret = DataStorageSecret.ofSecret(
+                            internalSecret,
+                            useCurrentSecretKey
+                                            && DataStorageUserHandler.getInstance()
+                                                            .getActiveUser()
+                                                    != null
+                                    ? EncryptionToken.ofUser()
+                                    : EncryptionToken.ofVaultKey());
+                } else {
+                    return null;
+                }
+            } else {
+                if (!secret.getEncryptedToken().canDecrypt()) {
+                    return null;
+                }
 
-            return new DataStoreSecret(secretTree, secret.inPlace());
+                var s = secret.getSecret();
+                if (s.length == 0) {
+                    return null;
+                }
+                value = JacksonMapper.getDefault().readValue(new CharArrayReader(s), type);
+            }
+            var perUser = useCurrentSecretKey;
+            return perUser
+                    ? new EncryptedValue.CurrentKey<>(value, secret)
+                    : new EncryptedValue.VaultKey<>(value, secret);
         }
     }
 
@@ -141,7 +214,7 @@ public class AppJacksonModule extends SimpleModule {
 
             jgen.writeStartObject();
             jgen.writeFieldName("storeId");
-            jgen.writeString(value.getEntry().getUuid().toString());
+            jgen.writeString(value.get().getUuid().toString());
             jgen.writeEndObject();
         }
     }
@@ -161,9 +234,11 @@ public class AppJacksonModule extends SimpleModule {
             }
 
             var id = UUID.fromString(text);
+            // Keep an invalid entry if it is per-user, meaning that it will get removed later on
             var e = DataStorage.get()
                     .getStoreEntryIfPresent(id)
-                    .filter(dataStoreEntry -> dataStoreEntry.getValidity() != DataStoreEntry.Validity.LOAD_FAILED)
+                    .filter(dataStoreEntry -> dataStoreEntry.getValidity() != DataStoreEntry.Validity.LOAD_FAILED
+                            || !dataStoreEntry.getStoreNode().isAvailableForUser())
                     .orElse(null);
             if (e == null) {
                 return null;

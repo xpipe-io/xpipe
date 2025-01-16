@@ -24,4 +24,9 @@ public class ConnectionRemoveExchangeImpl extends ConnectionRemoveExchange {
         DataStorage.get().deleteWithChildren(entries.toArray(DataStoreEntry[]::new));
         return Response.builder().build();
     }
+
+    @Override
+    public Object getSynchronizationObject() {
+        return DataStorage.get();
+    }
 }

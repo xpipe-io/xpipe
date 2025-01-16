@@ -97,9 +97,7 @@ public enum XPipeDistributionType {
             return UNKNOWN;
         }
 
-        if (OsType.getLocal() == OsType.LINUX
-                && "/config".equals(System.getProperty("user.home"))
-                && Files.isDirectory(Path.of("/kclient"))) {
+        if (OsType.getLocal() == OsType.LINUX && Files.isDirectory(Path.of("/kclient"))) {
             return WEBTOP;
         }
 

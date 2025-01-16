@@ -50,7 +50,7 @@ public class ScriptHelper {
 
         // We just apply the profile files always, as we can't be sure that they definitely have been applied.
         // Especially if we launch something that is not the system default shell
-        var applyCommand = t.applyInitFileCommand();
+        var applyCommand = t.applyInitFileCommand(processControl);
         if (applyCommand != null) {
             content += nl + applyCommand + nl;
         }
@@ -112,11 +112,34 @@ public class ScriptHelper {
                 .tag("content", content)
                 .handle();
 
-        processControl
-                .getShellDialect()
-                .createScriptTextFileWriteCommand(processControl, content, file.toString())
-                .execute();
+        processControl.view().writeScriptFile(file, content);
+        file = fixScriptPermissions(processControl, file);
         return file;
+    }
+
+    public static FilePath fixScriptPermissions(ShellControl processControl, FilePath file) throws Exception {
+        // Check if file system has disabled execution in temp
+        // This might happen in limited containers
+        if (processControl.getOsType() == OsType.LINUX
+                && ShellDialects.SH
+                        .getClass()
+                        .isAssignableFrom(processControl.getShellDialect().getClass())
+                && !processControl
+                        .command(CommandBuilder.of().add("test", "-x").addFile(file))
+                        .executeAndCheck()) {
+            var homeFile =
+                    processControl.view().userHome().join(".xpipe", "scripts").join(file.getFileName());
+            processControl.executeSimpleCommand(processControl
+                    .getShellDialect()
+                    .getMkdirsCommand(homeFile.getParent().toString()));
+            processControl
+                    .getShellDialect()
+                    .getFileMoveCommand(processControl, file.toString(), homeFile.toString())
+                    .execute();
+            return homeFile;
+        } else {
+            return file;
+        }
     }
 
     public static FilePath createRemoteAskpassScript(ShellControl parent, UUID requestId, String prefix)

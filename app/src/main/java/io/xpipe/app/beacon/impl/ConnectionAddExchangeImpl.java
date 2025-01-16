@@ -3,6 +3,7 @@ package io.xpipe.app.beacon.impl;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.ConnectionAddExchange;
 import io.xpipe.core.util.ValidationException;
 
@@ -17,7 +18,17 @@ public class ConnectionAddExchangeImpl extends ConnectionAddExchange {
             return Response.builder().connection(found.get().getUuid()).build();
         }
 
+        if (msg.getCategory() != null
+                && DataStorage.get()
+                        .getStoreCategoryIfPresent(msg.getCategory())
+                        .isEmpty()) {
+            throw new BeaconClientException("Category with id " + msg.getCategory() + " does not exist");
+        }
+
         var entry = DataStoreEntry.createNew(msg.getName(), msg.getData());
+        if (msg.getCategory() != null) {
+            entry.setCategoryUuid(msg.getCategory());
+        }
         try {
             DataStorage.get().addStoreEntryInProgress(entry);
             if (msg.getValidate()) {
@@ -35,6 +46,22 @@ public class ConnectionAddExchangeImpl extends ConnectionAddExchange {
             DataStorage.get().removeStoreEntryInProgress(entry);
         }
         DataStorage.get().addStoreEntryIfNotPresent(entry);
+
+        // Explicitly assign category
+        if (msg.getCategory() != null) {
+            DataStorage.get()
+                    .updateCategory(
+                            entry,
+                            DataStorage.get()
+                                    .getStoreCategoryIfPresent(msg.getCategory())
+                                    .orElseThrow());
+        }
+
         return Response.builder().connection(entry.getUuid()).build();
+    }
+
+    @Override
+    public Object getSynchronizationObject() {
+        return DataStorage.get();
     }
 }

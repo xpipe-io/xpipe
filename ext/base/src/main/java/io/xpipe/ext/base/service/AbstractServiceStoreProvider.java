@@ -2,17 +2,18 @@ package io.xpipe.ext.base.service;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.store.*;
-import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.ext.SingletonSessionStoreProvider;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DataStoreFormatter;
+import io.xpipe.app.util.ShellStoreFormat;
 import io.xpipe.core.store.DataStore;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;
@@ -27,17 +28,6 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     @Override
     public DataStoreUsageCategory getUsageCategory() {
         return DataStoreUsageCategory.TUNNEL;
-    }
-
-    @Override
-    public ActionProvider.Action launchAction(DataStoreEntry store) {
-        return new ActionProvider.Action() {
-            @Override
-            public void execute() throws Exception {
-                AbstractServiceStore s = store.getStore().asNeeded();
-                s.startSessionIfNeeded();
-            }
-        };
     }
 
     @Override
@@ -59,7 +49,7 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
                         return SystemStateComp.State.SUCCESS;
                     }
 
-                    if (!s.isSessionEnabled()) {
+                    if (!s.isSessionEnabled() || (s.isSessionEnabled() && !s.isSessionRunning())) {
                         return SystemStateComp.State.OTHER;
                     }
 
@@ -102,11 +92,31 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     @Override
     public ObservableValue<String> informationString(StoreSection section) {
         AbstractServiceStore s = section.getWrapper().getEntry().getStore().asNeeded();
-        if (s.getLocalPort() != null) {
-            return new SimpleStringProperty("Port " + s.getLocalPort() + " <- " + s.getRemotePort());
-        } else {
-            return new SimpleStringProperty("Port " + s.getRemotePort());
-        }
+        return Bindings.createStringBinding(
+                () -> {
+                    var desc = formatService(s);
+                    var type = s.getServiceProtocolType() != null
+                                    && !(s.getServiceProtocolType() instanceof ServiceProtocolType.None)
+                            ? AppI18n.get(s.getServiceProtocolType().getTranslationKey())
+                            : null;
+                    var state = !s.requiresTunnel()
+                            ? null
+                            : s.isSessionRunning()
+                                    ? AppI18n.get("active")
+                                    : s.isSessionEnabled() ? AppI18n.get("starting") : AppI18n.get("inactive");
+                    return new ShellStoreFormat(null, desc, type, state).format();
+                },
+                section.getWrapper().getCache(),
+                AppPrefs.get().language());
+    }
+
+    protected String formatService(AbstractServiceStore s) {
+        var desc = s.getLocalPort() != null
+                ? "localhost:" + s.getLocalPort() + " <- :" + s.getRemotePort()
+                : s.isSessionRunning()
+                        ? "localhost:" + s.getSession().getLocalPort() + " <- :" + s.getRemotePort()
+                        : AppI18n.get("servicePort", s.getRemotePort());
+        return desc;
     }
 
     @Override

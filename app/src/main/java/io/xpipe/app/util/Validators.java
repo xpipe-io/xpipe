@@ -21,6 +21,12 @@ public class Validators {
         }
     }
 
+    public static void nonNull(Object object, String name) throws ValidationException {
+        if (object == null) {
+            throw new ValidationException(AppI18n.get("app.mustNotBeEmpty", name));
+        }
+    }
+
     public static void contentNonNull(List<?> object) throws ValidationException {
         if (object.stream().anyMatch(o -> o == null)) {
             throw new ValidationException(AppI18n.get("app.valueMustNotBeEmpty"));

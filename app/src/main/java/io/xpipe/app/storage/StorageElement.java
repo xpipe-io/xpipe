@@ -83,11 +83,15 @@ public abstract class StorageElement {
             lastModified = Instant.now();
             dirty = true;
         }
-        listeners.forEach(l -> l.onUpdate());
+        synchronized (listeners) {
+            listeners.forEach(l -> l.onUpdate());
+        }
     }
 
     public void addListener(Listener l) {
-        this.listeners.add(l);
+        synchronized (listeners) {
+            this.listeners.add(l);
+        }
     }
 
     public final void deleteFromDisk() throws IOException {

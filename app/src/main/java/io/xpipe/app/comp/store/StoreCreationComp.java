@@ -2,17 +2,13 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.augment.GrowAugment;
-import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.DialogComp;
-import io.xpipe.app.comp.base.ErrorOverlayComp;
-import io.xpipe.app.comp.base.PopupMenuButtonComp;
+import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.issue.ExceptionConverter;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
@@ -31,17 +27,20 @@ import javafx.geometry.Orientation;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import atlantafx.base.controls.Spacer;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import net.synedra.validatorfx.GraphicDecorationStackPane;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -54,7 +53,7 @@ public class StoreCreationComp extends DialogComp {
     Predicate<DataStoreProvider> filter;
     BooleanProperty busy = new SimpleBooleanProperty();
     Property<Validator> validator = new SimpleObjectProperty<>(new SimpleValidator());
-    Property<String> messageProp = new SimpleStringProperty();
+    Property<ModalOverlay> messageProp = new SimpleObjectProperty<>();
     BooleanProperty finished = new SimpleBooleanProperty();
     ObservableValue<DataStoreEntry> entry;
     BooleanProperty changedSinceError = new SimpleBooleanProperty();
@@ -132,15 +131,16 @@ public class StoreCreationComp extends DialogComp {
                             .getRootCategory(DataStorage.get()
                                     .getStoreCategoryIfPresent(targetCategory)
                                     .orElseThrow());
-                    // Don't put connections in the scripts category ever
+
+                    // Don't put it in the wrong root category
                     if ((provider.getValue().getCreationCategory() == null
-                                    || !provider.getValue()
-                                            .getCreationCategory()
-                                            .equals(DataStoreCreationCategory.SCRIPT))
-                            && rootCategory.equals(DataStorage.get().getAllScriptsCategory())) {
-                        targetCategory = DataStorage.get()
-                                .getDefaultConnectionsCategory()
-                                .getUuid();
+                            || !provider.getValue()
+                                    .getCreationCategory()
+                                    .getCategory()
+                                    .equals(rootCategory.getUuid()))) {
+                        targetCategory = provider.getValue().getCreationCategory() != null
+                                ? provider.getValue().getCreationCategory().getCategory()
+                                : DataStorage.ALL_CONNECTIONS_CATEGORY_UUID;
                     }
 
                     // Don't use the all connections category
@@ -150,6 +150,21 @@ public class StoreCreationComp extends DialogComp {
                                 .getDefaultConnectionsCategory()
                                 .getUuid();
                     }
+
+                    // Don't use the all scripts category
+                    if (targetCategory.equals(
+                            DataStorage.get().getAllScriptsCategory().getUuid())) {
+                        targetCategory = DataStorage.CUSTOM_SCRIPTS_CATEGORY_UUID;
+                    }
+
+                    // Don't use the all identities category
+                    if (targetCategory.equals(
+                            DataStorage.get().getAllIdentitiesCategory().getUuid())) {
+                        targetCategory = DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID;
+                    }
+
+                    // Custom category stuff
+                    targetCategory = provider.getValue().getTargetCategory(store.getValue(), targetCategory);
 
                     return DataStoreEntry.createNew(
                             UUID.randomUUID(), targetCategory, name.getValue(), store.getValue());
@@ -194,10 +209,14 @@ public class StoreCreationComp extends DialogComp {
     }
 
     public static void showCreation(DataStoreProvider selected, DataStoreCreationCategory category) {
-        showCreation(selected != null ? selected.defaultStore() : null, category);
+        showCreation(selected != null ? selected.defaultStore() : null, category, dataStoreEntry -> {}, true);
     }
 
-    public static void showCreation(DataStore base, DataStoreCreationCategory category) {
+    public static void showCreation(
+            DataStore base,
+            DataStoreCreationCategory category,
+            Consumer<DataStoreEntry> listener,
+            boolean selectCategory) {
         var prov = base != null ? DataStoreProviders.byStore(base) : null;
         show(
                 null,
@@ -207,13 +226,26 @@ public class StoreCreationComp extends DialogComp {
                         || dataStoreProvider.equals(prov),
                 (e, validated) -> {
                     try {
-                        DataStorage.get().addStoreEntryIfNotPresent(e);
+                        var returned = DataStorage.get().addStoreEntryIfNotPresent(e);
+                        listener.accept(returned);
                         if (validated
                                 && e.getProvider().shouldShowScan()
                                 && AppPrefs.get()
                                         .openConnectionSearchWindowOnConnectionCreation()
                                         .get()) {
-                            ScanAlert.showAsync(e);
+                            ScanDialog.showAsync(e);
+                        }
+
+                        if (selectCategory) {
+                            // Select new category if needed
+                            var cat = DataStorage.get()
+                                    .getStoreCategoryIfPresent(e.getCategoryUuid())
+                                    .orElseThrow();
+                            PlatformThread.runLaterIfNeeded(() -> {
+                                StoreViewState.get()
+                                        .getActiveCategory()
+                                        .setValue(StoreViewState.get().getCategoryWrapper(cat));
+                            });
                         }
                     } catch (Exception ex) {
                         ErrorEvent.fromThrowable(ex).handle();
@@ -262,7 +294,7 @@ public class StoreCreationComp extends DialogComp {
     @Override
     protected List<Comp<?>> customButtons() {
         return List.of(
-                new ButtonComp(AppI18n.observable("skipValidation"), null, () -> {
+                new ButtonComp(AppI18n.observable("skipValidation"), () -> {
                             if (showInvalidConfirmAlert()) {
                                 commit(false);
                             } else {
@@ -270,7 +302,7 @@ public class StoreCreationComp extends DialogComp {
                             }
                         })
                         .visible(skippable),
-                new ButtonComp(AppI18n.observable("connect"), null, () -> {
+                new ButtonComp(AppI18n.observable("connect"), () -> {
                             var temp = DataStoreEntry.createTempWrapper(store.getValue());
                             var action = provider.getValue().launchAction(temp);
                             ThreadHelper.runFailableAsync(() -> {
@@ -319,12 +351,7 @@ public class StoreCreationComp extends DialogComp {
                     .getFirst()
                     .getText();
             TrackEvent.info(msg);
-            var newMessage = msg;
-            // Temporary fix for equal error message not showing up again
-            if (Objects.equals(newMessage, messageProp.getValue())) {
-                newMessage = newMessage + " ";
-            }
-            messageProp.setValue(newMessage);
+            messageProp.setValue(createErrorOverlay(msg));
             changedSinceError.setValue(false);
             return;
         }
@@ -340,19 +367,19 @@ public class StoreCreationComp extends DialogComp {
                 entry.getValue().validateOrThrow();
                 commit(true);
             } catch (Throwable ex) {
+                String message;
                 if (ex instanceof ValidationException) {
                     ErrorEvent.expected(ex);
+                    message = ex.getMessage();
                 } else if (ex instanceof StackOverflowError) {
                     // Cycles in connection graphs can fail hard but are expected
                     ErrorEvent.expected(ex);
+                    message = "StackOverflowError";
+                } else {
+                    message = ex.getMessage();
                 }
 
-                var newMessage = ExceptionConverter.convertMessage(ex);
-                // Temporary fix for equal error message not showing up again
-                if (Objects.equals(newMessage, messageProp.getValue())) {
-                    newMessage = newMessage + " ";
-                }
-                messageProp.setValue(newMessage);
+                messageProp.setValue(createErrorOverlay(message));
                 changedSinceError.setValue(false);
 
                 ErrorEvent.fromThrowable(ex).omit().handle();
@@ -370,7 +397,24 @@ public class StoreCreationComp extends DialogComp {
     @Override
     protected Comp<?> pane(Comp<?> content) {
         var back = super.pane(content);
-        return new ErrorOverlayComp(back, messageProp);
+        return new ModalOverlayComp(back, messageProp);
+    }
+
+    private ModalOverlay createErrorOverlay(String message) {
+        var comp = Comp.of(() -> {
+            var l = new TextArea();
+            l.setText(message);
+            l.setWrapText(true);
+            l.getStyleClass().add("error-overlay-comp");
+            l.setEditable(false);
+            return l;
+        });
+        var overlay = ModalOverlay.of("error", comp, new LabelGraphic.NodeGraphic(() -> {
+            var graphic = new FontIcon("mdomz-warning");
+            graphic.setIconColor(Color.RED);
+            return new StackPane(graphic);
+        }));
+        return overlay;
     }
 
     @Override

@@ -19,3 +19,11 @@
 .options-comp .long-description {
     -fx-padding: 0 6 0 6;
 }
+
+.options-comp .simple-titled-pane-comp > .content {
+    -fx-padding: 0 9 6 9;
+}
+
+.options-comp .titled-pane > .title {
+    -fx-padding: 8 20 8 10;
+}

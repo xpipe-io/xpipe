@@ -8,10 +8,10 @@ import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
-import io.xpipe.app.comp.base.PrettySvgComp;
 import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.DerivedObservableList;
@@ -20,7 +20,6 @@ import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -52,7 +51,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
         var vbox = new VBox(welcome, new Spacer(4, Orientation.VERTICAL));
         vbox.setAlignment(Pos.CENTER_LEFT);
 
-        var img = new PrettySvgComp(new SimpleStringProperty("graphics/Hips.svg"), 50, 75)
+        var img = PrettyImageHelper.ofSpecificFixedSize("graphics/Hips.svg", 50, 61)
                 .padding(new Insets(5, 0, 0, 0))
                 .createRegion();
 
@@ -148,17 +147,20 @@ public class BrowserHistoryTabComp extends SimpleComp {
         var entry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
         var graphic = entry.get().getEffectiveIconFile();
         var view = PrettyImageHelper.ofFixedSize(graphic, 22, 16);
-        return new ButtonComp(
-                        new SimpleStringProperty(DataStorage.get().getStoreEntryDisplayName(entry.get())),
-                        view.createRegion(),
-                        () -> {
-                            ThreadHelper.runAsync(() -> {
-                                var storageEntry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
-                                if (storageEntry.isPresent()) {
-                                    model.openFileSystemAsync(storageEntry.get().ref(), null, disable);
-                                }
-                            });
-                        })
+        var name = Bindings.createStringBinding(
+                () -> {
+                    var n = DataStorage.get().getStoreEntryDisplayName(entry.get());
+                    return AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n;
+                },
+                AppPrefs.get().censorMode());
+        return new ButtonComp(name, view.createRegion(), () -> {
+                    ThreadHelper.runAsync(() -> {
+                        var storageEntry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
+                        if (storageEntry.isPresent()) {
+                            model.openFileSystemAsync(storageEntry.get().ref(), null, disable);
+                        }
+                    });
+                })
                 .minWidth(300)
                 .accessibleText(DataStorage.get().getStoreEntryDisplayName(entry.get()))
                 .disable(disable)
@@ -168,7 +170,13 @@ public class BrowserHistoryTabComp extends SimpleComp {
     }
 
     private Comp<?> dirButton(BrowserHistorySavedState.Entry e, BooleanProperty disable) {
-        return new ButtonComp(new SimpleStringProperty(e.getPath()), null, () -> {
+        var name = Bindings.createStringBinding(
+                () -> {
+                    var n = e.getPath();
+                    return AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n;
+                },
+                AppPrefs.get().censorMode());
+        return new ButtonComp(name, () -> {
                     ThreadHelper.runAsync(() -> {
                         model.restoreStateAsync(e, disable);
                     });

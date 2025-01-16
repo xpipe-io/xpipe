@@ -87,4 +87,8 @@ public abstract class BeaconInterface<T> {
     public boolean requiresEnabledApi() {
         return true;
     }
+
+    public Object getSynchronizationObject() {
+        return null;
+    }
 }

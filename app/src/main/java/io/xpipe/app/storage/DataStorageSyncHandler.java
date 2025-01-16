@@ -8,7 +8,7 @@ import java.util.List;
 public interface DataStorageSyncHandler {
 
     static DataStorageSyncHandler getInstance() {
-        return (DataStorageSyncHandler) ProcessControlProvider.get().getGitStorageHandler();
+        return (DataStorageSyncHandler) ProcessControlProvider.get().getStorageSyncHandler();
     }
 
     void reset() throws Exception;
@@ -36,4 +36,6 @@ public interface DataStorageSyncHandler {
     Path getDirectory();
 
     List<Path> getSavedDataFiles();
+
+    Path addDataFile(Path file, Path target, boolean perUser);
 }

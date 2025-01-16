@@ -49,10 +49,10 @@ public class ErrorEvent {
 
     public static ErrorEventBuilder fromThrowable(Throwable t) {
         if (EVENT_BASES.containsKey(t)) {
-            return EVENT_BASES.remove(t).description(ExceptionConverter.convertMessage(t));
+            return EVENT_BASES.remove(t).description(t.getMessage());
         }
 
-        return builder().throwable(t).description(ExceptionConverter.convertMessage(t));
+        return builder().throwable(t).description(t.getMessage());
     }
 
     public static ErrorEventBuilder fromThrowable(String msg, Throwable t) {

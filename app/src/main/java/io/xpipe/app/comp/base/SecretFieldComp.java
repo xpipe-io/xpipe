@@ -94,6 +94,7 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
                 .createRegion();
 
         var ig = new InputGroup(text);
+        ig.setFillHeight(true);
         ig.getStyleClass().add("secret-field-comp");
         if (allowCopy) {
             ig.getChildren().add(copyButton);

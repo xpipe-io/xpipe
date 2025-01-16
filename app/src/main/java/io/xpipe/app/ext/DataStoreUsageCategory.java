@@ -9,8 +9,6 @@ public enum DataStoreUsageCategory {
     TUNNEL,
     @JsonProperty("script")
     SCRIPT,
-    @JsonProperty("database")
-    DATABASE,
     @JsonProperty("command")
     COMMAND,
     @JsonProperty("desktop")
@@ -18,5 +16,7 @@ public enum DataStoreUsageCategory {
     @JsonProperty("group")
     GROUP,
     @JsonProperty("serial")
-    SERIAL
+    SERIAL,
+    @JsonProperty("identity")
+    IDENTITY
 }

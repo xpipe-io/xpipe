@@ -59,7 +59,7 @@ public class UserReportComp extends SimpleComp {
 
     private Comp<?> createAttachments() {
         var list = new ListSelectorComp<>(
-                        event.getAttachments(),
+                        FXCollections.observableList(event.getAttachments()),
                         file -> {
                             if (file.equals(AppLogs.get().getSessionLogsDirectory())) {
                                 return AppI18n.get("logFilesAttachment");
@@ -69,7 +69,7 @@ public class UserReportComp extends SimpleComp {
                         },
                         includedDiagnostics,
                         file -> false,
-                        false)
+                        () -> false)
                 .styleClass("attachment-list");
         return new TitledPaneComp(AppI18n.observable("additionalErrorAttachments"), list, 100)
                 .apply(struc -> struc.get().setExpanded(true))
@@ -120,7 +120,7 @@ public class UserReportComp extends SimpleComp {
         AppFont.small(dataPolicyButton);
         dataPolicyButton.setOnAction(event1 -> {
             AppResources.with(AppResources.XPIPE_MODULE, "misc/report_privacy_policy.md", file -> {
-                var markDown = new MarkdownComp(Files.readString(file), s -> s)
+                var markDown = new MarkdownComp(Files.readString(file), s -> s, true)
                         .apply(struc -> struc.get().setMaxWidth(500))
                         .apply(struc -> struc.get().setMaxHeight(400));
                 var popover = new Popover(markDown.createRegion());
@@ -132,7 +132,7 @@ public class UserReportComp extends SimpleComp {
             });
             event1.consume();
         });
-        var sendButton = new ButtonComp(AppI18n.observable("sendReport"), null, this::send)
+        var sendButton = new ButtonComp(AppI18n.observable("sendReport"), this::send)
                 .apply(struc -> struc.get().setDefaultButton(true))
                 .createRegion();
         var spacer = new Region();

@@ -76,8 +76,8 @@ public class StoreToggleComp extends SimpleComp {
         var val = new SimpleBooleanProperty();
         ObservableValue<LabelGraphic> g = graphic
                 ? val.map(aBoolean -> aBoolean
-                        ? new LabelGraphic.IconGraphic("mdi2c-circle-slice-8")
-                        : new LabelGraphic.IconGraphic("mdi2c-circle-half-full"))
+                        ? new LabelGraphic.IconGraphic("mdi2e-eye-plus")
+                        : new LabelGraphic.IconGraphic("mdi2e-eye-minus"))
                 : null;
         var t = new StoreToggleComp(
                 nameKey,
@@ -91,7 +91,7 @@ public class StoreToggleComp extends SimpleComp {
                         StoreViewState.get().toggleStoreListUpdate();
                     });
                 });
-        t.tooltipKey("showAllChildren");
+        t.tooltipKey("showNonRunningChildren");
         t.value.subscribe((newValue) -> {
             val.set(newValue);
         });

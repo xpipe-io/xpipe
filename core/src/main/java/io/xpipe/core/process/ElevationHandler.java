@@ -10,9 +10,10 @@ public interface ElevationHandler {
         return new ElevationHandler() {
 
             @Override
-            public boolean handleRequest(UUID requestId, CountDown countDown, boolean confirmIfNeeded) {
-                var r = ElevationHandler.this.handleRequest(requestId, countDown, confirmIfNeeded);
-                return r || other.handleRequest(requestId, countDown, confirmIfNeeded);
+            public boolean handleRequest(
+                    ShellControl parent, UUID requestId, CountDown countDown, boolean confirmIfNeeded) {
+                var r = ElevationHandler.this.handleRequest(parent, requestId, countDown, confirmIfNeeded);
+                return r || other.handleRequest(parent, requestId, countDown, confirmIfNeeded);
             }
 
             @Override
@@ -23,7 +24,7 @@ public interface ElevationHandler {
         };
     }
 
-    boolean handleRequest(UUID requestId, CountDown countDown, boolean confirmIfNeeded);
+    boolean handleRequest(ShellControl parent, UUID requestId, CountDown countDown, boolean confirmIfNeeded);
 
     SecretReference getSecretRef();
 }

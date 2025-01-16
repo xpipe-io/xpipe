@@ -140,7 +140,7 @@ public class AppExtensionManager {
     }
 
     private void loadAllExtensions() {
-        for (var ext : List.of("proc", "uacc")) {
+        for (var ext : List.of("system", "proc", "uacc")) {
             var extension = findAndParseExtension(ext, baseLayer)
                     .orElseThrow(() -> ExtensionException.corrupt("Missing module " + ext));
             loadedExtensions.add(extension);
@@ -158,16 +158,20 @@ public class AppExtensionManager {
     private Optional<Extension> findAndParseExtension(String name, ModuleLayer parent) {
         var inModulePath = ModuleLayer.boot().findModule("io.xpipe.ext." + name);
         if (inModulePath.isPresent()) {
+            TrackEvent.info("Loaded extension " + name + " from boot module path");
             return Optional.of(new Extension(null, inModulePath.get().getName(), name, inModulePath.get(), 0));
         }
 
         for (Path extensionBaseDirectory : extensionBaseDirectories) {
-            var found = parseExtensionDirectory(extensionBaseDirectory.resolve(name), parent);
+            var extensionDir = extensionBaseDirectory.resolve(name);
+            var found = parseExtensionDirectory(extensionDir, parent);
             if (found.isPresent()) {
+                TrackEvent.info("Loaded extension " + name + " from module " + extensionDir);
                 return found;
             }
         }
 
+        TrackEvent.info("Unable to locate module " + name);
         return Optional.empty();
     }
 

@@ -9,12 +9,12 @@ import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.ContextualFileReference;
-import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystemStore;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.ListCell;
@@ -27,7 +27,6 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,22 +41,22 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
 
     private final Property<DataStoreEntryRef<? extends FileSystemStore>> fileSystem;
     private final Property<String> filePath;
-    private final boolean allowSync;
+    private final ContextualFileReferenceSync sync;
     private final List<PreviousFileReference> previousFileReferences;
 
     public <T extends FileSystemStore> ContextualFileReferenceChoiceComp(
             Property<DataStoreEntryRef<T>> fileSystem,
             Property<String> filePath,
-            boolean allowSync,
+            ContextualFileReferenceSync sync,
             List<PreviousFileReference> previousFileReferences) {
-        this.allowSync = allowSync;
+        this.sync = sync;
         this.previousFileReferences = previousFileReferences;
         this.fileSystem = new SimpleObjectProperty<>();
         fileSystem.subscribe(val -> {
             this.fileSystem.setValue(val);
         });
         this.fileSystem.addListener((observable, oldValue, newValue) -> {
-            fileSystem.setValue(newValue != null ? newValue.get().ref() : null);
+            fileSystem.setValue(newValue != null ? newValue.asNeeded() : null);
         });
         this.filePath = filePath;
     }
@@ -79,7 +78,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                             },
                             false);
                 })
-                .styleClass(allowSync ? Styles.CENTER_PILL : Styles.RIGHT_PILL)
+                .styleClass(sync != null ? Styles.CENTER_PILL : Styles.RIGHT_PILL)
                 .grow(false, true);
 
         var gitShareButton = new ButtonComp(null, new FontIcon("mdi2g-git"), () -> {
@@ -99,9 +98,8 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
             }
 
             try {
-                var data = DataStorage.get().getDataDir();
-                var f = data.resolve(FileNames.getFileName(currentPath.trim()));
                 var source = Path.of(currentPath.trim());
+                var target = sync.getTargetLocation().apply(source);
                 if (Files.exists(source)) {
                     var shouldCopy = AppWindowHelper.showConfirmationAlert(
                             "confirmGitShareTitle", "confirmGitShareHeader", "confirmGitShareContent");
@@ -109,9 +107,11 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                         return;
                     }
 
-                    Files.copy(source, f, StandardCopyOption.REPLACE_EXISTING);
+                    var handler = DataStorageSyncHandler.getInstance();
+                    var syncedTarget = handler.addDataFile(
+                            source, target, sync.getPerUser().test(source));
                     Platform.runLater(() -> {
-                        filePath.setValue(f.toString());
+                        filePath.setValue(syncedTarget.toString());
                     });
                 }
             } catch (Exception e) {
@@ -120,11 +120,17 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
         });
         gitShareButton.tooltipKey("gitShareFileTooltip");
         gitShareButton.styleClass(Styles.RIGHT_PILL).grow(false, true);
+        gitShareButton.disable(Bindings.createBooleanBinding(
+                () -> {
+                    return filePath.getValue() != null
+                            && ContextualFileReference.of(filePath.getValue()).isInDataDirectory();
+                },
+                filePath));
 
         var nodes = new ArrayList<Comp<?>>();
         nodes.add(path);
         nodes.add(fileBrowseButton);
-        if (allowSync) {
+        if (sync != null) {
             nodes.add(gitShareButton);
         }
         var layout = new HorizontalComp(nodes).apply(struc -> struc.get().setFillHeight(true));
@@ -139,7 +145,9 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
     }
 
     private Comp<?> createComboBox() {
-        var items = previousFileReferences.stream()
+        var allFiles = new ArrayList<>(previousFileReferences);
+        allFiles.addAll(sync != null ? sync.getExistingFiles() : List.of());
+        var items = allFiles.stream()
                 .map(previousFileReference -> previousFileReference.getPath().toString())
                 .toList();
         var combo = new ComboTextFieldComp(filePath, items, param -> {
@@ -151,7 +159,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                         return;
                     }
 
-                    var display = previousFileReferences.stream()
+                    var display = allFiles.stream()
                             .filter(ref -> ref.path.toString().equals(item))
                             .findFirst()
                             .map(previousFileReference -> previousFileReference.getDisplayName())

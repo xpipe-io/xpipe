@@ -5,7 +5,6 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.*;
-import io.xpipe.core.util.FailableFunction;
 
 import lombok.Getter;
 
@@ -113,6 +112,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public boolean isRecommended() {
+            // Tabs are only supported when single process option is enabled in konsole
             return false;
         }
 
@@ -315,6 +315,32 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     .addFile(configuration.getScriptFile());
         }
     };
+    ExternalTerminalType GHOSTTY = new SimplePathType("app.ghostty", "ghostty", true) {
+        @Override
+        public String getWebsite() {
+            return "https://ghostty.org";
+        }
+
+        @Override
+        public boolean isRecommended() {
+            return true;
+        }
+
+        @Override
+        public boolean supportsColoredTitle() {
+            return true;
+        }
+
+        @Override
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.TABBED;
+        }
+
+        @Override
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
+            return CommandBuilder.of().add("-e").addFile(configuration.getScriptFile());
+        }
+    };
     ExternalTerminalType GUAKE = new SimplePathType("app.guake", "guake", true) {
 
         @Override
@@ -396,7 +422,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public boolean supportsColoredTitle() {
-            return true;
+            return false;
         }
 
         @Override
@@ -540,6 +566,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
     ExternalTerminalType WARP = new WarpTerminalType();
+    ExternalTerminalType WAVE = new WaveTerminalType();
     ExternalTerminalType CUSTOM = new CustomTerminalType();
     List<ExternalTerminalType> WINDOWS_TERMINALS = List.of(
             WindowsTerminalType.WINDOWS_TERMINAL_CANARY,
@@ -559,6 +586,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             AlacrittyTerminalType.ALACRITTY_LINUX,
             WezTerminalType.WEZTERM_LINUX,
             KittyTerminalType.KITTY_LINUX,
+            GHOSTTY,
             TERMINATOR,
             TERMINOLOGY,
             XFCE,
@@ -575,6 +603,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             TERMIUS);
     List<ExternalTerminalType> MACOS_TERMINALS = List.of(
             WARP,
+            // WAVE,
             ITERM2,
             KittyTerminalType.KITTY_MACOS,
             TabbyTerminalType.TABBY_MAC_OS,
@@ -583,11 +612,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             MACOS_TERMINAL,
             TERMIUS);
 
-    List<ExternalTerminalType> ALL = getTypes(OsType.getLocal(), false, true);
+    List<ExternalTerminalType> ALL = getTypes(OsType.getLocal(), true);
 
-    List<ExternalTerminalType> ALL_ON_ALL_PLATFORMS = getTypes(null, false, true);
+    List<ExternalTerminalType> ALL_ON_ALL_PLATFORMS = getTypes(null, true);
 
-    static List<ExternalTerminalType> getTypes(OsType osType, boolean remote, boolean custom) {
+    static List<ExternalTerminalType> getTypes(OsType osType, boolean custom) {
         var all = new ArrayList<ExternalTerminalType>();
         if (osType == null || osType.equals(OsType.WINDOWS)) {
             all.addAll(WINDOWS_TERMINALS);
@@ -597,9 +626,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
         if (osType == null || osType.equals(OsType.MACOS)) {
             all.addAll(MACOS_TERMINALS);
-        }
-        if (remote) {
-            all.removeIf(externalTerminalType -> externalTerminalType.remoteLaunchCommand(null) == null);
         }
         // Prefer recommended
         all.sort(Comparator.comparingInt(o -> (o.isRecommended() ? -1 : 0)));
@@ -621,11 +647,23 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return existing;
         }
 
-        return ALL.stream()
+        var r = ALL.stream()
                 .filter(externalTerminalType -> !externalTerminalType.equals(CUSTOM))
                 .filter(terminalType -> terminalType.isAvailable())
                 .findFirst()
                 .orElse(null);
+
+        // Check if detection failed for some reason
+        if (r == null) {
+            var def = OsType.getLocal() == OsType.WINDOWS
+                    ? (ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.CMD
+                            ? ExternalTerminalType.CMD
+                            : ExternalTerminalType.POWERSHELL)
+                    : OsType.getLocal() == OsType.MACOS ? ExternalTerminalType.MACOS_TERMINAL : null;
+            r = def;
+        }
+
+        return r;
     }
 
     default TerminalInitFunction additionalInitCommands() {
@@ -647,11 +685,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     }
 
     default void launch(TerminalLaunchConfiguration configuration) throws Exception {}
-
-    default FailableFunction<TerminalLaunchConfiguration, String, Exception> remoteLaunchCommand(
-            ShellDialect systemDialect) {
-        return null;
-    }
 
     abstract class WindowsType extends ExternalApplicationType.WindowsType implements ExternalTerminalType {
 
@@ -703,19 +736,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             var args = toCommand(configuration);
             launch(configuration.getColoredTitle(), args);
-        }
-
-        @Override
-        public FailableFunction<TerminalLaunchConfiguration, String, Exception> remoteLaunchCommand(
-                ShellDialect systemDialect) {
-            return launchConfiguration -> {
-                var args = toCommand(launchConfiguration);
-                args.add(0, executable);
-                if (explicitlyAsync) {
-                    args = systemDialect.launchAsnyc(args);
-                }
-                return args.buildSimple();
-            };
         }
 
         protected abstract CommandBuilder toCommand(TerminalLaunchConfiguration configuration) throws Exception;

@@ -4,7 +4,6 @@ import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.*;
-import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileInfo;
@@ -29,10 +28,7 @@ import atlantafx.base.theme.Styles;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static io.xpipe.app.util.HumanReadableFormat.byteCount;
@@ -283,12 +279,21 @@ public final class BrowserFileListComp extends SimpleComp {
             }
 
             try (var ignored = updateFromModel) {
-                fileList.getSelection().setAll(c.getList());
+                // Attempt to preserve ordering. Works at least when selecting single entries
+                var existing = new HashSet<>(fileList.getSelection());
+                c.getList().forEach(browserEntry -> {
+                    if (!existing.contains(browserEntry)) {
+                        fileList.getSelection().add(browserEntry);
+                    }
+                });
+                fileList.getSelection().removeIf(browserEntry -> !c.getList().contains(browserEntry));
             }
         });
 
         fileList.getSelection().addListener((ListChangeListener<? super BrowserEntry>) c -> {
-            if (c.getList().equals(table.getSelectionModel().getSelectedItems())) {
+            var existing = new HashSet<>(fileList.getSelection());
+            var toApply = new HashSet<>(c.getList());
+            if (existing.equals(toApply)) {
                 return;
             }
 

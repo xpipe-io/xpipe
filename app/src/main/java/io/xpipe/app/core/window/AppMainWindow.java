@@ -1,27 +1,30 @@
 package io.xpipe.app.core.window;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.core.AppCache;
-import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.AppTheme;
+import io.xpipe.app.comp.base.AppLayoutComp;
+import io.xpipe.app.comp.base.AppMainWindowContentComp;
+import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.prefs.CloseBehaviourAlert;
+import io.xpipe.app.prefs.CloseBehaviourDialog;
 import io.xpipe.app.resources.AppImages;
+import io.xpipe.app.update.XPipeDistributionType;
+import io.xpipe.app.util.LicenseProvider;
+import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.*;
+import javafx.beans.value.ObservableDoubleValue;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -49,21 +52,118 @@ public class AppMainWindow {
     private Thread thread;
     private volatile Instant lastUpdate;
 
+    @Getter
+    private static final Property<AppLayoutComp.Structure> loadedContent = new SimpleObjectProperty<>();
+
+    @Getter
+    private static final Property<String> loadingText = new SimpleObjectProperty<>();
+
     public AppMainWindow(Stage stage) {
         this.stage = stage;
     }
 
-    public static AppMainWindow init(Stage stage) {
+    public static void init(boolean show) {
+        if (INSTANCE != null
+                && INSTANCE.getStage() != null
+                && (!show || INSTANCE.getStage().isShowing())) {
+            return;
+        }
+
+        PlatformThread.runLaterIfNeededBlocking(() -> {
+            initEmpty(show);
+        });
+    }
+
+    private static synchronized void initEmpty(boolean show) {
+        if (INSTANCE != null) {
+            if (show) {
+                INSTANCE.show();
+            }
+            return;
+        }
+
+        var stage = App.getApp().getStage();
         INSTANCE = new AppMainWindow(stage);
-        var scene = new Scene(new Region(), -1, -1, false);
+
+        var content = new AppMainWindowContentComp(stage).createRegion();
+        content.opacityProperty()
+                .bind(Bindings.createDoubleBinding(
+                        () -> {
+                            if (OsType.getLocal() != OsType.MACOS) {
+                                return 1.0;
+                            }
+                            return stage.isFocused() ? 1.0 : 0.8;
+                        },
+                        stage.focusedProperty()));
+        var scene = new Scene(content, -1, -1, false);
+        content.prefWidthProperty().bind(scene.widthProperty());
+        content.prefHeightProperty().bind(scene.heightProperty());
         scene.setFill(Color.TRANSPARENT);
+
         ModifiedStage.prepareStage(stage);
         stage.setScene(scene);
-        stage.opacityProperty().bind(AppPrefs.get().windowOpacity());
+        stage.opacityProperty().bind(PlatformThread.sync(AppPrefs.get().windowOpacity()));
+        stage.titleProperty().bind(createTitle());
         AppWindowHelper.addIcons(stage);
         AppWindowHelper.setupStylesheets(stage.getScene());
         AppWindowHelper.setupClickShield(stage);
-        return INSTANCE;
+        AppWindowHelper.addMaximizedPseudoClass(stage);
+        AppTheme.initThemeHandlers(stage);
+
+        stage.setMinWidth(550);
+        stage.setMinHeight(400);
+        var state = INSTANCE.loadState();
+        TrackEvent.withDebug("Window state loaded").tag("state", state).handle();
+        INSTANCE.initializeWindow(state);
+        INSTANCE.setupListeners();
+        INSTANCE.windowActive.set(true);
+
+        if (show) {
+            INSTANCE.show();
+        }
+    }
+
+    public static void loadingText(String key) {
+        loadingText.setValue(key != null && AppI18n.get() != null ? AppI18n.get(key) : "...");
+    }
+
+    public ObservableDoubleValue displayScale() {
+        if (getStage() == null) {
+            return new SimpleDoubleProperty(1.0);
+        }
+
+        return getStage().outputScaleXProperty();
+    }
+
+    public static synchronized void initContent() {
+        var content = new AppLayoutComp();
+        var s = content.createStructure();
+        loadedContent.setValue(s);
+    }
+
+    private static ObservableValue<String> createTitle() {
+        var t = LicenseProvider.get().licenseTitle();
+        var u = XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate();
+        return PlatformThread.sync(Bindings.createStringBinding(
+                () -> {
+                    var base = String.format(
+                            "XPipe %s (%s)", t.getValue(), AppProperties.get().getVersion());
+                    var prefix = AppProperties.get().isStaging() ? "[Public Test Build, Not a proper release] " : "";
+                    var suffix = u.getValue() != null
+                            ? " " + AppI18n.get("updateReadyTitle", u.getValue().getVersion())
+                            : "";
+                    return prefix + base + suffix;
+                },
+                u,
+                t,
+                AppPrefs.get().language()));
+    }
+
+    public void show() {
+        stage.show();
+        if (OsType.getLocal() == OsType.WINDOWS) {
+            NativeWinWindowControl.MAIN_WINDOW = new NativeWinWindowControl(stage);
+        }
     }
 
     public static AppMainWindow getInstance() {
@@ -161,7 +261,7 @@ public class AppMainWindow {
         });
 
         stage.setOnCloseRequest(e -> {
-            if (!CloseBehaviourAlert.showIfNeeded()) {
+            if (!OperationMode.isInStartup() && !OperationMode.isInShutdown() && !CloseBehaviourDialog.showIfNeeded()) {
                 e.consume();
                 return;
             }
@@ -181,17 +281,45 @@ public class AppMainWindow {
             }
         });
 
+        if (OsType.getLocal().equals(OsType.LINUX) || OsType.getLocal().equals(OsType.MACOS)) {
+            stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+                if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {
+                    OperationMode.onWindowClose();
+                    event.consume();
+                }
+            });
+        }
+
+        stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if (AppProperties.get().isShowcase() && event.getCode().equals(KeyCode.F12)) {
+                var image = stage.getScene().snapshot(null);
+                var awt = AppImages.toAwtImage(image);
+                var file = Path.of(System.getProperty("user.home"), "Desktop", "xpipe-screenshot.png");
+                try {
+                    ImageIO.write(awt, "png", file.toFile());
+                } catch (IOException e) {
+                    ErrorEvent.fromThrowable(e).handle();
+                }
+                TrackEvent.debug("Screenshot taken");
+                event.consume();
+            }
+        });
+
         TrackEvent.debug("Window listeners added");
     }
 
     private void applyState(WindowState state) {
         if (state != null) {
-            stage.setX(state.windowX);
-            stage.setY(state.windowY);
-            stage.setWidth(state.windowWidth);
-            stage.setHeight(state.windowHeight);
-            stage.setMaximized(state.maximized);
-
+            if (state.maximized) {
+                stage.setMaximized(true);
+                stage.setWidth(1280);
+                stage.setHeight(720);
+            } else {
+                stage.setX(state.windowX);
+                stage.setY(state.windowY);
+                stage.setWidth(state.windowWidth);
+                stage.setHeight(state.windowHeight);
+            }
             TrackEvent.debug("Window loaded saved bounds");
         } else if (!AppProperties.get().isShowcase()) {
             stage.setWidth(1280);
@@ -250,73 +378,6 @@ public class AppMainWindow {
             }
         }
         return inBounds ? state : null;
-    }
-
-    public void initialize() {
-        stage.setMinWidth(550);
-        stage.setMinHeight(400);
-
-        var state = loadState();
-        initializeWindow(state);
-        setupListeners();
-        windowActive.set(true);
-        TrackEvent.debug("Window set to active");
-    }
-
-    public void show() {
-        stage.show();
-        if (OsType.getLocal() == OsType.WINDOWS) {
-            NativeWinWindowControl.MAIN_WINDOW = new NativeWinWindowControl(stage);
-        }
-    }
-
-    private void setupContent(Comp<?> content) {
-        var contentR = content.createRegion();
-        stage.getScene().setRoot(contentR);
-        AppTheme.initThemeHandlers(stage);
-        TrackEvent.debug("Set content scene");
-
-        contentR.prefWidthProperty().bind(stage.getScene().widthProperty());
-        contentR.prefHeightProperty().bind(stage.getScene().heightProperty());
-
-        if (OsType.getLocal().equals(OsType.LINUX) || OsType.getLocal().equals(OsType.MACOS)) {
-            stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-                if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {
-                    OperationMode.onWindowClose();
-                    event.consume();
-                }
-            });
-        }
-
-        stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            if (AppProperties.get().isDeveloperMode() && event.getCode().equals(KeyCode.F6)) {
-                var newR = content.createRegion();
-                stage.getScene().setRoot(newR);
-                AppTheme.initThemeHandlers(stage);
-                newR.requestFocus();
-
-                TrackEvent.debug("Rebuilt content");
-                event.consume();
-            }
-
-            if (AppProperties.get().isShowcase() && event.getCode().equals(KeyCode.F12)) {
-                var image = stage.getScene().snapshot(null);
-                var awt = AppImages.toAwtImage(image);
-                var file = Path.of(System.getProperty("user.home"), "Desktop", "xpipe-screenshot.png");
-                try {
-                    ImageIO.write(awt, "png", file.toFile());
-                } catch (IOException e) {
-                    ErrorEvent.fromThrowable(e).handle();
-                }
-                TrackEvent.debug("Screenshot taken");
-                event.consume();
-            }
-        });
-        TrackEvent.debug("Set content reload listener");
-    }
-
-    public void setContent(Comp<?> content) {
-        setupContent(content);
     }
 
     @Builder

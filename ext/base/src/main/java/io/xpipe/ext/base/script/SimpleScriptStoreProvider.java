@@ -36,6 +36,11 @@ import java.util.stream.Stream;
 public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, DataStoreProvider {
 
     @Override
+    public boolean canMoveCategories() {
+        return false;
+    }
+
+    @Override
     public boolean editByDefault() {
         return true;
     }
@@ -141,7 +146,8 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
             }
         };
         var selectedExecTypes = new SimpleListProperty<>(FXCollections.observableList(selectedStart));
-        var selectorComp = new ListSelectorComp<>(vals, name, selectedExecTypes, v -> false, false);
+        var selectorComp = new ListSelectorComp<>(
+                FXCollections.observableList(vals), name, selectedExecTypes, v -> false, () -> false);
 
         return new OptionsBuilder()
                 .name("snippets")
@@ -213,8 +219,8 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
     public String summaryString(StoreEntryWrapper wrapper) {
         SimpleScriptStore st = wrapper.getEntry().getStore().asNeeded();
         var init = st.isInitScript() ? AppI18n.get("init") : null;
-        var file = st.isRunnableScript() ? AppI18n.get("file") : null;
-        var shell = st.isRunnableScript() ? AppI18n.get("shell") : null;
+        var file = st.isFileScript() ? AppI18n.get("file") : null;
+        var shell = st.isShellScript() ? AppI18n.get("shell") : null;
         var runnable = st.isRunnableScript() ? AppI18n.get("hub") : null;
         var type = st.getMinimumDialect() != null
                 ? st.getMinimumDialect().getDisplayName() + " " + AppI18n.get("script")

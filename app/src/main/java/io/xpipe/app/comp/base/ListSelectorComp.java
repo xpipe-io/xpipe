@@ -2,8 +2,11 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.property.ListProperty;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -19,16 +22,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 @Value
 @EqualsAndHashCode(callSuper = true)
 public class ListSelectorComp<T> extends SimpleComp {
 
-    List<T> values;
+    ObservableList<T> values;
     Function<T, String> toString;
     ListProperty<T> selected;
     Predicate<T> disable;
-    boolean showAllSelector;
+    Supplier<Boolean> showAllSelector;
 
     @Override
     protected Region createSimple() {
@@ -36,7 +40,23 @@ public class ListSelectorComp<T> extends SimpleComp {
         vbox.setSpacing(8);
         vbox.getStyleClass().add("list-content");
         var cbs = new ArrayList<CheckBox>();
-        for (var v : values) {
+        update(vbox, cbs);
+        values.addListener((ListChangeListener<? super T>) c -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                update(vbox, cbs);
+            });
+        });
+        var sp = new ScrollPane(vbox);
+        sp.setFitToWidth(true);
+        sp.getStyleClass().add("list-selector-comp");
+        return sp;
+    }
+
+    private void update(VBox vbox, List<CheckBox> cbs) {
+        var currentVals = new ArrayList<>(values);
+        vbox.getChildren().clear();
+        cbs.clear();
+        for (var v : currentVals) {
             var cb = new CheckBox(null);
             if (disable.test(v)) {
                 cb.setDisable(true);
@@ -65,7 +85,7 @@ public class ListSelectorComp<T> extends SimpleComp {
             vbox.getChildren().add(l);
         }
 
-        if (showAllSelector) {
+        if (showAllSelector.get()) {
             var allSelector = new CheckBox(null);
             allSelector.setSelected(
                     values.stream().filter(t -> !disable.test(t)).count() == selected.size());
@@ -85,10 +105,5 @@ public class ListSelectorComp<T> extends SimpleComp {
             vbox.getChildren().add(new Separator(Orientation.HORIZONTAL));
             vbox.getChildren().add(l);
         }
-
-        var sp = new ScrollPane(vbox);
-        sp.setFitToWidth(true);
-        sp.getStyleClass().add("list-selector-comp");
-        return sp;
     }
 }

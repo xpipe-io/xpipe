@@ -51,15 +51,16 @@ public class BrowserFileSystemHelper {
         }
 
         var shell = model.getFileSystem().getShell();
-        if (shell.isEmpty() || !shell.get().isRunning()) {
+        if (shell.isEmpty() || !shell.get().isRunning(true)) {
             return path;
         }
 
         try {
-            return shell.get()
+            var r = shell.get()
                     .getShellDialect()
                     .evaluateExpression(shell.get(), path)
                     .readStdoutOrThrow();
+            return !r.isBlank() ? r : null;
         } catch (Exception ex) {
             ErrorEvent.expected(ex);
             throw ex;

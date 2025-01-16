@@ -1,17 +1,19 @@
 package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.core.App;
+import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.core.store.FileNames;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableValue;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 public class PrettyImageHelper {
 
@@ -33,7 +35,11 @@ public class PrettyImageHelper {
         return Optional.empty();
     }
 
-    private static ObservableValue<String> rasterizedImageIfExistsScaled(String img, int height) {
+    private static ObservableValue<String> rasterizedImageIfExistsScaled(
+            String img, int height, int... availableSizes) {
+        ObservableDoubleValue obs = AppMainWindow.getInstance() != null
+                ? AppMainWindow.getInstance().displayScale()
+                : new SimpleDoubleProperty(1.0);
         return Bindings.createStringBinding(
                 () -> {
                     if (img == null) {
@@ -44,11 +50,11 @@ public class PrettyImageHelper {
                         return rasterizedImageIfExists(img, height).orElse(null);
                     }
 
-                    var sizes = List.of(16, 24, 40, 80);
-                    var mult = Math.round(App.getApp().displayScale().get() * height);
+                    var mult = Math.round(obs.get() * height);
                     var base = FileNames.getBaseName(img);
-                    var available = sizes.stream()
+                    var available = IntStream.of(availableSizes)
                             .filter(integer -> AppImages.hasNormalImage(base + "-" + integer + ".png"))
+                            .boxed()
                             .toList();
                     var closest = available.stream()
                             .filter(integer -> integer >= mult)
@@ -56,7 +62,7 @@ public class PrettyImageHelper {
                             .orElse(available.size() > 0 ? available.getLast() : 0);
                     return rasterizedImageIfExists(img, closest).orElse(null);
                 },
-                App.getApp().displayScale());
+                obs);
     }
 
     public static Comp<?> ofFixedSizeSquare(String img, int size) {
@@ -73,8 +79,13 @@ public class PrettyImageHelper {
         }
 
         var binding = BindingsHelper.flatMap(img, s -> {
-            return rasterizedImageIfExistsScaled(s, h);
+            return rasterizedImageIfExistsScaled(s, h, 16, 24, 40, 80);
         });
         return new PrettyImageComp(binding, w, h);
+    }
+
+    public static Comp<?> ofSpecificFixedSize(String img, int w, int h) {
+        var b = rasterizedImageIfExistsScaled(img, h, h, h * 2);
+        return new PrettyImageComp(b, w, h);
     }
 }

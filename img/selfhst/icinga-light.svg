@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 27.7.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1"
+	 id="Layer_1" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
+	 style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill-rule:evenodd;clip-rule:evenodd;fill:#FFFFFF;}
+	.st1{filter:url(#Adobe_OpacityMaskFilter);}
+	.st2{mask:url(#f_00000115481920936914840190000007784245985182772650_);fill-rule:evenodd;clip-rule:evenodd;fill:#FFFFFF;}
+</style>
+<g>
+	<g>
+		<path class="st0" d="M207.1,262.7L79.6,445.1 M207.1,262.7l264-65.1 M211.9,268.2l73.9,123.5 M180.4,232.2l-108.5-89 M222.4,212.5
+			l63.8-132.8"/>
+		<g transform="translate(0 23.6)">
+			<defs>
+				<filter id="Adobe_OpacityMaskFilter" filterUnits="userSpaceOnUse" x="11.9" y="368.7" width="116.3" height="116.3">
+					<feColorMatrix  type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0"/>
+				</filter>
+			</defs>
+			
+				<mask maskUnits="userSpaceOnUse" x="11.9" y="368.7" width="116.3" height="116.3" id="f_00000115481920936914840190000007784245985182772650_">
+				<g class="st1">
+					<polygon id="e_00000156566394182843808950000007511004106722699136_" class="st0" points="11.9,368.8 11.9,485.2 128.2,485.2 
+						128.2,368.8 					"/>
+				</g>
+			</mask>
+			<path class="st2" d="M12,431.3c-2.4-32,21.6-60,53.6-62.4c32-2.4,60,21.6,62.4,53.6c2.4,32-21.6,60-53.6,62.4
+				C42.4,487.3,14.4,463.3,12,431.3"/>
+		</g>
+		<path class="st0" d="M267.9,393.9c1.1-9.9,10.1-17,20-15.9c9.9,1.2,17,10.1,15.9,20c-1.2,9.9-10.1,17.1-20,15.9
+			c-9.9-1.2-17.1-10.1-15.9-20.2 M48.7,157c-6.3-12.8-1-28.2,11.8-34.6c12.8-6.3,28.2-1,34.6,11.8c6.2,12.8,1,28.2-11.8,34.6
+			S55.1,169.8,48.7,157 M429.5,195.8c-1.5-19.5,13.1-36.5,32.6-37.9c19.5-1.5,36.5,13.1,37.9,32.6c1.5,19.5-13.1,36.5-32.6,37.9
+			C447.9,229.9,430.9,215.4,429.5,195.8 M269.8,13.4C289-2.2,317.3,0.7,333,19.9c15.7,19.2,12.8,47.5-6.4,63.2
+			c-19.2,15.6-47.5,12.8-63.2-6.5C247.6,57.4,250.5,29.1,269.8,13.4 M148.2,187.8c37-30.1,91.4-24.6,121.4,12.4
+			c30.1,37,24.5,91.4-12.4,121.4c-37,30.1-91.4,24.6-121.4-12.4C105.6,272.3,111.2,217.9,148.2,187.8"/>
+	</g>
+</g>
+</svg>

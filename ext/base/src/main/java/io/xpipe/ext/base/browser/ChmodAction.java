@@ -5,7 +5,7 @@ import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.ModalOverlayComp;
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
@@ -87,29 +87,29 @@ public class ChmodAction implements BrowserBranchAction {
         @Override
         public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             var permissions = new SimpleStringProperty();
-            model.getOverlay()
-                    .setValue(new ModalOverlayComp.OverlayContent(
-                            "chmodPermissions",
-                            Comp.of(() -> {
-                                        var creationName = new TextField();
-                                        creationName.textProperty().bindBidirectional(permissions);
-                                        return creationName;
-                                    })
-                                    .prefWidth(350),
-                            null,
-                            "finish",
-                            () -> {
-                                model.runCommandAsync(
-                                        CommandBuilder.of()
-                                                .add("chmod", permissions.getValue())
-                                                .addFiles(entries.stream()
-                                                        .map(browserEntry -> browserEntry
-                                                                .getRawFileEntry()
-                                                                .getPath())
-                                                        .toList()),
-                                        false);
-                            },
-                            true));
+            var modal = ModalOverlay.of(
+                    "chmodPermissions",
+                    Comp.of(() -> {
+                                var creationName = new TextField();
+                                creationName.textProperty().bindBidirectional(permissions);
+                                return creationName;
+                            })
+                            .prefWidth(350));
+            modal.withDefaultButtons(() -> {
+                if (permissions.getValue() == null) {
+                    return;
+                }
+
+                model.runCommandAsync(
+                        CommandBuilder.of()
+                                .add("chmod", permissions.getValue())
+                                .addFiles(entries.stream()
+                                        .map(browserEntry ->
+                                                browserEntry.getRawFileEntry().getPath())
+                                        .toList()),
+                        false);
+            });
+            modal.show();
         }
 
         @Override

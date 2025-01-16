@@ -1,6 +1,6 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.storage.DataStorageUserHandler;
 import io.xpipe.core.util.AesSecretValue;
 import io.xpipe.core.util.InPlaceSecretValue;
 
@@ -9,7 +9,6 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-import java.security.spec.InvalidKeySpecException;
 import javax.crypto.SecretKey;
 
 @JsonTypeName("locked")
@@ -18,20 +17,18 @@ import javax.crypto.SecretKey;
 @EqualsAndHashCode(callSuper = true)
 public class PasswordLockSecretValue extends AesSecretValue {
 
+    public PasswordLockSecretValue(String encryptedValue) {
+        super(encryptedValue);
+    }
+
     public PasswordLockSecretValue(char[] secret) {
         super(secret);
     }
 
     @Override
-    protected int getIterationCount() {
-        return 8192;
-    }
-
-    protected SecretKey getAESKey() throws InvalidKeySpecException {
-        var chars = AppPrefs.get().getLockPassword().getValue() != null
-                ? AppPrefs.get().getLockPassword().getValue().getSecret()
-                : new char[0];
-        return getSecretKey(chars);
+    protected SecretKey getSecretKey() {
+        var handler = DataStorageUserHandler.getInstance();
+        return handler != null ? handler.getEncryptionKey() : null;
     }
 
     @Override

@@ -11,19 +11,23 @@ public class SimpleTitledPaneComp extends Comp<CompStructure<TitledPane>> {
 
     private final ObservableValue<String> name;
     private final Comp<?> content;
+    private final boolean collapsible;
 
-    public SimpleTitledPaneComp(ObservableValue<String> name, Comp<?> content) {
+    public SimpleTitledPaneComp(ObservableValue<String> name, Comp<?> content, boolean collapsible) {
         this.name = name;
         this.content = content;
+        this.collapsible = collapsible;
     }
 
     @Override
     public CompStructure<TitledPane> createBase() {
-        var tp = new TitledPane(null, content.createRegion());
+        var r = content.createRegion();
+        r.getStyleClass().add("content");
+        var tp = new TitledPane(null, r);
         tp.textProperty().bind(name);
         tp.getStyleClass().add("simple-titled-pane-comp");
         tp.setExpanded(true);
-        tp.setCollapsible(false);
+        tp.setCollapsible(collapsible);
         return new SimpleCompStructure<>(tp);
     }
 }

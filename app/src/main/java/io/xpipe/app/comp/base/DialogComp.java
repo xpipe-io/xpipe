@@ -74,7 +74,7 @@ public abstract class DialogComp extends Comp<CompStructure<Region>> {
     }
 
     protected Comp<?> finishButton() {
-        return new ButtonComp(AppI18n.observable(finishKey()), null, this::finish)
+        return new ButtonComp(AppI18n.observable(finishKey()), this::finish)
                 .apply(struc -> struc.get().setDefaultButton(true))
                 .styleClass(Styles.ACCENT)
                 .styleClass("next");

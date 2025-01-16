@@ -5,8 +5,8 @@ import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.EncryptionKey;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.util.JacksonMapper;
 
 import com.fasterxml.jackson.core.JacksonException;
 import lombok.Getter;
@@ -23,6 +23,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
+import javax.crypto.SecretKey;
 
 public class StandardStorage extends DataStorage {
 
@@ -31,17 +32,21 @@ public class StandardStorage extends DataStorage {
     @Getter
     private final DataStorageSyncHandler dataStorageSyncHandler;
 
-    private String vaultKey;
+    @Getter
+    private final DataStorageUserHandler dataStorageUserHandler;
+
+    private SecretKey vaultKey;
 
     @Getter
     private boolean disposed;
 
     StandardStorage() {
         this.dataStorageSyncHandler = DataStorageSyncHandler.getInstance();
+        this.dataStorageUserHandler = DataStorageUserHandler.getInstance();
     }
 
     @Override
-    public String getVaultKey() {
+    public SecretKey getVaultKey() {
         return vaultKey;
     }
 
@@ -75,6 +80,16 @@ public class StandardStorage extends DataStorage {
                     .build()
                     .handle();
         }
+
+        try {
+            dataStorageUserHandler.init();
+        } catch (IOException e) {
+            ErrorEvent.fromThrowable("Unable to load vault users", e)
+                    .terminal(true)
+                    .build()
+                    .handle();
+        }
+        dataStorageUserHandler.login();
 
         var storesDir = getStoresDir();
         var categoriesDir = getCategoriesDir();
@@ -245,6 +260,8 @@ public class StandardStorage extends DataStorage {
         });
         // Update validaties from synthetic parent changes
         refreshEntries();
+        // Remove user inaccessible entries only when everything is valid, so we can check the parent hierarchies
+        filterPerUserEntries();
 
         if (!hasFixedLocal) {
             storeEntriesSet.removeIf(dataStoreEntry ->
@@ -253,7 +270,7 @@ public class StandardStorage extends DataStorage {
                     .filter(entry -> entry.getValidity() != DataStoreEntry.Validity.LOAD_FAILED)
                     .forEach(entry -> {
                         entry.dirty = true;
-                        entry.setStoreNode(JacksonMapper.getDefault().valueToTree(entry.getStore()));
+                        entry.setStoreNode(DataStorageNode.ofNewStore(entry.getStore()));
                     });
             // Save to apply changes
             save(false);
@@ -264,6 +281,32 @@ public class StandardStorage extends DataStorage {
         loaded = true;
         busyIo.unlock();
         this.dataStorageSyncHandler.afterStorageLoad();
+    }
+
+    private void filterPerUserEntries() {
+        var toRemove = getStoreEntries().stream()
+                .filter(dataStoreEntry -> shouldRemoveOtherUserEntry(dataStoreEntry))
+                .toList();
+        directoriesToKeep.addAll(toRemove.stream()
+                .map(dataStoreEntry -> dataStoreEntry.getDirectory())
+                .toList());
+        toRemove.forEach(storeEntries::remove);
+    }
+
+    private boolean shouldRemoveOtherUserEntry(DataStoreEntry entry) {
+        var current = entry;
+        while (true) {
+            if (!current.getStoreNode().hasAccess()) {
+                return true;
+            }
+
+            var parent = getDefaultDisplayParent(current);
+            if (parent.isEmpty()) {
+                return false;
+            } else {
+                current = parent.get();
+            }
+        }
     }
 
     private void callProviders() {
@@ -348,6 +391,7 @@ public class StandardStorage extends DataStorage {
         }
 
         deleteLeftovers();
+        dataStorageUserHandler.save();
         dataStorageSyncHandler.afterStorageSave();
         if (dispose) {
             disposed = true;
@@ -435,11 +479,13 @@ public class StandardStorage extends DataStorage {
         var file = dir.resolve("vaultkey");
         if (Files.exists(file)) {
             var s = Files.readString(file);
-            vaultKey = new String(Base64.getDecoder().decode(s), StandardCharsets.UTF_8);
+            var id = new String(Base64.getDecoder().decode(s), StandardCharsets.UTF_8);
+            vaultKey = EncryptionKey.getVaultSecretKey(id);
         } else {
             FileUtils.forceMkdir(dir.toFile());
-            vaultKey = UUID.randomUUID().toString();
-            Files.writeString(file, Base64.getEncoder().encodeToString(vaultKey.getBytes(StandardCharsets.UTF_8)));
+            var id = UUID.randomUUID().toString();
+            Files.writeString(file, Base64.getEncoder().encodeToString(id.getBytes(StandardCharsets.UTF_8)));
+            vaultKey = EncryptionKey.getVaultSecretKey(id);
         }
     }
 

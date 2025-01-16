@@ -60,20 +60,20 @@ public class BrowserOverviewComp extends SimpleComp {
             });
         });
         var commonOverview = new BrowserFileOverviewComp(model, commonPlatform, false);
-        var commonPane = new SimpleTitledPaneComp(AppI18n.observable("common"), commonOverview)
+        var commonPane = new SimpleTitledPaneComp(AppI18n.observable("common"), commonOverview, false)
                 .apply(struc -> VBox.setVgrow(struc.get(), Priority.NEVER));
 
         var roots = model.getFileSystem().listRoots().stream()
                 .map(s -> FileEntry.ofDirectory(model.getFileSystem(), s))
                 .toList();
         var rootsOverview = new BrowserFileOverviewComp(model, FXCollections.observableArrayList(roots), false);
-        var rootsPane = new SimpleTitledPaneComp(AppI18n.observable("roots"), rootsOverview);
+        var rootsPane = new SimpleTitledPaneComp(AppI18n.observable("roots"), rootsOverview, false);
 
         var recent = new DerivedObservableList<>(model.getSavedState().getRecentDirectories(), true)
                 .mapped(s -> FileEntry.ofDirectory(model.getFileSystem(), s.getDirectory()))
                 .getList();
         var recentOverview = new BrowserFileOverviewComp(model, recent, true);
-        var recentPane = new SimpleTitledPaneComp(AppI18n.observable("recent"), recentOverview);
+        var recentPane = new SimpleTitledPaneComp(AppI18n.observable("recent"), recentOverview, false);
 
         var vbox = new VerticalComp(List.of(recentPane, commonPane, rootsPane)).styleClass("overview");
         var r = vbox.createRegion();

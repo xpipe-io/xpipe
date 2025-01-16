@@ -39,7 +39,7 @@ public class RdpConfig {
         }
 
         content.lines().forEach(s -> {
-            var split = s.split(":");
+            var split = s.split(":", 3);
             if (split.length < 2) {
                 return;
             }
@@ -71,7 +71,7 @@ public class RdpConfig {
     }
 
     public RdpConfig withRemoved(String key) {
-        var map = new LinkedHashMap<String, TypedValue>(content);
+        var map = new LinkedHashMap<>(content);
         map.remove(key);
         return new RdpConfig(map);
     }

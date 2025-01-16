@@ -5,6 +5,7 @@ import io.xpipe.app.comp.store.StoreCategoryWrapper;
 import io.xpipe.app.comp.store.StoreViewState;
 
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
@@ -28,17 +29,20 @@ public class DataStoreCategoryChoiceComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
+        var initialized = new SimpleBooleanProperty();
         external.subscribe(newValue -> {
             if (newValue == null) {
                 value.setValue(root);
             } else if (root == null) {
                 value.setValue(newValue);
             } else if (!newValue.getRoot().equals(root)) {
-                // Ignore change, that is more user-friendly
-                // value.setValue(root);
+                if (!initialized.get()) {
+                    value.setValue(root);
+                }
             } else {
                 value.setValue(newValue);
             }
+            initialized.set(true);
         });
         var box = new ComboBox<>(StoreViewState.get().getSortedCategories(root).getList());
         box.setValue(value.getValue());
@@ -66,7 +70,7 @@ public class DataStoreCategoryChoiceComp extends SimpleComp {
             super.updateItem(w, empty);
             textProperty().unbind();
             if (w != null) {
-                textProperty().bind(w.nameProperty());
+                textProperty().bind(w.getShownName());
                 setPadding(new Insets(6, 6, 6, 8 + (indent ? w.getDepth() * 8 : 0)));
             } else {
                 setText("None");

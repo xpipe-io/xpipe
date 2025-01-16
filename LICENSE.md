@@ -187,7 +187,8 @@ APPENDIX: How to apply the Apache License to your work.
       same "printed page" as the copyright notice for easier
       identification within third-party archives.
 
-Copyright 2024 Christopher Schnick
+Copyright 2023 Christopher Schnick
+Copyright 2023 XPipe UG (haftungsbeschränkt)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

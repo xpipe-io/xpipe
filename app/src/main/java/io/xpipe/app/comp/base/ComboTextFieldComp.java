@@ -5,12 +5,14 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.util.PlatformThread;
 
+import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
 
 import java.util.List;
@@ -34,6 +36,11 @@ public class ComboTextFieldComp extends Comp<CompStructure<ComboBox<String>>> {
     @Override
     public CompStructure<ComboBox<String>> createBase() {
         var text = new ComboBox<>(FXCollections.observableList(predefinedValues));
+        text.addEventFilter(KeyEvent.ANY, event -> {
+            Platform.runLater(() -> {
+                text.commitValue();
+            });
+        });
         text.setEditable(true);
         text.setMaxWidth(2000);
         text.setValue(value.getValue() != null ? value.getValue() : null);

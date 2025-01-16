@@ -1,6 +1,7 @@
 package io.xpipe.app.issue;
 
 import io.xpipe.app.core.AppLogs;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.core.util.Deobfuscator;
 
@@ -32,6 +33,14 @@ public class EventHandlerImpl extends EventHandler {
 
     @Override
     public void handle(ErrorEvent ee) {
+        if (AppProperties.get().isAotTrainMode()) {
+            new LogErrorHandler().handle(ee);
+            if (ee.isTerminal()) {
+                OperationMode.halt(1);
+            }
+            return;
+        }
+
         if (ee.isTerminal()) {
             new TerminalErrorHandler().handle(ee);
             return;

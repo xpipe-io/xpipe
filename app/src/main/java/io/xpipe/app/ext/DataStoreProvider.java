@@ -12,7 +12,6 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.core.util.JacksonizedValue;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -23,8 +22,17 @@ import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface DataStoreProvider {
+
+    default boolean canMoveCategories() {
+        return true;
+    }
+
+    default UUID getTargetCategory(DataStore store, UUID target) {
+        return target;
+    }
 
     default int getOrderPriority() {
         return 0;
@@ -55,15 +63,8 @@ public interface DataStoreProvider {
     }
 
     default void validate() {
-        for (Class<?> storeClass : getStoreClasses()) {
-            if (!JacksonizedValue.class.isAssignableFrom(storeClass)) {
-                throw ExtensionException.corrupt(
-                        String.format("Store class %s is not a Jacksonized value", storeClass.getSimpleName()));
-            }
-
-            if (getUsageCategory() == null) {
-                throw ExtensionException.corrupt("Provider %s does not have the usage category".formatted(getId()));
-            }
+        if (getUsageCategory() == null) {
+            throw ExtensionException.corrupt("Provider %s does not have the usage category".formatted(getId()));
         }
     }
 
@@ -125,7 +126,7 @@ public interface DataStoreProvider {
                     }
                 },
                 store);
-        return new MarkdownComp(content, s -> s)
+        return new MarkdownComp(content, s -> s, true)
                 .apply(struc -> struc.get().setPrefWidth(450))
                 .apply(struc -> struc.get().setPrefHeight(250));
     }
@@ -150,10 +151,6 @@ public interface DataStoreProvider {
 
         if (cc == DataStoreCreationCategory.SCRIPT) {
             return DataStoreUsageCategory.SCRIPT;
-        }
-
-        if (cc == DataStoreCreationCategory.DATABASE) {
-            return DataStoreUsageCategory.DATABASE;
         }
 
         if (cc == DataStoreCreationCategory.SERIAL) {

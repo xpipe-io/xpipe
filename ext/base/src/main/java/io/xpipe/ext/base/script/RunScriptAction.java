@@ -52,7 +52,7 @@ public class RunScriptAction implements BrowserAction, BrowserBranchAction {
         if (actions.isEmpty()) {
             actions = List.of(new BrowserLeafAction() {
                 @Override
-                public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) throws Exception {
+                public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                     StoreViewState.get().getAllScriptsCategory().select();
                     AppLayoutModel.get().selectConnections();
                 }
@@ -135,7 +135,7 @@ public class RunScriptAction implements BrowserAction, BrowserBranchAction {
 
             @Override
             protected String getTerminalTitle() {
-                return ref.get().getName() + " - " + model.getName();
+                return ref.get().getName() + " - " + model.getName().getValue();
             }
         };
     }

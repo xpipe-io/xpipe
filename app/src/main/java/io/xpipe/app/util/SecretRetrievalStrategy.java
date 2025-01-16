@@ -3,8 +3,8 @@ package io.xpipe.app.util;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataStoreSecret;
 import io.xpipe.core.util.InPlaceSecretValue;
+import io.xpipe.core.util.ValidationException;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -23,6 +23,8 @@ import lombok.extern.jackson.Jacksonized;
 })
 public interface SecretRetrievalStrategy {
 
+    default void checkComplete() throws ValidationException {}
+
     SecretQuery query();
 
     default boolean expectsQuery() {
@@ -30,6 +32,7 @@ public interface SecretRetrievalStrategy {
     }
 
     @JsonTypeName("none")
+    @Value
     class None implements SecretRetrievalStrategy {
 
         @Override
@@ -45,13 +48,17 @@ public interface SecretRetrievalStrategy {
     @JsonTypeName("inPlace")
     @Builder
     @Value
-    @Jacksonized
     class InPlace implements SecretRetrievalStrategy {
 
-        DataStoreSecret value;
+        InPlaceSecretValue value;
 
-        public InPlace(DataStoreSecret value) {
+        public InPlace(InPlaceSecretValue value) {
             this.value = value;
+        }
+
+        @Override
+        public void checkComplete() throws ValidationException {
+            Validators.nonNull(value);
         }
 
         @Override
@@ -59,9 +66,7 @@ public interface SecretRetrievalStrategy {
             return new SecretQuery() {
                 @Override
                 public SecretQueryResult query(String prompt) {
-                    return new SecretQueryResult(
-                            value != null ? value.getInternalSecret() : InPlaceSecretValue.of(""),
-                            SecretQueryState.NORMAL);
+                    return new SecretQueryResult(value, SecretQueryState.NORMAL);
                 }
 
                 @Override
@@ -83,6 +88,7 @@ public interface SecretRetrievalStrategy {
     }
 
     @JsonTypeName("prompt")
+    @Value
     class Prompt implements SecretRetrievalStrategy {
 
         @Override
@@ -118,6 +124,11 @@ public interface SecretRetrievalStrategy {
     class PasswordManager implements SecretRetrievalStrategy {
 
         String key;
+
+        @Override
+        public void checkComplete() throws ValidationException {
+            Validators.nonNull(key);
+        }
 
         @Override
         public SecretQuery query() {
@@ -170,6 +181,11 @@ public interface SecretRetrievalStrategy {
     class CustomCommand implements SecretRetrievalStrategy {
 
         String command;
+
+        @Override
+        public void checkComplete() throws ValidationException {
+            Validators.nonNull(command);
+        }
 
         @Override
         public SecretQuery query() {

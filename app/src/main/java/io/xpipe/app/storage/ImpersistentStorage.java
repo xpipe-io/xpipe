@@ -2,15 +2,16 @@ package io.xpipe.app.storage;
 
 import io.xpipe.app.comp.store.StoreSortMode;
 import io.xpipe.app.ext.LocalStore;
+import io.xpipe.app.util.EncryptionKey;
 
 import java.time.Instant;
-import java.util.UUID;
+import javax.crypto.SecretKey;
 
 public class ImpersistentStorage extends DataStorage {
 
     @Override
-    public String getVaultKey() {
-        return UUID.randomUUID().toString();
+    public SecretKey getVaultKey() {
+        return EncryptionKey.getVaultSecretKey("");
     }
 
     @Override
@@ -21,6 +22,10 @@ public class ImpersistentStorage extends DataStorage {
         }
         {
             var cat = DataStoreCategory.createNew(null, ALL_SCRIPTS_CATEGORY_UUID, "All scripts");
+            storeCategories.add(cat);
+        }
+        {
+            var cat = DataStoreCategory.createNew(null, ALL_IDENTITIES_CATEGORY_UUID, "All identities");
             storeCategories.add(cat);
         }
         {

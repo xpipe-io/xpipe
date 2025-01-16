@@ -54,7 +54,7 @@ public class StoreIconComp extends SimpleComp {
 
         stack.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
-                StoreIconChoiceDialogComp.show(wrapper.getEntry());
+                StoreIconChoiceDialog.show(wrapper.getEntry());
                 event.consume();
             }
         });

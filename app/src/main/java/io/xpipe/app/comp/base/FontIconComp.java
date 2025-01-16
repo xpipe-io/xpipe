@@ -24,7 +24,6 @@ public class FontIconComp extends Comp<FontIconComp.Structure> {
     @Override
     public FontIconComp.Structure createBase() {
         var fi = new FontIcon();
-        var obs = PlatformThread.sync(icon);
         icon.subscribe(val -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 fi.setIconLiteral(val);

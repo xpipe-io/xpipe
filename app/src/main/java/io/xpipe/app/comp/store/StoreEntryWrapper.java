@@ -3,15 +3,19 @@ package io.xpipe.app.comp.store;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.SingletonSessionStore;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 
 import lombok.Getter;
@@ -46,6 +50,12 @@ public class StoreEntryWrapper {
     private final Property<String> customIcon = new SimpleObjectProperty<>();
     private final Property<String> iconFile = new SimpleObjectProperty<>();
     private final BooleanProperty sessionActive = new SimpleBooleanProperty();
+    private final Property<DataStore> store = new SimpleObjectProperty<>();
+    private final Property<String> information = new SimpleStringProperty();
+    private final BooleanProperty perUser = new SimpleBooleanProperty();
+
+    private boolean effectiveBusyProviderBound = false;
+    private final BooleanProperty effectiveBusy = new SimpleBooleanProperty();
 
     public StoreEntryWrapper(DataStoreEntry entry) {
         this.entry = entry;
@@ -86,7 +96,7 @@ public class StoreEntryWrapper {
     }
 
     public boolean isInStorage() {
-        return DataStorage.get().getStoreEntries().contains(entry);
+        return DataStorage.get() != null && DataStorage.get().getStoreEntries().contains(entry);
     }
 
     public void editDialog() {
@@ -139,6 +149,30 @@ public class StoreEntryWrapper {
             name.setValue(entry.getName());
         }
 
+        if (effectiveBusyProviderBound && !getValidity().getValue().isUsable()) {
+            this.effectiveBusyProviderBound = false;
+            this.effectiveBusy.unbind();
+            this.effectiveBusy.bind(busy);
+        }
+
+        var storeChanged = store.getValue() != entry.getStore();
+        store.setValue(entry.getStore());
+        if (storeChanged || !information.isBound()) {
+            if (entry.getProvider() != null) {
+                var section = StoreViewState.get().getSectionForWrapper(this);
+                if (section.isPresent()) {
+                    information.unbind();
+                    try {
+                        var binding = PlatformThread.sync(entry.getProvider().informationString(section.get()));
+                        information.bind(binding);
+                    } catch (Exception e) {
+                        ErrorEvent.fromThrowable(e).handle();
+                        information.bind(new SimpleStringProperty());
+                    }
+                }
+            }
+        }
+
         lastAccess.setValue(entry.getLastAccess());
         disabled.setValue(entry.isDisabled());
         validity.setValue(entry.getValidity());
@@ -153,17 +187,19 @@ public class StoreEntryWrapper {
         notes.setValue(new StoreNotes(entry.getNotes(), entry.getNotes()));
         customIcon.setValue(entry.getIcon());
         iconFile.setValue(entry.getEffectiveIconFile());
-
         busy.setValue(entry.getBusyCounter().get() != 0);
         deletable.setValue(entry.getConfiguration().isDeletable());
         sessionActive.setValue(entry.getStore() instanceof SingletonSessionStore<?> ss
                 && entry.getStore() instanceof ShellStore
                 && ss.isSessionRunning());
-
-        category.setValue(StoreViewState.get()
-                .getCategoryWrapper(DataStorage.get()
-                        .getStoreCategoryIfPresent(entry.getCategoryUuid())
-                        .orElseThrow()));
+        category.setValue(StoreViewState.get().getCategories().getList().stream()
+                .filter(storeCategoryWrapper ->
+                        storeCategoryWrapper.getCategory().getUuid().equals(entry.getCategoryUuid()))
+                .findFirst()
+                .orElse(StoreViewState.get().getAllConnectionsCategory()));
+        perUser.setValue(
+                !category.getValue().getRoot().equals(StoreViewState.get().getAllIdentitiesCategory())
+                        && entry.isPerUserStore());
 
         if (!entry.getValidity().isUsable()) {
             summary.setValue(null);
@@ -206,6 +242,16 @@ public class StoreEntryWrapper {
             } catch (Exception ex) {
                 ErrorEvent.fromThrowable(ex).handle();
             }
+        }
+
+        if (!effectiveBusyProviderBound && getValidity().getValue().isUsable()) {
+            this.effectiveBusyProviderBound = true;
+            this.effectiveBusy.unbind();
+            this.effectiveBusy.bind(busy.or(getEntry().getProvider().busy(this)));
+        }
+
+        if (!this.effectiveBusy.isBound() && !getValidity().getValue().isUsable()) {
+            this.effectiveBusy.bind(busy);
         }
     }
 
@@ -295,5 +341,35 @@ public class StoreEntryWrapper {
 
     public BooleanProperty disabledProperty() {
         return disabled;
+    }
+
+    public ObservableStringValue getShownName() {
+        return Bindings.createStringBinding(
+                () -> {
+                    var n = nameProperty().getValue();
+                    return AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n;
+                },
+                AppPrefs.get().censorMode(),
+                nameProperty());
+    }
+
+    public ObservableStringValue getShownSummary() {
+        return Bindings.createStringBinding(
+                () -> {
+                    var n = summary.getValue();
+                    return AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n;
+                },
+                AppPrefs.get().censorMode(),
+                summary);
+    }
+
+    public ObservableStringValue getShownInformation() {
+        return Bindings.createStringBinding(
+                () -> {
+                    var n = information.getValue();
+                    return AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n;
+                },
+                AppPrefs.get().censorMode(),
+                information);
     }
 }

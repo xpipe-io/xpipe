@@ -1,10 +1,10 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.browser.BrowserFullSessionComp;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.store.StoreLayoutComp;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.AppPrefsComp;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LabelGraphic;
@@ -39,7 +39,7 @@ public class AppLayoutModel {
     public AppLayoutModel(SavedState savedState) {
         this.savedState = savedState;
         this.entries = createEntryList();
-        this.selected = new SimpleObjectProperty<>(entries.get(0));
+        this.selected = new SimpleObjectProperty<>(entries.getFirst());
     }
 
     public static AppLayoutModel get() {
@@ -73,7 +73,7 @@ public class AppLayoutModel {
     }
 
     public void selectConnections() {
-        selected.setValue(entries.get(0));
+        selected.setValue(entries.getFirst());
     }
 
     private List<Entry> createEntryList() {
@@ -103,6 +103,12 @@ public class AppLayoutModel {
                         null,
                         null),
                 new Entry(
+                        AppI18n.observable("team"),
+                        new LabelGraphic.IconGraphic("mdi2a-account-group"),
+                        null,
+                        () -> AppPrefs.get().selectCategory("vault"),
+                        null),
+                new Entry(
                         AppI18n.observable("visitGithubRepository"),
                         new LabelGraphic.IconGraphic("mdi2g-github"),
                         null,
@@ -114,18 +120,24 @@ public class AppLayoutModel {
                         null,
                         () -> Hyperlinks.open(Hyperlinks.DISCORD),
                         null),
-                new Entry(
-                        AppI18n.observable("api"),
-                        new LabelGraphic.IconGraphic("mdi2c-code-json"),
-                        null,
-                        () -> Hyperlinks.open(
-                                "http://localhost:" + AppBeaconServer.get().getPort()),
-                        null),
+                //                new Entry(
+                //                        AppI18n.observable("api"),
+                //                        new LabelGraphic.IconGraphic("mdi2c-code-json"),
+                //                        null,
+                //                        () -> Hyperlinks.open(
+                //                                "http://localhost:" + AppBeaconServer.get().getPort()),
+                //                        null),
                 new Entry(
                         AppI18n.observable("webtop"),
                         new LabelGraphic.IconGraphic("mdi2d-desktop-mac"),
                         null,
                         () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
+                        null),
+                new Entry(
+                        AppI18n.observable("pythonApi"),
+                        new LabelGraphic.IconGraphic("mdi2l-language-python"),
+                        null,
+                        () -> Hyperlinks.open(Hyperlinks.GITHUB_PYTHON_API),
                         null)));
 
         return l;

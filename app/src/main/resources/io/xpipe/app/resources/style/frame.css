@@ -2,6 +2,10 @@
     -fx-padding: 0 0 27 0;
 }
 
+.root:windows:seamless-frame:maximized {
+    -fx-padding: 5 0 0 0;
+}
+
 .root:dark:separate-frame .background {
     -fx-background-color: derive(-color-bg-default, -3%);
 }
@@ -36,27 +40,27 @@
     -fx-background-color: derive(-color-bg-default-transparent, -9%);
 }
 
-.root:seamless-frame.layout > .background {
+.root:seamless-frame .layout > .background {
     -fx-background-radius: 0 6 0 0;
     -fx-border-radius: 0 6 0 0;
     -fx-border-width: 1 1 0 0;
     -fx-padding: 0 0 0 0;
 }
 
-.root:light:seamless-frame.layout > .background {
+.root:light:seamless-frame .layout > .background {
     -fx-border-color: #999;
 }
 
-.root:dark:seamless-frame.layout > .background {
+.root:dark:seamless-frame .layout > .background {
     -fx-border-color: -color-border-default;
 }
 
-.root:macos:seamless-frame.layout > .background {
+.root:macos:seamless-frame .layout > .background {
     -fx-background-insets: 0;
     -fx-border-insets: 0;
 }
 
-.root:seamless-frame.layout > .background > * {
+.root:seamless-frame .layout > .background > * {
     -fx-background-radius: 0 6 0 0;
     -fx-border-radius: 0 6 0 0;
 }

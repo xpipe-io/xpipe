@@ -1,15 +1,11 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.comp.base.ModalOverlayComp;
-import io.xpipe.app.comp.base.TooltipAugment;
-import io.xpipe.app.core.window.AppWindowHelper;
-import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.Translatable;
-import io.xpipe.core.util.ModuleHelper;
+import io.xpipe.app.prefs.SupportedLocale;
+import io.xpipe.app.util.PlatformState;
+import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.util.XPipeInstallation;
 
 import javafx.beans.binding.Bindings;
@@ -17,7 +13,6 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 
-import lombok.SneakyThrows;
 import lombok.Value;
 import org.apache.commons.io.FilenameUtils;
 
@@ -85,46 +80,29 @@ public class AppI18n {
         return s;
     }
 
-    @SneakyThrows
-    private static String getCallerModuleName() {
-        var callers = CallingClass.INSTANCE.getCallingClasses();
-        for (Class<?> caller : callers) {
-            if (caller.isSynthetic()) {
-                continue;
-            }
-
-            if (caller.equals(CallingClass.class)
-                    || caller.equals(ModuleHelper.class)
-                    || caller.equals(ModalOverlayComp.class)
-                    || caller.equals(AppI18n.class)
-                    || caller.equals(TooltipAugment.class)
-                    || caller.equals(PrefsChoiceValue.class)
-                    || caller.equals(Translatable.class)
-                    || caller.equals(AppWindowHelper.class)
-                    || caller.equals(OptionsBuilder.class)) {
-                continue;
-            }
-            var split = caller.getModule().getName().split("\\.");
-            return split[split.length - 1];
-        }
-        return "";
-    }
-
     private void load() throws Exception {
         if (english == null) {
             english = load(Locale.ENGLISH);
             Locale.setDefault(Locale.ENGLISH);
+
+            // Load bundled JDK locale resources
+            SupportedLocale.ALL.forEach(supportedLocale -> {
+                supportedLocale.getLocale().getDisplayName();
+            });
         }
 
-        if (currentLanguage.getValue() == null) {
+        if (currentLanguage.getValue() == null && PlatformState.getCurrent() == PlatformState.RUNNING) {
             if (AppPrefs.get() != null) {
-                AppPrefs.get().language().subscribe(n -> {
-                    try {
-                        currentLanguage.setValue(n != null ? load(n.getLocale()) : null);
-                        Locale.setDefault(n != null ? n.getLocale() : Locale.ENGLISH);
-                    } catch (Exception e) {
-                        ErrorEvent.fromThrowable(e).handle();
-                    }
+                // Perform initial update on platform thread
+                PlatformThread.runLaterIfNeededBlocking(() -> {
+                    AppPrefs.get().language().subscribe(n -> {
+                        try {
+                            currentLanguage.setValue(n != null ? load(n.getLocale()) : null);
+                            Locale.setDefault(n != null ? n.getLocale() : Locale.ENGLISH);
+                        } catch (Exception e) {
+                            ErrorEvent.fromThrowable(e).handle();
+                        }
+                    });
                 });
             }
         }
@@ -136,8 +114,12 @@ public class AppI18n {
 
     public String getKey(String s) {
         var key = s;
-        if (!s.contains(".")) {
-            key = getCallerModuleName() + "." + s;
+        if (s.startsWith("app.")
+                || s.startsWith("base.")
+                || s.startsWith("proc.")
+                || s.startsWith("uacc.")
+                || s.startsWith("system.")) {
+            key = key.substring(key.indexOf(".") + 1);
         }
         return key;
     }
@@ -172,6 +154,10 @@ public class AppI18n {
     }
 
     public String getMarkdownDocumentation(String name) {
+        if (name.contains(":")) {
+            name = name.substring(name.indexOf(":") + 1);
+        }
+
         if (currentLanguage.getValue() != null
                 && currentLanguage.getValue().getMarkdownDocumentations().containsKey(name)) {
             var localisedString =
@@ -189,25 +175,14 @@ public class AppI18n {
         return "";
     }
 
-    private Path getModuleLangPath(String module) {
-        return XPipeInstallation.getLangPath().resolve(module);
-    }
-
     private LoadedTranslations load(Locale l) throws Exception {
         TrackEvent.info("Loading translations ...");
 
         var translations = new HashMap<String, String>();
-        for (var module : AppExtensionManager.getInstance().getContentModules()) {
-            var basePath = getModuleLangPath(FilenameUtils.getExtension(module.getName()))
-                    .resolve("strings");
-            if (!Files.exists(basePath)) {
-                continue;
-            }
-
+        {
+            var basePath = XPipeInstallation.getLangPath().resolve("strings");
             AtomicInteger fileCounter = new AtomicInteger();
             AtomicInteger lineCounter = new AtomicInteger();
-            var simpleName = FilenameUtils.getExtension(module.getName());
-            String defaultPrefix = simpleName.equals("app") ? "app." : simpleName + ".";
             Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
@@ -224,9 +199,7 @@ public class AppI18n {
                         var props = new Properties();
                         props.load(new InputStreamReader(in, StandardCharsets.UTF_8));
                         props.forEach((key, value) -> {
-                            var hasPrefix = key.toString().contains(".");
-                            var usedPrefix = hasPrefix ? "" : defaultPrefix;
-                            translations.put(usedPrefix + key, value.toString());
+                            translations.put(key.toString(), value.toString());
                             lineCounter.incrementAndGet();
                         });
                     } catch (IOException ex) {
@@ -235,22 +208,11 @@ public class AppI18n {
                     return FileVisitResult.CONTINUE;
                 }
             });
-
-            TrackEvent.withDebug("Loading translations for module " + simpleName)
-                    .tag("fileCount", fileCounter.get())
-                    .tag("lineCount", lineCounter.get())
-                    .handle();
         }
 
         var markdownDocumentations = new HashMap<String, String>();
-        for (var module : AppExtensionManager.getInstance().getContentModules()) {
-            var basePath = getModuleLangPath(FilenameUtils.getExtension(module.getName()))
-                    .resolve("texts");
-            if (!Files.exists(basePath)) {
-                continue;
-            }
-
-            var moduleName = FilenameUtils.getExtension(module.getName());
+        {
+            var basePath = XPipeInstallation.getLangPath().resolve("texts");
             Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
@@ -266,9 +228,7 @@ public class AppI18n {
                             .toString()
                             .substring(0, file.getFileName().toString().lastIndexOf("_"));
                     try (var in = Files.newInputStream(file)) {
-                        var usedPrefix = moduleName + ":";
-                        markdownDocumentations.put(
-                                usedPrefix + name, new String(in.readAllBytes(), StandardCharsets.UTF_8));
+                        markdownDocumentations.put(name, new String(in.readAllBytes(), StandardCharsets.UTF_8));
                     } catch (IOException ex) {
                         ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
                     }
@@ -286,14 +246,5 @@ public class AppI18n {
         Locale locale;
         Map<String, String> translations;
         Map<String, String> markdownDocumentations;
-    }
-
-    @SuppressWarnings("removal")
-    public static class CallingClass extends SecurityManager {
-        public static final CallingClass INSTANCE = new CallingClass();
-
-        public Class<?>[] getCallingClasses() {
-            return getClassContext();
-        }
     }
 }

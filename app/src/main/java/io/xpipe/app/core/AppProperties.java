@@ -5,6 +5,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.util.ModuleHelper;
+import io.xpipe.core.util.XPipeDaemonMode;
 
 import lombok.Getter;
 import lombok.Value;
@@ -54,7 +55,15 @@ public class AppProperties {
 
     boolean newBuildSession;
 
-    public AppProperties() {
+    boolean aotTrainMode;
+
+    AppArguments arguments;
+
+    XPipeDaemonMode explicitMode;
+
+    String devLoginPassword;
+
+    public AppProperties(String[] args) {
         var appDir = Path.of(System.getProperty("user.dir")).resolve("app");
         Path propsFile = appDir.resolve("dev.properties");
         if (Files.exists(propsFile)) {
@@ -74,6 +83,7 @@ public class AppProperties {
         var referenceDir = Files.exists(appDir) ? appDir : Path.of(System.getProperty("user.dir"));
 
         image = ModuleHelper.isImage();
+        arguments = AppArguments.init(args);
         fullVersion = Optional.ofNullable(System.getProperty("io.xpipe.app.fullVersion"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
@@ -91,6 +101,8 @@ public class AppProperties {
         staging = Optional.ofNullable(System.getProperty("io.xpipe.app.staging"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
+        devLoginPassword = Optional.ofNullable(System.getProperty("io.xpipe.app.loginPassword"))
+                .orElse(null);
         useVirtualThreads = Optional.ofNullable(System.getProperty("io.xpipe.app.useVirtualThreads"))
                 .map(Boolean::parseBoolean)
                 .orElse(true);
@@ -138,6 +150,11 @@ public class AppProperties {
         var cachedBuildId = AppCache.getNonNull("lastBuildId", String.class, () -> null);
         newBuildSession = !buildUuid.toString().equals(cachedBuildId);
         AppCache.update("lastBuildId", buildUuid);
+        aotTrainMode = Optional.ofNullable(System.getProperty("io.xpipe.app.aotTrainMode"))
+                .map(Boolean::parseBoolean)
+                .orElse(false);
+        explicitMode = XPipeDaemonMode.getIfPresent(System.getProperty("io.xpipe.app.mode"))
+                .orElse(null);
     }
 
     private static boolean isJUnitTest() {
@@ -157,19 +174,20 @@ public class AppProperties {
         }
     }
 
-    public static void logArguments(String[] args) {
-        TrackEvent.withInfo("Detected arguments")
-                .tag("list", Arrays.asList(args))
-                .handle();
-    }
-
-    public static void logPassedProperties() {
+    public void logArguments() {
         TrackEvent.withInfo("Loaded properties")
-                .tag("version", INSTANCE.version)
-                .tag("build", INSTANCE.build)
-                .tag("dataDir", INSTANCE.dataDir)
-                .tag("fullVersion", INSTANCE.fullVersion)
-                .build();
+                .tag("version", version)
+                .tag("build", build)
+                .tag("dataDir", dataDir)
+                .tag("fullVersion", fullVersion)
+                .handle();
+
+        TrackEvent.withInfo("Received arguments")
+                .tag("raw", arguments.getRawArgs())
+                .tag("resolved", arguments.getResolvedArgs())
+                .tag("resolvedCommand", arguments.getOpenArgs())
+                .tag("resolvedMode", arguments.getModeArg())
+                .handle();
 
         for (var e : System.getProperties().entrySet()) {
             if (e.getKey().toString().contains("io.xpipe")) {
@@ -179,11 +197,15 @@ public class AppProperties {
     }
 
     public static void init() {
+        init(new String[0]);
+    }
+
+    public static void init(String[] args) {
         if (INSTANCE != null) {
             return;
         }
 
-        INSTANCE = new AppProperties();
+        INSTANCE = new AppProperties(args);
     }
 
     public static AppProperties get() {
