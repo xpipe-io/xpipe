@@ -111,7 +111,8 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
 
     @Override
     public DataStore defaultStore() {
-        return SyncedIdentityStore.builder().perUser(false).build();
+        return SyncedIdentityStore.builder().password(EncryptedValue.VaultKey.of(new SecretRetrievalStrategy.None())).sshIdentity(
+                EncryptedValue.VaultKey.of(new SshIdentityStrategy.None())).perUser(false).build();
     }
 
     @Override

@@ -6,6 +6,7 @@ import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.util.EncryptedValue;
 import io.xpipe.app.util.OptionsBuilder;
+import io.xpipe.app.util.SecretRetrievalStrategy;
 import io.xpipe.app.util.SecretRetrievalStrategyHelper;
 import io.xpipe.core.store.DataStore;
 
@@ -77,7 +78,7 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
 
     @Override
     public DataStore defaultStore() {
-        return LocalIdentityStore.builder().build();
+        return LocalIdentityStore.builder().password(EncryptedValue.of(new SecretRetrievalStrategy.None())).sshIdentity(EncryptedValue.of(new SshIdentityStrategy.None())).build();
     }
 
     @Override

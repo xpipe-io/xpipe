@@ -20,6 +20,7 @@ import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.SecretRetrievalStrategy;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
@@ -223,6 +224,21 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                 }
             });
         });
+
+        combo.apply(struc -> {
+            struc.get().getEditor().focusedProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue && selectedReference.get() != null) {
+                    Platform.runLater(() -> {
+                        if (struc.get().isShowing()) {
+                            return;
+                        }
+
+                        struc.get().getEditor().selectAll();
+                    });
+                }
+            });
+        });
+
         return combo;
     }
 }
