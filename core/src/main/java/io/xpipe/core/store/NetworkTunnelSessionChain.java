@@ -27,8 +27,13 @@ public class NetworkTunnelSessionChain extends NetworkTunnelSession {
     }
 
     @Override
-    public boolean isRunning() {
-        return sessions.stream().allMatch(session -> session.isRunning());
+    public boolean isRunning() throws Exception {
+        for (NetworkTunnelSession session : sessions) {
+            if (!session.isRunning()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

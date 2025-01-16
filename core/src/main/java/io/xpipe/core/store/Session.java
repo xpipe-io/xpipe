@@ -16,7 +16,7 @@ public abstract class Session implements AutoCloseable {
         };
     }
 
-    public abstract boolean isRunning();
+    public abstract boolean isRunning() throws Exception;
 
     public abstract void start() throws Exception;
 

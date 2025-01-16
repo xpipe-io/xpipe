@@ -19,7 +19,7 @@ import lombok.experimental.SuperBuilder;
 @ToString
 public abstract class AbstractServiceGroupStore<T extends DataStore> implements DataStore, GroupStore<T> {
 
-    DataStoreEntryRef<T> parent;
+    DataStoreEntryRef<? extends T> parent;
 
     @Override
     public void checkComplete() throws Throwable {

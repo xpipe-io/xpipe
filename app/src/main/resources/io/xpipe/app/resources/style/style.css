@@ -6,6 +6,10 @@
 */
 
 * {
+    -fx-icon-color: inherit;
+}
+
+.root:light, .root:dark {
     -fx-icon-color: -color-fg-default;
 }
 
