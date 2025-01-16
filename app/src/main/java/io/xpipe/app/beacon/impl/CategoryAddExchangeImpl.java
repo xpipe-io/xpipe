@@ -15,11 +15,11 @@ public class CategoryAddExchangeImpl extends CategoryAddExchange {
             throw new BeaconClientException("Parent category with id " + msg.getParent() + " does not exist");
         }
 
-        if (DataStorage.get().getStoreCategories().stream()
-                .anyMatch(dataStoreCategory -> msg.getParent().equals(dataStoreCategory.getParentCategory())
-                        && msg.getName().equals(dataStoreCategory.getName()))) {
-            throw new BeaconClientException(
-                    "Category with name " + msg.getName() + " already exists in parent category");
+        var found = DataStorage.get().getStoreCategories().stream().filter(
+                dataStoreCategory -> msg.getParent().equals(dataStoreCategory.getParentCategory()) &&
+                        msg.getName().equals(dataStoreCategory.getName())).findAny();
+        if (found.isPresent()) {
+            return Response.builder().category(found.get().getUuid()).build();
         }
 
         var cat = DataStoreCategory.createNew(msg.getParent(), msg.getName());
