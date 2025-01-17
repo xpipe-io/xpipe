@@ -234,4 +234,8 @@ public interface DataStoreProvider {
     String getId();
 
     List<Class<?>> getStoreClasses();
+
+    default List<ActionProvider> getActionProviders() {
+        return List.of();
+    }
 }
