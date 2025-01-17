@@ -83,6 +83,8 @@ public class AppMainWindow {
         }
 
         var stage = App.getApp().getStage();
+        stage.setMinWidth(600);
+        stage.setMinHeight(500);
         INSTANCE = new AppMainWindow(stage);
 
         var content = new AppMainWindowContentComp(stage).createRegion();
@@ -102,7 +104,9 @@ public class AppMainWindow {
 
         ModifiedStage.prepareStage(stage);
         stage.setScene(scene);
-        stage.opacityProperty().bind(PlatformThread.sync(AppPrefs.get().windowOpacity()));
+        if (AppPrefs.get() != null) {
+            stage.opacityProperty().bind(PlatformThread.sync(AppPrefs.get().windowOpacity()));
+        }
         stage.titleProperty().bind(createTitle());
         AppWindowHelper.addIcons(stage);
         AppWindowHelper.setupStylesheets(stage.getScene());
@@ -110,8 +114,6 @@ public class AppMainWindow {
         AppWindowHelper.addMaximizedPseudoClass(stage);
         AppTheme.initThemeHandlers(stage);
 
-        stage.setMinWidth(550);
-        stage.setMinHeight(400);
         var state = INSTANCE.loadState();
         TrackEvent.withDebug("Window state loaded").tag("state", state).handle();
         INSTANCE.initializeWindow(state);
@@ -142,6 +144,10 @@ public class AppMainWindow {
     }
 
     private static ObservableValue<String> createTitle() {
+        if (AppPrefs.get() == null || LicenseProvider.get() == null) {
+            return new SimpleStringProperty("XPipe");
+        }
+
         var t = LicenseProvider.get().licenseTitle();
         var u = XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate();
         return PlatformThread.sync(Bindings.createStringBinding(
@@ -352,6 +358,10 @@ public class AppMainWindow {
     }
 
     private WindowState loadState() {
+        if (AppPrefs.get() == null) {
+            return null;
+        }
+
         if (!AppPrefs.get().saveWindowLocation().get()) {
             return null;
         }
