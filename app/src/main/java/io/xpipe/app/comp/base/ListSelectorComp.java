@@ -53,7 +53,11 @@ public class ListSelectorComp<T> extends SimpleComp {
     }
 
     private void update(VBox vbox, List<CheckBox> cbs) {
-        var currentVals = new ArrayList<>(values);
+        List<T> currentVals;
+        // Allow for the usage of a synchronized list
+        synchronized (values) {
+            currentVals = new ArrayList<>(values);
+        }
         vbox.getChildren().clear();
         cbs.clear();
         for (var v : currentVals) {
@@ -87,8 +91,7 @@ public class ListSelectorComp<T> extends SimpleComp {
 
         if (showAllSelector.get()) {
             var allSelector = new CheckBox(null);
-            allSelector.setSelected(
-                    values.stream().filter(t -> !disable.test(t)).count() == selected.size());
+            allSelector.setSelected(currentVals.stream().filter(t -> !disable.test(t)).count() == selected.size());
             allSelector.selectedProperty().addListener((observable, oldValue, newValue) -> {
                 cbs.forEach(checkBox -> {
                     if (checkBox.isDisabled()) {
