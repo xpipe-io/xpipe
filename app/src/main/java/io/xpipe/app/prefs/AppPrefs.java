@@ -9,6 +9,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.update.XPipeDistributionType;
+import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.ModuleHelper;
@@ -487,7 +488,11 @@ public class AppPrefs {
         terminalType.set(ExternalTerminalType.determineDefault(terminalType.get()));
         rdpClientType.setValue(ExternalRdpClientType.determineDefault(rdpClientType.get()));
         if (AppProperties.get().isInitialLaunch()) {
-            performanceMode.setValue(XPipeDistributionType.get() == XPipeDistributionType.WEBTOP);
+            if (XPipeDistributionType.get() == XPipeDistributionType.WEBTOP) {
+                performanceMode.setValue(true);
+            } else if (System.getProperty("os.name").toLowerCase().contains("server")) {
+                performanceMode.setValue(true);
+            }
         }
     }
 
