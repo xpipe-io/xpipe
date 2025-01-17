@@ -51,14 +51,11 @@ public class ErrorHandlerDialog {
                 graphic.setIconColor(Color.RED);
                 return graphic;
             })));
-            modal.get().setOnClose(() -> {
-                if (comp.getTakenAction().getValue() == null) {
-                    ErrorAction.ignore().handle(event);
-                    comp.getTakenAction().setValue(ErrorAction.ignore());
-                }
-            });
-
             AppDialog.showAndWait(modal.get());
+            if (comp.getTakenAction().getValue() == null) {
+                ErrorAction.ignore().handle(event);
+                comp.getTakenAction().setValue(ErrorAction.ignore());
+            }
         } catch (Throwable t) {
             ErrorAction.ignore().handle(ErrorEvent.fromThrowable(t).build());
             ErrorAction.ignore().handle(event);

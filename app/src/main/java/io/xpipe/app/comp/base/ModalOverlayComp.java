@@ -113,12 +113,11 @@ public class ModalOverlayComp extends SimpleComp {
                     if (newValue == null) {
                         modal.hide(false);
                     }
+                }
+
+                if (oldValue != null) {
                     if (oldValue.getContent() instanceof ModalOverlayContentComp mocc) {
                         mocc.onClose();
-                    }
-                    var runnable = oldValue.getOnClose();
-                    if (runnable != null) {
-                        runnable.run();
                     }
                     if (oldValue.getContent() instanceof ModalOverlayContentComp mocc) {
                         mocc.setModalOverlay(null);
