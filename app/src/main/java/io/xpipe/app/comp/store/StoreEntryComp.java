@@ -313,7 +313,7 @@ public abstract class StoreEntryComp extends SimpleComp {
             contextMenu.getItems().add(copyId);
         }
 
-        if (DataStorage.get().isRootEntry(getWrapper().getEntry())) {
+        if (section.getDepth() == 1) {
             var color = new Menu(AppI18n.get("color"), new FontIcon("mdi2f-format-color-fill"));
             var none = new MenuItem();
             none.textProperty().bind(AppI18n.observable("none"));

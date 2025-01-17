@@ -54,6 +54,9 @@ public class ImpersistentStorage extends DataStorage {
     }
 
     @Override
+    public void saveAsync() {}
+
+    @Override
     public synchronized void save(boolean dispose) {}
 
     @Override

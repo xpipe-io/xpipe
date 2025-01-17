@@ -6,6 +6,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.EncryptionKey;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 
 import com.fasterxml.jackson.core.JacksonException;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Stream;
 import javax.crypto.SecretKey;
 
@@ -39,6 +41,9 @@ public class StandardStorage extends DataStorage {
 
     @Getter
     private boolean disposed;
+    private boolean saveQueued;
+    private final ReentrantLock busyIo = new ReentrantLock();
+
 
     StandardStorage() {
         this.dataStorageSyncHandler = DataStorageSyncHandler.getInstance();
@@ -319,6 +324,12 @@ public class StandardStorage extends DataStorage {
         });
     }
 
+    public void saveAsync() {
+        ThreadHelper.runAsync(() -> {
+            save(false);
+        });
+    }
+
     public void save(boolean dispose) {
         try {
             // If another save operation is in progress, we have to wait on dispose
@@ -331,14 +342,21 @@ public class StandardStorage extends DataStorage {
         }
 
         // We don't need to wait on normal saves though
-        if (!dispose && !busyIo.tryLock()) {
-            return;
+        // If we are already loading or saving, don't queue up another operation.
+        // This could otherwise lead to thread starvation with virtual threads
+        synchronized (busyIo) {
+            if (!dispose && !busyIo.tryLock()) {
+                saveQueued = true;
+                return;
+            }
         }
 
         if (!loaded || disposed) {
             busyIo.unlock();
             return;
         }
+
+        this.saveQueued = false;
 
         this.dataStorageSyncHandler.beforeStorageSave();
 
@@ -396,7 +414,14 @@ public class StandardStorage extends DataStorage {
         if (dispose) {
             disposed = true;
         }
-        busyIo.unlock();
+
+        synchronized (busyIo) {
+            busyIo.unlock();
+            if (!dispose && saveQueued) {
+                // Avoid stack overflow by doing it async
+                saveAsync();
+            }
+        }
     }
 
     @Override

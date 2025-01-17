@@ -118,7 +118,7 @@ public class StoreSection {
             ObservableIntegerValue updateObservable) {
         var topLevel = all.filtered(
                 section -> {
-                    return DataStorage.get().isRootEntry(section.getEntry());
+                    return DataStorage.get().isRootEntry(section.getEntry(), category.getValue().getCategory());
                 },
                 category,
                 updateObservable);
@@ -209,7 +209,7 @@ public class StoreSection {
                             // If this entry is already shown as root due to a different category than parent, don't
                             // show it
                             // again here
-                            !DataStorage.get().isRootEntry(section.getWrapper().getEntry());
+                            !DataStorage.get().isRootEntry(section.getWrapper().getEntry(), category.getValue().getCategory());
                 },
                 category,
                 filterString,

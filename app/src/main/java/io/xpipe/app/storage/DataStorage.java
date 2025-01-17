@@ -24,7 +24,6 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.crypto.SecretKey;
@@ -53,8 +52,6 @@ public abstract class DataStorage {
 
     @Getter
     protected final Set<DataStoreEntry> storeEntriesSet;
-
-    protected final ReentrantLock busyIo = new ReentrantLock();
 
     @Getter
     private final List<StorageListener> listeners = new CopyOnWriteArrayList<>();
@@ -265,19 +262,7 @@ public abstract class DataStorage {
 
     public abstract void load();
 
-    public void saveAsync() {
-        // If we are already loading or saving, don't queue up another operation.
-        // This could otherwise lead to thread starvation with virtual threads
-        // Technically the load and save operations also return instantly if locked, but let's not even create new
-        // threads here
-        if (busyIo.isLocked()) {
-            return;
-        }
-
-        ThreadHelper.runAsync(() -> {
-            save(false);
-        });
-    }
+    public abstract void saveAsync();
 
     public abstract void save(boolean dispose);
 
@@ -409,7 +394,7 @@ public abstract class DataStorage {
         DataStorage.get().saveAsync();
     }
 
-    public void updateCategory(DataStoreEntry entry, DataStoreCategory newCategory) {
+    public void moveEntryToCategory(DataStoreEntry entry, DataStoreCategory newCategory) {
         if (getStoreCategoryIfPresent(entry.getUuid())
                 .map(category -> category.equals(newCategory))
                 .orElse(false)) {
@@ -419,7 +404,13 @@ public abstract class DataStorage {
         var oldCat = getStoreCategoryIfPresent(entry.getCategoryUuid()).orElse(getDefaultConnectionsCategory());
         entry.setCategoryUuid(newCategory.getUuid());
         var children = getDeepStoreChildren(entry);
-        children.forEach(child -> child.setCategoryUuid(newCategory.getUuid()));
+        children.forEach(child -> {
+            if (!child.getCategoryUuid().equals(oldCat.getUuid())) {
+                return;
+            }
+
+            child.setCategoryUuid(newCategory.getUuid());
+        });
         listeners.forEach(storageListener -> storageListener.onEntryCategoryChange(oldCat, newCategory));
         listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
         saveAsync();
@@ -787,14 +778,35 @@ public abstract class DataStorage {
 
     // Get operations
 
-    public boolean isRootEntry(DataStoreEntry entry) {
-        var noParent = DataStorage.get().getDefaultDisplayParent(entry).isEmpty();
-        boolean diffParentCategory = DataStorage.get()
-                .getDefaultDisplayParent(entry)
-                .map(p -> !p.getCategoryUuid().equals(entry.getCategoryUuid()))
-                .orElse(false);
+    public boolean isRootEntry(DataStoreEntry entry, DataStoreCategory current) {
+        var parent = DataStorage.get().getDefaultDisplayParent(entry);
+        var noParent = parent.isEmpty();
+        if (noParent) {
+            return true;
+        }
+
+        var parentCat = getStoreCategoryIfPresent(parent.get().getCategoryUuid()).orElseThrow();
+        var parentCatHierarchy = getCategoryParentHierarchy(parentCat);
+        var cat = getStoreCategoryIfPresent(entry.getCategoryUuid()).orElseThrow();
+        var catHierarchy = getCategoryParentHierarchy(cat);
+
+        var currentContainsBoth = catHierarchy.contains(current) && parentCatHierarchy.contains(current);
+        if (currentContainsBoth) {
+            return false;
+        }
+
+        var diffParentCategoryHierarchy = !catHierarchy.contains(parentCat);
+        if (diffParentCategoryHierarchy) {
+            return true;
+        }
+
+        var subParent = catHierarchy.indexOf(current) > catHierarchy.indexOf(parentCat);
+        if (subParent) {
+            return true;
+        }
+
         var loop = isParentLoop(entry);
-        return noParent || diffParentCategory || loop;
+        return loop;
     }
 
     private boolean isParentLoop(DataStoreEntry entry) {
@@ -813,28 +825,28 @@ public abstract class DataStorage {
     }
 
     public DataColor getEffectiveColor(DataStoreEntry entry) {
-        var root = getRootForEntry(entry);
+        var cat = getStoreCategoryIfPresent(entry.getCategoryUuid()).orElseThrow();
+        var root = getRootForEntry(entry, cat);
         if (root.getColor() != null) {
             return root.getColor();
         }
 
-        var cats = getCategoryParentHierarchy(
-                getStoreCategoryIfPresent(entry.getCategoryUuid()).orElseThrow());
-        for (DataStoreCategory cat : cats.reversed()) {
-            if (cat.getColor() != null) {
-                return cat.getColor();
+        var cats = getCategoryParentHierarchy(cat);
+        for (DataStoreCategory r : cats.reversed()) {
+            if (r.getColor() != null) {
+                return r.getColor();
             }
         }
 
         return null;
     }
 
-    public DataStoreEntry getRootForEntry(DataStoreEntry entry) {
+    public DataStoreEntry getRootForEntry(DataStoreEntry entry, DataStoreCategory cat) {
         if (entry == null) {
             return null;
         }
 
-        if (isRootEntry(entry)) {
+        if (isRootEntry(entry, cat)) {
             return entry;
         }
 
@@ -842,7 +854,7 @@ public abstract class DataStorage {
         Optional<DataStoreEntry> parent;
         while ((parent = getDefaultDisplayParent(current)).isPresent()) {
             current = parent.get();
-            if (isRootEntry(current)) {
+            if (isRootEntry(current, cat)) {
                 break;
             }
         }
