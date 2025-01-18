@@ -20,6 +20,8 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
 
         if (event.isOmitted() || OperationMode.isInShutdown()) {
             ErrorAction.ignore().handle(event);
+            // Wait a bit to the beacon the ability to respond to any open requests with an error
+            ThreadHelper.sleep(3000);
             OperationMode.halt(1);
             return;
         }
