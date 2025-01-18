@@ -327,13 +327,16 @@ public class StandardStorage extends DataStorage {
     public void saveAsync() {
         // If we are already loading or saving, don't queue up another operation.
         // This could otherwise lead to thread starvation with virtual threads
+
         // Technically the load and save operations also return instantly if locked, but let's not even create new
         // threads here
-        synchronized (busyIo) {
-            if (busyIo.isLocked()) {
-                saveQueued = true;
-                return;
-            }
+
+        // Technically we would have to synchronize the saveQueued update to avoid a rare lost update
+        // but in practice it doesn't really matter as the save queueing is optional
+        // The last dispose save will save everything anyway, it's about optimizing before that
+        if (busyIo.isLocked()) {
+            saveQueued = true;
+            return;
         }
 
         ThreadHelper.runAsync(() -> {
@@ -353,11 +356,9 @@ public class StandardStorage extends DataStorage {
         }
 
         // We don't need to wait on normal saves though
-        synchronized (busyIo) {
-            if (!dispose && !busyIo.tryLock()) {
-                saveQueued = true;
-                return;
-            }
+        if (!dispose && !busyIo.tryLock()) {
+            saveQueued = true;
+            return;
         }
 
         if (!loaded || disposed) {
@@ -424,12 +425,10 @@ public class StandardStorage extends DataStorage {
             disposed = true;
         }
 
-        synchronized (busyIo) {
-            busyIo.unlock();
-            if (!dispose && saveQueued) {
-                // Avoid stack overflow by doing it async
-                saveAsync();
-            }
+        busyIo.unlock();
+        if (!dispose && saveQueued) {
+            // Avoid stack overflow by doing it async
+            saveAsync();
         }
     }
 

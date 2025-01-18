@@ -191,6 +191,11 @@ public class DataStoreCategory extends StorageElement {
             return;
         }
 
+        // Reset the dirty state early
+        // That way, if any other changes are made during this save operation,
+        // the dirty bit can be set to true again
+        dirty = false;
+
         ObjectMapper mapper = JacksonMapper.getDefault();
         ObjectNode obj = JsonNodeFactory.instance.objectNode();
         ObjectNode stateObj = JsonNodeFactory.instance.objectNode();
@@ -209,6 +214,5 @@ public class DataStoreCategory extends StorageElement {
         FileUtils.forceMkdir(directory.toFile());
         Files.writeString(directory.resolve("category.json"), entryString);
         Files.writeString(directory.resolve("state.json"), stateString);
-        dirty = false;
     }
 }
