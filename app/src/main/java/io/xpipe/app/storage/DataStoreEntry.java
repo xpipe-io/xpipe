@@ -447,6 +447,11 @@ public class DataStoreEntry extends StorageElement {
             return;
         }
 
+        // Reset the dirty state early
+        // That way, if any other changes are made during this save operation,
+        // the dirty bit can be set to true again
+        dirty = false;
+
         ObjectMapper mapper = JacksonMapper.getDefault();
 
         ObjectNode obj = JsonNodeFactory.instance.objectNode();
@@ -493,8 +498,6 @@ public class DataStoreEntry extends StorageElement {
             Files.writeString(normalNotesFile, notes);
         }
         lastWrittenNotes = notes;
-
-        dirty = false;
     }
 
     public void setNotes(String newNotes) {
