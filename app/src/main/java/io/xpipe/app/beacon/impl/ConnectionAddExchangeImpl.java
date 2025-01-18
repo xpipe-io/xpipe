@@ -50,7 +50,7 @@ public class ConnectionAddExchangeImpl extends ConnectionAddExchange {
         // Explicitly assign category
         if (msg.getCategory() != null) {
             DataStorage.get()
-                    .updateCategory(
+                    .moveEntryToCategory(
                             entry,
                             DataStorage.get()
                                     .getStoreCategoryIfPresent(msg.getCategory())

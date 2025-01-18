@@ -2,6 +2,7 @@ package io.xpipe.core.util;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.Module;
@@ -26,6 +27,7 @@ public class JacksonMapper {
     static {
         ObjectMapper objectMapper = BASE;
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        objectMapper.enable(JsonParser.Feature.ALLOW_COMMENTS);
         objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         objectMapper.disable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE);

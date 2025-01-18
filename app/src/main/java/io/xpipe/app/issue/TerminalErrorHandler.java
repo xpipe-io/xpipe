@@ -20,6 +20,8 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
 
         if (event.isOmitted() || OperationMode.isInShutdown()) {
             ErrorAction.ignore().handle(event);
+            // Wait a bit to the beacon the ability to respond to any open requests with an error
+            ThreadHelper.sleep(3000);
             OperationMode.halt(1);
             return;
         }
@@ -77,7 +79,7 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
             var rel = XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheck(false, false);
             if (rel != null && rel.isUpdate()) {
                 var updateModal =
-                        ModalOverlay.of("updateAvailableTitle", AppDialog.dialogTextKey("updateAvailableContent"));
+                        ModalOverlay.of("updateAvailableTitle", AppDialog.dialogText(AppI18n.get("updateAvailableContent", rel.getVersion())));
                 updateModal.addButton(
                         new ModalButton("checkOutUpdate", () -> Hyperlinks.open(rel.getReleaseUrl()), false, true));
                 updateModal.addButton(new ModalButton("ignore", null, true, false));

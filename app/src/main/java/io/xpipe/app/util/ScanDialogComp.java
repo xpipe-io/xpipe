@@ -16,11 +16,13 @@ import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.function.Function;
 
 import static javafx.scene.layout.Priority.ALWAYS;
@@ -30,10 +32,9 @@ class ScanDialogComp extends ModalOverlayContentComp {
     private final DataStoreEntryRef<ShellStore> initialStore;
     private final ScanDialogAction action;
     private final ObjectProperty<DataStoreEntryRef<ShellStore>> entry;
-    private final ListProperty<ScanProvider.ScanOpportunity> available =
-            new SimpleListProperty<>(FXCollections.observableArrayList());
+    private final ObservableList<ScanProvider.ScanOpportunity> available = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
     private final ListProperty<ScanProvider.ScanOpportunity> selected =
-            new SimpleListProperty<>(FXCollections.observableArrayList());
+            new SimpleListProperty<>(FXCollections.synchronizedObservableList(FXCollections.observableArrayList()));
     private final BooleanProperty busy = new SimpleBooleanProperty();
 
     ScanDialogComp(DataStoreEntryRef<ShellStore> entry, ScanDialogAction action) {

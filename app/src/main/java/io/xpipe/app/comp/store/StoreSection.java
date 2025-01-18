@@ -66,10 +66,6 @@ public class StoreSection {
             DerivedObservableList<StoreSection> list,
             ObservableValue<StoreCategoryWrapper> category,
             ObservableIntegerValue updateObservable) {
-        if (category == null) {
-            return list;
-        }
-
         var explicitOrderComp = Comparator.<StoreSection>comparingInt(new ToIntFunction<>() {
             @Override
             public int applyAsInt(StoreSection value) {
@@ -91,7 +87,7 @@ public class StoreSection {
         var comp = explicitOrderComp;
         var mappedSortMode = BindingsHelper.flatMap(
                 category,
-                storeCategoryWrapper -> storeCategoryWrapper != null ? storeCategoryWrapper.getSortMode() : null);
+                storeCategoryWrapper -> storeCategoryWrapper.getSortMode());
         return list.sorted(
                 (o1, o2) -> {
                     var r = comp.compare(o1, o2);
@@ -118,7 +114,7 @@ public class StoreSection {
             ObservableIntegerValue updateObservable) {
         var topLevel = all.filtered(
                 section -> {
-                    return DataStorage.get().isRootEntry(section.getEntry());
+                    return DataStorage.get().isRootEntry(section.getEntry(), category.getValue().getCategory());
                 },
                 category,
                 updateObservable);
@@ -134,9 +130,7 @@ public class StoreSection {
                             (section.anyMatches(entryFilter))
                             &&
                             // same category
-                            (category == null
-                                    || category.getValue() == null
-                                    || showInCategory(category.getValue(), section.getWrapper()));
+                            (showInCategory(category.getValue(), section.getWrapper()));
                 },
                 category,
                 filterString);
@@ -200,16 +194,13 @@ public class StoreSection {
                             &&
                             // matches category
                             // Prevent updates for children on category switching by checking depth
-                            (category == null
-                                    || category.getValue() == null
-                                    || showInCategory(category.getValue(), section.getWrapper())
-                                    || depth > 0)
+                            (showInCategory(category.getValue(), section.getWrapper()) || depth > 0)
                             &&
                             // not root
                             // If this entry is already shown as root due to a different category than parent, don't
                             // show it
                             // again here
-                            !DataStorage.get().isRootEntry(section.getWrapper().getEntry());
+                            !DataStorage.get().isRootEntry(section.getWrapper().getEntry(), category.getValue().getCategory());
                 },
                 category,
                 filterString,

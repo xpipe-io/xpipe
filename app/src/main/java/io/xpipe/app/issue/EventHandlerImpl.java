@@ -3,6 +3,7 @@ package io.xpipe.app.issue;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.util.Deobfuscator;
 
 import java.nio.file.Path;
@@ -33,7 +34,7 @@ public class EventHandlerImpl extends EventHandler {
 
     @Override
     public void handle(ErrorEvent ee) {
-        if (AppProperties.get().isAotTrainMode()) {
+        if (AppProperties.get() != null && AppProperties.get().isAotTrainMode()) {
             new LogErrorHandler().handle(ee);
             if (ee.isTerminal()) {
                 OperationMode.halt(1);

@@ -98,8 +98,8 @@ public abstract class OperationMode {
             TrackEvent.info("Initial setup");
             AppMainWindow.loadingText("initializingApp");
             AppProperties.init(args);
-            AppTempCheck.check();
             AppLogs.init();
+            AppTempCheck.check();
             AppDebugModeCheck.printIfNeeded();
             AppProperties.logSystemProperties();
             AppProperties.get().logArguments();

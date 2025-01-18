@@ -43,7 +43,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
         var identity = new SimpleObjectProperty<>(st.getSshIdentity());
         var perUser = new SimpleBooleanProperty(st.isPerUser());
         perUser.addListener((observable, oldValue, newValue) -> {
-            if (!(identity.getValue() instanceof SshIdentityStrategy.File f) || f.getFile() == null) {
+            if (!(identity.getValue() instanceof SshIdentityStrategy.File f) || f.getFile() == null || !f.getFile().isInDataDirectory()) {
                 return;
             }
 

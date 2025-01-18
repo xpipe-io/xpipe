@@ -24,7 +24,7 @@ public class ModalOverlay {
     }
 
     public static ModalOverlay of(String titleKey, Comp<?> content, LabelGraphic graphic) {
-        return new ModalOverlay(titleKey, content, graphic, new ArrayList<>(), false, null);
+        return new ModalOverlay(titleKey, content, graphic, new ArrayList<>(), false);
     }
 
     public ModalOverlay withDefaultButtons(Runnable action) {
@@ -46,10 +46,6 @@ public class ModalOverlay {
 
     @NonFinal
     boolean persistent;
-
-    @NonFinal
-    @Setter
-    Runnable onClose;
 
     public ModalButton addButton(ModalButton button) {
         buttons.add(button);

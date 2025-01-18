@@ -85,7 +85,7 @@ public class StoreEntryWrapper {
 
     public void moveTo(DataStoreCategory category) {
         ThreadHelper.runAsync(() -> {
-            DataStorage.get().updateCategory(entry, category);
+            DataStorage.get().moveEntryToCategory(entry, category);
         });
     }
 
