@@ -65,11 +65,11 @@ public class StoreViewState {
         }
 
         var active = INSTANCE.activeCategory.getValue().getCategory();
-        if (active == null) {
+        if (active != null) {
+            AppCache.update("selectedCategory", active.getUuid());
             return;
         }
 
-        AppCache.update("selectedCategory", active.getUuid());
         INSTANCE = null;
     }
 
