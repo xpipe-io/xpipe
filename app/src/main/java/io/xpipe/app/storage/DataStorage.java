@@ -438,9 +438,12 @@ public abstract class DataStorage {
         e.incrementBusyCounter();
         List<? extends DataStoreEntryRef<? extends FixedChildStore>> newChildren;
         try {
-            newChildren = h.listChildren().stream()
-                    .filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null)
-                    .toList();
+            List<? extends DataStoreEntryRef<? extends FixedChildStore>> l = h.listChildren();
+            if (l != null) {
+                newChildren = l.stream().filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null).toList();
+            } else {
+                newChildren = null;
+            }
         } catch (Exception ex) {
             if (throwOnFail) {
                 throw ex;
@@ -450,6 +453,10 @@ public abstract class DataStorage {
             }
         } finally {
             e.decrementBusyCounter();
+        }
+
+        if (newChildren == null) {
+            return false;
         }
 
         var oldChildren = getStoreChildren(e);
