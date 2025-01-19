@@ -448,10 +448,13 @@ public class StoreCreationComp extends DialogComp {
     }
 
     private Region createStoreProperties(Comp<?> comp, Validator propVal) {
+        var p = provider.getValue();
+        var nameKey = p == null || p.getCreationCategory() == null || p.getCreationCategory().getCategory().equals(DataStorage.ALL_CONNECTIONS_CATEGORY_UUID) ?
+        "connection" : p.getCreationCategory().getCategory().equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID) ? "script" : "identity";
         return new OptionsBuilder()
                 .addComp(comp, store)
-                .name("connectionName")
-                .description("connectionNameDescription")
+                .name(nameKey + "Name")
+                .description(nameKey + "NameDescription")
                 .addString(name, false)
                 .nonNull(propVal)
                 .buildComp()
