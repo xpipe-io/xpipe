@@ -26,7 +26,7 @@ public class MobaXTermTerminalType extends ExternalTerminalType.WindowsType {
     protected Optional<Path> determineInstallation() {
         try {
             var r = WindowsRegistry.local()
-                    .readValue(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\mobaxterm\\DefaultIcon");
+                    .readStringValueIfPresent(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\mobaxterm\\DefaultIcon");
             return r.map(Path::of);
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).omit().handle();

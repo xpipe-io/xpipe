@@ -63,7 +63,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                                 "http://wezfurlong.org/wezterm");
                 if (foundKey.isPresent()) {
                     var installKey = WindowsRegistry.local()
-                            .readValue(foundKey.get().getHkey(), foundKey.get().getKey(), "InstallLocation");
+                            .readStringValueIfPresent(foundKey.get().getHkey(), foundKey.get().getKey(), "InstallLocation");
                     if (installKey.isPresent()) {
                         return installKey.map(p -> p + "\\wezterm-gui.exe").map(Path::of);
                     }
