@@ -1,8 +1,10 @@
 package io.xpipe.core.store;
 
+import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 
 @SuperBuilder(toBuilder = true)
+@EqualsAndHashCode
 public abstract class DataStoreState {
 
     public DataStoreState() {}
