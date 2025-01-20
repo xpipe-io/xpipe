@@ -328,7 +328,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         }
 
         try {
-            BrowserFileSystemHelper.validateDirectoryPath(this, resolvedPath, customInput);
+            BrowserFileSystemHelper.validateDirectoryPath(this, resolvedPath, true);
             cdSyncWithoutCheck(path);
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();

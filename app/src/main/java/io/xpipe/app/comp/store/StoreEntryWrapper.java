@@ -8,6 +8,7 @@ import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
@@ -16,6 +17,7 @@ import io.xpipe.core.store.SingletonSessionStore;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableStringValue;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 
 import lombok.Getter;
@@ -155,24 +157,6 @@ public class StoreEntryWrapper {
             this.effectiveBusy.bind(busy);
         }
 
-        var storeChanged = store.getValue() != entry.getStore();
-        store.setValue(entry.getStore());
-        if (storeChanged || !information.isBound()) {
-            if (entry.getProvider() != null) {
-                var section = StoreViewState.get().getSectionForWrapper(this);
-                if (section.isPresent()) {
-                    information.unbind();
-                    try {
-                        var binding = PlatformThread.sync(entry.getProvider().informationString(section.get()));
-                        information.bind(binding);
-                    } catch (Exception e) {
-                        ErrorEvent.fromThrowable(e).handle();
-                        information.bind(new SimpleStringProperty());
-                    }
-                }
-            }
-        }
-
         lastAccess.setValue(entry.getLastAccess());
         disabled.setValue(entry.isDisabled());
         validity.setValue(entry.getValidity());
@@ -200,6 +184,24 @@ public class StoreEntryWrapper {
         perUser.setValue(
                 !category.getValue().getRoot().equals(StoreViewState.get().getAllIdentitiesCategory())
                         && entry.isPerUserStore());
+
+        var storeChanged = store.getValue() != entry.getStore();
+        store.setValue(entry.getStore());
+        if (storeChanged || !information.isBound()) {
+            if (entry.getProvider() != null) {
+                var section = StoreViewState.get().getSectionForWrapper(this);
+                if (section.isPresent()) {
+                    information.unbind();
+                    try {
+                        var is = entry.getProvider().informationString(section.get());
+                        information.bind(PlatformThread.sync(is));
+                    } catch (Exception e) {
+                        ErrorEvent.fromThrowable(e).handle();
+                        information.bind(new SimpleStringProperty());
+                    }
+                }
+            }
+        }
 
         if (!entry.getValidity().isUsable()) {
             summary.setValue(null);

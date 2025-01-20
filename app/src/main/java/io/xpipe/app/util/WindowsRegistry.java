@@ -139,11 +139,17 @@ public abstract class WindowsRegistry {
             // \n<Version information>\n\n<key>\t<registry type>\t<value>
             if (original.contains("\t")) {
                 String[] parsed = original.split("\t");
+                if (parsed.length < 4) {
+                    return Optional.empty();
+                }
                 return Optional.of(parsed[parsed.length - 1]);
             }
 
             if (original.contains("    ")) {
                 String[] parsed = original.split(" {4}");
+                if (parsed.length < 4) {
+                    return Optional.empty();
+                }
                 return Optional.of(parsed[parsed.length - 1]);
             }
 
@@ -173,14 +179,14 @@ public abstract class WindowsRegistry {
 
         @Override
         public List<String> listSubKeys(int hkey, String key) throws Exception {
-            var prefix = hkey(hkey) + "\\";
+            var prefix = hkey(hkey) + "\\" + key;
             var command = CommandBuilder.of()
                     .add("reg", "query")
-                    .addQuoted(prefix + key);
+                    .addQuoted(prefix);
             var out = shellControl.command(command).readStdoutOrThrow();
             return out.lines().filter(s -> {
-                return s.contains(prefix);
-            }).map(s -> s.replace(prefix, "")).toList();
+                return s.contains(prefix + "\\");
+            }).map(s -> s.replace(prefix + "\\", "")).toList();
         }
 
         @Override
@@ -199,7 +205,7 @@ public abstract class WindowsRegistry {
         public OptionalInt readIntegerValueIfPresent(int hkey, String key, String valueName) throws Exception {
             var r = readStringValueIfPresent(hkey, key, valueName);
             if (r.isPresent()) {
-                return OptionalInt.of(Integer.parseInt(r.get()));
+                return OptionalInt.of(Integer.decode(r.get()));
             } else {
                 return OptionalInt.empty();
             }
