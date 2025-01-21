@@ -37,7 +37,7 @@ public class DesktopHelper {
         } else if (OsType.getLocal() == OsType.LINUX) {
             try (var sc = LocalShell.getShell().start()) {
                 var out = sc.command("xdg-user-dir DOWNLOAD").readStdoutIfPossible();
-                if (out.isPresent()) {
+                if (out.isPresent() && !out.get().isBlank()) {
                     return Path.of(out.get());
                 }
             }

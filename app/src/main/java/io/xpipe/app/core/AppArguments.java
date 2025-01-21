@@ -97,7 +97,7 @@ public class AppArguments {
                 var converted = t instanceof CommandLine.UnmatchedArgumentException u
                         ? new IllegalArgumentException(u.getMessage())
                         : t;
-                var e = ErrorEvent.fromThrowable(converted).term().build();
+                var e = ErrorEvent.fromThrowable(converted).expected().term().build();
                 // Print error in case we launched from the command-line
                 new LogErrorHandler().handle(e);
                 e.handle();

@@ -106,7 +106,7 @@ public class AppExtensionManager {
                     .orElseThrow(() -> new IllegalArgumentException("Invalid source version: " + sv));
             if (AppProperties.get().isLocatorVersionCheck() && !installVersion.equals(sourceVersion)) {
                 throw new IllegalStateException(
-                        "Incompatible development version. Source: " + iv + ", Installation: " + sv
+                        "Incompatible development version. Source: " + sv + ", Installation: " + iv
                                 + "\n\nPlease try to check out the matching release version in the repository. See https://github.com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
             }
 

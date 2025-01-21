@@ -96,7 +96,7 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
                 () -> {
                     var desc = formatService(s);
                     var type = s.getServiceProtocolType() != null
-                                    && !(s.getServiceProtocolType() instanceof ServiceProtocolType.None)
+                                    && !(s.getServiceProtocolType() instanceof ServiceProtocolType.Undefined)
                             ? AppI18n.get(s.getServiceProtocolType().getTranslationKey())
                             : null;
                     var state = !s.requiresTunnel()

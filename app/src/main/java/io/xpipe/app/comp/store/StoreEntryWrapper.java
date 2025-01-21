@@ -186,7 +186,7 @@ public class StoreEntryWrapper {
         validity.setValue(entry.getValidity());
         expanded.setValue(entry.isExpanded());
         persistentState.setValue(entry.getStorePersistentState());
-
+		
         // The property values are only registered as changed once they are queried
         // If we use information bindings that depend on some of these properties
         // but use the store methods to retrieve data instead of the wrapper properties,

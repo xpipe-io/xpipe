@@ -339,7 +339,7 @@ public class AppMainWindow {
     }
 
     private void saveState() {
-        if (!AppPrefs.get().saveWindowLocation().get()) {
+        if (AppPrefs.get() == null || !AppPrefs.get().saveWindowLocation().get()) {
             return;
         }
 
