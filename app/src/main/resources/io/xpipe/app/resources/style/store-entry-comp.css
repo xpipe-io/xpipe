@@ -1,3 +1,7 @@
+.store-list-comp.scroll-pane * {
+    -fx-icon-color: -color-fg-default;
+}
+
 .store-list-comp.scroll-pane > .viewport .list-box-content {
     -fx-spacing: 6;
     -fx-padding: 7 0 7 0;

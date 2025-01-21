@@ -5,10 +5,6 @@
 }
 */
 
-* {
-    -fx-icon-color: -color-fg-default;
-}
-
 .root:light, .root:dark {
     -fx-background-color: transparent;
 }
