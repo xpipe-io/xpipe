@@ -34,7 +34,7 @@ public class ServiceOpenAction implements ActionProvider {
                     ? serviceStore.getSession().getLocalPort()
                     : serviceStore.getRemotePort();
             var base = "localhost:" + l;
-            var full = serviceStore.getServiceProtocolType().formatUrl(base);
+            var full = serviceStore.getServiceProtocolType().formatAddress(base);
             serviceStore.getServiceProtocolType().open(full);
         }
     }

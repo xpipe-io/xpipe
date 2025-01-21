@@ -81,7 +81,7 @@ open module io.xpipe.ext.base {
             StorePauseAction,
             StoreRestartAction,
             ServiceOpenAction,
-            ServiceCopyUrlAction,
+            ServiceCopyAddressAction,
             CloneStoreAction,
             RefreshChildrenStoreAction,
             RunScriptActionMenu,

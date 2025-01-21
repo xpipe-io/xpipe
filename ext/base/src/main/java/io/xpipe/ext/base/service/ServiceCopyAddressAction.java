@@ -9,7 +9,7 @@ import javafx.beans.value.ObservableValue;
 
 import lombok.Value;
 
-public class ServiceCopyUrlAction implements ActionProvider {
+public class ServiceCopyAddressAction implements ActionProvider {
 
     @Override
     public LeafDataStoreCallSite<?> getLeafDataStoreCallSite() {
@@ -37,7 +37,7 @@ public class ServiceCopyUrlAction implements ActionProvider {
 
             @Override
             public ObservableValue<String> getName(DataStoreEntryRef<AbstractServiceStore> store) {
-                return AppI18n.observable("copyUrl");
+                return AppI18n.observable("copyAddress");
             }
 
             @Override
@@ -59,7 +59,7 @@ public class ServiceCopyUrlAction implements ActionProvider {
                     ? serviceStore.getSession().getLocalPort()
                     : serviceStore.getRemotePort();
             var base = "localhost:" + l;
-            var full = serviceStore.getServiceProtocolType().formatUrl(base);
+            var full = serviceStore.getServiceProtocolType().formatAddress(base);
             ClipboardHelper.copyUrl(full);
         }
     }
