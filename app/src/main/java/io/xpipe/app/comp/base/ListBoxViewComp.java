@@ -64,7 +64,9 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         });
 
         all.addListener((ListChangeListener<? super T>) c -> {
-            cache.keySet().retainAll(c.getList());
+            synchronized (cache) {
+                cache.keySet().retainAll(c.getList());
+            }
         });
 
         var scroll = new ScrollPane(vbox);
@@ -97,8 +99,10 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
     private void refresh(
             VBox listView, List<? extends T> shown, List<? extends T> all, Map<T, Region> cache, boolean asynchronous) {
         Runnable update = () -> {
-            // Clear cache of unused values
-            cache.keySet().removeIf(t -> !all.contains(t));
+            synchronized (cache) {
+                // Clear cache of unused values
+                cache.keySet().removeIf(t -> !all.contains(t));
+            }
 
             final long[] lastPause = {System.currentTimeMillis()};
             // Create copy to reduce chances of concurrent modification

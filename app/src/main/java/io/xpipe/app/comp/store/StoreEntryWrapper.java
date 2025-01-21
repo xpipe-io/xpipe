@@ -178,6 +178,7 @@ public class StoreEntryWrapper {
         validity.setValue(entry.getValidity());
         expanded.setValue(entry.isExpanded());
         persistentState.setValue(entry.getStorePersistentState());
+        persistentState.getValue();
         // Use map copy to recognize update
         // This is a synchronized map, so we synchronize the access
         synchronized (entry.getStoreCache()) {
