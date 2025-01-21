@@ -186,11 +186,21 @@ public class StoreEntryWrapper {
         validity.setValue(entry.getValidity());
         expanded.setValue(entry.isExpanded());
         persistentState.setValue(entry.getStorePersistentState());
+
+        // The property values are only registered as changed once they are queried
+        // If we use information bindings that depend on some of these properties
+        // but use the store methods to retrieve data instead of the wrapper properties,
+        // the bindings do not get updated as the change events are not fired.
+        // We can also fire them manually with this
+        persistentState.getValue();
+
         // Use map copy to recognize update
         // This is a synchronized map, so we synchronize the access
         synchronized (entry.getStoreCache()) {
             if (!entry.getStoreCache().equals(cache.getValue())) {
                 cache.setValue(new HashMap<>(entry.getStoreCache()));
+                // Same here
+                cache.getValue();
             }
         }
         color.setValue(entry.getColor());
