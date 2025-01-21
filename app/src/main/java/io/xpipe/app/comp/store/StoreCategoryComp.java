@@ -50,7 +50,8 @@ public class StoreCategoryComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var prop = new SimpleStringProperty(category.getName().getValue());
+        var prop = new SimpleStringProperty();
+        category.getName().subscribe(prop::setValue);
         AppPrefs.get().censorMode().subscribe(aBoolean -> {
             var n = category.getName().getValue();
             prop.setValue(aBoolean ? "*".repeat(n.length()) : n);
