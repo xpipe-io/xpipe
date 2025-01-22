@@ -91,6 +91,10 @@
     -fx-padding: 0.5em 0.1em 0.5em 0.5em;
 }
 
+.store-category-bar * {
+    -fx-icon-color: -color-fg-default;
+}
+
 .store-sort-bar {
     -fx-spacing: 0.2em;
 }

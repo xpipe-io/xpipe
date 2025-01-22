@@ -2,6 +2,7 @@ package io.xpipe.app.core.window;
 
 import io.xpipe.app.comp.base.AppLayoutComp;
 import io.xpipe.app.comp.base.AppMainWindowContentComp;
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
@@ -272,8 +273,13 @@ public class AppMainWindow {
                 return;
             }
 
+            // Close dialogs
+            AppDialog.getModalOverlay().clear();
+
             // Close other windows
             Stage.getWindows().stream().filter(w -> !w.equals(stage)).toList().forEach(w -> w.fireEvent(e));
+
+            // Close self
             stage.close();
             OperationMode.onWindowClose();
             e.consume();

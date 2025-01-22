@@ -566,7 +566,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
     ExternalTerminalType WARP = new WarpTerminalType();
-    ExternalTerminalType WAVE = new WaveTerminalType();
     ExternalTerminalType CUSTOM = new CustomTerminalType();
     List<ExternalTerminalType> WINDOWS_TERMINALS = List.of(
             WindowsTerminalType.WINDOWS_TERMINAL_CANARY,
@@ -581,7 +580,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             SECURECRT,
             TERMIUS,
             XSHELL,
-            TabbyTerminalType.TABBY_WINDOWS);
+            TabbyTerminalType.TABBY_WINDOWS,
+            WaveTerminalType.WAVE_WINDOWS);
     List<ExternalTerminalType> LINUX_TERMINALS = List.of(
             AlacrittyTerminalType.ALACRITTY_LINUX,
             WezTerminalType.WEZTERM_LINUX,
@@ -600,17 +600,18 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             DEEPIN_TERMINAL,
             FOOT,
             Q_TERMINAL,
-            TERMIUS);
+            TERMIUS,
+            WaveTerminalType.WAVE_LINUX);
     List<ExternalTerminalType> MACOS_TERMINALS = List.of(
             WARP,
-            // WAVE,
             ITERM2,
             KittyTerminalType.KITTY_MACOS,
             TabbyTerminalType.TABBY_MAC_OS,
             AlacrittyTerminalType.ALACRITTY_MAC_OS,
             WezTerminalType.WEZTERM_MAC_OS,
             MACOS_TERMINAL,
-            TERMIUS);
+            TERMIUS,
+            WaveTerminalType.WAVE_MAC_OS);
 
     List<ExternalTerminalType> ALL = getTypes(OsType.getLocal(), true);
 
