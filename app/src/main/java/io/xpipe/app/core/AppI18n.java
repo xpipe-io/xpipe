@@ -100,9 +100,9 @@ public class AppI18n {
             Locale.setDefault(Locale.ENGLISH);
 
             // Load bundled JDK locale resources by initializing the classes
-            SupportedLocale.ALL.forEach(supportedLocale -> {
-                supportedLocale.getLocale().getDisplayName();
-            });
+            for (var value : SupportedLocale.values()) {
+                value.getLocale().getDisplayName();
+            }
         }
 
         if (currentLanguage.getValue() == null && PlatformState.getCurrent() == PlatformState.RUNNING) {

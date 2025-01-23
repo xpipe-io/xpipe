@@ -3,6 +3,7 @@ package io.xpipe.ext.base.service;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.store.*;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.ext.SingletonSessionStoreProvider;
@@ -19,6 +20,24 @@ import javafx.beans.value.ObservableValue;
 import java.util.List;
 
 public abstract class AbstractServiceStoreProvider implements SingletonSessionStoreProvider, DataStoreProvider {
+
+    @Override
+    public ActionProvider.Action launchAction(DataStoreEntry store) {
+        return new ActionProvider.Action() {
+
+            @Override
+            public void execute() throws Exception {
+                AbstractServiceStore serviceStore = store.getStore().asNeeded();
+                serviceStore.startSessionIfNeeded();
+                var l = serviceStore.requiresTunnel()
+                        ? serviceStore.getSession().getLocalPort()
+                        : serviceStore.getRemotePort();
+                var base = "localhost:" + l;
+                var full = serviceStore.getServiceProtocolType().formatAddress(base);
+                serviceStore.getServiceProtocolType().open(full);
+            }
+        };
+    }
 
     public String displayName(DataStoreEntry entry) {
         AbstractServiceStore s = entry.getStore().asNeeded();

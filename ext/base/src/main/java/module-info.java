@@ -80,7 +80,6 @@ open module io.xpipe.ext.base {
             StoreStartAction,
             StorePauseAction,
             StoreRestartAction,
-            ServiceOpenAction,
             ServiceCopyAddressAction,
             CloneStoreAction,
             RefreshChildrenStoreAction,

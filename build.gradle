@@ -126,7 +126,6 @@ project.ext {
     authors = 'Christopher Schnick'
     javafxVersion = '24-ea+15'
     platformName = getPlatformName()
-    languages = ["en", "nl", "es", "fr", "de", "it", "pt", "ru", "ja", "zh", "tr", "da", "id", "sv", "pl"]
     jvmRunArgs = [
             "--add-opens", "java.base/java.lang=io.xpipe.app",
             "--add-opens", "java.base/java.lang=io.xpipe.core",
@@ -140,7 +139,6 @@ project.ext {
             "--add-opens", "javafx.graphics/com.sun.javafx.tk.quantum=io.xpipe.app",
             "-Xmx2g",
             "-Dio.xpipe.app.arch=$rootProject.arch",
-            "-Dio.xpipe.app.languages=${String.join(",", languages)}",
             "-Dfile.encoding=UTF-8",
             "-Dvisualvm.display.name=XPipe",
             "-Djavafx.preloader=io.xpipe.app.core.AppPreloader",

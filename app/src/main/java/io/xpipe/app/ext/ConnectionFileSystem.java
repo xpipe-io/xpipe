@@ -1,9 +1,12 @@
-package io.xpipe.core.store;
+package io.xpipe.app.ext;
 
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.xpipe.core.store.FileEntry;
+import io.xpipe.core.store.FileSystem;
 import lombok.Getter;
 
 import java.io.InputStream;
@@ -172,7 +175,8 @@ public class ConnectionFileSystem implements FileSystem {
         // Since we are only closing, just swallow all exceptions
         try {
             shellControl.close();
-        } catch (Exception ignored) {
+        } catch (Exception ex) {
+            ErrorEvent.fromThrowable(ex).omit().expected().handle();
         }
     }
 }

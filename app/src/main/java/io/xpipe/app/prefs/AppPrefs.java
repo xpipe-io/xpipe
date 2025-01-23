@@ -9,7 +9,6 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.update.XPipeDistributionType;
-import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.ModuleHelper;
@@ -91,7 +90,7 @@ public class AppPrefs {
     public final BooleanProperty denyTempScriptCreation =
             mapVaultShared(new SimpleBooleanProperty(false), "denyTempScriptCreation", Boolean.class, false);
     final Property<ExternalPasswordManager> passwordManager =
-            mapVaultShared(new SimpleObjectProperty<>(), "passwordManager", ExternalPasswordManager.class, false);
+            mapVaultShared(new SimpleObjectProperty<>(ExternalPasswordManager.NONE), "passwordManager", ExternalPasswordManager.class, false);
     final StringProperty passwordManagerCommand =
             mapLocal(new SimpleStringProperty(""), "passwordManagerCommand", String.class, false);
     final ObjectProperty<StartupBehaviour> startupBehaviour = mapLocal(
@@ -144,7 +143,7 @@ public class AppPrefs {
             mapLocal(new SimpleBooleanProperty(false), "developerPrintInitFiles", Boolean.class, false);
 
     final ObjectProperty<SupportedLocale> language = mapLocal(
-            new SimpleObjectProperty<>(SupportedLocale.getEnglish()), "language", SupportedLocale.class, false);
+            new SimpleObjectProperty<>(SupportedLocale.getInitial()), "language", SupportedLocale.class, false);
 
     final BooleanProperty requireDoubleClickForConnections =
             mapLocal(new SimpleBooleanProperty(false), "requireDoubleClickForConnections", Boolean.class, false);

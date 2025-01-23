@@ -7,7 +7,7 @@ import io.xpipe.app.util.FileBridge;
 import io.xpipe.app.util.FileOpener;
 import io.xpipe.core.process.ElevationFunction;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.store.ConnectionFileSystem;
+import io.xpipe.app.ext.ConnectionFileSystem;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileInfo;
 import io.xpipe.core.store.FileNames;
