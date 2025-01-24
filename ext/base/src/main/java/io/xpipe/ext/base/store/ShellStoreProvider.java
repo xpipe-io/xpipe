@@ -28,15 +28,6 @@ public interface ShellStoreProvider extends DataStoreProvider {
                 var replacement = ProcessControlProvider.get().replace(entry.ref());
                 ShellStore store = replacement.getStore().asNeeded();
                 var control = ScriptStore.controlWithDefaultScripts(store.tempControl());
-                control.onInit(sc -> {
-                    if (entry.getStorePersistentState() instanceof SystemState systemState
-                            && systemState.getShellDialect() == null) {
-                        var found = SystemIcons.detectForSystem(sc);
-                        if (found.isPresent()) {
-                            entry.setIcon(found.get().getIconName(), false);
-                        }
-                    }
-                });
                 TerminalLauncher.open(
                         replacement.get(),
                         DataStorage.get().getStoreEntryDisplayName(replacement.get()),

@@ -156,7 +156,6 @@ public class DataStoreEntry extends StorageElement {
         var validity = storeFromNode == null
                 ? Validity.LOAD_FAILED
                 : store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE;
-        var icon = SystemIcons.detectForStore(store);
         var entry = new DataStoreEntry(
                 null,
                 uuid,
@@ -174,7 +173,7 @@ public class DataStoreEntry extends StorageElement {
                 null,
                 null,
                 null,
-                icon.map(systemIcon -> systemIcon.getIconName()).orElse(null));
+                null);
         return entry;
     }
 
@@ -188,22 +187,6 @@ public class DataStoreEntry extends StorageElement {
         }
 
         return "app:system/" + icon + ".svg";
-    }
-
-    void refreshIcon() {
-        if (icon != null && SystemIcons.getForId(icon).isEmpty()) {
-            icon = null;
-            return;
-        }
-
-        if (icon != null) {
-            return;
-        }
-
-        var icon = SystemIcons.detectForStore(store);
-        if (icon.isPresent()) {
-            setIcon(icon.get().getIconName(), true);
-        }
     }
 
     public static Optional<DataStoreEntry> fromDirectory(Path dir) throws Exception {
@@ -416,7 +399,6 @@ public class DataStoreEntry extends StorageElement {
         this.storePersistentState = value;
         this.storePersistentStateNode = JacksonMapper.getDefault().valueToTree(value);
         if (changed) {
-            refreshIcon();
             notifyUpdate(false, true);
         }
     }

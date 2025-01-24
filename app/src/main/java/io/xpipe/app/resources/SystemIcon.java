@@ -7,17 +7,9 @@ import lombok.Value;
 import lombok.experimental.NonFinal;
 
 @Value
-@NonFinal
 public class SystemIcon {
 
+    SystemIconSource source;
     String iconName;
     String displayName;
-
-    public boolean isApplicable(ShellControl sc) throws Exception {
-        return false;
-    }
-
-    public boolean isApplicable(DataStore store) {
-        return false;
-    }
 }

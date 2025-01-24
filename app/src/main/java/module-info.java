@@ -78,6 +78,7 @@ open module io.xpipe.app {
     requires com.shinyhut.vernacular;
     requires org.kordamp.ikonli.core;
     requires jdk.httpserver;
+    requires com.github.weisj.jsvg;
 
     // Required runtime modules
     requires jdk.charsets;
