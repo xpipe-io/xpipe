@@ -1,7 +1,6 @@
-package io.xpipe.app.resources;
+package io.xpipe.app.icon;
 
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;
 import lombok.Value;
 
@@ -17,7 +16,7 @@ public interface SystemIconSource {
         String id;
 
         @Override
-        public void init() throws Exception {
+        public void refresh() throws Exception {
             try (var sc = ProcessControlProvider.get().createLocalProcessControl(true).start()) {
                 var dir = SystemIconManager.getPoolPath().resolve(id);
                 if (!Files.exists(dir)) {
@@ -34,7 +33,7 @@ public interface SystemIconSource {
         }
     }
 
-    void init() throws Exception;
+    void refresh() throws Exception;
 
     String getId();
 

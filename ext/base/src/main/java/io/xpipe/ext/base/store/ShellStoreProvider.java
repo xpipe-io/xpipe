@@ -7,12 +7,10 @@ import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.comp.store.SystemStateComp;
 import io.xpipe.app.ext.*;
-import io.xpipe.app.resources.SystemIcons;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.ShellStoreFormat;
-import io.xpipe.core.process.SystemState;
 import io.xpipe.ext.base.script.ScriptStore;
 
 import javafx.beans.property.BooleanProperty;

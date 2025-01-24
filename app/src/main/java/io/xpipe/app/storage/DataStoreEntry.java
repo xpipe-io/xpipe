@@ -4,7 +4,6 @@ import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.ext.UserScopeStore;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.resources.SystemIcons;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.*;
 import io.xpipe.core.util.JacksonMapper;
@@ -186,7 +185,7 @@ public class DataStoreEntry extends StorageElement {
             return getProvider().getDisplayIconFileName(getStore());
         }
 
-        return "app:system/" + icon + ".svg";
+        return "icons/" + icon + ".svg";
     }
 
     public static Optional<DataStoreEntry> fromDirectory(Path dir) throws Exception {

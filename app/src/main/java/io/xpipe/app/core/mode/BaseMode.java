@@ -13,6 +13,7 @@ import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -94,9 +95,6 @@ public class BaseMode extends OperationMode {
                     AppPrefs.setLocalDefaultsIfNeeded();
                 },
                 () -> {
-                    SystemIconManager.init();
-                },
-                () -> {
                     shellLoaded.await();
                     AppMainWindow.loadingText("loadingGit");
                     DataStorageSyncHandler.getInstance().init();
@@ -135,8 +133,9 @@ public class BaseMode extends OperationMode {
                 () -> {
                     PlatformInit.init(true);
                     AppImages.init();
-                    SystemIcons.init();
                     imagesLoaded.countDown();
+                    SystemIconManager.loadSources();
+                    SystemIconManager.loadImages();
                 },
                 () -> {
                     BrowserIconManager.loadIfNecessary();

@@ -2,8 +2,9 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.*;
-import io.xpipe.app.resources.SystemIcon;
+import io.xpipe.app.icon.SystemIcon;
 
+import io.xpipe.app.icon.SystemIconManager;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -14,24 +15,21 @@ import javafx.scene.layout.Region;
 
 import atlantafx.base.theme.Tweaks;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 import static atlantafx.base.theme.Styles.TEXT_SMALL;
 
 public class StoreIconChoiceComp extends SimpleComp {
 
     private final Property<SystemIcon> selected;
-    private final List<SystemIcon> icons;
+    private final Set<SystemIcon> icons;
     private final int columns;
     private final SimpleStringProperty filter;
     private final Runnable doubleClick;
 
     public StoreIconChoiceComp(
             Property<SystemIcon> selected,
-            List<SystemIcon> icons,
+            Set<SystemIcon> icons,
             int columns,
             SimpleStringProperty filter,
             Runnable doubleClick) {
@@ -73,9 +71,9 @@ public class StoreIconChoiceComp extends SimpleComp {
 
     private void updateData(TableView<List<SystemIcon>> table, String filterString) {
         var displayedIcons = filterString == null || filterString.isBlank() || filterString.length() < 2
-                ? icons
+                ? icons.stream().sorted(Comparator.<SystemIcon, String>comparing(systemIcon -> systemIcon.getId())).toList()
                 : icons.stream()
-                        .filter(icon -> containsString(icon.getDisplayName(), filterString))
+                        .filter(icon -> containsString(icon.getId(), filterString))
                         .toList();
 
         var data = partitionList(displayedIcons, columns);
@@ -137,8 +135,8 @@ public class StoreIconChoiceComp extends SimpleComp {
                 return;
             }
 
-            root.setText(icon.getDisplayName());
-            image.set("app:system/" + icon.getIconName() + ".svg");
+            root.setText(icon.getId());
+            image.set(SystemIconManager.getIconFile(icon));
             setGraphic(root);
         }
     }

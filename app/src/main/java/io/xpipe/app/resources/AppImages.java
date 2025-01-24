@@ -75,6 +75,24 @@ public class AppImages {
         TrackEvent.trace("Loaded images in " + module + ":" + dir + " in " + elapsed.toMillis() + " ms");
     }
 
+
+    public static void loadRasterImages(Path directory, String prefix) throws IOException {
+        Files.walkFileTree(directory, new SimpleFileVisitor<>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                var relativeFileName = FilenameUtils.separatorsToUnix(
+                        directory.relativize(file).toString());
+                var key = prefix + "/" + relativeFileName;
+                if (images.containsKey(key)) {
+                    return FileVisitResult.CONTINUE;
+                }
+
+                images.put(key, loadImage(file));
+                return FileVisitResult.CONTINUE;
+            }
+        });
+    }
+
     public static String svgImage(String file) {
         if (file == null) {
             return "";
@@ -95,6 +113,10 @@ public class AppImages {
             return false;
         }
 
+        if (images.containsKey(file)) {
+            return true;
+        }
+
         var key = file.contains(":") ? file : "app:" + file;
         return images.containsKey(key);
     }
@@ -111,6 +133,10 @@ public class AppImages {
     public static Image image(String file) {
         if (file == null) {
             return DEFAULT_IMAGE;
+        }
+
+        if (images.containsKey(file)) {
+            return images.get(file);
         }
 
         var key = file.contains(":") ? file : "app:" + file;

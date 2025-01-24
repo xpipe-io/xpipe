@@ -1,8 +1,8 @@
 package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.base.*;
-import io.xpipe.app.resources.SystemIcon;
-import io.xpipe.app.resources.SystemIcons;
+import io.xpipe.app.icon.SystemIcon;
+import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.Hyperlinks;
 
@@ -41,7 +41,7 @@ public class StoreIconChoiceDialog {
                 .grow(false, true);
         var modal = ModalOverlay.of(
                 "chooseCustomIcon",
-                new StoreIconChoiceComp(selected, SystemIcons.getSystemIcons(), 5, filterText, () -> {
+                new StoreIconChoiceComp(selected, SystemIconManager.getIcons(), 5, filterText, () -> {
                             finish();
                         })
                         .prefWidth(600));
@@ -63,7 +63,7 @@ public class StoreIconChoiceDialog {
     }
 
     private void finish() {
-        entry.setIcon(selected.get() != null ? selected.getValue().getIconName() : null, true);
+        entry.setIcon(selected.get() != null ? selected.getValue().getSource().getId() + "/" + selected.getValue().getId() : null, true);
         overlay.close();
     }
 }
