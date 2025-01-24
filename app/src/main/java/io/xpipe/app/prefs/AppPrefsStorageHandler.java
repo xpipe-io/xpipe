@@ -12,12 +12,15 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static io.xpipe.app.ext.PrefsChoiceValue.getAll;
 import static io.xpipe.app.ext.PrefsChoiceValue.getSupported;
@@ -79,6 +82,7 @@ public class AppPrefsStorageHandler {
     }
 
     @SuppressWarnings("unchecked")
+    @SneakyThrows
     public <T> T loadObject(String id, JavaType type, T defaultObject) {
         var tree = getContent(id);
         if (tree == null) {
@@ -121,7 +125,12 @@ public class AppPrefsStorageHandler {
 
         try {
             TrackEvent.debug("Loading preferences value for key " + id + " from value " + tree);
-            return JacksonMapper.getDefault().treeToValue(tree, type);
+            T value = JacksonMapper.getDefault().treeToValue(tree, type);
+            if (value instanceof List<?> l) {
+                var mod = l.stream().filter(v -> v != null).collect(Collectors.toCollection(ArrayList::new));
+                return (T) mod;
+            }
+            return value;
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).expected().omit().handle();
             return defaultObject;

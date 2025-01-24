@@ -2,6 +2,7 @@ package io.xpipe.app.icon;
 
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.resources.AppImages;
 
 import java.nio.file.Files;
@@ -12,11 +13,12 @@ public class SystemIconManager {
 
     private static final Path DIRECTORY = AppProperties.get().getDataDir().resolve("cache").resolve("icons").resolve("pool");
 
-    private static final List<SystemIconSource> SOURCES = java.util.List.of(
-            new SystemIconSource.GitRepository("https://github.com/selfhst/icons", "selfhst"));
-
     private static final Map<SystemIconSource, SystemIconSourceData> LOADED = new HashMap<>();
     private static final Set<SystemIcon> ICONS = new HashSet<>();
+
+    public static Map<SystemIconSource, SystemIconSourceData> getSources() {
+        return LOADED;
+    }
 
     public static Set<SystemIcon> getIcons() {
         return ICONS;
@@ -30,7 +32,7 @@ public class SystemIconManager {
         Files.createDirectories(DIRECTORY);
 
         LOADED.clear();
-        for (var source : SOURCES) {
+        for (var source : AppPrefs.get().getIconSources().getValue()) {
             LOADED.put(source,SystemIconSourceData.of(source));
         }
 
@@ -46,7 +48,7 @@ public class SystemIconManager {
 
     public static void loadImages() {
         try {
-            for (var source : SOURCES) {
+            for (var source : AppPrefs.get().getIconSources().getValue()) {
                 AppImages.loadRasterImages(SystemIconCache.getDirectory(source), "icons/" + source.getId());
             }
         } catch (Exception e) {
@@ -56,7 +58,7 @@ public class SystemIconManager {
 
     public static void reload() throws Exception {
         Files.createDirectories(DIRECTORY);
-        for (var source : SOURCES) {
+        for (var source : AppPrefs.get().getIconSources().getValue()) {
             source.refresh();
         }
         loadSources();

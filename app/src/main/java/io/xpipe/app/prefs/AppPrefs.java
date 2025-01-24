@@ -1,10 +1,12 @@
 package io.xpipe.app.prefs;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
+import io.xpipe.app.icon.SystemIconSource;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.ExternalTerminalType;
@@ -77,6 +79,15 @@ public class AppPrefs {
             mapLocal(new SimpleStringProperty(null), "customTerminalCommand", String.class, false);
     final BooleanProperty clearTerminalOnInit =
             mapLocal(new SimpleBooleanProperty(true), "clearTerminalOnInit", Boolean.class, false);
+    final Property<List<SystemIconSource>> iconSources = map(Mapping.builder()
+            .property(new SimpleObjectProperty<>(new ArrayList<>(List.of(
+                    SystemIconSource.GitRepository.builder().remote("https://github.com/selfhst/icons").id("selfhst").build()))))
+            .key("iconSources")
+            .valueType(TypeFactory.defaultInstance().constructType(new TypeReference<List<SystemIconSource>>() {}))
+            .build());
+    public final ObservableValue<List<SystemIconSource>> getIconSources() {
+        return iconSources;
+    }
     public final BooleanProperty disableCertutilUse =
             mapLocal(new SimpleBooleanProperty(false), "disableCertutilUse", Boolean.class, false);
     public final BooleanProperty useLocalFallbackShell =
@@ -240,6 +251,7 @@ public class AppPrefs {
                         new ConnectionsCategory(),
                         new FileBrowserCategory(),
                         new PasswordManagerCategory(),
+                        new IconsCategory(),
                         new SecurityCategory(),
                         new HttpApiCategory(),
                         new WorkspacesCategory(),
