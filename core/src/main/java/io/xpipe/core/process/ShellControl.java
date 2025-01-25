@@ -251,6 +251,10 @@ public interface ShellControl extends ProcessControl {
         return command(CommandBuilder.ofFunction(shellProcessControl -> command));
     }
 
+    default CommandControl command(ShellScript command) {
+        return command(CommandBuilder.of().add(command.getValue()));
+    }
+
     default CommandControl command(Consumer<CommandBuilder> builder) {
         var b = CommandBuilder.of();
         builder.accept(b);

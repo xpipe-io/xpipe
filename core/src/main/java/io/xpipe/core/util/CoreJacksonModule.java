@@ -7,6 +7,7 @@ import io.xpipe.core.dialog.HeaderElement;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
+import io.xpipe.core.process.ShellScript;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.StorePath;
 
@@ -65,10 +66,30 @@ public class CoreJacksonModule extends SimpleModule {
         addDeserializer(OsType.Local.class, new OsTypeLocalDeserializer());
         addDeserializer(OsType.Any.class, new OsTypeAnyDeserializer());
 
+        addSerializer(ShellScript.class, new ShellScriptSerializer());
+        addDeserializer(ShellScript.class, new ShellScriptDeserializer());
+
         context.setMixInAnnotations(Throwable.class, ThrowableTypeMixIn.class);
 
         context.addSerializers(_serializers);
         context.addDeserializers(_deserializers);
+    }
+
+    public static class ShellScriptSerializer extends JsonSerializer<ShellScript> {
+
+        @Override
+        public void serialize(ShellScript value, JsonGenerator jgen, SerializerProvider provider)
+                throws IOException {
+            jgen.writeString(value.getValue());
+        }
+    }
+
+    public static class ShellScriptDeserializer extends JsonDeserializer<ShellScript> {
+
+        @Override
+        public ShellScript deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            return new ShellScript(p.getValueAsString());
+        }
     }
 
     public static class StorePathSerializer extends JsonSerializer<StorePath> {

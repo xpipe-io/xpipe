@@ -98,6 +98,7 @@ open module io.xpipe.ext.base {
             CustomServiceStoreProvider,
             MappedServiceStoreProvider,
             FixedServiceStoreProvider,
+            ServiceControlStoreProvider,
             SimpleScriptStoreProvider,
             DesktopApplicationStoreProvider,
             LocalIdentityStoreProvider,
