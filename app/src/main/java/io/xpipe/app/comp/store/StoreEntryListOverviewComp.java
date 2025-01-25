@@ -28,6 +28,8 @@ import javafx.scene.text.TextAlignment;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.util.function.Function;
+
 public class StoreEntryListOverviewComp extends SimpleComp {
 
     private final Property<StoreSortMode> sortMode;
@@ -76,7 +78,8 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                             return inRootCategory;
                         },
                         StoreViewState.get().getActiveCategory());
-        var count = new CountComp<>(all.getList(), all.getList());
+        var allCount = Bindings.size(all.getList());
+        var count = new CountComp(allCount, allCount, Function.identity());
 
         var c = count.createRegion();
         var topBar = new HBox(
