@@ -18,8 +18,6 @@ import java.util.function.Function;
 
 public interface ShellControl extends ProcessControl {
 
-    void startShell() throws Exception;
-
     void writeLine(String line) throws IOException;
 
     void writeLine(String line, boolean log) throws IOException;

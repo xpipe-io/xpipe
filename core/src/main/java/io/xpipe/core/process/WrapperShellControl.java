@@ -216,11 +216,6 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public void startShell() throws Exception {
-        parent.startShell();
-    }
-
-    @Override
     public void writeLine(String line) throws IOException {
         parent.writeLine(line);
     }

@@ -74,6 +74,7 @@ open module io.xpipe.ext.base {
             JavapAction,
             JarAction;
     provides ActionProvider with
+            ScanStoreAction,
             LocalIdentityConvertAction,
             SimpleScriptQuickEditAction,
             StoreStopAction,
@@ -89,7 +90,6 @@ open module io.xpipe.ext.base {
             EditStoreAction,
             EditScriptStoreAction,
             BrowseStoreAction,
-            ScanStoreAction,
             ChangeStoreIconAction,
             ServiceRefreshAction;
     provides DataStoreProvider with
