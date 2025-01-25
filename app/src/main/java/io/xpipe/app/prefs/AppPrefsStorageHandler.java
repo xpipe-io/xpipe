@@ -1,5 +1,9 @@
 package io.xpipe.app.prefs;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.util.TokenBuffer;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
@@ -74,11 +78,23 @@ public class AppPrefsStorageHandler {
         }
     }
 
-    public void updateObject(String key, Object object) {
-        var tree = object instanceof PrefsChoiceValue prefsChoiceValue
-                ? new TextNode(prefsChoiceValue.getId())
-                : (object != null ? JacksonMapper.getDefault().valueToTree(object) : NullNode.getInstance());
-        setContent(key, tree);
+    @SneakyThrows
+    public void updateObject(String key, Object object, JavaType type) {
+        if (object instanceof PrefsChoiceValue prefsChoiceValue) {
+            setContent(key, new TextNode(prefsChoiceValue.getId()));
+            return;
+        }
+
+        if (object == null) {
+            setContent(key, JsonNodeFactory.instance.nullNode());
+            return;
+        }
+
+        var mapper = JacksonMapper.getDefault();
+        TokenBuffer buf = new TokenBuffer(mapper, false);
+        mapper.writerFor(type).writeValue(buf, object);
+        var tree = mapper.readTree(buf.asParser());
+        setContent(key, (JsonNode) tree);
     }
 
     @SuppressWarnings("unchecked")

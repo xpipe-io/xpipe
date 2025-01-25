@@ -19,7 +19,6 @@ open module io.xpipe.core {
     requires static lombok;
 
     uses com.fasterxml.jackson.databind.Module;
-    uses io.xpipe.core.util.ProxyManagerProvider;
     uses io.xpipe.core.util.DataStateProvider;
     uses ModuleLayerLoader;
     uses ShellDialect;

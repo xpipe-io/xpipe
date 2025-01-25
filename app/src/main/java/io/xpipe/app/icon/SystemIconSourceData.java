@@ -9,6 +9,7 @@ import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @Value
@@ -30,23 +31,25 @@ public class SystemIconSourceData {
                 return;
             }
 
-            var files = Files.walk(dir, FileVisitOption.FOLLOW_LINKS).toList();
+            var files = Files.walk(dir).toList();
             for (var file : files) {
                 if (file.getFileName().toString().endsWith(".svg")) {
                     var name = FilenameUtils.getBaseName(file.getFileName().toString());
                     var cleanedName = name.replaceFirst("-light$", "").replaceFirst("-dark$", "");
-                    if (name.endsWith("-light") || name.endsWith("-dark")) {
-                        var s = new SystemIconSourceFile(source, cleanedName, file, name.endsWith("-dark"));
+                    var hasLightVariant = Files.exists(file.getParent().resolve(cleanedName + "-light.svg"));
+                    var hasDarkVariant = Files.exists(file.getParent().resolve(cleanedName + "-dark.svg"));
+                    if (hasLightVariant && !hasDarkVariant && name.endsWith("-light")) {
+                        var s = new SystemIconSourceFile(source, cleanedName, file, true);
                         sourceFiles.add(s);
                         continue;
                     }
 
-                    var bothVariants = Files.exists(file.getParent().resolve(cleanedName + "-light.svg")) && Files.exists(
-                            file.getParent().resolve(cleanedName + "-dark.svg"));
-                    if (!bothVariants) {
-                        var s = new SystemIconSourceFile(source, cleanedName, file, name.endsWith("-dark"));
-                        sourceFiles.add(s);
+                    if (hasLightVariant && hasDarkVariant && (name.endsWith("-dark") || name.endsWith("-light"))) {
+                        continue;
                     }
+
+                    var s = new SystemIconSourceFile(source, cleanedName, file, false);
+                    sourceFiles.add(s);
                 }
             }
         } catch (Exception e) {

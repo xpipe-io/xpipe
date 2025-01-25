@@ -11,7 +11,6 @@ import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.beacon.BeaconInterface;
 import io.xpipe.core.util.DataStateProvider;
 import io.xpipe.core.util.ModuleLayerLoader;
-import io.xpipe.core.util.ProxyFunction;
 
 import com.fasterxml.jackson.databind.Module;
 import org.slf4j.spi.SLF4JServiceProvider;
@@ -100,7 +99,6 @@ open module io.xpipe.app {
     uses EventHandler;
     uses PrefsProvider;
     uses DataStoreProvider;
-    uses ProxyFunction;
     uses ModuleLayerLoader;
     uses ScanProvider;
     uses BrowserAction;

@@ -1,5 +1,6 @@
 package io.xpipe.app.icon;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.ext.ProcessControlProvider;
@@ -15,6 +16,10 @@ import java.nio.file.Path;
 
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = SystemIconSource.Directory.class),
+        @JsonSubTypes.Type(value = SystemIconSource.GitRepository.class)
+})
 public interface SystemIconSource {
 
     @Value

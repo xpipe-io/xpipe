@@ -1,6 +1,7 @@
 package io.xpipe.app.icon;
 
 import com.github.weisj.jsvg.SVGDocument;
+import com.github.weisj.jsvg.SVGRenderingHints;
 import com.github.weisj.jsvg.attributes.ViewBox;
 import com.github.weisj.jsvg.parser.SVGLoader;
 import io.xpipe.app.core.AppProperties;
@@ -86,6 +87,10 @@ public class SystemIconCache {
 
         BufferedImage image = new BufferedImage(px, px, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = image.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+        g.setRenderingHint(SVGRenderingHints.KEY_IMAGE_ANTIALIASING, SVGRenderingHints.VALUE_IMAGE_ANTIALIASING_ON);
+        g.setRenderingHint(SVGRenderingHints.KEY_SOFT_CLIPPING, SVGRenderingHints.VALUE_SOFT_CLIPPING_ON);
         svgDocument.render((Component) null, g, new ViewBox(0, 0, px, px));
         g.dispose();
 

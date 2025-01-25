@@ -583,7 +583,7 @@ public class AppPrefs {
             if (!handler.isInitialized()) {
                 continue;
             }
-            handler.updateObject(m.getKey(), m.getProperty().getValue());
+            handler.updateObject(m.getKey(), m.getProperty().getValue(), m.getValueType());
         }
         if (vaultStorageHandler.isInitialized()) {
             vaultStorageHandler.save();
