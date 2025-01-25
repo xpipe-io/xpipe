@@ -46,7 +46,7 @@ public class BrowserFileOpener {
         }
 
         var rootSc = sc.identicalSubShell()
-                .elevated(ElevationFunction.elevated("sudo"))
+                .elevated(ElevationFunction.elevated(null))
                 .start();
         var rootFs = new ConnectionFileSystem(rootSc);
         try {

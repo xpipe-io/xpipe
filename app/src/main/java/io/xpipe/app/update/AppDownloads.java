@@ -165,6 +165,11 @@ public class AppDownloads {
             throw new IOException(response.body());
         }
 
+        var dateEntry = response.headers().firstValue("Date");
+        if (dateEntry.isPresent()) {
+            LicenseProvider.get().updateDate(dateEntry.get());
+        }
+
         var json = JacksonMapper.getDefault().readTree(response.body());
         var ver = json.required("version").asText();
         return ver;
