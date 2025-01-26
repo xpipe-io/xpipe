@@ -129,9 +129,10 @@ public interface ServiceProtocolType {
                 return;
             }
 
-            var format = commandTemplate.toLowerCase(Locale.ROOT).contains("$address") ? commandTemplate : commandTemplate + " $ADDRESS";
+            var port = url.split(":")[1];
+            var format = commandTemplate.toLowerCase(Locale.ROOT).contains("$port") ? commandTemplate : commandTemplate + ":$PORT";
             try (var pc = LocalShell.getShell().start()) {
-                var toExecute = ExternalApplicationHelper.replaceFileArgument(format, "ADDRESS", url);
+                var toExecute = ExternalApplicationHelper.replaceFileArgument(format, "PORT", port);
                 var command = CommandBuilder.of().add(toExecute);
                 // We can't be sure whether the command is blocking or not, so always make it not blocking
                 command = pc.getShellDialect().launchAsnyc(command);
