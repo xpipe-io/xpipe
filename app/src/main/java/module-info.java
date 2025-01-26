@@ -79,7 +79,6 @@ open module io.xpipe.app {
     requires org.kordamp.ikonli.core;
     requires jdk.httpserver;
     requires com.github.weisj.jsvg;
-    requires org.fxmisc.flowless;
 
     // Required runtime modules
     requires jdk.charsets;

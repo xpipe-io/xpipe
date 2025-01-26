@@ -12,10 +12,10 @@ import javafx.css.PseudoClass;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import lombok.Setter;
-import org.fxmisc.flowless.Cell;
 
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
@@ -51,12 +51,7 @@ public class ListVirtualViewComp<T> extends Comp<CompStructure<ScrollPane>> {
     public CompStructure<ScrollPane> createBase() {
         Map<T, Region> cache = new IdentityHashMap<>();
 
-        var vbox = org.fxmisc.flowless.VirtualFlow.createVertical(shown,t -> new Cell<T, Node>() {
-            @Override
-            public Node getNode() {
-                return compFunction.apply(t).createRegion();
-            }
-        });
+        var vbox = new VirtualFlow<>();
         vbox.getStyleClass().add("list-box-content");
         vbox.setFocusTraversable(false);
 
