@@ -2,6 +2,7 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ListSelectorComp;
+import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.comp.base.ModalOverlayContentComp;
 import io.xpipe.app.comp.store.StoreChoiceComp;
 import io.xpipe.app.comp.store.StoreViewState;
@@ -41,11 +42,6 @@ class ScanDialogComp extends ModalOverlayContentComp {
         this.initialStore = entry;
         this.entry = new SimpleObjectProperty<>(entry);
         this.action = action;
-    }
-
-    @Override
-    protected ObservableValue<Boolean> busy() {
-        return busy;
     }
 
     protected void finish() {
@@ -132,10 +128,10 @@ class ScanDialogComp extends ModalOverlayContentComp {
                                 ShellStore.class,
                                 store1 -> true,
                                 StoreViewState.get().getAllConnectionsCategory())
-                        .disable(new SimpleBooleanProperty(initialStore != null)))
+                        .disable(busy.or(new SimpleBooleanProperty(initialStore != null))))
                 .name("scanAlertHeader")
                 .description("scanAlertHeaderDescription")
-                .addComp(Comp.of(() -> stackPane).vgrow())
+                .addComp(LoadingOverlayComp.noProgress(Comp.of(() -> stackPane), busy).vgrow())
                 .buildComp()
                 .prefWidth(500)
                 .prefHeight(680)

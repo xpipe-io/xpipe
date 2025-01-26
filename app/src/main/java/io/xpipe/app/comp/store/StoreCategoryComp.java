@@ -94,10 +94,7 @@ public class StoreCategoryComp extends SimpleComp {
                     }
 
                     if (!DataStorage.get().supportsSharing()
-                            || (!category.getCategory().canShare()
-                                    && !category.getCategory()
-                                            .getUuid()
-                                            .equals(DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID))) {
+                            || (!category.getCategory().canShare())) {
                         return new LabelGraphic.IconGraphic("mdi2g-git");
                     }
 

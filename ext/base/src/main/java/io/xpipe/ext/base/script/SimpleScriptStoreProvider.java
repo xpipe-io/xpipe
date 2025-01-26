@@ -16,6 +16,7 @@ import io.xpipe.app.util.MarkdownBuilder;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.Validator;
 import io.xpipe.core.process.ShellDialect;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.Identifiers;
 
@@ -100,14 +101,15 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                 new SimpleListProperty<>(FXCollections.observableArrayList(new ArrayList<>(st.getEffectiveScripts())));
         Property<String> commandProp = new SimpleObjectProperty<>(st.getCommands());
 
+        var availableDialects = List.of(ShellDialects.SH, ShellDialects.BASH, ShellDialects.ZSH, ShellDialects.FISH, ShellDialects.CMD, ShellDialects.POWERSHELL, ShellDialects.POWERSHELL_CORE);
         Comp<?> choice = (Comp<?>) Class.forName(
                         AppExtensionManager.getInstance()
                                 .getExtendedLayer()
                                 .findModule("io.xpipe.ext.proc")
                                 .orElseThrow(),
                         "io.xpipe.ext.proc.ShellDialectChoiceComp")
-                .getDeclaredConstructor(Property.class, boolean.class)
-                .newInstance(dialect, false);
+                .getDeclaredConstructor(List.class, Property.class, boolean.class)
+                .newInstance(availableDialects, dialect, false);
 
         var vals = List.of(0, 1, 2, 3);
         var selectedStart = new ArrayList<Integer>();
@@ -219,7 +221,7 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
     public String summaryString(StoreEntryWrapper wrapper) {
         SimpleScriptStore st = wrapper.getEntry().getStore().asNeeded();
         var init = st.isInitScript() ? AppI18n.get("init") : null;
-        var file = st.isFileScript() ? AppI18n.get("file") : null;
+        var file = st.isFileScript() ? AppI18n.get("fileBrowser") : null;
         var shell = st.isShellScript() ? AppI18n.get("shell") : null;
         var runnable = st.isRunnableScript() ? AppI18n.get("hub") : null;
         var type = st.getMinimumDialect() != null

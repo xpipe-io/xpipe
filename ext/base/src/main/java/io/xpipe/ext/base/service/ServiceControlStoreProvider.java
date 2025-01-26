@@ -121,11 +121,6 @@ public class ServiceControlStoreProvider implements SingletonSessionStoreProvide
     }
 
     @Override
-    public List<String> getPossibleNames() {
-        return List.of("serviceControl");
-    }
-
-    @Override
     public List<Class<?>> getStoreClasses() {
         return List.of(ServiceControlStore.class);
     }
@@ -133,6 +128,11 @@ public class ServiceControlStoreProvider implements SingletonSessionStoreProvide
     @Override
     public DataStore defaultStore() {
         return ServiceControlStore.builder().build();
+    }
+
+    @Override
+    public String getId() {
+        return "serviceControl";
     }
 
     @Override
