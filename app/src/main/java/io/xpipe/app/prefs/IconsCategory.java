@@ -106,14 +106,14 @@ public class IconsCategory extends AppPrefsCategory {
         });
         addDirectoryButton.grow(true, false);
 
-        var vbox = new VerticalComp(List.of(box, Comp.separator(), refreshButton, addDirectoryButton, addGitButton));
+        var vbox = new VerticalComp(List.of(Comp.vspacer(10), box, Comp.separator(), refreshButton,  Comp.separator(), addDirectoryButton, addGitButton));
         vbox.spacing(10);
         return vbox;
     }
 
     private Comp<?> createSourceEntry(SystemIconSource source) {
         var delete = new IconButtonComp(new LabelGraphic.IconGraphic("mdal-delete_outline"), () -> {
-            if (!AppDialog.confirm("userDeletion")) {
+            if (!AppDialog.confirm("iconSourceDeletion")) {
                 return;
             }
 

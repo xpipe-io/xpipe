@@ -37,7 +37,7 @@ public class SystemIconManager {
         }
 
         ICONS.clear();
-        SystemIconCache.buildCache(LOADED);
+        SystemIconCache.refreshBuilt();
         LOADED.forEach((source, systemIconSourceData) -> {
             systemIconSourceData.getIcons().forEach(systemIconSourceFile -> {
                 var icon = new SystemIcon(source, systemIconSourceFile.getName());
@@ -62,6 +62,8 @@ public class SystemIconManager {
             source.refresh();
         }
         loadSources();
+        SystemIconCache.buildCache(LOADED);
+        SystemIconCache.refreshBuilt();
     }
 
     public static Path getPoolPath() {

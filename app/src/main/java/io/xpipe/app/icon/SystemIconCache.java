@@ -22,9 +22,17 @@ public class SystemIconCache {
     private static final Path DIRECTORY = AppProperties.get().getDataDir().resolve("cache").resolve("icons").resolve("raster");
     private static final int[] sizes = new int[]{16, 24, 40, 80};
 
+    private static boolean built = false;
+
     public static Path getDirectory(SystemIconSource source) {
         var target = DIRECTORY.resolve(source.getId());
         return target;
+    }
+
+    public static void refreshBuilt() throws IOException {
+        try (var stream = Files.walk(DIRECTORY)) {
+            built = stream.findAny().isPresent();
+        }
     }
 
     public static void buildCache(Map<SystemIconSource, SystemIconSourceData> all) {
