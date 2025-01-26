@@ -30,6 +30,10 @@ public class SystemIconCache {
     }
 
     public static void refreshBuilt() throws IOException {
+        if (!Files.exists(DIRECTORY)) {
+            return;
+        }
+
         try (var stream = Files.walk(DIRECTORY)) {
             built = stream.findAny().isPresent();
         }
