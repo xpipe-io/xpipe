@@ -6,6 +6,7 @@ import com.github.weisj.jsvg.attributes.ViewBox;
 import com.github.weisj.jsvg.parser.SVGLoader;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.resources.AppImages;
 import lombok.Getter;
 
 import javax.imageio.ImageIO;
@@ -41,7 +42,7 @@ public class SystemIconCache {
         }
     }
 
-    public static void buildCache(Map<SystemIconSource, SystemIconSourceData> all) {
+    public static void rebuildCache(Map<SystemIconSource, SystemIconSourceData> all) {
         try {
             for (var e : all.entrySet()) {
                 var target = DIRECTORY.resolve(e.getKey().getId());

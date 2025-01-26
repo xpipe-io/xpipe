@@ -29,12 +29,12 @@ public class SystemIconManager {
     }
 
     public static void init() throws Exception {
-        loadSources();
+        reloadSources();
         SystemIconCache.refreshBuilt();
-        loadImages();
+        reloadImages();
     }
 
-    public static synchronized void loadSources() throws Exception {
+    public static synchronized void reloadSources() throws Exception {
         Files.createDirectories(DIRECTORY);
 
         LOADED.clear();
@@ -51,7 +51,8 @@ public class SystemIconManager {
         });
     }
 
-    public static void loadImages() {
+    public static void reloadImages() {
+        AppImages.remove(s -> s.startsWith("icons/"));
         try {
             for (var source : AppPrefs.get().getIconSources().getValue()) {
                 AppImages.loadRasterImages(SystemIconCache.getDirectory(source), "icons/" + source.getId());
@@ -66,9 +67,10 @@ public class SystemIconManager {
         for (var source : AppPrefs.get().getIconSources().getValue()) {
             source.refresh();
         }
-        loadSources();
-        SystemIconCache.buildCache(LOADED);
+        reloadSources();
+        SystemIconCache.rebuildCache(LOADED);
         SystemIconCache.refreshBuilt();
+        reloadImages();
     }
 
     public static Path getPoolPath() {

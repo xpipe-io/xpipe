@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 
 @Value
 public class SystemIconSourceData {
@@ -39,7 +40,7 @@ public class SystemIconSourceData {
                     var hasLightVariant = Files.exists(file.getParent().resolve(cleanedName + "-light.svg"));
                     var hasDarkVariant = Files.exists(file.getParent().resolve(cleanedName + "-dark.svg"));
                     if (hasLightVariant && !hasDarkVariant && name.endsWith("-light")) {
-                        var s = new SystemIconSourceFile(source, cleanedName, file, true);
+                        var s = new SystemIconSourceFile(source, cleanedName.toLowerCase(Locale.ROOT), file, true);
                         sourceFiles.add(s);
                         continue;
                     }
@@ -48,7 +49,7 @@ public class SystemIconSourceData {
                         continue;
                     }
 
-                    var s = new SystemIconSourceFile(source, cleanedName, file, false);
+                    var s = new SystemIconSourceFile(source, cleanedName.toLowerCase(Locale.ROOT), file, false);
                     sourceFiles.add(s);
                 }
             }
