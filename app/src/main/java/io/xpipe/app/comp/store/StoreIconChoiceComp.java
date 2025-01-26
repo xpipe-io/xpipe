@@ -1,5 +1,8 @@
 package io.xpipe.app.comp.store;
 
+import atlantafx.base.theme.Styles;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
@@ -13,12 +16,15 @@ import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.property.*;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.theme.Tweaks;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 
 import java.util.*;
 
@@ -86,7 +92,18 @@ public class StoreIconChoiceComp extends SimpleComp {
             });
         });
         refreshButton.disable(busy);
-        var placeholder = new StackPane(refreshButton.createRegion());
+        var text = new LabelComp(AppI18n.observable("refreshIconsDescription", SystemIconManager.getSources().values().stream()
+                .mapToInt(value -> value.getIcons().size()).sum()));
+        text.apply(struc -> {
+            struc.get().setWrapText(true);
+            struc.get().setTextAlignment(TextAlignment.CENTER);
+            struc.get().setPrefWidth(300);
+        });
+        text.styleClass(Styles.TEXT_SUBTLE);
+        text.visible(busy);
+        var vbox = new VerticalComp(List.of(refreshButton, text)).spacing(25);
+        vbox.apply(struc -> struc.get().setAlignment(Pos.CENTER));
+        var placeholder = new StackPane(vbox.createRegion());
         table.setPlaceholder(placeholder);
     }
 

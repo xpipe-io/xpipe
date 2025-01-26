@@ -45,8 +45,11 @@ public class StoreIconChoiceDialog {
         var modal = ModalOverlay.of(
                 "chooseCustomIcon",
                 new StoreIconChoiceComp(() -> {
+                    var showing = overlay.isShowing();
                     overlay.close();
-                    Platform.runLater(() -> overlay.show());
+                    if (showing) {
+                        Platform.runLater(() -> overlay.show());
+                    }
                 }, selected, SystemIconManager.getIcons(), 5, filterText, () -> {
                             finish();
                         })
