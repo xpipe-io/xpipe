@@ -77,6 +77,10 @@ public class AppImages {
 
 
     public static void loadRasterImages(Path directory, String prefix) throws IOException {
+        if (!Files.isDirectory(directory)) {
+            return;
+        }
+
         Files.walkFileTree(directory, new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {

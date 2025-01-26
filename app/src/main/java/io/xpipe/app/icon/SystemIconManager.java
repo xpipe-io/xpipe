@@ -28,7 +28,13 @@ public class SystemIconManager {
         return "icons/" + icon.getSource().getId() + "/" + icon.getId() + ".svg";
     }
 
-    public static void loadSources() throws Exception {
+    public static void init() throws Exception {
+        loadSources();
+        SystemIconCache.refreshBuilt();
+        loadImages();
+    }
+
+    public static synchronized void loadSources() throws Exception {
         Files.createDirectories(DIRECTORY);
 
         LOADED.clear();
@@ -37,7 +43,6 @@ public class SystemIconManager {
         }
 
         ICONS.clear();
-        SystemIconCache.refreshBuilt();
         LOADED.forEach((source, systemIconSourceData) -> {
             systemIconSourceData.getIcons().forEach(systemIconSourceFile -> {
                 var icon = new SystemIcon(source, systemIconSourceFile.getName());
@@ -56,7 +61,7 @@ public class SystemIconManager {
         }
     }
 
-    public static void reload() throws Exception {
+    public static synchronized void reload() throws Exception {
         Files.createDirectories(DIRECTORY);
         for (var source : AppPrefs.get().getIconSources().getValue()) {
             source.refresh();

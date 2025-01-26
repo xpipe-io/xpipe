@@ -6,6 +6,7 @@ import com.github.weisj.jsvg.attributes.ViewBox;
 import com.github.weisj.jsvg.parser.SVGLoader;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
+import lombok.Getter;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -22,6 +23,7 @@ public class SystemIconCache {
     private static final Path DIRECTORY = AppProperties.get().getDataDir().resolve("cache").resolve("icons").resolve("raster");
     private static final int[] sizes = new int[]{16, 24, 40, 80};
 
+    @Getter
     private static boolean built = false;
 
     public static Path getDirectory(SystemIconSource source) {
@@ -35,7 +37,7 @@ public class SystemIconCache {
         }
 
         try (var stream = Files.walk(DIRECTORY)) {
-            built = stream.findAny().isPresent();
+            built = stream.anyMatch(path -> Files.isRegularFile(path));
         }
     }
 

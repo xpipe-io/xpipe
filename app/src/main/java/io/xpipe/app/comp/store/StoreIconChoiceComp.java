@@ -2,18 +2,23 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.*;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.icon.SystemIcon;
 
+import io.xpipe.app.icon.SystemIconCache;
 import io.xpipe.app.icon.SystemIconManager;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import io.xpipe.app.resources.AppImages;
+import io.xpipe.app.util.BooleanScope;
+import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.util.ThreadHelper;
+import javafx.application.Platform;
+import javafx.beans.property.*;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.theme.Tweaks;
+import javafx.scene.layout.StackPane;
 
 import java.util.*;
 
@@ -21,6 +26,7 @@ import static atlantafx.base.theme.Styles.TEXT_SMALL;
 
 public class StoreIconChoiceComp extends SimpleComp {
 
+    private final Runnable reshow;
     private final Property<SystemIcon> selected;
     private final Set<SystemIcon> icons;
     private final int columns;
@@ -28,11 +34,12 @@ public class StoreIconChoiceComp extends SimpleComp {
     private final Runnable doubleClick;
 
     public StoreIconChoiceComp(
-            Property<SystemIcon> selected,
+            Runnable reshow, Property<SystemIcon> selected,
             Set<SystemIcon> icons,
             int columns,
             SimpleStringProperty filter,
             Runnable doubleClick) {
+        this.reshow = reshow;
         this.selected = selected;
         this.icons = icons;
         this.columns = columns;
@@ -50,23 +57,37 @@ public class StoreIconChoiceComp extends SimpleComp {
     }
 
     private void initTable(TableView<List<SystemIcon>> table) {
-        for (int i = 0; i < columns; i++) {
-            var col = new TableColumn<List<SystemIcon>, SystemIcon>("col" + i);
-            final int colIndex = i;
-            col.setCellValueFactory(cb -> {
-                var row = cb.getValue();
-                var item = row.size() > colIndex ? row.get(colIndex) : null;
-                return new SimpleObjectProperty<>(item);
-            });
-            col.setCellFactory(cb -> new IconCell());
-            col.getStyleClass().add(Tweaks.ALIGN_CENTER);
-            table.getColumns().add(col);
+        if (SystemIconCache.isBuilt()) {
+            for (int i = 0; i < columns; i++) {
+                var col = new TableColumn<List<SystemIcon>, SystemIcon>("col" + i);
+                final int colIndex = i;
+                col.setCellValueFactory(cb -> {
+                    var row = cb.getValue();
+                    var item = row.size() > colIndex ? row.get(colIndex) : null;
+                    return new SimpleObjectProperty<>(item);
+                });
+                col.setCellFactory(cb -> new IconCell());
+                col.getStyleClass().add(Tweaks.ALIGN_CENTER);
+                table.getColumns().add(col);
+            }
         }
 
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         table.getSelectionModel().setCellSelectionEnabled(true);
         table.getStyleClass().add("icon-browser");
-        table.setPlaceholder(new Region());
+
+        var busy = new SimpleBooleanProperty(false);
+        var refreshButton = new ButtonComp(AppI18n.observable("refreshIcons"), new SimpleObjectProperty<>(new LabelGraphic.IconGraphic("mdi2r-refresh")), () -> {
+            ThreadHelper.runFailableAsync(() -> {
+                try (var ignored = new BooleanScope(busy).start()) {
+                    SystemIconManager.reload();
+                }
+                reshow.run();
+            });
+        });
+        refreshButton.disable(busy);
+        var placeholder = new StackPane(refreshButton.createRegion());
+        table.setPlaceholder(placeholder);
     }
 
     private void updateData(TableView<List<SystemIcon>> table, String filterString) {

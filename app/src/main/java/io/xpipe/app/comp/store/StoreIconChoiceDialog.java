@@ -3,9 +3,11 @@ package io.xpipe.app.comp.store;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.icon.SystemIcon;
 import io.xpipe.app.icon.SystemIconManager;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.Hyperlinks;
 
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -35,13 +37,17 @@ public class StoreIconChoiceDialog {
         var filterText = new SimpleStringProperty();
         var filter = new FilterComp(filterText).grow(true, false);
         filter.focusOnShow();
-        var github = new ButtonComp(null, new FontIcon("mdi2g-github"), () -> {
-                    Hyperlinks.open(Hyperlinks.SELFHST_ICONS);
+        var github = new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
+            overlay.close();
+            AppPrefs.get().selectCategory("icons");
                 })
                 .grow(false, true);
         var modal = ModalOverlay.of(
                 "chooseCustomIcon",
-                new StoreIconChoiceComp(selected, SystemIconManager.getIcons(), 5, filterText, () -> {
+                new StoreIconChoiceComp(() -> {
+                    overlay.close();
+                    Platform.runLater(() -> overlay.show());
+                }, selected, SystemIconManager.getIcons(), 5, filterText, () -> {
                             finish();
                         })
                         .prefWidth(600));
