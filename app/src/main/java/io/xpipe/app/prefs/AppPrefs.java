@@ -80,8 +80,7 @@ public class AppPrefs {
     final BooleanProperty clearTerminalOnInit =
             mapLocal(new SimpleBooleanProperty(true), "clearTerminalOnInit", Boolean.class, false);
     final Property<List<SystemIconSource>> iconSources = map(Mapping.builder()
-            .property(new SimpleObjectProperty<>(new ArrayList<>(List.of(
-                    SystemIconSource.GitRepository.builder().remote("https://github.com/selfhst/icons").id("selfhst").build()))))
+            .property(new SimpleObjectProperty<>(new ArrayList<>()))
             .key("iconSources")
             .valueType(TypeFactory.defaultInstance().constructType(new TypeReference<List<SystemIconSource>>() {}))
             .build());

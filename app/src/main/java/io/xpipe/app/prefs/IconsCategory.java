@@ -24,6 +24,7 @@ import javafx.scene.control.TextField;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,9 +50,9 @@ public class IconsCategory extends AppPrefsCategory {
     private Comp<?> createOverview() {
         var sources = FXCollections.<SystemIconSource>observableArrayList();
         AppPrefs.get().getIconSources().subscribe((newValue) -> {
-            sources.setAll(newValue);
+            sources.setAll(SystemIconManager.getEffectiveSources());
         });
-        var box = new ListBoxViewComp<>(sources, sources, s -> createSourceEntry(s), true);
+        var box = new ListBoxViewComp<>(sources, sources, s -> createSourceEntry(s, sources), true);
 
         var busy = new SimpleBooleanProperty(false);
         var refreshButton = new TileButtonComp("refreshSources", "refreshSourcesDescription", "mdi2r-refresh", e -> {
@@ -81,7 +82,12 @@ public class IconsCategory extends AppPrefsCategory {
                 }
 
                 var source = SystemIconSource.GitRepository.builder().remote(remote.get()).id(UUID.randomUUID().toString()).build();
-                sources.add(source);
+                if (!sources.contains(source)) {
+                    sources.add(source);
+                    var nl = new ArrayList<>(AppPrefs.get().getIconSources().getValue());
+                    nl.add(source);
+                    AppPrefs.get().iconSources.setValue(nl);
+                }
             });
             modal.show();
             e.consume();
@@ -99,7 +105,12 @@ public class IconsCategory extends AppPrefsCategory {
                 }
 
                 var source = SystemIconSource.Directory.builder().path(Path.of(dir.get())).id(UUID.randomUUID().toString()).build();
-                sources.add(source);
+                if (!sources.contains(source)) {
+                    sources.add(source);
+                    var nl = new ArrayList<>(AppPrefs.get().getIconSources().getValue());
+                    nl.add(source);
+                    AppPrefs.get().iconSources.setValue(nl);
+                }
             });
             modal.show();
             e.consume();
@@ -111,17 +122,25 @@ public class IconsCategory extends AppPrefsCategory {
         return vbox;
     }
 
-    private Comp<?> createSourceEntry(SystemIconSource source) {
+    private Comp<?> createSourceEntry(SystemIconSource source, List<SystemIconSource> sources) {
         var delete = new IconButtonComp(new LabelGraphic.IconGraphic("mdal-delete_outline"), () -> {
             if (!AppDialog.confirm("iconSourceDeletion")) {
                 return;
             }
 
+            var nl = new ArrayList<>(AppPrefs.get().getIconSources().getValue());
+            nl.remove(source);
+            AppPrefs.get().iconSources.setValue(nl);
+            sources.remove(source);
         });
         var buttons = new HorizontalComp(List.of(delete));
         buttons.spacing(5);
+        if (!AppPrefs.get().getIconSources().getValue().contains(source)) {
+            buttons.disable(new SimpleBooleanProperty(true));
+        }
+
         var tile = new TileButtonComp(
-                new SimpleStringProperty(source.getId()),
+                new SimpleStringProperty(AppPrefs.get().getIconSources().getValue().contains(source) ? source.getDisplayName() : source.getId()),
                 new SimpleStringProperty(source.getDescription()),
                 new SimpleObjectProperty<>(source.getIcon()),
                 actionEvent -> {

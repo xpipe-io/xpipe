@@ -134,6 +134,7 @@ public class BaseMode extends OperationMode {
                     PlatformInit.init(true);
                     AppImages.init();
                     imagesLoaded.countDown();
+                    storageLoaded.await();
                     SystemIconManager.init();
                 },
                 () -> {

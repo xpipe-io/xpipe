@@ -7,6 +7,7 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.core.process.CommandBuilder;
+import io.xpipe.core.store.FileNames;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -32,7 +33,9 @@ public interface SystemIconSource {
         String id;
 
         @Override
-        public void refresh() throws Exception {}
+        public void refresh() throws Exception {
+            Files.createDirectories(path);
+        }
 
         @Override
         public Path getPath() {
@@ -45,12 +48,18 @@ public interface SystemIconSource {
         }
 
         @Override
+        public String getDisplayName() {
+            return path.getFileName().toString();
+        }
+
+        @Override
         public String getDescription() {
             return path.toString();
         }
 
         @Override
         public void open() throws Exception {
+            Files.createDirectories(path);
             DesktopHelper.browsePathLocal(path);
         }
     }
@@ -87,6 +96,11 @@ public interface SystemIconSource {
         }
 
         @Override
+        public String getDisplayName() {
+            return FileNames.getFileName(remote);
+        }
+
+        @Override
         public String getDescription() {
             return "Git repository " + remote;
         }
@@ -104,6 +118,8 @@ public interface SystemIconSource {
     Path getPath();
 
     String getIcon();
+
+    String getDisplayName();
 
     String getDescription();
 

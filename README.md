@@ -14,7 +14,7 @@ XPipe fully integrates with your tools such as your favourite text/code editors,
 
 It currently supports:
 - [SSH](https://www.ssh.com/academy/ssh/protocol) connections, config files, and tunnels
-- [Docker](https://www.docker.com/), [Podman](https://podman.io/), LXD](https://linuxcontainers.org/lxd/introduction/), and [incus](https://linuxcontainers.org/incus/) container instances located on any host
+- [Docker](https://www.docker.com/), [Podman](https://podman.io/), [LXD](https://linuxcontainers.org/lxd/introduction/), and [incus](https://linuxcontainers.org/incus/) container instances located on any host
 - [Proxmox PVE](https://www.proxmox.com/en/proxmox-virtual-environment/overview) virtual machines and containers
 - [Hyper-V](https://learn.microsoft.com/en-us/virtualization/hyper-v-on-windows/about/), [KVM/QEMU](https://linux-kvm.org/page/Main_Page), [VMware Player/Workstation/Fusion](https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion) virtual machines
 - [Kubernetes](https://kubernetes.io/) clusters, pods, and containers

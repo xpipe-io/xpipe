@@ -4,6 +4,7 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.resources.AppImages;
+import io.xpipe.app.storage.DataStorage;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,6 +16,19 @@ public class SystemIconManager {
 
     private static final Map<SystemIconSource, SystemIconSourceData> LOADED = new HashMap<>();
     private static final Set<SystemIcon> ICONS = new HashSet<>();
+
+    public static List<SystemIconSource> getEffectiveSources() {
+        var prefs = AppPrefs.get().getIconSources().getValue();
+        var all = new ArrayList<SystemIconSource>();
+        all.add(SystemIconSource.Directory.builder().path(DataStorage.get().getIconsDir()).id("custom").build());
+        all.add(SystemIconSource.GitRepository.builder().remote("https://github.com/selfhst/icons").id("selfhst").build());
+        for (var pref : prefs) {
+            if (!all.contains(pref)) {
+                all.add(pref);
+            }
+        }
+        return all;
+    }
 
     public static Map<SystemIconSource, SystemIconSourceData> getSources() {
         return LOADED;
@@ -38,7 +52,7 @@ public class SystemIconManager {
         Files.createDirectories(DIRECTORY);
 
         LOADED.clear();
-        for (var source : AppPrefs.get().getIconSources().getValue()) {
+        for (var source : getEffectiveSources()) {
             LOADED.put(source,SystemIconSourceData.of(source));
         }
 
@@ -54,7 +68,7 @@ public class SystemIconManager {
     public static void reloadImages() {
         AppImages.remove(s -> s.startsWith("icons/"));
         try {
-            for (var source : AppPrefs.get().getIconSources().getValue()) {
+            for (var source : getEffectiveSources()) {
                 AppImages.loadRasterImages(SystemIconCache.getDirectory(source), "icons/" + source.getId());
             }
         } catch (Exception e) {
@@ -64,7 +78,7 @@ public class SystemIconManager {
 
     public static synchronized void reload() throws Exception {
         Files.createDirectories(DIRECTORY);
-        for (var source : AppPrefs.get().getIconSources().getValue()) {
+        for (var source : getEffectiveSources()) {
             source.refresh();
         }
         reloadSources();
