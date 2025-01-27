@@ -45,7 +45,7 @@ public class BrowserFileOpener {
             return fileSystem.openOutput(file.getPath(), totalBytes);
         }
 
-        var rootSc = sc.identicalSubShell()
+        var rootSc = sc.identicalDialectSubShell()
                 .elevated(ElevationFunction.elevated(null))
                 .start();
         var rootFs = new ConnectionFileSystem(rootSc);

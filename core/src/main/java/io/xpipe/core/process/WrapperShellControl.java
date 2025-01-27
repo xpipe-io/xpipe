@@ -216,6 +216,16 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
+    public void setDumbOpen(ShellOpenFunction openFunction) {
+        parent.setDumbOpen(openFunction);
+    }
+
+    @Override
+    public void setTerminalOpen(ShellOpenFunction openFunction) {
+        parent.setTerminalOpen(openFunction);
+    }
+
+    @Override
     public void writeLine(String line) throws IOException {
         parent.writeLine(line);
     }
@@ -326,6 +336,11 @@ public class WrapperShellControl implements ShellControl {
     @Override
     public ShellControl withInitSnippet(ShellInitCommand snippet) {
         return parent.withInitSnippet(snippet);
+    }
+
+    @Override
+    public ShellControl subShell() {
+        return parent.subShell();
     }
 
     @Override

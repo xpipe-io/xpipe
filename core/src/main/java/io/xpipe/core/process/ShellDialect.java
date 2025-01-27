@@ -132,6 +132,8 @@ public interface ShellDialect {
 
     CommandBuilder getOpenScriptCommand(String file);
 
+    String terminalInitCommand(ShellControl shellControl, boolean requiresExecutableFirst, boolean supportsRawArguments, String file, boolean exit);
+
     String prepareTerminalInitFileOpenCommand(ShellDialect parentDialect, ShellControl sc, String file, boolean exit);
 
     String runScriptCommand(ShellControl parent, String file);

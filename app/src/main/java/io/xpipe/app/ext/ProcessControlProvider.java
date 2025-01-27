@@ -4,8 +4,6 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.DataStore;
 
-import lombok.NonNull;
-
 import java.util.ServiceLoader;
 
 public abstract class ProcessControlProvider {
@@ -28,9 +26,6 @@ public abstract class ProcessControlProvider {
     public abstract void reset();
 
     public abstract ShellControl withDefaultScripts(ShellControl pc);
-
-    public abstract ShellControl sub(
-            ShellControl parent, @NonNull ShellOpenFunction commandFunction, ShellOpenFunction terminalCommand);
 
     public abstract CommandControl command(ShellControl parent, CommandBuilder command, CommandBuilder terminalCommand);
 

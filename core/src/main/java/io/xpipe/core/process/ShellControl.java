@@ -18,6 +18,10 @@ import java.util.function.Function;
 
 public interface ShellControl extends ProcessControl {
 
+    void setDumbOpen(ShellOpenFunction openFunction);
+
+    void setTerminalOpen(ShellOpenFunction openFunction);
+
     void writeLine(String line) throws IOException;
 
     void writeLine(String line, boolean log) throws IOException;
@@ -193,8 +197,8 @@ public interface ShellControl extends ProcessControl {
             }
 
             @Override
-            public CommandBuilder prepareWithInitCommand(@NonNull String command) {
-                return CommandBuilder.ofString(command);
+            public CommandBuilder prepareWithInitCommand(@NonNull Argument command) {
+                return CommandBuilder.ofString(command.get(false));
             }
         };
         var s = singularSubShell(o);
@@ -202,7 +206,7 @@ public interface ShellControl extends ProcessControl {
         return s;
     }
 
-    default ShellControl identicalSubShell() {
+    default ShellControl identicalDialectSubShell() {
         var o = new ShellOpenFunction() {
 
             @Override
@@ -212,8 +216,8 @@ public interface ShellControl extends ProcessControl {
             }
 
             @Override
-            public CommandBuilder prepareWithInitCommand(@NonNull String command) {
-                return CommandBuilder.ofString(command);
+            public CommandBuilder prepareWithInitCommand(@NonNull Argument command) {
+                return CommandBuilder.ofString(command.get(false));
             }
         };
         var sc = singularSubShell(o);
@@ -224,7 +228,7 @@ public interface ShellControl extends ProcessControl {
 
     default ShellControl elevateIfNeeded(ElevationFunction function) throws Exception {
         if (function.apply(this)) {
-            return identicalSubShell().elevated(ElevationFunction.elevated(function.getPrefix()));
+            return identicalDialectSubShell().elevated(ElevationFunction.elevated(function.getPrefix()));
         } else {
             return new StubShellControl(this);
         }
@@ -240,6 +244,8 @@ public interface ShellControl extends ProcessControl {
             }
         }
     }
+
+    ShellControl subShell();
 
     ShellControl subShell(ShellOpenFunction command, ShellOpenFunction terminalCommand);
 

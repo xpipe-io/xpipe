@@ -26,6 +26,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.SneakyThrows;
 
 import java.io.IOException;
@@ -301,11 +302,25 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                 if (ShellDialects.getStartableDialects().stream().anyMatch(dialect -> adjustedPath
                         .toLowerCase()
                         .startsWith(dialect.getExecutableName().toLowerCase()))) {
-                    var cc = fileSystem
+                    var sub = fileSystem
                             .getShell()
                             .get()
-                            .singularSubShell(ShellOpenFunction.of(CommandBuilder.ofString(adjustedPath), false));
-                    openTerminalAsync(name, directory, cc, true);
+                            .subShell();
+                    var open = new ShellOpenFunction() {
+
+                        @Override
+                        public CommandBuilder prepareWithoutInitCommand() throws Exception {
+                            return CommandBuilder.ofString(adjustedPath);
+                        }
+
+                        @Override
+                        public CommandBuilder prepareWithInitCommand(@NonNull Argument command) {
+                            return CommandBuilder.ofString(command.get(false));
+                        }
+                    };
+                    sub.setDumbOpen(open);
+                    sub.setTerminalOpen(open);
+                    openTerminalAsync(name, directory, sub, true);
                 } else {
                     var cc = fileSystem.getShell().get().command(adjustedPath);
                     openTerminalAsync(name, directory, cc, true);

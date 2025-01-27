@@ -128,8 +128,8 @@ public class PodmanCommandView extends CommandViewBase {
                 }
 
                 @Override
-                public CommandBuilder prepareWithInitCommand(@NonNull String command) {
-                    return execCommand(terminal).addQuoted(containerName).add(command);
+                public CommandBuilder prepareWithInitCommand(@NonNull Argument command) {
+                    return execCommand(terminal).addQuoted(containerName).add(command.get(true));
                 }
             };
         }

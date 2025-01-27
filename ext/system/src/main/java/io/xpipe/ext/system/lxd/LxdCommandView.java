@@ -170,12 +170,12 @@ public class LxdCommandView extends CommandViewBase {
             }
 
             @Override
-            public CommandBuilder prepareWithInitCommand(@NonNull String command) {
+            public CommandBuilder prepareWithInitCommand(@NonNull Argument command) {
                 var b = execCommand(containerName, terminal).add("su", "-l");
                 if (user != null) {
                     b.addQuoted(user);
                 }
-                return b.add("--session-command").addLiteral(command);
+                return b.add("--session-command").addLiteral(command.get(true));
             }
         };
     }
