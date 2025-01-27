@@ -3,3 +3,5 @@
 *.bat text eol=crlf
 *.png binary
 *.xcf binary
+*.properties linguist-detectable=false
+
