@@ -131,6 +131,10 @@
     -fx-text-fill: -color-fg-default;
 }
 
+.store-header-bar .filter-bar .ikonli-font-icon {
+    -fx-icon-color: -color-fg-default;
+}
+
 .store-header-bar .filter-bar {
     -fx-background-radius: 3px;
     -fx-background-color: -color-bg-default;

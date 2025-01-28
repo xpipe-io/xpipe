@@ -80,7 +80,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         @Override
         public void launch(Path file) throws Exception {
             var builder = CommandBuilder.of()
-                    .fixedEnvrironment("DONT_PROMPT_WSL_INSTALL", "No_Prompt_please")
+                    .fixedEnvironment("DONT_PROMPT_WSL_INSTALL", "No_Prompt_please")
                     .addFile(executable)
                     .addFile(file.toString());
             ExternalApplicationHelper.startAsync(builder);

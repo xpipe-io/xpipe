@@ -43,7 +43,7 @@ public class GnomeTerminalType extends ExternalTerminalType.PathCheckType implem
                     .addFile(configuration.getScriptFile())
                     // In order to fix this bug which also affects us:
                     // https://askubuntu.com/questions/1148475/launching-gnome-terminal-from-vscode
-                    .envrironment("GNOME_TERMINAL_SCREEN", sc -> "");
+                    .environment("GNOME_TERMINAL_SCREEN", sc -> "");
             pc.executeSimpleCommand(toExecute);
         }
     }
