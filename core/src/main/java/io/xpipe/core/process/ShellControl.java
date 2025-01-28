@@ -201,7 +201,9 @@ public interface ShellControl extends ProcessControl {
                 return CommandBuilder.ofString(command.get(false));
             }
         };
-        var s = singularSubShell(o);
+        var s = subShell();
+        s.setDumbOpen(o);
+        s.setTerminalOpen(o);
         s.setParentSystemAccess(ParentSystemAccess.identity());
         return s;
     }
@@ -220,7 +222,9 @@ public interface ShellControl extends ProcessControl {
                 return CommandBuilder.ofString(command.get(false));
             }
         };
-        var sc = singularSubShell(o);
+        var sc = subShell();
+        sc.setDumbOpen(o);
+        sc.setTerminalOpen(o);
         sc.withSourceStore(getSourceStore().orElse(null));
         sc.setParentSystemAccess(ParentSystemAccess.identity());
         return sc;
@@ -246,10 +250,6 @@ public interface ShellControl extends ProcessControl {
     }
 
     ShellControl subShell();
-
-    ShellControl subShell(ShellOpenFunction command, ShellOpenFunction terminalCommand);
-
-    ShellControl singularSubShell(ShellOpenFunction command);
 
     void cd(String directory) throws Exception;
 

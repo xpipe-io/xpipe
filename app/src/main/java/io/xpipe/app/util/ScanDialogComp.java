@@ -21,6 +21,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,6 +37,7 @@ class ScanDialogComp extends ModalOverlayContentComp {
     private final ObservableList<ScanProvider.ScanOpportunity> available = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
     private final ListProperty<ScanProvider.ScanOpportunity> selected =
             new SimpleListProperty<>(FXCollections.synchronizedObservableList(FXCollections.observableArrayList()));
+    @Getter
     private final BooleanProperty busy = new SimpleBooleanProperty();
 
     ScanDialogComp(DataStoreEntryRef<ShellStore> entry, ScanDialogAction action) {

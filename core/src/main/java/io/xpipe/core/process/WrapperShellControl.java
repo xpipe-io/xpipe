@@ -344,16 +344,6 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public ShellControl subShell(ShellOpenFunction command, ShellOpenFunction terminalCommand) {
-        return parent.subShell(command, terminalCommand);
-    }
-
-    @Override
-    public ShellControl singularSubShell(ShellOpenFunction command) {
-        return parent.singularSubShell(command);
-    }
-
-    @Override
     public void cd(String directory) throws Exception {
         parent.cd(directory);
     }
