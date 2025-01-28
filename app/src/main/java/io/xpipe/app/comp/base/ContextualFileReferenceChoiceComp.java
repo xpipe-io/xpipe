@@ -11,6 +11,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.FileSystemStore;
 
 import javafx.application.Platform;
@@ -40,13 +41,13 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
     }
 
     private final Property<DataStoreEntryRef<? extends FileSystemStore>> fileSystem;
-    private final Property<String> filePath;
+    private final Property<FilePath> filePath;
     private final ContextualFileReferenceSync sync;
     private final List<PreviousFileReference> previousFileReferences;
 
     public <T extends FileSystemStore> ContextualFileReferenceChoiceComp(
             Property<DataStoreEntryRef<T>> fileSystem,
-            Property<String> filePath,
+            Property<FilePath> filePath,
             ContextualFileReferenceSync sync,
             List<PreviousFileReference> previousFileReferences) {
         this.sync = sync;
@@ -86,7 +87,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
             }
 
             var currentPath = filePath.getValue();
-            if (currentPath == null || currentPath.isBlank()) {
+            if (currentPath == null) {
                 return;
             }
 
@@ -95,7 +96,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
             }
 
             try {
-                var source = Path.of(currentPath.trim());
+                var source = Path.of(currentPath.toString());
                 var target = sync.getTargetLocation().apply(source);
                 if (Files.exists(source)) {
                     var shouldCopy = AppWindowHelper.showConfirmationAlert(
@@ -108,7 +109,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                     var syncedTarget = handler.addDataFile(
                             source, target, sync.getPerUser().test(source));
                     Platform.runLater(() -> {
-                        filePath.setValue(syncedTarget.toString());
+                        filePath.setValue(new FilePath(syncedTarget));
                     });
                 }
             } catch (Exception e) {

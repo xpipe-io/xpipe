@@ -11,6 +11,7 @@ import io.xpipe.app.comp.base.TooltipAugment;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 
+import io.xpipe.core.store.FilePath;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -111,9 +112,9 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
     }
 
     private Comp<CompStructure<TextField>> createPathBar() {
-        var path = new SimpleStringProperty(model.getCurrentPath().get());
+        var path = new SimpleStringProperty();
         model.getCurrentPath().subscribe((newValue) -> {
-            path.set(newValue);
+            path.set(newValue != null ? newValue.toString() : null);
         });
         path.addListener((observable, oldValue, newValue) -> {
             ThreadHelper.runFailableAsync(() -> {
@@ -180,7 +181,7 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
                 continue;
             }
 
-            var mi = new MenuItem(f.get(i));
+            var mi = new MenuItem(f.get(i).toString());
             int target = i + 1;
             mi.setOnAction(event -> {
                 ThreadHelper.runFailableAsync(() -> {
@@ -197,7 +198,7 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
         }
 
         if (model.getHistory().getCurrent() != null) {
-            var current = new MenuItem(model.getHistory().getCurrent());
+            var current = new MenuItem(model.getHistory().getCurrent().toString());
             current.setDisable(true);
             cm.getItems().add(current);
         }
@@ -212,7 +213,7 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
                 continue;
             }
 
-            var mi = new MenuItem(b.get(i));
+            var mi = new MenuItem(b.get(i).toString());
             int target = i + 1;
             mi.setOnAction(event -> {
                 ThreadHelper.runFailableAsync(() -> {

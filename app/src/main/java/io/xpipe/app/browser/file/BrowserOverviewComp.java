@@ -42,13 +42,10 @@ public class BrowserOverviewComp extends SimpleComp {
         var commonPlatform = FXCollections.<FileEntry>observableArrayList();
         ThreadHelper.runFailableAsync(() -> {
             var common = sc.getOsType().determineInterestingPaths(sc).stream()
-                    .filter(s -> !s.isBlank())
                     .map(s -> FileEntry.ofDirectory(model.getFileSystem(), s))
                     .filter(entry -> {
                         try {
-                            return sc.getShellDialect()
-                                    .directoryExists(sc, entry.getPath())
-                                    .executeAndCheck();
+                            return model.getFileSystem().directoryExists(entry.getPath());
                         } catch (Exception e) {
                             ErrorEvent.fromThrowable(e).handle();
                             return false;

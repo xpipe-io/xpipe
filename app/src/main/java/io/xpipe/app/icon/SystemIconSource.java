@@ -8,6 +8,7 @@ import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.store.FileNames;
+import io.xpipe.core.store.FilePath;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -80,7 +81,7 @@ public interface SystemIconSource {
                 if (!Files.exists(dir)) {
                     sc.command(CommandBuilder.of().add("git", "clone").addQuoted(remote).addFile(dir.toString())).execute();
                 } else {
-                    sc.command(CommandBuilder.of().add("git", "pull")).withWorkingDirectory(dir.toString()).execute();
+                    sc.command(CommandBuilder.of().add("git", "pull")).withWorkingDirectory(new FilePath(dir)).execute();
                 }
             }
         }

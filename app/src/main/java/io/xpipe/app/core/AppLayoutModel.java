@@ -103,12 +103,6 @@ public class AppLayoutModel {
                         null,
                         null),
                 new Entry(
-                        AppI18n.observable("team"),
-                        new LabelGraphic.IconGraphic("mdi2a-account-group"),
-                        null,
-                        () -> AppPrefs.get().selectCategory("vault"),
-                        null),
-                new Entry(
                         AppI18n.observable("visitGithubRepository"),
                         new LabelGraphic.IconGraphic("mdi2g-github"),
                         null,

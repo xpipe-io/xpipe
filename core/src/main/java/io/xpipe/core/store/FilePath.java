@@ -35,6 +35,10 @@ public final class FilePath {
         }
     }
 
+    public FilePath(@NonNull Path value) {
+        this.value = value.toString();
+    }
+
     public FilePath fileSystemCompatible(OsType osType) {
         var split = split();
         var needsReplacement = split.stream().anyMatch(s -> !s.equals(osType.makeFileSystemCompatible(s)));

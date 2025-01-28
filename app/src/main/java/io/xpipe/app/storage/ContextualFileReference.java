@@ -4,6 +4,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FileNames;
 
+import io.xpipe.core.store.FilePath;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -59,6 +60,10 @@ public class ContextualFileReference {
         } else {
             return Optional.empty();
         }
+    }
+
+    public static ContextualFileReference of(FilePath p) {
+        return of(p != null ? p.toString() : null);
     }
 
     public static ContextualFileReference of(String s) {

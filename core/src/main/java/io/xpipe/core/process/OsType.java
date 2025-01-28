@@ -1,6 +1,7 @@
 package io.xpipe.core.process;
 
 import io.xpipe.core.store.FileNames;
+import io.xpipe.core.store.FilePath;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,7 @@ public interface OsType {
 
     String makeFileSystemCompatible(String name);
 
-    List<String> determineInterestingPaths(ShellControl pc) throws Exception;
+    List<FilePath> determineInterestingPaths(ShellControl pc) throws Exception;
 
     String getUserHomeDirectory(ShellControl pc) throws Exception;
 
@@ -55,13 +56,13 @@ public interface OsType {
         }
 
         @Override
-        public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
-            var home = getUserHomeDirectory(pc);
+        public List<FilePath> determineInterestingPaths(ShellControl pc) throws Exception {
+            var home = pc.view().userHome();
             return List.of(
                     home,
-                    FileNames.join(home, "Documents"),
-                    FileNames.join(home, "Downloads"),
-                    FileNames.join(home, "Desktop"));
+                    home.join("Documents"),
+                    home.join("Downloads"),
+                    home.join("Desktop"));
         }
 
         @Override
@@ -95,17 +96,17 @@ public interface OsType {
         }
 
         @Override
-        public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
-            var home = getUserHomeDirectory(pc);
+        public List<FilePath> determineInterestingPaths(ShellControl pc) throws Exception {
+            var home = pc.view().userHome();
             var list = new ArrayList<>(List.of(
                     home,
-                    FileNames.join(home, "Downloads"),
-                    FileNames.join(home, "Documents"),
-                    "/etc",
-                    "/tmp",
-                    "/var"));
-            var parentHome = FileNames.getParent(home);
-            if (parentHome != null && !parentHome.equals("/")) {
+                    home.join("Downloads"),
+                    home.join("Documents"),
+                    new FilePath("/etc"),
+                    new FilePath("/tmp"),
+                    new FilePath("/var")));
+            var parentHome = home.getParent();
+            if (parentHome != null && !parentHome.toString().equals("/")) {
                 list.add(3, parentHome);
             }
             return list;
@@ -168,17 +169,20 @@ public interface OsType {
         }
 
         @Override
-        public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
-            var home = getUserHomeDirectory(pc);
-            return List.of(
+        public List<FilePath> determineInterestingPaths(ShellControl pc) throws Exception {
+            var home = pc.view().userHome();
+            var list = List.of(
                     home,
-                    FileNames.join(home, "Downloads"),
-                    FileNames.join(home, "Documents"),
-                    FileNames.join(home, "Desktop"),
-                    "/Applications",
-                    "/Library",
-                    "/System",
-                    "/etc");
+                    home.join("Downloads"),
+                    home.join("Documents"),
+                    home.join("Desktop"),
+                    new FilePath("/Applications"),
+                    new FilePath("/Library"),
+                    new FilePath("/System"),
+                    new FilePath("/etc"),
+                    new FilePath("/tmp")
+            );
+            return list;
         }
 
         @Override
