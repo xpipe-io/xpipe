@@ -211,7 +211,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
 
                         return AppI18n.get("defineNewIdentityOrSelect");
                     },
-                    AppPrefs.get().language(),
+                    AppI18n.activeLanguage(),
                     selectedReference);
             struc.get().promptTextProperty().bind(binding);
         });

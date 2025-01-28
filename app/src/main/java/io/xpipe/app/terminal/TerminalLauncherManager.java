@@ -4,6 +4,7 @@ import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.BeaconServerException;
 import io.xpipe.core.process.ProcessControl;
 import io.xpipe.core.process.TerminalInitScriptConfig;
+import io.xpipe.core.store.FilePath;
 
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
@@ -34,7 +35,7 @@ public class TerminalLauncherManager {
     }
 
     public static CountDownLatch submitAsync(
-            UUID request, ProcessControl processControl, TerminalInitScriptConfig config, String directory) {
+            UUID request, ProcessControl processControl, TerminalInitScriptConfig config, FilePath directory) {
         synchronized (entries) {
             var req = entries.get(request);
             if (req == null) {

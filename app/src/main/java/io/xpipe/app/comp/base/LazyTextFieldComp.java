@@ -50,8 +50,10 @@ public class LazyTextFieldComp extends Comp<CompStructure<TextField>> {
         });
 
         // Handles external updates
-        PlatformThread.sync(appliedValue).addListener((observable, oldValue, n) -> {
-            currentValue.setValue(n);
+        appliedValue.addListener((observable, oldValue, n) -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                currentValue.setValue(n);
+            });
         });
 
         r.setMinWidth(0);

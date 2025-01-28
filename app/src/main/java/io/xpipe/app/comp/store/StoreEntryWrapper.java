@@ -8,6 +8,7 @@ import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
@@ -16,6 +17,7 @@ import io.xpipe.core.store.SingletonSessionStore;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableStringValue;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 
 import lombok.Getter;
@@ -53,6 +55,9 @@ public class StoreEntryWrapper {
     private final Property<DataStore> store = new SimpleObjectProperty<>();
     private final Property<String> information = new SimpleStringProperty();
     private final BooleanProperty perUser = new SimpleBooleanProperty();
+    private final ObservableValue<String> shownName;
+    private final ObservableValue<String> shownSummary;
+    private final ObservableValue<String> shownInformation;
 
     private boolean effectiveBusyProviderBound = false;
     private final BooleanProperty effectiveBusy = new SimpleBooleanProperty();
@@ -61,6 +66,27 @@ public class StoreEntryWrapper {
         this.entry = entry;
         this.name = new SimpleStringProperty(entry.getName());
         this.lastAccess = new SimpleObjectProperty<>(entry.getLastAccess().minus(Duration.ofMillis(500)));
+        this.shownName = Bindings.createStringBinding(
+                () -> {
+                    var n = name.getValue();
+                    return n != null && AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n;
+                },
+                AppPrefs.get().censorMode(),
+                name);
+        this.shownSummary = Bindings.createStringBinding(
+                () -> {
+                    var n = summary.getValue();
+                    return n != null && AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n;
+                },
+                AppPrefs.get().censorMode(),
+                summary);
+        this.shownInformation = Bindings.createStringBinding(
+                () -> {
+                    var n = information.getValue();
+                    return n != null && AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n;
+                },
+                AppPrefs.get().censorMode(),
+                information);
         ActionProvider.ALL_STANDALONE.stream()
                 .filter(dataStoreActionProvider -> {
                     return !entry.isDisabled()
@@ -155,34 +181,27 @@ public class StoreEntryWrapper {
             this.effectiveBusy.bind(busy);
         }
 
-        var storeChanged = store.getValue() != entry.getStore();
-        store.setValue(entry.getStore());
-        if (storeChanged || !information.isBound()) {
-            if (entry.getProvider() != null) {
-                var section = StoreViewState.get().getSectionForWrapper(this);
-                if (section.isPresent()) {
-                    information.unbind();
-                    try {
-                        var binding = PlatformThread.sync(entry.getProvider().informationString(section.get()));
-                        information.bind(binding);
-                    } catch (Exception e) {
-                        ErrorEvent.fromThrowable(e).handle();
-                        information.bind(new SimpleStringProperty());
-                    }
-                }
-            }
-        }
-
         lastAccess.setValue(entry.getLastAccess());
         disabled.setValue(entry.isDisabled());
         validity.setValue(entry.getValidity());
         expanded.setValue(entry.isExpanded());
         persistentState.setValue(entry.getStorePersistentState());
+		
+        // The property values are only registered as changed once they are queried
+        // If we use information bindings that depend on some of these properties
+        // but use the store methods to retrieve data instead of the wrapper properties,
+        // the bindings do not get updated as the change events are not fired.
+        // We can also fire them manually with this
         persistentState.getValue();
+
         // Use map copy to recognize update
         // This is a synchronized map, so we synchronize the access
         synchronized (entry.getStoreCache()) {
-            cache.setValue(new HashMap<>(entry.getStoreCache()));
+            if (!entry.getStoreCache().equals(cache.getValue())) {
+                cache.setValue(new HashMap<>(entry.getStoreCache()));
+                // Same here
+                cache.getValue();
+            }
         }
         color.setValue(entry.getColor());
         notes.setValue(new StoreNotes(entry.getNotes(), entry.getNotes()));
@@ -201,6 +220,24 @@ public class StoreEntryWrapper {
         perUser.setValue(
                 !category.getValue().getRoot().equals(StoreViewState.get().getAllIdentitiesCategory())
                         && entry.isPerUserStore());
+
+        var storeChanged = store.getValue() != entry.getStore();
+        store.setValue(entry.getStore());
+        if (storeChanged || !information.isBound()) {
+            if (entry.getProvider() != null) {
+                var section = StoreViewState.get().getSectionForWrapper(this);
+                if (section.isPresent()) {
+                    information.unbind();
+                    try {
+                        var is = entry.getProvider().informationString(section.get());
+                        information.bind(is);
+                    } catch (Exception e) {
+                        ErrorEvent.fromThrowable(e).handle();
+                        information.bind(new SimpleStringProperty());
+                    }
+                }
+            }
+        }
 
         if (!entry.getValidity().isUsable()) {
             summary.setValue(null);
@@ -323,7 +360,7 @@ public class StoreEntryWrapper {
     }
 
     public boolean matchesFilter(String filter) {
-        if (filter == null || nameProperty().getValue().toLowerCase().contains(filter.toLowerCase())) {
+        if (filter == null || name.getValue().toLowerCase().contains(filter.toLowerCase())) {
             return true;
         }
 
@@ -338,39 +375,5 @@ public class StoreEntryWrapper {
 
     public Property<String> nameProperty() {
         return name;
-    }
-
-    public BooleanProperty disabledProperty() {
-        return disabled;
-    }
-
-    public ObservableStringValue getShownName() {
-        return Bindings.createStringBinding(
-                () -> {
-                    var n = nameProperty().getValue();
-                    return AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n;
-                },
-                AppPrefs.get().censorMode(),
-                nameProperty());
-    }
-
-    public ObservableStringValue getShownSummary() {
-        return Bindings.createStringBinding(
-                () -> {
-                    var n = summary.getValue();
-                    return AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n;
-                },
-                AppPrefs.get().censorMode(),
-                summary);
-    }
-
-    public ObservableStringValue getShownInformation() {
-        return Bindings.createStringBinding(
-                () -> {
-                    var n = information.getValue();
-                    return AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n;
-                },
-                AppPrefs.get().censorMode(),
-                information);
     }
 }

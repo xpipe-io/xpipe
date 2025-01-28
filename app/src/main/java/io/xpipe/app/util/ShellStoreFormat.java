@@ -30,7 +30,7 @@ public class ShellStoreFormat {
                             (includeOsName ? formattedOsName(s.getOsName()) : null), s.getShellName());
                     return new ShellStoreFormat(null, name, def).format();
                 },
-                AppPrefs.get().language(),
+                AppI18n.activeLanguage(),
                 section.getWrapper().getPersistentState());
     }
 

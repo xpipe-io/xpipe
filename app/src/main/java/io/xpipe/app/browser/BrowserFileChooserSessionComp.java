@@ -179,7 +179,7 @@ public class BrowserFileChooserSessionComp extends DialogComp {
                             .setAll(c.getList().stream()
                                     .map(s -> {
                                         var field = new TextField(
-                                                s.getRawFileEntry().getPath());
+                                                s.getRawFileEntry().getPath().toString());
                                         field.setEditable(false);
                                         field.getStyleClass().add("chooser-selection");
                                         HBox.setHgrow(field, Priority.ALWAYS);

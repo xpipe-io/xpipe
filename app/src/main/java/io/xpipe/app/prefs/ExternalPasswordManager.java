@@ -16,6 +16,23 @@ public interface ExternalPasswordManager extends PrefsChoiceValue {
 
     String retrievePassword(String key);
 
+    ExternalPasswordManager NONE = new ExternalPasswordManager() {
+        @Override
+        public String getDocsLink() {
+            return null;
+        }
+
+        @Override
+        public String retrievePassword(String key) {
+            return null;
+        }
+
+        @Override
+        public String getId() {
+            return "none";
+        }
+    };
+
     ExternalPasswordManager COMMAND = new ExternalPasswordManager() {
 
         private static ShellControl SHELL;
@@ -153,7 +170,7 @@ public interface ExternalPasswordManager extends PrefsChoiceValue {
         }
     };
 
-    List<ExternalPasswordManager> ALL = Stream.of(COMMAND, WINDOWS_CREDENTIAL_MANAGER)
+    List<ExternalPasswordManager> ALL = Stream.of(NONE, COMMAND, WINDOWS_CREDENTIAL_MANAGER)
             .filter(externalPasswordManager -> externalPasswordManager.isSelectable())
             .toList();
 }

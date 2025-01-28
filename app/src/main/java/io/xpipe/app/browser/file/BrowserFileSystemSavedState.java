@@ -2,6 +2,7 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.core.AppCache;
 import io.xpipe.core.store.FileNames;
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.JacksonMapper;
 
 import javafx.application.Platform;
@@ -41,12 +42,12 @@ public class BrowserFileSystemSavedState {
     @Setter
     private BrowserFileSystemTabModel model;
 
-    private String lastDirectory;
+    private FilePath lastDirectory;
 
     @NonNull
     private ObservableList<RecentEntry> recentDirectories;
 
-    public BrowserFileSystemSavedState(String lastDirectory, @NonNull ObservableList<RecentEntry> recentDirectories) {
+    public BrowserFileSystemSavedState(FilePath lastDirectory, @NonNull ObservableList<RecentEntry> recentDirectories) {
         this.lastDirectory = lastDirectory;
         this.recentDirectories = recentDirectories;
     }
@@ -73,7 +74,7 @@ public class BrowserFileSystemSavedState {
         AppCache.update("fs-state-" + model.getEntry().get().getUuid(), this);
     }
 
-    public void cd(String dir, boolean delay) {
+    public void cd(FilePath dir, boolean delay) {
         if (dir == null) {
             lastDirectory = null;
             return;
@@ -107,9 +108,9 @@ public class BrowserFileSystemSavedState {
         }
     }
 
-    private synchronized void updateRecent(String dir) {
-        var without = FileNames.removeTrailingSlash(dir);
-        var with = FileNames.toDirectory(dir);
+    private synchronized void updateRecent(FilePath dir) {
+        var without = dir.removeTrailingSlash();
+        var with = dir.toDirectory();
         recentDirectories.removeIf(recentEntry ->
                 Objects.equals(recentEntry.directory, without) || Objects.equals(recentEntry.directory, with));
 
@@ -161,7 +162,7 @@ public class BrowserFileSystemSavedState {
                 recentDirectories = List.of();
             }
             var cleaned = recentDirectories.stream()
-                    .map(recentEntry -> new RecentEntry(FileNames.toDirectory(recentEntry.directory), recentEntry.time))
+                    .map(recentEntry -> new RecentEntry(recentEntry.directory.toDirectory(), recentEntry.time))
                     .filter(distinctBy(recentEntry -> recentEntry.getDirectory()))
                     .collect(Collectors.toCollection(ArrayList::new));
             return new BrowserFileSystemSavedState(null, FXCollections.observableList(cleaned));
@@ -173,7 +174,7 @@ public class BrowserFileSystemSavedState {
     @Builder
     public static class RecentEntry {
 
-        String directory;
+        FilePath directory;
         Instant time;
     }
 }

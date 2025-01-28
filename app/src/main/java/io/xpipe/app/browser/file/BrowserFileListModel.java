@@ -66,9 +66,7 @@ public final class BrowserFileListModel {
         List<BrowserEntry> filtered = fileSystemModel.getFilter().getValue() != null
                 ? all.getValue().stream()
                         .filter(entry -> {
-                            var name = FileNames.getFileName(
-                                            entry.getRawFileEntry().getPath())
-                                    .toLowerCase(Locale.ROOT);
+                            var name = entry.getRawFileEntry().getPath().getFileName().toLowerCase(Locale.ROOT);
                             var filterString =
                                     fileSystemModel.getFilter().getValue().toLowerCase(Locale.ROOT);
                             return name.contains(filterString);
@@ -99,8 +97,8 @@ public final class BrowserFileListModel {
             return old;
         }
 
-        var fullPath = FileNames.join(fileSystemModel.getCurrentPath().get(), old.getFileName());
-        var newFullPath = FileNames.join(fileSystemModel.getCurrentPath().get(), newName);
+        var fullPath = fileSystemModel.getCurrentPath().get().join(old.getFileName());
+        var newFullPath = fileSystemModel.getCurrentPath().get().join(newName);
 
         // This check will fail on case-insensitive file systems when changing the case of the file
         // So skip it in this case
@@ -144,7 +142,7 @@ public final class BrowserFileListModel {
     public void onDoubleClick(BrowserEntry entry) {
         var r = entry.getRawFileEntry().resolved();
         if (r.getKind() == FileKind.DIRECTORY) {
-            fileSystemModel.cdAsync(r.getPath());
+            fileSystemModel.cdAsync(r.getPath().toString());
         }
 
         if (AppPrefs.get().editFilesWithDoubleClick().get() && r.getKind() == FileKind.FILE) {

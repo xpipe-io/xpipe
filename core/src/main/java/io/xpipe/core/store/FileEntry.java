@@ -22,25 +22,24 @@ public class FileEntry {
     @NonNull
     @NonFinal
     @Setter
-    String path;
+    FilePath path;
 
     public FileEntry(
             FileSystem fileSystem,
-            @NonNull String path,
+            @NonNull FilePath path,
             Instant date,
             long size,
             FileInfo info,
             @NonNull FileKind kind) {
         this.fileSystem = fileSystem;
         this.kind = kind;
-        this.path =
-                kind == FileKind.DIRECTORY ? new FilePath(path).toDirectory().toString() : path;
+        this.path = kind == FileKind.DIRECTORY ? new FilePath(path.toDirectory().toString()) : path;
         this.date = date;
         this.info = info;
         this.size = size;
     }
 
-    public static FileEntry ofDirectory(FileSystem fileSystem, String path) {
+    public static FileEntry ofDirectory(FileSystem fileSystem, FilePath path) {
         return new FileEntry(fileSystem, path, Instant.now(), 0, null, FileKind.DIRECTORY);
     }
 
@@ -49,6 +48,6 @@ public class FileEntry {
     }
 
     public String getName() {
-        return FileNames.getFileName(path);
+        return path.getFileName();
     }
 }

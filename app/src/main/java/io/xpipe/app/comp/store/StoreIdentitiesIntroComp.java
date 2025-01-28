@@ -50,8 +50,8 @@ public class StoreIdentitiesIntroComp extends SimpleComp {
         addButton.setOnAction(event -> {
             var canSync = DataStorage.get().supportsSharing();
             var prov = canSync
-                    ? DataStoreProviders.byName("syncedIdentity").orElseThrow()
-                    : DataStoreProviders.byName("localIdentity").orElseThrow();
+                    ? DataStoreProviders.byId("syncedIdentity").orElseThrow()
+                    : DataStoreProviders.byId("localIdentity").orElseThrow();
             StoreCreationComp.showCreation(prov, DataStoreCreationCategory.IDENTITY);
             event.consume();
         });

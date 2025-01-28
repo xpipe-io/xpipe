@@ -63,8 +63,7 @@ public final class BrowserFileListComp extends SimpleComp {
         filenameCol.textProperty().bind(AppI18n.observable("name"));
         filenameCol.setCellValueFactory(param -> new SimpleStringProperty(
                 param.getValue() != null
-                        ? FileNames.getFileName(
-                                param.getValue().getRawFileEntry().getPath())
+                        ? param.getValue().getRawFileEntry().getPath().getFileName()
                         : null));
         filenameCol.setComparator(Comparator.comparing(String::toLowerCase));
         filenameCol.setSortType(ASCENDING);

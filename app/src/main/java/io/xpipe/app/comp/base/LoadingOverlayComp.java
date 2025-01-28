@@ -57,7 +57,10 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
                         }
 
                         if (!showLoading.getValue()) {
-                            Platform.runLater(() -> loadingOverlay.setVisible(false));
+                            Platform.runLater(() -> {
+                                loadingOverlay.setVisible(false);
+                                loadingOverlay.setManaged(false);
+                            });
                         }
                     });
                 } else {
@@ -68,7 +71,10 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
                         }
 
                         if (showLoading.getValue()) {
-                            Platform.runLater(() -> loadingOverlay.setVisible(true));
+                            Platform.runLater(() -> {
+                                loadingOverlay.setVisible(true);
+                                loadingOverlay.setManaged(true);
+                            });
                         }
                     });
                 }

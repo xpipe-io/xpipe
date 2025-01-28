@@ -8,7 +8,7 @@ import com.sun.jna.platform.win32.Advapi32Util;
 import com.sun.jna.platform.win32.WinReg;
 import lombok.Value;
 
-import java.util.Optional;
+import java.util.*;
 
 public abstract class WindowsRegistry {
 
@@ -31,12 +31,16 @@ public abstract class WindowsRegistry {
 
     public abstract boolean keyExists(int hkey, String key) throws Exception;
 
+    public abstract List<String> listSubKeys(int hkey, String key) throws Exception;
+
     public abstract boolean valueExists(int hkey, String key, String valueName) throws Exception;
 
-    public abstract Optional<String> readValue(int hkey, String key, String valueName) throws Exception;
+    public abstract OptionalInt readIntegerValueIfPresent(int hkey, String key, String valueName) throws Exception;
 
-    public Optional<String> readValue(int hkey, String key) throws Exception {
-        return readValue(hkey, key, null);
+    public abstract Optional<String> readStringValueIfPresent(int hkey, String key, String valueName) throws Exception;
+
+    public Optional<String> readStringValueIfPresent(int hkey, String key) throws Exception {
+        return readStringValueIfPresent(hkey, key, null);
     }
 
     public abstract Optional<String> findValuesRecursive(int hkey, String key, String valueName) throws Exception;
@@ -62,6 +66,17 @@ public abstract class WindowsRegistry {
         }
 
         @Override
+        public List<String> listSubKeys(int hkey, String key) throws Exception {
+            // This can fail even with errors in case the jna native library extraction or loading fails
+            try {
+                return Arrays.asList(Advapi32Util.registryGetKeys(hkey(hkey), key));
+            } catch (Throwable t) {
+                ErrorEvent.fromThrowable(t).handle();
+                return List.of();
+            }
+        }
+
+        @Override
         public boolean valueExists(int hkey, String key, String valueName) {
             // This can fail even with errors in case the jna native library extraction or loading fails
             try {
@@ -73,7 +88,22 @@ public abstract class WindowsRegistry {
         }
 
         @Override
-        public Optional<String> readValue(int hkey, String key, String valueName) {
+        public OptionalInt readIntegerValueIfPresent(int hkey, String key, String valueName) throws Exception {
+            // This can fail even with errors in case the jna native library extraction or loading fails
+            try {
+                if (!Advapi32Util.registryValueExists(hkey(hkey), key, valueName)) {
+                    return OptionalInt.empty();
+                }
+
+                return OptionalInt.of(Advapi32Util.registryGetIntValue(hkey(hkey), key, valueName));
+            } catch (Throwable t) {
+                ErrorEvent.fromThrowable(t).handle();
+                return OptionalInt.empty();
+            }
+        }
+
+        @Override
+        public Optional<String> readStringValueIfPresent(int hkey, String key, String valueName) {
             // This can fail even with errors in case the jna native library extraction or loading fails
             try {
                 if (!Advapi32Util.registryValueExists(hkey(hkey), key, valueName)) {
@@ -109,11 +139,17 @@ public abstract class WindowsRegistry {
             // \n<Version information>\n\n<key>\t<registry type>\t<value>
             if (original.contains("\t")) {
                 String[] parsed = original.split("\t");
+                if (parsed.length < 4) {
+                    return Optional.empty();
+                }
                 return Optional.of(parsed[parsed.length - 1]);
             }
 
             if (original.contains("    ")) {
-                String[] parsed = original.split("    ");
+                String[] parsed = original.split(" {4}");
+                if (parsed.length < 4) {
+                    return Optional.empty();
+                }
                 return Optional.of(parsed[parsed.length - 1]);
             }
 
@@ -142,6 +178,18 @@ public abstract class WindowsRegistry {
         }
 
         @Override
+        public List<String> listSubKeys(int hkey, String key) throws Exception {
+            var prefix = hkey(hkey) + "\\" + key;
+            var command = CommandBuilder.of()
+                    .add("reg", "query")
+                    .addQuoted(prefix);
+            var out = shellControl.command(command).readStdoutOrThrow();
+            return out.lines().filter(s -> {
+                return s.contains(prefix + "\\");
+            }).map(s -> s.replace(prefix + "\\", "")).toList();
+        }
+
+        @Override
         public boolean valueExists(int hkey, String key, String valueName) throws Exception {
             var command = CommandBuilder.of()
                     .add("reg", "query")
@@ -154,7 +202,17 @@ public abstract class WindowsRegistry {
         }
 
         @Override
-        public Optional<String> readValue(int hkey, String key, String valueName) throws Exception {
+        public OptionalInt readIntegerValueIfPresent(int hkey, String key, String valueName) throws Exception {
+            var r = readStringValueIfPresent(hkey, key, valueName);
+            if (r.isPresent()) {
+                return OptionalInt.of(Integer.decode(r.get()));
+            } else {
+                return OptionalInt.empty();
+            }
+        }
+
+        @Override
+        public Optional<String> readStringValueIfPresent(int hkey, String key, String valueName) throws Exception {
             var command = CommandBuilder.of()
                     .add("reg", "query")
                     .addQuoted(hkey(hkey) + "\\" + key)

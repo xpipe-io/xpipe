@@ -11,6 +11,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FileNames;
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.FileSystemStore;
 import io.xpipe.core.util.FailableFunction;
 
@@ -198,7 +199,7 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
 
     public void openFileSystemAsync(
             DataStoreEntryRef<? extends FileSystemStore> store,
-            FailableFunction<BrowserFileSystemTabModel, String, Exception> path,
+            FailableFunction<BrowserFileSystemTabModel, FilePath, Exception> path,
             BooleanProperty externalBusy) {
         if (store == null) {
             return;
@@ -211,7 +212,7 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
 
     public BrowserFileSystemTabModel openFileSystemSync(
             DataStoreEntryRef<? extends FileSystemStore> store,
-            FailableFunction<BrowserFileSystemTabModel, String, Exception> path,
+            FailableFunction<BrowserFileSystemTabModel, FilePath, Exception> path,
             BooleanProperty externalBusy,
             boolean select)
             throws Exception {
@@ -231,7 +232,7 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
             }
         }
         if (path != null) {
-            model.initWithGivenDirectory(FileNames.toDirectory(path.apply(model)));
+            model.initWithGivenDirectory(path.apply(model).toDirectory());
         } else {
             model.initWithDefaultDirectory();
         }

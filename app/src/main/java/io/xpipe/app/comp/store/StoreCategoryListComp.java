@@ -20,6 +20,7 @@ public class StoreCategoryListComp extends SimpleComp {
         sp.styleClass("store-category-bar");
         sp.apply(struc -> {
             Region content = (Region) struc.get().getContent();
+            struc.get().setFitToWidth(true);
             struc.get()
                     .minHeightProperty()
                     .bind(Bindings.createDoubleBinding(

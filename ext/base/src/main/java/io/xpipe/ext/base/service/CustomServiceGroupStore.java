@@ -1,6 +1,7 @@
 package io.xpipe.ext.base.service;
 
 import io.xpipe.app.util.Validators;
+import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.NetworkTunnelStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -13,11 +14,11 @@ import lombok.extern.jackson.Jacksonized;
 @JsonTypeName("customServiceGroup")
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class CustomServiceGroupStore extends AbstractServiceGroupStore<NetworkTunnelStore> {
+public class CustomServiceGroupStore extends AbstractServiceGroupStore<DataStore> {
 
     @Override
     public void checkComplete() throws Throwable {
         super.checkComplete();
-        Validators.isType(getParent(), NetworkTunnelStore.class);
+        Validators.isType(getParent(), DataStore.class);
     }
 }

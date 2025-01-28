@@ -5,7 +5,7 @@ import io.xpipe.app.beacon.BlobManager;
 import io.xpipe.app.util.FixedSizeInputStream;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.FsReadExchange;
-import io.xpipe.core.store.ConnectionFileSystem;
+import io.xpipe.app.ext.ConnectionFileSystem;
 
 import com.sun.net.httpserver.HttpExchange;
 import lombok.SneakyThrows;
@@ -22,14 +22,14 @@ public class FsReadExchangeImpl extends FsReadExchange {
         var shell = AppBeaconServer.get().getCache().getShellSession(msg.getConnection());
         var fs = new ConnectionFileSystem(shell.getControl());
 
-        if (!fs.fileExists(msg.getPath().toString())) {
+        if (!fs.fileExists(msg.getPath())) {
             throw new BeaconClientException("File does not exist");
         }
 
-        var size = fs.getFileSize(msg.getPath().toString());
+        var size = fs.getFileSize(msg.getPath());
         if (size > 100_000_000) {
             var file = BlobManager.get().newBlobFile();
-            try (var in = fs.openInput(msg.getPath().toString())) {
+            try (var in = fs.openInput(msg.getPath())) {
                 var fixedIn = new FixedSizeInputStream(new BufferedInputStream(in), size);
                 try (var fileOut =
                         Files.newOutputStream(file.resolve(msg.getPath().getFileName()))) {
@@ -45,7 +45,7 @@ public class FsReadExchangeImpl extends FsReadExchange {
             }
         } else {
             byte[] bytes;
-            try (var in = fs.openInput(msg.getPath().toString())) {
+            try (var in = fs.openInput(msg.getPath())) {
                 var fixedIn = new FixedSizeInputStream(new BufferedInputStream(in), size);
                 bytes = fixedIn.readAllBytes();
                 in.transferTo(OutputStream.nullOutputStream());

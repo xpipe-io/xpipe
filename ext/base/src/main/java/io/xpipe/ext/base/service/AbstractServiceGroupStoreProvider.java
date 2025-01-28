@@ -80,7 +80,7 @@ public abstract class AbstractServiceGroupStoreProvider implements DataStoreProv
                 },
                 section.getShownChildren().getList(),
                 section.getAllChildren().getList(),
-                AppPrefs.get().language());
+                AppI18n.activeLanguage());
     }
 
     @Override

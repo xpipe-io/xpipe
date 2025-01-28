@@ -69,7 +69,7 @@ public class BrowserFileTransferOperation {
         this.progress.accept(progress);
     }
 
-    private BrowserAlerts.FileConflictChoice handleChoice(FileSystem fileSystem, String target, boolean multiple)
+    private BrowserAlerts.FileConflictChoice handleChoice(FileSystem fileSystem, FilePath target, boolean multiple)
             throws Exception {
         if (lastConflictChoice == BrowserAlerts.FileConflictChoice.CANCEL) {
             return BrowserAlerts.FileConflictChoice.CANCEL;
@@ -173,7 +173,7 @@ public class BrowserFileTransferOperation {
         }
 
         var sourceFile = source.getPath();
-        var targetFile = FileNames.join(target.getPath(), FileNames.getFileName(sourceFile));
+        var targetFile = target.getPath().join(sourceFile.getFileName());
 
         if (sourceFile.equals(targetFile)) {
             // Duplicate file by renaming it
@@ -205,7 +205,7 @@ public class BrowserFileTransferOperation {
         }
     }
 
-    private String renameFileLoop(FileSystem fileSystem, String target, boolean dir) throws Exception {
+    private FilePath renameFileLoop(FileSystem fileSystem, FilePath target, boolean dir) throws Exception {
         // Who has more than 10 copies?
         for (int i = 0; i < 10; i++) {
             target = renameFile(target);
@@ -216,23 +216,22 @@ public class BrowserFileTransferOperation {
         return target;
     }
 
-    private String renameFile(String target) {
-        var targetFile = new FilePath(target);
-        var name = targetFile.getFileName();
+    private FilePath renameFile(FilePath target) {
+        var name = target.getFileName();
         var pattern = Pattern.compile("(.+) \\((\\d+)\\)\\.(.+?)");
         var matcher = pattern.matcher(name);
         if (matcher.matches()) {
             try {
                 var number = Integer.parseInt(matcher.group(2));
                 var newFile =
-                        targetFile.getParent().join(matcher.group(1) + " (" + (number + 1) + ")." + matcher.group(3));
-                return newFile.toString();
+                        target.getParent().join(matcher.group(1) + " (" + (number + 1) + ")." + matcher.group(3));
+                return newFile;
             } catch (NumberFormatException ignored) {
             }
         }
 
-        var noExt = targetFile.getFileName().equals(targetFile.getExtension());
-        return targetFile.getBaseName() + " (" + 1 + ")" + (noExt ? "" : "." + targetFile.getExtension());
+        var noExt = target.getFileName().equals(target.getExtension());
+        return target.getBaseName() + " (" + 1 + ")" + (noExt ? "" : "." + target.getExtension());
     }
 
     private void handleSingleAcrossFileSystems(FileEntry source) throws Exception {
@@ -244,7 +243,7 @@ public class BrowserFileTransferOperation {
 
         // Prevent dropping directory into itself
         if (source.getFileSystem().equals(target.getFileSystem())
-                && FileNames.startsWith(source.getPath(), target.getPath())) {
+                && source.getPath().startsWith(target.getPath())) {
             return;
         }
 
@@ -256,17 +255,17 @@ public class BrowserFileTransferOperation {
                 return;
             }
 
-            var directoryName = FileNames.getFileName(source.getPath());
+            var directoryName = source.getPath().getFileName();
             flatFiles.put(source, directoryName);
 
-            var baseRelative = FileNames.toDirectory(FileNames.getParent(source.getPath()));
+            var baseRelative = source.getPath().getParent().toDirectory();
             List<FileEntry> list = source.getFileSystem().listFilesRecursively(source.getPath());
             for (FileEntry fileEntry : list) {
                 if (cancelled()) {
                     return;
                 }
 
-                var rel = FileNames.toUnix(FileNames.relativize(baseRelative, fileEntry.getPath()));
+                var rel = baseRelative.relativize(fileEntry.getPath()).toUnix();
                 flatFiles.put(fileEntry, rel);
                 if (fileEntry.getKind() == FileKind.FILE) {
                     // This one is up-to-date and does not need to be recalculated
@@ -280,7 +279,7 @@ public class BrowserFileTransferOperation {
                 return;
             }
 
-            flatFiles.put(source, FileNames.getFileName(source.getPath()));
+            flatFiles.put(source, source.getPath().getFileName());
             // Recalculate as it could have been changed meanwhile
             totalSize.addAndGet(source.getFileSystem().getFileSize(source.getPath()));
         }

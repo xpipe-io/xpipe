@@ -294,7 +294,7 @@ public class BrowserFileListCompEntry {
                     return;
                 }
 
-                model.getFileSystemModel().cdAsync(item.getRawFileEntry().getPath());
+                model.getFileSystemModel().cdAsync(item.getRawFileEntry().getPath().toString());
             }
         };
         DROP_TIMER.schedule(activeTask, 1200);

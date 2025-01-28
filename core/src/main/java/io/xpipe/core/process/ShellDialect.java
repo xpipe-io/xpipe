@@ -30,10 +30,6 @@ public interface ShellDialect {
 
     String getExecutableName();
 
-    default boolean isSelectable() {
-        return true;
-    }
-
     default boolean isCompatibleTo(ShellDialect other) {
         return other.equals(this);
     }

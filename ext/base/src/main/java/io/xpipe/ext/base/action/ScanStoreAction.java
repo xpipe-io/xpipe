@@ -56,7 +56,7 @@ public class ScanStoreAction implements ActionProvider {
 
             @Override
             public String getIcon(DataStoreEntryRef<ShellStore> store) {
-                return "mdi2m-magnify-scan";
+                return "mdi2l-layers-plus";
             }
         };
     }

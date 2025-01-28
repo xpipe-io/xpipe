@@ -59,7 +59,6 @@ jlink {
             // '--strip-debug',
             '--no-header-files',
             '--no-man-pages',
-            '--include-locales', "${String.join(",", languages)}",
             '--compress', 'zip-9',
             '--ignore-signing-information'
     ]

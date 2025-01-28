@@ -21,6 +21,7 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -45,9 +46,8 @@ public class ModalOverlayComp extends SimpleComp {
     protected Region createSimple() {
         var bgRegion = background.createRegion();
         var modal = new ModalPane();
-        modal.setInTransitionFactory(OsType.getLocal() == OsType.LINUX ? null : node -> fadeInDelyed(node));
-        modal.setOutTransitionFactory(
-                OsType.getLocal() == OsType.LINUX ? null : node -> Animations.fadeOut(node, Duration.millis(200)));
+        modal.setInTransitionFactory(null);
+        modal.setOutTransitionFactory(OsType.getLocal() == OsType.LINUX ? null : node -> Animations.fadeOut(node, Duration.millis(50)));
         modal.focusedProperty().addListener((observable, oldValue, newValue) -> {
             var c = modal.getContent();
             if (newValue && c != null) {
@@ -228,6 +228,13 @@ public class ModalOverlayComp extends SimpleComp {
             var busy = mocc.busy();
             if (busy != null) {
                 var loading = LoadingOverlayComp.noProgress(Comp.of(() -> modalBox), busy);
+//                loading.apply(struc -> {
+//                    var bg = struc.get().getChildren().getFirst();
+//                    struc.get().getChildren().get(1).addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+//                        bg.fireEvent(event);
+//                        event.consume();
+//                    });
+//                });
                 return loading.createRegion();
             }
         }
@@ -289,7 +296,7 @@ public class ModalOverlayComp extends SimpleComp {
         var t = new Timeline(
                 new KeyFrame(Duration.ZERO, new KeyValue(node.opacityProperty(), 0.01)),
                 new KeyFrame(Duration.millis(50), new KeyValue(node.opacityProperty(), 0.01, Animations.EASE)),
-                new KeyFrame(Duration.millis(150), new KeyValue(node.opacityProperty(), 1, Animations.EASE)));
+                new KeyFrame(Duration.millis(1250), new KeyValue(node.opacityProperty(), 1, Animations.EASE)));
 
         t.statusProperty().addListener((obs, old, val) -> {
             if (val == Animation.Status.STOPPED) {

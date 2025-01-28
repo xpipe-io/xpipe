@@ -8,6 +8,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.process.*;
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.FailableFunction;
 
 import java.io.IOException;
@@ -46,12 +47,12 @@ public class TerminalLauncher {
         open(null, title, null, cc, request, true);
     }
 
-    public static void open(DataStoreEntry entry, String title, String directory, ProcessControl cc) throws Exception {
+    public static void open(DataStoreEntry entry, String title, FilePath directory, ProcessControl cc) throws Exception {
         open(entry, title, directory, cc, UUID.randomUUID(), true);
     }
 
     public static void open(
-            DataStoreEntry entry, String title, String directory, ProcessControl cc, UUID request, boolean preferTabs)
+            DataStoreEntry entry, String title, FilePath directory, ProcessControl cc, UUID request, boolean preferTabs)
             throws Exception {
         var type = AppPrefs.get().terminalType().getValue();
         if (type == null) {

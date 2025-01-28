@@ -157,14 +157,14 @@ public class BrowserFileSystemTabComp extends SimpleComp {
                 root, new KeyCodeCombination(KeyCode.UP, KeyCombination.ALT_DOWN), true, keyEvent -> {
                     var p = model.getCurrentParentDirectory();
                     if (p != null) {
-                        model.cdAsync(p.getPath());
+                        model.cdAsync(p.getPath().toString());
                     }
                     keyEvent.consume();
                 });
         InputHelper.onKeyCombination(root, new KeyCodeCombination(KeyCode.BACK_SPACE), false, keyEvent -> {
             var p = model.getCurrentParentDirectory();
             if (p != null) {
-                model.cdAsync(p.getPath());
+                model.cdAsync(p.getPath().toString());
             }
             keyEvent.consume();
         });

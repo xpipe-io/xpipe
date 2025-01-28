@@ -12,37 +12,37 @@ import java.util.stream.Stream;
 
 public interface FileSystem extends Closeable, AutoCloseable {
 
-    long getFileSize(String file) throws Exception;
+    long getFileSize(FilePath file) throws Exception;
 
     Optional<ShellControl> getShell();
 
     FileSystem open() throws Exception;
 
-    InputStream openInput(String file) throws Exception;
+    InputStream openInput(FilePath file) throws Exception;
 
-    OutputStream openOutput(String file, long totalBytes) throws Exception;
+    OutputStream openOutput(FilePath file, long totalBytes) throws Exception;
 
-    boolean fileExists(String file) throws Exception;
+    boolean fileExists(FilePath file) throws Exception;
 
-    void delete(String file) throws Exception;
+    void delete(FilePath file) throws Exception;
 
-    void copy(String file, String newFile) throws Exception;
+    void copy(FilePath file, FilePath newFile) throws Exception;
 
-    void move(String file, String newFile) throws Exception;
+    void move(FilePath file, FilePath newFile) throws Exception;
 
-    void mkdirs(String file) throws Exception;
+    void mkdirs(FilePath file) throws Exception;
 
-    void touch(String file) throws Exception;
+    void touch(FilePath file) throws Exception;
 
-    void symbolicLink(String linkFile, String targetFile) throws Exception;
+    void symbolicLink(FilePath linkFile, FilePath targetFile) throws Exception;
 
-    boolean directoryExists(String file) throws Exception;
+    boolean directoryExists(FilePath file) throws Exception;
 
-    void directoryAccessible(String file) throws Exception;
+    void directoryAccessible(FilePath file) throws Exception;
 
-    Stream<FileEntry> listFiles(String file) throws Exception;
+    Stream<FileEntry> listFiles(FilePath file) throws Exception;
 
-    default List<FileEntry> listFilesRecursively(String file) throws Exception {
+    default List<FileEntry> listFilesRecursively(FilePath file) throws Exception {
         List<FileEntry> base;
         try (var filesStream = listFiles(file)) {
             base = filesStream.toList();
