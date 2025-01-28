@@ -14,7 +14,7 @@ public interface ProcessControl extends AutoCloseable {
 
     void resetData();
 
-    String prepareTerminalOpen(TerminalInitScriptConfig config, WorkingDirectoryFunction workingDirectory)
+    ShellOpenFunctionArgument prepareTerminalOpen(TerminalInitScriptConfig config, WorkingDirectoryFunction workingDirectory)
             throws Exception;
 
     void refreshRunningState();

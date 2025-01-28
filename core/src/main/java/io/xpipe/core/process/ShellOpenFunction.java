@@ -4,11 +4,6 @@ import lombok.NonNull;
 
 public interface ShellOpenFunction {
 
-    interface Argument {
-
-        String get(boolean requiresExecutableInFirst);
-    }
-
     static ShellOpenFunction unsupported() {
         return new ShellOpenFunction() {
             @Override
@@ -17,7 +12,7 @@ public interface ShellOpenFunction {
             }
 
             @Override
-            public CommandBuilder prepareWithInitCommand(@NonNull Argument command) {
+            public CommandBuilder prepareWithInitCommand(@NonNull ShellOpenFunctionArgument command) {
                 throw new UnsupportedOperationException();
             }
         };
@@ -31,7 +26,7 @@ public interface ShellOpenFunction {
             }
 
             @Override
-            public CommandBuilder prepareWithInitCommand(@NonNull Argument command) {
+            public CommandBuilder prepareWithInitCommand(@NonNull ShellOpenFunctionArgument command) {
                 return CommandBuilder.ofFunction(sc -> (append ? b.buildFull(sc) + " " : "") + command);
             }
         };
@@ -39,5 +34,5 @@ public interface ShellOpenFunction {
 
     CommandBuilder prepareWithoutInitCommand() throws Exception;
 
-    CommandBuilder prepareWithInitCommand(@NonNull Argument command) throws Exception;
+    CommandBuilder prepareWithInitCommand(@NonNull ShellOpenFunctionArgument command) throws Exception;
 }

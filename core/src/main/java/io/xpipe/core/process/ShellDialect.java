@@ -132,7 +132,7 @@ public interface ShellDialect {
 
     CommandBuilder getOpenScriptCommand(String file);
 
-    String terminalInitCommand(ShellControl shellControl, boolean requiresExecutableFirst, boolean supportsRawArguments, String file, boolean exit);
+    ShellOpenFunctionArgument terminalInitCommand(ShellControl shellControl, String file, boolean exit);
 
     String prepareTerminalInitFileOpenCommand(ShellDialect parentDialect, ShellControl sc, String file, boolean exit);
 

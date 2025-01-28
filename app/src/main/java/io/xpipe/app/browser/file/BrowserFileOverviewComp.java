@@ -6,7 +6,6 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
-import io.xpipe.app.comp.base.VBoxViewComp;
 import io.xpipe.core.store.FileEntry;
 
 import javafx.collections.ObservableList;
@@ -48,12 +47,10 @@ public class BrowserFileOverviewComp extends SimpleComp {
             });
         };
 
-        if (grow) {
-            var c = new ListBoxViewComp<>(list, list, factory, true).styleClass("overview-file-list");
-            return c.createRegion();
-        } else {
-            var c = new VBoxViewComp<>(list, list, factory).styleClass("overview-file-list");
-            return c.createRegion();
+        var c = new ListBoxViewComp<>(list, list, factory, true).styleClass("overview-file-list");
+        if (!grow) {
+            c.apply(struc -> struc.get().setFitToHeight(true));
         }
+        return c.createRegion();
     }
 }
