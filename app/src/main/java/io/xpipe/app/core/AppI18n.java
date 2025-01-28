@@ -34,7 +34,8 @@ public class AppI18n {
 
     private static AppI18n INSTANCE;
     private final Property<AppI18nData> currentLanguage = new SimpleObjectProperty<>();
-    private final ObservableValue<SupportedLocale> currentLocale = BindingsHelper.map(currentLanguage,appI18nData -> appI18nData.getLocale());
+    private final ObservableValue<SupportedLocale> currentLocale = BindingsHelper.map(currentLanguage,appI18nData -> appI18nData != null ?
+            appI18nData.getLocale() : SupportedLocale.getEnglish());
     private final Map<String, ObservableValue<String>> observableCache = new HashMap<>();
     private AppI18nData english;
 

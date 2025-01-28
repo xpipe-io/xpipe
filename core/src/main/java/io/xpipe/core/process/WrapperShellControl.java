@@ -185,7 +185,7 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public ShellOpenFunctionArgument prepareTerminalOpen(TerminalInitScriptConfig config, WorkingDirectoryFunction workingDirectory)
+    public String prepareTerminalOpen(TerminalInitScriptConfig config, WorkingDirectoryFunction workingDirectory)
             throws Exception {
         return parent.prepareTerminalOpen(config, workingDirectory);
     }
@@ -291,7 +291,7 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public ShellOpenFunctionArgument prepareIntermediateTerminalOpen(
+    public String prepareIntermediateTerminalOpen(
             TerminalInitFunction content, TerminalInitScriptConfig config, WorkingDirectoryFunction workingDirectory)
             throws Exception {
         return parent.prepareIntermediateTerminalOpen(content, config, workingDirectory);

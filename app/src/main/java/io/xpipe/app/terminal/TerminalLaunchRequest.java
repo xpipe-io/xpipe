@@ -94,7 +94,7 @@ public class TerminalLaunchRequest {
         };
 
         try {
-            var file = ScriptHelper.createLocalExecScript(processControl.prepareTerminalOpen(config, wd).get(false));
+            var file = ScriptHelper.createLocalExecScript(processControl.prepareTerminalOpen(config, wd));
             setResult(new TerminalLaunchResult.ResultSuccess(Path.of(file.toString())));
         } catch (Exception e) {
             setResult(new TerminalLaunchResult.ResultFailure(e));

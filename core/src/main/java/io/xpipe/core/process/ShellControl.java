@@ -133,7 +133,7 @@ public interface ShellControl extends ProcessControl {
 
     void checkLicenseOrThrow();
 
-    ShellOpenFunctionArgument prepareIntermediateTerminalOpen(
+    String prepareIntermediateTerminalOpen(
             TerminalInitFunction content, TerminalInitScriptConfig config, WorkingDirectoryFunction workingDirectory)
             throws Exception;
 
@@ -197,8 +197,8 @@ public interface ShellControl extends ProcessControl {
             }
 
             @Override
-            public CommandBuilder prepareWithInitCommand(@NonNull ShellOpenFunctionArgument command) {
-                return CommandBuilder.ofString(command.get(false));
+            public CommandBuilder prepareWithInitCommand(@NonNull String command) {
+                return CommandBuilder.ofString(command);
             }
         };
         var s = subShell();
@@ -218,8 +218,8 @@ public interface ShellControl extends ProcessControl {
             }
 
             @Override
-            public CommandBuilder prepareWithInitCommand(@NonNull ShellOpenFunctionArgument command) {
-                return CommandBuilder.ofString(command.get(false));
+            public CommandBuilder prepareWithInitCommand(@NonNull String command) {
+                return CommandBuilder.ofString(command);
             }
         };
         var sc = subShell();

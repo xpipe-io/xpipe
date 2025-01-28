@@ -132,9 +132,7 @@ public interface ShellDialect {
 
     CommandBuilder getOpenScriptCommand(String file);
 
-    ShellOpenFunctionArgument terminalInitCommand(ShellControl shellControl, String file, boolean exit);
-
-    String prepareTerminalInitFileOpenCommand(ShellDialect parentDialect, ShellControl sc, String file, boolean exit);
+    String terminalInitCommand(ShellControl shellControl, String file, boolean exit);
 
     String runScriptCommand(ShellControl parent, String file);
 

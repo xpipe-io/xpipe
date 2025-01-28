@@ -12,7 +12,7 @@ public interface ShellOpenFunction {
             }
 
             @Override
-            public CommandBuilder prepareWithInitCommand(@NonNull ShellOpenFunctionArgument command) {
+            public CommandBuilder prepareWithInitCommand(@NonNull String command) {
                 throw new UnsupportedOperationException();
             }
         };
@@ -20,5 +20,5 @@ public interface ShellOpenFunction {
 
     CommandBuilder prepareWithoutInitCommand() throws Exception;
 
-    CommandBuilder prepareWithInitCommand(@NonNull ShellOpenFunctionArgument command) throws Exception;
+    CommandBuilder prepareWithInitCommand(@NonNull String command) throws Exception;
 }

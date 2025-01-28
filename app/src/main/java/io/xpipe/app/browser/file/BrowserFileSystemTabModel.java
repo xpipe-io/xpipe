@@ -314,8 +314,8 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                         }
 
                         @Override
-                        public CommandBuilder prepareWithInitCommand(@NonNull ShellOpenFunctionArgument command) {
-                            return CommandBuilder.ofString(command.get(false));
+                        public CommandBuilder prepareWithInitCommand(@NonNull String command) {
+                            return CommandBuilder.ofString(command);
                         }
                     };
                     sub.setDumbOpen(open);
