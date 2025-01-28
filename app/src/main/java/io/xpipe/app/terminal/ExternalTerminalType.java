@@ -57,21 +57,21 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     //        }
     //    };
 
-    static ExternalTerminalType determineNonSshBridgeFallback(ExternalTerminalType type) {
+    static ExternalTerminalType determineFallbackTerminalToOpen(ExternalTerminalType type) {
         if (type == XSHELL || type == MOBAXTERM || type == SECURECRT) {
             return ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.CMD ? CMD : POWERSHELL;
         }
 
-        if (type != TERMIUS) {
+        if (type != TERMIUS && type instanceof WaveTerminalType) {
             return type;
         }
 
         switch (OsType.getLocal()) {
             case OsType.Linux linux -> {
-                // This should not be termius as all others take precedence
+                // This should not be termius or wave as all others take precedence
                 var def = determineDefault(null);
                 // If there's no other terminal available, use a fallback which won't work
-                return def != TERMIUS ? def : XTERM;
+                return def != TERMIUS && def != WaveTerminalType.WAVE_LINUX ? def : XTERM;
             }
             case OsType.MacOs macOs -> {
                 return MACOS_TERMINAL;

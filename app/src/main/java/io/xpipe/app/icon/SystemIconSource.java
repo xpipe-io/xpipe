@@ -6,8 +6,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.Hyperlinks;
+import io.xpipe.app.util.Validators;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.store.FileNames;
+import io.xpipe.core.util.ValidationException;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -31,6 +33,12 @@ public interface SystemIconSource {
 
         Path path;
         String id;
+
+        @Override
+        public void checkComplete() throws ValidationException {
+            Validators.nonNull(path);
+            Validators.notEmpty(id);
+        }
 
         @Override
         public void refresh() throws Exception {
@@ -74,6 +82,12 @@ public interface SystemIconSource {
         String id;
 
         @Override
+        public void checkComplete() throws ValidationException {
+            Validators.notEmpty(remote);
+            Validators.notEmpty(id);
+        }
+
+        @Override
         public void refresh() throws Exception {
             try (var sc = ProcessControlProvider.get().createLocalProcessControl(true).start()) {
                 var dir = SystemIconManager.getPoolPath().resolve(id);
@@ -110,6 +124,8 @@ public interface SystemIconSource {
             Hyperlinks.open(remote);
         }
     }
+
+    void checkComplete() throws ValidationException;
 
     void refresh() throws Exception;
 

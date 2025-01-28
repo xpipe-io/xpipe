@@ -81,6 +81,11 @@ public class IconsCategory extends AppPrefsCategory {
                     return;
                 }
 
+                // Don't use the git sync repo itself ...
+                if (remote.get().equals(AppPrefs.get().storageGitRemote().get())) {
+                    return;
+                }
+
                 var source = SystemIconSource.GitRepository.builder().remote(remote.get()).id(UUID.randomUUID().toString()).build();
                 if (!sources.contains(source)) {
                     sources.add(source);

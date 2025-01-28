@@ -5,6 +5,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.core.util.ValidationException;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,6 +24,13 @@ public class SystemIconManager {
         all.add(SystemIconSource.Directory.builder().path(DataStorage.get().getIconsDir()).id("custom").build());
         all.add(SystemIconSource.GitRepository.builder().remote("https://github.com/selfhst/icons").id("selfhst").build());
         for (var pref : prefs) {
+            try {
+                pref.checkComplete();
+            } catch (ValidationException e) {
+                ErrorEvent.fromThrowable(e).omit().expected().handle();
+                continue;
+            }
+
             if (!all.contains(pref)) {
                 all.add(pref);
             }
