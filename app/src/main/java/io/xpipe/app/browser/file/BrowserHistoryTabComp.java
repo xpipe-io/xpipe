@@ -114,6 +114,10 @@ public class BrowserHistoryTabComp extends SimpleComp {
                             });
                         },
                         true)
+                .apply(struc -> {
+                    VBox vBox = (VBox) struc.get().getContent();
+                    vBox.setSpacing(10);
+                })
                 .hide(empty)
                 .createRegion();
 
