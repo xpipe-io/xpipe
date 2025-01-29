@@ -46,7 +46,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
     protected Region createSimple() {
         var state = BrowserHistorySavedStateImpl.get();
 
-        var welcome = new BrowserGreetingComp().createSimple();
+        var welcome = new BrowserGreetingComp().createRegion();
 
         var vbox = new VBox(welcome, new Spacer(4, Orientation.VERTICAL));
         vbox.setAlignment(Pos.CENTER_LEFT);
