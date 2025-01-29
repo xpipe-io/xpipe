@@ -13,6 +13,7 @@ import io.xpipe.app.icon.SystemIconSource;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageUserHandler;
 import io.xpipe.app.util.*;
+import io.xpipe.core.store.FilePath;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -95,16 +96,16 @@ public class IconsCategory extends AppPrefsCategory {
         addGitButton.grow(true, false);
 
         var addDirectoryButton = new TileButtonComp("addDirectoryIconSource", "addDirectoryIconSourceDescription", "mdi2f-folder-plus", e -> {
-            var dir = new SimpleStringProperty();
+            var dir = new SimpleObjectProperty<FilePath>();
             var modal = ModalOverlay.of(
                     "iconDirectory",
                     new ContextualFileReferenceChoiceComp(new SimpleObjectProperty<>(DataStorage.get().local().ref()),dir,null,List.of()).prefWidth(350));
             modal.withDefaultButtons(() -> {
-                if (dir.get() == null || dir.get().isBlank()) {
+                if (dir.get() == null) {
                     return;
                 }
 
-                var source = SystemIconSource.Directory.builder().path(Path.of(dir.get())).id(UUID.randomUUID().toString()).build();
+                var source = SystemIconSource.Directory.builder().path(Path.of(dir.get().toString())).id(UUID.randomUUID().toString()).build();
                 if (!sources.contains(source)) {
                     sources.add(source);
                     var nl = new ArrayList<>(AppPrefs.get().getIconSources().getValue());

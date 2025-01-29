@@ -65,5 +65,5 @@ public interface FileSystem extends Closeable, AutoCloseable {
                 .toList();
     }
 
-    List<String> listRoots() throws Exception;
+    List<FilePath> listRoots() throws Exception;
 }

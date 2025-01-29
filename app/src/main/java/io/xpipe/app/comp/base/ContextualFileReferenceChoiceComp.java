@@ -11,6 +11,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.FileSystemStore;
 
@@ -18,6 +19,7 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -148,7 +150,14 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
         var items = allFiles.stream()
                 .map(previousFileReference -> previousFileReference.getPath().toString())
                 .toList();
-        var combo = new ComboTextFieldComp(filePath, items, param -> {
+        var prop = new SimpleStringProperty();
+        filePath.subscribe(s -> PlatformThread.runLaterIfNeeded(() -> {
+            prop.set(s != null ? s.toString() : null);
+        }));
+        prop.addListener((observable, oldValue, newValue) -> {
+            filePath.setValue(newValue != null ? new FilePath(newValue) : null);
+        });
+        var combo = new ComboTextFieldComp(prop, items, param -> {
             return new ListCell<>() {
                 @Override
                 protected void updateItem(String item, boolean empty) {
@@ -173,7 +182,14 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
     }
 
     private Comp<?> createTextField() {
-        var fileNameComp = new TextFieldComp(filePath)
+        var prop = new SimpleStringProperty();
+        filePath.subscribe(s -> PlatformThread.runLaterIfNeeded(() -> {
+            prop.set(s != null ? s.toString() : null);
+        }));
+        prop.addListener((observable, oldValue, newValue) -> {
+            filePath.setValue(newValue != null ? new FilePath(newValue) : null);
+        });
+        var fileNameComp = new TextFieldComp(prop)
                 .apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS))
                 .styleClass(Styles.LEFT_PILL)
                 .grow(false, true);

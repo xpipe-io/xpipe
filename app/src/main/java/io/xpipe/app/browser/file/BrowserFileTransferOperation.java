@@ -231,7 +231,7 @@ public class BrowserFileTransferOperation {
         }
 
         var noExt = target.getFileName().equals(target.getExtension());
-        return target.getBaseName() + " (" + 1 + ")" + (noExt ? "" : "." + target.getExtension());
+        return new FilePath(target.getBaseName() + " (" + 1 + ")" + (noExt ? "" : "." + target.getExtension()));
     }
 
     private void handleSingleAcrossFileSystems(FileEntry source) throws Exception {
@@ -295,7 +295,7 @@ public class BrowserFileTransferOperation {
             var fixedRelPath = new FilePath(e.getValue())
                     .fileSystemCompatible(
                             target.getFileSystem().getShell().orElseThrow().getOsType());
-            var targetFile = FileNames.join(target.getPath(), fixedRelPath.toString());
+            var targetFile = target.getPath().join(fixedRelPath.toString());
             if (sourceFile.getFileSystem().equals(target.getFileSystem())) {
                 throw new IllegalStateException();
             }
@@ -323,7 +323,7 @@ public class BrowserFileTransferOperation {
     }
 
     private void transfer(
-            FileEntry sourceFile, String targetFile, AtomicLong transferred, AtomicLong totalSize, Instant start)
+            FileEntry sourceFile, FilePath targetFile, AtomicLong transferred, AtomicLong totalSize, Instant start)
             throws Exception {
         if (cancelled()) {
             return;

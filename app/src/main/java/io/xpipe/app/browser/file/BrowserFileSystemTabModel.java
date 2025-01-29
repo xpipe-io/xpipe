@@ -211,6 +211,10 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         return new FileEntry(fileSystem, currentPath.get(), null, 0, null, FileKind.DIRECTORY);
     }
 
+    public void cdAsync(FilePath path) {
+        cdAsync(path != null ? path.toString() : null);
+    }
+
     public void cdAsync(String path) {
         ThreadHelper.runFailableAsync(() -> {
             BooleanScope.executeExclusive(busy, () -> {

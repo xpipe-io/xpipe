@@ -11,6 +11,7 @@ import io.xpipe.app.core.AppFont;
 import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.PlatformThread;
 
+import io.xpipe.core.store.FilePath;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -49,7 +50,7 @@ public class BrowserFileSystemTabComp extends SimpleComp {
     private Region createContent() {
         var root = new VBox();
         var overview = new Button(null, new FontIcon("mdi2m-monitor"));
-        overview.setOnAction(e -> model.cdAsync(null));
+        overview.setOnAction(e -> model.cdAsync((FilePath) null));
         new TooltipAugment<>("overview", new KeyCodeCombination(KeyCode.HOME, KeyCombination.ALT_DOWN))
                 .augment(overview);
         overview.disableProperty().bind(model.getInOverview());

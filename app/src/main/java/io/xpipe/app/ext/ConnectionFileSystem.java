@@ -30,7 +30,7 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public long getFileSize(FilePath file) throws Exception {
         return Long.parseLong(
-                shellControl.getShellDialect().queryFileSize(shellControl, file).readStdoutOrThrow());
+                shellControl.getShellDialect().queryFileSize(shellControl, file.toString()).readStdoutOrThrow());
     }
 
     @Override
@@ -63,13 +63,13 @@ public class ConnectionFileSystem implements FileSystem {
     public InputStream openInput(FilePath file) throws Exception {
         return shellControl
                 .getShellDialect()
-                .getFileReadCommand(shellControl, file)
+                .getFileReadCommand(shellControl, file.toString())
                 .startExternalStdout();
     }
 
     @Override
     public OutputStream openOutput(FilePath file, long totalBytes) throws Exception {
-        var cmd = shellControl.getShellDialect().createStreamFileWriteCommand(shellControl, file, totalBytes);
+        var cmd = shellControl.getShellDialect().createStreamFileWriteCommand(shellControl, file.toString(), totalBytes);
         cmd.setExitTimeout(Duration.ofMillis(Long.MAX_VALUE));
         return cmd.startExternalStdin();
     }
@@ -78,7 +78,7 @@ public class ConnectionFileSystem implements FileSystem {
     public boolean fileExists(FilePath file) throws Exception {
         try (var pc = shellControl
                 .getShellDialect()
-                .createFileExistsCommand(shellControl, file)
+                .createFileExistsCommand(shellControl, file.toString())
                 .start()) {
             return pc.discardAndCheckExit();
         }
@@ -88,7 +88,7 @@ public class ConnectionFileSystem implements FileSystem {
     public void delete(FilePath file) throws Exception {
         try (var pc = shellControl
                 .getShellDialect()
-                .deleteFileOrDirectory(shellControl, file)
+                .deleteFileOrDirectory(shellControl, file.toString())
                 .start()) {
             pc.discardOrThrow();
         }
@@ -98,7 +98,7 @@ public class ConnectionFileSystem implements FileSystem {
     public void copy(FilePath file, FilePath newFile) throws Exception {
         try (var pc = shellControl
                 .getShellDialect()
-                .getFileCopyCommand(shellControl, file, newFile)
+                .getFileCopyCommand(shellControl, file.toString(), newFile.toString())
                 .start()) {
             pc.discardOrThrow();
         }
@@ -108,7 +108,7 @@ public class ConnectionFileSystem implements FileSystem {
     public void move(FilePath file, FilePath newFile) throws Exception {
         try (var pc = shellControl
                 .getShellDialect()
-                .getFileMoveCommand(shellControl, file, newFile)
+                .getFileMoveCommand(shellControl, file.toString(), newFile.toString())
                 .start()) {
             pc.discardOrThrow();
         }
@@ -118,7 +118,7 @@ public class ConnectionFileSystem implements FileSystem {
     public void mkdirs(FilePath file) throws Exception {
         try (var pc = shellControl
                 .command(
-                        CommandBuilder.ofFunction(proc -> proc.getShellDialect().getMkdirsCommand(file)))
+                        CommandBuilder.ofFunction(proc -> proc.getShellDialect().getMkdirsCommand(file.toString())))
                 .start()) {
             pc.discardOrThrow();
         }
@@ -128,7 +128,7 @@ public class ConnectionFileSystem implements FileSystem {
     public void touch(FilePath file) throws Exception {
         try (var pc = shellControl
                 .getShellDialect()
-                .getFileTouchCommand(shellControl, file)
+                .getFileTouchCommand(shellControl, file.toString())
                 .start()) {
             pc.discardOrThrow();
         }
@@ -138,7 +138,7 @@ public class ConnectionFileSystem implements FileSystem {
     public void symbolicLink(FilePath linkFile, FilePath targetFile) throws Exception {
         try (var pc = shellControl
                 .getShellDialect()
-                .symbolicLink(shellControl, linkFile, targetFile)
+                .symbolicLink(shellControl, linkFile.toString(), targetFile.toString())
                 .start()) {
             pc.discardOrThrow();
         }
@@ -148,7 +148,7 @@ public class ConnectionFileSystem implements FileSystem {
     public boolean directoryExists(FilePath file) throws Exception {
         return shellControl
                 .getShellDialect()
-                .directoryExists(shellControl, file)
+                .directoryExists(shellControl, file.toString())
                 .executeAndCheck();
     }
 
@@ -156,18 +156,18 @@ public class ConnectionFileSystem implements FileSystem {
     public void directoryAccessible(FilePath file) throws Exception {
         var current = shellControl.executeSimpleStringCommand(
                 shellControl.getShellDialect().getPrintWorkingDirectoryCommand());
-        shellControl.command(shellControl.getShellDialect().getCdCommand(file));
+        shellControl.command(shellControl.getShellDialect().getCdCommand(file.toString()));
         shellControl.command(shellControl.getShellDialect().getCdCommand(current));
     }
 
     @Override
     public Stream<FileEntry> listFiles(FilePath file) throws Exception {
-        return shellControl.getShellDialect().listFiles(this, shellControl, file);
+        return shellControl.getShellDialect().listFiles(this, shellControl, file.toString());
     }
 
     @Override
-    public List<String> listRoots() throws Exception {
-        return shellControl.getShellDialect().listRoots(shellControl).toList();
+    public List<FilePath> listRoots() throws Exception {
+        return shellControl.getShellDialect().listRoots(shellControl).map(s -> new FilePath(s)).toList();
     }
 
     @Override
