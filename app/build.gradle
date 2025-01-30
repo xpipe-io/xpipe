@@ -109,6 +109,8 @@ run {
 
     def exts = files(project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)[0].outputs.files.singleFile).toList());
     classpath += exts
+
+    dependsOn(project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)[0]).toList())
 }
 
 task runAttachedDebugger(type: JavaExec) {
@@ -127,6 +129,8 @@ task runAttachedDebugger(type: JavaExec) {
 
     def exts = files(project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)[0].outputs.files.singleFile).toList());
     classpath += exts
+    dependsOn(project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)[0]).toList())
+
 }
 
 processResources {

@@ -31,6 +31,7 @@ application {
 }
 
 def extModules = project.allExtensions
+def extLibrariesTasks = extModules.stream().map { it.getTasksByName('createExtOutput', true)[0] }.toList()
 
 dependencies {
     implementation project(':app')
@@ -77,6 +78,7 @@ jlink {
     for (def extProject : extModules) {
         def dir = "${extProject.buildDir}/libs_ext"
         addExtraModulePath(dir)
+        addOptions("--add-modules", "io.xpipe.ext.${extProject.name}")
     }
 
     launcher {
@@ -106,10 +108,10 @@ jlink {
 }
 
 tasks.named('jlink').get().dependsOn(rootProject.getTasksByName("jar", true))
+tasks.named('jlink').get().dependsOn(extLibrariesTasks)
 
 def outputName = org.gradle.internal.os.OperatingSystem.current().isMacOsX() ? 'xpiped.app/Contents/Resources' : 'xpiped'
-task copyBundledExtensions(type: DefaultTask,
-                           dependsOn: extModules.stream().map { it.getTasksByName('createExtOutput', true)[0] }.toList()) {
+task copyBundledExtensions(type: DefaultTask, dependsOn: extLibrariesTasks) {
     doLast {
         for (def extProject : extModules) {
             def dir = "${extProject.buildDir}/libs_ext"

@@ -22,23 +22,23 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
         doLast {
             copy {
                 from "$distDir/jpackage/xpiped"
-                into "$distDir/base/app"
+                into "$distDir/base"
             }
             copy {
                 from "$projectDir/logo/logo.ico"
-                into "$distDir/base/app"
+                into "$distDir/base"
             }
             copy {
                 from "$projectDir/fonts"
-                into "$distDir/base/app/fonts"
+                into "$distDir/base/fonts"
             }
             copy {
                 from "$rootDir/lang"
-                into "$distDir/base/app/lang"
+                into "$distDir/base/lang"
             }
 
-            file("$distDir/base/app/scripts").mkdirs()
-            def debug = file("$distDir/base/app/scripts/xpiped_debug.bat")
+            file("$distDir/base/scripts").mkdirs()
+            def debug = file("$distDir/base/scripts/xpiped_debug.bat")
             debug.text = file("$projectDir/debug/windows/xpiped_debug.bat").text.replace(
                     'JVM-ARGS',
                     debugArguments)
@@ -63,21 +63,21 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
             }
             copy {
                 from "$projectDir/fonts"
-                into "$distDir/base/app/fonts"
+                into "$distDir/base/fonts"
             }
             copy {
                 from "$rootDir/lang"
-                into "$distDir/base/app/lang"
+                into "$distDir/base/lang"
             }
 
             // Fixes a JPackage bug
             copy {
-                from "$distDir/base/app/lib/app/xpiped.cfg"
+                from "$distDir/base/lib/app/xpiped.cfg"
                 into "$distDir/base/app"
             }
 
-            file("$distDir/base/app/scripts").mkdirs()
-            def debug = file("$distDir/base/app/scripts/xpiped_debug.sh")
+            file("$distDir/base/scripts").mkdirs()
+            def debug = file("$distDir/base/scripts/xpiped_debug.sh")
             debug.text = file("$projectDir/debug/linux/xpiped_debug.sh").text.replace(
                     'JVM-ARGS',
                     debugArguments)
