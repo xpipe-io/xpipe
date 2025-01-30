@@ -55,7 +55,7 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
         doLast {
             copy {
                 from "$distDir/jpackage/xpiped"
-                into "$distDir/base/app"
+                into "$distDir/base/"
             }
             copy {
                 from "$projectDir/logo/logo.png"
