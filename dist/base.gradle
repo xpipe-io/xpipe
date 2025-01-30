@@ -73,7 +73,7 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
             // Fixes a JPackage bug
             copy {
                 from "$distDir/base/lib/app/xpiped.cfg"
-                into "$distDir/base/app"
+                into "$distDir/base/"
             }
 
             file("$distDir/base/scripts").mkdirs()
