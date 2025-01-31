@@ -132,7 +132,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
         if (OsType.getLocal().equals(OsType.MACOS)) {
             menu.setPadding(new Insets(-2, 0, -2, 0));
         } else {
-            menu.setPadding(new Insets(-4, 0, -4, 0));
+            menu.setPadding(new Insets(-5, -2, -5, -2));
         }
 
         return menu;

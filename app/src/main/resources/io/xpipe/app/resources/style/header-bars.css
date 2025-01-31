@@ -12,7 +12,7 @@
 }
 
 .store-header-bar {
-    -fx-spacing: 0.8em;
+    -fx-spacing: 0.45em;
 }
 
 .root.nord .store-header-bar {
@@ -88,7 +88,7 @@
 }
 
 .store-category-bar > .viewport > .view > .scroll-comp-content {
-    -fx-padding: 0.5em 0.1em 0.5em 0.5em;
+    -fx-padding: 0.5em 0.1em 0.2em 0.5em;
 }
 
 .store-category-bar * {

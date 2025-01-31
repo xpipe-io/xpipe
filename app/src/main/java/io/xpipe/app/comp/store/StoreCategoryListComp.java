@@ -26,7 +26,7 @@ public class StoreCategoryListComp extends SimpleComp {
                     .bind(Bindings.createDoubleBinding(
                             () -> {
                                 var h = content.getHeight();
-                                return Math.min(200, h + 2);
+                                return Math.min(150, h + 2);
                             },
                             content.heightProperty()));
         });

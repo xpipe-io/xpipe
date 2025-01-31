@@ -43,7 +43,7 @@ public class AppFont {
         }
 
         // Somehow the font is bigger on Linux
-        var baseSize = OsType.getLocal() == OsType.LINUX ? 11 : 12;
+        var baseSize = OsType.getLocal() == OsType.LINUX ? 11 : 11.5;
         node.setStyle(node.getStyle() + "-fx-font-size: " + (baseSize + off) + "pt;");
     }
 
@@ -61,7 +61,7 @@ public class AppFont {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                         try (var in = Files.newInputStream(file)) {
-                            Font.loadFont(in, OsType.getLocal() == OsType.LINUX ? 11 : 12);
+                            Font.loadFont(in, OsType.getLocal() == OsType.LINUX ? 11 : 11.5);
                         } catch (Throwable t) {
                             // Font loading can fail in rare cases. This is however not important, so we can just ignore
                             // it

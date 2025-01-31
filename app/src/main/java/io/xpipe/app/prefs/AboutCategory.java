@@ -99,7 +99,7 @@ public class AboutCategory extends AppPrefsCategory {
 
     @Override
     protected Comp<?> create() {
-        var props = createProperties().padding(new Insets(0, 0, 0, 15));
+        var props = createProperties().padding(new Insets(0, 0, 0, 5));
         var update = new UpdateCheckComp().grow(true, false);
         return new VerticalComp(List.of(props, Comp.separator(), update, Comp.separator(), createLinks()))
                 .apply(s -> s.get().setFillWidth(true))
