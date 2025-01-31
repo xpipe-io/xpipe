@@ -8,6 +8,7 @@ import io.xpipe.app.util.PlatformThread;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -21,12 +22,12 @@ import java.util.Objects;
 public class ComboTextFieldComp extends Comp<CompStructure<ComboBox<String>>> {
 
     private final Property<String> value;
-    private final List<String> predefinedValues;
+    private final ObservableList<String> predefinedValues;
     private final Callback<ListView<String>, ListCell<String>> customCellFactory;
 
     public ComboTextFieldComp(
             Property<String> value,
-            List<String> predefinedValues,
+            ObservableList<String> predefinedValues,
             Callback<ListView<String>, ListCell<String>> customCellFactory) {
         this.value = value;
         this.predefinedValues = predefinedValues;
@@ -35,7 +36,7 @@ public class ComboTextFieldComp extends Comp<CompStructure<ComboBox<String>>> {
 
     @Override
     public CompStructure<ComboBox<String>> createBase() {
-        var text = new ComboBox<>(FXCollections.observableList(predefinedValues));
+        var text = new ComboBox<>(predefinedValues);
         text.addEventFilter(KeyEvent.ANY, event -> {
             Platform.runLater(() -> {
                 text.commitValue();

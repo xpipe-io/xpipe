@@ -56,7 +56,7 @@ public class StoreViewState {
         INSTANCE.updateContent();
         INSTANCE.initSections();
         INSTANCE.updateContent();
-        INSTANCE.initFilterJump();
+        INSTANCE.initFilterListener();
     }
 
     public static void reset() {
@@ -96,9 +96,10 @@ public class StoreViewState {
         }
     }
 
-    private void initFilterJump() {
+    private void initFilterListener() {
         var all = getAllConnectionsCategory();
         filter.addListener((observable, oldValue, newValue) -> {
+            categories.getList().forEach(e -> e.update());
             var matchingCats = categories.getList().stream()
                     .filter(storeCategoryWrapper ->
                             storeCategoryWrapper.getRoot().equals(all))

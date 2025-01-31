@@ -46,6 +46,9 @@ public class VaultCategory extends AppPrefsCategory {
 
         builder.addTitle("vaultUsers")
                 .sub(new OptionsBuilder()
+                        .nameAndDescription("personalVault")
+                        .addComp(Comp.empty())
+                        .hide(new SimpleBooleanProperty(DataStorageUserHandler.getInstance().getUserCount() > 1))
                         .name("userManagement")
                         .description(
                                 DataStorageUserHandler.getInstance().getActiveUser() != null
@@ -56,6 +59,7 @@ public class VaultCategory extends AppPrefsCategory {
                         .addComp(Comp.empty())
                         .licenseRequirement("team")
                         .disable(!LicenseProvider.get().getFeature("team").isSupported())
+                        .hide(new SimpleBooleanProperty(DataStorageUserHandler.getInstance().getUserCount() > 1))
                         .nameAndDescription("syncTeamVaults")
                         .addComp(new ButtonComp(AppI18n.observable("enableGitSync"), () -> AppPrefs.get()
                                 .selectCategory("sync")))
@@ -68,7 +72,9 @@ public class VaultCategory extends AppPrefsCategory {
                         .pref(prefs.lockVaultOnHibernation)
                         .addToggle(prefs.lockVaultOnHibernation)
                         .pref(prefs.encryptAllVaultData)
-                        .addToggle(encryptVault));
+                        .addToggle(encryptVault)
+                        .disable(DataStorageUserHandler.getInstance().getUserCount() > 1)
+                );
         builder.addTitle("vault")
                 .sub(new OptionsBuilder()
                         .nameAndDescription("browseVault")

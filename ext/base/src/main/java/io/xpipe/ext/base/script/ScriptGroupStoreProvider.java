@@ -94,9 +94,9 @@ public class ScriptGroupStoreProvider implements EnabledParentStoreProvider, Dat
         return ScriptGroupStore.builder().build();
     }
 
-    @Override
-    public List<String> getPossibleNames() {
-        return List.of("scriptGroup");
+@Override
+     public String getId() {
+        return "scriptGroup";
     }
 
     @Override

@@ -28,9 +28,9 @@ public class FixedServiceStoreProvider extends AbstractServiceStoreProvider {
                                 .build());
     }
 
-    @Override
-    public List<String> getPossibleNames() {
-        return List.of("fixedService");
+@Override
+     public String getId() {
+        return "fixedService";
     }
 
     @Override

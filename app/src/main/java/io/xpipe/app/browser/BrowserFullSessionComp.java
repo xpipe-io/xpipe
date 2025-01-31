@@ -194,7 +194,6 @@ public class BrowserFullSessionComp extends SimpleComp {
                     struc.get().setMinWidth(rightSplit.get());
                     struc.get().setPrefWidth(rightSplit.get());
                     struc.get().setMaxWidth(rightSplit.get());
-                    struc.get().getParent().requestLayout();
                 });
             });
 
@@ -202,7 +201,6 @@ public class BrowserFullSessionComp extends SimpleComp {
                 struc.get().setMinWidth(newValue.doubleValue());
                 struc.get().setPrefWidth(newValue.doubleValue());
                 struc.get().setMaxWidth(newValue.doubleValue());
-                struc.get().getParent().requestLayout();
             });
 
             AnchorPane.setBottomAnchor(struc.get(), 0.0);

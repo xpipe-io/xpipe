@@ -1,15 +1,16 @@
 package io.xpipe.app.prefs;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
+import io.xpipe.app.icon.SystemIconSource;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.update.XPipeDistributionType;
-import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.ModuleHelper;
@@ -78,6 +79,14 @@ public class AppPrefs {
             mapLocal(new SimpleStringProperty(null), "customTerminalCommand", String.class, false);
     final BooleanProperty clearTerminalOnInit =
             mapLocal(new SimpleBooleanProperty(true), "clearTerminalOnInit", Boolean.class, false);
+    final Property<List<SystemIconSource>> iconSources = map(Mapping.builder()
+            .property(new SimpleObjectProperty<>(new ArrayList<>()))
+            .key("iconSources")
+            .valueType(TypeFactory.defaultInstance().constructType(new TypeReference<List<SystemIconSource>>() {}))
+            .build());
+    public final ObservableValue<List<SystemIconSource>> getIconSources() {
+        return iconSources;
+    }
     public final BooleanProperty disableCertutilUse =
             mapLocal(new SimpleBooleanProperty(false), "disableCertutilUse", Boolean.class, false);
     public final BooleanProperty useLocalFallbackShell =
@@ -91,7 +100,7 @@ public class AppPrefs {
     public final BooleanProperty denyTempScriptCreation =
             mapVaultShared(new SimpleBooleanProperty(false), "denyTempScriptCreation", Boolean.class, false);
     final Property<ExternalPasswordManager> passwordManager =
-            mapVaultShared(new SimpleObjectProperty<>(), "passwordManager", ExternalPasswordManager.class, false);
+            mapVaultShared(new SimpleObjectProperty<>(ExternalPasswordManager.NONE), "passwordManager", ExternalPasswordManager.class, false);
     final StringProperty passwordManagerCommand =
             mapLocal(new SimpleStringProperty(""), "passwordManagerCommand", String.class, false);
     final ObjectProperty<StartupBehaviour> startupBehaviour = mapLocal(
@@ -144,7 +153,7 @@ public class AppPrefs {
             mapLocal(new SimpleBooleanProperty(false), "developerPrintInitFiles", Boolean.class, false);
 
     final ObjectProperty<SupportedLocale> language = mapLocal(
-            new SimpleObjectProperty<>(SupportedLocale.getEnglish()), "language", SupportedLocale.class, false);
+            new SimpleObjectProperty<>(SupportedLocale.getInitial()), "language", SupportedLocale.class, false);
 
     final BooleanProperty requireDoubleClickForConnections =
             mapLocal(new SimpleBooleanProperty(false), "requireDoubleClickForConnections", Boolean.class, false);
@@ -241,6 +250,7 @@ public class AppPrefs {
                         new ConnectionsCategory(),
                         new FileBrowserCategory(),
                         new PasswordManagerCategory(),
+                        new IconsCategory(),
                         new SecurityCategory(),
                         new HttpApiCategory(),
                         new WorkspacesCategory(),
@@ -572,7 +582,7 @@ public class AppPrefs {
             if (!handler.isInitialized()) {
                 continue;
             }
-            handler.updateObject(m.getKey(), m.getProperty().getValue());
+            handler.updateObject(m.getKey(), m.getProperty().getValue(), m.getValueType());
         }
         if (vaultStorageHandler.isInitialized()) {
             vaultStorageHandler.save();

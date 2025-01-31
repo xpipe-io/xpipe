@@ -91,7 +91,7 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
         @Override
         protected Optional<Path> determineInstallation() {
             var perUser = WindowsRegistry.local()
-                    .readValue(
+                    .readStringValueIfPresent(
                             WindowsRegistry.HKEY_CURRENT_USER,
                             "SOFTWARE\\71445fac-d6ef-5436-9da7-5a323762d7f5",
                             "InstallLocation")
@@ -102,7 +102,7 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
             }
 
             var systemWide = WindowsRegistry.local()
-                    .readValue(
+                    .readStringValueIfPresent(
                             WindowsRegistry.HKEY_LOCAL_MACHINE,
                             "SOFTWARE\\71445fac-d6ef-5436-9da7-5a323762d7f5",
                             "InstallLocation")

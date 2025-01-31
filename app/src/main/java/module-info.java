@@ -11,7 +11,6 @@ import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.beacon.BeaconInterface;
 import io.xpipe.core.util.DataStateProvider;
 import io.xpipe.core.util.ModuleLayerLoader;
-import io.xpipe.core.util.ProxyFunction;
 
 import com.fasterxml.jackson.databind.Module;
 import org.slf4j.spi.SLF4JServiceProvider;
@@ -40,6 +39,7 @@ open module io.xpipe.app {
     exports io.xpipe.app.core.window;
     exports io.xpipe.app.resources;
     exports io.xpipe.app.comp;
+    exports io.xpipe.app.icon;
 
     requires com.sun.jna;
     requires com.sun.jna.platform;
@@ -78,6 +78,7 @@ open module io.xpipe.app {
     requires com.shinyhut.vernacular;
     requires org.kordamp.ikonli.core;
     requires jdk.httpserver;
+    requires com.github.weisj.jsvg;
 
     // Required runtime modules
     requires jdk.charsets;
@@ -98,7 +99,6 @@ open module io.xpipe.app {
     uses EventHandler;
     uses PrefsProvider;
     uses DataStoreProvider;
-    uses ProxyFunction;
     uses ModuleLayerLoader;
     uses ScanProvider;
     uses BrowserAction;

@@ -104,8 +104,8 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
     }
 
     @Override
-    public List<String> getPossibleNames() {
-        return List.of("podman", "podman_container");
+    public String getId() {
+        return "podman";
     }
 
     @Override

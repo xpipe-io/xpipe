@@ -65,7 +65,7 @@ public abstract class BaseCompressAction implements BrowserAction, BrowserBranch
 
     @Override
     public Category getCategory() {
-        return Category.OPEN;
+        return Category.MUTATION;
     }
 
     @Override

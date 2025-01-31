@@ -17,6 +17,7 @@ import io.xpipe.app.util.LabelGraphic;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
@@ -50,7 +51,8 @@ public class StoreCategoryComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var prop = new SimpleStringProperty(category.getName().getValue());
+        var prop = new SimpleStringProperty();
+        category.getName().subscribe(prop::setValue);
         AppPrefs.get().censorMode().subscribe(aBoolean -> {
             var n = category.getName().getValue();
             prop.setValue(aBoolean ? "*".repeat(n.length()) : n);
@@ -92,10 +94,7 @@ public class StoreCategoryComp extends SimpleComp {
                     }
 
                     if (!DataStorage.get().supportsSharing()
-                            || (!category.getCategory().canShare()
-                                    && !category.getCategory()
-                                            .getUuid()
-                                            .equals(DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID))) {
+                            || (!category.getCategory().canShare())) {
                         return new LabelGraphic.IconGraphic("mdi2g-git");
                     }
 
@@ -119,18 +118,8 @@ public class StoreCategoryComp extends SimpleComp {
                         }))
                 .styleClass("status-button");
 
-        var shownList = new DerivedObservableList<>(
-                        category.getAllContainedEntries().getList(), true)
-                .filtered(
-                        storeEntryWrapper -> {
-                            return storeEntryWrapper.matchesFilter(
-                                    StoreViewState.get().getFilterString().getValue());
-                        },
-                        StoreViewState.get().getFilterString())
-                .getList();
-        var count =
-                new CountComp<>(shownList, category.getAllContainedEntries().getList(), string -> "(" + string + ")");
-        count.visible(Bindings.isNotEmpty(shownList));
+        var count = new CountComp(category.getShownContainedEntriesCount(), category.getAllContainedEntriesCount(), string -> "(" + string + ")");
+        count.visible(Bindings.notEqual(0, category.getShownContainedEntriesCount()));
 
         var showStatus = hover.or(new SimpleBooleanProperty(DataStorage.get().supportsSharing()))
                 .or(showing);
@@ -145,7 +134,7 @@ public class StoreCategoryComp extends SimpleComp {
                 statusButton.hide(showStatus.not())));
         h.padding(new Insets(0, 10, 0, (category.getDepth() * 10)));
 
-        var categoryButton = new ButtonComp(null, h.createRegion(), category::select)
+        var categoryButton = new ButtonComp(null, new SimpleObjectProperty<>(new LabelGraphic.CompGraphic(h)), category::select)
                 .focusTraversable()
                 .styleClass("category-button")
                 .apply(struc -> hover.bind(struc.get().hoverProperty()))

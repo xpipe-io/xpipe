@@ -17,6 +17,7 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -68,10 +69,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                     BrowserFileChooserSessionComp.openSingleFile(
                             () -> fileSystem.getValue(),
                             fileStore -> {
-                                if (fileStore == null) {
-                                    filePath.setValue(null);
-                                    fileSystem.setValue(null);
-                                } else {
+                                if (fileStore != null) {
                                     filePath.setValue(fileStore.getPath());
                                     fileSystem.setValue(fileStore.getFileSystem());
                                 }
@@ -150,7 +148,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
         var items = allFiles.stream()
                 .map(previousFileReference -> previousFileReference.getPath().toString())
                 .toList();
-        var combo = new ComboTextFieldComp(filePath, items, param -> {
+        var combo = new ComboTextFieldComp(filePath, FXCollections.observableList(items), param -> {
             return new ListCell<>() {
                 @Override
                 protected void updateItem(String item, boolean empty) {

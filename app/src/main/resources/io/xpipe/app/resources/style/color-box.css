@@ -34,13 +34,13 @@
 
 
 .root:pretty:light .color-box.blue {
-    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, rgb(170, 130, 250, 0.08) 40%, rgb(87, 57, 200, 0.08) 50%, rgb(167, 137, 250, 0.08) 100%);
-    -fx-border-color: rgba(80, 100, 150, 0.6);
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, rgb(170, 130, 250, 0.05) 40%, rgb(87, 57, 200, 0.05) 50%, rgb(167, 137, 250, 0.05) 100%);
+    -fx-border-color: rgba(80, 100, 200, 0.6);
 }
 
 .root:performance:light .color-box.blue {
-    -fx-background-color: rgb(130, 130, 250, 0.08);
-    -fx-border-color: rgba(80, 100, 150, 0.6);
+    -fx-background-color: rgb(90, 90, 250, 0.06);
+    -fx-border-color: rgba(80, 100, 200, 0.6);
 }
 
 .root:light .color-box.blue > .separator .line {
@@ -63,13 +63,13 @@
 
 
 .root:pretty:light .color-box.red {
-    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, rgb(250, 100, 100, 0.06) 40%, rgb(245, 50, 50, 0.06) 50%, rgb(240, 90, 90, 0.06) 100%);
-    -fx-border-color: rgba(150, 100, 80, 0.6);
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, rgb(250, 100, 100, 0.03) 40%, rgb(245, 50, 50, 0.03) 50%, rgb(240, 90, 90, 0.03) 100%);
+    -fx-border-color: rgba(200, 100, 80, 0.6);
 }
 
 .root:performance:light .color-box.red {
-    -fx-background-color: rgb(250, 100, 100, 0.06);
-    -fx-border-color: rgba(150, 100, 80, 0.6);
+    -fx-background-color: rgb(250, 80, 80, 0.03);
+    -fx-border-color: rgba(200, 100, 80, 0.6);
 }
 
 .root:light .color-box.red > .separator .line {
@@ -92,13 +92,13 @@
 
 
 .root:pretty:light .color-box.yellow {
-    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, rgb(180, 180, 30, 0.15) 40%, rgb(135, 135, 27, 0.15) 50%, rgb(200, 200, 37, 0.15) 100%);
-    -fx-border-color: rgba(170, 170, 80, 0.7);
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, rgb(200, 200, 30, 0.03) 40%, rgb(135, 135, 27, 0.03) 50%, rgb(220, 220, 37, 0.03) 100%);
+    -fx-border-color: rgba(110, 110, 20, 0.6);
 }
 
 .root:performance:light .color-box.yellow {
-    -fx-background-color: rgb(180, 180, 30, 0.15);
-    -fx-border-color: rgba(170, 170, 80, 0.7);
+    -fx-background-color: rgb(220, 220, 50, 0.03);
+    -fx-border-color: rgba(110, 110, 20, 0.6);
 }
 
 .root:light .color-box.yellow > .separator .line {
@@ -121,13 +121,13 @@
 
 
 .root:pretty:light .color-box.green {
-    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, rgb(30, 180, 30, 0.1) 40%, rgb(20, 120, 20, 0.15) 50%, rgb(37, 200, 37, 0.1) 100%);
-    -fx-border-color: rgba(100, 150, 80, 0.6);
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, rgb(30, 180, 30, 0.05) 40%, rgb(20, 120, 20, 0.05) 50%, rgb(37, 200, 37, 0.05) 100%);
+    -fx-border-color: rgba(100, 210, 80, 0.6);
 }
 
 .root:performance:light .color-box.green {
-    -fx-background-color: rgb(30, 180, 30, 0.1);
-    -fx-border-color: rgba(100, 150, 80, 0.6);
+    -fx-background-color: rgb(30, 180, 30, 0.05);
+    -fx-border-color: rgba(100, 210, 80, 0.6);
 }
 
 .root:light .color-box.green > .separator .line {

@@ -129,14 +129,11 @@ public interface ServiceProtocolType {
                 return;
             }
 
-            var format = commandTemplate.toLowerCase(Locale.ROOT).contains("$address") ? commandTemplate : commandTemplate + " $ADDRESS";
-            try (var pc = LocalShell.getShell().start()) {
-                var toExecute = ExternalApplicationHelper.replaceFileArgument(format, "ADDRESS", url);
-                var command = CommandBuilder.of().add(toExecute);
-                // We can't be sure whether the command is blocking or not, so always make it not blocking
-                command = pc.getShellDialect().launchAsnyc(command);
-                pc.command(command).execute();
-            }
+            var port = url.split(":")[1];
+            var format = commandTemplate.toLowerCase(Locale.ROOT).contains("$port") ? commandTemplate : commandTemplate + " localhost:$PORT";
+            var toExecute = ExternalApplicationHelper.replaceFileArgument(format, "PORT", port);
+            // We can't be sure whether the command is blocking or not, so always make it not blocking
+            ExternalApplicationHelper.startAsync(toExecute);
         }
 
         @Override

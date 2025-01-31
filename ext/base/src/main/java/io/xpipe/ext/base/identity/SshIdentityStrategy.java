@@ -107,7 +107,7 @@ public interface SshIdentityStrategy {
 
         @Override
         public void buildCommand(CommandBuilder builder) {
-            builder.envrironment("SSH_AUTH_SOCK", parent -> {
+            builder.environment("SSH_AUTH_SOCK", parent -> {
                 if (parent.getOsType().equals(OsType.WINDOWS)) {
                     return getPageantWindowsPipe(parent);
                 }
@@ -245,7 +245,7 @@ public interface SshIdentityStrategy {
 
         @Override
         public void buildCommand(CommandBuilder builder) {
-            builder.envrironment("SSH_AUTH_SOCK", sc -> {
+            builder.environment("SSH_AUTH_SOCK", sc -> {
                 if (sc.getOsType() == OsType.WINDOWS) {
                     return null;
                 }
@@ -311,10 +311,10 @@ public interface SshIdentityStrategy {
                         var dir = FileNames.getParent(file);
                         if (sc.getOsType() == OsType.WINDOWS) {
                             var path = sc.view().getPath();
-                            builder.fixedEnvrironment("PATH", dir + ";" + path);
+                            builder.fixedEnvironment("PATH", dir + ";" + path);
                         } else {
                             var path = sc.view().getLibraryPath();
-                            builder.fixedEnvrironment("LD_LIBRARY_PATH", dir + ":" + path);
+                            builder.fixedEnvironment("LD_LIBRARY_PATH", dir + ":" + path);
                         }
                     })
                     .add("-I")
@@ -358,10 +358,10 @@ public interface SshIdentityStrategy {
                 var dir = FileNames.getParent(file);
                 if (sc.getOsType() == OsType.WINDOWS) {
                     var path = sc.view().getPath();
-                    builder.fixedEnvrironment("PATH", dir + ";" + path);
+                    builder.fixedEnvironment("PATH", dir + ";" + path);
                 } else {
                     var path = sc.view().getLibraryPath();
-                    builder.fixedEnvrironment("LD_LIBRARY_PATH", dir + ":" + path);
+                    builder.fixedEnvironment("LD_LIBRARY_PATH", dir + ":" + path);
                 }
             });
             builder.add("-I").addFile(file);

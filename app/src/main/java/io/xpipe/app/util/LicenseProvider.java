@@ -16,6 +16,8 @@ public abstract class LicenseProvider {
         return INSTANCE;
     }
 
+    public abstract void updateDate(String date);
+
     public abstract String formatExceptionMessage(String name, boolean plural, LicensedFeature licensedFeature);
 
     public abstract boolean hasLicense();

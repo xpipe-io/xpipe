@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.ext.HostAddress;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.terminal.ExternalTerminalType;
@@ -41,8 +42,28 @@ public class AppJacksonModule extends SimpleModule {
         addSerializer(EncryptedValue.VaultKey.class, new EncryptedValueSerializer());
         addDeserializer(EncryptedValue.VaultKey.class, new EncryptedValueDeserializer<>());
 
+        addSerializer(HostAddress.class, new HostAddressSerializer());
+        addDeserializer(HostAddress.class, new HostAddressDeserializer());
+
         context.addSerializers(_serializers);
         context.addDeserializers(_deserializers);
+    }
+
+    public static class HostAddressSerializer extends JsonSerializer<HostAddress> {
+
+        @Override
+        public void serialize(HostAddress value, JsonGenerator jgen, SerializerProvider provider)
+                throws IOException {
+            jgen.writeString(value.get());
+        }
+    }
+
+    public static class HostAddressDeserializer extends JsonDeserializer<HostAddress> {
+
+        @Override
+        public HostAddress deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            return HostAddress.of(p.getValueAsString());
+        }
     }
 
     public static class LocalFileReferenceSerializer extends JsonSerializer<ContextualFileReference> {

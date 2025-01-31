@@ -33,6 +33,7 @@ public class BaseElevationHandler implements ElevationHandler {
                 List.of(SecretQuery.confirmElevationIfNeeded(password.query(), confirmIfNeeded)),
                 SecretQuery.prompt(false),
                 List.of(),
+                List.of(),
                 countDown,
                 parent.isInteractive());
         return true;

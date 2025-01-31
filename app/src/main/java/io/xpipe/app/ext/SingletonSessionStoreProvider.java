@@ -59,7 +59,7 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
         return new SystemStateComp(Bindings.createObjectBinding(
                 () -> {
                     SingletonSessionStore<?> s = w.getEntry().getStore().asNeeded();
-                    if (!s.isSessionEnabled()) {
+                    if (!s.isSessionEnabled() || (s.isSessionEnabled() && !s.isSessionRunning())) {
                         return SystemStateComp.State.OTHER;
                     }
 

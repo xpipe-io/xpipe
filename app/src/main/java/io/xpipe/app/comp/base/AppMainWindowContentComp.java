@@ -83,12 +83,13 @@ public class AppMainWindowContentComp extends SimpleComp {
             loaded.subscribe(struc -> {
                 if (struc != null) {
                     PlatformThread.runNestedLoopIteration();
-                    struc.prepareAddition();
                     anim.stop();
+                    struc.prepareAddition();
                     pane.getChildren().add(struc.get());
-                    struc.show();
-                    pane.getChildren().remove(vbox);
+                    PlatformThread.runNestedLoopIteration();
                     pane.getStyleClass().remove("background");
+                    pane.getChildren().remove(vbox);
+                    struc.show();
                 }
             });
 

@@ -72,9 +72,9 @@ public class PodmanCmdStoreProvider implements DataStoreProvider {
         return "system:podman_icon.svg";
     }
 
-    @Override
-    public List<String> getPossibleNames() {
-        return List.of("podmanCmd");
+@Override
+     public String getId() {
+        return "podmanCmd";
     }
 
     @Override

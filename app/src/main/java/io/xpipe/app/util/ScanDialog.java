@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.ext.ScanProvider;
@@ -73,9 +74,11 @@ public class ScanDialog {
     private static void show(DataStoreEntry initialStore, ScanDialogAction action) {
         var comp = new ScanDialogComp(initialStore != null ? initialStore.ref() : null, action);
         var modal = ModalOverlay.of("scanAlertTitle", comp);
-        modal.addButton(ModalButton.ok(() -> {
+        var button = new ModalButton("ok", () -> {
             comp.finish();
-        }));
+        }, false, true);
+        button.augment(r -> r.disableProperty().bind(PlatformThread.sync(comp.getBusy())));
+        modal.addButton(button);
         modal.show();
     }
 }

@@ -5,6 +5,7 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.LocalShell;
+import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.XPipeInstallation;
@@ -22,6 +23,8 @@ public enum XPipeDistributionType {
     PORTABLE("portable", false, () -> new PortableUpdater(true)),
     NATIVE_INSTALLATION("install", true, () -> new GitHubUpdater(true)),
     HOMEBREW("homebrew", true, () -> new PortableUpdater(true)),
+    APT_REPO("apt", true, () -> new PortableUpdater(true)),
+    RPM_REPO("rpm", true, () -> new PortableUpdater(true)),
     WEBTOP("webtop", true, () -> new PortableUpdater(false)),
     CHOCO("choco", true, () -> new PortableUpdater(true));
 
@@ -130,6 +133,23 @@ public enum XPipeDistributionType {
                     })) {
                         return HOMEBREW;
                     }
+                }
+            }
+
+            if (OsType.getLocal() == OsType.LINUX) {
+                var aptOut = sc.command("apt show xpipe").readStdoutIfPossible();
+                if (aptOut.isPresent()) {
+                    var fromRepo = aptOut.get().lines().anyMatch(s -> {
+                        return s.contains("APT-Sources") && s.contains("apt.xpipe.io");
+                    });
+                    if (fromRepo) {
+                        return APT_REPO;
+                    }
+                }
+
+                var yumRepo = sc.command(CommandBuilder.of().add("test", "-f").addFile("/etc/yum.repos.d/xpipe.repo")).executeAndCheck();
+                if (yumRepo) {
+                    return RPM_REPO;
                 }
             }
         } catch (Exception ex) {

@@ -5,7 +5,7 @@ import io.xpipe.app.beacon.BlobManager;
 import io.xpipe.app.util.FixedSizeInputStream;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.FsReadExchange;
-import io.xpipe.core.store.ConnectionFileSystem;
+import io.xpipe.app.ext.ConnectionFileSystem;
 
 import com.sun.net.httpserver.HttpExchange;
 import lombok.SneakyThrows;

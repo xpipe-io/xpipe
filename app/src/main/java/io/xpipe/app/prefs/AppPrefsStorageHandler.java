@@ -1,5 +1,9 @@
 package io.xpipe.app.prefs;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.util.TokenBuffer;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
@@ -12,12 +16,15 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static io.xpipe.app.ext.PrefsChoiceValue.getAll;
 import static io.xpipe.app.ext.PrefsChoiceValue.getSupported;
@@ -71,14 +78,27 @@ public class AppPrefsStorageHandler {
         }
     }
 
-    public void updateObject(String key, Object object) {
-        var tree = object instanceof PrefsChoiceValue prefsChoiceValue
-                ? new TextNode(prefsChoiceValue.getId())
-                : (object != null ? JacksonMapper.getDefault().valueToTree(object) : NullNode.getInstance());
-        setContent(key, tree);
+    @SneakyThrows
+    public void updateObject(String key, Object object, JavaType type) {
+        if (object instanceof PrefsChoiceValue prefsChoiceValue) {
+            setContent(key, new TextNode(prefsChoiceValue.getId()));
+            return;
+        }
+
+        if (object == null) {
+            setContent(key, JsonNodeFactory.instance.nullNode());
+            return;
+        }
+
+        var mapper = JacksonMapper.getDefault();
+        TokenBuffer buf = new TokenBuffer(mapper, false);
+        mapper.writerFor(type).writeValue(buf, object);
+        var tree = mapper.readTree(buf.asParser());
+        setContent(key, (JsonNode) tree);
     }
 
     @SuppressWarnings("unchecked")
+    @SneakyThrows
     public <T> T loadObject(String id, JavaType type, T defaultObject) {
         var tree = getContent(id);
         if (tree == null) {
@@ -121,7 +141,12 @@ public class AppPrefsStorageHandler {
 
         try {
             TrackEvent.debug("Loading preferences value for key " + id + " from value " + tree);
-            return JacksonMapper.getDefault().treeToValue(tree, type);
+            T value = JacksonMapper.getDefault().treeToValue(tree, type);
+            if (value instanceof List<?> l) {
+                var mod = l.stream().filter(v -> v != null).collect(Collectors.toCollection(ArrayList::new));
+                return (T) mod;
+            }
+            return value;
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).expected().omit().handle();
             return defaultObject;

@@ -72,9 +72,9 @@ public class LxdCmdStoreProvider implements DataStoreProvider {
         return new LxdCmdStore(DataStorage.get().local().ref());
     }
 
-    @Override
-    public List<String> getPossibleNames() {
-        return List.of("lxdCmd");
+@Override
+     public String getId() {
+        return "lxdCmd";
     }
 
     @Override

@@ -3,5 +3,3 @@
 *.bat text eol=crlf
 *.png binary
 *.xcf binary
-*.properties linguist-generated
-

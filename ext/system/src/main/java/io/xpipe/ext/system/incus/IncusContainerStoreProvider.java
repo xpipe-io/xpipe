@@ -103,9 +103,9 @@ public class IncusContainerStoreProvider implements ShellStoreProvider {
                 section, (ContainerStoreState s) -> DataStoreFormatter.capitalize(s.getContainerState()));
     }
 
-    @Override
-    public List<String> getPossibleNames() {
-        return List.of("incusContainer");
+@Override
+     public String getId() {
+        return "incusContainer";
     }
 
     @Override
