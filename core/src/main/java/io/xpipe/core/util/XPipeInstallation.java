@@ -169,9 +169,9 @@ public class XPipeInstallation {
         if (OsType.getLocal().equals(OsType.MACOS)) {
             return path.getParent().getParent().getParent().toString();
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
-            return path.getParent().getParent().toString();
+            return path.getParent().toString();
         } else {
-            return path.getParent().getParent().toString();
+            return path.getParent().toString();
         }
     }
 
