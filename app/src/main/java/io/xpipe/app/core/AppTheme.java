@@ -6,6 +6,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.resources.AppResources;
+import io.xpipe.app.util.ColorHelper;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
 
@@ -22,6 +23,7 @@ import javafx.css.PseudoClass;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -32,6 +34,7 @@ import lombok.SneakyThrows;
 
 import java.nio.file.Files;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class AppTheme {
@@ -67,12 +70,8 @@ public class AppTheme {
                 }
 
                 root.getStyleClass().add(t.getCssId());
-                stage.getScene().getStylesheets().addAll(t.getAdditionalStylesheets());
                 root.pseudoClassStateChanged(LIGHT, !t.isDark());
                 root.pseudoClassStateChanged(DARK, t.isDark());
-            });
-            AppPrefs.get().theme().addListener((observable, oldValue, newValue) -> {
-                stage.getScene().getStylesheets().removeAll(oldValue.getAdditionalStylesheets());
             });
 
             AppPrefs.get().performanceMode().subscribe(val -> {
@@ -199,8 +198,8 @@ public class AppTheme {
         private final String name;
         private final int skipLines;
 
-        public DerivedTheme(String id, String cssId, String name, atlantafx.base.theme.Theme theme, AppFontSizes sizes, int skipLines) {
-            super(id, cssId, theme, sizes);
+        public DerivedTheme(String id, String cssId, String name, atlantafx.base.theme.Theme theme, AppFontSizes sizes, Supplier<Color> contextMenuColor, int skipLines) {
+            super(id, cssId, theme, sizes, contextMenuColor);
             this.name = name;
             this.skipLines = skipLines;
         }
@@ -241,49 +240,49 @@ public class AppTheme {
                 AppFontSizes.BASE_11_5,
                 AppFontSizes.BASE_11,
                 AppFontSizes.BASE_12
-        ));
+        ), () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().darker().desaturate(), 0.3));
         public static final Theme PRIMER_DARK = new Theme("dark", "primer", new PrimerDark(), AppFontSizes.forOs(
                 AppFontSizes.BASE_12,
                 AppFontSizes.BASE_11,
                 AppFontSizes.BASE_12
-        ));
+        ), () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2));
         public static final Theme NORD_LIGHT = new Theme("nordLight", "nord", new NordLight(), AppFontSizes.forOs(
                 AppFontSizes.BASE_11_5,
                 AppFontSizes.BASE_11,
                 AppFontSizes.BASE_12
-        ));
+        ), () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().darker().desaturate(), 0.3));
         public static final Theme NORD_DARK = new Theme("nordDark", "nord", new NordDark(), AppFontSizes.forOs(
                 AppFontSizes.BASE_12,
                 AppFontSizes.BASE_11,
                 AppFontSizes.BASE_12
-        ));
+        ), () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2));
         public static final Theme CUPERTINO_LIGHT = new Theme("cupertinoLight", "cupertino", new CupertinoLight(), AppFontSizes.forOs(
                 AppFontSizes.BASE_11_5,
                 AppFontSizes.BASE_11,
                 AppFontSizes.BASE_12
-        ));
+        ), () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().darker().desaturate(), 0.3));
         public static final Theme CUPERTINO_DARK = new Theme("cupertinoDark", "cupertino", new CupertinoDark(), AppFontSizes.forOs(
                 AppFontSizes.BASE_12,
                 AppFontSizes.BASE_11,
                 AppFontSizes.BASE_12
-        ));
+        ), () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2));
         public static final Theme DRACULA = new Theme("dracula", "dracula", new Dracula(), AppFontSizes.forOs(
                 AppFontSizes.BASE_12,
                 AppFontSizes.BASE_11,
                 AppFontSizes.BASE_12
-        ));
+        ), () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2));
         public static final Theme MOCHA = new DerivedTheme("mocha", "mocha", "Mocha", new PrimerDark(), AppFontSizes.forOs(
                 AppFontSizes.BASE_12,
                 AppFontSizes.BASE_11,
                 AppFontSizes.BASE_12
-        ), 115);
+        ), () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2), 115);
 
         // Adjust this to create your own theme
         public static final Theme CUSTOM = new DerivedTheme("custom", "primer", "Custom", new PrimerDark(), AppFontSizes.forOs(
                 AppFontSizes.BASE_11_5,
                 AppFontSizes.BASE_11_5,
                 AppFontSizes.BASE_12
-        ), 115);
+        ), () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2), 115);
 
         // Also include your custom theme here
         public static final List<Theme> ALL = List.of(
@@ -297,6 +296,9 @@ public class AppTheme {
 
         @Getter
         protected final AppFontSizes fontSizes;
+
+        @Getter
+        protected final Supplier<Color> contextMenuColor;
 
         static Theme getDefaultLightTheme() {
             return switch (OsType.getLocal()) {
@@ -320,6 +322,13 @@ public class AppTheme {
 
         public void apply() {
             Application.setUserAgentStylesheet(theme.getUserAgentStylesheetBSS());
+        }
+
+        protected String getPlatformPreferencesStylesheet() {
+            var c = contextMenuColor.get();
+            var hex = ColorHelper.toWeb(c);
+            var s = "* { -color-context-menu: " + hex + "; }";
+            return s;
         }
 
         public List<String> getAdditionalStylesheets() {
