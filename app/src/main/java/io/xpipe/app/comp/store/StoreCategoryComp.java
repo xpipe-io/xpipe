@@ -197,7 +197,7 @@ public class StoreCategoryComp extends SimpleComp {
 
     private ContextMenu createContextMenu(Region text) {
         var contextMenu = ContextMenuHelper.create();
-        AppFontSizes.base(contextMenu.getStyleableNode());
+        AppFontSizes.sm(contextMenu.getStyleableNode());
 
         if (AppPrefs.get().enableHttpApi().get()) {
             var copyId = new MenuItem(AppI18n.get("copyId"), new FontIcon("mdi2c-content-copy"));

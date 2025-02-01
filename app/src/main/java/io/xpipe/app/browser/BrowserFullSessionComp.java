@@ -93,7 +93,7 @@ public class BrowserFullSessionComp extends SimpleComp {
                             node.setClip(null);
                             node.setPickOnBounds(false);
                         });
-                        struc.get().lookupAll(".split-pane-divider").forEach(node -> node.setViewOrder(1));
+                        struc.get().lookupAll(".split-pane-divider").forEach(node -> node.setViewOrder(-1));
                     });
                 }
             });

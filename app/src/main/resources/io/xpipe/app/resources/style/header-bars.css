@@ -103,8 +103,8 @@
 }
 
 .sidebar {
-    -fx-padding: 7 0 7 7;
-    -fx-spacing: 0.4em;
+    -fx-padding: 4 0 4 4;
+    -fx-spacing: 4;
     -fx-background-color: transparent;
 }
 

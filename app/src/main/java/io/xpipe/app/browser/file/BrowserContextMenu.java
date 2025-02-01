@@ -30,7 +30,7 @@ public final class BrowserContextMenu extends ContextMenu {
             e.consume();
         });
 
-        AppFontSizes.base(this.getStyleableNode());
+        AppFontSizes.sm(this.getStyleableNode());
 
         var empty = source == null;
         var selected = new ArrayList<>(

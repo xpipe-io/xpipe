@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 
 import javafx.application.Platform;
@@ -33,6 +34,7 @@ public class ContextMenuHelper {
                 }
             });
         });
+        AppFontSizes.sm(contextMenu.getStyleableNode());
         return contextMenu;
     }
 

@@ -12,7 +12,7 @@
 }
 
 .transfer {
-    -fx-padding: 0 6 8 8;
+    -fx-padding: 0 6 4 4;
 }
 
 .transfer > .download-background.color-box.gray {
@@ -102,10 +102,10 @@
 }
 
 .browser .top-bar {
-    -fx-min-height: 3.4em;
-    -fx-pref-height: 3.4em;
-    -fx-max-height: 3.4em;
-    -fx-padding: 11 6 9px 6px;
+    -fx-min-height: 3.0em;
+    -fx-pref-height: 3.0em;
+    -fx-max-height: 3.0em;
+    -fx-padding: 4 4 4px 0;
 }
 
 .browser .top-bar > .button {
@@ -245,7 +245,7 @@
 }
 
 .browser .browser-content-container {
-    -fx-padding: 0 10 7 0;
+    -fx-padding: 0 4 4 0;
 }
 
 .root.nord .browser .browser-content {
