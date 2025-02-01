@@ -29,11 +29,11 @@
 }
 
 .root:dark .store-entry-grid:incomplete .name {
-    -fx-text-fill: #b2271a;
+    -fx-text-fill: #aa473c;
 }
 
 .root:light .store-entry-grid:incomplete .name {
-    -fx-text-fill: #851908;
+    -fx-text-fill: #88352b;
 }
 
 .store-entry-grid .user-icon .ikonli-font-icon {
