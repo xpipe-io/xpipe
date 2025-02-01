@@ -2,6 +2,7 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.augment.Augment;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.PlatformThread;
 
@@ -41,7 +42,7 @@ public class TooltipAugment<S extends CompStructure<?>> implements Augment<S> {
         } else {
             tt.textProperty().bind(PlatformThread.sync(text));
         }
-        tt.setStyle("-fx-font-size: 11pt;");
+        AppFontSizes.sm(tt.getStyleableNode());
         tt.setWrapText(true);
         tt.setMaxWidth(400);
         tt.getStyleClass().add("fancy-tooltip");
