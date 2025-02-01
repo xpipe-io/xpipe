@@ -52,11 +52,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
         var vbox = new VBox(welcome, new Spacer(4, Orientation.VERTICAL));
         vbox.setAlignment(Pos.CENTER_LEFT);
 
-        var img = PrettyImageHelper.ofSpecificFixedSize("graphics/Hips.svg", 50, 61)
-                .padding(new Insets(5, 0, 0, 0))
-                .createRegion();
-
-        var hbox = new HBox(img, vbox);
+        var hbox = new HBox(vbox);
         hbox.setAlignment(Pos.CENTER_LEFT);
         hbox.setSpacing(15);
 
@@ -70,6 +66,10 @@ public class BrowserHistoryTabComp extends SimpleComp {
 
         var list = new DerivedObservableList<>(state.getEntries(), true)
                 .filtered(e -> {
+                    if (DataStorage.get() == null) {
+                        return false;
+                    }
+
                     var entry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
                     if (entry.isEmpty()) {
                         return false;
@@ -123,11 +123,12 @@ public class BrowserHistoryTabComp extends SimpleComp {
                 .createRegion();
 
         var layout = new VBox();
+        layout.setMaxWidth(1000);
         layout.getStyleClass().add("welcome");
-        layout.setPadding(new Insets(25, 40, 40, 40));
-        layout.setSpacing(18);
+        layout.setPadding(new Insets(45, 40, 40, 50));
+        layout.setSpacing(14);
         layout.getChildren().add(hbox);
-        layout.getChildren().add(Comp.separator().hide(empty).createRegion());
+        layout.getChildren().add(Comp.vspacer(5).createRegion());
         layout.getChildren().add(listBox);
         VBox.setVgrow(layout.getChildren().get(2), Priority.NEVER);
         layout.getChildren().add(Comp.separator().hide(empty).createRegion());
@@ -140,7 +141,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
                 .hide(empty)
                 .accessibleTextKey("restoreAllSessions");
         layout.getChildren().add(tile.createRegion());
-        AppFontSizes.sm(layout);
+        AppFontSizes.base(layout);
         return layout;
     }
 

@@ -122,13 +122,16 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
 
             var current = getCurrentDirectory();
             // We might close this after storage shutdown
-            if (DataStorage.get() != null
-                    && DataStorage.get().getStoreEntries().contains(getEntry().get())
-                    && savedState != null
+            // If this entry does not exist, it's not that bad if we save it anyway
+            if (
+//                    DataStorage.get() != null
+//                    && DataStorage.get().getStoreEntries().contains(getEntry().get())
+                    savedState != null
                     && current != null) {
                 savedState.cd(current.getPath(), false);
                 BrowserHistorySavedStateImpl.get()
                         .add(new BrowserHistorySavedState.Entry(getEntry().get().getUuid(), current.getPath()));
+                BrowserHistorySavedStateImpl.get().save();
             }
             try {
                 fileSystem.close();

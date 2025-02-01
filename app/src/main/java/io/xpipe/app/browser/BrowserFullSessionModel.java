@@ -189,7 +189,9 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
                 // Prevent blocking of shutdown
                 closeAsync(o);
             }
-            BrowserHistorySavedStateImpl.get().save();
+            if (all.size() > 0) {
+                ThreadHelper.sleep(1000);
+            }
         }
 
         // Delete all files
