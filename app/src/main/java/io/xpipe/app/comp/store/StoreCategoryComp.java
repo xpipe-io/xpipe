@@ -5,6 +5,7 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataColor;
@@ -76,7 +77,7 @@ public class StoreCategoryComp extends SimpleComp {
         var expandButton = new IconButtonComp(expandIcon, () -> {
                     category.toggleExpanded();
                 })
-                .apply(struc -> AppFont.medium(struc.get()))
+                .apply(struc -> AppFontSizes.sm(struc.get()))
                 .apply(struc -> {
                     struc.get().setAlignment(Pos.CENTER);
                     struc.get().setPadding(new Insets(-2, 0, 0, 0));
@@ -103,7 +104,7 @@ public class StoreCategoryComp extends SimpleComp {
                 category.getSync(),
                 hover);
         var statusButton = new IconButtonComp(statusIcon)
-                .apply(struc -> AppFont.small(struc.get()))
+                .apply(struc -> AppFontSizes.xs(struc.get()))
                 .apply(struc -> {
                     struc.get().setAlignment(Pos.CENTER);
                     struc.get().setPadding(new Insets(0, 0, 0, 0));
@@ -186,7 +187,7 @@ public class StoreCategoryComp extends SimpleComp {
 
     private ContextMenu createContextMenu(Region text) {
         var contextMenu = ContextMenuHelper.create();
-        AppFont.normal(contextMenu.getStyleableNode());
+        AppFontSizes.base(contextMenu.getStyleableNode());
 
         if (AppPrefs.get().enableHttpApi().get()) {
             var copyId = new MenuItem(AppI18n.get("copyId"), new FontIcon("mdi2c-content-copy"));

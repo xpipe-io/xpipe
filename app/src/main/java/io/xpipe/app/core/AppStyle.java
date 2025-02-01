@@ -34,7 +34,7 @@ public class AppStyle {
             AppPrefs.get().useSystemFont().addListener((c, o, n) -> {
                 changeFontUsage(n);
             });
-            AppPrefs.get().theme.addListener((c, o, n) -> {
+            AppPrefs.get().theme().addListener((c, o, n) -> {
                 changeTheme(n);
             });
         }
@@ -130,7 +130,7 @@ public class AppStyle {
             scene.getStylesheets().add(s);
         });
         if (AppPrefs.get() != null) {
-            var t = AppPrefs.get().theme.get();
+            var t = AppPrefs.get().theme().getValue();
             if (t != null) {
                 scene.getStylesheets().add(THEME_SPECIFIC_STYLESHEET_CONTENTS.get(t));
             }

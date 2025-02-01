@@ -6,6 +6,7 @@ import io.xpipe.app.comp.base.CountComp;
 import io.xpipe.app.comp.base.FilterComp;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.LabelGraphic;
@@ -89,8 +90,8 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                 createDateSortButton().createRegion(),
                 Comp.hspacer(2).createRegion(),
                 createAlphabeticalSortButton().createRegion());
-        AppFont.setSize(label, 2);
-        AppFont.setSize(c, 2);
+        AppFontSizes.xl(label);
+        AppFontSizes.xl(c);
         topBar.setAlignment(Pos.CENTER);
         topBar.getStyleClass().add("top");
         return topBar;
@@ -115,7 +116,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
         HBox.setHgrow(f, Priority.ALWAYS);
 
         f.getStyleClass().add("filter-bar");
-        AppFont.medium(hbox);
+        AppFontSizes.sm(hbox);
         return hbox;
     }
 
@@ -124,7 +125,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
         menu.textProperty().bind(AppI18n.observable("addConnections"));
         menu.setAlignment(Pos.CENTER);
         menu.setTextAlignment(TextAlignment.CENTER);
-        AppFont.medium(menu);
+        AppFontSizes.sm(menu);
         StoreCreationMenu.addButtons(menu);
         menu.setOpacity(0.85);
         menu.setMinWidth(Region.USE_PREF_SIZE);
@@ -160,7 +161,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
             }
         });
         alphabetical.apply(alphabeticalR -> {
-            AppFont.medium(alphabeticalR.get());
+            AppFontSizes.sm(alphabeticalR.get());
             alphabeticalR
                     .get()
                     .opacityProperty()
@@ -201,7 +202,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
             }
         });
         date.apply(dateR -> {
-            AppFont.medium(dateR.get());
+            AppFontSizes.sm(dateR.get());
             dateR.get()
                     .opacityProperty()
                     .bind(Bindings.createDoubleBinding(

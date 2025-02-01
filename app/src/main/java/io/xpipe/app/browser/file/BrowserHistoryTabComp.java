@@ -10,6 +10,7 @@ import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
@@ -91,7 +92,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
             }
         });
         var header = new LabelComp(headerBinding).createRegion();
-        AppFont.setSize(header, 1);
+        AppFontSizes.lg(header);
         vbox.getChildren().add(header);
 
         var storeList = new VBox();
@@ -139,7 +140,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
                 .hide(empty)
                 .accessibleTextKey("restoreAllSessions");
         layout.getChildren().add(tile.createRegion());
-        AppFont.medium(layout);
+        AppFontSizes.sm(layout);
         return layout;
     }
 

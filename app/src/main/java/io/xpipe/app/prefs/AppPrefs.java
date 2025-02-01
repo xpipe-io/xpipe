@@ -191,6 +191,10 @@ public class AppPrefs {
     final BooleanProperty disableApiAuthentication =
             mapLocal(new SimpleBooleanProperty(false), "disableApiAuthentication", Boolean.class, false);
 
+    public ObservableValue<AppTheme.Theme> theme() {
+        return theme;
+    }
+
     public ObservableBooleanValue developerPrintInitFiles() {
         return developerPrintInitFiles;
     }

@@ -9,10 +9,7 @@ import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.comp.base.TooltipAugment;
-import io.xpipe.app.core.App;
-import io.xpipe.app.core.AppActionLinkDetector;
-import io.xpipe.app.core.AppFont;
-import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.*;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.resources.AppResources;
@@ -138,7 +135,7 @@ public abstract class StoreEntryComp extends SimpleComp {
 
         var loading = LoadingOverlayComp.noProgress(
                 Comp.of(() -> button), getWrapper().getEffectiveBusy());
-        AppFont.normal(button);
+        AppFontSizes.base(button);
         return loading.createRegion();
     }
 
@@ -175,7 +172,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         button.styleClass("user-icon");
         button.tooltipKey("personalConnection");
         button.apply(struc -> {
-            AppFont.medium(struc.get());
+            AppFontSizes.sm(struc.get());
             struc.get().setOpacity(1.0);
         });
         button.hide(Bindings.not(getWrapper().getPerUser()));
@@ -207,7 +204,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         update.run();
         ig.setAlignment(Pos.CENTER_RIGHT);
         ig.getStyleClass().add("button-bar");
-        AppFont.medium(ig);
+        AppFontSizes.sm(ig);
         return ig;
     }
 
@@ -267,7 +264,7 @@ public abstract class StoreEntryComp extends SimpleComp {
 
     protected ContextMenu createContextMenu() {
         var contextMenu = new ContextMenu();
-        AppFont.normal(contextMenu.getStyleableNode());
+        AppFontSizes.base(contextMenu.getStyleableNode());
 
         var hasSep = false;
         for (var p : getWrapper().getActionProviders()) {

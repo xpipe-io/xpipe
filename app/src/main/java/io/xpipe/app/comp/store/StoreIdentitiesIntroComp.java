@@ -2,6 +2,7 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProviders;
@@ -29,7 +30,7 @@ public class StoreIdentitiesIntroComp extends SimpleComp {
         if (OsType.getLocal() != OsType.MACOS) {
             title.getStyleClass().add(Styles.TEXT_BOLD);
         }
-        AppFont.setSize(title, 7);
+        AppFontSizes.xxl(title);
 
         var introDesc = new Label();
         introDesc.textProperty().bind(AppI18n.observable("identitiesIntroText"));
@@ -76,7 +77,7 @@ public class StoreIdentitiesIntroComp extends SimpleComp {
         if (OsType.getLocal() != OsType.MACOS) {
             title.getStyleClass().add(Styles.TEXT_BOLD);
         }
-        AppFont.setSize(title, 7);
+        AppFontSizes.xxl(title);
 
         var importDesc = new Label();
         importDesc.textProperty().bind(AppI18n.observable("identitiesIntroBottomText"));

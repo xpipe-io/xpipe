@@ -8,6 +8,7 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.ErrorEvent;
@@ -119,7 +120,7 @@ public abstract class MultiExecuteSelectionAction implements BrowserBranchAction
                                                 text.setWrapText(true);
                                                 text.setEditable(false);
                                                 text.setPrefRowCount(Math.max(8,( int) finalOut.lines().count()));
-                                                AppFont.medium(text);
+                                                AppFontSizes.sm(text);
                                                 var sp = new StackPane(text);
                                                 return sp;
                                             })

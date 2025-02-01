@@ -25,7 +25,7 @@ public class AppGreetingsDialog {
         tp.setExpanded(true);
         tp.setText(AppI18n.get("introduction"));
         tp.setAlignment(Pos.CENTER_LEFT);
-        AppFont.normal(tp);
+        AppFontSizes.base(tp);
 
         AppResources.with(AppResources.XPIPE_MODULE, "misc/welcome.md", file -> {
             var md = Files.readString(file);
@@ -41,7 +41,7 @@ public class AppGreetingsDialog {
         tp.setExpanded(false);
         tp.setText(AppI18n.get("eula"));
         tp.setAlignment(Pos.CENTER_LEFT);
-        AppFont.normal(tp);
+        AppFontSizes.base(tp);
 
         AppResources.with(AppResources.XPIPE_MODULE, "misc/eula.md", file -> {
             var md = Files.readString(file);
@@ -84,7 +84,7 @@ public class AppGreetingsDialog {
 
                         var label = new Label(AppI18n.get("legalAccept"));
                         label.setGraphic(cb);
-                        AppFont.medium(label);
+                        AppFontSizes.sm(label);
                         label.setPadding(new Insets(20, 0, 10, 0));
                         label.setOnMouseClicked(event -> accepted.set(!accepted.get()));
                         label.setGraphicTextGap(10);

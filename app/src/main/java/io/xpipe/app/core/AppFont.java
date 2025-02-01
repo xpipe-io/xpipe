@@ -17,41 +17,14 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 public class AppFont {
 
-    public static void header(Node node) {
-        setSize(node, +1);
-    }
-
-    public static void normal(Node node) {
-        setSize(node, 0);
-    }
-
-    public static void medium(Node node) {
-        setSize(node, -1);
-    }
-
-    public static void small(Node node) {
-        setSize(node, -2);
-    }
-
-    public static void verySmall(Node node) {
-        setSize(node, -3);
-    }
-
-    public static void setSize(Node node, int off) {
-        if (node.getStyle().contains("-fx-font-size: ")) {
-            return;
-        }
-
-        // Somehow the font is bigger on Linux
-        var baseSize = OsType.getLocal() == OsType.LINUX ? 11 : 11.5;
-        node.setStyle(node.getStyle() + "-fx-font-size: " + (baseSize + off) + "pt;");
-    }
-
     public static void init() {
         // Load ikonli fonts
         TrackEvent.info("Loading ikonli fonts ...");
         new FontIcon("mdi2s-stop");
         new FontIcon("mdi2m-magnify");
+        new FontIcon("mdi2d-database-plus");
+        new FontIcon("mdi2p-professional-hexagon");
+        new FontIcon("mdi2c-chevron-double-right");
 
         TrackEvent.info("Loading bundled fonts ...");
         AppResources.with(
@@ -61,7 +34,7 @@ public class AppFont {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                         try (var in = Files.newInputStream(file)) {
-                            Font.loadFont(in, OsType.getLocal() == OsType.LINUX ? 11 : 11.5);
+                            Font.loadFont(in, OsType.getLocal() == OsType.LINUX ? 11 : 12);
                         } catch (Throwable t) {
                             // Font loading can fail in rare cases. This is however not important, so we can just ignore
                             // it

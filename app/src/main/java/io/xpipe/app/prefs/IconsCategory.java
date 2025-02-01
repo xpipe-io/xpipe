@@ -3,6 +3,7 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.PrefsChoiceValue;
@@ -156,7 +157,7 @@ public class IconsCategory extends AppPrefsCategory {
         tile.setRight(buttons);
         tile.setIconSize(1.0);
         tile.grow(true, false);
-        tile.apply(struc -> AppFont.medium(struc.get()));
+        tile.apply(struc -> AppFontSizes.sm(struc.get()));
         return tile;
     }
 }

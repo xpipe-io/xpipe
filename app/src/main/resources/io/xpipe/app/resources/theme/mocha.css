@@ -112,7 +112,9 @@
     -fx-font-size: 14px;
 }
 
-.root { -color-bg-default-transparent: #13171dd2; }
+.root:macos { -color-bg-default-transparent: #13171dd2; }
+
+.root:windows { -color-bg-default-transparent: #191c23b8; }
 
 .root .table-view {
     -color-cell-bg-odd: derive(-color-bg-subtle, -35%);

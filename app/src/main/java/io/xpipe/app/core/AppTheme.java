@@ -60,7 +60,7 @@ public class AppTheme {
                 return;
             }
 
-            AppPrefs.get().theme.subscribe(t -> {
+            AppPrefs.get().theme().subscribe(t -> {
                 Theme.ALL.forEach(theme -> root.getStyleClass().remove(theme.getCssId()));
                 if (t == null) {
                     return;
@@ -71,7 +71,7 @@ public class AppTheme {
                 root.pseudoClassStateChanged(LIGHT, !t.isDark());
                 root.pseudoClassStateChanged(DARK, t.isDark());
             });
-            AppPrefs.get().theme.addListener((observable, oldValue, newValue) -> {
+            AppPrefs.get().theme().addListener((observable, oldValue, newValue) -> {
                 stage.getScene().getStylesheets().removeAll(oldValue.getAdditionalStylesheets());
             });
 
@@ -96,19 +96,19 @@ public class AppTheme {
             var lastSystemDark = AppCache.getBoolean("lastDarkTheme", false);
             var nowDark = Platform.getPreferences().getColorScheme() == ColorScheme.DARK;
             AppCache.update("lastDarkTheme", nowDark);
-            if (AppPrefs.get().theme.getValue() == null || lastSystemDark != nowDark) {
+            if (AppPrefs.get().theme().getValue() == null || lastSystemDark != nowDark) {
                 setDefault();
             }
 
             Platform.getPreferences().colorSchemeProperty().addListener((observableValue, colorScheme, t1) -> {
                 Platform.runLater(() -> {
                     if (t1 == ColorScheme.DARK
-                            && !AppPrefs.get().theme.getValue().isDark()) {
+                            && !AppPrefs.get().theme().getValue().isDark()) {
                         AppPrefs.get().theme.setValue(Theme.getDefaultDarkTheme());
                     }
 
                     if (t1 != ColorScheme.DARK
-                            && AppPrefs.get().theme.getValue().isDark()) {
+                            && AppPrefs.get().theme().getValue().isDark()) {
                         AppPrefs.get().theme.setValue(Theme.getDefaultLightTheme());
                     }
                 });
@@ -120,11 +120,11 @@ public class AppTheme {
             ErrorEvent.fromThrowable(t).omit().handle();
         }
 
-        var t = AppPrefs.get().theme.getValue();
+        var t = AppPrefs.get().theme().getValue();
         t.apply();
         TrackEvent.debug("Set theme " + t.getId() + " for scene");
 
-        AppPrefs.get().theme.addListener((c, o, n) -> {
+        AppPrefs.get().theme().addListener((c, o, n) -> {
             changeTheme(n);
         });
 
@@ -199,8 +199,8 @@ public class AppTheme {
         private final String name;
         private final int skipLines;
 
-        public DerivedTheme(String id, String cssId, String name, atlantafx.base.theme.Theme theme, int skipLines) {
-            super(id, cssId, theme);
+        public DerivedTheme(String id, String cssId, String name, atlantafx.base.theme.Theme theme, AppFontSizes sizes, int skipLines) {
+            super(id, cssId, theme, sizes);
             this.name = name;
             this.skipLines = skipLines;
         }
@@ -237,17 +237,53 @@ public class AppTheme {
     @AllArgsConstructor
     public static class Theme implements PrefsChoiceValue {
 
-        public static final Theme PRIMER_LIGHT = new Theme("light", "primer", new PrimerLight());
-        public static final Theme PRIMER_DARK = new Theme("dark", "primer", new PrimerDark());
-        public static final Theme NORD_LIGHT = new Theme("nordLight", "nord", new NordLight());
-        public static final Theme NORD_DARK = new Theme("nordDark", "nord", new NordDark());
-        public static final Theme CUPERTINO_LIGHT = new Theme("cupertinoLight", "cupertino", new CupertinoLight());
-        public static final Theme CUPERTINO_DARK = new Theme("cupertinoDark", "cupertino", new CupertinoDark());
-        public static final Theme DRACULA = new Theme("dracula", "dracula", new Dracula());
-        public static final Theme MOCHA = new DerivedTheme("mocha", "mocha", "Mocha", new PrimerDark(), 115);
+        public static final Theme PRIMER_LIGHT = new Theme("light", "primer", new PrimerLight(), AppFontSizes.forOs(
+                AppFontSizes.BASE_11_5,
+                AppFontSizes.BASE_11,
+                AppFontSizes.BASE_12
+        ));
+        public static final Theme PRIMER_DARK = new Theme("dark", "primer", new PrimerDark(), AppFontSizes.forOs(
+                AppFontSizes.BASE_12,
+                AppFontSizes.BASE_11,
+                AppFontSizes.BASE_12
+        ));
+        public static final Theme NORD_LIGHT = new Theme("nordLight", "nord", new NordLight(), AppFontSizes.forOs(
+                AppFontSizes.BASE_11_5,
+                AppFontSizes.BASE_11,
+                AppFontSizes.BASE_12
+        ));
+        public static final Theme NORD_DARK = new Theme("nordDark", "nord", new NordDark(), AppFontSizes.forOs(
+                AppFontSizes.BASE_12,
+                AppFontSizes.BASE_11,
+                AppFontSizes.BASE_12
+        ));
+        public static final Theme CUPERTINO_LIGHT = new Theme("cupertinoLight", "cupertino", new CupertinoLight(), AppFontSizes.forOs(
+                AppFontSizes.BASE_11_5,
+                AppFontSizes.BASE_11,
+                AppFontSizes.BASE_12
+        ));
+        public static final Theme CUPERTINO_DARK = new Theme("cupertinoDark", "cupertino", new CupertinoDark(), AppFontSizes.forOs(
+                AppFontSizes.BASE_12,
+                AppFontSizes.BASE_11,
+                AppFontSizes.BASE_12
+        ));
+        public static final Theme DRACULA = new Theme("dracula", "dracula", new Dracula(), AppFontSizes.forOs(
+                AppFontSizes.BASE_12,
+                AppFontSizes.BASE_11,
+                AppFontSizes.BASE_12
+        ));
+        public static final Theme MOCHA = new DerivedTheme("mocha", "mocha", "Mocha", new PrimerDark(), AppFontSizes.forOs(
+                AppFontSizes.BASE_12,
+                AppFontSizes.BASE_11,
+                AppFontSizes.BASE_12
+        ), 115);
 
         // Adjust this to create your own theme
-        public static final Theme CUSTOM = new DerivedTheme("custom", "primer", "Custom", new PrimerDark(), 115);
+        public static final Theme CUSTOM = new DerivedTheme("custom", "primer", "Custom", new PrimerDark(), AppFontSizes.forOs(
+                AppFontSizes.BASE_11_5,
+                AppFontSizes.BASE_11_5,
+                AppFontSizes.BASE_12
+        ), 115);
 
         // Also include your custom theme here
         public static final List<Theme> ALL = List.of(
@@ -258,6 +294,9 @@ public class AppTheme {
         protected final String cssId;
 
         protected final atlantafx.base.theme.Theme theme;
+
+        @Getter
+        protected final AppFontSizes fontSizes;
 
         static Theme getDefaultLightTheme() {
             return switch (OsType.getLocal()) {

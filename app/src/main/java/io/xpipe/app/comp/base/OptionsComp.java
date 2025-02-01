@@ -4,6 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.Observable;
@@ -92,7 +93,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                         popover.setCloseButtonEnabled(false);
                         popover.setHeaderAlwaysVisible(false);
                         popover.setDetachable(true);
-                        AppFont.small(popover.getContentNode());
+                        AppFontSizes.xs(popover.getContentNode());
 
                         var extendedDescription = new Button("... ?");
                         extendedDescription.setMinWidth(Region.USE_PREF_SIZE);
@@ -100,7 +101,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                         extendedDescription.getStyleClass().add(Styles.ACCENT);
                         extendedDescription.getStyleClass().add("long-description");
                         extendedDescription.setAccessibleText("Help");
-                        AppFont.normal(extendedDescription);
+                        AppFontSizes.base(extendedDescription);
                         extendedDescription.setOnAction(e -> {
                             popover.show(extendedDescription);
                             e.consume();

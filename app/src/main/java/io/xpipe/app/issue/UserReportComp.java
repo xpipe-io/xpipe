@@ -73,7 +73,7 @@ public class UserReportComp extends SimpleComp {
                 .styleClass("attachment-list");
         return new TitledPaneComp(AppI18n.observable("additionalErrorAttachments"), list, 100)
                 .apply(struc -> struc.get().setExpanded(true))
-                .apply(s -> AppFont.medium(s.get()))
+                .apply(s -> AppFontSizes.sm(s.get()))
                 .styleClass("attachments");
     }
 
@@ -81,13 +81,13 @@ public class UserReportComp extends SimpleComp {
     protected Region createSimple() {
         var emailHeader = new Label(AppI18n.get("provideEmail"));
         emailHeader.setWrapText(true);
-        AppFont.medium(emailHeader);
+        AppFontSizes.sm(emailHeader);
         var email = new TextField();
         this.email.bind(email.textProperty());
         VBox.setVgrow(email, Priority.ALWAYS);
 
         var header = new Label(AppI18n.get("additionalErrorInfo"));
-        AppFont.medium(header);
+        AppFontSizes.sm(header);
         var tf = new TextArea();
         text.bind(tf.textProperty());
         VBox.setVgrow(tf, Priority.ALWAYS);
@@ -117,7 +117,7 @@ public class UserReportComp extends SimpleComp {
 
     private Region createBottomBarNavigation() {
         var dataPolicyButton = new Hyperlink(AppI18n.get("dataHandlingPolicies"));
-        AppFont.small(dataPolicyButton);
+        AppFontSizes.xs(dataPolicyButton);
         dataPolicyButton.setOnAction(event1 -> {
             AppResources.with(AppResources.XPIPE_MODULE, "misc/report_privacy_policy.md", file -> {
                 var markDown = new MarkdownComp(Files.readString(file), s -> s, true)
@@ -127,7 +127,7 @@ public class UserReportComp extends SimpleComp {
                 popover.setCloseButtonEnabled(true);
                 popover.setHeaderAlwaysVisible(false);
                 popover.setDetachable(true);
-                AppFont.small(popover.getContentNode());
+                AppFontSizes.xs(popover.getContentNode());
                 popover.show(dataPolicyButton);
             });
             event1.consume();
@@ -141,7 +141,7 @@ public class UserReportComp extends SimpleComp {
         buttons.setAlignment(Pos.CENTER);
         buttons.getStyleClass().add("buttons");
         HBox.setHgrow(spacer, Priority.ALWAYS);
-        AppFont.medium(dataPolicyButton);
+        AppFontSizes.sm(dataPolicyButton);
         return buttons;
     }
 

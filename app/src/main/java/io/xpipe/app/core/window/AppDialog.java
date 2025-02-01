@@ -4,6 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.PlatformInit;
 import io.xpipe.app.util.PlatformThread;
@@ -109,7 +110,7 @@ public class AppDialog {
         return Comp.of(() -> {
                     var text = new Text(s);
                     text.setWrappingWidth(450);
-                    AppFont.medium(text);
+                    AppFontSizes.sm(text);
                     var sp = new StackPane(text);
                     return sp;
                 })

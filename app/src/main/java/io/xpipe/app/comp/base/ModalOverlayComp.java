@@ -3,6 +3,7 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.util.PlatformThread;
@@ -177,7 +178,7 @@ public class ModalOverlayComp extends SimpleComp {
                     AppI18n.get(newValue.getTitleKey()),
                     newValue.getGraphic() != null ? newValue.getGraphic().createGraphicNode() : null);
             l.setGraphicTextGap(8);
-            AppFont.normal(l);
+            AppFontSizes.base(l);
             content.getChildren().addFirst(l);
         } else {
             content.getChildren().addFirst(Comp.vspacer(0).createRegion());
@@ -194,7 +195,7 @@ public class ModalOverlayComp extends SimpleComp {
                 }
             }
             content.getChildren().add(buttonBar);
-            AppFont.small(buttonBar);
+            AppFontSizes.xs(buttonBar);
         }
 
         var modalBox = new ModalBox(content) {

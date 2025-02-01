@@ -94,8 +94,8 @@ public class PrettyImageComp extends SimpleComp {
 
         Consumer<String> update = val -> {
             var useDark = AppPrefs.get() != null
-                    && AppPrefs.get().theme.get() != null
-                    && AppPrefs.get().theme.get().isDark();
+                    && AppPrefs.get().theme().getValue() != null
+                    && AppPrefs.get().theme().getValue().isDark();
             var fixed = val != null
                     ? FileNames.getBaseName(val) + (useDark ? "-dark" : "") + "." + FileNames.getExtension(val)
                     : null;
@@ -110,7 +110,7 @@ public class PrettyImageComp extends SimpleComp {
 
         PlatformThread.sync(value).subscribe(update);
         if (AppPrefs.get() != null) {
-            AppPrefs.get().theme.addListener((observable, oldValue, newValue) -> {
+            AppPrefs.get().theme().addListener((observable, oldValue, newValue) -> {
                 update.accept(value.getValue());
             });
         }

@@ -6,6 +6,7 @@ import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.store.StoreCategoryWrapper;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.util.DataStoreCategoryChoiceComp;
 
 import javafx.beans.property.Property;
@@ -33,14 +34,14 @@ public final class BrowserConnectionListFilterComp extends SimpleComp {
                         this.category)
                 .styleClass(Styles.LEFT_PILL)
                 .apply(struc -> {
-                    AppFont.medium(struc.get());
+                    AppFontSizes.sm(struc.get());
                 });
         var filter = new FilterComp(this.filter)
                 .styleClass(Styles.RIGHT_PILL)
                 .minWidth(0)
                 .hgrow()
                 .apply(struc -> {
-                    AppFont.medium(struc.get());
+                    AppFontSizes.sm(struc.get());
                 });
 
         var top = new HorizontalComp(List.of(category, filter))

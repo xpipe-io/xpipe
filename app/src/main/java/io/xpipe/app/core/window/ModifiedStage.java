@@ -43,7 +43,7 @@ public class ModifiedStage extends Stage {
     private static void hookUpStage(Stage stage) {
         applyModes(stage);
         if (AppPrefs.get() != null) {
-            AppPrefs.get().theme.addListener((observable, oldValue, newValue) -> {
+            AppPrefs.get().theme().addListener((observable, oldValue, newValue) -> {
                 updateStage(stage);
             });
             AppPrefs.get().performanceMode().addListener((observable, oldValue, newValue) -> {
@@ -65,7 +65,7 @@ public class ModifiedStage extends Stage {
         }
 
         var applyToStage = (OsType.getLocal() == OsType.WINDOWS) || (OsType.getLocal() == OsType.MACOS);
-        if (!applyToStage || AppPrefs.get() == null || AppPrefs.get().theme.getValue() == null) {
+        if (!applyToStage || AppPrefs.get() == null || AppPrefs.get().theme().getValue() == null) {
             stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), false);
             stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), true);
             return;
@@ -80,7 +80,7 @@ public class ModifiedStage extends Stage {
                         && !AppPrefs.get().performanceMode().get()
                         && mergeFrame();
                 var seamlessFrameApplied = ctrl.setAppearance(
-                                seamlessFrame, AppPrefs.get().theme.getValue().isDark())
+                                seamlessFrame, AppPrefs.get().theme().getValue().isDark())
                         && seamlessFrame;
                 stage.getScene()
                         .getRoot()
@@ -93,7 +93,7 @@ public class ModifiedStage extends Stage {
                 var ctrl = new NativeWinWindowControl(stage);
                 ctrl.setWindowAttribute(
                         NativeWinWindowControl.DmwaWindowAttribute.DWMWA_USE_IMMERSIVE_DARK_MODE.get(),
-                        AppPrefs.get().theme.getValue().isDark());
+                        AppPrefs.get().theme().getValue().isDark());
                 boolean seamlessFrame;
                 if (AppPrefs.get().performanceMode().get()
                         || !mergeFrame()

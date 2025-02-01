@@ -3,6 +3,7 @@ package io.xpipe.app.issue;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.core.util.Deobfuscator;
 
 import javafx.geometry.Insets;
@@ -21,7 +22,7 @@ public class ErrorDetailsComp extends SimpleComp {
             String stackTrace = Deobfuscator.deobfuscateToString(event.getThrowable());
             stackTrace = stackTrace.replace("\t", "");
             var tf = new TextArea(stackTrace);
-            AppFont.verySmall(tf);
+            AppFontSizes.xs(tf);
             tf.setWrapText(false);
             tf.setEditable(false);
             tf.setPadding(new Insets(10, 0, 10, 0));
@@ -34,7 +35,7 @@ public class ErrorDetailsComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var tb = Comp.of(this::createStrackTraceContent);
-        tb.apply(r -> AppFont.small(r.get()));
+        tb.apply(r -> AppFontSizes.xs(r.get()));
         return tb.createRegion();
     }
 }

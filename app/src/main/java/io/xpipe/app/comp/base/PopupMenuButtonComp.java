@@ -4,6 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppFont;
 
+import io.xpipe.app.core.AppFontSizes;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Region;
@@ -32,7 +33,7 @@ public class PopupMenuButtonComp extends SimpleComp {
         popover.setCloseButtonEnabled(false);
         popover.setHeaderAlwaysVisible(false);
         popover.setDetachable(true);
-        AppFont.small(popover.getContentNode());
+        AppFontSizes.xs(popover.getContentNode());
 
         var extendedDescription = new Button();
         extendedDescription.textProperty().bind(name);

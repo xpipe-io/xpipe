@@ -49,7 +49,7 @@ public class AppWindowHelper {
     public static Region alertContentText(String s, int width) {
         var text = new Text(s);
         text.setWrappingWidth(width);
-        AppFont.medium(text);
+        AppFontSizes.sm(text);
         var sp = new StackPane(text);
         sp.setPadding(new Insets(5));
         return sp;
@@ -140,7 +140,7 @@ public class AppWindowHelper {
 
         Supplier<Alert> supplier = () -> {
             Alert a = AppWindowHelper.createEmptyAlert();
-            AppFont.normal(a.getDialogPane());
+            AppFontSizes.base(a.getDialogPane());
             var s = (Stage) a.getDialogPane().getScene().getWindow();
             s.setOnShown(event -> {
                 Platform.runLater(() -> {
@@ -279,7 +279,7 @@ public class AppWindowHelper {
         var baseComp = contentFunc.apply(stage);
         var content = loading != null ? LoadingOverlayComp.noProgress(baseComp, loading) : baseComp;
         var contentR = content.createRegion();
-        AppFont.small(contentR);
+        AppFontSizes.xs(contentR);
         var scene = new Scene(bindSize ? new Pane(contentR) : contentR, -1, -1, false);
         scene.setFill(Color.TRANSPARENT);
         stage.setScene(scene);
@@ -294,7 +294,7 @@ public class AppWindowHelper {
                 var newBaseComp = contentFunc.apply(stage);
                 var newComp = loading != null ? LoadingOverlayComp.noProgress(newBaseComp, loading) : newBaseComp;
                 var newR = newComp.createRegion();
-                AppFont.medium(newR);
+                AppFontSizes.sm(newR);
                 scene.setRoot(bindSize ? new Pane(newR) : newR);
                 newR.requestFocus();
                 if (bindSize) {
