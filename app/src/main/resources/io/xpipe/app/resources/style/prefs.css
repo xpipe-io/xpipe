@@ -4,6 +4,11 @@
     -fx-font-size: 1.1em;
 }
 
+.root:macos .prefs-container .options-comp .name {
+    -fx-font-weight: NORMAL;
+    -fx-font-size: 1.2em;
+}
+
 .prefs-container .options-comp .description {
     -fx-padding: 0.5em 0 0.5em 0;
     -fx-opacity: 0.9;
