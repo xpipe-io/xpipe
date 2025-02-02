@@ -1,11 +1,9 @@
 package io.xpipe.app.issue;
 
-import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.comp.base.MarkdownComp;
-import io.xpipe.app.comp.base.TitledPaneComp;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.resources.AppResources;
@@ -57,26 +55,6 @@ public class UserReportComp extends SimpleComp {
         window.showAndWait();
     }
 
-    private Comp<?> createAttachments() {
-        var list = new ListSelectorComp<>(
-                        FXCollections.observableList(event.getAttachments()),
-                        file -> {
-                            if (file.equals(AppLogs.get().getSessionLogsDirectory())) {
-                                return AppI18n.get("logFilesAttachment");
-                            }
-
-                            return file.getFileName().toString();
-                        },
-                        includedDiagnostics,
-                        file -> false,
-                        () -> false)
-                .styleClass("attachment-list");
-        return new TitledPaneComp(AppI18n.observable("additionalErrorAttachments"), list, 100)
-                .apply(struc -> struc.get().setExpanded(true))
-                .apply(s -> AppFontSizes.sm(s.get()))
-                .styleClass("attachments");
-    }
-
     @Override
     protected Region createSimple() {
         var emailHeader = new Label(AppI18n.get("provideEmail"));
@@ -86,22 +64,32 @@ public class UserReportComp extends SimpleComp {
         this.email.bind(email.textProperty());
         VBox.setVgrow(email, Priority.ALWAYS);
 
-        var header = new Label(AppI18n.get("additionalErrorInfo"));
-        AppFontSizes.sm(header);
+        var infoHeader = new Label(AppI18n.get("additionalErrorInfo"));
         var tf = new TextArea();
         text.bind(tf.textProperty());
         VBox.setVgrow(tf, Priority.ALWAYS);
-        var reportSection = new VBox(header, tf, new Spacer(8, Orientation.VERTICAL));
+
+        var attachmentsHeader = new Label(AppI18n.get("additionalErrorAttachments"));
+        var attachments = new ListSelectorComp<>(
+                FXCollections.observableList(event.getAttachments()),
+                file -> {
+                    if (file.equals(AppLogs.get().getSessionLogsDirectory())) {
+                        return AppI18n.get("logFilesAttachment");
+                    }
+
+                    return file.getFileName().toString();
+                },
+                includedDiagnostics,
+                file -> false,
+                () -> false)
+                .styleClass("attachment-list")
+                .createRegion();
+
+        var reportSection = new VBox(infoHeader, tf, new Spacer(8, Orientation.VERTICAL), attachmentsHeader, new Spacer(3, Orientation.VERTICAL), attachments);
         reportSection.setSpacing(5);
         reportSection.getStyleClass().add("report");
 
-        var at = createAttachments().createRegion();
-
         var buttons = createBottomBarNavigation();
-
-        if (event.getAttachments().size() > 0) {
-            reportSection.getChildren().add(at);
-        }
 
         reportSection.getChildren().addAll(new Spacer(8, Orientation.VERTICAL), emailHeader, email);
 

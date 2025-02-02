@@ -59,7 +59,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
             if (showVertical) {
                 var line = new VBox();
                 line.prefWidthProperty().bind(pane.widthProperty());
-                line.setSpacing(5);
+                line.setSpacing(2);
 
                 var name = new Label();
                 name.getStyleClass().add("name");
@@ -120,6 +120,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                         }
                     } else {
                         line.getChildren().add(description);
+                        line.getChildren().add(new Spacer(2, Orientation.VERTICAL));
                     }
                 }
 

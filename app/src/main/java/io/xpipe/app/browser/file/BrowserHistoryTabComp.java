@@ -141,7 +141,6 @@ public class BrowserHistoryTabComp extends SimpleComp {
                 .hide(empty)
                 .accessibleTextKey("restoreAllSessions");
         layout.getChildren().add(tile.createRegion());
-        AppFontSizes.base(layout);
         return layout;
     }
 

@@ -3,6 +3,7 @@ package io.xpipe.app.comp.store;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.*;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.ext.DataStoreCreationCategory;
@@ -517,7 +518,7 @@ public class StoreCreationComp extends DialogComp {
 
         var sep = new Separator();
         sep.getStyleClass().add("spacer");
-        var top = new VBox(providerChoice.createRegion(), new Spacer(5, Orientation.VERTICAL), sep);
+        var top = new VBox(providerChoice.createRegion(), sep);
         top.getStyleClass().add("top");
         if (showProviders) {
             layout.setTop(top);

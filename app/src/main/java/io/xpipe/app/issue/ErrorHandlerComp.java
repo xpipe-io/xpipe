@@ -3,11 +3,11 @@ package io.xpipe.app.issue;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.TitledPaneComp;
-import io.xpipe.app.core.AppFont;
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.LicenseRequiredException;
 
 import javafx.beans.property.Property;
@@ -42,7 +42,7 @@ public class ErrorHandlerComp extends SimpleComp {
 
     private Region createActionButtonGraphic(String nameString, String descString) {
         var header = new Label(nameString);
-        AppFontSizes.lg(header);
+        AppFontSizes.base(header);
         var desc = new Label(descString);
         AppFontSizes.xs(desc);
         var text = new VBox(header, desc);
@@ -67,9 +67,14 @@ public class ErrorHandlerComp extends SimpleComp {
     }
 
     private Region createDetails() {
-        var content = new ErrorDetailsComp(event);
-        var tp = new TitledPaneComp(AppI18n.observable("errorDetails"), content, 250);
-        var r = tp.createRegion();
+        var content = new ErrorDetailsComp(event).prefWidth(600).prefHeight(750);
+        var modal = ModalOverlay.of("errorDetails", content);
+        var button = new ButtonComp(null, new SimpleObjectProperty<>(new LabelGraphic.NodeGraphic(() -> {
+            return createActionButtonGraphic(AppI18n.get("showDetails"), AppI18n.get("showDetailsDescription"));
+        })), () -> {
+            modal.show();
+        });
+        var r = button.grow(true, false).createRegion();
         r.getStyleClass().add("details");
         return r;
     }
@@ -106,7 +111,7 @@ public class ErrorHandlerComp extends SimpleComp {
         var top = createTop();
         var content = new VBox(top, new Separator(Orientation.HORIZONTAL));
         var header = new Label(AppI18n.get("possibleActions"));
-        AppFontSizes.lg(header);
+        AppFontSizes.base(header);
         var actionBox = new VBox(header);
         actionBox.getStyleClass().add("actions");
         actionBox.setFillWidth(true);

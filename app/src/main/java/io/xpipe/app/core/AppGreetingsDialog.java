@@ -25,7 +25,6 @@ public class AppGreetingsDialog {
         tp.setExpanded(true);
         tp.setText(AppI18n.get("introduction"));
         tp.setAlignment(Pos.CENTER_LEFT);
-        AppFontSizes.base(tp);
 
         AppResources.with(AppResources.XPIPE_MODULE, "misc/welcome.md", file -> {
             var md = Files.readString(file);
@@ -41,7 +40,6 @@ public class AppGreetingsDialog {
         tp.setExpanded(false);
         tp.setText(AppI18n.get("eula"));
         tp.setAlignment(Pos.CENTER_LEFT);
-        AppFontSizes.base(tp);
 
         AppResources.with(AppResources.XPIPE_MODULE, "misc/eula.md", file -> {
             var md = Files.readString(file);

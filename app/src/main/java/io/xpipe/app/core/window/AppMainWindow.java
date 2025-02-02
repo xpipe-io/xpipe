@@ -113,6 +113,7 @@ public class AppMainWindow {
         AppWindowHelper.setupStylesheets(stage.getScene());
         AppWindowHelper.setupClickShield(stage);
         AppWindowHelper.addMaximizedPseudoClass(stage);
+        AppWindowHelper.addFontSize(stage);
         AppTheme.initThemeHandlers(stage);
 
         var state = INSTANCE.loadState();

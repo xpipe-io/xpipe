@@ -7,6 +7,7 @@
 .prefs-container .options-comp .description {
     -fx-padding: 0.5em 0 0.5em 0;
     -fx-opacity: 0.9;
+    -fx-font-size: 1.0em;
 }
 
 .prefs-container > .title-header.first {

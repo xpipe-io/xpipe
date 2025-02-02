@@ -81,6 +81,7 @@ public class BrowserFileSystemTabComp extends SimpleComp {
         var topBar = new HBox();
         topBar.setAlignment(Pos.CENTER);
         topBar.getStyleClass().add("top-bar");
+        AppFontSizes.base(topBar);
         var navBar = new BrowserNavBarComp(model).createStructure();
         filter.textField().prefHeightProperty().bind(navBar.get().heightProperty());
         AppFontSizes.sm(navBar.get());

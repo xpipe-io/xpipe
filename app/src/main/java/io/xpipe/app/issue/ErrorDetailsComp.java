@@ -23,7 +23,7 @@ public class ErrorDetailsComp extends SimpleComp {
             stackTrace = stackTrace.replace("\t", "");
             var tf = new TextArea(stackTrace);
             AppFontSizes.xs(tf);
-            tf.setWrapText(false);
+            tf.setWrapText(true);
             tf.setEditable(false);
             tf.setPadding(new Insets(10, 0, 10, 0));
             return tf;

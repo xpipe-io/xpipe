@@ -278,7 +278,6 @@
 }
 
 .table-view .column-header-background .label {
-    -fx-font-size: 0.9em;
     -fx-font-weight: bolder;
     -fx-opacity: 0.9;
     -fx-padding: 0 0 0 7;

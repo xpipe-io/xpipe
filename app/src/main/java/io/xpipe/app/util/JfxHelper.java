@@ -19,7 +19,7 @@ public class JfxHelper {
             ObservableValue<String> nameString, ObservableValue<String> descString, String image) {
         var header = new Label();
         header.textProperty().bind(nameString);
-        AppFontSizes.lg(header);
+        AppFontSizes.base(header);
         var desc = new Label();
         desc.textProperty().bind(descString);
         AppFontSizes.xs(desc);

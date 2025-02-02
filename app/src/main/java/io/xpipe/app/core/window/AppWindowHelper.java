@@ -63,6 +63,12 @@ public class AppWindowHelper {
         });
     }
 
+    public static void addFontSize(Stage stage) {
+        stage.getScene().rootProperty().subscribe(root -> {
+            AppFontSizes.sm(root);
+        });
+    }
+
     public static void addIcons(Stage stage) {
         stage.getIcons().clear();
 
@@ -93,6 +99,7 @@ public class AppWindowHelper {
         setupStylesheets(stage.getScene());
         AppWindowHelper.setupClickShield(stage);
         AppWindowBounds.fixInvalidStagePosition(stage);
+        AppWindowHelper.addFontSize(stage);
 
         if (AppPrefs.get() != null && AppPrefs.get().enforceWindowModality().get()) {
             stage.initModality(Modality.WINDOW_MODAL);
@@ -140,7 +147,6 @@ public class AppWindowHelper {
 
         Supplier<Alert> supplier = () -> {
             Alert a = AppWindowHelper.createEmptyAlert();
-            AppFontSizes.base(a.getDialogPane());
             var s = (Stage) a.getDialogPane().getScene().getWindow();
             s.setOnShown(event -> {
                 Platform.runLater(() -> {
@@ -288,23 +294,6 @@ public class AppWindowHelper {
             bindSize(stage, contentR);
             stage.setResizable(false);
         }
-
-        scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            if (AppProperties.get().isDeveloperMode() && event.getCode().equals(KeyCode.F6)) {
-                var newBaseComp = contentFunc.apply(stage);
-                var newComp = loading != null ? LoadingOverlayComp.noProgress(newBaseComp, loading) : newBaseComp;
-                var newR = newComp.createRegion();
-                AppFontSizes.sm(newR);
-                scene.setRoot(bindSize ? new Pane(newR) : newR);
-                newR.requestFocus();
-                if (bindSize) {
-                    bindSize(stage, newR);
-                }
-
-                TrackEvent.debug("Rebuilt content");
-                event.consume();
-            }
-        });
 
         scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {

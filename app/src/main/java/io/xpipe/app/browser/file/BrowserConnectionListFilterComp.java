@@ -52,6 +52,7 @@ public final class BrowserConnectionListFilterComp extends SimpleComp {
                     first.prefHeightProperty().bind(second.heightProperty());
                     first.minHeightProperty().bind(second.heightProperty());
                     first.maxHeightProperty().bind(second.heightProperty());
+                    AppFontSizes.base(struc.get());
                 })
                 .styleClass("bookmarks-header")
                 .createRegion();

@@ -109,7 +109,6 @@
     -color-chart-7-alpha20: rgba(200, 65, 100, 0.2);
     -color-chart-8-alpha20: rgba(136, 136, 136, 0.2);
     -fx-background-color: -color-bg-default;
-    -fx-font-size: 14px;
 }
 
 .root:macos { -color-bg-default-transparent: #13171dd2; }
