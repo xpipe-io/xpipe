@@ -60,6 +60,7 @@ public class BrowserFileSelectionListComp extends SimpleComp {
                                         .createRegion();
                                 var t = nameTransformation.apply(entry);
                                 var l = new Label(t.getValue(), image);
+                                l.setGraphicTextGap(6);
                                 l.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
                                 t.addListener((observable, oldValue, newValue) -> {
                                     PlatformThread.runLaterIfNeeded(() -> {

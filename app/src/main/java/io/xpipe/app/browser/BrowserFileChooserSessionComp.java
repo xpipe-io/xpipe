@@ -63,7 +63,7 @@ public class BrowserFileChooserSessionComp extends DialogComp {
                 });
                 var comp = new BrowserFileChooserSessionComp(stage, model);
                 comp.apply(struc -> struc.get().setPrefSize(1200, 700))
-                        .apply(struc -> AppFontSizes.base(struc.get()))
+                        .apply(struc -> AppFontSizes.sm(struc.get()))
                         .styleClass("browser")
                         .styleClass("chooser");
                 return comp;

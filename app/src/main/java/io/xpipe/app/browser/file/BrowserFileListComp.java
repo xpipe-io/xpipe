@@ -2,6 +2,7 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
@@ -125,7 +126,7 @@ public final class BrowserFileListComp extends SimpleComp {
             fileList.setComparator(table.getComparator());
             return true;
         });
-        table.setFixedCellSize(32.0);
+        table.setFixedCellSize(30.0);
 
         prepareColumnVisibility(table, ownerCol, filenameCol);
         prepareTableScrollFix(table);
@@ -134,6 +135,8 @@ public final class BrowserFileListComp extends SimpleComp {
         prepareTableEntries(table);
         prepareTableChanges(table, filenameCol, mtimeCol, modeCol, ownerCol);
         prepareTypedSelectionModel(table);
+
+        AppFontSizes.sm(table);
 
         return table;
     }
@@ -291,7 +294,7 @@ public final class BrowserFileListComp extends SimpleComp {
         });
 
         fileList.getSelection().addListener((ListChangeListener<? super BrowserEntry>) c -> {
-            var existing = new HashSet<>(fileList.getSelection());
+            var existing = new HashSet<>(table.getSelectionModel().getSelectedItems());
             var toApply = new HashSet<>(c.getList());
             if (existing.equals(toApply)) {
                 return;

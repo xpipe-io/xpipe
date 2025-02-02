@@ -194,6 +194,8 @@ public class BrowserTransferComp extends SimpleComp {
             });
         });
 
-        return stack.styleClass("transfer").createRegion();
+        var r = stack.styleClass("transfer").createRegion();
+        AppFontSizes.sm(r);
+        return r;
     }
 }

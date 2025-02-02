@@ -4,6 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.store.*;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.PlatformThread;
 
@@ -86,6 +87,7 @@ public final class BrowserConnectionListComp extends SimpleComp {
 
         var r = section.vgrow().createRegion();
         r.getStyleClass().add("bookmark-list");
+        AppFontSizes.sm(r);
         return r;
     }
 

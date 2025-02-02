@@ -12,6 +12,7 @@ import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.comp.base.StackComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.util.BindingsHelper;
@@ -99,7 +100,8 @@ public class BrowserFullSessionComp extends SimpleComp {
             });
         });
         splitPane.styleClass("browser");
-        return splitPane.createRegion();
+        var r = splitPane.createRegion();
+        return r;
     }
 
     private Comp<CompStructure<VBox>> createLeftSide() {

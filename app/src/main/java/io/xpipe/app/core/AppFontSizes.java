@@ -39,7 +39,7 @@ public class AppFontSizes {
         apply(node, AppFontSizes::getXxl);
     }
 
-    private static void apply(Node node, Function<AppFontSizes, String> function) {
+    public static void apply(Node node, Function<AppFontSizes, String> function) {
         if (AppPrefs.get() == null) {
             setFont(node, function.apply(getDefault()));
             return;
