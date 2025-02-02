@@ -1,7 +1,6 @@
 package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.LabelGraphic;
@@ -44,7 +43,7 @@ public class IntroComp extends SimpleComp {
         if (OsType.getLocal() != OsType.MACOS) {
             title.getStyleClass().add(Styles.TEXT_BOLD);
         }
-        AppFontSizes.xxl(title);
+        AppFontSizes.title(title);
 
         var introDesc = new Label();
         introDesc.textProperty().bind(AppI18n.observable(translationsKey + "Content"));

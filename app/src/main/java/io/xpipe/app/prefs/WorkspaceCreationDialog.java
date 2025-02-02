@@ -2,7 +2,6 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
-import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;

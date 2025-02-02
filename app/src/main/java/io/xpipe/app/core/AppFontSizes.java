@@ -39,6 +39,10 @@ public class AppFontSizes {
         apply(node, AppFontSizes::getXxl);
     }
 
+    public static void title(Node node) {
+        apply(node, AppFontSizes::getTitle);
+    }
+
     public static void apply(Node node, Function<AppFontSizes, String> function) {
         if (AppPrefs.get() == null) {
             setFont(node, function.apply(getDefault()));
@@ -59,18 +63,18 @@ public class AppFontSizes {
     }
 
     public static final AppFontSizes DEFAULT = getDefault();
+    public static final AppFontSizes BASE_10 = ofBase("10");
+    public static final AppFontSizes BASE_10_5 = ofBase("10.5");
     public static final AppFontSizes BASE_11 = ofBase("11");
-    public static final AppFontSizes BASE_11_5 = ofBase("11.5");
-    public static final AppFontSizes BASE_12 = ofBase("12");
 
     public static AppFontSizes ofBase(String base) {
         if (base.contains(".")) {
             var l = Integer.parseInt(base.split("\\.")[0]);
             var r = "." + base.split("\\.")[1];
-            return new AppFontSizes((l - 2) + r, (l - 1) + r, base, (l + 1) + r, (l + 2) + r, (l + 7) + r);
+            return new AppFontSizes((l - 1) + r, (l - 1) + "", base, (l + 1) + "", (l + 1) + r, (l + 2) + r, (l + 7) + r);
         } else {
             var l = Integer.parseInt(base);
-            return new AppFontSizes(l - 2 + "", l - 1 + "", l + "", l + 1 + "", l + 2 + "", l + 7 + "");
+            return new AppFontSizes((l - 1) + "", (l - 1) + ".5", l + "", l + ".5", l + 1 + "", l + 2 + "", l + 7 + "");
         }
     }
     
@@ -83,18 +87,27 @@ public class AppFontSizes {
     }
 
     public static AppFontSizes getDefault() {
-        return forOs(AppFontSizes.BASE_11_5, AppFontSizes.BASE_11, AppFontSizes.BASE_12);
+        return forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10, AppFontSizes.BASE_11);
     }
 
+    // -1.0pt
     String xs;
 
+    // -0.5pt
     String sm;
 
+    // 0pt
     String base;
 
+    // +0.5pt
     String lg;
 
+    // +1.0pt
     String xl;
 
+    // +2.0pt
     String xxl;
+
+    // +7.0pt
+    String title;
 }

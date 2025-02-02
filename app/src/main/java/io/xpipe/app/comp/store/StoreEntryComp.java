@@ -137,9 +137,9 @@ public abstract class StoreEntryComp extends SimpleComp {
         var loading = LoadingOverlayComp.noProgress(
                 Comp.of(() -> button), getWrapper().getEffectiveBusy());
         if (OsType.getLocal() == OsType.MACOS) {
-            AppFontSizes.sm(button);
-        } else {
             AppFontSizes.base(button);
+        } else {
+            AppFontSizes.xl(button);
         }
         return loading.createRegion();
     }
@@ -177,7 +177,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         button.styleClass("user-icon");
         button.tooltipKey("personalConnection");
         button.apply(struc -> {
-            AppFontSizes.sm(struc.get());
+            AppFontSizes.base(struc.get());
             struc.get().setOpacity(1.0);
         });
         button.hide(Bindings.not(getWrapper().getPerUser()));
@@ -209,7 +209,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         update.run();
         ig.setAlignment(Pos.CENTER_RIGHT);
         ig.getStyleClass().add("button-bar");
-        AppFontSizes.sm(ig);
+        AppFontSizes.base(ig);
         return ig;
     }
 

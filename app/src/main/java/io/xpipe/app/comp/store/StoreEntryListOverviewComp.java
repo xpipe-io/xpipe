@@ -5,7 +5,6 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.CountComp;
 import io.xpipe.app.comp.base.FilterComp;
 import io.xpipe.app.comp.base.IconButtonComp;
-import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.BindingsHelper;
@@ -90,8 +89,8 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                 createDateSortButton().createRegion(),
                 Comp.hspacer(2).createRegion(),
                 createAlphabeticalSortButton().createRegion());
-        AppFontSizes.xl(label);
-        AppFontSizes.xl(c);
+        AppFontSizes.xxl(label);
+        AppFontSizes.xxl(c);
         topBar.setAlignment(Pos.CENTER);
         topBar.getStyleClass().add("top");
         return topBar;

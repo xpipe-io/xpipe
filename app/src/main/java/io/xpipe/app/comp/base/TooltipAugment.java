@@ -42,7 +42,7 @@ public class TooltipAugment<S extends CompStructure<?>> implements Augment<S> {
         } else {
             tt.textProperty().bind(PlatformThread.sync(text));
         }
-        AppFontSizes.sm(tt.getStyleableNode());
+        AppFontSizes.base(tt.getStyleableNode());
         tt.setWrapText(true);
         tt.setMaxWidth(400);
         tt.getStyleClass().add("fancy-tooltip");

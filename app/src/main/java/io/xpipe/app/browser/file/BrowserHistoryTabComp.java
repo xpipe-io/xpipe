@@ -9,7 +9,6 @@ import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.TileButtonComp;
-import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
@@ -92,7 +91,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
             }
         });
         var header = new LabelComp(headerBinding).createRegion();
-        AppFontSizes.lg(header);
+        AppFontSizes.xl(header);
         vbox.getChildren().add(header);
 
         var storeList = new VBox();

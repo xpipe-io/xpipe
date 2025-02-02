@@ -2,7 +2,6 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.window.AppDialog;
@@ -58,7 +57,7 @@ public class AppMainWindowContentComp extends SimpleComp {
             var version = new LabelComp((AppProperties.get().isStaging() ? "XPipe PTB" : "XPipe") + " "
                     + AppProperties.get().getVersion());
             version.apply(struc -> {
-                AppFontSizes.xl(struc.get());
+                AppFontSizes.xxl(struc.get());
                 struc.get().setOpacity(0.6);
             });
 

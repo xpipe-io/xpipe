@@ -1,7 +1,6 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.comp.base.PrettyImageHelper;
-import io.xpipe.app.core.AppFont;
 
 import io.xpipe.app.core.AppFontSizes;
 import javafx.beans.value.ObservableValue;
@@ -19,7 +18,7 @@ public class JfxHelper {
             ObservableValue<String> nameString, ObservableValue<String> descString, String image) {
         var header = new Label();
         header.textProperty().bind(nameString);
-        AppFontSizes.base(header);
+        AppFontSizes.xl(header);
         var desc = new Label();
         desc.textProperty().bind(descString);
         AppFontSizes.xs(desc);

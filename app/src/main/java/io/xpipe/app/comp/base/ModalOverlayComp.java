@@ -2,7 +2,6 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLogs;
@@ -22,7 +21,6 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -178,7 +176,7 @@ public class ModalOverlayComp extends SimpleComp {
                     AppI18n.get(newValue.getTitleKey()),
                     newValue.getGraphic() != null ? newValue.getGraphic().createGraphicNode() : null);
             l.setGraphicTextGap(8);
-            AppFontSizes.base(l);
+            AppFontSizes.xl(l);
             content.getChildren().addFirst(l);
         } else {
             content.getChildren().addFirst(Comp.vspacer(0).createRegion());

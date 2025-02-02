@@ -3,7 +3,6 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
-import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.util.PlatformThread;
 
@@ -101,7 +100,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                         extendedDescription.getStyleClass().add(Styles.ACCENT);
                         extendedDescription.getStyleClass().add("long-description");
                         extendedDescription.setAccessibleText("Help");
-                        AppFontSizes.base(extendedDescription);
+                        AppFontSizes.xl(extendedDescription);
                         extendedDescription.setOnAction(e -> {
                             popover.show(extendedDescription);
                             e.consume();

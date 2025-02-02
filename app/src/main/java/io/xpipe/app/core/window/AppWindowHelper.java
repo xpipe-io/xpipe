@@ -64,7 +64,7 @@ public class AppWindowHelper {
 
     public static void addFontSize(Stage stage) {
         stage.getScene().rootProperty().subscribe(root -> {
-            AppFontSizes.sm(root);
+            AppFontSizes.base(root);
         });
     }
 
@@ -284,7 +284,6 @@ public class AppWindowHelper {
         var baseComp = contentFunc.apply(stage);
         var content = loading != null ? LoadingOverlayComp.noProgress(baseComp, loading) : baseComp;
         var contentR = content.createRegion();
-        AppFontSizes.xs(contentR);
         var scene = new Scene(bindSize ? new Pane(contentR) : contentR, -1, -1, false);
         scene.setFill(Color.TRANSPARENT);
         stage.setScene(scene);

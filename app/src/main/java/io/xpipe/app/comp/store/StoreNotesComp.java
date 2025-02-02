@@ -6,7 +6,6 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.DialogComp;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.MarkdownEditorComp;
-import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.storage.DataStorage;

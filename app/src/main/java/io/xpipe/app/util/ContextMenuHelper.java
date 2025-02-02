@@ -35,11 +35,7 @@ public class ContextMenuHelper {
                 }
             });
         });
-        if (OsType.getLocal() == OsType.MACOS) {
-            AppFontSizes.base(contextMenu.getStyleableNode());
-        } else {
-            AppFontSizes.sm(contextMenu.getStyleableNode());
-        }
+        AppFontSizes.lg(contextMenu.getStyleableNode());
         return contextMenu;
     }
 

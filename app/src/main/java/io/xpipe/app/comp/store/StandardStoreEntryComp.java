@@ -1,7 +1,6 @@
 package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.core.process.OsType;
 

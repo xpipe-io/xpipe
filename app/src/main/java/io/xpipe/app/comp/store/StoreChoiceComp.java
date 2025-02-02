@@ -6,7 +6,6 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.FilterComp;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
-import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.LocalStore;
@@ -232,7 +231,7 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
         var icon = new FontIcon("mdal-keyboard_arrow_down");
         icon.setDisable(true);
         icon.setPickOnBounds(false);
-        AppFontSizes.lg(icon);
+        AppFontSizes.xl(icon);
         var pane = new StackPane(r, icon);
         pane.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {

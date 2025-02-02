@@ -7,7 +7,6 @@ import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.LabelComp;
-import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.HumanReadableFormat;

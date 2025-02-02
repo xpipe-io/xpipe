@@ -42,7 +42,7 @@ public class ErrorHandlerComp extends SimpleComp {
 
     private Region createActionButtonGraphic(String nameString, String descString) {
         var header = new Label(nameString);
-        AppFontSizes.base(header);
+        AppFontSizes.xl(header);
         var desc = new Label(descString);
         AppFontSizes.xs(desc);
         var text = new VBox(header, desc);
@@ -111,7 +111,7 @@ public class ErrorHandlerComp extends SimpleComp {
         var top = createTop();
         var content = new VBox(top, new Separator(Orientation.HORIZONTAL));
         var header = new Label(AppI18n.get("possibleActions"));
-        AppFontSizes.base(header);
+        AppFontSizes.xl(header);
         var actionBox = new VBox(header);
         actionBox.getStyleClass().add("actions");
         actionBox.setFillWidth(true);

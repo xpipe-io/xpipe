@@ -2,7 +2,6 @@ package io.xpipe.app.issue;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.core.util.Deobfuscator;
 
