@@ -60,7 +60,7 @@
 }
 
 .store-entry-grid {
-    -fx-padding: 0.2em 6px 0.2em 6px;
+    -fx-padding: 0.15em 6px 0.15em 6px;
 }
 
 .store-entry-grid.dense {
@@ -108,7 +108,7 @@
 }
 
 .store-entry-grid.dense .button-bar {
-    -fx-padding: 3;
+    -fx-padding: 2;
 }
 
 .store-entry-comp .button-bar .button {
