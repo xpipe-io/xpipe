@@ -3,6 +3,8 @@ package io.xpipe.app.comp.store;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.ScrollComp;
 
+import io.xpipe.app.core.AppFontSizes;
+import io.xpipe.core.process.OsType;
 import javafx.beans.binding.Bindings;
 import javafx.scene.layout.Region;
 
@@ -21,6 +23,9 @@ public class StoreCategoryListComp extends SimpleComp {
         sp.apply(struc -> {
             Region content = (Region) struc.get().getContent();
             struc.get().setFitToWidth(true);
+            if (OsType.getLocal() == OsType.MACOS) {
+                AppFontSizes.lg(struc.get());
+            }
             struc.get()
                     .minHeightProperty()
                     .bind(Bindings.createDoubleBinding(

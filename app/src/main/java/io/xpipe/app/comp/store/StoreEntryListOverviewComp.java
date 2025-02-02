@@ -89,8 +89,13 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                 createDateSortButton().createRegion(),
                 Comp.hspacer(2).createRegion(),
                 createAlphabeticalSortButton().createRegion());
-        AppFontSizes.xxl(label);
-        AppFontSizes.xxl(c);
+        if (OsType.getLocal() == OsType.MACOS) {
+            AppFontSizes.xxxl(label);
+            AppFontSizes.xxxl(c);
+        } else {
+            AppFontSizes.xxl(label);
+            AppFontSizes.xxl(c);
+        }
         topBar.setAlignment(Pos.CENTER);
         topBar.getStyleClass().add("top");
         return topBar;

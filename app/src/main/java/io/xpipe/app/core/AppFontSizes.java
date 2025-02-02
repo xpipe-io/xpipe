@@ -39,6 +39,10 @@ public class AppFontSizes {
         apply(node, AppFontSizes::getXxl);
     }
 
+    public static void xxxl(Node node) {
+        apply(node, AppFontSizes::getXxl);
+    }
+
     public static void title(Node node) {
         apply(node, AppFontSizes::getTitle);
     }
@@ -71,10 +75,10 @@ public class AppFontSizes {
         if (base.contains(".")) {
             var l = Integer.parseInt(base.split("\\.")[0]);
             var r = "." + base.split("\\.")[1];
-            return new AppFontSizes((l - 1) + r, (l - 1) + "", base, (l + 1) + "", (l + 1) + r, (l + 2) + r, (l + 7) + r);
+            return new AppFontSizes((l - 1) + r, (l - 1) + "", base, (l + 1) + "", (l + 1) + r, (l + 2) + r, (l + 3) + r, (l + 7) + r);
         } else {
             var l = Integer.parseInt(base);
-            return new AppFontSizes((l - 1) + "", (l - 1) + ".5", l + "", l + ".5", l + 1 + "", l + 2 + "", l + 7 + "");
+            return new AppFontSizes((l - 1) + "", (l - 1) + ".5", l + "", l + ".5", l + 1 + "", l + 2 + "", l + 3 + "", l + 7 + "");
         }
     }
     
@@ -107,6 +111,9 @@ public class AppFontSizes {
 
     // +2.0pt
     String xxl;
+
+    // +3.0pt
+    String xxxl;
 
     // +7.0pt
     String title;
