@@ -78,7 +78,6 @@ public class BrowserOverviewComp extends SimpleComp {
 
         var vbox = new VerticalComp(List.of(recentPane, commonPane, rootsPane)).styleClass("overview");
         var r = vbox.createRegion();
-        AppFontSizes.sm(r);
         return r;
     }
 }

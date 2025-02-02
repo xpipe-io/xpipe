@@ -55,7 +55,6 @@ public class AppPrefsComp extends SimpleComp {
         split.getStyleClass().add("prefs");
         var stack = new StackPane(split);
         stack.setPickOnBounds(false);
-        AppFontSizes.sm(stack);
         return stack;
     }
 }

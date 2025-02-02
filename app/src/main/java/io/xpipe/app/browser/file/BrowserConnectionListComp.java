@@ -87,7 +87,6 @@ public final class BrowserConnectionListComp extends SimpleComp {
 
         var r = section.vgrow().createRegion();
         r.getStyleClass().add("bookmark-list");
-        AppFontSizes.sm(r);
         return r;
     }
 

@@ -110,7 +110,6 @@ public class AppDialog {
         return Comp.of(() -> {
                     var text = new Text(s);
                     text.setWrappingWidth(450);
-                    AppFontSizes.sm(text);
                     var sp = new StackPane(text);
                     return sp;
                 })

@@ -269,7 +269,6 @@ public abstract class StoreEntryComp extends SimpleComp {
 
     protected ContextMenu createContextMenu() {
         var contextMenu = ContextMenuHelper.create();
-        AppFontSizes.sm(contextMenu.getStyleableNode());
 
         var hasSep = false;
         for (var p : getWrapper().getActionProviders()) {

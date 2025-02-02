@@ -49,7 +49,6 @@ public class AppWindowHelper {
     public static Region alertContentText(String s, int width) {
         var text = new Text(s);
         text.setWrappingWidth(width);
-        AppFontSizes.sm(text);
         var sp = new StackPane(text);
         sp.setPadding(new Insets(5));
         return sp;

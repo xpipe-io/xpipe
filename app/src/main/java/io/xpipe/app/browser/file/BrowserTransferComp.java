@@ -82,7 +82,6 @@ public class BrowserTransferComp extends SimpleComp {
                 .grow(false, true);
         var dragNotice = new LabelComp(AppI18n.observable("dragLocalFiles"))
                 .apply(struc -> struc.get().setGraphic(new FontIcon("mdi2h-hand-left")))
-                .apply(struc -> AppFontSizes.sm(struc.get()))
                 .apply(struc -> struc.get().setWrapText(true))
                 .hide(model.getEmpty());
 
@@ -195,7 +194,6 @@ public class BrowserTransferComp extends SimpleComp {
         });
 
         var r = stack.styleClass("transfer").createRegion();
-        AppFontSizes.sm(r);
         return r;
     }
 }

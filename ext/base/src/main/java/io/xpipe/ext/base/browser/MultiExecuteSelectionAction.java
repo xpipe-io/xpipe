@@ -120,7 +120,6 @@ public abstract class MultiExecuteSelectionAction implements BrowserBranchAction
                                                 text.setWrapText(true);
                                                 text.setEditable(false);
                                                 text.setPrefRowCount(Math.max(8,( int) finalOut.lines().count()));
-                                                AppFontSizes.sm(text);
                                                 var sp = new StackPane(text);
                                                 return sp;
                                             })

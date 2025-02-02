@@ -69,7 +69,6 @@ public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
                 }
             });
         });
-        AppFontSizes.sm(pane);
         pane.getStyleClass().add("layout");
         return new Structure(pane, multiR, sidebarR, new ArrayList<>(multiR.getChildren()));
     }

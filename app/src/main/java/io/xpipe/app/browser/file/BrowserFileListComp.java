@@ -135,9 +135,6 @@ public final class BrowserFileListComp extends SimpleComp {
         prepareTableEntries(table);
         prepareTableChanges(table, filenameCol, mtimeCol, modeCol, ownerCol);
         prepareTypedSelectionModel(table);
-
-        AppFontSizes.sm(table);
-
         return table;
     }
 

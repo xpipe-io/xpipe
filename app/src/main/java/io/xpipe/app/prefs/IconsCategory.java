@@ -157,7 +157,6 @@ public class IconsCategory extends AppPrefsCategory {
         tile.setRight(buttons);
         tile.setIconSize(1.0);
         tile.grow(true, false);
-        tile.apply(struc -> AppFontSizes.sm(struc.get()));
         return tile;
     }
 }

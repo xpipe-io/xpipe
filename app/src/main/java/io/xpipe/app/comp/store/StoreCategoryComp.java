@@ -84,7 +84,6 @@ public class StoreCategoryComp extends SimpleComp {
         var expandButton = new IconButtonComp(expandIcon, () -> {
                     category.toggleExpanded();
                 })
-                .apply(struc -> AppFontSizes.sm(struc.get()))
                 .apply(struc -> {
                     struc.get().setAlignment(Pos.CENTER);
                     struc.get().setFocusTraversable(false);
@@ -188,8 +187,6 @@ public class StoreCategoryComp extends SimpleComp {
             category.getColor().subscribe((c) -> {
                 DataColor.applyStyleClasses(c, struc.get());
             });
-
-            AppFontSizes.sm(struc.get());
         });
 
         return v.createRegion();
@@ -197,7 +194,6 @@ public class StoreCategoryComp extends SimpleComp {
 
     private ContextMenu createContextMenu(Region text) {
         var contextMenu = ContextMenuHelper.create();
-        AppFontSizes.sm(contextMenu.getStyleableNode());
 
         if (AppPrefs.get().enableHttpApi().get()) {
             var copyId = new MenuItem(AppI18n.get("copyId"), new FontIcon("mdi2c-content-copy"));

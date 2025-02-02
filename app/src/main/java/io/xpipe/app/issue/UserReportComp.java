@@ -59,7 +59,6 @@ public class UserReportComp extends SimpleComp {
     protected Region createSimple() {
         var emailHeader = new Label(AppI18n.get("provideEmail"));
         emailHeader.setWrapText(true);
-        AppFontSizes.sm(emailHeader);
         var email = new TextField();
         this.email.bind(email.textProperty());
         VBox.setVgrow(email, Priority.ALWAYS);
@@ -129,7 +128,6 @@ public class UserReportComp extends SimpleComp {
         buttons.setAlignment(Pos.CENTER);
         buttons.getStyleClass().add("buttons");
         HBox.setHgrow(spacer, Priority.ALWAYS);
-        AppFontSizes.sm(dataPolicyButton);
         return buttons;
     }
 

@@ -116,7 +116,6 @@ public class StoreEntryListOverviewComp extends SimpleComp {
         HBox.setHgrow(f, Priority.ALWAYS);
 
         f.getStyleClass().add("filter-bar");
-        AppFontSizes.sm(hbox);
         return hbox;
     }
 
@@ -125,7 +124,6 @@ public class StoreEntryListOverviewComp extends SimpleComp {
         menu.textProperty().bind(AppI18n.observable("addConnections"));
         menu.setAlignment(Pos.CENTER);
         menu.setTextAlignment(TextAlignment.CENTER);
-        AppFontSizes.sm(menu);
         StoreCreationMenu.addButtons(menu);
         menu.setOpacity(0.85);
         menu.setMinWidth(Region.USE_PREF_SIZE);
@@ -161,7 +159,6 @@ public class StoreEntryListOverviewComp extends SimpleComp {
             }
         });
         alphabetical.apply(alphabeticalR -> {
-            AppFontSizes.sm(alphabeticalR.get());
             alphabeticalR
                     .get()
                     .opacityProperty()
@@ -202,7 +199,6 @@ public class StoreEntryListOverviewComp extends SimpleComp {
             }
         });
         date.apply(dateR -> {
-            AppFontSizes.sm(dateR.get());
             dateR.get()
                     .opacityProperty()
                     .bind(Bindings.createDoubleBinding(

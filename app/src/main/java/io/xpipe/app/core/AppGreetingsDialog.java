@@ -82,7 +82,6 @@ public class AppGreetingsDialog {
 
                         var label = new Label(AppI18n.get("legalAccept"));
                         label.setGraphic(cb);
-                        AppFontSizes.sm(label);
                         label.setPadding(new Insets(20, 0, 10, 0));
                         label.setOnMouseClicked(event -> accepted.set(!accepted.get()));
                         label.setGraphicTextGap(10);

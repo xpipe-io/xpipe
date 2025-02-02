@@ -170,7 +170,6 @@ public class ErrorHandlerComp extends SimpleComp {
         if (event.getThrowable() != null) {
             content.getChildren().add(new Separator(Orientation.HORIZONTAL));
             var details = createDetails();
-            AppFontSizes.sm(details);
             layout.getChildren().add(details);
             layout.prefHeightProperty().bind(content.heightProperty().add(65).add(details.prefHeightProperty()));
         }
