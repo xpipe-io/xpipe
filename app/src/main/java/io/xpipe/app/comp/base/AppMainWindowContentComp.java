@@ -58,7 +58,7 @@ public class AppMainWindowContentComp extends SimpleComp {
             var version = new LabelComp((AppProperties.get().isStaging() ? "XPipe PTB" : "XPipe") + " "
                     + AppProperties.get().getVersion());
             version.apply(struc -> {
-                AppFontSizes.lg(struc.get());
+                AppFontSizes.xl(struc.get());
                 struc.get().setOpacity(0.6);
             });
 

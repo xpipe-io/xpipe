@@ -19,6 +19,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.*;
 
+import io.xpipe.core.process.OsType;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.css.PseudoClass;
@@ -135,7 +136,11 @@ public abstract class StoreEntryComp extends SimpleComp {
 
         var loading = LoadingOverlayComp.noProgress(
                 Comp.of(() -> button), getWrapper().getEffectiveBusy());
-        AppFontSizes.base(button);
+        if (OsType.getLocal() == OsType.MACOS) {
+            AppFontSizes.sm(button);
+        } else {
+            AppFontSizes.base(button);
+        }
         return loading.createRegion();
     }
 
@@ -263,7 +268,7 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     protected ContextMenu createContextMenu() {
-        var contextMenu = new ContextMenu();
+        var contextMenu = ContextMenuHelper.create();
         AppFontSizes.sm(contextMenu.getStyleableNode());
 
         var hasSep = false;

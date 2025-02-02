@@ -3,6 +3,7 @@ package io.xpipe.app.util;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 
+import io.xpipe.core.process.OsType;
 import javafx.application.Platform;
 import javafx.geometry.Side;
 import javafx.scene.Node;
@@ -34,7 +35,11 @@ public class ContextMenuHelper {
                 }
             });
         });
-        AppFontSizes.sm(contextMenu.getStyleableNode());
+        if (OsType.getLocal() == OsType.MACOS) {
+            AppFontSizes.base(contextMenu.getStyleableNode());
+        } else {
+            AppFontSizes.sm(contextMenu.getStyleableNode());
+        }
         return contextMenu;
     }
 

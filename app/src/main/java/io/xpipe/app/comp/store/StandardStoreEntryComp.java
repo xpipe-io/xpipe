@@ -41,7 +41,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
 
         var storeIcon = createIcon(46, 40);
         grid.add(storeIcon, 0, 0, 1, 2);
-        grid.getColumnConstraints().add(new ColumnConstraints(56));
+        grid.getColumnConstraints().add(new ColumnConstraints(52));
 
         var active = new StoreActiveComp(getWrapper()).createRegion();
         var nameBox = new HBox(name, userIcon, notes);
