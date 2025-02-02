@@ -14,6 +14,11 @@ public class AppGpuCheck {
             return;
         }
 
+        // We might launch the platform due to an error early
+        if (AppPrefs.get() == null) {
+            return;
+        }
+
         if (PlatformState.getCurrent() != PlatformState.RUNNING) {
             return;
         }
