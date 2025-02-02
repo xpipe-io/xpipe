@@ -138,8 +138,16 @@ public abstract class StoreEntryComp extends SimpleComp {
                 Comp.of(() -> button), getWrapper().getEffectiveBusy());
         if (OsType.getLocal() == OsType.MACOS) {
             AppFontSizes.base(button);
-        } else {
+        } else if (OsType.getLocal() == OsType.LINUX) {
             AppFontSizes.xl(button);
+        } else {
+            AppFontSizes.apply(button, sizes -> {
+                if (sizes.getBase().equals("10.5")) {
+                    return sizes.getXl();
+                } else {
+                    return sizes.getLg();
+                }
+            });
         }
         return loading.createRegion();
     }

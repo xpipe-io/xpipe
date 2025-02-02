@@ -8,7 +8,7 @@
 }
 
 .store-list-comp.scroll-pane  {
-    -fx-padding: 0 0 0 1;
+    -fx-padding: 0 0 0 2;
 }
 
 .store-list-comp.scroll-pane .scroll-bar:vertical {

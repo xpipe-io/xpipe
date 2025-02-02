@@ -25,6 +25,8 @@ public final class BrowserContextMenu extends ContextMenu {
     }
 
     private void createMenu() {
+        AppFontSizes.lg(getStyleableNode());
+
         InputHelper.onLeft(this, false, e -> {
             hide();
             e.consume();
