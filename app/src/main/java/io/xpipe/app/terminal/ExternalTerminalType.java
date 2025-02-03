@@ -426,6 +426,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
+        public boolean supportsUnicode() {
+            return false;
+        }
+
+        @Override
         protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return CommandBuilder.of()
                     .add("-title")
@@ -682,6 +687,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     boolean useColoredTitle();
 
     default boolean supportsEscapes() {
+        return true;
+    }
+
+    default boolean supportsUnicode() {
         return true;
     }
 

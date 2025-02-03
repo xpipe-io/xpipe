@@ -15,7 +15,7 @@ public class TerminalPrepareExchangeImpl extends TerminalPrepareExchange {
         TerminalView.get().open(msg.getRequest(), msg.getPid());
         TerminalLauncherManager.registerPid(msg.getRequest(), msg.getPid());
         var term = AppPrefs.get().terminalType().getValue();
-        var unicode = true;
+        var unicode = term.supportsUnicode();
         var escapes = term.supportsEscapes();
         var finished = TerminalLauncherManager.isCompletedSuccessfully(msg.getRequest());
         return Response.builder().supportsUnicode(unicode).supportsEscapeSequences(escapes).alreadyFinished(finished).build();
