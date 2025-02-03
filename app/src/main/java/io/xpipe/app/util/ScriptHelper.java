@@ -121,9 +121,6 @@ public class ScriptHelper {
         // Check if file system has disabled execution in temp
         // This might happen in limited containers
         if (processControl.getOsType() == OsType.LINUX
-                && ShellDialects.SH
-                        .getClass()
-                        .isAssignableFrom(processControl.getShellDialect().getClass())
                 && !processControl
                         .command(CommandBuilder.of().add("test", "-x").addFile(file))
                         .executeAndCheck()) {
