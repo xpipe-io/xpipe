@@ -92,8 +92,7 @@ public class StoreIconChoiceComp extends SimpleComp {
             });
         });
         refreshButton.disable(busy);
-        var text = new LabelComp(AppI18n.observable("refreshIconsDescription", SystemIconManager.getSources().values().stream()
-                .mapToInt(value -> value.getIcons().size()).sum()));
+        var text = new LabelComp(AppI18n.observable("refreshIconsDescription"));
         text.apply(struc -> {
             struc.get().setWrapText(true);
             struc.get().setTextAlignment(TextAlignment.CENTER);

@@ -10,6 +10,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.DerivedObservableList;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.binding.Bindings;
@@ -118,18 +119,14 @@ public class BrowserHistoryTabComp extends SimpleComp {
     }
 
     private Comp<?> createEmptyDisplay() {
-        var welcome = new BrowserGreetingComp();
-        var header = new LabelComp(AppI18n.observable("browserWelcomeEmpty"));
-        var vbox = new VerticalComp(List.of(welcome, Comp.vspacer(4), header));
-        vbox.apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
-
-        var img = PrettyImageHelper.ofSpecificFixedSize("graphics/Hips.svg", 50, 61)
-                .padding(new Insets(5, 0, 0, 0));
-        var hbox = new HorizontalComp(List.of(img, vbox));
-        hbox.spacing(15);
-        hbox.apply(struc -> struc.get().setAlignment(Pos.CENTER));
-
-        return new StackComp(List.of(hbox));
+        var intro = new IntroComp(
+                "browserWelcomeEmpty",
+                new LabelGraphic.CompGraphic(PrettyImageHelper.ofSpecificFixedSize("graphics/Hips.svg", 100, 122)));
+        intro.setButtonAction(() -> {
+            BrowserFullSessionModel.DEFAULT.openFileSystemAsync(DataStorage.get().local().ref(), null, null);
+        });
+        intro.setButtonDefault(true);
+        return intro;
     }
 
     private Comp<?> entryButton(BrowserHistorySavedState.Entry e, BooleanProperty disable) {

@@ -54,7 +54,7 @@
 
 .prefs .sidebar .button {
     -fx-background-color: transparent;
-    -fx-padding: 0.4em 1em 0.4em 1.0em;
+    -fx-padding: 0.35em 1em 0.35em 1.0em;
     -fx-background-radius: 0, 4, 4;
     -fx-background-insets: 0, 1 4 1 4;
 }

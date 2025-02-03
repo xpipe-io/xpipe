@@ -224,6 +224,11 @@ public class DataStoreEntry extends StorageElement {
         var iconNode = json.get("icon");
         String icon = iconNode != null && !iconNode.isNull() ? iconNode.asText() : null;
 
+        // Legacy compat for old icons
+        if (icon != null && !icon.contains("/")) {
+            icon = "selfhst/" + icon;
+        }
+
         var persistentState = stateJson.get("persistentState");
         var lastUsed = Optional.ofNullable(stateJson.get("lastUsed"))
                 .map(jsonNode -> jsonNode.textValue())

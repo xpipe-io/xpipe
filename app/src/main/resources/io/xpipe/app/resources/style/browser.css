@@ -289,9 +289,9 @@
 
 /* setting opacity directly to the .table-cell or .table-row-cell
    leads to incorrect table row height calculation #javafx-bug */
-.browser .table-row-cell:hidden > .table-cell > * {
-    -fx-opacity: 0.75;
-}
+/*.browser .table-row-cell:hidden > .table-cell > * {*/
+/*    -fx-opacity: 0.75;*/
+/*}*/
 
 .browser .table-view:drag-into-current .table-row-cell {
     -fx-opacity: 0.65;
