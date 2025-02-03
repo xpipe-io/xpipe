@@ -61,7 +61,7 @@ public class TermiusTerminalType implements ExternalTerminalType {
     }
 
     @Override
-    public boolean supportsColoredTitle() {
+    public boolean useColoredTitle() {
         return true;
     }
 

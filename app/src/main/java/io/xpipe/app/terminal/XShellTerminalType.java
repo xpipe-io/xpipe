@@ -50,7 +50,7 @@ public class XShellTerminalType extends ExternalTerminalType.WindowsType {
     }
 
     @Override
-    public boolean supportsColoredTitle() {
+    public boolean useColoredTitle() {
         return false;
     }
 

@@ -117,7 +117,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return false;
         }
 
@@ -149,7 +149,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return true;
         }
 
@@ -180,7 +180,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return true;
         }
 
@@ -210,7 +210,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return true;
         }
 
@@ -239,7 +239,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return true;
         }
 
@@ -264,7 +264,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return true;
         }
 
@@ -295,7 +295,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return true;
         }
 
@@ -327,7 +327,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return true;
         }
 
@@ -359,7 +359,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return true;
         }
 
@@ -390,7 +390,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return true;
         }
 
@@ -421,7 +421,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return false;
         }
 
@@ -457,7 +457,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return true;
         }
 
@@ -489,7 +489,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return true;
         }
 
@@ -516,7 +516,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return true;
         }
 
@@ -552,7 +552,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return true;
         }
 
@@ -679,7 +679,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     boolean isRecommended();
 
-    boolean supportsColoredTitle();
+    boolean useColoredTitle();
+
+    default boolean supportsEscapes() {
+        return true;
+    }
 
     default boolean shouldClear() {
         return true;

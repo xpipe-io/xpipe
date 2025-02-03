@@ -25,7 +25,7 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
     }
 
     @Override
-    default boolean supportsColoredTitle() {
+    default boolean useColoredTitle() {
         return true;
     }
 

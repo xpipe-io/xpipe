@@ -12,6 +12,11 @@ public class PwshTerminalType extends ExternalTerminalType.SimplePathType implem
     }
 
     @Override
+    public boolean supportsEscapes() {
+        return false;
+    }
+
+    @Override
     public TerminalOpenFormat getOpenFormat() {
         return TerminalOpenFormat.NEW_WINDOW;
     }
@@ -27,7 +32,7 @@ public class PwshTerminalType extends ExternalTerminalType.SimplePathType implem
     }
 
     @Override
-    public boolean supportsColoredTitle() {
+    public boolean useColoredTitle() {
         return false;
     }
 

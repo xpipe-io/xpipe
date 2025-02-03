@@ -27,7 +27,7 @@ public class GnomeTerminalType extends ExternalTerminalType.PathCheckType implem
     }
 
     @Override
-    public boolean supportsColoredTitle() {
+    public boolean useColoredTitle() {
         return false;
     }
 

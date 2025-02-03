@@ -28,7 +28,7 @@ public interface WaveTerminalType extends ExternalTerminalType, TrackableTermina
     }
 
     @Override
-    default boolean supportsColoredTitle() {
+    default boolean useColoredTitle() {
         return true;
     }
 

@@ -29,7 +29,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
     }
 
     @Override
-    default boolean supportsColoredTitle() {
+    default boolean useColoredTitle() {
         return true;
     }
 

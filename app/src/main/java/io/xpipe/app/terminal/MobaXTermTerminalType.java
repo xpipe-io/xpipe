@@ -40,7 +40,7 @@ public class MobaXTermTerminalType extends ExternalTerminalType.WindowsType {
     }
 
     @Override
-    public boolean supportsColoredTitle() {
+    public boolean useColoredTitle() {
         return true;
     }
 

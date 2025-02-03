@@ -148,6 +148,7 @@ open module io.xpipe.app {
             FsScriptExchangeImpl,
             FsWriteExchangeImpl,
             AskpassExchangeImpl,
+            TerminalPrepareExchangeImpl,
             TerminalWaitExchangeImpl,
             TerminalLaunchExchangeImpl,
             SshLaunchExchangeImpl,

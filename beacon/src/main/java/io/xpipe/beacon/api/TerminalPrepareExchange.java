@@ -1,7 +1,6 @@
 package io.xpipe.beacon.api;
 
 import io.xpipe.beacon.BeaconInterface;
-
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -9,11 +8,11 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.util.UUID;
 
-public class TerminalWaitExchange extends BeaconInterface<TerminalWaitExchange.Request> {
+public class TerminalPrepareExchange extends BeaconInterface<TerminalPrepareExchange.Request> {
 
     @Override
     public String getPath() {
-        return "/terminal/wait";
+        return "/terminal/prepare";
     }
 
     @Jacksonized
@@ -22,10 +21,16 @@ public class TerminalWaitExchange extends BeaconInterface<TerminalWaitExchange.R
     public static class Request {
         @NonNull
         UUID request;
+
+        long pid;
     }
 
     @Jacksonized
     @Builder
     @Value
-    public static class Response {}
+    public static class Response {
+        boolean supportsUnicode;
+        boolean supportsEscapeSequences;
+        boolean alreadyFinished;
+    }
 }

@@ -124,7 +124,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
     }
 
     @Override
-    default boolean supportsColoredTitle() {
+    default boolean useColoredTitle() {
         return false;
     }
 

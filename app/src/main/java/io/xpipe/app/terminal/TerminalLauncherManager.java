@@ -61,15 +61,18 @@ public class TerminalLauncherManager {
         return last.waitForCompletion();
     }
 
-    public static Path waitExchange(UUID request, long pid) throws BeaconClientException, BeaconServerException {
+    public static boolean isCompletedSuccessfully(UUID request) {
+        synchronized (entries) {
+            var req = entries.get(request);
+            return req.getResult() instanceof TerminalLaunchResult.ResultSuccess;
+        }
+    }
+
+    public static void registerPid(UUID request, long pid) throws BeaconClientException {
         TerminalLaunchRequest req;
         synchronized (entries) {
             req = entries.get(request);
         }
-        if (req == null) {
-            throw new BeaconClientException("Unknown launch request " + request);
-        }
-
         var byPid = ProcessHandle.of(pid);
         if (byPid.isEmpty()) {
             throw new BeaconClientException("Unable to find terminal child process " + pid);
@@ -79,6 +82,16 @@ public class TerminalLauncherManager {
             throw new BeaconClientException("Wrong launch context");
         }
         req.setPid(shell.pid());
+    }
+
+    public static Path waitExchange(UUID request) throws BeaconClientException, BeaconServerException {
+        TerminalLaunchRequest req;
+        synchronized (entries) {
+            req = entries.get(request);
+        }
+        if (req == null) {
+            throw new BeaconClientException("Unknown launch request " + request);
+        }
 
         if (req.isSetupCompleted()) {
             submitAsync(req.getRequest(), req.getProcessControl(), req.getConfig(), req.getWorkingDirectory());
