@@ -612,7 +612,7 @@ paths:
               examples:
                 success:
                   summary: Success
-                  value: { "path": "/tmp/exec-123.sh" }
+                  value: { "path": "/tmp/xpipe-123.sh" }
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':

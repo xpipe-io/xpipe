@@ -27,10 +27,6 @@ public class XPipeInstallation {
         return 21721 + offset;
     }
 
-    private static String getPkgId() {
-        return isStaging() ? "io.xpipe.xpipe-ptb" : "io.xpipe.xpipe";
-    }
-
     public static Path getLocalBeaconAuthFile() {
         return Path.of(System.getProperty("java.io.tmpdir"), isStaging() ? "xpipe_ptb_auth" : "xpipe_auth");
     }
@@ -93,29 +89,6 @@ public class XPipeInstallation {
             return p.toRealPath();
         } catch (IOException e) {
             return p;
-        }
-    }
-
-    public static boolean isInstallationDistribution() {
-        var base = getCurrentInstallationBasePath();
-        if (OsType.getLocal().equals(OsType.MACOS)) {
-            if (!base.toString().equals(getLocalDefaultInstallationBasePath())) {
-                return false;
-            }
-
-            try {
-                var process = new ProcessBuilder("pkgutil", "--pkg-info", getPkgId())
-                        .redirectOutput(ProcessBuilder.Redirect.DISCARD)
-                        .redirectError(ProcessBuilder.Redirect.DISCARD)
-                        .start();
-                process.waitFor();
-                return process.exitValue() == 0;
-            } catch (Exception ex) {
-                return false;
-            }
-        } else {
-            var file = base.resolve("installation");
-            return Files.exists(file);
         }
     }
 

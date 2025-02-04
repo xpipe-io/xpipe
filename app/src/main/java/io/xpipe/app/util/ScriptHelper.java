@@ -84,7 +84,7 @@ public class ScriptHelper {
 
     @SneakyThrows
     public static FilePath getExecScriptFile(ShellControl processControl, String fileEnding) {
-        var fileName = "exec-" + getScriptId();
+        var fileName = "xpipe-" + getScriptId();
         var temp = processControl.getSystemTemporaryDirectory();
         return temp.join(fileName + "." + fileEnding);
     }
@@ -96,7 +96,7 @@ public class ScriptHelper {
 
     @SneakyThrows
     public static FilePath createExecScript(ShellDialect type, ShellControl processControl, String content) {
-        var fileName = "exec-" + getScriptId();
+        var fileName = "xpipe-" + getScriptId();
         var temp = processControl.getSystemTemporaryDirectory();
         var file = temp.join(fileName + "." + type.getScriptFileEnding());
         return createExecScript(type, processControl, file, content);
@@ -148,7 +148,7 @@ public class ScriptHelper {
             type = parent.getOsType().equals(OsType.WINDOWS) ? ShellDialects.CMD : ShellDialects.SH;
         }
 
-        var fileName = "exec-" + getScriptId() + "." + type.getScriptFileEnding();
+        var fileName = "xpipe-" + getScriptId() + "." + type.getScriptFileEnding();
         var temp = parent.getSystemTemporaryDirectory();
         var file = temp.join(fileName);
         if (type != parent.getShellDialect()) {
@@ -183,7 +183,7 @@ public class ScriptHelper {
 
     private static FilePath createTerminalPreparedAskpassScript(
             List<SecretValue> pass, ShellControl parent, ShellDialect type) throws Exception {
-        var fileName = "exec-" + getScriptId() + "." + type.getScriptFileEnding();
+        var fileName = "xpipe-" + getScriptId() + "." + type.getScriptFileEnding();
         var temp = parent.getSystemTemporaryDirectory();
         var file = temp.join(fileName);
         if (type != parent.getShellDialect()) {

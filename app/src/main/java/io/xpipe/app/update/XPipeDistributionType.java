@@ -55,19 +55,6 @@ public enum XPipeDistributionType {
             return;
         }
 
-        if (!AppProperties.get().isNewBuildSession()) {
-            var cached = AppCache.getNonNull("dist", String.class, () -> null);
-            var cachedType = Arrays.stream(values())
-                    .filter(xPipeDistributionType ->
-                            xPipeDistributionType.getId().equals(cached))
-                    .findAny()
-                    .orElse(null);
-            if (cachedType != null) {
-                type = cachedType;
-                return;
-            }
-        }
-
         var det = determine();
 
         // Don't cache unknown type
@@ -76,7 +63,6 @@ public enum XPipeDistributionType {
         }
 
         type = det;
-        AppCache.update("dist", type.getId());
         TrackEvent.withInfo("Determined distribution type")
                 .tag("type", type.getId())
                 .handle();
@@ -92,8 +78,30 @@ public enum XPipeDistributionType {
     }
 
     public static XPipeDistributionType determine() {
-        if (!XPipeInstallation.isInstallationDistribution()) {
-            return PORTABLE;
+        var base = XPipeInstallation.getCurrentInstallationBasePath();
+        if (OsType.getLocal().equals(OsType.MACOS)) {
+            if (!base.toString().equals(XPipeInstallation.getLocalDefaultInstallationBasePath())) {
+                return PORTABLE;
+            }
+
+            try {
+                var process = new ProcessBuilder("pkgutil", "--pkg-info", AppProperties.get().isStaging() ? "io.xpipe.xpipe-ptb" : "io.xpipe.xpipe")
+                        .redirectOutput(ProcessBuilder.Redirect.DISCARD)
+                        .redirectError(ProcessBuilder.Redirect.DISCARD)
+                        .start();
+                process.waitFor();
+                if (process.exitValue() != 0) {
+                    return PORTABLE;
+                }
+            } catch (Exception ex) {
+                ErrorEvent.fromThrowable(ex).omit().handle();
+                return PORTABLE;
+            }
+        } else {
+            var file = base.resolve("installation");
+            if (!Files.exists(file)) {
+                return PORTABLE;
+            }
         }
 
         if (!LocalShell.isLocalShellInitialized()) {
@@ -104,7 +112,7 @@ public enum XPipeDistributionType {
             return WEBTOP;
         }
 
-        try (var sc = LocalShell.getShell()) {
+        try (var sc = LocalShell.getShell().start()) {
             // In theory, we can also add  && !AppProperties.get().isStaging() here, but we want to replicate the
             // production behavior
             if (OsType.getLocal().equals(OsType.WINDOWS)) {

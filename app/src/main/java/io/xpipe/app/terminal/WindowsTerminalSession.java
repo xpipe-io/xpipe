@@ -36,7 +36,6 @@ public final class WindowsTerminalSession extends ControllableTerminalSession {
     @Override
     public void alwaysInFront() {
         this.control.alwaysInFront();
-        // this.control.removeBorders();
     }
 
     @Override
@@ -48,8 +47,8 @@ public final class WindowsTerminalSession extends ControllableTerminalSession {
 
     @Override
     public void frontOfMainWindow() {
-        this.control.alwaysInFront();
         this.control.defaultOrder();
+        NativeWinWindowControl.MAIN_WINDOW.orderRelative(control.getWindowHandle());
     }
 
     @Override

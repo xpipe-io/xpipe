@@ -534,16 +534,6 @@ public class AppPrefs {
             storageDirectory.setValue(DEFAULT_STORAGE_DIR);
         }
 
-        // Fix erroneous fallback shell set on macOS
-        if (OsType.getLocal() == OsType.MACOS
-                && AppProperties.get()
-                        .getCanonicalVersion()
-                        .map(v -> v.getMajor() == 12 && v.getMinor() == 2)
-                        .orElse(false)
-                && AppProperties.get().isNewBuildSession()) {
-            useLocalFallbackShell.setValue(false);
-        }
-
         try {
             FileUtils.forceMkdir(storageDirectory.getValue().toFile());
         } catch (Exception e) {
