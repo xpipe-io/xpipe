@@ -18,10 +18,7 @@ import javafx.scene.layout.VBox;
 
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
@@ -99,8 +96,9 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             VBox listView, List<? extends T> shown, List<? extends T> all, Map<T, Region> cache, boolean asynchronous) {
         Runnable update = () -> {
             synchronized (cache) {
+                var set = new HashSet<>(all);
                 // Clear cache of unused values
-                cache.keySet().removeIf(t -> !all.contains(t));
+                cache.keySet().removeIf(t -> !set.contains(t));
             }
 
             final long[] lastPause = {System.currentTimeMillis()};

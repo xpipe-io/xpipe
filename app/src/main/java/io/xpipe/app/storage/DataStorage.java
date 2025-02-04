@@ -399,9 +399,7 @@ public abstract class DataStorage {
     }
 
     public void moveEntryToCategory(DataStoreEntry entry, DataStoreCategory newCategory) {
-        if (getStoreCategoryIfPresent(entry.getUuid())
-                .map(category -> category.equals(newCategory))
-                .orElse(false)) {
+        if (newCategory.getUuid().equals(entry.getCategoryUuid())) {
             return;
         }
 
@@ -919,13 +917,13 @@ public abstract class DataStorage {
             return Set.of();
         }
 
+        if (entry.getChildrenCache() != null) {
+            return entry.getChildrenCache();
+        }
+
         var entries = getStoreEntries();
         if (!entries.contains(entry)) {
             return Set.of();
-        }
-
-        if (entry.getChildrenCache() != null) {
-            return entry.getChildrenCache();
         }
 
         var children = entries.stream()

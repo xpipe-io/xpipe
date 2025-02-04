@@ -176,12 +176,13 @@ public class StoreViewState {
 
             @Override
             public void onStoreAdd(DataStoreEntry... entry) {
-                var l = Arrays.stream(entry)
-                        .map(StoreEntryWrapper::new)
-                        .peek(storeEntryWrapper -> storeEntryWrapper.update())
-                        .peek(wrapper -> wrapper.applyLastAccess())
-                        .toList();
                 Platform.runLater(() -> {
+                    var l = Arrays.stream(entry)
+                            .map(StoreEntryWrapper::new)
+                            .peek(storeEntryWrapper -> storeEntryWrapper.update())
+                            .peek(wrapper -> wrapper.applyLastAccess())
+                            .toList();
+
                     // Don't update anything if we have already reset
                     if (INSTANCE == null) {
                         return;
