@@ -8,9 +8,11 @@ import io.xpipe.app.util.PlatformThread;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
+import javafx.scene.Node;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Region;
@@ -52,11 +54,12 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         VBox vbox = new VBox();
         vbox.getStyleClass().add("list-box-content");
         vbox.setFocusTraversable(false);
+        var scroll = new ScrollPane(vbox);
 
-        refresh(vbox, shown, all, cache, false);
+        refresh(scroll, vbox, shown, all, cache, false, false);
 
         shown.addListener((ListChangeListener<? super T>) (c) -> {
-            refresh(vbox, c.getList(), all, cache, true);
+            refresh(scroll, vbox, c.getList(), all, cache, true, true);
         });
 
         all.addListener((ListChangeListener<? super T>) c -> {
@@ -65,7 +68,6 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             }
         });
 
-        var scroll = new ScrollPane(vbox);
         if (scrollBar) {
             scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
             scroll.skinProperty().subscribe(newValue -> {
@@ -89,11 +91,55 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scroll.setFitToWidth(true);
         scroll.getStyleClass().add("list-box-view-comp");
+
+        scroll.vvalueProperty().addListener((observable, oldValue, newValue) -> {
+            updateVisibilities(scroll, vbox);
+        });
+        scroll.sceneProperty().addListener((observable, oldValue, newValue) -> {
+            Platform.runLater(() -> {
+                updateVisibilities(scroll, vbox);
+            });
+        });
+        scroll.heightProperty().addListener((observable, oldValue, newValue) -> {
+            updateVisibilities(scroll, vbox);
+        });
+        vbox.heightProperty().addListener((observable, oldValue, newValue) -> {
+            Platform.runLater(() -> {
+                updateVisibilities(scroll, vbox);
+            });
+        });
+
         return new SimpleCompStructure<>(scroll);
     }
 
+    private boolean isVisible(ScrollPane pane, VBox box, Node node) {
+        var paneHeight = pane.getHeight();
+        var scrollCenter = box.getBoundsInLocal().getHeight() * pane.getVvalue();
+        var minBoundsHeight = scrollCenter - paneHeight;
+        var maxBoundsHeight = scrollCenter + paneHeight;
+
+        var nodeMinHeight = node.getBoundsInParent().getMinY();
+        var nodeMaxHeight = node.getBoundsInParent().getMaxY();
+
+        if (nodeMaxHeight < minBoundsHeight) {
+            return false;
+        }
+
+        if (nodeMinHeight > maxBoundsHeight) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private void updateVisibilities(ScrollPane scroll, VBox vbox) {
+        for (Node child : vbox.getChildren()) {
+            child.setVisible(isVisible(scroll, vbox, child));
+        }
+    }
+
     private void refresh(
-            VBox listView, List<? extends T> shown, List<? extends T> all, Map<T, Region> cache, boolean asynchronous) {
+            ScrollPane scroll, VBox listView, List<? extends T> shown, List<? extends T> all, Map<T, Region> cache, boolean asynchronous, boolean refreshVisibilities) {
         Runnable update = () -> {
             synchronized (cache) {
                 var set = new HashSet<>(all);
@@ -114,7 +160,13 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
 
                         if (!cache.containsKey(v)) {
                             var comp = compFunction.apply(v);
-                            cache.put(v, comp != null ? comp.createRegion() : null);
+                            if (comp != null) {
+                                var r = comp.createRegion();
+                                r.setVisible(false);
+                                cache.put(v, r);
+                            } else {
+                                cache.put(v, null);
+                            }
                         }
 
                         return cache.get(v);
@@ -137,6 +189,9 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
 
             var d = new DerivedObservableList<>(listView.getChildren(), true);
             d.setContent(newShown);
+            if (refreshVisibilities) {
+                updateVisibilities(scroll, listView);
+            }
         };
 
         if (asynchronous) {
