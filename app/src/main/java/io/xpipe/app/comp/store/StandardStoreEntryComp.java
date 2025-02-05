@@ -39,8 +39,16 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         grid.setVgap(OsType.getLocal() == OsType.MACOS ? 2 : 0);
 
         var storeIcon = createIcon(46, 40);
-        grid.add(storeIcon, 0, 0, 1, 2);
-        grid.getColumnConstraints().add(new ColumnConstraints(52));
+        grid.getColumnConstraints().add(new ColumnConstraints(0));
+        getWrapper().getLargeCategoryOptimizations().subscribe(b -> {
+            if (!b) {
+                grid.add(storeIcon, 0, 0, 1, 2);
+                grid.getColumnConstraints().getFirst().setPrefWidth(52);
+            } else {
+                grid.add(new Region(), 0, 0, 1, 2);
+                grid.getColumnConstraints().getFirst().setPrefWidth(0);
+            }
+        });
 
         var active = new StoreActiveComp(getWrapper()).createRegion();
         var nameBox = new HBox(name, userIcon, notes);

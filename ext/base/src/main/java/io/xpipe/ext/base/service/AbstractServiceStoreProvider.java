@@ -7,7 +7,6 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.ext.SingletonSessionStoreProvider;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DataStoreFormatter;
@@ -91,7 +90,7 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
                     return true;
                 },
                 sec.getWrapper().getCache()));
-        return new DenseStoreEntryComp(sec, true, toggle);
+        return new DenseStoreEntryComp(sec, toggle);
     }
 
     @Override

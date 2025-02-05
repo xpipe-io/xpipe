@@ -13,11 +13,8 @@ import javafx.scene.layout.*;
 
 public class DenseStoreEntryComp extends StoreEntryComp {
 
-    private final boolean showIcon;
-
-    public DenseStoreEntryComp(StoreSection section, boolean showIcon, Comp<?> content) {
+    public DenseStoreEntryComp(StoreSection section, Comp<?> content) {
         super(section, content);
-        this.showIcon = showIcon;
     }
 
     private Label createInformation(GridPane grid) {
@@ -74,12 +71,19 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         var notes = new StoreNotesComp(getWrapper()).createRegion();
         var userIcon = createUserIcon().createRegion();
 
-        if (showIcon) {
-            var storeIcon = createIcon(28, 24);
-            grid.getColumnConstraints().add(new ColumnConstraints(34));
-            grid.add(storeIcon, 0, 0);
-            GridPane.setHalignment(storeIcon, HPos.CENTER);
-        }
+        var storeIcon = createIcon(28, 24);
+        GridPane.setHalignment(storeIcon, HPos.CENTER);
+        grid.getColumnConstraints().add(new ColumnConstraints(0));
+
+        getWrapper().getLargeCategoryOptimizations().subscribe(b -> {
+            if (!b) {
+                grid.add(storeIcon, 0, 0);
+                grid.getColumnConstraints().getFirst().setPrefWidth(34);
+            } else {
+                grid.add(new Region(), 0, 0);
+                grid.getColumnConstraints().getFirst().setPrefWidth(0);
+            }
+        });
 
         var customSize = content != null ? 100 : 0;
         var custom = new ColumnConstraints(0, customSize, customSize);

@@ -37,6 +37,7 @@ public class StoreCategoryWrapper {
     private final IntegerProperty allContainedEntriesCount = new SimpleIntegerProperty();
     private final BooleanProperty expanded = new SimpleBooleanProperty();
     private final Property<DataColor> color = new SimpleObjectProperty<>();
+    private final BooleanProperty largeCategoryOptimizations = new SimpleBooleanProperty();
     private StoreCategoryWrapper cachedParent;
 
     public StoreCategoryWrapper(DataStoreCategory category) {
@@ -187,6 +188,11 @@ public class StoreCategoryWrapper {
         var direct = directContainedEntries.getList().size();
         var sub = children.getList().stream().mapToInt(value -> value.allContainedEntriesCount.get()).sum();
         allContainedEntriesCount.setValue(direct + sub);
+
+        var performanceCount = AppPrefs.get().showChildCategoriesInParentCategory().get() ? allContainedEntriesCount.get() : direct;
+        if (performanceCount > 500) {
+            largeCategoryOptimizations.setValue(true);
+        }
 
         var directFiltered = directContainedEntries.getList().stream().filter(storeEntryWrapper ->
                 storeEntryWrapper.matchesFilter(StoreViewState.get().getFilterString().getValue())).count();

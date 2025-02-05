@@ -58,6 +58,7 @@ public class StoreEntryWrapper {
     private final ObservableValue<String> shownName;
     private final ObservableValue<String> shownSummary;
     private final ObservableValue<String> shownInformation;
+    private final BooleanProperty largeCategoryOptimizations = new SimpleBooleanProperty();
 
     private boolean effectiveBusyProviderBound = false;
     private final BooleanProperty effectiveBusy = new SimpleBooleanProperty();
@@ -217,6 +218,7 @@ public class StoreEntryWrapper {
                         storeCategoryWrapper.getCategory().getUuid().equals(entry.getCategoryUuid()))
                 .findFirst()
                 .orElse(StoreViewState.get().getAllConnectionsCategory()));
+        largeCategoryOptimizations.setValue(category.getValue().getLargeCategoryOptimizations().getValue());
         perUser.setValue(
                 !category.getValue().getRoot().equals(StoreViewState.get().getAllIdentitiesCategory())
                         && entry.isPerUserStore());

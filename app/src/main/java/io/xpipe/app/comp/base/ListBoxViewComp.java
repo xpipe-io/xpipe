@@ -33,7 +33,6 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
     private final ObservableList<T> shown;
     private final ObservableList<T> all;
     private final Function<T, Comp<?>> compFunction;
-    private final int limit = Integer.MAX_VALUE;
     private final boolean scrollBar;
 
     @Setter
@@ -99,6 +98,11 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             Platform.runLater(() -> {
                 updateVisibilities(scroll, vbox);
             });
+            if (newValue != null) {
+                newValue.heightProperty().addListener((observable1, oldValue1, newValue1) -> {
+                    updateVisibilities(scroll, vbox);
+                });
+            }
         });
         scroll.heightProperty().addListener((observable, oldValue, newValue) -> {
             updateVisibilities(scroll, vbox);
@@ -113,6 +117,13 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
     }
 
     private boolean isVisible(ScrollPane pane, VBox box, Node node) {
+        Node c = pane;
+        while ( (c = c.getParent()) != null) {
+            if (!c.isVisible()) {
+                return false;
+            }
+        }
+
         var paneHeight = pane.getHeight();
         var scrollCenter = box.getBoundsInLocal().getHeight() * pane.getVvalue();
         var minBoundsHeight = scrollCenter - paneHeight;
@@ -129,6 +140,14 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             return false;
         }
 
+        if (pane.getScene() != null) {
+            var sceneBounds = pane.localToScene(pane.getBoundsInLocal());
+            var sceneNodeBounds = node.localToScene(node.getBoundsInLocal());
+            if (sceneNodeBounds.getMaxY() < 0 || sceneNodeBounds.getMinY() > pane.getScene().getHeight()) {
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -142,7 +161,10 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             ScrollPane scroll, VBox listView, List<? extends T> shown, List<? extends T> all, Map<T, Region> cache, boolean asynchronous, boolean refreshVisibilities) {
         Runnable update = () -> {
             synchronized (cache) {
-                var set = new HashSet<>(all);
+                var set = new HashSet<T>();
+                // These lists might diverge on updates
+                set.addAll(shown);
+                set.addAll(all);
                 // Clear cache of unused values
                 cache.keySet().removeIf(t -> !set.contains(t));
             }
@@ -172,7 +194,6 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
                         return cache.get(v);
                     })
                     .filter(region -> region != null)
-                    .limit(limit)
                     .toList();
 
             if (listView.getChildren().equals(newShown)) {

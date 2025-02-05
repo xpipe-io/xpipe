@@ -92,6 +92,11 @@ public abstract class OperationMode {
                     OperationMode.halt(1);
                 }
 
+                if (ex instanceof OutOfMemoryError) {
+                    ex.printStackTrace();
+                    OperationMode.halt(1);
+                }
+
                 ErrorEvent.fromThrowable(ex).unhandled(true).build().handle();
             });
 

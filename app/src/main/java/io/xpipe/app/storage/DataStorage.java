@@ -786,7 +786,7 @@ public abstract class DataStorage {
     // Get operations
 
     public boolean isRootEntry(DataStoreEntry entry, DataStoreCategory current) {
-        var parent = DataStorage.get().getDefaultDisplayParent(entry);
+        var parent = getDefaultDisplayParent(entry);
         var noParent = parent.isEmpty();
         if (noParent) {
             return true;
