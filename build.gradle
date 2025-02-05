@@ -137,7 +137,6 @@ project.ext {
             "--add-opens", "javafx.graphics/com.sun.glass.ui=io.xpipe.app",
             "--add-opens", "javafx.graphics/javafx.stage=io.xpipe.app",
             "--add-opens", "javafx.graphics/com.sun.javafx.tk.quantum=io.xpipe.app",
-            "-Xmx2g",
             "-Dio.xpipe.app.arch=$rootProject.arch",
             "-Dfile.encoding=UTF-8",
             "-Dvisualvm.display.name=XPipe",
