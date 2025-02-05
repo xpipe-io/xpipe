@@ -129,6 +129,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                         compRegion.accessibleHelpProperty().bind(PlatformThread.sync(entry.description()));
                     }
                     line.getChildren().add(compRegion);
+                    compRegion.getStyleClass().add("options-content");
                 }
 
                 pane.getChildren().add(line);

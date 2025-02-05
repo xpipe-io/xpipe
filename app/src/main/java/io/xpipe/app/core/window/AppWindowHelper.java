@@ -128,18 +128,6 @@ public class AppWindowHelper {
                 .orElse(false);
     }
 
-    public static boolean showConfirmationAlert(
-            ObservableValue<String> title, ObservableValue<String> header, ObservableValue<String> content) {
-        return AppWindowHelper.showBlockingAlert(alert -> {
-                    alert.titleProperty().bind(title);
-                    alert.headerTextProperty().bind(header);
-                    setContent(alert, content.getValue());
-                    alert.setAlertType(Alert.AlertType.CONFIRMATION);
-                })
-                .map(b -> b.getButtonData().isDefaultButton())
-                .orElse(false);
-    }
-
     @SneakyThrows
     public static Optional<ButtonType> showBlockingAlert(Consumer<Alert> c) {
         PlatformInit.init(true);

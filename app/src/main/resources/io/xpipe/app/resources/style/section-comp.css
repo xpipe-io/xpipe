@@ -17,6 +17,10 @@
     -fx-font-size: 0.95em;
 }
 
+.options-comp .options-content {
+    -fx-font-size: 0.95em;
+}
+
 .options-comp .long-description {
     -fx-padding: 0 6 0 6;
 }

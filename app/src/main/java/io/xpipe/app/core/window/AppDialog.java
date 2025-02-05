@@ -12,6 +12,8 @@ import io.xpipe.app.util.ThreadHelper;
 
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
+import javafx.beans.Observable;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -103,7 +105,7 @@ public class AppDialog {
     }
 
     public static Comp<?> dialogTextKey(String s) {
-        return dialogText(AppI18n.get(s));
+        return dialogText(AppI18n.observable(s));
     }
 
     public static Comp<?> dialogText(String s) {
@@ -116,10 +118,30 @@ public class AppDialog {
                 .prefWidth(450);
     }
 
+    public static Comp<?> dialogText(ObservableValue<String> s) {
+        return Comp.of(() -> {
+                    var text = new Text();
+                    text.textProperty().bind(s);
+                    text.setWrappingWidth(450);
+                    var sp = new StackPane(text);
+                    return sp;
+                })
+                .prefWidth(450);
+    }
+
     public static boolean confirm(String translationKey) {
         var confirmed = new AtomicBoolean(false);
         var content = dialogTextKey(translationKey + "Content");
         var modal = ModalOverlay.of(translationKey + "Title", content);
+        modal.addButton(ModalButton.cancel());
+        modal.addButton(ModalButton.ok(() -> confirmed.set(true)));
+        showAndWait(modal);
+        return confirmed.get();
+    }
+
+    public static boolean confirm(String titleKey, ObservableValue<String> content) {
+        var confirmed = new AtomicBoolean(false);
+        var modal = ModalOverlay.of(titleKey, dialogText(content));
         modal.addButton(ModalButton.cancel());
         modal.addButton(ModalButton.ok(() -> confirmed.set(true)));
         showAndWait(modal);

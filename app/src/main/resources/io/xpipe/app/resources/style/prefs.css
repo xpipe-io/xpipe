@@ -15,6 +15,10 @@
     -fx-font-size: 1.0em;
 }
 
+.prefs-container .options-comp .options-content {
+    -fx-font-size: 1.0em;
+}
+
 .prefs-container > .title-header.first {
     -fx-padding: 0 0 -0.5em 0;
 }

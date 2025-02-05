@@ -21,7 +21,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
 
     private static FilePath getSocket() throws Exception {
         try (var sc = LocalShell.getShell().start()) {
-            var temp = ShellTemp.getUserSpecificTempDataDirectory(sc, null);
+            var temp = ShellTemp.createUserSpecificTempDataDirectory(sc, null);
             sc.executeSimpleCommand(sc.getShellDialect().getMkdirsCommand(temp.toString()));
             return temp.join("xpipe_kitty");
         }

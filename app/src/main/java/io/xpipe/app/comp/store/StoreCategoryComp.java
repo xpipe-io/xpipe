@@ -67,10 +67,6 @@ public class StoreCategoryComp extends SimpleComp {
 
         var expandIcon = Bindings.createObjectBinding(
                 () -> {
-                    if (category.getCategory().getParentCategory() == null) {
-                        return new LabelGraphic.IconGraphic("mdi2f-folder-text-outline");
-                    }
-
                     var exp = category.getExpanded().get()
                             && category.getChildren().getList().size() > 0;
                     return new LabelGraphic.IconGraphic(exp ? "mdi2m-menu-down-outline" : "mdi2m-menu-right-outline");

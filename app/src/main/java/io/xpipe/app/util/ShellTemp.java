@@ -38,13 +38,14 @@ public class ShellTemp {
         return temp.resolve(sub);
     }
 
-    public static FilePath getUserSpecificTempDataDirectory(ShellControl proc, String sub) throws Exception {
+    public static FilePath createUserSpecificTempDataDirectory(ShellControl proc, String sub) throws Exception {
         FilePath base;
         // On Windows and macOS, we already have user specific temp directories
         // Even on macOS as root it is technically unique as only root will use /tmp
         if (!proc.getOsType().equals(OsType.WINDOWS) && !proc.getOsType().equals(OsType.MACOS)) {
             var temp = proc.getSystemTemporaryDirectory();
             base = temp.join("xpipe");
+            proc.command(proc.getShellDialect().getMkdirsCommand(base.toString())).execute();
             // We have to make sure that also other users can create files here
             // This command should work in all shells
             proc.command("chmod 777 " + proc.getShellDialect().fileArgument(base))

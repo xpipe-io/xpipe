@@ -108,7 +108,7 @@ public abstract class ScriptStore implements DataStore, StatefulDataStore<Enable
                 .mapToInt(value ->
                         value.get().getName().hashCode() + value.getStore().hashCode())
                 .sum();
-        var targetDir = ShellTemp.getUserSpecificTempDataDirectory(proc, "scripts")
+        var targetDir = ShellTemp.createUserSpecificTempDataDirectory(proc, "scripts")
                 .join(proc.getShellDialect().getId())
                 .toString();
         var hashFile = FileNames.join(targetDir, "hash");

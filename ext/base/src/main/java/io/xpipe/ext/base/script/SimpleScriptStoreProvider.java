@@ -116,13 +116,13 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
         if (st.isInitScript()) {
             selectedStart.add(0);
         }
-        if (st.isShellScript()) {
+        if (st.isRunnableScript()) {
             selectedStart.add(1);
         }
         if (st.isFileScript()) {
             selectedStart.add(2);
         }
-        if (st.isRunnableScript()) {
+        if (st.isShellScript()) {
             selectedStart.add(3);
         }
         var name = new Function<Integer, String>() {
@@ -134,7 +134,7 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                 }
 
                 if (integer == 1) {
-                    return AppI18n.get("shellScript");
+                    return AppI18n.get("runnableScript");
                 }
 
                 if (integer == 2) {
@@ -142,8 +142,9 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                 }
 
                 if (integer == 3) {
-                    return AppI18n.get("runnableScript");
+                    return AppI18n.get("shellScript");
                 }
+
                 return "?";
             }
         };
@@ -152,16 +153,6 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                 FXCollections.observableList(vals), name, selectedExecTypes, v -> false, () -> false);
 
         return new OptionsBuilder()
-                .name("snippets")
-                .description("snippetsDescription")
-                .longDescription("base:scriptDependencies")
-                .addComp(
-                        new StoreListChoiceComp<>(
-                                others,
-                                ScriptStore.class,
-                                scriptStore -> !scriptStore.get().equals(entry) && !others.contains(scriptStore),
-                                StoreViewState.get().getAllScriptsCategory()),
-                        others)
                 .name("minimumShellDialect")
                 .description("minimumShellDialectDescription")
                 .longDescription("base:scriptCompatibility")
@@ -182,6 +173,16 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                 .addComp(selectorComp, selectedExecTypes)
                 .check(validator ->
                         Validator.nonEmpty(validator, AppI18n.observable("executionType"), selectedExecTypes))
+                .name("snippets")
+                .description("snippetsDescription")
+                .longDescription("base:scriptDependencies")
+                .addComp(
+                        new StoreListChoiceComp<>(
+                                others,
+                                ScriptStore.class,
+                                scriptStore -> !scriptStore.get().equals(entry) && !others.contains(scriptStore),
+                                StoreViewState.get().getAllScriptsCategory()),
+                        others)
                 .name("scriptGroup")
                 .description("scriptGroupDescription")
                 .addComp(
@@ -203,9 +204,9 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                                     .description(st.getDescription())
                                     .commands(commandProp.getValue())
                                     .initScript(selectedExecTypes.contains(0))
-                                    .shellScript(selectedExecTypes.contains(1))
+                                    .runnableScript(selectedExecTypes.contains(1))
                                     .fileScript(selectedExecTypes.contains(2))
-                                    .runnableScript(selectedExecTypes.contains(3))
+                                    .shellScript(selectedExecTypes.contains(3))
                                     .build();
                         },
                         store)
