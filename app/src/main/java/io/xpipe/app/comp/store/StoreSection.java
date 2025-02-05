@@ -26,11 +26,11 @@ import java.util.function.ToIntFunction;
 @Getter
 public class StoreSection {
 
-    StoreEntryWrapper wrapper;
-    DerivedObservableList<StoreSection> allChildren;
-    DerivedObservableList<StoreSection> shownChildren;
-    int depth;
-    ObservableBooleanValue showDetails;
+    private final StoreEntryWrapper wrapper;
+    private final DerivedObservableList<StoreSection> allChildren;
+    private final DerivedObservableList<StoreSection> shownChildren;
+    private final int depth;
+    private final ObservableBooleanValue showDetails;
 
     public StoreSection(
             StoreEntryWrapper wrapper,
@@ -164,7 +164,7 @@ public class StoreSection {
                     //                                        .orElse(false);
 
                     // is children. This check is fast as the children are cached in the storage
-                    if (!DataStorage.get().getStoreChildren(e.getEntry()).contains(other.getEntry())) {
+                    if (DataStorage.get() == null || !DataStorage.get().getStoreChildren(e.getEntry()).contains(other.getEntry())) {
                         return false;
                     }
 

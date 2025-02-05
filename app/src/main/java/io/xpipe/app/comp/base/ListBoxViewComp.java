@@ -7,6 +7,7 @@ import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.application.Platform;
+import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
@@ -94,16 +95,6 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         scroll.vvalueProperty().addListener((observable, oldValue, newValue) -> {
             updateVisibilities(scroll, vbox);
         });
-        scroll.sceneProperty().addListener((observable, oldValue, newValue) -> {
-            Platform.runLater(() -> {
-                updateVisibilities(scroll, vbox);
-            });
-            if (newValue != null) {
-                newValue.heightProperty().addListener((observable1, oldValue1, newValue1) -> {
-                    updateVisibilities(scroll, vbox);
-                });
-            }
-        });
         scroll.heightProperty().addListener((observable, oldValue, newValue) -> {
             updateVisibilities(scroll, vbox);
         });
@@ -113,15 +104,29 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             });
         });
 
+        vbox.sceneProperty().addListener((observable, oldValue, newValue) -> {
+            Node c = vbox;
+            while ( (c = c.getParent()) != null) {
+                c.boundsInParentProperty().addListener((observable1, oldValue1, newValue1) -> {
+                    updateVisibilities(scroll, vbox);
+                });
+            }
+            Platform.runLater(() -> {
+                updateVisibilities(scroll, vbox);
+            });
+            if (newValue != null) {
+                newValue.heightProperty().addListener((observable1, oldValue1, newValue1) -> {
+                    updateVisibilities(scroll, vbox);
+                });
+            }
+        });
+
         return new SimpleCompStructure<>(scroll);
     }
 
     private boolean isVisible(ScrollPane pane, VBox box, Node node) {
-        Node c = pane;
-        while ( (c = c.getParent()) != null) {
-            if (!c.isVisible()) {
-                return false;
-            }
+        if (pane.getScene() == null || box.getScene() == null || node.getScene() == null) {
+            return false;
         }
 
         var paneHeight = pane.getHeight();
@@ -132,6 +137,10 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         var nodeMinHeight = node.getBoundsInParent().getMinY();
         var nodeMaxHeight = node.getBoundsInParent().getMaxY();
 
+        if (paneHeight == 0.0 || box.getHeight() == 0.0 || ((Region) node).getHeight() == 0.0 || nodeMinHeight == nodeMaxHeight) {
+            return false;
+        }
+
         if (nodeMaxHeight < minBoundsHeight) {
             return false;
         }
@@ -140,8 +149,7 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             return false;
         }
 
-        if (pane.getScene() != null) {
-            var sceneBounds = pane.localToScene(pane.getBoundsInLocal());
+        if (pane.getScene().getHeight() > 200) {
             var sceneNodeBounds = node.localToScene(node.getBoundsInLocal());
             if (sceneNodeBounds.getMaxY() < 0 || sceneNodeBounds.getMinY() > pane.getScene().getHeight()) {
                 return false;
@@ -153,7 +161,8 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
 
     private void updateVisibilities(ScrollPane scroll, VBox vbox) {
         for (Node child : vbox.getChildren()) {
-            child.setVisible(isVisible(scroll, vbox, child));
+            var v = isVisible(scroll, vbox, child);
+            child.setVisible(v);
         }
     }
 
