@@ -307,8 +307,8 @@ public abstract class DataStorage {
 
         DataStoreEntry c = entry;
         do {
-            // We can't check for sharing of invalid entries
-            if (!c.getValidity().isUsable()) {
+            // We can't check for sharing of failed entries
+            if (c.getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
                 return false;
             }
 
@@ -316,7 +316,11 @@ public abstract class DataStorage {
                 return true;
             }
 
-            if (!c.getProvider().isShareable(c)) {
+            try {
+                if (!c.getProvider().isShareable(c)) {
+                    return false;
+                }
+            } catch (Exception e) {
                 return false;
             }
         } while ((c = DataStorage.get().getDefaultDisplayParent(c).orElse(null)) != null);
@@ -397,6 +401,8 @@ public abstract class DataStorage {
         // Update git remote if needed
         DataStorage.get().saveAsync();
     }
+
+    public abstract boolean isOtherUserEntry(UUID uuid);
 
     public void moveEntryToCategory(DataStoreEntry entry, DataStoreCategory newCategory) {
         if (getStoreCategoryIfPresent(entry.getUuid())

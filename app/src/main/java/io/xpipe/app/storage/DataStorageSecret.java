@@ -90,16 +90,14 @@ public class DataStorageSecret {
 
         // User key must have changed
         if (!isUser && !isVault) {
-            // There must be a key mismatch
+            // We have loaded a secret with a user key that does no longer exist
+            // This means that the user was deleted in this session
+            // Replace it with a vault key
             if (userHandler.getActiveUser() == null) {
-                return false;
+                return true;
             }
 
-            // We don't want to use the new user key
-            if (!allowUserSecretKey) {
-                return false;
-            }
-
+            // Password was changed
             return true;
         }
 

@@ -40,7 +40,7 @@ public class EncryptionToken {
     }
 
     public static EncryptionToken ofInvalid() {
-        return EncryptionToken.builder().token("").isUser(false).isVault(false).build();
+        return EncryptionToken.builder().token("").isVault(false).build();
     }
 
     public static EncryptionToken ofUser() {
@@ -65,9 +65,6 @@ public class EncryptionToken {
     private final String token;
 
     @JsonIgnore
-    private Boolean isUser;
-
-    @JsonIgnore
     private Boolean isVault;
 
     public boolean canDecrypt() {
@@ -85,16 +82,12 @@ public class EncryptionToken {
     }
 
     public boolean isUser() {
-        if (isUser != null) {
-            return isUser;
-        }
-
         var userHandler = DataStorageUserHandler.getInstance();
         if (userHandler.getActiveUser() == null) {
             return false;
         }
 
-        return (isUser = userHandler.getActiveUser().equals(decode(userHandler.getEncryptionKey())));
+        return userHandler.getActiveUser().equals(decode(userHandler.getEncryptionKey()));
     }
 
     public boolean isVault() {
