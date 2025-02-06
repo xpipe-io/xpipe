@@ -60,7 +60,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                                         .toString(),
                                                 XPipeInstallation.getDaemonDebugScriptPath(OsType.getLocal()));
                                         // We can't use the SSH bridge
-                                        var type = ExternalTerminalType.determineNonSshBridgeFallback(
+                                        var type = ExternalTerminalType.determineFallbackTerminalToOpen(
                                                 AppPrefs.get().terminalType().getValue());
                                         TerminalLauncher.openDirect(
                                                 "XPipe Debug",

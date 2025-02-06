@@ -13,7 +13,7 @@ public class TerminalWaitExchange extends BeaconInterface<TerminalWaitExchange.R
 
     @Override
     public String getPath() {
-        return "/terminalWait";
+        return "/terminal/wait";
     }
 
     @Jacksonized
@@ -22,8 +22,6 @@ public class TerminalWaitExchange extends BeaconInterface<TerminalWaitExchange.R
     public static class Request {
         @NonNull
         UUID request;
-
-        long pid;
     }
 
     @Jacksonized

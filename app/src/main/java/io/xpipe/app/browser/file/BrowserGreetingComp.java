@@ -1,7 +1,7 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.util.PlatformThread;
@@ -24,7 +24,7 @@ public class BrowserGreetingComp extends SimpleComp {
                 r.setText(getText());
             });
         });
-        AppFont.setSize(r, 7);
+        AppFontSizes.title(r);
         if (OsType.getLocal() != OsType.MACOS) {
             r.getStyleClass().add(Styles.TEXT_BOLD);
         }

@@ -66,7 +66,9 @@ public class ButtonComp extends Comp<CompStructure<Button>> {
                 }
             });
         }
-        button.setOnAction(e -> getListener().run());
+        if (listener != null) {
+            button.setOnAction(e -> getListener().run());
+        }
         button.getStyleClass().add("button-comp");
         return new SimpleCompStructure<>(button);
     }

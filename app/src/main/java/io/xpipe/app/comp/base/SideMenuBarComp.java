@@ -3,7 +3,7 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
-import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.update.UpdateAvailableDialog;
 import io.xpipe.app.update.XPipeDistributionType;
@@ -76,7 +76,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
             var shortcut = e.combination();
             b.apply(new TooltipAugment<>(e.name(), shortcut));
             b.apply(struc -> {
-                AppFont.setSize(struc.get(), 1);
+                AppFontSizes.xl(struc.get());
                 struc.get().pseudoClassStateChanged(selected, value.getValue().equals(e));
                 value.addListener((c, o, n) -> {
                     PlatformThread.runLaterIfNeeded(() -> {
@@ -123,7 +123,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                     .tooltipKey("updateAvailableTooltip")
                     .accessibleTextKey("updateAvailableTooltip");
             b.apply(struc -> {
-                AppFont.setSize(struc.get(), 1);
+                AppFontSizes.xl(struc.get());
             });
             b.hide(PlatformThread.sync(Bindings.createBooleanBinding(
                     () -> {
@@ -142,7 +142,6 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         filler.setMaxHeight(3000);
         vbox.getChildren().add(filler);
         VBox.setVgrow(filler, Priority.ALWAYS);
-        filler.prefWidthProperty().bind(((Region) vbox.getChildren().getFirst()).widthProperty());
         vbox.getStyleClass().add("sidebar-comp");
         return new SimpleCompStructure<>(vbox);
     }

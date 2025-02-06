@@ -162,10 +162,6 @@ public class DataStoreCategory extends StorageElement {
             return false;
         }
 
-        if (getUuid().equals(DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID)) {
-            return false;
-        }
-
         return true;
     }
 

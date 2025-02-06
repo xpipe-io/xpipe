@@ -19,7 +19,7 @@ public class Main {
                     """
                                The daemon executable xpiped does not accept any command-line arguments.
 
-                               For a reference on what you can do from the CLI, take a look at the xpipe CLI executable instead.
+                               For a reference on how to use xpipe from the command-line, take a look at https://docs.xpipe.io/cli.
                                """);
             return;
         }

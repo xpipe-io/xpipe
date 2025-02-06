@@ -36,7 +36,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
-    ExternalEditorType VSCODE_WINDOWS = new WindowsType("app.vscode", "code.cmd", false) {
+    WindowsType VSCODE_WINDOWS = new WindowsType("app.vscode", "code.cmd", false) {
 
         @Override
         protected Optional<Path> determineInstallation() {
@@ -65,12 +65,12 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         @Override
         protected Optional<Path> determineInstallation() {
             var found =
-                    WindowsRegistry.local().readValue(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Notepad++", null);
+                    WindowsRegistry.local().readStringValueIfPresent(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Notepad++", null);
 
             // Check 32 bit install
             if (found.isEmpty()) {
                 found = WindowsRegistry.local()
-                        .readValue(WindowsRegistry.HKEY_LOCAL_MACHINE, "WOW6432Node\\SOFTWARE\\Notepad++", null);
+                        .readStringValueIfPresent(WindowsRegistry.HKEY_LOCAL_MACHINE, "WOW6432Node\\SOFTWARE\\Notepad++", null);
             }
             return found.map(p -> p + "\\notepad++.exe").map(Path::of);
         }
@@ -80,7 +80,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         @Override
         public void launch(Path file) throws Exception {
             var builder = CommandBuilder.of()
-                    .fixedEnvrironment("DONT_PROMPT_WSL_INSTALL", "No_Prompt_please")
+                    .fixedEnvironment("DONT_PROMPT_WSL_INSTALL", "No_Prompt_please")
                     .addFile(executable)
                     .addFile(file.toString());
             ExternalApplicationHelper.startAsync(builder);
@@ -249,13 +249,10 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public void launch(Path file) throws Exception {
-            var location = determineFromPath();
+            var location = findExecutable();
             if (location.isEmpty()) {
-                location = determineInstallation();
-                if (location.isEmpty()) {
-                    throw ErrorEvent.expected(new IOException("Unable to find installation of "
-                            + toTranslatedString().getValue()));
-                }
+                throw ErrorEvent.expected(new IOException("Unable to find installation of "
+                        + toTranslatedString().getValue()));
             }
 
             var builder = CommandBuilder.of().addFile(location.get().toString()).addFile(file.toString());
@@ -264,6 +261,14 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             } else {
                 LocalShell.getShell().executeSimpleCommand(builder);
             }
+        }
+
+        public Optional<Path> findExecutable() {
+            var location = determineFromPath();
+            if (location.isEmpty()) {
+                location = determineInstallation();
+            }
+            return location;
         }
     }
 }

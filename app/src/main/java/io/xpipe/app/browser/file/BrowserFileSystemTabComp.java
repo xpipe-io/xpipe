@@ -7,7 +7,7 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
-import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.PlatformThread;
 
@@ -80,9 +80,10 @@ public class BrowserFileSystemTabComp extends SimpleComp {
         var topBar = new HBox();
         topBar.setAlignment(Pos.CENTER);
         topBar.getStyleClass().add("top-bar");
+        AppFontSizes.xl(topBar);
         var navBar = new BrowserNavBarComp(model).createStructure();
         filter.textField().prefHeightProperty().bind(navBar.get().heightProperty());
-        AppFont.medium(navBar.get());
+        AppFontSizes.base(navBar.get());
         topBar.getChildren()
                 .setAll(
                         overview,

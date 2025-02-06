@@ -43,22 +43,22 @@ public class CommandBuilder {
         return this;
     }
 
-    public CommandBuilder fixedEnvrironment(String k, String v) {
+    public CommandBuilder fixedEnvironment(String k, String v) {
         environmentVariables.put(k, new Fixed(v));
         return this;
     }
 
-    public CommandBuilder envrironment(String k, Element v) {
+    public CommandBuilder environment(String k, Element v) {
         environmentVariables.put(k, v);
         return this;
     }
 
-    public CommandBuilder fixedEnvrironment(Map<String, String> map) {
-        map.forEach((s, s2) -> fixedEnvrironment(s, s2));
+    public CommandBuilder fixedEnvironment(Map<String, String> map) {
+        map.forEach((s, s2) -> fixedEnvironment(s, s2));
         return this;
     }
 
-    public CommandBuilder envrironment(Map<String, Element> map) {
+    public CommandBuilder environment(Map<String, Element> map) {
         environmentVariables.putAll(map);
         return this;
     }

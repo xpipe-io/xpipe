@@ -1,11 +1,9 @@
 package io.xpipe.app.issue;
 
-import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.comp.base.MarkdownComp;
-import io.xpipe.app.comp.base.TitledPaneComp;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.resources.AppResources;
@@ -57,51 +55,40 @@ public class UserReportComp extends SimpleComp {
         window.showAndWait();
     }
 
-    private Comp<?> createAttachments() {
-        var list = new ListSelectorComp<>(
-                        FXCollections.observableList(event.getAttachments()),
-                        file -> {
-                            if (file.equals(AppLogs.get().getSessionLogsDirectory())) {
-                                return AppI18n.get("logFilesAttachment");
-                            }
-
-                            return file.getFileName().toString();
-                        },
-                        includedDiagnostics,
-                        file -> false,
-                        () -> false)
-                .styleClass("attachment-list");
-        return new TitledPaneComp(AppI18n.observable("additionalErrorAttachments"), list, 100)
-                .apply(struc -> struc.get().setExpanded(true))
-                .apply(s -> AppFont.medium(s.get()))
-                .styleClass("attachments");
-    }
-
     @Override
     protected Region createSimple() {
         var emailHeader = new Label(AppI18n.get("provideEmail"));
         emailHeader.setWrapText(true);
-        AppFont.medium(emailHeader);
         var email = new TextField();
         this.email.bind(email.textProperty());
         VBox.setVgrow(email, Priority.ALWAYS);
 
-        var header = new Label(AppI18n.get("additionalErrorInfo"));
-        AppFont.medium(header);
+        var infoHeader = new Label(AppI18n.get("additionalErrorInfo"));
         var tf = new TextArea();
         text.bind(tf.textProperty());
         VBox.setVgrow(tf, Priority.ALWAYS);
-        var reportSection = new VBox(header, tf, new Spacer(8, Orientation.VERTICAL));
+
+        var attachmentsHeader = new Label(AppI18n.get("additionalErrorAttachments"));
+        var attachments = new ListSelectorComp<>(
+                FXCollections.observableList(event.getAttachments()),
+                file -> {
+                    if (file.equals(AppLogs.get().getSessionLogsDirectory())) {
+                        return AppI18n.get("logFilesAttachment");
+                    }
+
+                    return file.getFileName().toString();
+                },
+                includedDiagnostics,
+                file -> false,
+                () -> false)
+                .styleClass("attachment-list")
+                .createRegion();
+
+        var reportSection = new VBox(infoHeader, tf, new Spacer(8, Orientation.VERTICAL), attachmentsHeader, new Spacer(3, Orientation.VERTICAL), attachments);
         reportSection.setSpacing(5);
         reportSection.getStyleClass().add("report");
 
-        var at = createAttachments().createRegion();
-
         var buttons = createBottomBarNavigation();
-
-        if (event.getAttachments().size() > 0) {
-            reportSection.getChildren().add(at);
-        }
 
         reportSection.getChildren().addAll(new Spacer(8, Orientation.VERTICAL), emailHeader, email);
 
@@ -117,7 +104,7 @@ public class UserReportComp extends SimpleComp {
 
     private Region createBottomBarNavigation() {
         var dataPolicyButton = new Hyperlink(AppI18n.get("dataHandlingPolicies"));
-        AppFont.small(dataPolicyButton);
+        AppFontSizes.xs(dataPolicyButton);
         dataPolicyButton.setOnAction(event1 -> {
             AppResources.with(AppResources.XPIPE_MODULE, "misc/report_privacy_policy.md", file -> {
                 var markDown = new MarkdownComp(Files.readString(file), s -> s, true)
@@ -127,7 +114,7 @@ public class UserReportComp extends SimpleComp {
                 popover.setCloseButtonEnabled(true);
                 popover.setHeaderAlwaysVisible(false);
                 popover.setDetachable(true);
-                AppFont.small(popover.getContentNode());
+                AppFontSizes.xs(popover.getContentNode());
                 popover.show(dataPolicyButton);
             });
             event1.consume();
@@ -141,7 +128,6 @@ public class UserReportComp extends SimpleComp {
         buttons.setAlignment(Pos.CENTER);
         buttons.getStyleClass().add("buttons");
         HBox.setHgrow(spacer, Priority.ALWAYS);
-        AppFont.medium(dataPolicyButton);
         return buttons;
     }
 

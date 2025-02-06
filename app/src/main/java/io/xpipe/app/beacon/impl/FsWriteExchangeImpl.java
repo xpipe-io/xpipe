@@ -3,7 +3,7 @@ package io.xpipe.app.beacon.impl;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.beacon.BlobManager;
 import io.xpipe.beacon.api.FsWriteExchange;
-import io.xpipe.core.store.ConnectionFileSystem;
+import io.xpipe.app.ext.ConnectionFileSystem;
 
 import com.sun.net.httpserver.HttpExchange;
 import lombok.SneakyThrows;

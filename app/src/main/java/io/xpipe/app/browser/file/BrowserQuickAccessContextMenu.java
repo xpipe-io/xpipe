@@ -2,6 +2,7 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.icon.BrowserIconManager;
 import io.xpipe.app.comp.base.PrettyImageHelper;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.util.BooleanAnimationTimer;
 import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.ThreadHelper;
@@ -41,6 +42,7 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
         this.base = base;
         this.model = model;
 
+        AppFontSizes.lg(getStyleableNode());
         addEventFilter(Menu.ON_SHOWING, e -> {
             Node content = getSkin().getNode();
             if (content instanceof Region r) {
@@ -115,7 +117,9 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
             var dirs = browserEntries.stream()
                     .filter(e -> e.getRawFileEntry().getKind() == FileKind.DIRECTORY)
                     .toList();
-            if (dirs.size() == 1) {
+            // Expand subdir if only one
+            // Note that if we have a link to the directory itself, we shouldn't do it, otherwise we are stuck in a loop
+            if (dirs.size() == 1 && !dirs.getFirst().getRawFileEntry().getPath().equals(entry.getRawFileEntry().getPath())) {
                 updateMenuItems((Menu) menus.get(dirs.getFirst()), dirs.getFirst(), true);
             }
             newItems.addAll(menus.values());

@@ -57,7 +57,6 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         vbox.setFocusTraversable(false);
 
         refresh(vbox, shown, all, cache, false);
-        vbox.requestLayout();
 
         shown.addListener((ListChangeListener<? super T>) (c) -> {
             refresh(vbox, c.getList(), all, cache, true);

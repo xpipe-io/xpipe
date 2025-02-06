@@ -40,7 +40,7 @@ public class TermiusTerminalType implements ExternalTerminalType {
                 }
                 case OsType.Windows windows -> {
                     var r = WindowsRegistry.local()
-                            .readValue(WindowsRegistry.HKEY_CURRENT_USER, "SOFTWARE\\Classes\\termius");
+                            .readStringValueIfPresent(WindowsRegistry.HKEY_CURRENT_USER, "SOFTWARE\\Classes\\termius");
                     yield r.isPresent();
                 }
             };
@@ -61,7 +61,7 @@ public class TermiusTerminalType implements ExternalTerminalType {
     }
 
     @Override
-    public boolean supportsColoredTitle() {
+    public boolean useColoredTitle() {
         return true;
     }
 

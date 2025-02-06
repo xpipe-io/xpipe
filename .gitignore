@@ -8,6 +8,7 @@ dev.properties
 extensions.txt
 dev_storage
 local/
+local*/
 local_*/
 .vs
 .vscode

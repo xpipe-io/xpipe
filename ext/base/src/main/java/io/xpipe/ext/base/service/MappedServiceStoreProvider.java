@@ -21,9 +21,9 @@ public class MappedServiceStoreProvider extends FixedServiceStoreProvider {
         return DataStorage.get().getStoreEntryDisplayName(s.getHost().get()) + " - Port " + s.getContainerPort();
     }
 
-    @Override
-    public List<String> getPossibleNames() {
-        return List.of("mappedService");
+@Override
+     public String getId() {
+        return "mappedService";
     }
 
     protected String formatService(AbstractServiceStore s) {

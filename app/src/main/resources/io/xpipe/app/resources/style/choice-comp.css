@@ -2,6 +2,10 @@
     -fx-focus-color: transparent;
 }
 
+.combo-box-popup .list-cell:hover, .combo-box-popup .list-cell:focused {
+    -fx-background-color: -color-context-menu;
+}
+
 .choice-comp-content > .top {
     -fx-padding: 0.4em;
     -fx-background-color: -color-neutral-subtle;

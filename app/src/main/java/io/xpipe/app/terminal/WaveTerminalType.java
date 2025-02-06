@@ -13,6 +13,17 @@ public interface WaveTerminalType extends ExternalTerminalType, TrackableTermina
     ExternalTerminalType WAVE_MAC_OS = new MacOs();
 
     @Override
+    default boolean isAvailable() {
+        try (var sc = LocalShell.getShell().start()) {
+            var wsh = CommandSupport.findProgram(sc, "wsh");
+            return wsh.isPresent();
+        } catch (Exception ex) {
+            ErrorEvent.fromThrowable(ex).handle();
+            return false;
+        }
+    }
+
+    @Override
     default String getWebsite() {
         return "https://www.waveterm.dev/";
     }
@@ -28,7 +39,7 @@ public interface WaveTerminalType extends ExternalTerminalType, TrackableTermina
     }
 
     @Override
-    default boolean supportsColoredTitle() {
+    default boolean useColoredTitle() {
         return true;
     }
 

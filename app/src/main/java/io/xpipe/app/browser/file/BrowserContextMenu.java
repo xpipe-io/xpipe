@@ -2,6 +2,7 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.util.InputHelper;
 
 import javafx.scene.control.ContextMenu;
@@ -24,12 +25,12 @@ public final class BrowserContextMenu extends ContextMenu {
     }
 
     private void createMenu() {
+        AppFontSizes.lg(getStyleableNode());
+
         InputHelper.onLeft(this, false, e -> {
             hide();
             e.consume();
         });
-
-        AppFont.normal(this.getStyleableNode());
 
         var empty = source == null;
         var selected = new ArrayList<>(

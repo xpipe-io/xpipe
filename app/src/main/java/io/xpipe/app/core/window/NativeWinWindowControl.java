@@ -87,6 +87,7 @@ public class NativeWinWindowControl {
 
     public void defaultOrder() {
         orderRelative(new WinDef.HWND(new Pointer(-2)));
+        orderRelative(new WinDef.HWND(new Pointer(0)));
     }
 
     public void orderRelative(WinDef.HWND predecessor) {

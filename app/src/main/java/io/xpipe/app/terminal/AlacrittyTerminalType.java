@@ -25,7 +25,7 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
     }
 
     @Override
-    default boolean supportsColoredTitle() {
+    default boolean useColoredTitle() {
         return false;
     }
 

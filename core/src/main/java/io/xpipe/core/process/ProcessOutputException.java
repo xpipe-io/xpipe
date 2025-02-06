@@ -38,7 +38,7 @@ public class ProcessOutputException extends Exception {
     public static ProcessOutputException of(long exitCode, String... messages) {
         var combinedError = Arrays.stream(messages)
                 .filter(s -> s != null && !s.isBlank())
-                .map(s -> s.strip())
+                .map(s -> s.trim())
                 .collect(Collectors.joining("\n\n"))
                 .replaceAll("\r\n", "\n");
         var hasMessage = !combinedError.isBlank();

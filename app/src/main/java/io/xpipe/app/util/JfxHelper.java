@@ -1,8 +1,8 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.comp.base.PrettyImageHelper;
-import io.xpipe.app.core.AppFont;
 
+import io.xpipe.app.core.AppFontSizes;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -18,10 +18,10 @@ public class JfxHelper {
             ObservableValue<String> nameString, ObservableValue<String> descString, String image) {
         var header = new Label();
         header.textProperty().bind(nameString);
-        AppFont.header(header);
+        AppFontSizes.xl(header);
         var desc = new Label();
         desc.textProperty().bind(descString);
-        AppFont.small(desc);
+        AppFontSizes.xs(desc);
         var text = new VBox(header, new Spacer(), desc);
         text.setAlignment(Pos.CENTER_LEFT);
 

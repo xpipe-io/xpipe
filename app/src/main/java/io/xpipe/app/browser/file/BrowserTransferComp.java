@@ -4,6 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.ThreadHelper;
@@ -81,7 +82,6 @@ public class BrowserTransferComp extends SimpleComp {
                 .grow(false, true);
         var dragNotice = new LabelComp(AppI18n.observable("dragLocalFiles"))
                 .apply(struc -> struc.get().setGraphic(new FontIcon("mdi2h-hand-left")))
-                .apply(struc -> AppFont.medium(struc.get()))
                 .apply(struc -> struc.get().setWrapText(true))
                 .hide(model.getEmpty());
 
@@ -193,6 +193,7 @@ public class BrowserTransferComp extends SimpleComp {
             });
         });
 
-        return stack.styleClass("transfer").createRegion();
+        var r = stack.styleClass("transfer").createRegion();
+        return r;
     }
 }

@@ -104,9 +104,9 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
         return wrapper.getEntry().isPerUserStore() ? AppI18n.get("userIdentity") : AppI18n.get("globalIdentity");
     }
 
-    @Override
-    public List<String> getPossibleNames() {
-        return List.of("syncedIdentity");
+@Override
+     public String getId() {
+        return "syncedIdentity";
     }
 
     @Override

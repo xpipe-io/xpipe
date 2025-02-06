@@ -49,7 +49,6 @@ public class AppWindowHelper {
     public static Region alertContentText(String s, int width) {
         var text = new Text(s);
         text.setWrappingWidth(width);
-        AppFont.medium(text);
         var sp = new StackPane(text);
         sp.setPadding(new Insets(5));
         return sp;
@@ -60,6 +59,12 @@ public class AppWindowHelper {
             stage.maximizedProperty().subscribe(v -> {
                 root.pseudoClassStateChanged(PseudoClass.getPseudoClass("maximized"), v);
             });
+        });
+    }
+
+    public static void addFontSize(Stage stage) {
+        stage.getScene().rootProperty().subscribe(root -> {
+            AppFontSizes.base(root);
         });
     }
 
@@ -93,6 +98,7 @@ public class AppWindowHelper {
         setupStylesheets(stage.getScene());
         AppWindowHelper.setupClickShield(stage);
         AppWindowBounds.fixInvalidStagePosition(stage);
+        AppWindowHelper.addFontSize(stage);
 
         if (AppPrefs.get() != null && AppPrefs.get().enforceWindowModality().get()) {
             stage.initModality(Modality.WINDOW_MODAL);
@@ -140,7 +146,6 @@ public class AppWindowHelper {
 
         Supplier<Alert> supplier = () -> {
             Alert a = AppWindowHelper.createEmptyAlert();
-            AppFont.normal(a.getDialogPane());
             var s = (Stage) a.getDialogPane().getScene().getWindow();
             s.setOnShown(event -> {
                 Platform.runLater(() -> {
@@ -279,7 +284,6 @@ public class AppWindowHelper {
         var baseComp = contentFunc.apply(stage);
         var content = loading != null ? LoadingOverlayComp.noProgress(baseComp, loading) : baseComp;
         var contentR = content.createRegion();
-        AppFont.small(contentR);
         var scene = new Scene(bindSize ? new Pane(contentR) : contentR, -1, -1, false);
         scene.setFill(Color.TRANSPARENT);
         stage.setScene(scene);
@@ -288,23 +292,6 @@ public class AppWindowHelper {
             bindSize(stage, contentR);
             stage.setResizable(false);
         }
-
-        scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            if (AppProperties.get().isDeveloperMode() && event.getCode().equals(KeyCode.F6)) {
-                var newBaseComp = contentFunc.apply(stage);
-                var newComp = loading != null ? LoadingOverlayComp.noProgress(newBaseComp, loading) : newBaseComp;
-                var newR = newComp.createRegion();
-                AppFont.medium(newR);
-                scene.setRoot(bindSize ? new Pane(newR) : newR);
-                newR.requestFocus();
-                if (bindSize) {
-                    bindSize(stage, newR);
-                }
-
-                TrackEvent.debug("Rebuilt content");
-                event.consume();
-            }
-        });
 
         scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {

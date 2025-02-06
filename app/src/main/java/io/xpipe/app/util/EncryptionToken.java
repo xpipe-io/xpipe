@@ -22,10 +22,6 @@ public class EncryptionToken {
 
     private static EncryptionToken createUserToken() {
         var userHandler = DataStorageUserHandler.getInstance();
-        if (userHandler.getActiveUser() == null) {
-            throw new IllegalStateException("No active user available");
-        }
-
         var userSecretValue =
                 new PasswordLockSecretValue(userHandler.getActiveUser().toCharArray()) {
                     @Override
@@ -48,6 +44,11 @@ public class EncryptionToken {
     }
 
     public static EncryptionToken ofUser() {
+        var userHandler = DataStorageUserHandler.getInstance();
+        if (userHandler.getActiveUser() == null) {
+            throw new IllegalStateException("No active user available");
+        }
+
         if (userToken == null) {
             userToken = createUserToken();
         }
@@ -90,7 +91,7 @@ public class EncryptionToken {
 
         var userHandler = DataStorageUserHandler.getInstance();
         if (userHandler.getActiveUser() == null) {
-            return (isUser = false);
+            return false;
         }
 
         return (isUser = userHandler.getActiveUser().equals(decode(userHandler.getEncryptionKey())));

@@ -6,7 +6,7 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.DialogComp;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.MarkdownEditorComp;
-import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BindingsHelper;
@@ -35,7 +35,7 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
     public Structure createBase() {
         var n = wrapper.getNotes();
         var button = new IconButtonComp("mdi2n-note-text")
-                .apply(struc -> AppFont.small(struc.get()))
+                .apply(struc -> AppFontSizes.xs(struc.get()))
                 .focusTraversableForAccessibility()
                 .tooltipKey("notes")
                 .styleClass("notes-button")
@@ -139,7 +139,7 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
                 ref.set(null);
             }
         });
-        AppFont.small(popover.getContentNode());
+        AppFontSizes.xs(popover.getContentNode());
 
         md.getEditButton().addEventFilter(ActionEvent.ANY, event -> {
             if (!popover.isDetached()) {

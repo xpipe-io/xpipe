@@ -1,7 +1,7 @@
 package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.core.process.OsType;
 
 import javafx.geometry.HPos;
@@ -25,7 +25,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         var summary = new Label();
         summary.textProperty().bind(getWrapper().getShownSummary());
         summary.getStyleClass().add("summary");
-        AppFont.small(summary);
+        AppFontSizes.xs(summary);
         return summary;
     }
 
@@ -40,7 +40,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
 
         var storeIcon = createIcon(46, 40);
         grid.add(storeIcon, 0, 0, 1, 2);
-        grid.getColumnConstraints().add(new ColumnConstraints(56));
+        grid.getColumnConstraints().add(new ColumnConstraints(52));
 
         var active = new StoreActiveComp(getWrapper()).createRegion();
         var nameBox = new HBox(name, userIcon, notes);

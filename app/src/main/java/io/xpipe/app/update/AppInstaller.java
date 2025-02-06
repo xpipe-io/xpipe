@@ -181,7 +181,7 @@ public class AppInstaller {
 
                 runAndClose(() -> {
                     // We can't use the SSH bridge
-                    var type = ExternalTerminalType.determineNonSshBridgeFallback(
+                    var type = ExternalTerminalType.determineFallbackTerminalToOpen(
                             AppPrefs.get().terminalType().getValue());
                     TerminalLauncher.openDirect("XPipe Updater", sc -> command, type);
                 });
@@ -222,7 +222,7 @@ public class AppInstaller {
 
                 runAndClose(() -> {
                     // We can't use the SSH bridge
-                    var type = ExternalTerminalType.determineNonSshBridgeFallback(
+                    var type = ExternalTerminalType.determineFallbackTerminalToOpen(
                             AppPrefs.get().terminalType().getValue());
                     TerminalLauncher.openDirect("XPipe Updater", sc -> command, type);
                 });
@@ -263,7 +263,7 @@ public class AppInstaller {
 
                 runAndClose(() -> {
                     // We can't use the SSH bridge
-                    var type = ExternalTerminalType.determineNonSshBridgeFallback(
+                    var type = ExternalTerminalType.determineFallbackTerminalToOpen(
                             AppPrefs.get().terminalType().getValue());
                     TerminalLauncher.openDirect("XPipe Updater", sc -> command, type);
                 });

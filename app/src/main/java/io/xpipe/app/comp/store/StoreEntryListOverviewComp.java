@@ -5,7 +5,7 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.CountComp;
 import io.xpipe.app.comp.base.FilterComp;
 import io.xpipe.app.comp.base.IconButtonComp;
-import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.LabelGraphic;
@@ -27,6 +27,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 
 import org.kordamp.ikonli.javafx.FontIcon;
+
+import java.util.function.Function;
 
 public class StoreEntryListOverviewComp extends SimpleComp {
 
@@ -76,7 +78,8 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                             return inRootCategory;
                         },
                         StoreViewState.get().getActiveCategory());
-        var count = new CountComp<>(all.getList(), all.getList());
+        var allCount = Bindings.size(all.getList());
+        var count = new CountComp(allCount, allCount, Function.identity());
 
         var c = count.createRegion();
         var topBar = new HBox(
@@ -86,8 +89,13 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                 createDateSortButton().createRegion(),
                 Comp.hspacer(2).createRegion(),
                 createAlphabeticalSortButton().createRegion());
-        AppFont.setSize(label, 2);
-        AppFont.setSize(c, 2);
+        if (OsType.getLocal() == OsType.MACOS) {
+            AppFontSizes.xxxl(label);
+            AppFontSizes.xxxl(c);
+        } else {
+            AppFontSizes.xxl(label);
+            AppFontSizes.xxl(c);
+        }
         topBar.setAlignment(Pos.CENTER);
         topBar.getStyleClass().add("top");
         return topBar;
@@ -112,7 +120,6 @@ public class StoreEntryListOverviewComp extends SimpleComp {
         HBox.setHgrow(f, Priority.ALWAYS);
 
         f.getStyleClass().add("filter-bar");
-        AppFont.medium(hbox);
         return hbox;
     }
 
@@ -121,7 +128,6 @@ public class StoreEntryListOverviewComp extends SimpleComp {
         menu.textProperty().bind(AppI18n.observable("addConnections"));
         menu.setAlignment(Pos.CENTER);
         menu.setTextAlignment(TextAlignment.CENTER);
-        AppFont.medium(menu);
         StoreCreationMenu.addButtons(menu);
         menu.setOpacity(0.85);
         menu.setMinWidth(Region.USE_PREF_SIZE);
@@ -129,7 +135,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
         if (OsType.getLocal().equals(OsType.MACOS)) {
             menu.setPadding(new Insets(-2, 0, -2, 0));
         } else {
-            menu.setPadding(new Insets(-4, 0, -4, 0));
+            menu.setPadding(new Insets(-5, -2, -5, -2));
         }
 
         return menu;
@@ -157,7 +163,6 @@ public class StoreEntryListOverviewComp extends SimpleComp {
             }
         });
         alphabetical.apply(alphabeticalR -> {
-            AppFont.medium(alphabeticalR.get());
             alphabeticalR
                     .get()
                     .opacityProperty()
@@ -198,7 +203,6 @@ public class StoreEntryListOverviewComp extends SimpleComp {
             }
         });
         date.apply(dateR -> {
-            AppFont.medium(dateR.get());
             dateR.get()
                     .opacityProperty()
                     .bind(Bindings.createDoubleBinding(

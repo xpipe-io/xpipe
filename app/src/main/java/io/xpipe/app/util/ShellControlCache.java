@@ -1,12 +1,18 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.prefs.ExternalApplicationType;
+import io.xpipe.app.prefs.ExternalEditorType;
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.FailableSupplier;
 
 import lombok.Getter;
 
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 @Getter
@@ -18,6 +24,10 @@ public class ShellControlCache {
 
     public ShellControlCache(ShellControl shellControl) {
         this.shellControl = shellControl;
+    }
+
+    public boolean has(String key) {
+        return multiPurposeCache.containsKey(key);
     }
 
     @SuppressWarnings("unchecked")

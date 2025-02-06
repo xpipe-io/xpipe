@@ -20,6 +20,8 @@ public interface ShellDialect {
 
     ShellCapabilities determineCapabilities();
 
+
+
     CommandBuilder launchAsnyc(CommandBuilder cmd);
 
     default String getLicenseFeatureId() {
@@ -29,10 +31,6 @@ public interface ShellDialect {
     String terminalLauncherScript(UUID request, String name);
 
     String getExecutableName();
-
-    default boolean isSelectable() {
-        return true;
-    }
 
     default boolean isCompatibleTo(ShellDialect other) {
         return other.equals(this);
@@ -136,7 +134,7 @@ public interface ShellDialect {
 
     CommandBuilder getOpenScriptCommand(String file);
 
-    String prepareTerminalInitFileOpenCommand(ShellDialect parentDialect, ShellControl sc, String file, boolean exit);
+    String terminalInitCommand(ShellControl shellControl, String file, boolean exit);
 
     String runScriptCommand(ShellControl parent, String file);
 

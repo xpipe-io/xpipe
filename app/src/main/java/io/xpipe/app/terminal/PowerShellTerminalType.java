@@ -10,6 +10,11 @@ import java.util.Base64;
 
 public class PowerShellTerminalType extends ExternalTerminalType.SimplePathType implements TrackableTerminalType {
 
+    @Override
+    public boolean supportsEscapes() {
+        return false;
+    }
+
     public PowerShellTerminalType() {
         super("app.powershell", "powershell", true);
     }
@@ -32,7 +37,7 @@ public class PowerShellTerminalType extends ExternalTerminalType.SimplePathType 
     }
 
     @Override
-    public boolean supportsColoredTitle() {
+    public boolean useColoredTitle() {
         return false;
     }
 

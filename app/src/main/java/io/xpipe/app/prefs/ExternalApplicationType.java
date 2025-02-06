@@ -44,15 +44,22 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
 
         @Override
         public boolean isAvailable() {
-            try (ShellControl pc = LocalShell.getShell().start()) {
-                var out = pc.command(String.format(
-                                "mdfind -literal 'kMDItemFSName = \"%s.app\"' -onlyin /Applications -onlyin ~/Applications -onlyin /System/Applications",
-                                applicationName))
-                        .readStdoutIfPossible();
-                return out.isPresent() && !out.get().isBlank() && out.get().contains(applicationName + ".app");
+            try {
+                return findApp().isPresent();
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).handle();
                 return false;
+            }
+        }
+
+        public Optional<Path> findApp() throws Exception {
+            try (ShellControl pc = LocalShell.getShell().start()) {
+                var out = pc.command(String.format(
+                        "mdfind -literal 'kMDItemFSName = \"%s.app\"' -onlyin /Applications -onlyin ~/Applications -onlyin /System/Applications",
+                        applicationName)).readStdoutIfPossible();
+                return out.isPresent() && !out.get().isBlank() && out.get().contains(applicationName + ".app") ?
+                        out.map(s -> Path.of(s)) :
+                        Optional.empty();
             }
         }
 

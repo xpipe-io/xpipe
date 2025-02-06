@@ -10,6 +10,7 @@ import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableNumberValue;
 import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 
@@ -32,7 +33,8 @@ public class StoreCategoryWrapper {
     private final Property<Boolean> sync;
     private final DerivedObservableList<StoreCategoryWrapper> children;
     private final DerivedObservableList<StoreEntryWrapper> directContainedEntries;
-    private final DerivedObservableList<StoreEntryWrapper> allContainedEntries;
+    private final IntegerProperty shownContainedEntriesCount = new SimpleIntegerProperty();
+    private final IntegerProperty allContainedEntriesCount = new SimpleIntegerProperty();
     private final BooleanProperty expanded = new SimpleBooleanProperty();
     private final Property<DataColor> color = new SimpleObjectProperty<>();
     private StoreCategoryWrapper cachedParent;
@@ -57,7 +59,6 @@ public class StoreCategoryWrapper {
         this.sortMode = new SimpleObjectProperty<>(category.getSortMode());
         this.sync = new SimpleObjectProperty<>(category.isSync());
         this.children = new DerivedObservableList<>(FXCollections.observableArrayList(), true);
-        this.allContainedEntries = new DerivedObservableList<>(FXCollections.observableArrayList(), true);
         this.directContainedEntries = new DerivedObservableList<>(FXCollections.observableArrayList(), true);
         this.color.setValue(category.getColor());
         setupListeners();
@@ -136,7 +137,7 @@ public class StoreCategoryWrapper {
             update();
         });
 
-        AppPrefs.get().language().addListener((observable, oldValue, newValue) -> {
+        AppI18n.activeLanguage().addListener((observable, oldValue, newValue) -> {
             update();
         });
 
@@ -177,25 +178,24 @@ public class StoreCategoryWrapper {
                     return entry.getEntry().getCategoryUuid().equals(category.getUuid());
                 })
                 .toList());
-        allContainedEntries.setContent(allEntries.stream()
-                .filter(entry -> {
-                    return entry.getEntry().getCategoryUuid().equals(category.getUuid())
-                            || (AppPrefs.get()
-                                            .showChildCategoriesInParentCategory()
-                                            .get()
-                                    && children.getList().stream()
-                                            .anyMatch(storeCategoryWrapper -> storeCategoryWrapper.contains(entry)));
-                })
-                .toList());
 
         children.setContent(StoreViewState.get().getCategories().getList().stream()
                 .filter(storeCategoryWrapper -> getCategory()
                         .getUuid()
                         .equals(storeCategoryWrapper.getCategory().getParentCategory()))
                 .toList());
+        var direct = directContainedEntries.getList().size();
+        var sub = children.getList().stream().mapToInt(value -> value.allContainedEntriesCount.get()).sum();
+        allContainedEntriesCount.setValue(direct + sub);
+
+        var directFiltered = directContainedEntries.getList().stream().filter(storeEntryWrapper ->
+                storeEntryWrapper.matchesFilter(StoreViewState.get().getFilterString().getValue())).count();
+        var subFiltered = children.getList().stream().mapToInt(value -> value.shownContainedEntriesCount.get()).sum();
+        shownContainedEntriesCount.setValue(directFiltered + subFiltered);
         Optional.ofNullable(getParent()).ifPresent(storeCategoryWrapper -> {
             storeCategoryWrapper.update();
         });
+
     }
 
     private String translatedName(String original) {

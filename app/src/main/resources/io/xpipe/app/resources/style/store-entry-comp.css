@@ -3,12 +3,12 @@
 }
 
 .store-list-comp.scroll-pane > .viewport .list-box-content {
-    -fx-spacing: 6;
-    -fx-padding: 7 0 7 0;
+    -fx-spacing: 4;
+    -fx-padding: 4 0 4 0;
 }
 
 .store-list-comp.scroll-pane  {
-    -fx-padding: 0 2 0 4;
+    -fx-padding: 0 0 0 2;
 }
 
 .store-list-comp.scroll-pane .scroll-bar:vertical {
@@ -29,11 +29,11 @@
 }
 
 .root:dark .store-entry-grid:incomplete .name {
-    -fx-text-fill: #b2271a;
+    -fx-text-fill: #aa473c;
 }
 
 .root:light .store-entry-grid:incomplete .name {
-    -fx-text-fill: #851908;
+    -fx-text-fill: #88352b;
 }
 
 .store-entry-grid .user-icon .ikonli-font-icon {
@@ -60,7 +60,7 @@
 }
 
 .store-entry-grid {
-    -fx-padding: 6px 6px 6px 6px;
+    -fx-padding: 0.15em 6px 0.15em 6px;
 }
 
 .store-entry-grid.dense {
@@ -108,7 +108,7 @@
 }
 
 .store-entry-grid.dense .button-bar {
-    -fx-padding: 3;
+    -fx-padding: 2;
 }
 
 .store-entry-comp .button-bar .button {

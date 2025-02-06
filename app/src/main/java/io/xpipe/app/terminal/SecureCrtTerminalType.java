@@ -43,7 +43,7 @@ public class SecureCrtTerminalType extends ExternalTerminalType.WindowsType {
     }
 
     @Override
-    public boolean supportsColoredTitle() {
+    public boolean useColoredTitle() {
         return false;
     }
 

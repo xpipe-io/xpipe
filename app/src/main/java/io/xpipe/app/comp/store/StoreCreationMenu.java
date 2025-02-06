@@ -69,7 +69,7 @@ public class StoreCreationMenu {
             item.setOnAction(event -> {
                 StoreCreationComp.showCreation(
                         defaultProvider != null
-                                ? DataStoreProviders.byName(defaultProvider).orElseThrow()
+                                ? DataStoreProviders.byId(defaultProvider).orElseThrow()
                                 : null,
                         category);
                 event.consume();
@@ -87,7 +87,7 @@ public class StoreCreationMenu {
 
             StoreCreationComp.showCreation(
                     defaultProvider != null
-                            ? DataStoreProviders.byName(defaultProvider).orElseThrow()
+                            ? DataStoreProviders.byId(defaultProvider).orElseThrow()
                             : null,
                     category);
             event.consume();

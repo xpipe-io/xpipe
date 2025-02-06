@@ -1,10 +1,13 @@
 package io.xpipe.app.core;
 
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.resources.AppResources;
 
+import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
 
 import java.io.IOException;
@@ -19,6 +22,7 @@ public class AppStyle {
 
     private static final Map<Path, String> STYLESHEET_CONTENTS = new LinkedHashMap<>();
     private static final Map<AppTheme.Theme, String> THEME_SPECIFIC_STYLESHEET_CONTENTS = new LinkedHashMap<>();
+    private static final Map<AppTheme.Theme, String> THEME_PREFERENCES_STYLESHEET_CONTENTS = new LinkedHashMap<>();
     private static final List<Scene> scenes = new ArrayList<>();
     private static String FONT_CONTENTS = "";
 
@@ -34,10 +38,15 @@ public class AppStyle {
             AppPrefs.get().useSystemFont().addListener((c, o, n) -> {
                 changeFontUsage(n);
             });
-            AppPrefs.get().theme.addListener((c, o, n) -> {
+            AppPrefs.get().theme().addListener((c, o, n) -> {
                 changeTheme(n);
             });
         }
+
+        var fxPrefs = Platform.getPreferences();
+        fxPrefs.accentColorProperty().addListener((c, o, n) -> {
+            changePlatformPreferences();
+        });
     }
 
     private static void loadStylesheets() {
@@ -88,6 +97,7 @@ public class AppStyle {
                 var bytes = Files.readAllBytes(file);
                 var s = "data:text/css;base64," + Base64.getEncoder().encodeToString(bytes);
                 THEME_SPECIFIC_STYLESHEET_CONTENTS.put(theme, s);
+                THEME_PREFERENCES_STYLESHEET_CONTENTS.put(theme, Styles.toDataURI(theme.getPlatformPreferencesStylesheet()));
             }
         });
     }
@@ -104,16 +114,41 @@ public class AppStyle {
         }
     }
 
+    private static void changePlatformPreferences() {
+        if (AppPrefs.get() == null) {
+            return;
+        }
+
+        var t = AppPrefs.get().theme().getValue();
+        if (t == null) {
+            return;
+        }
+
+        scenes.forEach(scene -> {
+            scene.getStylesheets().remove(THEME_PREFERENCES_STYLESHEET_CONTENTS.get(t));
+        });
+        THEME_PREFERENCES_STYLESHEET_CONTENTS.clear();
+        for (AppTheme.Theme theme : AppTheme.Theme.ALL) {
+            THEME_PREFERENCES_STYLESHEET_CONTENTS.put(theme, Styles.toDataURI(theme.getPlatformPreferencesStylesheet()));
+        }
+        scenes.forEach(scene -> {
+            scene.getStylesheets().add(THEME_PREFERENCES_STYLESHEET_CONTENTS.get(t));
+        });
+    }
+
     private static void changeTheme(AppTheme.Theme theme) {
         scenes.forEach(scene -> {
             scene.getStylesheets().removeAll(THEME_SPECIFIC_STYLESHEET_CONTENTS.values());
+            scene.getStylesheets().removeAll(THEME_PREFERENCES_STYLESHEET_CONTENTS.values());
             scene.getStylesheets().add(THEME_SPECIFIC_STYLESHEET_CONTENTS.get(theme));
+            scene.getStylesheets().add(THEME_PREFERENCES_STYLESHEET_CONTENTS.get(theme));
         });
     }
 
     public static void reloadStylesheets(Scene scene) {
         STYLESHEET_CONTENTS.clear();
         THEME_SPECIFIC_STYLESHEET_CONTENTS.clear();
+        THEME_PREFERENCES_STYLESHEET_CONTENTS.clear();
         FONT_CONTENTS = "";
 
         init();
@@ -130,9 +165,10 @@ public class AppStyle {
             scene.getStylesheets().add(s);
         });
         if (AppPrefs.get() != null) {
-            var t = AppPrefs.get().theme.get();
+            var t = AppPrefs.get().theme().getValue();
             if (t != null) {
                 scene.getStylesheets().add(THEME_SPECIFIC_STYLESHEET_CONTENTS.get(t));
+                scene.getStylesheets().add(THEME_PREFERENCES_STYLESHEET_CONTENTS.get(t));
             }
         }
         TrackEvent.debug("Added stylesheets for scene");

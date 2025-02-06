@@ -24,7 +24,7 @@ public class ServiceProtocolTypeHelper {
                     firstFocus.set(true);
                 }
             });
-            struc.get().setPromptText("mycommand open $ADDRESS");
+            struc.get().setPromptText("mycommand open localhost:$PORT");
         });
         return new OptionsBuilder()
                 .nameAndDescription("serviceCommand")

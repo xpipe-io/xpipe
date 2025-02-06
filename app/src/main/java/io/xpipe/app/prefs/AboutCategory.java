@@ -1,7 +1,9 @@
 package io.xpipe.app.prefs;
 
+import atlantafx.base.layout.ModalBox;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.LabelComp;
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppI18n;
@@ -62,16 +64,11 @@ public class AboutCategory extends AppPrefsCategory {
                         null)
                 .addComp(
                         new TileButtonComp("thirdParty", "thirdPartyDescription", "mdi2o-open-source-initiative", e -> {
-                                    AppWindowHelper.sideWindow(
-                                                    AppI18n.get("openSourceNotices"),
-                                                    stage -> Comp.of(() -> createThirdPartyDeps()),
-                                                    true,
-                                                    null)
-                                            .show();
-                                    e.consume();
-                                })
-                                .grow(true, false),
-                        null)
+                            var comp = new ThirdPartyDependencyListComp().prefWidth(650).styleClass("open-source-notices");
+                            var modal = ModalOverlay.of("openSourceNotices", comp);
+                            modal.show();
+                        })
+                )
                 .addComp(
                         new TileButtonComp("eula", "eulaDescription", "mdi2c-card-text-outline", e -> {
                                     Hyperlinks.open(Hyperlinks.EULA);
@@ -82,16 +79,6 @@ public class AboutCategory extends AppPrefsCategory {
                 .buildComp();
     }
 
-    private Region createThirdPartyDeps() {
-        var list = new ThirdPartyDependencyListComp().createRegion();
-        list.getStyleClass().add("open-source-notices");
-        var sp = new ScrollPane(list);
-        sp.setFitToWidth(true);
-        sp.setPrefWidth(600);
-        sp.setPrefHeight(500);
-        return sp;
-    }
-
     @Override
     protected String getId() {
         return "about";
@@ -99,7 +86,7 @@ public class AboutCategory extends AppPrefsCategory {
 
     @Override
     protected Comp<?> create() {
-        var props = createProperties().padding(new Insets(0, 0, 0, 15));
+        var props = createProperties().padding(new Insets(0, 0, 0, 5));
         var update = new UpdateCheckComp().grow(true, false);
         return new VerticalComp(List.of(props, Comp.separator(), update, Comp.separator(), createLinks()))
                 .apply(s -> s.get().setFillWidth(true))

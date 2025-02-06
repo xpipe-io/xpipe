@@ -9,6 +9,7 @@ import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.comp.base.TooltipAugment;
 import io.xpipe.app.util.BooleanScope;
+import io.xpipe.app.util.ContextMenuHelper;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
@@ -172,7 +173,7 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
     }
 
     private ContextMenu createContextMenu() {
-        var cm = new ContextMenu();
+        var cm = ContextMenuHelper.create();
 
         var f = model.getHistory().getForwardHistory(8).stream().toList();
         for (int i = f.size() - 1; i >= 0; i--) {

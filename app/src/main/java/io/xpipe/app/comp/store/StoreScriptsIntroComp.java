@@ -2,7 +2,7 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppCache;
-import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.process.OsType;
 
@@ -33,7 +33,7 @@ public class StoreScriptsIntroComp extends SimpleComp {
         if (OsType.getLocal() != OsType.MACOS) {
             title.getStyleClass().add(Styles.TEXT_BOLD);
         }
-        AppFont.setSize(title, 7);
+        AppFontSizes.title(title);
 
         var introDesc = new Label();
         introDesc.textProperty().bind(AppI18n.observable("scriptsIntroText"));
@@ -66,7 +66,7 @@ public class StoreScriptsIntroComp extends SimpleComp {
         if (OsType.getLocal() != OsType.MACOS) {
             title.getStyleClass().add(Styles.TEXT_BOLD);
         }
-        AppFont.setSize(title, 7);
+        AppFontSizes.title(title);
 
         var importDesc = new Label();
         importDesc.textProperty().bind(AppI18n.observable("scriptsIntroBottomText"));

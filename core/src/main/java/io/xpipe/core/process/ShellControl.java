@@ -18,6 +18,10 @@ import java.util.function.Function;
 
 public interface ShellControl extends ProcessControl {
 
+    void setDumbOpen(ShellOpenFunction openFunction);
+
+    void setTerminalOpen(ShellOpenFunction openFunction);
+
     void writeLine(String line) throws IOException;
 
     void writeLine(String line, boolean log) throws IOException;
@@ -197,12 +201,14 @@ public interface ShellControl extends ProcessControl {
                 return CommandBuilder.ofString(command);
             }
         };
-        var s = singularSubShell(o);
+        var s = subShell();
+        s.setDumbOpen(o);
+        s.setTerminalOpen(o);
         s.setParentSystemAccess(ParentSystemAccess.identity());
         return s;
     }
 
-    default ShellControl identicalSubShell() {
+    default ShellControl identicalDialectSubShell() {
         var o = new ShellOpenFunction() {
 
             @Override
@@ -216,7 +222,9 @@ public interface ShellControl extends ProcessControl {
                 return CommandBuilder.ofString(command);
             }
         };
-        var sc = singularSubShell(o);
+        var sc = subShell();
+        sc.setDumbOpen(o);
+        sc.setTerminalOpen(o);
         sc.withSourceStore(getSourceStore().orElse(null));
         sc.setParentSystemAccess(ParentSystemAccess.identity());
         return sc;
@@ -224,7 +232,7 @@ public interface ShellControl extends ProcessControl {
 
     default ShellControl elevateIfNeeded(ElevationFunction function) throws Exception {
         if (function.apply(this)) {
-            return identicalSubShell().elevated(ElevationFunction.elevated(function.getPrefix()));
+            return identicalDialectSubShell().elevated(ElevationFunction.elevated(function.getPrefix()));
         } else {
             return new StubShellControl(this);
         }
@@ -241,14 +249,16 @@ public interface ShellControl extends ProcessControl {
         }
     }
 
-    ShellControl subShell(ShellOpenFunction command, ShellOpenFunction terminalCommand);
-
-    ShellControl singularSubShell(ShellOpenFunction command);
+    ShellControl subShell();
 
     void cd(String directory) throws Exception;
 
     default CommandControl command(String command) {
         return command(CommandBuilder.ofFunction(shellProcessControl -> command));
+    }
+
+    default CommandControl command(ShellScript command) {
+        return command(CommandBuilder.of().add(command.getValue()));
     }
 
     default CommandControl command(Consumer<CommandBuilder> builder) {

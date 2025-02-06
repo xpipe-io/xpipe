@@ -142,7 +142,15 @@ public abstract class Comp<S extends CompStructure<?>> {
     }
 
     public Comp<S> visible(ObservableValue<Boolean> o) {
-        return apply(struc -> struc.get().visibleProperty().bind(o));
+        return apply(struc -> {
+            var region = struc.get();
+            BindingsHelper.preserve(region, o);
+            o.subscribe(n -> {
+                PlatformThread.runLaterIfNeeded(() -> {
+                    region.setVisible(n);
+                });
+            });
+        });
     }
 
     public Comp<S> disable(ObservableValue<Boolean> o) {

@@ -17,7 +17,7 @@ public class BrowserIconVariant {
     }
 
     protected final String getIcon() {
-        var t = AppPrefs.get() != null ? AppPrefs.get().theme.getValue() : null;
+        var t = AppPrefs.get() != null ? AppPrefs.get().theme().getValue() : null;
         if (t == null) {
             return lightIcon;
         }

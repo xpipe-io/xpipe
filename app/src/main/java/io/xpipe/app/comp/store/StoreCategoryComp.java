@@ -4,7 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
-import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataColor;
@@ -12,11 +12,11 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.util.ClipboardHelper;
 import io.xpipe.app.util.ContextMenuHelper;
-import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.LabelGraphic;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
@@ -29,6 +29,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 
 import lombok.EqualsAndHashCode;
@@ -50,7 +51,8 @@ public class StoreCategoryComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var prop = new SimpleStringProperty(category.getName().getValue());
+        var prop = new SimpleStringProperty();
+        category.getName().subscribe(prop::setValue);
         AppPrefs.get().censorMode().subscribe(aBoolean -> {
             var n = category.getName().getValue();
             prop.setValue(aBoolean ? "*".repeat(n.length()) : n);
@@ -65,20 +67,23 @@ public class StoreCategoryComp extends SimpleComp {
 
         var expandIcon = Bindings.createObjectBinding(
                 () -> {
+                    if (category.getCategory().getParentCategory() == null) {
+                        return new LabelGraphic.IconGraphic("mdi2f-folder-text-outline");
+                    }
+
                     var exp = category.getExpanded().get()
                             && category.getChildren().getList().size() > 0;
-                    return new LabelGraphic.IconGraphic(exp ? "mdal-keyboard_arrow_down" : "mdal-keyboard_arrow_right");
+                    return new LabelGraphic.IconGraphic(exp ? "mdi2m-menu-down-outline" : "mdi2m-menu-right-outline");
                 },
                 category.getExpanded(),
                 category.getChildren().getList());
         var expandButton = new IconButtonComp(expandIcon, () -> {
                     category.toggleExpanded();
                 })
-                .apply(struc -> AppFont.medium(struc.get()))
                 .apply(struc -> {
                     struc.get().setAlignment(Pos.CENTER);
-                    struc.get().setPadding(new Insets(-2, 0, 0, 0));
                     struc.get().setFocusTraversable(false);
+                    HBox.setMargin(struc.get(), new Insets(0, 0, 2.6, 0));
                 })
                 .disable(Bindings.isEmpty(category.getChildren().getList()))
                 .styleClass("expand-button")
@@ -92,10 +97,7 @@ public class StoreCategoryComp extends SimpleComp {
                     }
 
                     if (!DataStorage.get().supportsSharing()
-                            || (!category.getCategory().canShare()
-                                    && !category.getCategory()
-                                            .getUuid()
-                                            .equals(DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID))) {
+                            || (!category.getCategory().canShare())) {
                         return new LabelGraphic.IconGraphic("mdi2g-git");
                     }
 
@@ -104,7 +106,7 @@ public class StoreCategoryComp extends SimpleComp {
                 category.getSync(),
                 hover);
         var statusButton = new IconButtonComp(statusIcon)
-                .apply(struc -> AppFont.small(struc.get()))
+                .apply(struc -> AppFontSizes.xs(struc.get()))
                 .apply(struc -> {
                     struc.get().setAlignment(Pos.CENTER);
                     struc.get().setPadding(new Insets(0, 0, 0, 0));
@@ -119,25 +121,15 @@ public class StoreCategoryComp extends SimpleComp {
                         }))
                 .styleClass("status-button");
 
-        var shownList = new DerivedObservableList<>(
-                        category.getAllContainedEntries().getList(), true)
-                .filtered(
-                        storeEntryWrapper -> {
-                            return storeEntryWrapper.matchesFilter(
-                                    StoreViewState.get().getFilterString().getValue());
-                        },
-                        StoreViewState.get().getFilterString())
-                .getList();
-        var count =
-                new CountComp<>(shownList, category.getAllContainedEntries().getList(), string -> "(" + string + ")");
-        count.visible(Bindings.isNotEmpty(shownList));
+        var count = new CountComp(category.getShownContainedEntriesCount(), category.getAllContainedEntriesCount(), string -> "(" + string + ")");
+        count.visible(Bindings.notEqual(0, category.getShownContainedEntriesCount()));
 
         var showStatus = hover.or(new SimpleBooleanProperty(DataStorage.get().supportsSharing()))
                 .or(showing);
         var focus = new SimpleBooleanProperty();
         var h = new HorizontalComp(List.of(
                 expandButton,
-                Comp.hspacer(1),
+                Comp.hspacer(category.getCategory().getParentCategory() == null ? 3 : 0),
                 Comp.of(() -> name).hgrow(),
                 Comp.hspacer(2),
                 count,
@@ -145,7 +137,7 @@ public class StoreCategoryComp extends SimpleComp {
                 statusButton.hide(showStatus.not())));
         h.padding(new Insets(0, 10, 0, (category.getDepth() * 10)));
 
-        var categoryButton = new ButtonComp(null, h.createRegion(), category::select)
+        var categoryButton = new ButtonComp(null, new SimpleObjectProperty<>(new LabelGraphic.CompGraphic(h)), category::select)
                 .focusTraversable()
                 .styleClass("category-button")
                 .apply(struc -> hover.bind(struc.get().hoverProperty()))
@@ -172,6 +164,7 @@ public class StoreCategoryComp extends SimpleComp {
         var children =
                 new ListBoxViewComp<>(l, l, storeCategoryWrapper -> new StoreCategoryComp(storeCategoryWrapper), false);
         children.styleClass("children");
+        children.minHeight(0);
 
         var hide = Bindings.createBooleanBinding(
                 () -> {
@@ -197,7 +190,6 @@ public class StoreCategoryComp extends SimpleComp {
 
     private ContextMenu createContextMenu(Region text) {
         var contextMenu = ContextMenuHelper.create();
-        AppFont.normal(contextMenu.getStyleableNode());
 
         if (AppPrefs.get().enableHttpApi().get()) {
             var copyId = new MenuItem(AppI18n.get("copyId"), new FontIcon("mdi2c-content-copy"));

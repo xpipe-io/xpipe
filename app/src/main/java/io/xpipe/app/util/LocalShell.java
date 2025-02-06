@@ -10,14 +10,14 @@ import lombok.Getter;
 public class LocalShell {
 
     @Getter
-    private static ShellControlCache localCache;
+    private static LocalShellCache localCache;
 
     private static ShellControl local;
     private static ShellControl localPowershell;
 
     public static void init() throws Exception {
         local = ProcessControlProvider.get().createLocalProcessControl(false).start();
-        localCache = new ShellControlCache(local);
+        localCache = new LocalShellCache(local);
     }
 
     public static void reset() {

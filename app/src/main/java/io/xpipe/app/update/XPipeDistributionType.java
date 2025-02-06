@@ -5,6 +5,7 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.LocalShell;
+import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.XPipeInstallation;
@@ -22,6 +23,8 @@ public enum XPipeDistributionType {
     PORTABLE("portable", false, () -> new PortableUpdater(true)),
     NATIVE_INSTALLATION("install", true, () -> new GitHubUpdater(true)),
     HOMEBREW("homebrew", true, () -> new PortableUpdater(true)),
+    APT_REPO("apt", true, () -> new PortableUpdater(true)),
+    RPM_REPO("rpm", true, () -> new PortableUpdater(true)),
     WEBTOP("webtop", true, () -> new PortableUpdater(false)),
     CHOCO("choco", true, () -> new PortableUpdater(true));
 
@@ -52,19 +55,6 @@ public enum XPipeDistributionType {
             return;
         }
 
-        if (!AppProperties.get().isNewBuildSession()) {
-            var cached = AppCache.getNonNull("dist", String.class, () -> null);
-            var cachedType = Arrays.stream(values())
-                    .filter(xPipeDistributionType ->
-                            xPipeDistributionType.getId().equals(cached))
-                    .findAny()
-                    .orElse(null);
-            if (cachedType != null) {
-                type = cachedType;
-                return;
-            }
-        }
-
         var det = determine();
 
         // Don't cache unknown type
@@ -73,7 +63,6 @@ public enum XPipeDistributionType {
         }
 
         type = det;
-        AppCache.update("dist", type.getId());
         TrackEvent.withInfo("Determined distribution type")
                 .tag("type", type.getId())
                 .handle();
@@ -89,8 +78,30 @@ public enum XPipeDistributionType {
     }
 
     public static XPipeDistributionType determine() {
-        if (!XPipeInstallation.isInstallationDistribution()) {
-            return PORTABLE;
+        var base = XPipeInstallation.getCurrentInstallationBasePath();
+        if (OsType.getLocal().equals(OsType.MACOS)) {
+            if (!base.toString().equals(XPipeInstallation.getLocalDefaultInstallationBasePath())) {
+                return PORTABLE;
+            }
+
+            try {
+                var process = new ProcessBuilder("pkgutil", "--pkg-info", AppProperties.get().isStaging() ? "io.xpipe.xpipe-ptb" : "io.xpipe.xpipe")
+                        .redirectOutput(ProcessBuilder.Redirect.DISCARD)
+                        .redirectError(ProcessBuilder.Redirect.DISCARD)
+                        .start();
+                process.waitFor();
+                if (process.exitValue() != 0) {
+                    return PORTABLE;
+                }
+            } catch (Exception ex) {
+                ErrorEvent.fromThrowable(ex).omit().handle();
+                return PORTABLE;
+            }
+        } else {
+            var file = base.resolve("installation");
+            if (!Files.exists(file)) {
+                return PORTABLE;
+            }
         }
 
         if (!LocalShell.isLocalShellInitialized()) {
@@ -101,7 +112,7 @@ public enum XPipeDistributionType {
             return WEBTOP;
         }
 
-        try (var sc = LocalShell.getShell()) {
+        try (var sc = LocalShell.getShell().start()) {
             // In theory, we can also add  && !AppProperties.get().isStaging() here, but we want to replicate the
             // production behavior
             if (OsType.getLocal().equals(OsType.WINDOWS)) {
@@ -130,6 +141,23 @@ public enum XPipeDistributionType {
                     })) {
                         return HOMEBREW;
                     }
+                }
+            }
+
+            if (OsType.getLocal() == OsType.LINUX) {
+                var aptOut = sc.command("apt show xpipe").readStdoutIfPossible();
+                if (aptOut.isPresent()) {
+                    var fromRepo = aptOut.get().lines().anyMatch(s -> {
+                        return s.contains("APT-Sources") && s.contains("apt.xpipe.io");
+                    });
+                    if (fromRepo) {
+                        return APT_REPO;
+                    }
+                }
+
+                var yumRepo = sc.command(CommandBuilder.of().add("test", "-f").addFile("/etc/yum.repos.d/xpipe.repo")).executeAndCheck();
+                if (yumRepo) {
+                    return RPM_REPO;
                 }
             }
         } catch (Exception ex) {

@@ -2,6 +2,7 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.geometry.Insets;
@@ -43,18 +44,17 @@ public class AppPrefsComp extends SimpleComp {
         pfxLimit.setAlignment(Pos.TOP_LEFT);
 
         var sidebar = new AppPrefsSidebarComp().createRegion();
-        sidebar.setMinWidth(280);
-        sidebar.setPrefWidth(280);
-        sidebar.setMaxWidth(280);
+        sidebar.setMinWidth(260);
+        sidebar.setPrefWidth(260);
+        sidebar.setMaxWidth(260);
 
         var split = new HBox(sidebar, pfxLimit);
-        HBox.setMargin(sidebar, new Insets(6));
+        HBox.setMargin(sidebar, new Insets(4));
         HBox.setHgrow(pfxLimit, Priority.ALWAYS);
         split.setFillHeight(true);
         split.getStyleClass().add("prefs");
         var stack = new StackPane(split);
         stack.setPickOnBounds(false);
-        AppFont.medium(stack);
         return stack;
     }
 }
