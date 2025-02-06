@@ -15,6 +15,11 @@
     -fx-font-size: 1.0em;
 }
 
+
+.root:light .prefs-container .options-comp .description {
+    -fx-opacity: 0.95;
+}
+
 .prefs-container .options-comp .options-content {
     -fx-font-size: 1.0em;
 }

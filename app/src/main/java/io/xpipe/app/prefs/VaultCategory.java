@@ -51,15 +51,14 @@ public class VaultCategory extends AppPrefsCategory {
         });
 
         var uh = DataStorageUserHandler.getInstance();
-        var vaultTypeKey = uh.getUserCount() == 0 ? "vaultTypeDefault" : uh.getUserCount() == 1 ? (uh.getActiveUser() != null && uh.getActiveUser().equals("legacy") ?
-                "vaultTypeLegacy" : "vaultTypePersonal") : "vaultTypeTeam";
+        var vaultTypeKey = uh.getUserCount() == 0 ? "Default" : uh.getUserCount() == 1 ? (uh.getActiveUser() != null && uh.getActiveUser().equals("legacy") ?
+                "Legacy" : "Personal") : "Team";
 
         builder.addTitle("vaultUsers")
                 .sub(new OptionsBuilder()
-                        .name("vaultType")
-                        .description(vaultTypeKey)
+                        .name("vaultTypeName" + vaultTypeKey)
+                        .description("vaultTypeContent" + vaultTypeKey)
                         .addComp(Comp.empty())
-                        .hide(new SimpleBooleanProperty(uh.getUserCount() > 1))
                         .name("userManagement")
                         .description(
                                 uh.getActiveUser() != null
