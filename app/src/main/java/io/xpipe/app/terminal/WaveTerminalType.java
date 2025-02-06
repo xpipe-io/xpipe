@@ -58,7 +58,7 @@ public interface WaveTerminalType extends ExternalTerminalType, TrackableTermina
                 var msg = """
                 The Wave integration requires XPipe to be launched from Wave itself to have access to its environment variables. Otherwise, XPipe does not have access to the token to control Wave.
                 
-                You can do this by running the command "%s" in a local terminal block inside Wave.
+                You can do this by first making sure that XPipe is shut down and then running the command "%s" in a local terminal block inside Wave.
                 """.formatted(inPath ? "xpipe open" : XPipeInstallation.getLocalDefaultCliExecutable() + " open");
                 throw ErrorEvent.expected(new IllegalStateException(msg));
             }

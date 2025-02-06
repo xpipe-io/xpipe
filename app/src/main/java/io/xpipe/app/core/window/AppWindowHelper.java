@@ -148,6 +148,7 @@ public class AppWindowHelper {
                 event.consume();
             });
             AppWindowBounds.fixInvalidStagePosition(s);
+            AppWindowHelper.addFontSize(s);
             a.getDialogPane().getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
                 if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {
                     s.close();
