@@ -23,16 +23,45 @@ import java.io.IOException;
 @Value
 public class DataStorageNode {
 
-    public static DataStorageNode ofNewStore(DataStore store) {
+    private static boolean encryptPerUser(DataStore store) {
+        if (DataStorageUserHandler.getInstance().getActiveUser() == null) {
+            return false;
+        }
+
         var perUser = false;
         try {
             perUser = store instanceof UserScopeStore s && s.isPerUser();
         } catch (Exception ignored) {
         }
-        var encrypted = perUser
-                || (AppPrefs.get() != null
-                        && AppPrefs.get().encryptAllVaultData().get());
-        return new DataStorageNode(JacksonMapper.getDefault().valueToTree(store), perUser, true, encrypted);
+
+        if (perUser) {
+            return true;
+        }
+
+        var all = AppPrefs.get() != null && AppPrefs.get().encryptAllVaultData().get();
+        var useUserKey = DataStorageUserHandler.getInstance().getUserCount() == 1 && DataStorageUserHandler.getInstance().getActiveUser() != null;
+        return all && useUserKey;
+    }
+
+    private static boolean encrypt(DataStore store) {
+        if (AppPrefs.get() != null && AppPrefs.get().encryptAllVaultData().get()) {
+            return true;
+        }
+
+        if (DataStorageUserHandler.getInstance().getActiveUser() == null) {
+            return false;
+        }
+
+        var perUser = false;
+        try {
+            perUser = store instanceof UserScopeStore s && s.isPerUser();
+        } catch (Exception ignored) {
+        }
+        return perUser;
+    }
+
+    public static DataStorageNode ofNewStore(DataStore store) {
+        return new DataStorageNode(JacksonMapper.getDefault().valueToTree(store), encryptPerUser(store), true, encrypt(store));
     }
 
     public static DataStorageNode fail() {
@@ -74,10 +103,7 @@ public class DataStorageNode {
     }
 
     public static JsonNode encryptNodeIfNeeded(DataStorageNode node) {
-        var encrypt =
-                (AppPrefs.get() != null && AppPrefs.get().encryptAllVaultData().get())
-                        || (node.isPerUser() && node.hasAccess());
-        if (!encrypt) {
+        if (!node.isEncrypted()) {
             return node.getContentNode();
         }
 
@@ -106,21 +132,6 @@ public class DataStorageNode {
 
     public boolean hasAccess() {
         return !perUser || availableForUser;
-    }
-
-    public DataStorageNode withStore(DataStore store) {
-        if (store == null) {
-            return fail();
-        }
-
-        try {
-            var perUser = store instanceof UserScopeStore s && s.isPerUser();
-            return new DataStorageNode(
-                    JacksonMapper.getDefault().valueToTree(store), perUser, availableForUser, encrypted);
-        } catch (Exception e) {
-            // The per user check might fail for incomplete stores
-            return new DataStorageNode(JacksonMapper.getDefault().valueToTree(store), false, true, encrypted);
-        }
     }
 
     JsonNode contentNode;

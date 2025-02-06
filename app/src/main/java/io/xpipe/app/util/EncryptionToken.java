@@ -22,10 +22,6 @@ public class EncryptionToken {
 
     private static EncryptionToken createUserToken() {
         var userHandler = DataStorageUserHandler.getInstance();
-        if (userHandler.getActiveUser() == null) {
-            throw new IllegalStateException("No active user available");
-        }
-
         var userSecretValue =
                 new PasswordLockSecretValue(userHandler.getActiveUser().toCharArray()) {
                     @Override
@@ -44,10 +40,15 @@ public class EncryptionToken {
     }
 
     public static EncryptionToken ofInvalid() {
-        return EncryptionToken.builder().token("").isUser(false).isVault(false).build();
+        return EncryptionToken.builder().token("").isVault(false).build();
     }
 
     public static EncryptionToken ofUser() {
+        var userHandler = DataStorageUserHandler.getInstance();
+        if (userHandler.getActiveUser() == null) {
+            throw new IllegalStateException("No active user available");
+        }
+
         if (userToken == null) {
             userToken = createUserToken();
         }
@@ -62,9 +63,6 @@ public class EncryptionToken {
     }
 
     private final String token;
-
-    @JsonIgnore
-    private Boolean isUser;
 
     @JsonIgnore
     private Boolean isVault;
@@ -84,16 +82,12 @@ public class EncryptionToken {
     }
 
     public boolean isUser() {
-        if (isUser != null) {
-            return isUser;
-        }
-
         var userHandler = DataStorageUserHandler.getInstance();
         if (userHandler.getActiveUser() == null) {
-            return (isUser = false);
+            return false;
         }
 
-        return (isUser = userHandler.getActiveUser().equals(decode(userHandler.getEncryptionKey())));
+        return userHandler.getActiveUser().equals(decode(userHandler.getEncryptionKey()));
     }
 
     public boolean isVault() {

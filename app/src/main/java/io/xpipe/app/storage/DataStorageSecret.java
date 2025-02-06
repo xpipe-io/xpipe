@@ -5,6 +5,7 @@ import io.xpipe.app.util.EncryptionToken;
 import io.xpipe.app.util.PasswordLockSecretValue;
 import io.xpipe.app.util.VaultKeySecretValue;
 import io.xpipe.core.util.EncryptedSecretValue;
+import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.core.util.SecretValue;
 
@@ -53,7 +54,7 @@ public class DataStorageSecret {
             token = userToken ? EncryptionToken.ofUser() : EncryptionToken.ofVaultKey();
         }
 
-        return new DataStorageSecret(token, secretTree, secret);
+        return new DataStorageSecret(token, secretTree, secret.inPlace());
     }
 
     public static DataStorageSecret ofCurrentSecret(SecretValue internalSecret) {
@@ -61,22 +62,22 @@ public class DataStorageSecret {
         return new DataStorageSecret(
                 handler.getActiveUser() != null ? EncryptionToken.ofUser() : EncryptionToken.ofVaultKey(),
                 null,
-                internalSecret);
+                internalSecret.inPlace());
     }
 
     public static DataStorageSecret ofSecret(SecretValue internalSecret, EncryptionToken token) {
-        return new DataStorageSecret(token, null, internalSecret);
+        return new DataStorageSecret(token, null, internalSecret.inPlace());
     }
 
     @NonFinal
     JsonNode originalNode;
 
-    SecretValue internalSecret;
+    InPlaceSecretValue internalSecret;
 
     @NonFinal
     EncryptionToken encryptedToken;
 
-    public DataStorageSecret(EncryptionToken encryptedToken, JsonNode originalNode, SecretValue internalSecret) {
+    public DataStorageSecret(EncryptionToken encryptedToken, JsonNode originalNode, InPlaceSecretValue internalSecret) {
         this.encryptedToken = encryptedToken;
         this.originalNode = originalNode;
         this.internalSecret = internalSecret;
@@ -89,16 +90,14 @@ public class DataStorageSecret {
 
         // User key must have changed
         if (!isUser && !isVault) {
-            // There must be a key mismatch
+            // We have loaded a secret with a user key that does no longer exist
+            // This means that the user was deleted in this session
+            // Replace it with a vault key
             if (userHandler.getActiveUser() == null) {
-                return false;
+                return true;
             }
 
-            // We don't want to use the new user key
-            if (!allowUserSecretKey) {
-                return false;
-            }
-
+            // Password was changed
             return true;
         }
 
@@ -115,19 +114,18 @@ public class DataStorageSecret {
         return false;
     }
 
-    public JsonNode rewrite(boolean allowUserSecretKey) {
+    private void rewrite(boolean allowUserSecretKey) {
         var handler = DataStorageUserHandler.getInstance();
         if (handler != null && handler.getActiveUser() != null && allowUserSecretKey) {
             var val = new PasswordLockSecretValue(getSecret());
             originalNode = JacksonMapper.getDefault().valueToTree(val);
             encryptedToken = EncryptionToken.ofUser();
-            return originalNode;
+            return;
         }
 
         var val = new VaultKeySecretValue(getSecret());
         originalNode = JacksonMapper.getDefault().valueToTree(val);
         encryptedToken = EncryptionToken.ofVaultKey();
-        return originalNode;
     }
 
     public JsonNode serialize(boolean allowUserSecretKey) {
@@ -137,17 +135,18 @@ public class DataStorageSecret {
 
         var mapper = JacksonMapper.getDefault();
         var tree = JsonNodeFactory.instance.objectNode();
-        tree.set("encryptedToken", mapper.valueToTree(getEncryptedToken()));
 
         // Preserve same output if not changed
         if (getOriginalNode() != null && !requiresRewrite(allowUserSecretKey)) {
             tree.set("secret", getOriginalNode());
+            tree.set("encryptedToken", mapper.valueToTree(getEncryptedToken()));
             return tree;
         }
 
         // Reencrypt
-        var val = rewrite(allowUserSecretKey);
-        tree.set("secret", val);
+        rewrite(allowUserSecretKey);
+        tree.set("secret", getOriginalNode());
+        tree.set("encryptedToken", mapper.valueToTree(getEncryptedToken()));
         return tree;
     }
 

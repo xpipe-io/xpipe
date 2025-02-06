@@ -1,8 +1,12 @@
 package io.xpipe.app.prefs;
 
+import atlantafx.base.layout.ModalBox;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.comp.base.ModalButton;
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageSyncHandler;
@@ -30,36 +34,43 @@ public class VaultCategory extends AppPrefsCategory {
 
         var encryptVault = new SimpleBooleanProperty(prefs.encryptAllVaultData().get());
         encryptVault.addListener((observable, oldValue, newValue) -> {
-            if (!newValue
-                    && !AppWindowHelper.showConfirmationAlert(
-                            "confirmVaultUnencryptTitle",
-                            "confirmVaultUnencryptHeader",
-                            "confirmVaultUnencryptContent")) {
-                Platform.runLater(() -> {
-                    encryptVault.set(true);
-                });
-                return;
+            if (!newValue) {
+                var modal = ModalOverlay.of("confirmVaultUnencryptTitle", AppDialog.dialogTextKey("confirmVaultUnencryptContent"));
+                modal.addButton(ModalButton.cancel(() -> {
+                    Platform.runLater(() -> {
+                        encryptVault.set(true);
+                    });
+                }));
+                modal.addButton(ModalButton.ok(() -> {
+                    prefs.encryptAllVaultData.setValue(false);
+                }));
+                modal.showAndWait();
+            } else {
+                prefs.encryptAllVaultData.setValue(true);
             }
-
-            prefs.encryptAllVaultData.setValue(newValue);
         });
+
+        var uh = DataStorageUserHandler.getInstance();
+        var vaultTypeKey = uh.getUserCount() == 0 ? "vaultTypeDefault" : uh.getUserCount() == 1 ? (uh.getActiveUser() != null && uh.getActiveUser().equals("legacy") ?
+                "vaultTypeLegacy" : "vaultTypePersonal") : "vaultTypeTeam";
 
         builder.addTitle("vaultUsers")
                 .sub(new OptionsBuilder()
-                        .nameAndDescription("personalVault")
+                        .name("vaultType")
+                        .description(vaultTypeKey)
                         .addComp(Comp.empty())
-                        .hide(new SimpleBooleanProperty(DataStorageUserHandler.getInstance().getUserCount() > 1))
+                        .hide(new SimpleBooleanProperty(uh.getUserCount() > 1))
                         .name("userManagement")
                         .description(
-                                DataStorageUserHandler.getInstance().getActiveUser() != null
+                                uh.getActiveUser() != null
                                         ? "userManagementDescription"
                                         : "userManagementDescriptionEmpty")
-                        .addComp(DataStorageUserHandler.getInstance().createOverview())
+                        .addComp(uh.createOverview())
                         .nameAndDescription("teamVaults")
                         .addComp(Comp.empty())
                         .licenseRequirement("team")
                         .disable(!LicenseProvider.get().getFeature("team").isSupported())
-                        .hide(new SimpleBooleanProperty(DataStorageUserHandler.getInstance().getUserCount() > 1))
+                        .hide(new SimpleBooleanProperty(uh.getUserCount() > 1))
                         .nameAndDescription("syncTeamVaults")
                         .addComp(new ButtonComp(AppI18n.observable("enableGitSync"), () -> AppPrefs.get()
                                 .selectCategory("sync")))
@@ -73,7 +84,6 @@ public class VaultCategory extends AppPrefsCategory {
                         .addToggle(prefs.lockVaultOnHibernation)
                         .pref(prefs.encryptAllVaultData)
                         .addToggle(encryptVault)
-                        .disable(DataStorageUserHandler.getInstance().getUserCount() > 1)
                 );
         builder.addTitle("vault")
                 .sub(new OptionsBuilder()

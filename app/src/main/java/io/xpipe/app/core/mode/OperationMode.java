@@ -250,7 +250,8 @@ public abstract class OperationMode {
         var loc = AppProperties.get().isDevelopmentEnvironment()
                 ? XPipeInstallation.getLocalDefaultInstallationBasePath()
                 : XPipeInstallation.getCurrentInstallationBasePath().toString();
-        var exec = XPipeInstallation.createExternalAsyncLaunchCommand(loc, XPipeDaemonMode.GUI, "", true);
+        var dataDir = AppProperties.get().getDataDir();
+        var exec = XPipeInstallation.createExternalAsyncLaunchCommand(loc, XPipeDaemonMode.GUI, "-Dio.xpipe.app.acceptEula=true -Dio.xpipe.app.dataDir=\"" + dataDir + "\"", true);
         LocalShell.getShell().executeSimpleCommand(exec);
     }
 

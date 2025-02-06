@@ -523,7 +523,7 @@ public class DataStoreEntry extends StorageElement {
         }
 
         this.store = store;
-        this.storeNode = this.storeNode.withStore(store);
+        this.storeNode = DataStorageNode.ofNewStore(store);
         this.provider = DataStoreProviders.byStore(store);
         if (updateTime) {
             lastModified = Instant.now();
@@ -533,7 +533,7 @@ public class DataStoreEntry extends StorageElement {
     }
 
     public void reassignStoreNode() {
-        this.storeNode = this.storeNode.withStore(store);
+        this.storeNode = DataStorageNode.ofNewStore(store);
         dirty = true;
     }
 

@@ -5,6 +5,7 @@ import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.util.EncryptionKey;
 
 import java.time.Instant;
+import java.util.UUID;
 import javax.crypto.SecretKey;
 
 public class ImpersistentStorage extends DataStorage {
@@ -61,6 +62,11 @@ public class ImpersistentStorage extends DataStorage {
 
     @Override
     public boolean supportsSharing() {
+        return false;
+    }
+
+    @Override
+    public boolean isOtherUserEntry(UUID uuid) {
         return false;
     }
 }
