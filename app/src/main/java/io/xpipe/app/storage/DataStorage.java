@@ -511,7 +511,12 @@ public abstract class DataStorage {
         }).filter(en -> en.getValue() != null).toList());
 
         toUpdate.removeIf(pair -> {
-            return pair.getKey().getStorePersistentState().equals(pair.getValue().get().getStorePersistentState());
+            if (pair.getKey().getStorePersistentState() != null
+                    && pair.getValue().get().getStorePersistentState() != null) {
+                return pair.getKey().getStorePersistentState().equals(pair.getValue().get().getStorePersistentState());
+            } else {
+                return true;
+            }
         });
 
         if (toRemove.isEmpty() && toAdd.isEmpty() && toUpdate.isEmpty()) {

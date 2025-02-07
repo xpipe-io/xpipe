@@ -372,6 +372,10 @@ public class DataStoreEntry extends StorageElement {
             return null;
         }
 
+        if (storePersistentStateNode != null && storePersistentStateNode.isNull()) {
+            storePersistentStateNode = null;
+        }
+
         if (storePersistentStateNode == null && storePersistentState == null) {
             storePersistentState = sds.createDefaultState();
             storePersistentStateNode = JacksonMapper.getDefault().valueToTree(storePersistentState);

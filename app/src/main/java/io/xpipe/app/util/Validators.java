@@ -10,7 +10,7 @@ import java.util.List;
 public class Validators {
 
     public static <T extends DataStore> void isType(DataStoreEntryRef<? extends T> ref, Class<T> c) throws ValidationException {
-        if (ref != null && !c.isAssignableFrom(ref.getStore().getClass())) {
+        if (ref == null || !c.isAssignableFrom(ref.getStore().getClass())) {
             throw new ValidationException("Value must be an instance of " + c.getSimpleName());
         }
     }
