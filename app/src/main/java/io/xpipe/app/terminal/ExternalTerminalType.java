@@ -100,6 +100,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     ExternalTerminalType GNOME_CONSOLE = new GnomeConsoleType();
 
+    ExternalTerminalType PTYXIS = new PtyxisTerminalType();
+
     ExternalTerminalType KONSOLE = new SimplePathType("app.konsole", "konsole", true) {
 
         @Override
@@ -595,6 +597,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             KittyTerminalType.KITTY_LINUX,
             GHOSTTY,
             GNOME_CONSOLE,
+            PTYXIS,
             TERMINATOR,
             TERMINOLOGY,
             XFCE,
