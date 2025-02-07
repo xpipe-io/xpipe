@@ -112,57 +112,57 @@ public enum XPipeDistributionType {
             return WEBTOP;
         }
 
-        try (var sc = LocalShell.getShell().start()) {
-            // In theory, we can also add  && !AppProperties.get().isStaging() here, but we want to replicate the
-            // production behavior
-            if (OsType.getLocal().equals(OsType.WINDOWS)) {
-                var out = sc.command("choco search --local-only -r xpipe").readStdoutIfPossible();
-                if (out.isPresent()) {
-                    var split = out.get().split("\\|");
-                    if (split.length == 2) {
-                        var version = split[1];
-                        if (AppProperties.get().getVersion().equals(version)) {
-                            return CHOCO;
+            try (var sc = LocalShell.getShell().start()) {
+                // In theory, we can also add  && !AppProperties.get().isStaging() here, but we want to replicate the
+                // production behavior
+                if (OsType.getLocal().equals(OsType.WINDOWS)) {
+                    var out = sc.command("choco search --local-only -r xpipe").readStdoutIfPossible();
+                    if (out.isPresent()) {
+                        var split = out.get().split("\\|");
+                        if (split.length == 2) {
+                            var version = split[1];
+                            if (AppProperties.get().getVersion().equals(version)) {
+                                return CHOCO;
+                            }
                         }
                     }
                 }
-            }
 
-            // In theory, we can also add  && !AppProperties.get().isStaging() here, but we want to replicate the
-            // production behavior
-            if (OsType.getLocal().equals(OsType.MACOS)) {
-                var out = sc.command("brew list --casks --versions").readStdoutIfPossible();
-                if (out.isPresent()) {
-                    if (out.get().lines().anyMatch(s -> {
-                        var split = s.split(" ");
-                        return split.length == 2
-                                && split[0].equals("xpipe")
-                                && split[1].equals(AppProperties.get().getVersion());
-                    })) {
-                        return HOMEBREW;
-                    }
-                }
-            }
-
-            if (OsType.getLocal() == OsType.LINUX) {
-                var aptOut = sc.command("apt show xpipe").readStdoutIfPossible();
-                if (aptOut.isPresent()) {
-                    var fromRepo = aptOut.get().lines().anyMatch(s -> {
-                        return s.contains("APT-Sources") && s.contains("apt.xpipe.io");
-                    });
-                    if (fromRepo) {
-                        return APT_REPO;
+                // In theory, we can also add  && !AppProperties.get().isStaging() here, but we want to replicate the
+                // production behavior
+                if (OsType.getLocal().equals(OsType.MACOS)) {
+                    var out = sc.command("brew list --casks --versions").readStdoutIfPossible();
+                    if (out.isPresent()) {
+                        if (out.get().lines().anyMatch(s -> {
+                            var split = s.split(" ");
+                            return split.length == 2 && split[0].equals("xpipe") && split[1].equals(AppProperties.get().getVersion());
+                        })) {
+                            return HOMEBREW;
+                        }
                     }
                 }
 
-                var yumRepo = sc.command(CommandBuilder.of().add("test", "-f").addFile("/etc/yum.repos.d/xpipe.repo")).executeAndCheck();
-                if (yumRepo) {
-                    return RPM_REPO;
+                    if (OsType.getLocal() == OsType.LINUX) {
+                        if (base.startsWith("/opt")) {
+                        var aptOut = sc.command("apt show xpipe").readStdoutIfPossible();
+                        if (aptOut.isPresent()) {
+                            var fromRepo = aptOut.get().lines().anyMatch(s -> {
+                                return s.contains("APT-Sources") && s.contains("apt.xpipe.io");
+                            });
+                            if (fromRepo) {
+                                return APT_REPO;
+                            }
+                        }
+
+                        var yumRepo = sc.command(CommandBuilder.of().add("test", "-f").addFile("/etc/yum.repos.d/xpipe.repo")).executeAndCheck();
+                        if (yumRepo) {
+                            return RPM_REPO;
+                        }
+                    }
                 }
+            } catch (Exception ex) {
+                ErrorEvent.fromThrowable(ex).handle();
             }
-        } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).handle();
-        }
 
         return XPipeDistributionType.NATIVE_INSTALLATION;
     }
