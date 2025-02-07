@@ -98,6 +98,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     ExternalTerminalType GNOME_TERMINAL = new GnomeTerminalType();
 
+    ExternalTerminalType GNOME_CONSOLE = new GnomeConsoleType();
+
     ExternalTerminalType KONSOLE = new SimplePathType("app.konsole", "konsole", true) {
 
         @Override
@@ -592,6 +594,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             WezTerminalType.WEZTERM_LINUX,
             KittyTerminalType.KITTY_LINUX,
             GHOSTTY,
+            GNOME_CONSOLE,
             TERMINATOR,
             TERMINOLOGY,
             XFCE,

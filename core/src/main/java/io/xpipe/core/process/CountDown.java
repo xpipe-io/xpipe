@@ -52,4 +52,8 @@ public class CountDown {
         }
         return true;
     }
+
+    public synchronized long getMillisecondsElapsed() {
+        return maxMillis - millisecondsLeft;
+    }
 }
