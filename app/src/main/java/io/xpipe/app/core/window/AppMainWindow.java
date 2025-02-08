@@ -59,7 +59,7 @@ public class AppMainWindow {
     @Getter
     private static final Property<String> loadingText = new SimpleObjectProperty<>();
 
-    public AppMainWindow(Stage stage) {
+    private AppMainWindow(Stage stage) {
         this.stage = stage;
     }
 
@@ -108,7 +108,7 @@ public class AppMainWindow {
         if (AppPrefs.get() != null) {
             stage.opacityProperty().bind(PlatformThread.sync(AppPrefs.get().windowOpacity()));
         }
-        stage.titleProperty().bind(createTitle());
+        INSTANCE.addBasicTitleListener();
         AppWindowHelper.addIcons(stage);
         AppWindowHelper.setupStylesheets(stage.getScene());
         AppWindowHelper.setupClickShield(stage);
@@ -145,33 +145,53 @@ public class AppMainWindow {
         loadedContent.setValue(s);
     }
 
-    private static ObservableValue<String> createTitle() {
-        if (AppPrefs.get() == null || LicenseProvider.get() == null) {
-            return new SimpleStringProperty("XPipe");
-        }
-
-        var t = LicenseProvider.get().licenseTitle();
-        var u = XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate();
-        return PlatformThread.sync(Bindings.createStringBinding(
-                () -> {
-                    var base = String.format(
-                            "XPipe %s (%s)", t.getValue(), AppProperties.get().getVersion());
-                    var prefix = AppProperties.get().isStaging() ? "[Public Test Build, Not a proper release] " : "";
-                    var suffix = u.getValue() != null
-                            ? " " + AppI18n.get("updateReadyTitle", u.getValue().getVersion())
-                            : "";
-                    return prefix + base + suffix;
-                },
-                u,
-                t,
-                AppI18n.activeLanguage()));
-    }
-
     public void show() {
         stage.show();
         if (OsType.getLocal() == OsType.WINDOWS) {
             NativeWinWindowControl.MAIN_WINDOW = new NativeWinWindowControl(stage);
         }
+    }
+
+    private String createTitle() {
+        var t = LicenseProvider.get().licenseTitle();
+        var base = String.format(
+                "XPipe %s (%s)", t.getValue(), AppProperties.get().getVersion());
+        var prefix = AppProperties.get().isStaging() ? "[Public Test Build, Not a proper release] " : "";
+        var dist = XPipeDistributionType.get();
+        if (dist == XPipeDistributionType.UNKNOWN) {
+            var u = dist.getUpdateHandler().getPreparedUpdate();
+            var suffix = u.getValue() != null ? " " + AppI18n.get("updateReadyTitle", u.getValue().getVersion()) : "";
+            return prefix + base + suffix;
+        } else {
+            return prefix + base;
+        }
+    }
+
+    public void addUpdateTitleListener() {
+        var u = XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate();
+        u.subscribe(up -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                stage.setTitle(createTitle());
+            });
+        });
+    }
+
+    private void addBasicTitleListener() {
+        if (LicenseProvider.get() != null) {
+            var t = LicenseProvider.get().licenseTitle();
+            t.subscribe(up -> {
+                PlatformThread.runLaterIfNeeded(() -> {
+                    stage.setTitle(createTitle());
+                });
+            });
+        }
+
+        var l = AppI18n.activeLanguage();
+        l.subscribe(up -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                stage.setTitle(createTitle());
+            });
+        });
     }
 
     public static AppMainWindow getInstance() {

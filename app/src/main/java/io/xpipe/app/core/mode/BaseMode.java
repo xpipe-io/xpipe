@@ -93,6 +93,8 @@ public class BaseMode extends OperationMode {
                     AppTestCommandCheck.check();
                     XPipeDistributionType.init();
                     AppPrefs.setLocalDefaultsIfNeeded();
+                    PlatformInit.init(true);
+                    AppMainWindow.getInstance().addUpdateTitleListener();
                 },
                 () -> {
                     shellLoaded.await();
