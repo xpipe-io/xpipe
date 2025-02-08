@@ -16,7 +16,7 @@ import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.update.XPipeDistributionType;
+import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.util.*;
 
 import io.xpipe.core.process.OsType;
@@ -482,7 +482,7 @@ public abstract class StoreEntryComp extends SimpleComp {
             });
             menu.getItems().add(sc);
 
-            if (XPipeDistributionType.get().isSupportsUrls()) {
+            if (AppDistributionType.get().isSupportsUrls()) {
                 var l = new MenuItem(null, new FontIcon("mdi2c-clipboard-list-outline"));
                 l.textProperty().bind(AppI18n.observable("base.copyShareLink"));
                 l.setOnAction(event -> {

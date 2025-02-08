@@ -2,7 +2,6 @@ package io.xpipe.app.core.window;
 
 import io.xpipe.app.comp.base.AppLayoutComp;
 import io.xpipe.app.comp.base.AppMainWindowContentComp;
-import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
@@ -10,7 +9,7 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviourDialog;
 import io.xpipe.app.resources.AppImages;
-import io.xpipe.app.update.XPipeDistributionType;
+import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
@@ -19,7 +18,6 @@ import io.xpipe.core.process.OsType;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableDoubleValue;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
@@ -158,8 +156,8 @@ public class AppMainWindow {
         var base = String.format(
                 "XPipe %s (%s)", t.getValue(), AppProperties.get().getVersion());
         var prefix = AppProperties.get().isStaging() ? "[Public Test Build, Not a proper release] " : "";
-        var dist = XPipeDistributionType.get();
-        if (dist == XPipeDistributionType.UNKNOWN) {
+        var dist = AppDistributionType.get();
+        if (dist == AppDistributionType.UNKNOWN) {
             var u = dist.getUpdateHandler().getPreparedUpdate();
             var suffix = u.getValue() != null ? " " + AppI18n.get("updateReadyTitle", u.getValue().getVersion()) : "";
             return prefix + base + suffix;
@@ -169,11 +167,11 @@ public class AppMainWindow {
     }
 
     public static synchronized void addUpdateTitleListener() {
-        if (INSTANCE == null || XPipeDistributionType.get() == XPipeDistributionType.UNKNOWN) {
+        if (INSTANCE == null || AppDistributionType.get() == AppDistributionType.UNKNOWN) {
             return;
         }
 
-        var u = XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate();
+        var u = AppDistributionType.get().getUpdateHandler().getPreparedUpdate();
         u.subscribe(up -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 INSTANCE.getStage().setTitle(createTitle());

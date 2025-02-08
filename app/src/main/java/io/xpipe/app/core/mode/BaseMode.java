@@ -25,7 +25,6 @@ import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.app.update.UpdateAvailableDialog;
 import io.xpipe.app.update.UpdateChangelogAlert;
 import io.xpipe.app.update.UpdateNagDialog;
-import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.*;
 import io.xpipe.core.util.XPipeDaemonMode;
 
@@ -91,7 +90,6 @@ public class BaseMode extends OperationMode {
                     shellLoaded.countDown();
                     AppRosettaCheck.check();
                     AppTestCommandCheck.check();
-                    XPipeDistributionType.init();
                     AppPrefs.setLocalDefaultsIfNeeded();
                     PlatformInit.init(true);
                     AppMainWindow.addUpdateTitleListener();

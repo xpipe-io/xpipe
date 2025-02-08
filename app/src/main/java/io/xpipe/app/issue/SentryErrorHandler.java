@@ -4,7 +4,7 @@ import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.update.XPipeDistributionType;
+import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.util.LicenseProvider;
 
 import io.sentry.*;
@@ -206,7 +206,7 @@ public class SentryErrorHandler implements ErrorHandler {
                     options.setTag("os", System.getProperty("os.name"));
                     options.setTag("osVersion", System.getProperty("os.version"));
                     options.setTag("arch", AppProperties.get().getArch());
-                    options.setDist(XPipeDistributionType.get().getId());
+                    options.setDist(AppDistributionType.get().getId());
                     options.setTag("staging", String.valueOf(AppProperties.get().isStaging()));
                     options.setSendModules(false);
                     options.setAttachThreads(false);

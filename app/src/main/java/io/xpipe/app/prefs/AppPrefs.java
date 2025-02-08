@@ -10,9 +10,8 @@ import io.xpipe.app.icon.SystemIconSource;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.ExternalTerminalType;
-import io.xpipe.app.update.XPipeDistributionType;
+import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.util.PlatformThread;
-import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.ModuleHelper;
 
 import javafx.beans.property.*;
@@ -502,7 +501,7 @@ public class AppPrefs {
         terminalType.set(ExternalTerminalType.determineDefault(terminalType.get()));
         rdpClientType.setValue(ExternalRdpClientType.determineDefault(rdpClientType.get()));
         if (AppProperties.get().isInitialLaunch()) {
-            if (XPipeDistributionType.get() == XPipeDistributionType.WEBTOP) {
+            if (AppDistributionType.get() == AppDistributionType.WEBTOP) {
                 performanceMode.setValue(true);
             } else if (System.getProperty("os.name").toLowerCase().contains("server")) {
                 performanceMode.setValue(true);

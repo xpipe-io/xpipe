@@ -196,7 +196,9 @@ public abstract class ScriptStore implements DataStore, StatefulDataStore<Enable
 
     @Override
     public void checkComplete() throws Throwable {
-        Validators.isType(group, ScriptGroupStore.class);
+        if (group != null) {
+            Validators.isType(group, ScriptGroupStore.class);
+        }
         if (scripts != null) {
             Validators.contentNonNull(scripts);
         }

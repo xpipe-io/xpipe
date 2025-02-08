@@ -6,7 +6,7 @@ import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.update.UpdateAvailableDialog;
-import io.xpipe.app.update.XPipeDistributionType;
+import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.application.Platform;
@@ -127,13 +127,13 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
             });
             b.hide(PlatformThread.sync(Bindings.createBooleanBinding(
                     () -> {
-                        return XPipeDistributionType.get()
+                        return AppDistributionType.get()
                                         .getUpdateHandler()
                                         .getPreparedUpdate()
                                         .getValue()
                                 == null;
                     },
-                    XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate())));
+                    AppDistributionType.get().getUpdateHandler().getPreparedUpdate())));
             vbox.getChildren().add(b.createRegion());
         }
 

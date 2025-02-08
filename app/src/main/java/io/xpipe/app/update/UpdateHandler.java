@@ -3,6 +3,7 @@ package io.xpipe.app.update;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -57,7 +58,7 @@ public abstract class UpdateHandler {
                                 .getValue()
                                 .getSourceVersion()
                                 .equals(AppProperties.get().getVersion())
-                        || !XPipeDistributionType.get()
+                        || !AppDistributionType.get()
                                 .getId()
                                 .equals(preparedUpdate.getValue().getSourceDist()))) {
             preparedUpdate.setValue(null);
@@ -192,7 +193,7 @@ public abstract class UpdateHandler {
 
         var rel = new PreparedUpdate(
                 AppProperties.get().getVersion(),
-                XPipeDistributionType.get().getId(),
+                AppDistributionType.get().getId(),
                 lastUpdateCheckResult.getValue().getVersion(),
                 lastUpdateCheckResult.getValue().getReleaseUrl(),
                 null,
@@ -218,7 +219,7 @@ public abstract class UpdateHandler {
 
         // Check if prepared update is still the latest.
         // We only do that here to minimize the sent requests by only executing when it's really necessary
-        var available = XPipeDistributionType.get()
+        var available = AppDistributionType.get()
                 .getUpdateHandler()
                 .refreshUpdateCheckSilent(false, preparedUpdate.getValue().isSecurityOnly());
         if (preparedUpdate.getValue() == null) {

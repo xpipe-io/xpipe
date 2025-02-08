@@ -108,6 +108,7 @@ public abstract class OperationMode {
             AppDebugModeCheck.printIfNeeded();
             AppProperties.logSystemProperties();
             AppProperties.get().logArguments();
+            AppDistributionType.init();
             AppExtensionManager.init(true);
             AppI18n.init();
             AppPrefs.initLocal();

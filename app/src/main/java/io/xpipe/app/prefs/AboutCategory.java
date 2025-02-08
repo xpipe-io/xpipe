@@ -1,6 +1,5 @@
 package io.xpipe.app.prefs;
 
-import atlantafx.base.layout.ModalBox;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.ModalOverlay;
@@ -8,7 +7,7 @@ import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.window.AppWindowHelper;
+import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.JfxHelper;
 import io.xpipe.app.util.OptionsBuilder;
@@ -16,8 +15,6 @@ import io.xpipe.core.process.OsType;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.Region;
 
 import atlantafx.base.theme.Styles;
 
@@ -114,6 +111,8 @@ public class AboutCategory extends AppPrefsCategory {
                 .addComp(Comp.vspacer(10))
                 .name("build")
                 .addComp(new LabelComp(AppProperties.get().getBuild()), null)
+                .name("distribution")
+                .addComp(new LabelComp(AppDistributionType.get().toTranslatedString()))
                 .name("runtimeVersion")
                 .addComp(new LabelComp(System.getProperty("java.vm.version")), null)
                 .name("virtualMachine")
