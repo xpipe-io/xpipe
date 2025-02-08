@@ -7,6 +7,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ShellTemp;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellInitCommand;
 import io.xpipe.core.store.*;
 
@@ -73,6 +74,11 @@ public abstract class ScriptStore implements DataStore, StatefulDataStore<Enable
 
                         return Optional.ofNullable(
                                 shellControl.getShellDialect().addToPathVariableCommand(List.of(dir), true));
+                    }
+
+                    @Override
+                    public boolean canPotentiallyRunInDialect(ShellDialect dialect) {
+                        return true;
                     }
 
                     @Override

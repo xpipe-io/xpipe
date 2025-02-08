@@ -327,7 +327,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public boolean isRecommended() {
-            return true;
+            return false;
         }
 
         @Override
@@ -595,7 +595,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             AlacrittyTerminalType.ALACRITTY_LINUX,
             WezTerminalType.WEZTERM_LINUX,
             KittyTerminalType.KITTY_LINUX,
-            GHOSTTY,
             GNOME_CONSOLE,
             PTYXIS,
             TERMINATOR,
@@ -604,6 +603,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             ELEMENTARY,
             KONSOLE,
             GNOME_TERMINAL,
+            GHOSTTY,
             TILIX,
             GUAKE,
             TILDA,

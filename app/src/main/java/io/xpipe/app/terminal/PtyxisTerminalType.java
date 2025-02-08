@@ -42,7 +42,8 @@ public class PtyxisTerminalType extends ExternalTerminalType.PathCheckType imple
                     .addIf(!configuration.isPreferTabs(), "--new-window")
                     .add("--")
                     .add(configuration.getDialectLaunchCommand());
-            pc.executeSimpleCommand(toExecute);
+            // This returns a failure exit code even if the terminal opened correctly
+            pc.command(toExecute).executeAndCheck();
         }
     }
 }

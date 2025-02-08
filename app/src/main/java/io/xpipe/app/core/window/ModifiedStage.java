@@ -19,7 +19,7 @@ import org.apache.commons.lang3.SystemUtils;
 public class ModifiedStage extends Stage {
 
     public static boolean mergeFrame() {
-        return SystemUtils.IS_OS_WINDOWS_11 || SystemUtils.IS_OS_MAC;
+        return SystemUtils.IS_OS_WINDOWS_10 || SystemUtils.IS_OS_WINDOWS_11 || SystemUtils.IS_OS_MAC;
     }
 
     public static void init() {

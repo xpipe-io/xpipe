@@ -18,6 +18,8 @@ public interface ShellInitCommand {
         return false;
     }
 
+    boolean canPotentiallyRunInDialect(ShellDialect dialect);
+
     default boolean runInTerminal() {
         return false;
     }
@@ -36,12 +38,15 @@ public interface ShellInitCommand {
         @NonNull
         private final String content;
 
+        private final ShellDialect dialect;
+
         private final boolean dumb;
 
         private final boolean terminal;
 
-        public Simple(@NonNull String content, boolean dumb, boolean terminal) {
+        public Simple(@NonNull String content, ShellDialect dialect, boolean dumb, boolean terminal) {
             this.content = content;
+            this.dialect = dialect;
             this.dumb = dumb;
             this.terminal = terminal;
         }
@@ -59,6 +64,11 @@ public interface ShellInitCommand {
         @Override
         public boolean runInDumb() {
             return dumb;
+        }
+
+        @Override
+        public boolean canPotentiallyRunInDialect(ShellDialect dialect) {
+            return this.dialect.isCompatibleTo(dialect);
         }
 
         @Override
