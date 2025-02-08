@@ -24,6 +24,7 @@
 .dialog-pane:header .header-panel {
     -fx-background-color: -color-bg-default;
     -fx-padding: 1.5em;
+    -fx-font-size: 1.15em;
 }
 
 .dialog-pane:header .header-panel .graphic-container {
