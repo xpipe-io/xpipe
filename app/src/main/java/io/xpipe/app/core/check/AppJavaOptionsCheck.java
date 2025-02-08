@@ -11,7 +11,7 @@ public class AppJavaOptionsCheck {
         }
 
         var env = System.getenv("_JAVA_OPTIONS");
-        if (env == null) {
+        if (env == null || env.isBlank()) {
             return;
         }
 

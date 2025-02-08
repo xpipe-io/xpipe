@@ -5,7 +5,7 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
 
-public class PtyxisTerminalType extends ExternalTerminalType.PathCheckType implements TrackableTerminalType {
+public class PtyxisTerminalType extends ExternalTerminalType.SimplePathType implements TrackableTerminalType {
 
     public PtyxisTerminalType() {
         super("app.ptyxis", "ptyxis", true);
@@ -32,18 +32,13 @@ public class PtyxisTerminalType extends ExternalTerminalType.PathCheckType imple
     }
 
     @Override
-    public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-        try (ShellControl pc = LocalShell.getShell()) {
-            CommandSupport.isInPathOrThrow(pc, executable, toTranslatedString().getValue(), null);
-
-            var toExecute = CommandBuilder.of()
-                    .add(executable)
-                    .addIf(configuration.isPreferTabs(), "--tab")
-                    .addIf(!configuration.isPreferTabs(), "--new-window")
-                    .add("--")
-                    .add(configuration.getDialectLaunchCommand());
-            // This returns a failure exit code even if the terminal opened correctly
-            pc.command(toExecute).executeAndCheck();
-        }
+    protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) throws Exception {
+        var toExecute = CommandBuilder.of()
+                .add(executable)
+                .addIf(configuration.isPreferTabs(), "--tab")
+                .addIf(!configuration.isPreferTabs(), "--new-window")
+                .add("--")
+                .add(configuration.getDialectLaunchCommand());
+        return toExecute;
     }
 }
