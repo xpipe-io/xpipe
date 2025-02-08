@@ -96,8 +96,8 @@
     -fx-padding: 6 10;
 }
 
-.store-creator {
-
+.error-overlay-comp {
+    -fx-font-size: 0.9em;
 }
 
 .store-creator > .top > .choice-comp {
