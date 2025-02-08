@@ -109,6 +109,7 @@ public class AppMainWindow {
             stage.opacityProperty().bind(PlatformThread.sync(AppPrefs.get().windowOpacity()));
         }
         INSTANCE.addBasicTitleListener();
+        addUpdateTitleListener();
         AppWindowHelper.addIcons(stage);
         AppWindowHelper.setupStylesheets(stage.getScene());
         AppWindowHelper.setupClickShield(stage);
@@ -152,7 +153,7 @@ public class AppMainWindow {
         }
     }
 
-    private String createTitle() {
+    private static String createTitle() {
         var t = LicenseProvider.get().licenseTitle();
         var base = String.format(
                 "XPipe %s (%s)", t.getValue(), AppProperties.get().getVersion());
@@ -167,11 +168,15 @@ public class AppMainWindow {
         }
     }
 
-    public void addUpdateTitleListener() {
+    public static synchronized void addUpdateTitleListener() {
+        if (INSTANCE == null || XPipeDistributionType.get() == XPipeDistributionType.UNKNOWN) {
+            return;
+        }
+
         var u = XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate();
         u.subscribe(up -> {
             PlatformThread.runLaterIfNeeded(() -> {
-                stage.setTitle(createTitle());
+                INSTANCE.getStage().setTitle(createTitle());
             });
         });
     }

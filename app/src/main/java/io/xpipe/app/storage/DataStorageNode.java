@@ -79,7 +79,7 @@ public class DataStorageNode {
                 return new DataStorageNode(node, false, true, false);
             }
 
-            if (secret.getSecret() == null) {
+            if (secret.getInternalSecret() == null) {
                 return fail();
             }
 
