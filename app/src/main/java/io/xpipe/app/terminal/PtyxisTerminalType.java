@@ -8,7 +8,7 @@ import io.xpipe.core.process.ShellControl;
 public class PtyxisTerminalType extends ExternalTerminalType.PathCheckType implements TrackableTerminalType {
 
     public PtyxisTerminalType() {
-        super("app.ptyxis", "ptyxis", false);
+        super("app.ptyxis", "ptyxis", true);
     }
 
     @Override
