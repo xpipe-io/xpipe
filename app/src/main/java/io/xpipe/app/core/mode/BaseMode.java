@@ -94,7 +94,7 @@ public class BaseMode extends OperationMode {
                     XPipeDistributionType.init();
                     AppPrefs.setLocalDefaultsIfNeeded();
                     PlatformInit.init(true);
-                    AppMainWindow.getInstance().addUpdateTitleListener();
+                    // AppMainWindow.getInstance().addUpdateTitleListener();
                 },
                 () -> {
                     shellLoaded.await();

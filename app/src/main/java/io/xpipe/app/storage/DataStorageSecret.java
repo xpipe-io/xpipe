@@ -12,12 +12,16 @@ import io.xpipe.core.util.SecretValue;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
 import java.io.IOException;
 
-@Value
+@EqualsAndHashCode
+@ToString
 public class DataStorageSecret {
 
     public static DataStorageSecret deserialize(JsonNode tree) throws IOException {
@@ -69,18 +73,18 @@ public class DataStorageSecret {
         return new DataStorageSecret(token, null, internalSecret.inPlace());
     }
 
-    @NonFinal
-    JsonNode originalNode;
+    @Getter
+    private JsonNode originalNode;
 
-    InPlaceSecretValue internalSecret;
+    private final InPlaceSecretValue secret;
 
-    @NonFinal
-    EncryptionToken encryptedToken;
+    @Getter
+    private EncryptionToken encryptedToken;
 
-    public DataStorageSecret(EncryptionToken encryptedToken, JsonNode originalNode, InPlaceSecretValue internalSecret) {
+    public DataStorageSecret(EncryptionToken encryptedToken, JsonNode originalNode, InPlaceSecretValue secret) {
         this.encryptedToken = encryptedToken;
         this.originalNode = originalNode;
-        this.internalSecret = internalSecret;
+        this.secret = secret;
     }
 
     public boolean requiresRewrite(boolean allowUserSecretKey) {
@@ -129,7 +133,7 @@ public class DataStorageSecret {
     }
 
     public JsonNode serialize(boolean allowUserSecretKey) {
-        if (internalSecret == null) {
+        if (secret == null) {
             return null;
         }
 
@@ -151,6 +155,10 @@ public class DataStorageSecret {
     }
 
     public char[] getSecret() {
-        return internalSecret != null ? internalSecret.getSecret() : new char[0];
+        return secret != null ? secret.getSecret() : new char[0];
+    }
+
+    public InPlaceSecretValue getInternalSecret() {
+        return secret;
     }
 }
