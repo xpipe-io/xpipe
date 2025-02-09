@@ -4,11 +4,14 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.store.FileNames;
 
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
 import javafx.util.Callback;
 
 import atlantafx.base.controls.Breadcrumbs;

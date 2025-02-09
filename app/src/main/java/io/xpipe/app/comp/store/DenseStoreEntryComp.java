@@ -73,17 +73,8 @@ public class DenseStoreEntryComp extends StoreEntryComp {
 
         var storeIcon = createIcon(28, 24);
         GridPane.setHalignment(storeIcon, HPos.CENTER);
-        grid.getColumnConstraints().add(new ColumnConstraints(0));
-
-        getWrapper().getLargeCategoryOptimizations().subscribe(b -> {
-            if (!b) {
-                grid.add(storeIcon, 0, 0);
-                grid.getColumnConstraints().getFirst().setPrefWidth(34);
-            } else {
-                grid.add(new Region(), 0, 0);
-                grid.getColumnConstraints().getFirst().setPrefWidth(0);
-            }
-        });
+        grid.add(storeIcon, 0, 0);
+        grid.getColumnConstraints().add(new ColumnConstraints(34));
 
         var customSize = content != null ? 100 : 0;
         var custom = new ColumnConstraints(0, customSize, customSize);
