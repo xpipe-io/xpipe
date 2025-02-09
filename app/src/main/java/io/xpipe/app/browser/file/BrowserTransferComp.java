@@ -3,8 +3,6 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.*;
-import io.xpipe.app.core.AppFont;
-import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.ThreadHelper;

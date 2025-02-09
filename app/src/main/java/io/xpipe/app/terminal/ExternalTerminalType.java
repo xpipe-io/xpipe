@@ -758,6 +758,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             launch(configuration.getColoredTitle(), args);
         }
 
-        protected abstract CommandBuilder toCommand(TerminalLaunchConfiguration configuration) throws Exception;
+        protected abstract CommandBuilder toCommand(TerminalLaunchConfiguration configuration);
     }
 }

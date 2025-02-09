@@ -2,7 +2,6 @@ package io.xpipe.app.browser;
 
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.file.BrowserHistorySavedState;
-import io.xpipe.app.browser.file.BrowserHistorySavedStateImpl;
 import io.xpipe.app.browser.file.BrowserHistoryTabModel;
 import io.xpipe.app.browser.file.BrowserTransferModel;
 import io.xpipe.app.prefs.AppPrefs;

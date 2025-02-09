@@ -3,7 +3,6 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.util.FailableRunnable;
 

@@ -10,7 +10,6 @@ import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-import javafx.beans.value.ObservableNumberValue;
 import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 

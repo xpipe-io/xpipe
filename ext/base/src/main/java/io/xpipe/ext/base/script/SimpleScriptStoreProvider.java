@@ -18,7 +18,6 @@ import io.xpipe.app.util.Validator;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.core.util.Identifiers;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;

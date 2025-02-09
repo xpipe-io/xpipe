@@ -7,7 +7,6 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.resources.AppResources;
 
 import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
 
 import java.io.IOException;

@@ -6,9 +6,9 @@ import javafx.beans.value.ObservableValue;
 
 import lombok.Getter;
 
+@Getter
 public abstract class ModalOverlayContentComp extends SimpleComp {
 
-    @Getter
     protected ModalOverlay modalOverlay;
 
     void setModalOverlay(ModalOverlay modalOverlay) {

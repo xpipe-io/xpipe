@@ -15,7 +15,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 
 import lombok.Getter;
-import lombok.Value;
 
 import java.util.ArrayList;
 import java.util.Comparator;

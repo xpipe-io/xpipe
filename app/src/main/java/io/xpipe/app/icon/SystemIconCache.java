@@ -6,7 +6,6 @@ import com.github.weisj.jsvg.attributes.ViewBox;
 import com.github.weisj.jsvg.parser.SVGLoader;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.resources.AppImages;
 import lombok.Getter;
 
 import javax.imageio.ImageIO;

@@ -1,6 +1,5 @@
 package io.xpipe.ext.base.service;
 
-import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.comp.store.*;
 import io.xpipe.app.core.AppI18n;
@@ -11,19 +10,13 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.ShellStoreFormat;
-import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.ext.base.script.ScriptStore;
-import io.xpipe.ext.base.script.SimpleScriptStore;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ServiceControlStoreProvider implements SingletonSessionStoreProvider, DataStoreProvider {

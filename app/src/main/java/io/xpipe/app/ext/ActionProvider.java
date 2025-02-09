@@ -142,7 +142,7 @@ public interface ActionProvider {
         }
 
         static <T extends DataStore> LeafDataStoreCallSite<T> simple(boolean major, String nameKey, String icon, Class<T> applicableClass, FailableConsumer<DataStoreEntryRef<T>, Exception> action) {
-            return new LeafDataStoreCallSite<T>() {
+            return new LeafDataStoreCallSite<>() {
                 @Override
                 public boolean isMajor(DataStoreEntryRef<T> o) {
                     return major;

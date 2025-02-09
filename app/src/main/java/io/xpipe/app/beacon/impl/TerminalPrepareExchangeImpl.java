@@ -11,7 +11,7 @@ import io.xpipe.beacon.api.TerminalPrepareExchange;
 public class TerminalPrepareExchangeImpl extends TerminalPrepareExchange {
 
     @Override
-    public Object handle(HttpExchange exchange, Request msg) throws BeaconClientException, BeaconServerException {
+    public Object handle(HttpExchange exchange, Request msg) throws BeaconClientException {
         TerminalView.get().open(msg.getRequest(), msg.getPid());
         TerminalLauncherManager.registerPid(msg.getRequest(), msg.getPid());
         var term = AppPrefs.get().terminalType().getValue();

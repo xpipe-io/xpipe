@@ -1,9 +1,6 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.util.CommandSupport;
-import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.ShellControl;
 
 public class PtyxisTerminalType extends ExternalTerminalType.SimplePathType implements TrackableTerminalType {
 
@@ -32,7 +29,7 @@ public class PtyxisTerminalType extends ExternalTerminalType.SimplePathType impl
     }
 
     @Override
-    protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) throws Exception {
+    protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
         var toExecute = CommandBuilder.of()
                 .add(executable)
                 .addIf(configuration.isPreferTabs(), "--tab")

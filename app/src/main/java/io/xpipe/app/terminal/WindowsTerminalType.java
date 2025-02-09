@@ -148,7 +148,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         }
 
         @Override
-        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) throws Exception {
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return WindowsTerminalType.toCommand(configuration);
         }
 

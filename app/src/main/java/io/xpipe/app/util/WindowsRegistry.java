@@ -66,7 +66,7 @@ public abstract class WindowsRegistry {
         }
 
         @Override
-        public List<String> listSubKeys(int hkey, String key) throws Exception {
+        public List<String> listSubKeys(int hkey, String key) {
             // This can fail even with errors in case the jna native library extraction or loading fails
             try {
                 return Arrays.asList(Advapi32Util.registryGetKeys(hkey(hkey), key));
@@ -88,7 +88,7 @@ public abstract class WindowsRegistry {
         }
 
         @Override
-        public OptionalInt readIntegerValueIfPresent(int hkey, String key, String valueName) throws Exception {
+        public OptionalInt readIntegerValueIfPresent(int hkey, String key, String valueName) {
             // This can fail even with errors in case the jna native library extraction or loading fails
             try {
                 if (!Advapi32Util.registryValueExists(hkey(hkey), key, valueName)) {

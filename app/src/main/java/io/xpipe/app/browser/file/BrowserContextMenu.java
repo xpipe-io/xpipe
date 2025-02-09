@@ -1,7 +1,6 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.action.BrowserAction;
-import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.util.InputHelper;
 

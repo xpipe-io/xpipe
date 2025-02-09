@@ -97,8 +97,7 @@ public class AppProperties {
         staging = Optional.ofNullable(System.getProperty("io.xpipe.app.staging"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
-        devLoginPassword = Optional.ofNullable(System.getProperty("io.xpipe.app.loginPassword"))
-                .orElse(null);
+        devLoginPassword = System.getProperty("io.xpipe.app.loginPassword");
         useVirtualThreads = Optional.ofNullable(System.getProperty("io.xpipe.app.useVirtualThreads"))
                 .map(Boolean::parseBoolean)
                 .orElse(true);

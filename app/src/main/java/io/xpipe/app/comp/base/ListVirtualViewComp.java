@@ -9,7 +9,6 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
-import javafx.scene.Node;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.skin.VirtualFlow;

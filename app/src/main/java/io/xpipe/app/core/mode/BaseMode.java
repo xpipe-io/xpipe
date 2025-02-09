@@ -45,7 +45,7 @@ public class BaseMode extends OperationMode {
     }
 
     @Override
-    public void onSwitchTo() throws Throwable {
+    public void onSwitchTo() {
         if (initialized) {
             return;
         }

@@ -1,16 +1,12 @@
 package io.xpipe.ext.base.browser;
 
-import atlantafx.base.layout.ModalBox;
 import io.xpipe.app.browser.action.BrowserBranchAction;
 import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
-import io.xpipe.app.core.AppFont;
-import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.CommandBuilder;
@@ -20,7 +16,6 @@ import io.xpipe.core.process.ShellControl;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.StackPane;
-import javafx.scene.text.Text;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;

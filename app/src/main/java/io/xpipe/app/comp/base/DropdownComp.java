@@ -11,7 +11,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.css.Size;
 import javafx.css.SizeUnits;
 import javafx.scene.control.Button;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 
 import org.kordamp.ikonli.javafx.FontIcon;

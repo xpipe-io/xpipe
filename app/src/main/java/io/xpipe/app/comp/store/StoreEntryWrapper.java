@@ -8,7 +8,6 @@ import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
@@ -16,7 +15,6 @@ import io.xpipe.core.store.SingletonSessionStore;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-import javafx.beans.value.ObservableStringValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 

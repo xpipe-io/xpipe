@@ -10,7 +10,6 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.*;
 import io.xpipe.app.util.BooleanScope;
@@ -312,7 +311,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                     var open = new ShellOpenFunction() {
 
                         @Override
-                        public CommandBuilder prepareWithoutInitCommand() throws Exception {
+                        public CommandBuilder prepareWithoutInitCommand() {
                             return CommandBuilder.ofString(adjustedPath);
                         }
 

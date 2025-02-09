@@ -6,9 +6,7 @@ import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringBinding;
 import javafx.beans.value.ObservableIntegerValue;
-import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;

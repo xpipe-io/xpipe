@@ -1,13 +1,9 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class LocalExec {
 

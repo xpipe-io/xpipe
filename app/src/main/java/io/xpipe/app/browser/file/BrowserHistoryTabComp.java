@@ -4,11 +4,9 @@ import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.*;
-import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
@@ -16,16 +14,12 @@ import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 
-import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
 
 import java.util.LinkedHashMap;

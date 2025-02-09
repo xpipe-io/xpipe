@@ -1,13 +1,11 @@
 package io.xpipe.app.prefs;
 
-import atlantafx.base.layout.ModalBox;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.storage.DataStorageUserHandler;

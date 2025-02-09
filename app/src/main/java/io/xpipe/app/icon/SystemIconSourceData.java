@@ -5,11 +5,9 @@ import lombok.Value;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.IOException;
-import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -19,7 +17,7 @@ public class SystemIconSourceData {
     Path directory;
     List<SystemIconSourceFile> icons;
 
-    public static SystemIconSourceData of(SystemIconSource source) throws IOException {
+    public static SystemIconSourceData of(SystemIconSource source) {
         var target = source.getPath();
         var list = new ArrayList<SystemIconSourceFile>();
         walkTree(source, target, list);

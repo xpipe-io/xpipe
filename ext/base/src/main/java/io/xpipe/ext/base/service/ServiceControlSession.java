@@ -2,10 +2,8 @@ package io.xpipe.ext.base.service;
 
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ElevationFunction;
-import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.Session;
 import io.xpipe.core.store.SessionListener;
-import io.xpipe.core.util.FailableSupplier;
 import lombok.Getter;
 
 @Getter

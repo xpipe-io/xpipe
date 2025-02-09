@@ -7,9 +7,7 @@ import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.application.Platform;
-import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;

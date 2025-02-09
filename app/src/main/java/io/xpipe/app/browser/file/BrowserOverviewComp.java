@@ -3,8 +3,6 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.SimpleTitledPaneComp;
 import io.xpipe.app.comp.base.VerticalComp;
-import io.xpipe.app.core.AppFont;
-import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.DerivedObservableList;

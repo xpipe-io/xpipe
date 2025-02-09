@@ -29,7 +29,7 @@ public interface SystemIconSource {
     @Builder
     @Jacksonized
     @JsonTypeName("directory")
-    static class Directory implements SystemIconSource{
+    class Directory implements SystemIconSource{
 
         Path path;
         String id;
@@ -76,7 +76,7 @@ public interface SystemIconSource {
     @Builder
     @Jacksonized
     @JsonTypeName("git")
-    static class GitRepository implements SystemIconSource{
+    class GitRepository implements SystemIconSource{
 
         String remote;
         String id;
@@ -120,7 +120,7 @@ public interface SystemIconSource {
         }
 
         @Override
-        public void open() throws Exception {
+        public void open() {
             Hyperlinks.open(remote);
         }
     }

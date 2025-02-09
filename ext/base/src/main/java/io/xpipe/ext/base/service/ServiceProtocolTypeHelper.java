@@ -1,14 +1,11 @@
 package io.xpipe.ext.base.service;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.OptionsBuilder;
 
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.control.TextField;
 
 import java.util.LinkedHashMap;
 

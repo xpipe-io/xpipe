@@ -50,7 +50,7 @@ public abstract class TestModule<V> {
         return argumentBuilder.build();
     }
 
-    protected abstract void init(Map<String, FailableSupplier<V>> list) throws Exception;
+    protected abstract void init(Map<String, FailableSupplier<V>> list);
 
     protected abstract Class<V> getValueClass();
 }

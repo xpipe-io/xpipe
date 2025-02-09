@@ -2,27 +2,17 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.*;
-import io.xpipe.app.core.AppFont;
-import io.xpipe.app.core.AppFontSizes;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.ext.PrefsChoiceValue;
-import io.xpipe.app.icon.SystemIcon;
-import io.xpipe.app.icon.SystemIconCache;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.icon.SystemIconSource;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStorageUserHandler;
 import io.xpipe.app.util.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.TextField;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.nio.file.Path;
 import java.util.ArrayList;

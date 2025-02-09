@@ -16,7 +16,6 @@ import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.util.*;
 
 import io.xpipe.core.process.OsType;

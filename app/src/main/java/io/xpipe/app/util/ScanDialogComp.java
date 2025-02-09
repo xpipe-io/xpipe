@@ -15,7 +15,6 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 
 import javafx.application.Platform;
 import javafx.beans.property.*;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.Region;
@@ -24,7 +23,6 @@ import javafx.scene.layout.VBox;
 import lombok.Getter;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.function.Function;
 
 import static javafx.scene.layout.Priority.ALWAYS;

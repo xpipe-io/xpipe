@@ -7,28 +7,13 @@ import io.xpipe.app.prefs.SupportedLocale;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.PlatformThread;
-import io.xpipe.core.util.XPipeInstallation;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringBinding;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 
-import lombok.Value;
-import org.apache.commons.io.FilenameUtils;
-
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Pattern;
 
 public class AppI18n {
 
