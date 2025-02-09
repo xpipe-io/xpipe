@@ -46,7 +46,8 @@ public class ModalOverlayComp extends SimpleComp {
         var bgRegion = background.createRegion();
         var modal = new ModalPane();
         modal.setInTransitionFactory(null);
-        modal.setOutTransitionFactory(OsType.getLocal() == OsType.LINUX ? null : node -> Animations.fadeOut(node, Duration.millis(50)));
+        modal.setOutTransitionFactory(
+                OsType.getLocal() == OsType.LINUX ? null : node -> Animations.fadeOut(node, Duration.millis(50)));
         modal.focusedProperty().addListener((observable, oldValue, newValue) -> {
             var c = modal.getContent();
             if (newValue && c != null) {
@@ -227,13 +228,14 @@ public class ModalOverlayComp extends SimpleComp {
             var busy = mocc.busy();
             if (busy != null) {
                 var loading = LoadingOverlayComp.noProgress(Comp.of(() -> modalBox), busy);
-//                loading.apply(struc -> {
-//                    var bg = struc.get().getChildren().getFirst();
-//                    struc.get().getChildren().get(1).addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-//                        bg.fireEvent(event);
-//                        event.consume();
-//                    });
-//                });
+                //                loading.apply(struc -> {
+                //                    var bg = struc.get().getChildren().getFirst();
+                //                    struc.get().getChildren().get(1).addEventFilter(MouseEvent.MOUSE_PRESSED, event ->
+                // {
+                //                        bg.fireEvent(event);
+                //                        event.consume();
+                //                    });
+                //                });
                 return loading.createRegion();
             }
         }

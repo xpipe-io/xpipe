@@ -142,8 +142,7 @@ public class IncusCommandView extends CommandViewBase {
         var sub = shellControl.subShell();
         sub.setDumbOpen(createOpenFunction(container, user, false));
         sub.setTerminalOpen(createOpenFunction(container, user, true));
-        return sub
-                .withErrorFormatter(IncusCommandView::formatErrorMessage)
+        return sub.withErrorFormatter(IncusCommandView::formatErrorMessage)
                 .withExceptionConverter(IncusCommandView::convertException)
                 .elevated(requiresElevation());
     }

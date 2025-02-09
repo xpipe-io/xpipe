@@ -185,7 +185,7 @@ public class StoreEntryWrapper {
         validity.setValue(entry.getValidity());
         expanded.setValue(entry.isExpanded());
         persistentState.setValue(entry.getStorePersistentState());
-		
+
         // The property values are only registered as changed once they are queried
         // If we use information bindings that depend on some of these properties
         // but use the store methods to retrieve data instead of the wrapper properties,
@@ -216,7 +216,8 @@ public class StoreEntryWrapper {
                         storeCategoryWrapper.getCategory().getUuid().equals(entry.getCategoryUuid()))
                 .findFirst()
                 .orElse(StoreViewState.get().getAllConnectionsCategory()));
-        largeCategoryOptimizations.setValue(category.getValue().getLargeCategoryOptimizations().getValue());
+        largeCategoryOptimizations.setValue(
+                category.getValue().getLargeCategoryOptimizations().getValue());
         perUser.setValue(
                 !category.getValue().getRoot().equals(StoreViewState.get().getAllIdentitiesCategory())
                         && entry.isPerUserStore());

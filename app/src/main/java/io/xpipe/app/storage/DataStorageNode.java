@@ -39,7 +39,8 @@ public class DataStorageNode {
         }
 
         var all = AppPrefs.get() != null && AppPrefs.get().encryptAllVaultData().get();
-        var useUserKey = DataStorageUserHandler.getInstance().getUserCount() == 1 && DataStorageUserHandler.getInstance().getActiveUser() != null;
+        var useUserKey = DataStorageUserHandler.getInstance().getUserCount() == 1
+                && DataStorageUserHandler.getInstance().getActiveUser() != null;
         return all && useUserKey;
     }
 
@@ -61,7 +62,8 @@ public class DataStorageNode {
     }
 
     public static DataStorageNode ofNewStore(DataStore store) {
-        return new DataStorageNode(JacksonMapper.getDefault().valueToTree(store), encryptPerUser(store), true, encrypt(store));
+        return new DataStorageNode(
+                JacksonMapper.getDefault().valueToTree(store), encryptPerUser(store), true, encrypt(store));
     }
 
     public static DataStorageNode fail() {

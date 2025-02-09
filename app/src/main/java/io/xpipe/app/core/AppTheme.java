@@ -198,7 +198,14 @@ public class AppTheme {
         private final String name;
         private final int skipLines;
 
-        public DerivedTheme(String id, String cssId, String name, atlantafx.base.theme.Theme theme, AppFontSizes sizes, Supplier<Color> contextMenuColor, int skipLines) {
+        public DerivedTheme(
+                String id,
+                String cssId,
+                String name,
+                atlantafx.base.theme.Theme theme,
+                AppFontSizes sizes,
+                Supplier<Color> contextMenuColor,
+                int skipLines) {
             super(id, cssId, theme, sizes, contextMenuColor);
             this.name = name;
             this.skipLines = skipLines;
@@ -236,53 +243,75 @@ public class AppTheme {
     @AllArgsConstructor
     public static class Theme implements PrefsChoiceValue {
 
-        public static final Theme PRIMER_LIGHT = new Theme("light", "primer", new PrimerLight(), AppFontSizes.forOs(
-                AppFontSizes.BASE_10_5,
-                AppFontSizes.BASE_10,
-                AppFontSizes.BASE_11
-        ), () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().darker().desaturate(), 0.3));
-        public static final Theme PRIMER_DARK = new Theme("dark", "primer", new PrimerDark(), AppFontSizes.forOs(
-                AppFontSizes.BASE_11,
-                AppFontSizes.BASE_10,
-                AppFontSizes.BASE_11
-        ), () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2));
-        public static final Theme NORD_LIGHT = new Theme("nordLight", "nord", new NordLight(), AppFontSizes.forOs(
-                AppFontSizes.BASE_10_5,
-                AppFontSizes.BASE_10,
-                AppFontSizes.BASE_11
-        ), () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().darker().desaturate(), 0.3));
-        public static final Theme NORD_DARK = new Theme("nordDark", "nord", new NordDark(), AppFontSizes.forOs(
-                AppFontSizes.BASE_11,
-                AppFontSizes.BASE_10,
-                AppFontSizes.BASE_11
-        ), () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2));
-        public static final Theme CUPERTINO_LIGHT = new Theme("cupertinoLight", "cupertino", new CupertinoLight(), AppFontSizes.forOs(
-                AppFontSizes.BASE_10_5,
-                AppFontSizes.BASE_10,
-                AppFontSizes.BASE_11
-        ), () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().darker().desaturate(), 0.3));
-        public static final Theme CUPERTINO_DARK = new Theme("cupertinoDark", "cupertino", new CupertinoDark(), AppFontSizes.forOs(
-                AppFontSizes.BASE_11,
-                AppFontSizes.BASE_10,
-                AppFontSizes.BASE_11
-        ), () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2));
-        public static final Theme DRACULA = new Theme("dracula", "dracula", new Dracula(), AppFontSizes.forOs(
-                AppFontSizes.BASE_11,
-                AppFontSizes.BASE_10,
-                AppFontSizes.BASE_11
-        ), () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2));
-        public static final Theme MOCHA = new DerivedTheme("mocha", "mocha", "Mocha", new PrimerDark(), AppFontSizes.forOs(
-                AppFontSizes.BASE_11,
-                AppFontSizes.BASE_10,
-                AppFontSizes.BASE_11
-        ), () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2), 115);
+        public static final Theme PRIMER_LIGHT = new Theme(
+                "light",
+                "primer",
+                new PrimerLight(),
+                AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10, AppFontSizes.BASE_11),
+                () -> ColorHelper.withOpacity(
+                        Platform.getPreferences().getAccentColor().darker().desaturate(), 0.3));
+        public static final Theme PRIMER_DARK = new Theme(
+                "dark",
+                "primer",
+                new PrimerDark(),
+                AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10, AppFontSizes.BASE_11),
+                () -> ColorHelper.withOpacity(
+                        Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2));
+        public static final Theme NORD_LIGHT = new Theme(
+                "nordLight",
+                "nord",
+                new NordLight(),
+                AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10, AppFontSizes.BASE_11),
+                () -> ColorHelper.withOpacity(
+                        Platform.getPreferences().getAccentColor().darker().desaturate(), 0.3));
+        public static final Theme NORD_DARK = new Theme(
+                "nordDark",
+                "nord",
+                new NordDark(),
+                AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10, AppFontSizes.BASE_11),
+                () -> ColorHelper.withOpacity(
+                        Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2));
+        public static final Theme CUPERTINO_LIGHT = new Theme(
+                "cupertinoLight",
+                "cupertino",
+                new CupertinoLight(),
+                AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10, AppFontSizes.BASE_11),
+                () -> ColorHelper.withOpacity(
+                        Platform.getPreferences().getAccentColor().darker().desaturate(), 0.3));
+        public static final Theme CUPERTINO_DARK = new Theme(
+                "cupertinoDark",
+                "cupertino",
+                new CupertinoDark(),
+                AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10, AppFontSizes.BASE_11),
+                () -> ColorHelper.withOpacity(
+                        Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2));
+        public static final Theme DRACULA = new Theme(
+                "dracula",
+                "dracula",
+                new Dracula(),
+                AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10, AppFontSizes.BASE_11),
+                () -> ColorHelper.withOpacity(
+                        Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2));
+        public static final Theme MOCHA = new DerivedTheme(
+                "mocha",
+                "mocha",
+                "Mocha",
+                new PrimerDark(),
+                AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10, AppFontSizes.BASE_11),
+                () -> ColorHelper.withOpacity(
+                        Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2),
+                115);
 
         // Adjust this to create your own theme
-        public static final Theme CUSTOM = new DerivedTheme("custom", "primer", "Custom", new PrimerDark(), AppFontSizes.forOs(
-                AppFontSizes.BASE_10_5,
-                AppFontSizes.BASE_10_5,
-                AppFontSizes.BASE_11
-        ), () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2), 115);
+        public static final Theme CUSTOM = new DerivedTheme(
+                "custom",
+                "primer",
+                "Custom",
+                new PrimerDark(),
+                AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
+                () -> ColorHelper.withOpacity(
+                        Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2),
+                115);
 
         // Also include your custom theme here
         public static final List<Theme> ALL = List.of(

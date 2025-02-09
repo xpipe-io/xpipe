@@ -72,8 +72,8 @@ public class LxdCmdStoreProvider implements DataStoreProvider {
         return new LxdCmdStore(DataStorage.get().local().ref());
     }
 
-@Override
-     public String getId() {
+    @Override
+    public String getId() {
         return "lxdCmd";
     }
 

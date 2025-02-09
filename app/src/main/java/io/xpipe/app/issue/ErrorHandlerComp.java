@@ -69,11 +69,14 @@ public class ErrorHandlerComp extends SimpleComp {
     private Region createDetails() {
         var content = new ErrorDetailsComp(event).prefWidth(600).prefHeight(750);
         var modal = ModalOverlay.of("errorDetails", content);
-        var button = new ButtonComp(null, new SimpleObjectProperty<>(new LabelGraphic.NodeGraphic(() -> {
-            return createActionButtonGraphic(AppI18n.get("showDetails"), AppI18n.get("showDetailsDescription"));
-        })), () -> {
-            modal.show();
-        });
+        var button = new ButtonComp(
+                null,
+                new SimpleObjectProperty<>(new LabelGraphic.NodeGraphic(() -> {
+                    return createActionButtonGraphic(AppI18n.get("showDetails"), AppI18n.get("showDetailsDescription"));
+                })),
+                () -> {
+                    modal.show();
+                });
         var r = button.grow(true, false).createRegion();
         r.getStyleClass().add("details");
         return r;

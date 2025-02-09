@@ -117,7 +117,10 @@ public class StoreCategoryComp extends SimpleComp {
                         }))
                 .styleClass("status-button");
 
-        var count = new CountComp(category.getShownContainedEntriesCount(), category.getAllContainedEntriesCount(), string -> "(" + string + ")");
+        var count = new CountComp(
+                category.getShownContainedEntriesCount(),
+                category.getAllContainedEntriesCount(),
+                string -> "(" + string + ")");
         count.visible(Bindings.notEqual(0, category.getShownContainedEntriesCount()));
 
         var showStatus = hover.or(new SimpleBooleanProperty(DataStorage.get().supportsSharing()))
@@ -133,7 +136,8 @@ public class StoreCategoryComp extends SimpleComp {
                 statusButton.hide(showStatus.not())));
         h.padding(new Insets(0, 10, 0, (category.getDepth() * 10)));
 
-        var categoryButton = new ButtonComp(null, new SimpleObjectProperty<>(new LabelGraphic.CompGraphic(h)), category::select)
+        var categoryButton = new ButtonComp(
+                        null, new SimpleObjectProperty<>(new LabelGraphic.CompGraphic(h)), category::select)
                 .focusTraversable()
                 .styleClass("category-button")
                 .apply(struc -> hover.bind(struc.get().hoverProperty()))

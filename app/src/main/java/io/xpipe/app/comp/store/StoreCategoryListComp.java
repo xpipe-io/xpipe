@@ -2,9 +2,9 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.ScrollComp;
-
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.core.process.OsType;
+
 import javafx.beans.binding.Bindings;
 import javafx.scene.layout.Region;
 

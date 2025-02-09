@@ -28,8 +28,8 @@ public class FixedServiceStoreProvider extends AbstractServiceStoreProvider {
                                 .build());
     }
 
-@Override
-     public String getId() {
+    @Override
+    public String getId() {
         return "fixedService";
     }
 

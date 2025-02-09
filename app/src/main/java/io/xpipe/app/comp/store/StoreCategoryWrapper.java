@@ -185,22 +185,28 @@ public class StoreCategoryWrapper {
                         .equals(storeCategoryWrapper.getCategory().getParentCategory()))
                 .toList());
         var direct = directContainedEntries.getList().size();
-        var sub = children.getList().stream().mapToInt(value -> value.allContainedEntriesCount.get()).sum();
+        var sub = children.getList().stream()
+                .mapToInt(value -> value.allContainedEntriesCount.get())
+                .sum();
         allContainedEntriesCount.setValue(direct + sub);
 
-        var performanceCount = AppPrefs.get().showChildCategoriesInParentCategory().get() ? allContainedEntriesCount.get() : direct;
+        var performanceCount =
+                AppPrefs.get().showChildCategoriesInParentCategory().get() ? allContainedEntriesCount.get() : direct;
         if (performanceCount > 500) {
             largeCategoryOptimizations.setValue(true);
         }
 
-        var directFiltered = directContainedEntries.getList().stream().filter(storeEntryWrapper ->
-                storeEntryWrapper.matchesFilter(StoreViewState.get().getFilterString().getValue())).count();
-        var subFiltered = children.getList().stream().mapToInt(value -> value.shownContainedEntriesCount.get()).sum();
+        var directFiltered = directContainedEntries.getList().stream()
+                .filter(storeEntryWrapper -> storeEntryWrapper.matchesFilter(
+                        StoreViewState.get().getFilterString().getValue()))
+                .count();
+        var subFiltered = children.getList().stream()
+                .mapToInt(value -> value.shownContainedEntriesCount.get())
+                .sum();
         shownContainedEntriesCount.setValue(directFiltered + subFiltered);
         Optional.ofNullable(getParent()).ifPresent(storeCategoryWrapper -> {
             storeCategoryWrapper.update();
         });
-
     }
 
     private String translatedName(String original) {

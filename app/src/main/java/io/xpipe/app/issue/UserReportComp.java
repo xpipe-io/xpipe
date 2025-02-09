@@ -70,21 +70,27 @@ public class UserReportComp extends SimpleComp {
 
         var attachmentsHeader = new Label(AppI18n.get("additionalErrorAttachments"));
         var attachments = new ListSelectorComp<>(
-                FXCollections.observableList(event.getAttachments()),
-                file -> {
-                    if (file.equals(AppLogs.get().getSessionLogsDirectory())) {
-                        return AppI18n.get("logFilesAttachment");
-                    }
+                        FXCollections.observableList(event.getAttachments()),
+                        file -> {
+                            if (file.equals(AppLogs.get().getSessionLogsDirectory())) {
+                                return AppI18n.get("logFilesAttachment");
+                            }
 
-                    return file.getFileName().toString();
-                },
-                includedDiagnostics,
-                file -> false,
-                () -> false)
+                            return file.getFileName().toString();
+                        },
+                        includedDiagnostics,
+                        file -> false,
+                        () -> false)
                 .styleClass("attachment-list")
                 .createRegion();
 
-        var reportSection = new VBox(infoHeader, tf, new Spacer(8, Orientation.VERTICAL), attachmentsHeader, new Spacer(3, Orientation.VERTICAL), attachments);
+        var reportSection = new VBox(
+                infoHeader,
+                tf,
+                new Spacer(8, Orientation.VERTICAL),
+                attachmentsHeader,
+                new Spacer(3, Orientation.VERTICAL),
+                attachments);
         reportSection.setSpacing(5);
         reportSection.getStyleClass().add("report");
 

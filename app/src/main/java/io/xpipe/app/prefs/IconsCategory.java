@@ -7,6 +7,7 @@ import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.icon.SystemIconSource;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.*;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -31,10 +32,7 @@ public class IconsCategory extends AppPrefsCategory {
         var prefs = AppPrefs.get();
         return new OptionsBuilder()
                 .addTitle("customIcons")
-                .sub(new OptionsBuilder()
-                        .nameAndDescription("iconSources")
-                        .addComp(createOverview())
-                )
+                .sub(new OptionsBuilder().nameAndDescription("iconSources").addComp(createOverview()))
                 .buildComp();
     }
 
@@ -57,63 +55,87 @@ public class IconsCategory extends AppPrefsCategory {
         refreshButton.disable(PlatformThread.sync(busy.or(Bindings.isEmpty(sources))));
         refreshButton.grow(true, false);
 
-        var addGitButton = new TileButtonComp("addGitIconSource", "addGitIconSourceDescription", "mdi2a-access-point-plus", e -> {
-            var remote = new SimpleStringProperty();
-            var modal = ModalOverlay.of(
-                    "repositoryUrl",
-                    Comp.of(() -> {
-                                var creationName = new TextField();
-                                creationName.textProperty().bindBidirectional(remote);
-                                return creationName;
-                            })
-                            .prefWidth(350));
-            modal.withDefaultButtons(() -> {
-                if (remote.get() == null || remote.get().isBlank()) {
-                    return;
-                }
+        var addGitButton =
+                new TileButtonComp("addGitIconSource", "addGitIconSourceDescription", "mdi2a-access-point-plus", e -> {
+                    var remote = new SimpleStringProperty();
+                    var modal = ModalOverlay.of(
+                            "repositoryUrl",
+                            Comp.of(() -> {
+                                        var creationName = new TextField();
+                                        creationName.textProperty().bindBidirectional(remote);
+                                        return creationName;
+                                    })
+                                    .prefWidth(350));
+                    modal.withDefaultButtons(() -> {
+                        if (remote.get() == null || remote.get().isBlank()) {
+                            return;
+                        }
 
-                // Don't use the git sync repo itself ...
-                if (remote.get().equals(AppPrefs.get().storageGitRemote().get())) {
-                    return;
-                }
+                        // Don't use the git sync repo itself ...
+                        if (remote.get()
+                                .equals(AppPrefs.get().storageGitRemote().get())) {
+                            return;
+                        }
 
-                var source = SystemIconSource.GitRepository.builder().remote(remote.get()).id(UUID.randomUUID().toString()).build();
-                if (!sources.contains(source)) {
-                    sources.add(source);
-                    var nl = new ArrayList<>(AppPrefs.get().getIconSources().getValue());
-                    nl.add(source);
-                    AppPrefs.get().iconSources.setValue(nl);
-                }
-            });
-            modal.show();
-            e.consume();
-        });
+                        var source = SystemIconSource.GitRepository.builder()
+                                .remote(remote.get())
+                                .id(UUID.randomUUID().toString())
+                                .build();
+                        if (!sources.contains(source)) {
+                            sources.add(source);
+                            var nl = new ArrayList<>(
+                                    AppPrefs.get().getIconSources().getValue());
+                            nl.add(source);
+                            AppPrefs.get().iconSources.setValue(nl);
+                        }
+                    });
+                    modal.show();
+                    e.consume();
+                });
         addGitButton.grow(true, false);
 
-        var addDirectoryButton = new TileButtonComp("addDirectoryIconSource", "addDirectoryIconSourceDescription", "mdi2f-folder-plus", e -> {
-            var dir = new SimpleStringProperty();
-            var modal = ModalOverlay.of(
-                    "iconDirectory",
-                    new ContextualFileReferenceChoiceComp(new SimpleObjectProperty<>(DataStorage.get().local().ref()),dir,null,List.of()).prefWidth(350));
-            modal.withDefaultButtons(() -> {
-                if (dir.get() == null || dir.get().isBlank()) {
-                    return;
-                }
+        var addDirectoryButton = new TileButtonComp(
+                "addDirectoryIconSource", "addDirectoryIconSourceDescription", "mdi2f-folder-plus", e -> {
+                    var dir = new SimpleStringProperty();
+                    var modal = ModalOverlay.of(
+                            "iconDirectory",
+                            new ContextualFileReferenceChoiceComp(
+                                            new SimpleObjectProperty<>(
+                                                    DataStorage.get().local().ref()),
+                                            dir,
+                                            null,
+                                            List.of())
+                                    .prefWidth(350));
+                    modal.withDefaultButtons(() -> {
+                        if (dir.get() == null || dir.get().isBlank()) {
+                            return;
+                        }
 
-                var source = SystemIconSource.Directory.builder().path(Path.of(dir.get())).id(UUID.randomUUID().toString()).build();
-                if (!sources.contains(source)) {
-                    sources.add(source);
-                    var nl = new ArrayList<>(AppPrefs.get().getIconSources().getValue());
-                    nl.add(source);
-                    AppPrefs.get().iconSources.setValue(nl);
-                }
-            });
-            modal.show();
-            e.consume();
-        });
+                        var source = SystemIconSource.Directory.builder()
+                                .path(Path.of(dir.get()))
+                                .id(UUID.randomUUID().toString())
+                                .build();
+                        if (!sources.contains(source)) {
+                            sources.add(source);
+                            var nl = new ArrayList<>(
+                                    AppPrefs.get().getIconSources().getValue());
+                            nl.add(source);
+                            AppPrefs.get().iconSources.setValue(nl);
+                        }
+                    });
+                    modal.show();
+                    e.consume();
+                });
         addDirectoryButton.grow(true, false);
 
-        var vbox = new VerticalComp(List.of(Comp.vspacer(10), box, Comp.separator(), refreshButton,  Comp.separator(), addDirectoryButton, addGitButton));
+        var vbox = new VerticalComp(List.of(
+                Comp.vspacer(10),
+                box,
+                Comp.separator(),
+                refreshButton,
+                Comp.separator(),
+                addDirectoryButton,
+                addGitButton));
         vbox.spacing(10);
         return vbox;
     }
@@ -136,7 +158,10 @@ public class IconsCategory extends AppPrefsCategory {
         }
 
         var tile = new TileButtonComp(
-                new SimpleStringProperty(AppPrefs.get().getIconSources().getValue().contains(source) ? source.getDisplayName() : source.getId()),
+                new SimpleStringProperty(
+                        AppPrefs.get().getIconSources().getValue().contains(source)
+                                ? source.getDisplayName()
+                                : source.getId()),
                 new SimpleStringProperty(source.getDescription()),
                 new SimpleObjectProperty<>(source.getIcon()),
                 actionEvent -> {

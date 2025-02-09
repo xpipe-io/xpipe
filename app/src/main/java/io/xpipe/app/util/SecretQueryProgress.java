@@ -31,7 +31,8 @@ public class SecretQueryProgress {
             @NonNull UUID storeId,
             @NonNull List<SecretQuery> suppliers,
             @NonNull SecretQuery fallback,
-            @NonNull List<SecretQueryFilter> filters, List<SecretQueryFormatter> formatters,
+            @NonNull List<SecretQueryFilter> filters,
+            List<SecretQueryFormatter> formatters,
             @NonNull CountDown countDown,
             boolean interactive) {
         this.requestId = requestId;

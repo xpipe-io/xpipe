@@ -104,7 +104,7 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
 
         vbox.sceneProperty().addListener((observable, oldValue, newValue) -> {
             Node c = vbox;
-            while ( (c = c.getParent()) != null) {
+            while ((c = c.getParent()) != null) {
                 c.boundsInParentProperty().addListener((observable1, oldValue1, newValue1) -> {
                     updateVisibilities(scroll, vbox);
                 });
@@ -135,7 +135,10 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         var nodeMinHeight = node.getBoundsInParent().getMinY();
         var nodeMaxHeight = node.getBoundsInParent().getMaxY();
 
-        if (paneHeight == 0.0 || box.getHeight() == 0.0 || ((Region) node).getHeight() == 0.0 || nodeMinHeight == nodeMaxHeight) {
+        if (paneHeight == 0.0
+                || box.getHeight() == 0.0
+                || ((Region) node).getHeight() == 0.0
+                || nodeMinHeight == nodeMaxHeight) {
             return false;
         }
 
@@ -149,7 +152,8 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
 
         if (pane.getScene().getHeight() > 200) {
             var sceneNodeBounds = node.localToScene(node.getBoundsInLocal());
-            if (sceneNodeBounds.getMaxY() < 0 || sceneNodeBounds.getMinY() > pane.getScene().getHeight()) {
+            if (sceneNodeBounds.getMaxY() < 0
+                    || sceneNodeBounds.getMinY() > pane.getScene().getHeight()) {
                 return false;
             }
         }
@@ -165,7 +169,13 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
     }
 
     private void refresh(
-            ScrollPane scroll, VBox listView, List<? extends T> shown, List<? extends T> all, Map<T, Region> cache, boolean asynchronous, boolean refreshVisibilities) {
+            ScrollPane scroll,
+            VBox listView,
+            List<? extends T> shown,
+            List<? extends T> all,
+            Map<T, Region> cache,
+            boolean asynchronous,
+            boolean refreshVisibilities) {
         Runnable update = () -> {
             synchronized (cache) {
                 var set = new HashSet<T>();

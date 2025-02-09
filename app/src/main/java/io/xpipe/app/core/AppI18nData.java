@@ -4,6 +4,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.SupportedLocale;
 import io.xpipe.core.util.XPipeInstallation;
+
 import lombok.Value;
 import org.apache.commons.io.FilenameUtils;
 
@@ -123,5 +124,4 @@ public class AppI18nData {
         var ending = "_" + l.toLanguageTag();
         return name.endsWith(ending);
     }
-
 }

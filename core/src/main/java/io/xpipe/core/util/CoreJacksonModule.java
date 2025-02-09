@@ -78,8 +78,7 @@ public class CoreJacksonModule extends SimpleModule {
     public static class ShellScriptSerializer extends JsonSerializer<ShellScript> {
 
         @Override
-        public void serialize(ShellScript value, JsonGenerator jgen, SerializerProvider provider)
-                throws IOException {
+        public void serialize(ShellScript value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
             jgen.writeString(value.getValue());
         }
     }

@@ -67,8 +67,9 @@ public class ServiceProtocolTypeHelper {
                         ? 0
                         : ex instanceof ServiceProtocolType.Http
                                 ? 1
-                                : ex instanceof ServiceProtocolType.Https ? 2 :
-                        ex instanceof ServiceProtocolType.Custom ? 3 : -1);
+                                : ex instanceof ServiceProtocolType.Https
+                                        ? 2
+                                        : ex instanceof ServiceProtocolType.Custom ? 3 : -1);
         var available = new LinkedHashMap<ObservableValue<String>, OptionsBuilder>();
         available.put(AppI18n.observable("undefined"), new OptionsBuilder());
         available.put(AppI18n.observable("http"), http(http));

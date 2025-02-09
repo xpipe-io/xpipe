@@ -115,8 +115,7 @@ public class PodmanCommandView extends CommandViewBase {
             var sub = shellControl.subShell();
             sub.setDumbOpen(createOpenFunction(container, false));
             sub.setTerminalOpen(createOpenFunction(container, true));
-            return sub
-                    .withErrorFormatter(PodmanCommandView::formatErrorMessage)
+            return sub.withErrorFormatter(PodmanCommandView::formatErrorMessage)
                     .withExceptionConverter(PodmanCommandView::convertException);
         }
 

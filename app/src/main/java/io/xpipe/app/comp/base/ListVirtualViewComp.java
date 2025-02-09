@@ -5,6 +5,7 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.PlatformThread;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
@@ -14,6 +15,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -53,7 +55,6 @@ public class ListVirtualViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         var vbox = new VirtualFlow<>();
         vbox.getStyleClass().add("list-box-content");
         vbox.setFocusTraversable(false);
-
 
         var scroll = new ScrollPane(vbox);
         if (scrollBar) {

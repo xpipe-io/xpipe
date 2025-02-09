@@ -10,6 +10,7 @@ import javafx.beans.value.ObservableIntegerValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;
+
 import lombok.AllArgsConstructor;
 
 import java.util.function.Function;
@@ -26,15 +27,17 @@ public class CountComp extends Comp<CompStructure<Label>> {
         var label = new Label();
         label.setTextOverrun(OverrunStyle.CLIP);
         label.setAlignment(Pos.CENTER);
-        var binding = Bindings.createStringBinding(() -> {
-            if (sub.get() == all.get()) {
-                return transformation.apply(all.get() + "");
-            } else {
-                return transformation.apply(sub.get() + "/" + all.get());
-            }
-        }, sub, all);
-        label.textProperty()
-                .bind(PlatformThread.sync(binding));
+        var binding = Bindings.createStringBinding(
+                () -> {
+                    if (sub.get() == all.get()) {
+                        return transformation.apply(all.get() + "");
+                    } else {
+                        return transformation.apply(sub.get() + "/" + all.get());
+                    }
+                },
+                sub,
+                all);
+        label.textProperty().bind(PlatformThread.sync(binding));
         label.getStyleClass().add("count-comp");
         return new SimpleCompStructure<>(label);
     }

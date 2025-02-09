@@ -72,8 +72,8 @@ public class PodmanCmdStoreProvider implements DataStoreProvider {
         return "system:podman_icon.svg";
     }
 
-@Override
-     public String getId() {
+    @Override
+    public String getId() {
         return "podmanCmd";
     }
 

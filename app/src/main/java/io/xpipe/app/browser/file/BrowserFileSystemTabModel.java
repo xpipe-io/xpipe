@@ -123,10 +123,9 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             // We might close this after storage shutdown
             // If this entry does not exist, it's not that bad if we save it anyway
             if (
-//                    DataStorage.get() != null
-//                    && DataStorage.get().getStoreEntries().contains(getEntry().get())
-                    savedState != null
-                    && current != null) {
+            //                    DataStorage.get() != null
+            //                    && DataStorage.get().getStoreEntries().contains(getEntry().get())
+            savedState != null && current != null) {
                 savedState.cd(current.getPath(), false);
                 BrowserHistorySavedStateImpl.get()
                         .add(new BrowserHistorySavedState.Entry(getEntry().get().getUuid(), current.getPath()));
@@ -304,10 +303,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                 if (ShellDialects.getStartableDialects().stream().anyMatch(dialect -> adjustedPath
                         .toLowerCase()
                         .startsWith(dialect.getExecutableName().toLowerCase()))) {
-                    var sub = fileSystem
-                            .getShell()
-                            .get()
-                            .subShell();
+                    var sub = fileSystem.getShell().get().subShell();
                     var open = new ShellOpenFunction() {
 
                         @Override

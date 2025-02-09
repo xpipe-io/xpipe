@@ -103,7 +103,6 @@ public interface ServiceProtocolType {
         }
     }
 
-
     @JsonTypeName("custom")
     @Value
     @Jacksonized
@@ -124,7 +123,9 @@ public interface ServiceProtocolType {
             }
 
             var port = url.split(":")[1];
-            var format = commandTemplate.toLowerCase(Locale.ROOT).contains("$port") ? commandTemplate : commandTemplate + " localhost:$PORT";
+            var format = commandTemplate.toLowerCase(Locale.ROOT).contains("$port")
+                    ? commandTemplate
+                    : commandTemplate + " localhost:$PORT";
             var toExecute = ExternalApplicationHelper.replaceFileArgument(format, "PORT", port);
             // We can't be sure whether the command is blocking or not, so always make it not blocking
             ExternalApplicationHelper.startAsync(toExecute);

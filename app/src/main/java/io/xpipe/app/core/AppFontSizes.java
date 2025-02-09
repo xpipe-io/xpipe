@@ -2,7 +2,9 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
+
 import javafx.scene.Node;
+
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
@@ -75,13 +77,15 @@ public class AppFontSizes {
         if (base.contains(".")) {
             var l = Integer.parseInt(base.split("\\.")[0]);
             var r = "." + base.split("\\.")[1];
-            return new AppFontSizes((l - 1) + r, (l - 1) + "", base, (l + 1) + "", (l + 1) + r, (l + 2) + r, (l + 3) + r, (l + 7) + r);
+            return new AppFontSizes(
+                    (l - 1) + r, (l - 1) + "", base, (l + 1) + "", (l + 1) + r, (l + 2) + r, (l + 3) + r, (l + 7) + r);
         } else {
             var l = Integer.parseInt(base);
-            return new AppFontSizes((l - 1) + "", (l - 1) + ".5", l + "", l + ".5", l + 1 + "", l + 2 + "", l + 3 + "", l + 7 + "");
+            return new AppFontSizes(
+                    (l - 1) + "", (l - 1) + ".5", l + "", l + ".5", l + 1 + "", l + 2 + "", l + 3 + "", l + 7 + "");
         }
     }
-    
+
     public static AppFontSizes forOs(AppFontSizes windows, AppFontSizes linux, AppFontSizes mac) {
         return switch (OsType.getLocal()) {
             case OsType.Linux linux1 -> linux;

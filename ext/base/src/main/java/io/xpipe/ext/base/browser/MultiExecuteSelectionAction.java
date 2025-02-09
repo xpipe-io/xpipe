@@ -91,9 +91,10 @@ public abstract class MultiExecuteSelectionAction implements BrowserBranchAction
 
                                         if (out.length() > 10000) {
                                             var counter = new AtomicInteger();
-                                            var start = out.lines().filter(s -> {
-                                                counter.incrementAndGet();
-                                                return true;
+                                            var start = out.lines()
+                                                    .filter(s -> {
+                                                        counter.incrementAndGet();
+                                                        return true;
                                                     })
                                                     .limit(100)
                                                     .collect(Collectors.joining("\n"));
@@ -110,15 +111,18 @@ public abstract class MultiExecuteSelectionAction implements BrowserBranchAction
                                     }
 
                                     String finalOut = out;
-                                    var modal = ModalOverlay.of("commandOutput", Comp.of(() -> {
-                                                var text = new TextArea(finalOut);
-                                                text.setWrapText(true);
-                                                text.setEditable(false);
-                                                text.setPrefRowCount(Math.max(8,( int) finalOut.lines().count()));
-                                                var sp = new StackPane(text);
-                                                return sp;
-                                            })
-                                            .prefWidth(650));
+                                    var modal = ModalOverlay.of(
+                                            "commandOutput",
+                                            Comp.of(() -> {
+                                                        var text = new TextArea(finalOut);
+                                                        text.setWrapText(true);
+                                                        text.setEditable(false);
+                                                        text.setPrefRowCount(Math.max(8, (int)
+                                                                finalOut.lines().count()));
+                                                        var sp = new StackPane(text);
+                                                        return sp;
+                                                    })
+                                                    .prefWidth(650));
                                     modal.show();
                                 },
                                 true);

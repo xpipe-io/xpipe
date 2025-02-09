@@ -1,8 +1,5 @@
 package io.xpipe.app.icon;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.Hyperlinks;
@@ -10,6 +7,10 @@ import io.xpipe.app.util.Validators;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.util.ValidationException;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -17,11 +18,10 @@ import lombok.extern.jackson.Jacksonized;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = SystemIconSource.Directory.class),
-        @JsonSubTypes.Type(value = SystemIconSource.GitRepository.class)
+    @JsonSubTypes.Type(value = SystemIconSource.Directory.class),
+    @JsonSubTypes.Type(value = SystemIconSource.GitRepository.class)
 })
 public interface SystemIconSource {
 
@@ -29,7 +29,7 @@ public interface SystemIconSource {
     @Builder
     @Jacksonized
     @JsonTypeName("directory")
-    class Directory implements SystemIconSource{
+    class Directory implements SystemIconSource {
 
         Path path;
         String id;
@@ -76,7 +76,7 @@ public interface SystemIconSource {
     @Builder
     @Jacksonized
     @JsonTypeName("git")
-    class GitRepository implements SystemIconSource{
+    class GitRepository implements SystemIconSource {
 
         String remote;
         String id;
@@ -89,12 +89,19 @@ public interface SystemIconSource {
 
         @Override
         public void refresh() throws Exception {
-            try (var sc = ProcessControlProvider.get().createLocalProcessControl(true).start()) {
+            try (var sc =
+                    ProcessControlProvider.get().createLocalProcessControl(true).start()) {
                 var dir = SystemIconManager.getPoolPath().resolve(id);
                 if (!Files.exists(dir)) {
-                    sc.command(CommandBuilder.of().add("git", "clone").addQuoted(remote).addFile(dir.toString())).execute();
+                    sc.command(CommandBuilder.of()
+                                    .add("git", "clone")
+                                    .addQuoted(remote)
+                                    .addFile(dir.toString()))
+                            .execute();
                 } else {
-                    sc.command(CommandBuilder.of().add("git", "pull")).withWorkingDirectory(dir.toString()).execute();
+                    sc.command(CommandBuilder.of().add("git", "pull"))
+                            .withWorkingDirectory(dir.toString())
+                            .execute();
                 }
             }
         }

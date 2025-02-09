@@ -19,8 +19,9 @@ public class AppI18n {
 
     private static AppI18n INSTANCE;
     private final Property<AppI18nData> currentLanguage = new SimpleObjectProperty<>();
-    private final ObservableValue<SupportedLocale> currentLocale = BindingsHelper.map(currentLanguage,appI18nData -> appI18nData != null ?
-            appI18nData.getLocale() : SupportedLocale.getEnglish());
+    private final ObservableValue<SupportedLocale> currentLocale = BindingsHelper.map(
+            currentLanguage,
+            appI18nData -> appI18nData != null ? appI18nData.getLocale() : SupportedLocale.getEnglish());
     private final Map<String, ObservableValue<String>> observableCache = new HashMap<>();
     private AppI18nData english;
 
@@ -57,9 +58,11 @@ public class AppI18n {
 
             // Don't cache vars
             if (vars.length > 0) {
-                var binding = Bindings.createStringBinding(() -> {
-                    return getLocalised(key, vars);
-                }, currentLanguage);
+                var binding = Bindings.createStringBinding(
+                        () -> {
+                            return getLocalised(key, vars);
+                        },
+                        currentLanguage);
                 return binding;
             }
 
@@ -68,9 +71,11 @@ public class AppI18n {
                 return found;
             }
 
-            var binding = Bindings.createStringBinding(() -> {
-                return getLocalised(key, vars);
-            }, currentLanguage);
+            var binding = Bindings.createStringBinding(
+                    () -> {
+                        return getLocalised(key, vars);
+                    },
+                    currentLanguage);
             observableCache.put(key, binding);
             return binding;
         }

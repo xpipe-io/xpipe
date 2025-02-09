@@ -102,7 +102,8 @@ public class ModifiedStage extends Stage {
                     seamlessFrame = false;
                 } else {
                     // This is not available on Windows 10
-                    seamlessFrame = ctrl.setWindowBackdrop(NativeWinWindowControl.DwmSystemBackDropType.MICA_ALT) || SystemUtils.IS_OS_WINDOWS_10;
+                    seamlessFrame = ctrl.setWindowBackdrop(NativeWinWindowControl.DwmSystemBackDropType.MICA_ALT)
+                            || SystemUtils.IS_OS_WINDOWS_10;
                 }
                 stage.getScene()
                         .getRoot()

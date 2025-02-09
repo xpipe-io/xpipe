@@ -1,10 +1,10 @@
 package io.xpipe.app.icon;
 
 import io.xpipe.app.issue.ErrorEvent;
+
 import lombok.Value;
 import org.apache.commons.io.FilenameUtils;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;

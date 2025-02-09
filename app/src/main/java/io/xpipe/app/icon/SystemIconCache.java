@@ -1,14 +1,14 @@
 package io.xpipe.app.icon;
 
+import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.issue.ErrorEvent;
+
 import com.github.weisj.jsvg.SVGDocument;
 import com.github.weisj.jsvg.SVGRenderingHints;
 import com.github.weisj.jsvg.attributes.ViewBox;
 import com.github.weisj.jsvg.parser.SVGLoader;
-import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.issue.ErrorEvent;
 import lombok.Getter;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -17,11 +17,13 @@ import java.nio.file.*;
 import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Map;
+import javax.imageio.ImageIO;
 
 public class SystemIconCache {
 
-    private static final Path DIRECTORY = AppProperties.get().getDataDir().resolve("cache").resolve("icons").resolve("raster");
-    private static final int[] sizes = new int[]{16, 24, 40, 80};
+    private static final Path DIRECTORY =
+            AppProperties.get().getDataDir().resolve("cache").resolve("icons").resolve("raster");
+    private static final int[] sizes = new int[] {16, 24, 40, 80};
 
     @Getter
     private static boolean built = false;
@@ -48,11 +50,11 @@ public class SystemIconCache {
                 Files.createDirectories(target);
 
                 for (var icon : e.getValue().getIcons()) {
-                    if (refreshChecksum(icon.getFile(),target,icon.getName(), icon.isDark())) {
+                    if (refreshChecksum(icon.getFile(), target, icon.getName(), icon.isDark())) {
                         continue;
                     }
 
-                    rasterizeSizes(icon.getFile(),target,icon.getName(), icon.isDark());
+                    rasterizeSizes(icon.getFile(), target, icon.getName(), icon.isDark());
                 }
             }
         } catch (Exception e) {
@@ -109,6 +111,6 @@ public class SystemIconCache {
         g.dispose();
 
         var out = dir.resolve(name + "-" + px + (dark ? "-dark" : "") + ".png");
-        ImageIO.write(image,"png", out.toFile());
+        ImageIO.write(image, "png", out.toFile());
     }
 }

@@ -4,8 +4,8 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
-
 import io.xpipe.app.util.ContextMenuHelper;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.css.Size;
@@ -28,11 +28,12 @@ public class DropdownComp extends Comp<CompStructure<Button>> {
     @Override
     public CompStructure<Button> createBase() {
         var cm = ContextMenuHelper.create();
-        cm.getItems().setAll(items.stream()
-                .map(comp -> {
-                    return new MenuItem(null, comp.createRegion());
-                })
-                .toList());
+        cm.getItems()
+                .setAll(items.stream()
+                        .map(comp -> {
+                            return new MenuItem(null, comp.createRegion());
+                        })
+                        .toList());
 
         Button button = (Button) new ButtonComp(null, () -> {})
                 .apply(new ContextMenuAugment<>(e -> true, null, () -> {

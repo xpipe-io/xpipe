@@ -153,9 +153,8 @@ public class LxdCommandView extends CommandViewBase {
     public ShellControl exec(String container, String user) {
         var sub = shellControl.subShell();
         sub.setDumbOpen(createOpenFunction(container, user, false));
-        sub.setTerminalOpen( createOpenFunction(container, user, true));
-        return sub
-                .withErrorFormatter(LxdCommandView::formatErrorMessage)
+        sub.setTerminalOpen(createOpenFunction(container, user, true));
+        return sub.withErrorFormatter(LxdCommandView::formatErrorMessage)
                 .withExceptionConverter(LxdCommandView::convertException)
                 .elevated(requiresElevation());
     }

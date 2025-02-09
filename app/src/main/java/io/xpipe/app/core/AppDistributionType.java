@@ -12,6 +12,7 @@ import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.XPipeInstallation;
 
 import javafx.beans.value.ObservableValue;
+
 import lombok.Getter;
 
 import java.nio.file.Files;
@@ -86,7 +87,9 @@ public enum AppDistributionType implements Translatable {
 
     private static boolean isDifferentDaemonExecutable() {
         var cached = AppCache.getNonNull("daemonExecutable", String.class, () -> null);
-        var current = XPipeInstallation.getCurrentInstallationBasePath().resolve(XPipeInstallation.getDaemonExecutablePath(OsType.getLocal())).toString();
+        var current = XPipeInstallation.getCurrentInstallationBasePath()
+                .resolve(XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()))
+                .toString();
         if (current.equals(cached)) {
             return false;
         }
@@ -112,7 +115,10 @@ public enum AppDistributionType implements Translatable {
             }
 
             try {
-                var r = LocalExec.readStdoutIfPossible("pkgutil", "--pkg-info", AppProperties.get().isStaging() ? "io.xpipe.xpipe-ptb" : "io.xpipe.xpipe");
+                var r = LocalExec.readStdoutIfPossible(
+                        "pkgutil",
+                        "--pkg-info",
+                        AppProperties.get().isStaging() ? "io.xpipe.xpipe-ptb" : "io.xpipe.xpipe");
                 if (r.isEmpty()) {
                     return PORTABLE;
                 }
@@ -147,7 +153,9 @@ public enum AppDistributionType implements Translatable {
             if (out.isPresent()) {
                 if (out.get().lines().anyMatch(s -> {
                     var split = s.split(" ");
-                    return split.length == 2 && split[0].equals("xpipe") && split[1].equals(AppProperties.get().getVersion());
+                    return split.length == 2
+                            && split[0].equals("xpipe")
+                            && split[1].equals(AppProperties.get().getVersion());
                 })) {
                     return HOMEBREW;
                 }

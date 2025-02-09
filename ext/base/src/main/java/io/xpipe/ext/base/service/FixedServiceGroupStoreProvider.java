@@ -18,8 +18,8 @@ public class FixedServiceGroupStoreProvider extends AbstractServiceGroupStorePro
         return s.getParent().get();
     }
 
-@Override
-     public String getId() {
+    @Override
+    public String getId() {
         return "fixedServiceGroup";
     }
 

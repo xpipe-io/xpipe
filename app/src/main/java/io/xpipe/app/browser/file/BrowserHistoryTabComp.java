@@ -73,31 +73,31 @@ public class BrowserHistoryTabComp extends SimpleComp {
         vbox.apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
 
         var listBox = new ListBoxViewComp<>(
-                list,
-                list,
-                e -> {
-                    var disable = new SimpleBooleanProperty();
-                    var entryButton = entryButton(e, disable);
-                    var dirButton = dirButton(e, disable);
-                    return new HorizontalComp(List.of(entryButton, dirButton)).apply(struc -> {
-                        ((Region) struc.get().getChildren().get(0))
-                                .prefHeightProperty()
-                                .bind(struc.get().heightProperty());
-                        ((Region) struc.get().getChildren().get(1))
-                                .prefHeightProperty()
-                                .bind(struc.get().heightProperty());
-                    });
-                },
-                true)
+                        list,
+                        list,
+                        e -> {
+                            var disable = new SimpleBooleanProperty();
+                            var entryButton = entryButton(e, disable);
+                            var dirButton = dirButton(e, disable);
+                            return new HorizontalComp(List.of(entryButton, dirButton)).apply(struc -> {
+                                ((Region) struc.get().getChildren().get(0))
+                                        .prefHeightProperty()
+                                        .bind(struc.get().heightProperty());
+                                ((Region) struc.get().getChildren().get(1))
+                                        .prefHeightProperty()
+                                        .bind(struc.get().heightProperty());
+                            });
+                        },
+                        true)
                 .apply(struc -> {
                     VBox vBox = (VBox) struc.get().getContent();
                     vBox.setSpacing(10);
                 });
 
         var tile = new TileButtonComp("restore", "restoreAllSessions", "mdmz-restore", actionEvent -> {
-            model.restoreState(state);
-            actionEvent.consume();
-        })
+                    model.restoreState(state);
+                    actionEvent.consume();
+                })
                 .grow(true, false)
                 .accessibleTextKey("restoreAllSessions");
 
@@ -117,7 +117,8 @@ public class BrowserHistoryTabComp extends SimpleComp {
                 "browserWelcomeEmpty",
                 new LabelGraphic.CompGraphic(PrettyImageHelper.ofSpecificFixedSize("graphics/Hips.svg", 100, 122)));
         intro.setButtonAction(() -> {
-            BrowserFullSessionModel.DEFAULT.openFileSystemAsync(DataStorage.get().local().ref(), null, null);
+            BrowserFullSessionModel.DEFAULT.openFileSystemAsync(
+                    DataStorage.get().local().ref(), null, null);
         });
         intro.setButtonDefault(true);
         return intro;

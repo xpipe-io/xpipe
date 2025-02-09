@@ -36,7 +36,11 @@ public class PasswordManagerCategory extends AppPrefsCategory {
     private static class Choice {
 
         public static Choice ofOther(ExternalPasswordManager externalPasswordManager) {
-            return new Choice(externalPasswordManager.getId(), null, externalPasswordManager.getDocsLink(),externalPasswordManager);
+            return new Choice(
+                    externalPasswordManager.getId(),
+                    null,
+                    externalPasswordManager.getDocsLink(),
+                    externalPasswordManager);
         }
 
         String id;

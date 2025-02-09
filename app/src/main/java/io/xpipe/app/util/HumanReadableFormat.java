@@ -70,7 +70,9 @@ public final class HumanReadableFormat {
 
         // not this week
         if (getWeekNumber(x) != getWeekNumber(now)) {
-            return DAY_MONTH.withLocale(AppI18n.activeLanguage().getValue().getLocale()).format(x);
+            return DAY_MONTH
+                    .withLocale(AppI18n.activeLanguage().getValue().getLocale())
+                    .format(x);
         }
 
         // not today
@@ -80,14 +82,19 @@ public final class HumanReadableFormat {
             return AppI18n.get("yesterday");
         }
         if (xDay != nowDay) {
-            return DAY_OF_WEEK.withLocale(AppI18n.activeLanguage().getValue().getLocale()).format(x);
+            return DAY_OF_WEEK
+                    .withLocale(AppI18n.activeLanguage().getValue().getLocale())
+                    .format(x);
         }
 
-        return HOUR_MINUTE.withLocale(AppI18n.activeLanguage().getValue().getLocale()).format(x);
+        return HOUR_MINUTE
+                .withLocale(AppI18n.activeLanguage().getValue().getLocale())
+                .format(x);
     }
 
     private static int getWeekNumber(LocalDateTime date) {
-        return date.get(WeekFields.of(AppI18n.activeLanguage().getValue().getLocale()).weekOfYear());
+        return date.get(
+                WeekFields.of(AppI18n.activeLanguage().getValue().getLocale()).weekOfYear());
     }
 
     public static String duration(Duration duration) {

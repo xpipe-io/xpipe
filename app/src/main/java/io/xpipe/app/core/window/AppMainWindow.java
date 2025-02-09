@@ -152,13 +152,15 @@ public class AppMainWindow {
 
     private static String createTitle() {
         var t = LicenseProvider.get().licenseTitle();
-        var base = String.format(
-                "XPipe %s (%s)", t.getValue(), AppProperties.get().getVersion());
+        var base =
+                String.format("XPipe %s (%s)", t.getValue(), AppProperties.get().getVersion());
         var prefix = AppProperties.get().isStaging() ? "[Public Test Build, Not a proper release] " : "";
         var dist = AppDistributionType.get();
         if (dist == AppDistributionType.UNKNOWN) {
             var u = dist.getUpdateHandler().getPreparedUpdate();
-            var suffix = u.getValue() != null ? " " + AppI18n.get("updateReadyTitle", u.getValue().getVersion()) : "";
+            var suffix = u.getValue() != null
+                    ? " " + AppI18n.get("updateReadyTitle", u.getValue().getVersion())
+                    : "";
             return prefix + base + suffix;
         } else {
             return prefix + base;

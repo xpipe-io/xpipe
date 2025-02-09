@@ -18,8 +18,8 @@ public class CustomServiceGroupStoreProvider extends AbstractServiceGroupStorePr
         return s.getParent().get();
     }
 
-@Override
-     public String getId() {
+    @Override
+    public String getId() {
         return "customServiceGroup";
     }
 

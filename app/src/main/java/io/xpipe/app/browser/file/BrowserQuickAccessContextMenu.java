@@ -119,7 +119,11 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
                     .toList();
             // Expand subdir if only one
             // Note that if we have a link to the directory itself, we shouldn't do it, otherwise we are stuck in a loop
-            if (dirs.size() == 1 && !dirs.getFirst().getRawFileEntry().getPath().equals(entry.getRawFileEntry().getPath())) {
+            if (dirs.size() == 1
+                    && !dirs.getFirst()
+                            .getRawFileEntry()
+                            .getPath()
+                            .equals(entry.getRawFileEntry().getPath())) {
                 updateMenuItems((Menu) menus.get(dirs.getFirst()), dirs.getFirst(), true);
             }
             newItems.addAll(menus.values());

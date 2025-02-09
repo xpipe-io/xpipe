@@ -2,9 +2,9 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.TileButtonComp;
+import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.update.UpdateAvailableDialog;
-import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -27,8 +27,8 @@ public class UpdateCheckComp extends SimpleComp {
                             != null;
                 },
                 AppDistributionType.get().getUpdateHandler().getPreparedUpdate()));
-        checking = PlatformThread.sync(
-                AppDistributionType.get().getUpdateHandler().getBusy());
+        checking =
+                PlatformThread.sync(AppDistributionType.get().getUpdateHandler().getBusy());
     }
 
     private void showAlert() {

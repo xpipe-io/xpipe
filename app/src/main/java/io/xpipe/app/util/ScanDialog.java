@@ -73,9 +73,13 @@ public class ScanDialog {
     private static void show(DataStoreEntry initialStore, ScanDialogAction action) {
         var comp = new ScanDialogComp(initialStore != null ? initialStore.ref() : null, action);
         var modal = ModalOverlay.of("scanAlertTitle", comp);
-        var button = new ModalButton("ok", () -> {
-            comp.finish();
-        }, false, true);
+        var button = new ModalButton(
+                "ok",
+                () -> {
+                    comp.finish();
+                },
+                false,
+                true);
         button.augment(r -> r.disableProperty().bind(PlatformThread.sync(comp.getBusy())));
         modal.addButton(button);
         modal.show();

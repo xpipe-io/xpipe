@@ -39,10 +39,10 @@ public class StandardStorage extends DataStorage {
 
     @Getter
     private boolean disposed;
+
     private boolean saveQueued;
     private final ReentrantLock busyIo = new ReentrantLock();
     private final Set<UUID> inaccessibleEntries = new HashSet<>();
-
 
     StandardStorage() {
         this.dataStorageSyncHandler = DataStorageSyncHandler.getInstance();
@@ -293,7 +293,9 @@ public class StandardStorage extends DataStorage {
                 .map(dataStoreEntry -> dataStoreEntry.getDirectory())
                 .toList());
         toRemove.forEach(storeEntries::remove);
-        inaccessibleEntries.addAll(toRemove.stream().map(dataStoreEntry -> dataStoreEntry.getUuid()).collect(Collectors.toSet()));
+        inaccessibleEntries.addAll(toRemove.stream()
+                .map(dataStoreEntry -> dataStoreEntry.getUuid())
+                .collect(Collectors.toSet()));
     }
 
     private boolean shouldRemoveOtherUserEntry(DataStoreEntry entry) {

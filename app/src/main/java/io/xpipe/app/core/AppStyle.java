@@ -1,6 +1,5 @@
 package io.xpipe.app.core;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -8,6 +7,8 @@ import io.xpipe.app.resources.AppResources;
 
 import javafx.application.Platform;
 import javafx.scene.Scene;
+
+import atlantafx.base.theme.Styles;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -96,7 +97,8 @@ public class AppStyle {
                 var bytes = Files.readAllBytes(file);
                 var s = "data:text/css;base64," + Base64.getEncoder().encodeToString(bytes);
                 THEME_SPECIFIC_STYLESHEET_CONTENTS.put(theme, s);
-                THEME_PREFERENCES_STYLESHEET_CONTENTS.put(theme, Styles.toDataURI(theme.getPlatformPreferencesStylesheet()));
+                THEME_PREFERENCES_STYLESHEET_CONTENTS.put(
+                        theme, Styles.toDataURI(theme.getPlatformPreferencesStylesheet()));
             }
         });
     }
@@ -128,7 +130,8 @@ public class AppStyle {
         });
         THEME_PREFERENCES_STYLESHEET_CONTENTS.clear();
         for (AppTheme.Theme theme : AppTheme.Theme.ALL) {
-            THEME_PREFERENCES_STYLESHEET_CONTENTS.put(theme, Styles.toDataURI(theme.getPlatformPreferencesStylesheet()));
+            THEME_PREFERENCES_STYLESHEET_CONTENTS.put(
+                    theme, Styles.toDataURI(theme.getPlatformPreferencesStylesheet()));
         }
         scenes.forEach(scene -> {
             scene.getStylesheets().add(THEME_PREFERENCES_STYLESHEET_CONTENTS.get(t));

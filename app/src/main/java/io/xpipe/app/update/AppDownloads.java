@@ -1,7 +1,7 @@
 package io.xpipe.app.update;
 
-import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppDistributionType;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.LicenseProvider;

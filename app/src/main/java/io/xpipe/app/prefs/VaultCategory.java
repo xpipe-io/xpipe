@@ -33,7 +33,8 @@ public class VaultCategory extends AppPrefsCategory {
         var encryptVault = new SimpleBooleanProperty(prefs.encryptAllVaultData().get());
         encryptVault.addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
-                var modal = ModalOverlay.of("confirmVaultUnencryptTitle", AppDialog.dialogTextKey("confirmVaultUnencryptContent"));
+                var modal = ModalOverlay.of(
+                        "confirmVaultUnencryptTitle", AppDialog.dialogTextKey("confirmVaultUnencryptContent"));
                 modal.addButton(ModalButton.cancel(() -> {
                     Platform.runLater(() -> {
                         encryptVault.set(true);
@@ -49,8 +50,11 @@ public class VaultCategory extends AppPrefsCategory {
         });
 
         var uh = DataStorageUserHandler.getInstance();
-        var vaultTypeKey = uh.getUserCount() == 0 ? "Default" : uh.getUserCount() == 1 ? (uh.getActiveUser() != null && uh.getActiveUser().equals("legacy") ?
-                "Legacy" : "Personal") : "Team";
+        var vaultTypeKey = uh.getUserCount() == 0
+                ? "Default"
+                : uh.getUserCount() == 1
+                        ? (uh.getActiveUser() != null && uh.getActiveUser().equals("legacy") ? "Legacy" : "Personal")
+                        : "Team";
 
         builder.addTitle("vaultUsers")
                 .sub(new OptionsBuilder()
@@ -80,8 +84,7 @@ public class VaultCategory extends AppPrefsCategory {
                         .pref(prefs.lockVaultOnHibernation)
                         .addToggle(prefs.lockVaultOnHibernation)
                         .pref(prefs.encryptAllVaultData)
-                        .addToggle(encryptVault)
-                );
+                        .addToggle(encryptVault));
         builder.addTitle("vault")
                 .sub(new OptionsBuilder()
                         .nameAndDescription("browseVault")

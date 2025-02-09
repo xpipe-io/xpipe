@@ -20,8 +20,6 @@ public interface ShellDialect {
 
     ShellCapabilities determineCapabilities();
 
-
-
     CommandBuilder launchAsnyc(CommandBuilder cmd);
 
     default String getLicenseFeatureId() {

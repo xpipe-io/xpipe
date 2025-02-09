@@ -100,7 +100,14 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                 new SimpleListProperty<>(FXCollections.observableArrayList(new ArrayList<>(st.getEffectiveScripts())));
         Property<String> commandProp = new SimpleObjectProperty<>(st.getCommands());
 
-        var availableDialects = List.of(ShellDialects.SH, ShellDialects.BASH, ShellDialects.ZSH, ShellDialects.FISH, ShellDialects.CMD, ShellDialects.POWERSHELL, ShellDialects.POWERSHELL_CORE);
+        var availableDialects = List.of(
+                ShellDialects.SH,
+                ShellDialects.BASH,
+                ShellDialects.ZSH,
+                ShellDialects.FISH,
+                ShellDialects.CMD,
+                ShellDialects.POWERSHELL,
+                ShellDialects.POWERSHELL_CORE);
         Comp<?> choice = (Comp<?>) Class.forName(
                         AppExtensionManager.getInstance()
                                 .getExtendedLayer()

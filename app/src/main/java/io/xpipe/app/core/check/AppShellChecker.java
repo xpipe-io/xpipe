@@ -5,8 +5,8 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.process.ProcessOutputException;
-
 import io.xpipe.core.process.ShellSpawnException;
+
 import lombok.Value;
 
 import java.util.Optional;
@@ -17,9 +17,11 @@ public abstract class AppShellChecker {
         var err = selfTestErrorCheck();
 
         var canFallback = !ProcessControlProvider.get()
-                        .getEffectiveLocalDialect()
-                        .equals(ProcessControlProvider.get().getFallbackDialect());
-        if (err.isPresent() && canFallback && (shouldAttemptFallbackForProcessStartFail() || !err.get().isProcessSpawnIssue())) {
+                .getEffectiveLocalDialect()
+                .equals(ProcessControlProvider.get().getFallbackDialect());
+        if (err.isPresent()
+                && canFallback
+                && (shouldAttemptFallbackForProcessStartFail() || !err.get().isProcessSpawnIssue())) {
             var msg = formatMessage(err.get().getMessage());
             ErrorEvent.fromThrowable(new IllegalStateException(msg)).expected().handle();
             toggleFallback();
@@ -93,7 +95,8 @@ public abstract class AppShellChecker {
                         "Expected output \"test\", got output \"" + out + "\" when running test script", false, true));
             }
         } catch (ProcessOutputException ex) {
-            return Optional.of(new FailureResult(ex.getOutput() != null ? ex.getOutput() : ex.getMessage(), false, true));
+            return Optional.of(
+                    new FailureResult(ex.getOutput() != null ? ex.getOutput() : ex.getMessage(), false, true));
         } catch (ShellSpawnException ex) {
             return Optional.of(new FailureResult(ex.getMessage(), true, true));
         } catch (Throwable t) {

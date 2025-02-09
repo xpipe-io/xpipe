@@ -253,7 +253,11 @@ public abstract class OperationMode {
                 : XPipeInstallation.getCurrentInstallationBasePath().toString();
         var dataDir = AppProperties.get().getDataDir();
         // We have to quote the arguments like this to make it work in PowerShell as well
-        var exec = XPipeInstallation.createExternalAsyncLaunchCommand(loc, XPipeDaemonMode.GUI, "\"-Dio.xpipe.app.acceptEula=true\" \"-Dio.xpipe.app.dataDir=" + dataDir + "\"", true);
+        var exec = XPipeInstallation.createExternalAsyncLaunchCommand(
+                loc,
+                XPipeDaemonMode.GUI,
+                "\"-Dio.xpipe.app.acceptEula=true\" \"-Dio.xpipe.app.dataDir=" + dataDir + "\"",
+                true);
         LocalShell.getShell().executeSimpleCommand(exec);
     }
 

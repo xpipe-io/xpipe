@@ -3,10 +3,10 @@ package io.xpipe.app.ext;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileSystem;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 
 import java.io.InputStream;

@@ -5,9 +5,9 @@ import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.comp.base.VerticalComp;
+import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.JfxHelper;
 import io.xpipe.app.util.OptionsBuilder;
@@ -61,11 +61,12 @@ public class AboutCategory extends AppPrefsCategory {
                         null)
                 .addComp(
                         new TileButtonComp("thirdParty", "thirdPartyDescription", "mdi2o-open-source-initiative", e -> {
-                            var comp = new ThirdPartyDependencyListComp().prefWidth(650).styleClass("open-source-notices");
+                            var comp = new ThirdPartyDependencyListComp()
+                                    .prefWidth(650)
+                                    .styleClass("open-source-notices");
                             var modal = ModalOverlay.of("openSourceNotices", comp);
                             modal.show();
-                        })
-                )
+                        }))
                 .addComp(
                         new TileButtonComp("eula", "eulaDescription", "mdi2c-card-text-outline", e -> {
                                     Hyperlinks.open(Hyperlinks.EULA);

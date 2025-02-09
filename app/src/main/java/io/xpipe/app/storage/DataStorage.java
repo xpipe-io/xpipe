@@ -448,7 +448,9 @@ public abstract class DataStorage {
         try {
             List<? extends DataStoreEntryRef<? extends FixedChildStore>> l = h.listChildren();
             if (l != null) {
-                newChildren = l.stream().filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null).toList();
+                newChildren = l.stream()
+                        .filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null)
+                        .toList();
             } else {
                 newChildren = null;
             }
@@ -494,26 +496,33 @@ public abstract class DataStorage {
                             .filter(oc -> oc.getStore() instanceof FixedChildStore)
                             .filter(oc -> getFixedChildId(oc).isPresent())
                             .noneMatch(oc -> {
-                                return getFixedChildId(oc).getAsInt()
-                                        == nid.getAsInt();
+                                return getFixedChildId(oc).getAsInt() == nid.getAsInt();
                             });
                 })
                 .toList();
-        var toUpdate = new ArrayList<>(oldChildren.stream().map(oc -> {
-            var oid = getFixedChildId(oc);
-            if (oid.isEmpty()) {
-                return new Pair<DataStoreEntry, DataStoreEntryRef<? extends FixedChildStore>>(oc, null);
-            }
+        var toUpdate = new ArrayList<>(oldChildren.stream()
+                .map(oc -> {
+                    var oid = getFixedChildId(oc);
+                    if (oid.isEmpty()) {
+                        return new Pair<DataStoreEntry, DataStoreEntryRef<? extends FixedChildStore>>(oc, null);
+                    }
 
-            var found = newChildren.stream().filter(nc -> getFixedChildId(nc.get()).isPresent()).filter(nc -> getFixedChildId(nc.get()).getAsInt() ==
-                    oid.getAsInt()).findFirst().orElse(null);
-            return new Pair<DataStoreEntry, DataStoreEntryRef<? extends FixedChildStore>>(oc, found);
-        }).filter(en -> en.getValue() != null).toList());
+                    var found = newChildren.stream()
+                            .filter(nc -> getFixedChildId(nc.get()).isPresent())
+                            .filter(nc -> getFixedChildId(nc.get()).getAsInt() == oid.getAsInt())
+                            .findFirst()
+                            .orElse(null);
+                    return new Pair<DataStoreEntry, DataStoreEntryRef<? extends FixedChildStore>>(oc, found);
+                })
+                .filter(en -> en.getValue() != null)
+                .toList());
 
         toUpdate.removeIf(pair -> {
             if (pair.getKey().getStorePersistentState() != null
                     && pair.getValue().get().getStorePersistentState() != null) {
-                return pair.getKey().getStorePersistentState().equals(pair.getValue().get().getStorePersistentState());
+                return pair.getKey()
+                        .getStorePersistentState()
+                        .equals(pair.getValue().get().getStorePersistentState());
             } else {
                 return true;
             }
@@ -803,7 +812,8 @@ public abstract class DataStorage {
             return true;
         }
 
-        var parentCat = getStoreCategoryIfPresent(parent.get().getCategoryUuid()).orElseThrow();
+        var parentCat =
+                getStoreCategoryIfPresent(parent.get().getCategoryUuid()).orElseThrow();
         var parentCatHierarchy = getCategoryParentHierarchy(parentCat);
         var cat = getStoreCategoryIfPresent(entry.getCategoryUuid()).orElseThrow();
         var catHierarchy = getCategoryParentHierarchy(cat);

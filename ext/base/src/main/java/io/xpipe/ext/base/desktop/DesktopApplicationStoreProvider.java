@@ -109,8 +109,8 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
         return DesktopApplicationStore.builder().build();
     }
 
-@Override
-     public String getId() {
+    @Override
+    public String getId() {
         return "desktopApplication";
     }
 
