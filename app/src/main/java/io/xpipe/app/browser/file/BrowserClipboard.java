@@ -48,7 +48,7 @@ public class BrowserClipboard {
                             List<File> data = (List<File>) clipboard.getData(DataFlavor.javaFileListFlavor);
                             // Sometimes file data can contain invalid chars. Why?
                             var files = data.stream()
-                                    .filter(file -> file.toString().equals(OsType.getLocal().makeFileSystemCompatible(file.toString())))
+                                    .filter(file -> file.toString().chars().noneMatch(value -> Character.isISOControl(value)))
                                     .map(f -> f.toPath()).toList();
                             if (files.size() == 0) {
                                 return;

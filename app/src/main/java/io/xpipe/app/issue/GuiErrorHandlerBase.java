@@ -10,7 +10,7 @@ public class GuiErrorHandlerBase {
     protected boolean startupGui(Consumer<Throwable> onFail) {
         try {
             AppProperties.init();
-            AppExtensionManager.init(false);
+            AppExtensionManager.init();
             PlatformInit.init(true);
         } catch (Throwable ex) {
             onFail.accept(ex);

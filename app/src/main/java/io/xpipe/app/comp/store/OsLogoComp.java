@@ -52,8 +52,8 @@ public class OsLogoComp extends SimpleComp {
                 wrapper.getPersistentState(),
                 state);
         var hide = Bindings.createBooleanBinding(() -> {
-            return img.get() != null && !wrapper.getLargeCategoryOptimizations().getValue();
-        }, img, wrapper.getLargeCategoryOptimizations());
+            return img.get() != null;
+        }, img);
         return new StackComp(List.of(
                         new SystemStateComp(state).hide(hide),
                         PrettyImageHelper.ofFixedSize(img, 24, 24).visible(hide)))

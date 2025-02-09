@@ -40,7 +40,7 @@ public class GitHubUpdater extends UpdateHandler {
                 () -> {
                     executeUpdateAndClose();
                 },
-                false,
+                true,
                 true));
         return list;
     }

@@ -26,7 +26,6 @@ import java.util.stream.Stream;
 public class AppExtensionManager {
 
     private static AppExtensionManager INSTANCE;
-    private final boolean loadedProviders;
     private final List<Extension> loadedExtensions = new ArrayList<>();
     private final List<ModuleLayer> leafModuleLayers = new ArrayList<>();
     private final List<Path> extensionBaseDirectories = new ArrayList<>();
@@ -35,29 +34,22 @@ public class AppExtensionManager {
     @Getter
     private ModuleLayer extendedLayer;
 
-    public AppExtensionManager(boolean loadedProviders) {
-        this.loadedProviders = loadedProviders;
-    }
-
-    public static void init(boolean loadProviders) throws Exception {
-        var load = INSTANCE == null || !INSTANCE.loadedProviders && loadProviders;
-
-        if (INSTANCE == null) {
-            INSTANCE = new AppExtensionManager(loadProviders);
-            INSTANCE.determineExtensionDirectories();
-            INSTANCE.loadBaseExtension();
-            INSTANCE.loadAllExtensions();
+    public static synchronized void init() throws Exception {
+        if (INSTANCE != null) {
+            return;
         }
 
-        if (load) {
-            try {
-                ProcessControlProvider.init(INSTANCE.extendedLayer);
-                ModuleLayerLoader.loadAll(INSTANCE.extendedLayer, t -> {
-                    ErrorEvent.fromThrowable(t).handle();
-                });
-            } catch (Throwable t) {
-                throw ExtensionException.corrupt("Service provider initialization failed", t);
-            }
+        INSTANCE = new AppExtensionManager();
+        INSTANCE.determineExtensionDirectories();
+        INSTANCE.loadBaseExtension();
+        INSTANCE.loadAllExtensions();
+        try {
+            ProcessControlProvider.init(INSTANCE.extendedLayer);
+            ModuleLayerLoader.loadAll(INSTANCE.extendedLayer, t -> {
+                ErrorEvent.fromThrowable(t).handle();
+            });
+        } catch (Throwable t) {
+            throw ExtensionException.corrupt("Service provider initialization failed", t);
         }
     }
 

@@ -109,7 +109,7 @@ public abstract class OperationMode {
             AppProperties.logSystemProperties();
             AppProperties.get().logArguments();
             AppDistributionType.init();
-            AppExtensionManager.init(true);
+            AppExtensionManager.init();
             AppI18n.init();
             AppPrefs.initLocal();
             AppBeaconServer.setupPort();
