@@ -31,7 +31,6 @@ public class PtyxisTerminalType extends ExternalTerminalType.SimplePathType impl
     @Override
     protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
         var toExecute = CommandBuilder.of()
-                .add(executable)
                 .addIf(configuration.isPreferTabs(), "--tab")
                 .addIf(!configuration.isPreferTabs(), "--new-window")
                 .add("--")
