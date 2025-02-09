@@ -3,6 +3,7 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.PlatformThread;
 
@@ -101,6 +102,15 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
                 updateVisibilities(scroll, vbox);
             });
         });
+
+        // We can't directly listen to any parent element changing visibility, so this is a compromise
+        if (AppLayoutModel.get() != null) {
+            AppLayoutModel.get().getSelected().addListener((observable, oldValue, newValue) -> {
+                PlatformThread.runLaterIfNeeded(() -> {
+                    updateVisibilities(scroll, vbox);
+                });
+            });
+        }
 
         vbox.sceneProperty().addListener((observable, oldValue, newValue) -> {
             Node c = vbox;

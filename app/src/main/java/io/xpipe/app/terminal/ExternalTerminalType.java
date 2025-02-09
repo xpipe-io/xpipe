@@ -189,6 +189,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
+        public boolean supportsEscapes() {
+            return false;
+        }
+
+        @Override
         protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return CommandBuilder.of()
                     .add("--title")
