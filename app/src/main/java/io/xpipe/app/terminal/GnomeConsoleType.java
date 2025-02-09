@@ -5,10 +5,10 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
 
-public class GnomeConsoleType extends ExternalTerminalType.PathCheckType implements TrackableTerminalType {
+public class GnomeConsoleType extends ExternalTerminalType.SimplePathType implements TrackableTerminalType {
 
     public GnomeConsoleType() {
-        super("app.gnomeConsole", "kgx", false);
+        super("app.gnomeConsole", "kgx", true);
     }
 
     @Override
@@ -32,16 +32,12 @@ public class GnomeConsoleType extends ExternalTerminalType.PathCheckType impleme
     }
 
     @Override
-    public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-        try (ShellControl pc = LocalShell.getShell()) {
-            CommandSupport.isInPathOrThrow(pc, executable, toTranslatedString().getValue(), null);
-
-            var toExecute = CommandBuilder.of()
-                    .add(executable)
-                    .addIf(configuration.isPreferTabs(), "--tab")
-                    .add("--")
-                    .add(configuration.getDialectLaunchCommand());
-            pc.executeSimpleCommand(toExecute);
-        }
+    protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
+        var toExecute = CommandBuilder.of()
+                .add(executable)
+                .addIf(configuration.isPreferTabs(), "--tab")
+                .add("--")
+                .add(configuration.getDialectLaunchCommand());
+        return toExecute;
     }
 }
