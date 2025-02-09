@@ -143,7 +143,7 @@ public enum AppDistributionType implements Translatable {
         // In theory, we can also add  && !AppProperties.get().isStaging() here, but we want to replicate the
         // production behavior
         if (OsType.getLocal().equals(OsType.MACOS)) {
-            var out = LocalExec.readStdoutIfPossible("brew", "list", "--casks", "--versions");
+            var out = LocalExec.readStdoutIfPossible("/opt/homebrew/bin/brew", "list", "--casks", "--versions");
             if (out.isPresent()) {
                 if (out.get().lines().anyMatch(s -> {
                     var split = s.split(" ");

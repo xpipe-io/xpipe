@@ -27,7 +27,7 @@ public class LocalExec {
                 return Optional.of(s);
             }
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).handle();
+            TrackEvent.withTrace("Local command finished").tag("command", String.join(" ", command)).tag("error", ex.toString()).handle();
             return Optional.empty();
         }
     }
