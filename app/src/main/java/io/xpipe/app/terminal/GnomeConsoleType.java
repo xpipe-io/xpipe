@@ -34,7 +34,6 @@ public class GnomeConsoleType extends ExternalTerminalType.SimplePathType implem
     @Override
     protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
         var toExecute = CommandBuilder.of()
-                .add(executable)
                 .addIf(configuration.isPreferTabs(), "--tab")
                 .add("--")
                 .add(configuration.getDialectLaunchCommand());
