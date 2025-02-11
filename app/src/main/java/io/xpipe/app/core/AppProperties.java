@@ -30,7 +30,6 @@ public class AppProperties {
     UUID buildUuid;
     String sentryUrl;
     String arch;
-    List<String> languages;
 
     @Getter
     boolean image;
@@ -95,14 +94,10 @@ public class AppProperties {
                 .orElse(UUID.randomUUID());
         sentryUrl = System.getProperty("io.xpipe.app.sentryUrl");
         arch = System.getProperty("io.xpipe.app.arch");
-        languages = Arrays.stream(System.getProperty("io.xpipe.app.languages").split(","))
-                .sorted()
-                .toList();
         staging = Optional.ofNullable(System.getProperty("io.xpipe.app.staging"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
-        devLoginPassword = Optional.ofNullable(System.getProperty("io.xpipe.app.loginPassword"))
-                .orElse(null);
+        devLoginPassword = System.getProperty("io.xpipe.app.loginPassword");
         useVirtualThreads = Optional.ofNullable(System.getProperty("io.xpipe.app.useVirtualThreads"))
                 .map(Boolean::parseBoolean)
                 .orElse(true);

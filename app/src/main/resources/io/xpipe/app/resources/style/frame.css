@@ -47,6 +47,13 @@
     -fx-padding: 0 0 0 0;
 }
 
+.root:seamless-frame.nord .layout > .background {
+    -fx-background-radius: 0 0 0 0;
+    -fx-border-radius: 0 0 0 0;
+    -fx-border-width: 1 1 0 0;
+    -fx-padding: 0 0 0 0;
+}
+
 .root:light:seamless-frame .layout > .background {
     -fx-border-color: #999;
 }
@@ -63,4 +70,9 @@
 .root:seamless-frame .layout > .background > * {
     -fx-background-radius: 0 6 0 0;
     -fx-border-radius: 0 6 0 0;
+}
+
+.root:seamless-frame.nord .layout > .background > * {
+    -fx-background-radius: 0 0 0 0;
+    -fx-border-radius: 0 0 0 0;
 }

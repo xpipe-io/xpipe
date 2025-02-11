@@ -32,7 +32,7 @@ public class WarpTerminalType extends ExternalTerminalType.MacOsType {
     }
 
     @Override
-    public boolean supportsColoredTitle() {
+    public boolean useColoredTitle() {
         return true;
     }
 

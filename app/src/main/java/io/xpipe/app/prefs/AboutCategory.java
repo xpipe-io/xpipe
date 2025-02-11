@@ -2,11 +2,12 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.LabelComp;
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.comp.base.VerticalComp;
+import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.JfxHelper;
 import io.xpipe.app.util.OptionsBuilder;
@@ -14,8 +15,6 @@ import io.xpipe.core.process.OsType;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.Region;
 
 import atlantafx.base.theme.Styles;
 
@@ -48,48 +47,34 @@ public class AboutCategory extends AppPrefsCategory {
                         null)
                 .addComp(
                         new TileButtonComp("securityPolicy", "securityPolicyDescription", "mdrmz-security", e -> {
-                                    Hyperlinks.open(Hyperlinks.SECURITY);
+                                    Hyperlinks.open(Hyperlinks.DOCS_SECURITY);
                                     e.consume();
                                 })
                                 .grow(true, false),
                         null)
                 .addComp(
                         new TileButtonComp("privacy", "privacyDescription", "mdomz-privacy_tip", e -> {
-                                    Hyperlinks.open(Hyperlinks.PRIVACY);
+                                    Hyperlinks.open(Hyperlinks.DOCS_PRIVACY);
                                     e.consume();
                                 })
                                 .grow(true, false),
                         null)
                 .addComp(
                         new TileButtonComp("thirdParty", "thirdPartyDescription", "mdi2o-open-source-initiative", e -> {
-                                    AppWindowHelper.sideWindow(
-                                                    AppI18n.get("openSourceNotices"),
-                                                    stage -> Comp.of(() -> createThirdPartyDeps()),
-                                                    true,
-                                                    null)
-                                            .show();
-                                    e.consume();
-                                })
-                                .grow(true, false),
-                        null)
+                            var comp = new ThirdPartyDependencyListComp()
+                                    .prefWidth(650)
+                                    .styleClass("open-source-notices");
+                            var modal = ModalOverlay.of("openSourceNotices", comp);
+                            modal.show();
+                        }))
                 .addComp(
                         new TileButtonComp("eula", "eulaDescription", "mdi2c-card-text-outline", e -> {
-                                    Hyperlinks.open(Hyperlinks.EULA);
+                                    Hyperlinks.open(Hyperlinks.DOCS_EULA);
                                     e.consume();
                                 })
                                 .grow(true, false),
                         null)
                 .buildComp();
-    }
-
-    private Region createThirdPartyDeps() {
-        var list = new ThirdPartyDependencyListComp().createRegion();
-        list.getStyleClass().add("open-source-notices");
-        var sp = new ScrollPane(list);
-        sp.setFitToWidth(true);
-        sp.setPrefWidth(600);
-        sp.setPrefHeight(500);
-        return sp;
     }
 
     @Override
@@ -99,7 +84,7 @@ public class AboutCategory extends AppPrefsCategory {
 
     @Override
     protected Comp<?> create() {
-        var props = createProperties().padding(new Insets(0, 0, 0, 15));
+        var props = createProperties().padding(new Insets(0, 0, 0, 5));
         var update = new UpdateCheckComp().grow(true, false);
         return new VerticalComp(List.of(props, Comp.separator(), update, Comp.separator(), createLinks()))
                 .apply(s -> s.get().setFillWidth(true))
@@ -127,6 +112,8 @@ public class AboutCategory extends AppPrefsCategory {
                 .addComp(Comp.vspacer(10))
                 .name("build")
                 .addComp(new LabelComp(AppProperties.get().getBuild()), null)
+                .name("distribution")
+                .addComp(new LabelComp(AppDistributionType.get().toTranslatedString()))
                 .name("runtimeVersion")
                 .addComp(new LabelComp(System.getProperty("java.vm.version")), null)
                 .name("virtualMachine")

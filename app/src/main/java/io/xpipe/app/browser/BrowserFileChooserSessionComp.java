@@ -11,7 +11,6 @@ import io.xpipe.app.comp.base.LeftSplitPaneComp;
 import io.xpipe.app.comp.base.StackComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
-import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -62,7 +61,6 @@ public class BrowserFileChooserSessionComp extends DialogComp {
                 });
                 var comp = new BrowserFileChooserSessionComp(stage, model);
                 comp.apply(struc -> struc.get().setPrefSize(1200, 700))
-                        .apply(struc -> AppFont.normal(struc.get()))
                         .styleClass("browser")
                         .styleClass("chooser");
                 return comp;

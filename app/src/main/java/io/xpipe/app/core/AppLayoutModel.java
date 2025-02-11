@@ -4,7 +4,6 @@ import io.xpipe.app.browser.BrowserFullSessionComp;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.store.StoreLayoutComp;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.AppPrefsComp;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LabelGraphic;
@@ -103,12 +102,6 @@ public class AppLayoutModel {
                         null,
                         null),
                 new Entry(
-                        AppI18n.observable("team"),
-                        new LabelGraphic.IconGraphic("mdi2a-account-group"),
-                        null,
-                        () -> AppPrefs.get().selectCategory("vault"),
-                        null),
-                new Entry(
                         AppI18n.observable("visitGithubRepository"),
                         new LabelGraphic.IconGraphic("mdi2g-github"),
                         null,
@@ -128,16 +121,16 @@ public class AppLayoutModel {
                 //                                "http://localhost:" + AppBeaconServer.get().getPort()),
                 //                        null),
                 new Entry(
+                        AppI18n.observable("documentation"),
+                        new LabelGraphic.IconGraphic("mdi2b-book-open-variant"),
+                        null,
+                        () -> Hyperlinks.open(Hyperlinks.DOCS),
+                        null),
+                new Entry(
                         AppI18n.observable("webtop"),
                         new LabelGraphic.IconGraphic("mdi2d-desktop-mac"),
                         null,
                         () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
-                        null),
-                new Entry(
-                        AppI18n.observable("pythonApi"),
-                        new LabelGraphic.IconGraphic("mdi2l-language-python"),
-                        null,
-                        () -> Hyperlinks.open(Hyperlinks.GITHUB_PYTHON_API),
                         null)));
 
         return l;

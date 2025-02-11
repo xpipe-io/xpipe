@@ -104,8 +104,8 @@ public class IncusContainerStoreProvider implements ShellStoreProvider {
     }
 
     @Override
-    public List<String> getPossibleNames() {
-        return List.of("incusContainer");
+    public String getId() {
+        return "incusContainer";
     }
 
     @Override

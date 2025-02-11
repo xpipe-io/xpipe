@@ -2832,7 +2832,7 @@ This can be used to run more complex commands on remote systems.
 
 ```json
 {
-  "path": "/tmp/exec-123.sh"
+  "path": "/tmp/xpipe-123.sh"
 }
 ```
 

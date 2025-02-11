@@ -29,7 +29,7 @@ public class XShellTerminalType extends ExternalTerminalType.WindowsType {
     protected Optional<Path> determineInstallation() {
         try {
             var r = WindowsRegistry.local()
-                    .readValue(
+                    .readStringValueIfPresent(
                             WindowsRegistry.HKEY_LOCAL_MACHINE,
                             "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\Xshell.exe");
             return r.map(Path::of);
@@ -50,7 +50,7 @@ public class XShellTerminalType extends ExternalTerminalType.WindowsType {
     }
 
     @Override
-    public boolean supportsColoredTitle() {
+    public boolean useColoredTitle() {
         return false;
     }
 

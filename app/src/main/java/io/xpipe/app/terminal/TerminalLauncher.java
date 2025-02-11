@@ -59,7 +59,7 @@ public class TerminalLauncher {
         }
 
         var color = entry != null ? DataStorage.get().getEffectiveColor(entry) : null;
-        var prefix = entry != null && color != null && type.supportsColoredTitle() ? color.getEmoji() + " " : "";
+        var prefix = entry != null && color != null && type.useColoredTitle() ? color.getEmoji() + " " : "";
         var cleanTitle = (title != null ? title : entry != null ? entry.getName() : "?");
         var adjustedTitle = prefix + cleanTitle;
         var log = AppPrefs.get().enableTerminalLogging().get();

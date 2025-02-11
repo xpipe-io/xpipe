@@ -5,6 +5,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.process.ProcessOutputException;
+import io.xpipe.core.process.ShellSpawnException;
 
 import lombok.Value;
 
@@ -16,10 +17,11 @@ public abstract class AppShellChecker {
         var err = selfTestErrorCheck();
 
         var canFallback = !ProcessControlProvider.get()
-                        .getEffectiveLocalDialect()
-                        .equals(ProcessControlProvider.get().getFallbackDialect())
-                && shouldAttemptFallback();
-        if (err.isPresent() && canFallback) {
+                .getEffectiveLocalDialect()
+                .equals(ProcessControlProvider.get().getFallbackDialect());
+        if (err.isPresent()
+                && canFallback
+                && (shouldAttemptFallbackForProcessStartFail() || !err.get().isProcessSpawnIssue())) {
             var msg = formatMessage(err.get().getMessage());
             ErrorEvent.fromThrowable(new IllegalStateException(msg)).expected().handle();
             toggleFallback();
@@ -41,7 +43,7 @@ public abstract class AppShellChecker {
         }
     }
 
-    protected boolean shouldAttemptFallback() {
+    protected boolean shouldAttemptFallbackForProcessStartFail() {
         return true;
     }
 
@@ -90,12 +92,15 @@ public abstract class AppShellChecker {
                     .readStdoutOrThrow();
             if (!out.equals("test")) {
                 return Optional.of(new FailureResult(
-                        "Expected output \"test\", got output \"" + out + "\" when running test script", true));
+                        "Expected output \"test\", got output \"" + out + "\" when running test script", false, true));
             }
         } catch (ProcessOutputException ex) {
-            return Optional.of(new FailureResult(ex.getOutput() != null ? ex.getOutput() : ex.getMessage(), true));
+            return Optional.of(
+                    new FailureResult(ex.getOutput() != null ? ex.getOutput() : ex.getMessage(), false, true));
+        } catch (ShellSpawnException ex) {
+            return Optional.of(new FailureResult(ex.getMessage(), true, true));
         } catch (Throwable t) {
-            return Optional.of(new FailureResult(t.getMessage() != null ? t.getMessage() : t.toString(), false));
+            return Optional.of(new FailureResult(t.getMessage() != null ? t.getMessage() : t.toString(), false, false));
         }
         return Optional.empty();
     }
@@ -104,6 +109,7 @@ public abstract class AppShellChecker {
     public static class FailureResult {
 
         String message;
+        boolean processSpawnIssue;
         boolean canContinue;
     }
 }

@@ -3,7 +3,6 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.SimpleTitledPaneComp;
 import io.xpipe.app.comp.base.VerticalComp;
-import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.DerivedObservableList;
@@ -77,7 +76,6 @@ public class BrowserOverviewComp extends SimpleComp {
 
         var vbox = new VerticalComp(List.of(recentPane, commonPane, rootsPane)).styleClass("overview");
         var r = vbox.createRegion();
-        AppFont.medium(r);
         return r;
     }
 }

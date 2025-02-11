@@ -19,7 +19,7 @@ import org.apache.commons.lang3.SystemUtils;
 public class ModifiedStage extends Stage {
 
     public static boolean mergeFrame() {
-        return SystemUtils.IS_OS_WINDOWS_11 || SystemUtils.IS_OS_MAC;
+        return SystemUtils.IS_OS_WINDOWS_10 || SystemUtils.IS_OS_WINDOWS_11 || SystemUtils.IS_OS_MAC;
     }
 
     public static void init() {
@@ -43,7 +43,7 @@ public class ModifiedStage extends Stage {
     private static void hookUpStage(Stage stage) {
         applyModes(stage);
         if (AppPrefs.get() != null) {
-            AppPrefs.get().theme.addListener((observable, oldValue, newValue) -> {
+            AppPrefs.get().theme().addListener((observable, oldValue, newValue) -> {
                 updateStage(stage);
             });
             AppPrefs.get().performanceMode().addListener((observable, oldValue, newValue) -> {
@@ -65,7 +65,7 @@ public class ModifiedStage extends Stage {
         }
 
         var applyToStage = (OsType.getLocal() == OsType.WINDOWS) || (OsType.getLocal() == OsType.MACOS);
-        if (!applyToStage || AppPrefs.get() == null || AppPrefs.get().theme.getValue() == null) {
+        if (!applyToStage || AppPrefs.get() == null || AppPrefs.get().theme().getValue() == null) {
             stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), false);
             stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), true);
             return;
@@ -80,7 +80,7 @@ public class ModifiedStage extends Stage {
                         && !AppPrefs.get().performanceMode().get()
                         && mergeFrame();
                 var seamlessFrameApplied = ctrl.setAppearance(
-                                seamlessFrame, AppPrefs.get().theme.getValue().isDark())
+                                seamlessFrame, AppPrefs.get().theme().getValue().isDark())
                         && seamlessFrame;
                 stage.getScene()
                         .getRoot()
@@ -93,7 +93,7 @@ public class ModifiedStage extends Stage {
                 var ctrl = new NativeWinWindowControl(stage);
                 ctrl.setWindowAttribute(
                         NativeWinWindowControl.DmwaWindowAttribute.DWMWA_USE_IMMERSIVE_DARK_MODE.get(),
-                        AppPrefs.get().theme.getValue().isDark());
+                        AppPrefs.get().theme().getValue().isDark());
                 boolean seamlessFrame;
                 if (AppPrefs.get().performanceMode().get()
                         || !mergeFrame()
@@ -101,7 +101,9 @@ public class ModifiedStage extends Stage {
                         || stage != AppMainWindow.getInstance().getStage()) {
                     seamlessFrame = false;
                 } else {
-                    seamlessFrame = ctrl.setWindowBackdrop(NativeWinWindowControl.DwmSystemBackDropType.MICA_ALT);
+                    // This is not available on Windows 10
+                    seamlessFrame = ctrl.setWindowBackdrop(NativeWinWindowControl.DwmSystemBackDropType.MICA_ALT)
+                            || SystemUtils.IS_OS_WINDOWS_10;
                 }
                 stage.getScene()
                         .getRoot()

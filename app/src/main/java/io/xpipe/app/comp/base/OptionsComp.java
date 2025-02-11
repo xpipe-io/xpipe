@@ -3,7 +3,7 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
-import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.Observable;
@@ -58,7 +58,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
             if (showVertical) {
                 var line = new VBox();
                 line.prefWidthProperty().bind(pane.widthProperty());
-                line.setSpacing(5);
+                line.setSpacing(2);
 
                 var name = new Label();
                 name.getStyleClass().add("name");
@@ -92,7 +92,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                         popover.setCloseButtonEnabled(false);
                         popover.setHeaderAlwaysVisible(false);
                         popover.setDetachable(true);
-                        AppFont.small(popover.getContentNode());
+                        AppFontSizes.xs(popover.getContentNode());
 
                         var extendedDescription = new Button("... ?");
                         extendedDescription.setMinWidth(Region.USE_PREF_SIZE);
@@ -100,7 +100,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                         extendedDescription.getStyleClass().add(Styles.ACCENT);
                         extendedDescription.getStyleClass().add("long-description");
                         extendedDescription.setAccessibleText("Help");
-                        AppFont.normal(extendedDescription);
+                        AppFontSizes.xl(extendedDescription);
                         extendedDescription.setOnAction(e -> {
                             popover.show(extendedDescription);
                             e.consume();
@@ -119,6 +119,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                         }
                     } else {
                         line.getChildren().add(description);
+                        line.getChildren().add(new Spacer(2, Orientation.VERTICAL));
                     }
                 }
 
@@ -128,6 +129,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                         compRegion.accessibleHelpProperty().bind(PlatformThread.sync(entry.description()));
                     }
                     line.getChildren().add(compRegion);
+                    compRegion.getStyleClass().add("options-content");
                 }
 
                 pane.getChildren().add(line);

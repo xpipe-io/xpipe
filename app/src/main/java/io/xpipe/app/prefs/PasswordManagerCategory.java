@@ -34,6 +34,15 @@ public class PasswordManagerCategory extends AppPrefsCategory {
 
     @Value
     private static class Choice {
+
+        public static Choice ofOther(ExternalPasswordManager externalPasswordManager) {
+            return new Choice(
+                    externalPasswordManager.getId(),
+                    null,
+                    externalPasswordManager.getDocsLink(),
+                    externalPasswordManager);
+        }
+
         String id;
         String template;
         String docsLink;
@@ -48,6 +57,7 @@ public class PasswordManagerCategory extends AppPrefsCategory {
     @Override
     protected Comp<?> create() {
         var choices = new ArrayList<Choice>();
+        choices.add(Choice.ofOther(ExternalPasswordManager.NONE));
         ExternalPasswordManagerTemplate.ALL.forEach(externalPasswordManagerTemplate -> {
             choices.add(new Choice(
                     externalPasswordManagerTemplate.getId(),
@@ -55,15 +65,7 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                     externalPasswordManagerTemplate.getDocsLink(),
                     ExternalPasswordManager.COMMAND));
         });
-        ExternalPasswordManager.ALL.stream()
-                .filter(externalPasswordManager -> externalPasswordManager != ExternalPasswordManager.COMMAND)
-                .forEach(externalPasswordManager -> {
-                    choices.add(new Choice(
-                            externalPasswordManager.getId(),
-                            null,
-                            externalPasswordManager.getDocsLink(),
-                            externalPasswordManager));
-                });
+        choices.add(Choice.ofOther(ExternalPasswordManager.WINDOWS_CREDENTIAL_MANAGER));
 
         var prefs = AppPrefs.get();
         var testPasswordManagerValue = new SimpleStringProperty();

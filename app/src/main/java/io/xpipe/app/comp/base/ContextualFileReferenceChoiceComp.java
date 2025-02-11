@@ -68,10 +68,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                     BrowserFileChooserSessionComp.openSingleFile(
                             () -> fileSystem.getValue(),
                             fileStore -> {
-                                if (fileStore == null) {
-                                    filePath.setValue(null);
-                                    fileSystem.setValue(null);
-                                } else {
+                                if (fileStore != null) {
                                     filePath.setValue(fileStore.getPath());
                                     fileSystem.setValue(fileStore.getFileSystem());
                                 }

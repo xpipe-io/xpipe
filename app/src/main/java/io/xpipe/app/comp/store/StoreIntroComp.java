@@ -2,7 +2,7 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
-import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
@@ -29,7 +29,7 @@ public class StoreIntroComp extends SimpleComp {
         if (OsType.getLocal() != OsType.MACOS) {
             title.getStyleClass().add(Styles.TEXT_BOLD);
         }
-        AppFont.setSize(title, 7);
+        AppFontSizes.title(title);
 
         var introDesc = new Label();
         introDesc.textProperty().bind(AppI18n.observable("storeIntroDescription"));
@@ -69,7 +69,7 @@ public class StoreIntroComp extends SimpleComp {
         if (OsType.getLocal() != OsType.MACOS) {
             title.getStyleClass().add(Styles.TEXT_BOLD);
         }
-        AppFont.setSize(title, 7);
+        AppFontSizes.title(title);
 
         var importDesc = new Label();
         importDesc.textProperty().bind(AppI18n.observable("storeIntroImportDescription"));

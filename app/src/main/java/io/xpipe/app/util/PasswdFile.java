@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.OptionalInt;
 
+@Getter
 public class PasswdFile {
 
     public static PasswdFile parse(ShellControl sc) throws Exception {
@@ -18,7 +19,6 @@ public class PasswdFile {
         return passwdFile;
     }
 
-    @Getter
     private final Map<Integer, String> users = new LinkedHashMap<>();
 
     public OptionalInt getUidForUserIfPresent(String name) {

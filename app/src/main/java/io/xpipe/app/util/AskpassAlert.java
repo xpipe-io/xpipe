@@ -33,7 +33,7 @@ public class AskpassAlert {
                         alert.getButtonTypes().add(type);
                         var button = alert.getDialogPane().lookupButton(type);
                         button.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-                            Hyperlinks.open(Hyperlinks.DOUBLE_PROMPT);
+                            Hyperlinks.open(Hyperlinks.DOCS_DOUBLE_PROMPT);
                             event.consume();
                         });
                     }

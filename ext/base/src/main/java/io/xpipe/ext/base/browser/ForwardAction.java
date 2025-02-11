@@ -18,7 +18,7 @@ import java.util.List;
 public class ForwardAction implements BrowserLeafAction {
 
     @Override
-    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) throws Exception {
+    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         model.forthSync(1);
     }
 

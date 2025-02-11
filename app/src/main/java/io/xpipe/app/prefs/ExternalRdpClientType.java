@@ -83,7 +83,8 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
         protected Optional<Path> determineInstallation() {
             try {
                 var r = WindowsRegistry.local()
-                        .readValue(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\rdm\\DefaultIcon");
+                        .readStringValueIfPresent(
+                                WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\rdm\\DefaultIcon");
                 return r.map(Path::of);
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).omit().handle();

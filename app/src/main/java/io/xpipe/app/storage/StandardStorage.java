@@ -17,13 +17,11 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.crypto.SecretKey;
 
@@ -41,9 +39,10 @@ public class StandardStorage extends DataStorage {
 
     @Getter
     private boolean disposed;
+
     private boolean saveQueued;
     private final ReentrantLock busyIo = new ReentrantLock();
-
+    private final Set<UUID> inaccessibleEntries = new HashSet<>();
 
     StandardStorage() {
         this.dataStorageSyncHandler = DataStorageSyncHandler.getInstance();
@@ -203,8 +202,6 @@ public class StandardStorage extends DataStorage {
                     if (e.getCategoryUuid() != null && e.getCategoryUuid().equals(ALL_CONNECTIONS_CATEGORY_UUID)) {
                         e.setCategoryUuid(DEFAULT_CATEGORY_UUID);
                     }
-
-                    e.refreshIcon();
                 });
             }
         } catch (IOException ex) {
@@ -296,6 +293,9 @@ public class StandardStorage extends DataStorage {
                 .map(dataStoreEntry -> dataStoreEntry.getDirectory())
                 .toList());
         toRemove.forEach(storeEntries::remove);
+        inaccessibleEntries.addAll(toRemove.stream()
+                .map(dataStoreEntry -> dataStoreEntry.getUuid())
+                .collect(Collectors.toSet()));
     }
 
     private boolean shouldRemoveOtherUserEntry(DataStoreEntry entry) {
@@ -435,6 +435,11 @@ public class StandardStorage extends DataStorage {
     @Override
     public boolean supportsSharing() {
         return dataStorageSyncHandler.supportsSync();
+    }
+
+    @Override
+    public boolean isOtherUserEntry(UUID uuid) {
+        return inaccessibleEntries.contains(uuid);
     }
 
     private void deleteLeftovers() {

@@ -4,6 +4,8 @@ import io.xpipe.app.browser.action.BrowserBranchAction;
 import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -12,9 +14,13 @@ import io.xpipe.core.process.ProcessOutputException;
 import io.xpipe.core.process.ShellControl;
 
 import javafx.beans.value.ObservableValue;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.StackPane;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 public abstract class MultiExecuteSelectionAction implements BrowserBranchAction {
 
@@ -70,6 +76,70 @@ public abstract class MultiExecuteSelectionAction implements BrowserBranchAction
                     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         model.withShell(
                                 pc -> {
+                                    var c = createCommand(pc, model, entries);
+                                    if (c == null) {
+                                        return;
+                                    }
+
+                                    var cmd = pc.command(c);
+                                    String out;
+                                    try {
+                                        out = cmd.readStdoutOrThrow();
+                                        if (out.isEmpty()) {
+                                            out = "<empty>";
+                                        }
+
+                                        if (out.length() > 10000) {
+                                            var counter = new AtomicInteger();
+                                            var start = out.lines()
+                                                    .filter(s -> {
+                                                        counter.incrementAndGet();
+                                                        return true;
+                                                    })
+                                                    .limit(100)
+                                                    .collect(Collectors.joining("\n"));
+                                            var notShownLines = counter.get() - 100;
+                                            if (notShownLines > 0) {
+                                                out = start + "\n\n... " + notShownLines + " more lines";
+                                            } else {
+                                                out = start;
+                                            }
+                                        }
+
+                                    } catch (ProcessOutputException e) {
+                                        out = e.getMessage();
+                                    }
+
+                                    String finalOut = out;
+                                    var modal = ModalOverlay.of(
+                                            "commandOutput",
+                                            Comp.of(() -> {
+                                                        var text = new TextArea(finalOut);
+                                                        text.setWrapText(true);
+                                                        text.setEditable(false);
+                                                        text.setPrefRowCount(Math.max(8, (int)
+                                                                finalOut.lines().count()));
+                                                        var sp = new StackPane(text);
+                                                        return sp;
+                                                    })
+                                                    .prefWidth(650));
+                                    modal.show();
+                                },
+                                true);
+                    }
+
+                    @Override
+                    public ObservableValue<String> getName(
+                            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                        return AppI18n.observable("runCommand");
+                    }
+                },
+                new BrowserLeafAction() {
+
+                    @Override
+                    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                        model.withShell(
+                                pc -> {
                                     var cmd = createCommand(pc, model, entries);
                                     AtomicReference<String> out = new AtomicReference<>();
                                     AtomicReference<String> err = new AtomicReference<>();
@@ -95,7 +165,7 @@ public abstract class MultiExecuteSelectionAction implements BrowserBranchAction
                     @Override
                     public ObservableValue<String> getName(
                             BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                        return AppI18n.observable("executeInBackground");
+                        return AppI18n.observable("runSilent");
                     }
                 });
     }

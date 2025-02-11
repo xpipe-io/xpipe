@@ -57,21 +57,21 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     //        }
     //    };
 
-    static ExternalTerminalType determineNonSshBridgeFallback(ExternalTerminalType type) {
+    static ExternalTerminalType determineFallbackTerminalToOpen(ExternalTerminalType type) {
         if (type == XSHELL || type == MOBAXTERM || type == SECURECRT) {
             return ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.CMD ? CMD : POWERSHELL;
         }
 
-        if (type != TERMIUS) {
+        if (type != TERMIUS && type instanceof WaveTerminalType) {
             return type;
         }
 
         switch (OsType.getLocal()) {
             case OsType.Linux linux -> {
-                // This should not be termius as all others take precedence
+                // This should not be termius or wave as all others take precedence
                 var def = determineDefault(null);
                 // If there's no other terminal available, use a fallback which won't work
-                return def != TERMIUS ? def : XTERM;
+                return def != TERMIUS && def != WaveTerminalType.WAVE_LINUX ? def : XTERM;
             }
             case OsType.MacOs macOs -> {
                 return MACOS_TERMINAL;
@@ -98,6 +98,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     ExternalTerminalType GNOME_TERMINAL = new GnomeTerminalType();
 
+    ExternalTerminalType GNOME_CONSOLE = new GnomeConsoleType();
+
+    ExternalTerminalType PTYXIS = new PtyxisTerminalType();
+
     ExternalTerminalType KONSOLE = new SimplePathType("app.konsole", "konsole", true) {
 
         @Override
@@ -117,7 +121,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return false;
         }
 
@@ -149,7 +153,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return true;
         }
 
@@ -180,8 +184,13 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return true;
+        }
+
+        @Override
+        public boolean supportsEscapes() {
+            return false;
         }
 
         @Override
@@ -210,7 +219,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return true;
         }
 
@@ -239,7 +248,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return true;
         }
 
@@ -264,7 +273,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return true;
         }
 
@@ -295,7 +304,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return true;
         }
 
@@ -323,11 +332,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public boolean isRecommended() {
-            return true;
+            return false;
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return true;
         }
 
@@ -359,7 +368,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return true;
         }
 
@@ -390,7 +399,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return true;
         }
 
@@ -421,7 +430,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
+            return false;
+        }
+
+        @Override
+        public boolean supportsUnicode() {
             return false;
         }
 
@@ -457,7 +471,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return true;
         }
 
@@ -489,7 +503,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return true;
         }
 
@@ -516,7 +530,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return true;
         }
 
@@ -552,7 +566,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsColoredTitle() {
+        public boolean useColoredTitle() {
             return true;
         }
 
@@ -586,13 +600,15 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             AlacrittyTerminalType.ALACRITTY_LINUX,
             WezTerminalType.WEZTERM_LINUX,
             KittyTerminalType.KITTY_LINUX,
-            GHOSTTY,
+            GNOME_CONSOLE,
+            PTYXIS,
             TERMINATOR,
             TERMINOLOGY,
             XFCE,
             ELEMENTARY,
             KONSOLE,
             GNOME_TERMINAL,
+            GHOSTTY,
             TILIX,
             GUAKE,
             TILDA,
@@ -679,7 +695,15 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     boolean isRecommended();
 
-    boolean supportsColoredTitle();
+    boolean useColoredTitle();
+
+    default boolean supportsEscapes() {
+        return true;
+    }
+
+    default boolean supportsUnicode() {
+        return true;
+    }
 
     default boolean shouldClear() {
         return true;
@@ -739,6 +763,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             launch(configuration.getColoredTitle(), args);
         }
 
-        protected abstract CommandBuilder toCommand(TerminalLaunchConfiguration configuration) throws Exception;
+        protected abstract CommandBuilder toCommand(TerminalLaunchConfiguration configuration);
     }
 }

@@ -57,7 +57,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
         var tabs = createTabPane();
         var topBackground = Comp.hspacer().styleClass("top-spacer").createRegion();
         leftPadding.subscribe(number -> {
-            StackPane.setMargin(topBackground, new Insets(0, 0, 0, -number.doubleValue() - 6));
+            StackPane.setMargin(topBackground, new Insets(0, 0, 0, -number.doubleValue() - 3));
         });
         var stack = new StackPane(topBackground, tabs);
         stack.setAlignment(Pos.TOP_CENTER);
@@ -217,7 +217,8 @@ public class BrowserSessionTabsComp extends SimpleComp {
                     headerArea
                             .paddingProperty()
                             .bind(Bindings.createObjectBinding(
-                                    () -> new Insets(2, 0, 4, -leftPadding.get() + 2), leftPadding));
+                                    () -> new Insets(2, 0, 4, -leftPadding.get() + 3), leftPadding));
+                    tabs.setPadding(new Insets(0, 0, 0, -5));
                     headerHeight.bind(headerArea.heightProperty());
                 });
             }
@@ -431,7 +432,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
                             },
                             tabModel.getName(),
                             global,
-                            AppPrefs.get().language(),
+                            AppI18n.activeLanguage(),
                             AppPrefs.get().censorMode()));
         } else {
             tab.textProperty().bind(tabModel.getName());

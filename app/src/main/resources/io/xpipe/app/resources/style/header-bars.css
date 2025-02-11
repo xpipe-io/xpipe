@@ -12,7 +12,7 @@
 }
 
 .store-header-bar {
-    -fx-spacing: 0.8em;
+    -fx-spacing: 0.45em;
 }
 
 .root.nord .store-header-bar {
@@ -88,7 +88,7 @@
 }
 
 .store-category-bar > .viewport > .view > .scroll-comp-content {
-    -fx-padding: 0.5em 0.1em 0.5em 0.5em;
+    -fx-padding: 0.5em 0.1em 0.2em 0.5em;
 }
 
 .store-category-bar * {
@@ -103,8 +103,8 @@
 }
 
 .sidebar {
-    -fx-padding: 7 0 7 7;
-    -fx-spacing: 0.4em;
+    -fx-padding: 4 0 4 4;
+    -fx-spacing: 4;
     -fx-background-color: transparent;
 }
 
@@ -129,6 +129,10 @@
 
 .store-header-bar .filter-bar .text-field {
     -fx-text-fill: -color-fg-default;
+}
+
+.store-header-bar .filter-bar .ikonli-font-icon {
+    -fx-icon-color: -color-fg-default;
 }
 
 .store-header-bar .filter-bar {

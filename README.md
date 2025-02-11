@@ -20,9 +20,8 @@ It currently supports:
 - [Kubernetes](https://kubernetes.io/) clusters, pods, and containers
 - [Windows Subsystem for Linux](https://ubuntu.com/wsl), [Cygwin](https://www.cygwin.com/), and [MSYS2](https://www.msys2.org/) instances
 - [Powershell Remote Sessions](https://learn.microsoft.com/en-us/powershell/scripting/learn/remoting/running-remote-commands?view=powershell-7.3)
-- [Teleport tsh connections](https://goteleport.com/)
-- VNC connections
-- Any other custom remote connection methods that work through the command-line
+- [Tailscale SSH](https://tailscale.com/kb/1193/tailscale-ssh) and [Teleport](https://goteleport.com/) connections
+- RDP and VNC connections
 
 ## Connection hub
 

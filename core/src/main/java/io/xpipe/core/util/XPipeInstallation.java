@@ -27,10 +27,6 @@ public class XPipeInstallation {
         return 21721 + offset;
     }
 
-    private static String getPkgId() {
-        return isStaging() ? "io.xpipe.xpipe-ptb" : "io.xpipe.xpipe";
-    }
-
     public static Path getLocalBeaconAuthFile() {
         return Path.of(System.getProperty("java.io.tmpdir"), isStaging() ? "xpipe_ptb_auth" : "xpipe_auth");
     }
@@ -40,7 +36,7 @@ public class XPipeInstallation {
         var suffix = (arguments != null ? " " + arguments : "");
         var modeOption = mode != null ? " --mode " + mode.getDisplayName() : "";
         if (OsType.getLocal().equals(OsType.LINUX)) {
-            return "nohup \"" + installationBase + "/app/bin/xpiped\"" + modeOption + suffix + " & disown";
+            return "nohup \"" + installationBase + "/bin/xpiped\"" + modeOption + suffix + " & disown";
         } else if (OsType.getLocal().equals(OsType.MACOS)) {
             if (restart) {
                 return "(sleep 1;open \"" + installationBase + "\" --args" + modeOption + suffix
@@ -96,48 +92,10 @@ public class XPipeInstallation {
         }
     }
 
-    public static boolean isInstallationDistribution() {
-        var base = getCurrentInstallationBasePath();
-        if (OsType.getLocal().equals(OsType.MACOS)) {
-            if (!base.toString().equals(getLocalDefaultInstallationBasePath())) {
-                return false;
-            }
-
-            try {
-                var process = new ProcessBuilder("pkgutil", "--pkg-info", getPkgId())
-                        .redirectOutput(ProcessBuilder.Redirect.DISCARD)
-                        .redirectError(ProcessBuilder.Redirect.DISCARD)
-                        .start();
-                process.waitFor();
-                return process.exitValue() == 0;
-            } catch (Exception ex) {
-                return false;
-            }
-        } else {
-            var file = base.resolve("installation");
-            return Files.exists(file);
-        }
-    }
-
-    public static Path getLocalDynamicLibraryDirectory() {
-        Path path = getCurrentInstallationBasePath();
-        if (OsType.getLocal().equals(OsType.WINDOWS)) {
-            return path.resolve("app").resolve("runtime").resolve("bin");
-        } else if (OsType.getLocal().equals(OsType.LINUX)) {
-            return path.resolve("app").resolve("lib").resolve("runtime").resolve("lib");
-        } else {
-            return path.resolve("Contents")
-                    .resolve("runtime")
-                    .resolve("Contents")
-                    .resolve("Home")
-                    .resolve("lib");
-        }
-    }
-
     public static Path getLocalExtensionsDirectory(Path path) {
         return OsType.getLocal().equals(OsType.MACOS)
                 ? path.resolve("Contents").resolve("Resources").resolve("extensions")
-                : path.resolve("app").resolve("extensions");
+                : path.resolve("extensions");
     }
 
     private static Path getLocalInstallationBasePathForJavaExecutable(Path executable) {
@@ -151,9 +109,9 @@ public class XPipeInstallation {
                     .getParent()
                     .getParent();
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
-            return executable.getParent().getParent().getParent().getParent().getParent();
-        } else {
             return executable.getParent().getParent().getParent().getParent();
+        } else {
+            return executable.getParent().getParent().getParent();
         }
     }
 
@@ -162,9 +120,9 @@ public class XPipeInstallation {
         if (OsType.getLocal().equals(OsType.MACOS)) {
             return executable.getParent().getParent().getParent();
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
-            return executable.getParent().getParent().getParent();
-        } else {
             return executable.getParent().getParent();
+        } else {
+            return executable.getParent();
         }
     }
 
@@ -184,9 +142,9 @@ public class XPipeInstallation {
         if (OsType.getLocal().equals(OsType.MACOS)) {
             return path.getParent().getParent().getParent().toString();
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
-            return path.getParent().getParent().getParent().toString();
+            return path.getParent().getParent().toString();
         } else {
-            return path.getParent().getParent().getParent().toString();
+            return path.getParent().getParent().toString();
         }
     }
 
@@ -214,9 +172,9 @@ public class XPipeInstallation {
         }
 
         if (OsType.getLocal().equals(OsType.WINDOWS)) {
-            return path.resolve("app").resolve("bundled");
+            return path.resolve("bundled");
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
-            return path.resolve("app").resolve("bundled");
+            return path.resolve("bundled");
         } else {
             return path.resolve("Contents").resolve("Resources").resolve("bundled");
         }
@@ -244,7 +202,7 @@ public class XPipeInstallation {
         }
 
         if (OsType.getLocal().equals(OsType.WINDOWS)) {
-            return path.resolve("app").resolve("logo.ico");
+            return path.resolve("logo.ico");
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
             return path.resolve("logo.png");
         } else {
@@ -284,9 +242,9 @@ public class XPipeInstallation {
         var install = getCurrentInstallationBasePath();
         var type = OsType.getLocal();
         if (type.equals(OsType.WINDOWS)) {
-            return install.resolve("app").resolve("lang");
+            return install.resolve("lang");
         } else if (type.equals(OsType.LINUX)) {
-            return install.resolve("app").resolve("lang");
+            return install.resolve("lang");
         } else {
             return install.resolve("Contents").resolve("Resources").resolve("lang");
         }
@@ -300,9 +258,9 @@ public class XPipeInstallation {
         var install = getCurrentInstallationBasePath();
         var type = OsType.getLocal();
         if (type.equals(OsType.WINDOWS)) {
-            return install.resolve("app").resolve("fonts");
+            return install.resolve("fonts");
         } else if (type.equals(OsType.LINUX)) {
-            return install.resolve("app").resolve("fonts");
+            return install.resolve("fonts");
         } else {
             return install.resolve("Contents").resolve("Resources").resolve("fonts");
         }
@@ -310,9 +268,9 @@ public class XPipeInstallation {
 
     public static String getDaemonDebugScriptPath(OsType.Local type) {
         if (type.equals(OsType.WINDOWS)) {
-            return FileNames.join("app", "scripts", "xpiped_debug.bat");
+            return FileNames.join("scripts", "xpiped_debug.bat");
         } else if (type.equals(OsType.LINUX)) {
-            return FileNames.join("app", "scripts", "xpiped_debug.sh");
+            return FileNames.join("scripts", "xpiped_debug.sh");
         } else {
             return FileNames.join("Contents", "Resources", "scripts", "xpiped_debug.sh");
         }
@@ -320,9 +278,9 @@ public class XPipeInstallation {
 
     public static String getDaemonDebugAttachScriptPath(OsType.Local type) {
         if (type.equals(OsType.WINDOWS)) {
-            return FileNames.join("app", "scripts", "xpiped_debug_attach.bat");
+            return FileNames.join("scripts", "xpiped_debug_attach.bat");
         } else if (type.equals(OsType.LINUX)) {
-            return FileNames.join("app", "scripts", "xpiped_debug_attach.sh");
+            return FileNames.join("scripts", "xpiped_debug_attach.sh");
         } else {
             return FileNames.join("Contents", "Resources", "scripts", "xpiped_debug_attach.sh");
         }
@@ -330,9 +288,9 @@ public class XPipeInstallation {
 
     public static String getDaemonExecutablePath(OsType.Local type) {
         if (type.equals(OsType.WINDOWS)) {
-            return FileNames.join("app", "xpiped.exe");
+            return FileNames.join("xpiped.exe");
         } else if (type.equals(OsType.LINUX)) {
-            return FileNames.join("app", "bin", "xpiped");
+            return FileNames.join("bin", "xpiped");
         } else {
             return FileNames.join("Contents", "MacOS", "xpiped");
         }
@@ -340,9 +298,9 @@ public class XPipeInstallation {
 
     public static String getRelativeCliExecutablePath(OsType.Local type) {
         if (type.equals(OsType.WINDOWS)) {
-            return FileNames.join("cli", "bin", "xpipe.exe");
+            return FileNames.join("bin", "xpipe.exe");
         } else if (type.equals(OsType.LINUX)) {
-            return FileNames.join("cli", "bin", "xpipe");
+            return FileNames.join("bin", "xpipe");
         } else {
             return FileNames.join("Contents", "MacOS", "xpipe");
         }

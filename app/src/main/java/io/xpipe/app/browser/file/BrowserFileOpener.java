@@ -1,13 +1,13 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.core.window.AppWindowHelper;
+import io.xpipe.app.ext.ConnectionFileSystem;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.FileBridge;
 import io.xpipe.app.util.FileOpener;
 import io.xpipe.core.process.ElevationFunction;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.store.ConnectionFileSystem;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileInfo;
 import io.xpipe.core.store.FileNames;
@@ -45,8 +45,8 @@ public class BrowserFileOpener {
             return fileSystem.openOutput(file.getPath(), totalBytes);
         }
 
-        var rootSc = sc.identicalSubShell()
-                .elevated(ElevationFunction.elevated("sudo"))
+        var rootSc = sc.identicalDialectSubShell()
+                .elevated(ElevationFunction.elevated(null))
                 .start();
         var rootFs = new ConnectionFileSystem(rootSc);
         try {

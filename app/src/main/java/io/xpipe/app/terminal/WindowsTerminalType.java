@@ -75,6 +75,10 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
             return;
         }
 
+        if (!Files.exists(getConfigFile())) {
+            return;
+        }
+
         var uuid = "{021eff0f-b38a-45f9-895d-41467e9d510f}";
         var config = JacksonMapper.getDefault().readTree(getConfigFile().toFile());
         var profiles = config.withObjectProperty("profiles").withArrayProperty("list");
@@ -120,7 +124,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
     }
 
     @Override
-    default boolean supportsColoredTitle() {
+    default boolean useColoredTitle() {
         return false;
     }
 
@@ -144,7 +148,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         }
 
         @Override
-        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) throws Exception {
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return WindowsTerminalType.toCommand(configuration);
         }
 

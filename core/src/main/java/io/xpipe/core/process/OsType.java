@@ -102,7 +102,7 @@ public interface OsType {
                     FileNames.join(home, "Downloads"),
                     FileNames.join(home, "Documents"),
                     "/etc",
-                    "/tmp",
+                    pc.getSystemTemporaryDirectory().toString(),
                     "/var"));
             var parentHome = FileNames.getParent(home);
             if (parentHome != null && !parentHome.equals("/")) {

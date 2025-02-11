@@ -4,7 +4,6 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.StackComp;
 import io.xpipe.app.resources.AppResources;
-import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.core.process.SystemState;
 import io.xpipe.core.store.FileNames;
 
@@ -51,7 +50,11 @@ public class OsLogoComp extends SimpleComp {
                 },
                 wrapper.getPersistentState(),
                 state);
-        var hide = BindingsHelper.map(img, s -> s != null);
+        var hide = Bindings.createBooleanBinding(
+                () -> {
+                    return img.get() != null;
+                },
+                img);
         return new StackComp(List.of(
                         new SystemStateComp(state).hide(hide),
                         PrettyImageHelper.ofFixedSize(img, 24, 24).visible(hide)))

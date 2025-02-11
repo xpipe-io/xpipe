@@ -4,7 +4,6 @@ import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.ext.UserScopeStore;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.resources.SystemIcons;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.*;
 import io.xpipe.core.util.JacksonMapper;
@@ -156,7 +155,6 @@ public class DataStoreEntry extends StorageElement {
         var validity = storeFromNode == null
                 ? Validity.LOAD_FAILED
                 : store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE;
-        var icon = SystemIcons.detectForStore(store);
         var entry = new DataStoreEntry(
                 null,
                 uuid,
@@ -174,7 +172,7 @@ public class DataStoreEntry extends StorageElement {
                 null,
                 null,
                 null,
-                icon.map(systemIcon -> systemIcon.getIconName()).orElse(null));
+                null);
         return entry;
     }
 
@@ -187,23 +185,7 @@ public class DataStoreEntry extends StorageElement {
             return getProvider().getDisplayIconFileName(getStore());
         }
 
-        return "app:system/" + icon + ".svg";
-    }
-
-    void refreshIcon() {
-        if (icon != null && SystemIcons.getForId(icon).isEmpty()) {
-            icon = null;
-            return;
-        }
-
-        if (icon != null) {
-            return;
-        }
-
-        var icon = SystemIcons.detectForStore(store);
-        if (icon.isPresent()) {
-            setIcon(icon.get().getIconName(), true);
-        }
+        return "icons/" + icon + ".svg";
     }
 
     public static Optional<DataStoreEntry> fromDirectory(Path dir) throws Exception {
@@ -241,6 +223,11 @@ public class DataStoreEntry extends StorageElement {
 
         var iconNode = json.get("icon");
         String icon = iconNode != null && !iconNode.isNull() ? iconNode.asText() : null;
+
+        // Legacy compat for old icons
+        if (icon != null && !icon.contains("/")) {
+            icon = "selfhst/" + icon;
+        }
 
         var persistentState = stateJson.get("persistentState");
         var lastUsed = Optional.ofNullable(stateJson.get("lastUsed"))
@@ -385,6 +372,10 @@ public class DataStoreEntry extends StorageElement {
             return null;
         }
 
+        if (storePersistentStateNode != null && storePersistentStateNode.isNull()) {
+            storePersistentStateNode = null;
+        }
+
         if (storePersistentStateNode == null && storePersistentState == null) {
             storePersistentState = sds.createDefaultState();
             storePersistentStateNode = JacksonMapper.getDefault().valueToTree(storePersistentState);
@@ -416,7 +407,6 @@ public class DataStoreEntry extends StorageElement {
         this.storePersistentState = value;
         this.storePersistentStateNode = JacksonMapper.getDefault().valueToTree(value);
         if (changed) {
-            refreshIcon();
             notifyUpdate(false, true);
         }
     }
@@ -537,7 +527,7 @@ public class DataStoreEntry extends StorageElement {
         }
 
         this.store = store;
-        this.storeNode = this.storeNode.withStore(store);
+        this.storeNode = DataStorageNode.ofNewStore(store);
         this.provider = DataStoreProviders.byStore(store);
         if (updateTime) {
             lastModified = Instant.now();
@@ -547,7 +537,7 @@ public class DataStoreEntry extends StorageElement {
     }
 
     public void reassignStoreNode() {
-        this.storeNode = this.storeNode.withStore(store);
+        this.storeNode = DataStorageNode.ofNewStore(store);
         dirty = true;
     }
 

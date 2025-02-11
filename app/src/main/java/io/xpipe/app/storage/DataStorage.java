@@ -252,6 +252,10 @@ public abstract class DataStorage {
         return dir.resolve("data");
     }
 
+    public Path getIconsDir() {
+        return dir.resolve("icons");
+    }
+
     protected Path getCategoriesDir() {
         return dir.resolve("categories");
     }
@@ -303,8 +307,8 @@ public abstract class DataStorage {
 
         DataStoreEntry c = entry;
         do {
-            // We can't check for sharing of invalid entries
-            if (!c.getValidity().isUsable()) {
+            // We can't check for sharing of failed entries
+            if (c.getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
                 return false;
             }
 
@@ -312,7 +316,11 @@ public abstract class DataStorage {
                 return true;
             }
 
-            if (!c.getProvider().isShareable(c)) {
+            try {
+                if (!c.getProvider().isShareable(c)) {
+                    return false;
+                }
+            } catch (Exception e) {
                 return false;
             }
         } while ((c = DataStorage.get().getDefaultDisplayParent(c).orElse(null)) != null);
@@ -394,10 +402,10 @@ public abstract class DataStorage {
         DataStorage.get().saveAsync();
     }
 
+    public abstract boolean isOtherUserEntry(UUID uuid);
+
     public void moveEntryToCategory(DataStoreEntry entry, DataStoreCategory newCategory) {
-        if (getStoreCategoryIfPresent(entry.getUuid())
-                .map(category -> category.equals(newCategory))
-                .orElse(false)) {
+        if (newCategory.getUuid().equals(entry.getCategoryUuid())) {
             return;
         }
 
@@ -438,9 +446,14 @@ public abstract class DataStorage {
         e.incrementBusyCounter();
         List<? extends DataStoreEntryRef<? extends FixedChildStore>> newChildren;
         try {
-            newChildren = h.listChildren().stream()
-                    .filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null)
-                    .toList();
+            List<? extends DataStoreEntryRef<? extends FixedChildStore>> l = h.listChildren();
+            if (l != null) {
+                newChildren = l.stream()
+                        .filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null)
+                        .toList();
+            } else {
+                newChildren = null;
+            }
         } catch (Exception ex) {
             if (throwOnFail) {
                 throw ex;
@@ -452,33 +465,28 @@ public abstract class DataStorage {
             e.decrementBusyCounter();
         }
 
+        if (newChildren == null) {
+            return false;
+        }
+
         var oldChildren = getStoreChildren(e);
         var toRemove = oldChildren.stream()
-                .filter(oc -> oc.getStore() instanceof FixedChildStore)
                 .filter(oc -> {
-                    if (!oc.getValidity().isUsable()) {
-                        return true;
-                    }
-
-                    var oid = ((FixedChildStore) oc.getStore()).getFixedId();
+                    var oid = getFixedChildId(oc);
                     if (oid.isEmpty()) {
                         return false;
                     }
 
                     return newChildren.stream()
-                            .filter(nc -> nc.getStore().getFixedId().isPresent())
+                            .filter(nc -> getFixedChildId(nc.get()).isPresent())
                             .noneMatch(nc -> {
-                                return nc.getStore().getFixedId().getAsInt() == oid.getAsInt();
+                                return getFixedChildId(nc.get()).getAsInt() == oid.getAsInt();
                             });
                 })
                 .toList();
         var toAdd = newChildren.stream()
                 .filter(nc -> {
-                    if (nc == null || nc.getStore() == null) {
-                        return false;
-                    }
-
-                    var nid = nc.getStore().getFixedId();
+                    var nid = getFixedChildId(nc.get());
                     // These can't be automatically generated
                     if (nid.isEmpty()) {
                         return false;
@@ -486,36 +494,43 @@ public abstract class DataStorage {
 
                     return oldChildren.stream()
                             .filter(oc -> oc.getStore() instanceof FixedChildStore)
-                            .filter(oc -> oc.getValidity().isUsable())
-                            .filter(oc -> ((FixedChildStore) oc.getStore())
-                                    .getFixedId()
-                                    .isPresent())
+                            .filter(oc -> getFixedChildId(oc).isPresent())
                             .noneMatch(oc -> {
-                                return ((FixedChildStore) oc.getStore())
-                                                .getFixedId()
-                                                .getAsInt()
-                                        == nid.getAsInt();
+                                return getFixedChildId(oc).getAsInt() == nid.getAsInt();
                             });
                 })
                 .toList();
-        var toUpdate = oldChildren.stream()
-                .filter(oc -> oc.getStore() instanceof FixedChildStore)
-                .filter(oc -> oc.getValidity().isUsable())
+        var toUpdate = new ArrayList<>(oldChildren.stream()
                 .map(oc -> {
-                    var oid = ((FixedChildStore) oc.getStore()).getFixedId();
+                    var oid = getFixedChildId(oc);
                     if (oid.isEmpty()) {
                         return new Pair<DataStoreEntry, DataStoreEntryRef<? extends FixedChildStore>>(oc, null);
                     }
 
                     var found = newChildren.stream()
-                            .filter(nc -> nc.getStore().getFixedId().isPresent())
-                            .filter(nc -> nc.getStore().getFixedId().getAsInt() == oid.getAsInt())
+                            .filter(nc -> getFixedChildId(nc.get()).isPresent())
+                            .filter(nc -> getFixedChildId(nc.get()).getAsInt() == oid.getAsInt())
                             .findFirst()
                             .orElse(null);
                     return new Pair<DataStoreEntry, DataStoreEntryRef<? extends FixedChildStore>>(oc, found);
                 })
                 .filter(en -> en.getValue() != null)
-                .toList();
+                .toList());
+
+        toUpdate.removeIf(pair -> {
+            if (pair.getKey().getStorePersistentState() != null
+                    && pair.getValue().get().getStorePersistentState() != null) {
+                return pair.getKey()
+                        .getStorePersistentState()
+                        .equals(pair.getValue().get().getStorePersistentState());
+            } else {
+                return true;
+            }
+        });
+
+        if (toRemove.isEmpty() && toAdd.isEmpty() && toUpdate.isEmpty()) {
+            return false;
+        }
 
         if (!newChildren.isEmpty()) {
             e.setExpanded(true);
@@ -562,6 +577,18 @@ public abstract class DataStorage {
         toUpdate.forEach(dataStoreEntryRef ->
                 dataStoreEntryRef.getKey().getProvider().onParentRefresh(dataStoreEntryRef.getKey()));
         return !newChildren.isEmpty();
+    }
+
+    private OptionalInt getFixedChildId(DataStoreEntry entry) {
+        if (!(entry.getStore() instanceof FixedChildStore f)) {
+            return OptionalInt.empty();
+        }
+
+        try {
+            return f.getFixedId();
+        } catch (Throwable t) {
+            return OptionalInt.empty();
+        }
     }
 
     public void deleteChildren(DataStoreEntry e) {
@@ -779,13 +806,14 @@ public abstract class DataStorage {
     // Get operations
 
     public boolean isRootEntry(DataStoreEntry entry, DataStoreCategory current) {
-        var parent = DataStorage.get().getDefaultDisplayParent(entry);
+        var parent = getDefaultDisplayParent(entry);
         var noParent = parent.isEmpty();
         if (noParent) {
             return true;
         }
 
-        var parentCat = getStoreCategoryIfPresent(parent.get().getCategoryUuid()).orElseThrow();
+        var parentCat =
+                getStoreCategoryIfPresent(parent.get().getCategoryUuid()).orElseThrow();
         var parentCatHierarchy = getCategoryParentHierarchy(parentCat);
         var cat = getStoreCategoryIfPresent(entry.getCategoryUuid()).orElseThrow();
         var catHierarchy = getCategoryParentHierarchy(cat);
@@ -910,13 +938,13 @@ public abstract class DataStorage {
             return Set.of();
         }
 
+        if (entry.getChildrenCache() != null) {
+            return entry.getChildrenCache();
+        }
+
         var entries = getStoreEntries();
         if (!entries.contains(entry)) {
             return Set.of();
-        }
-
-        if (entry.getChildrenCache() != null) {
-            return entry.getChildrenCache();
         }
 
         var children = entries.stream()

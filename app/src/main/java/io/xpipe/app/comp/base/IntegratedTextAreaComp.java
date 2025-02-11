@@ -2,10 +2,17 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
+import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.FileOpener;
+import io.xpipe.core.process.ShellScript;
+import io.xpipe.core.process.ShellStoreState;
+import io.xpipe.core.store.StatefulDataStore;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
@@ -19,6 +26,33 @@ import lombok.Value;
 import java.nio.file.Files;
 
 public class IntegratedTextAreaComp extends Comp<IntegratedTextAreaComp.Structure> {
+
+    public static IntegratedTextAreaComp script(
+            ObservableValue<DataStoreEntryRef<ShellStore>> host, Property<ShellScript> value) {
+        var string = new SimpleStringProperty(
+                value.getValue() != null ? value.getValue().getValue() : null);
+        string.addListener((observable, oldValue, newValue) -> {
+            value.setValue(newValue != null ? new ShellScript(newValue) : null);
+        });
+        var i = new IntegratedTextAreaComp(
+                string,
+                false,
+                "script",
+                Bindings.createStringBinding(
+                        () -> {
+                            return host.getValue() != null
+                                            && host.getValue().getStore() instanceof StatefulDataStore<?> sd
+                                            && sd.getState() instanceof ShellStoreState sss
+                                            && sss.getShellDialect() != null
+                                    ? sss.getShellDialect().getScriptFileEnding()
+                                    : "sh";
+                        },
+                        host));
+        i.minHeight(60);
+        i.prefHeight(60);
+        i.maxHeight(60);
+        return i;
+    }
 
     private final Property<String> value;
     private final boolean lazy;

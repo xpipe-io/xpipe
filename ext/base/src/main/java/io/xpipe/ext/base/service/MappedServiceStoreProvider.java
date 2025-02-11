@@ -22,8 +22,8 @@ public class MappedServiceStoreProvider extends FixedServiceStoreProvider {
     }
 
     @Override
-    public List<String> getPossibleNames() {
-        return List.of("mappedService");
+    public String getId() {
+        return "mappedService";
     }
 
     protected String formatService(AbstractServiceStore s) {

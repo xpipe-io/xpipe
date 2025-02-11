@@ -23,7 +23,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
@@ -32,7 +31,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import atlantafx.base.controls.Spacer;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import net.synedra.validatorfx.GraphicDecorationStackPane;
@@ -448,10 +446,18 @@ public class StoreCreationComp extends DialogComp {
     }
 
     private Region createStoreProperties(Comp<?> comp, Validator propVal) {
+        var p = provider.getValue();
+        var nameKey = p == null
+                        || p.getCreationCategory() == null
+                        || p.getCreationCategory().getCategory().equals(DataStorage.ALL_CONNECTIONS_CATEGORY_UUID)
+                ? "connection"
+                : p.getCreationCategory().getCategory().equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID)
+                        ? "script"
+                        : "identity";
         return new OptionsBuilder()
                 .addComp(comp, store)
-                .name("connectionName")
-                .description("connectionNameDescription")
+                .name(nameKey + "Name")
+                .description(nameKey + "NameDescription")
                 .addString(name, false)
                 .nonNull(propVal)
                 .buildComp()
@@ -514,7 +520,7 @@ public class StoreCreationComp extends DialogComp {
 
         var sep = new Separator();
         sep.getStyleClass().add("spacer");
-        var top = new VBox(providerChoice.createRegion(), new Spacer(5, Orientation.VERTICAL), sep);
+        var top = new VBox(providerChoice.createRegion(), sep);
         top.getStyleClass().add("top");
         if (showProviders) {
             layout.setTop(top);

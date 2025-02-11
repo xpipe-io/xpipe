@@ -40,7 +40,11 @@ public class ModalButton {
     }
 
     public static ModalButton cancel() {
-        return new ModalButton("cancel", null, true, false);
+        return cancel(null);
+    }
+
+    public static ModalButton cancel(Runnable action) {
+        return new ModalButton("cancel", action, true, false);
     }
 
     public static ModalButton skip() {

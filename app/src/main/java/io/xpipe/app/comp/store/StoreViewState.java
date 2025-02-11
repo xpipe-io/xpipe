@@ -56,7 +56,7 @@ public class StoreViewState {
         INSTANCE.updateContent();
         INSTANCE.initSections();
         INSTANCE.updateContent();
-        INSTANCE.initFilterJump();
+        INSTANCE.initFilterListener();
     }
 
     public static void reset() {
@@ -96,9 +96,10 @@ public class StoreViewState {
         }
     }
 
-    private void initFilterJump() {
+    private void initFilterListener() {
         var all = getAllConnectionsCategory();
         filter.addListener((observable, oldValue, newValue) -> {
+            categories.getList().forEach(e -> e.update());
             var matchingCats = categories.getList().stream()
                     .filter(storeCategoryWrapper ->
                             storeCategoryWrapper.getRoot().equals(all))
@@ -175,12 +176,13 @@ public class StoreViewState {
 
             @Override
             public void onStoreAdd(DataStoreEntry... entry) {
-                var l = Arrays.stream(entry)
-                        .map(StoreEntryWrapper::new)
-                        .peek(storeEntryWrapper -> storeEntryWrapper.update())
-                        .peek(wrapper -> wrapper.applyLastAccess())
-                        .toList();
                 Platform.runLater(() -> {
+                    var l = Arrays.stream(entry)
+                            .map(StoreEntryWrapper::new)
+                            .peek(storeEntryWrapper -> storeEntryWrapper.update())
+                            .peek(wrapper -> wrapper.applyLastAccess())
+                            .toList();
+
                     // Don't update anything if we have already reset
                     if (INSTANCE == null) {
                         return;

@@ -2,7 +2,7 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
@@ -57,7 +57,7 @@ public class AppMainWindowContentComp extends SimpleComp {
             var version = new LabelComp((AppProperties.get().isStaging() ? "XPipe PTB" : "XPipe") + " "
                     + AppProperties.get().getVersion());
             version.apply(struc -> {
-                AppFont.setSize(struc.get(), 1);
+                AppFontSizes.xxl(struc.get());
                 struc.get().setOpacity(0.6);
             });
 
@@ -83,12 +83,13 @@ public class AppMainWindowContentComp extends SimpleComp {
             loaded.subscribe(struc -> {
                 if (struc != null) {
                     PlatformThread.runNestedLoopIteration();
-                    struc.prepareAddition();
                     anim.stop();
+                    struc.prepareAddition();
                     pane.getChildren().add(struc.get());
-                    struc.show();
-                    pane.getChildren().remove(vbox);
+                    PlatformThread.runNestedLoopIteration();
                     pane.getStyleClass().remove("background");
+                    pane.getChildren().remove(vbox);
+                    struc.show();
                 }
             });
 

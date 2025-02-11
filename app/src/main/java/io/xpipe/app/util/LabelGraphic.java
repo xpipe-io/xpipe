@@ -75,7 +75,9 @@ public abstract class LabelGraphic {
         @Override
         public Node createGraphicNode() {
             var n = node.get();
-            n.getStyleClass().add("graphic");
+            if (n != null) {
+                n.getStyleClass().add("graphic");
+            }
             return n;
         }
     }

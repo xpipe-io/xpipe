@@ -20,6 +20,10 @@ public class ShellControlCache {
         this.shellControl = shellControl;
     }
 
+    public boolean has(String key) {
+        return multiPurposeCache.containsKey(key);
+    }
+
     @SuppressWarnings("unchecked")
     public <T> T get(String key) {
         return (T) multiPurposeCache.get(key);

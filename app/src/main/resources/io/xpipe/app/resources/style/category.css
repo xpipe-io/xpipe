@@ -8,7 +8,7 @@
 }
 
 .category-button .name {
-    -fx-padding: 0.25em;
+    -fx-padding: 0.25em 0.1em;
 }
 
 .category-button .text-field {

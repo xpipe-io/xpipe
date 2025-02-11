@@ -2,7 +2,7 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.util.PlatformThread;
@@ -45,9 +45,9 @@ public class ModalOverlayComp extends SimpleComp {
     protected Region createSimple() {
         var bgRegion = background.createRegion();
         var modal = new ModalPane();
-        modal.setInTransitionFactory(OsType.getLocal() == OsType.LINUX ? null : node -> fadeInDelyed(node));
+        modal.setInTransitionFactory(null);
         modal.setOutTransitionFactory(
-                OsType.getLocal() == OsType.LINUX ? null : node -> Animations.fadeOut(node, Duration.millis(200)));
+                OsType.getLocal() == OsType.LINUX ? null : node -> Animations.fadeOut(node, Duration.millis(50)));
         modal.focusedProperty().addListener((observable, oldValue, newValue) -> {
             var c = modal.getContent();
             if (newValue && c != null) {
@@ -177,7 +177,7 @@ public class ModalOverlayComp extends SimpleComp {
                     AppI18n.get(newValue.getTitleKey()),
                     newValue.getGraphic() != null ? newValue.getGraphic().createGraphicNode() : null);
             l.setGraphicTextGap(8);
-            AppFont.normal(l);
+            AppFontSizes.xl(l);
             content.getChildren().addFirst(l);
         } else {
             content.getChildren().addFirst(Comp.vspacer(0).createRegion());
@@ -194,7 +194,7 @@ public class ModalOverlayComp extends SimpleComp {
                 }
             }
             content.getChildren().add(buttonBar);
-            AppFont.small(buttonBar);
+            AppFontSizes.xs(buttonBar);
         }
 
         var modalBox = new ModalBox(content) {
@@ -228,6 +228,14 @@ public class ModalOverlayComp extends SimpleComp {
             var busy = mocc.busy();
             if (busy != null) {
                 var loading = LoadingOverlayComp.noProgress(Comp.of(() -> modalBox), busy);
+                //                loading.apply(struc -> {
+                //                    var bg = struc.get().getChildren().getFirst();
+                //                    struc.get().getChildren().get(1).addEventFilter(MouseEvent.MOUSE_PRESSED, event ->
+                // {
+                //                        bg.fireEvent(event);
+                //                        event.consume();
+                //                    });
+                //                });
                 return loading.createRegion();
             }
         }
@@ -289,7 +297,7 @@ public class ModalOverlayComp extends SimpleComp {
         var t = new Timeline(
                 new KeyFrame(Duration.ZERO, new KeyValue(node.opacityProperty(), 0.01)),
                 new KeyFrame(Duration.millis(50), new KeyValue(node.opacityProperty(), 0.01, Animations.EASE)),
-                new KeyFrame(Duration.millis(150), new KeyValue(node.opacityProperty(), 1, Animations.EASE)));
+                new KeyFrame(Duration.millis(1250), new KeyValue(node.opacityProperty(), 1, Animations.EASE)));
 
         t.statusProperty().addListener((obs, old, val) -> {
             if (val == Animation.Status.STOPPED) {

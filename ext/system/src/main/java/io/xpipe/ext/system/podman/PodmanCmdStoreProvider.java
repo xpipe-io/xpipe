@@ -73,8 +73,8 @@ public class PodmanCmdStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public List<String> getPossibleNames() {
-        return List.of("podmanCmd");
+    public String getId() {
+        return "podmanCmd";
     }
 
     @Override

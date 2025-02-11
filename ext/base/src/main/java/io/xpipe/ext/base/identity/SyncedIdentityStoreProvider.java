@@ -43,7 +43,9 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
         var identity = new SimpleObjectProperty<>(st.getSshIdentity());
         var perUser = new SimpleBooleanProperty(st.isPerUser());
         perUser.addListener((observable, oldValue, newValue) -> {
-            if (!(identity.getValue() instanceof SshIdentityStrategy.File f) || f.getFile() == null || !f.getFile().isInDataDirectory()) {
+            if (!(identity.getValue() instanceof SshIdentityStrategy.File f)
+                    || f.getFile() == null
+                    || !f.getFile().isInDataDirectory()) {
                 return;
             }
 
@@ -105,14 +107,17 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
     }
 
     @Override
-    public List<String> getPossibleNames() {
-        return List.of("syncedIdentity");
+    public String getId() {
+        return "syncedIdentity";
     }
 
     @Override
     public DataStore defaultStore() {
-        return SyncedIdentityStore.builder().password(EncryptedValue.VaultKey.of(new SecretRetrievalStrategy.None())).sshIdentity(
-                EncryptedValue.VaultKey.of(new SshIdentityStrategy.None())).perUser(false).build();
+        return SyncedIdentityStore.builder()
+                .password(EncryptedValue.VaultKey.of(new SecretRetrievalStrategy.None()))
+                .sshIdentity(EncryptedValue.VaultKey.of(new SshIdentityStrategy.None()))
+                .perUser(false)
+                .build();
     }
 
     @Override

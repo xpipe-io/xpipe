@@ -231,11 +231,11 @@ public interface DataStoreProvider {
         return null;
     }
 
-    List<String> getPossibleNames();
-
-    default String getId() {
-        return getPossibleNames().getFirst();
-    }
+    String getId();
 
     List<Class<?>> getStoreClasses();
+
+    default List<ActionProvider> getActionProviders() {
+        return List.of();
+    }
 }

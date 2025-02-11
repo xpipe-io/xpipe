@@ -7,6 +7,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ShellTemp;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellInitCommand;
 import io.xpipe.core.store.*;
 
@@ -76,6 +77,11 @@ public abstract class ScriptStore implements DataStore, StatefulDataStore<Enable
                     }
 
                     @Override
+                    public boolean canPotentiallyRunInDialect(ShellDialect dialect) {
+                        return true;
+                    }
+
+                    @Override
                     public boolean runInTerminal() {
                         return true;
                     }
@@ -108,7 +114,7 @@ public abstract class ScriptStore implements DataStore, StatefulDataStore<Enable
                 .mapToInt(value ->
                         value.get().getName().hashCode() + value.getStore().hashCode())
                 .sum();
-        var targetDir = ShellTemp.getUserSpecificTempDataDirectory(proc, "scripts")
+        var targetDir = ShellTemp.createUserSpecificTempDataDirectory(proc, "scripts")
                 .join(proc.getShellDialect().getId())
                 .toString();
         var hashFile = FileNames.join(targetDir, "hash");
@@ -190,7 +196,9 @@ public abstract class ScriptStore implements DataStore, StatefulDataStore<Enable
 
     @Override
     public void checkComplete() throws Throwable {
-        Validators.isType(group, ScriptGroupStore.class);
+        if (group != null) {
+            Validators.isType(group, ScriptGroupStore.class);
+        }
         if (scripts != null) {
             Validators.contentNonNull(scripts);
         }

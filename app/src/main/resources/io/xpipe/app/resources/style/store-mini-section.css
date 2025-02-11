@@ -20,12 +20,12 @@
 
 .root:light .store-section-mini-comp:sub:expanded:even-depth {
     -fx-background-color: #9991;
-    -fx-border-color: -color-border-subtle;
+    -fx-border-color: -color-border-muted;
 }
 
 .root:dark .store-section-mini-comp:sub:expanded:even-depth {
     -fx-background-color: #0002;
-    -fx-border-color: -color-border-subtle;
+    -fx-border-color: -color-border-muted;
 }
 
 .store-section-mini-comp .expand-button:hover, .root:key-navigation .store-section-mini-comp .expand-button:focused {
@@ -58,7 +58,7 @@
 }
 
 .store-section-mini-comp > .children-content {
-    -fx-padding: 0 0 5px 15px;
+    -fx-padding: 0 0 0px 15px;
 }
 
 .store-section-mini-comp:root > .children-content {
@@ -74,15 +74,25 @@
 }
 
 .root:light .store-section-mini-comp:sub:expanded {
-    -fx-border-color: #9999;
+    -fx-border-color: #bbb9;
 }
 
 .root:dark .store-section-mini-comp:sub:expanded {
-    -fx-border-color: #4449;
+    -fx-border-color: #3339;
 }
 
 .root.nord .store-section-mini-comp:sub:expanded {
     -fx-border-radius: 0;
+}
+
+.store-section-mini-comp:last:sub:expanded {
+    -fx-border-width: 1 0 0 1;
+    -fx-background-radius: 4 0 0 0;
+    -fx-border-radius: 4 0 0 0;
+}
+
+.store-section-mini-comp:last:sub:expanded {
+    -fx-padding: 0;
 }
 
 .store-section-mini-comp:sub:expanded {
@@ -100,9 +110,12 @@
     -fx-border-color: -color-border-default;
 }
 
+.store-section-mini-comp .list-box-view-comp .list-box-content {
+    -fx-spacing: 0.2em;
+}
+
 .store-section-mini-comp:root .list-box-view-comp .list-box-content {
     -fx-spacing: 0.4em;
 }
-
 
 

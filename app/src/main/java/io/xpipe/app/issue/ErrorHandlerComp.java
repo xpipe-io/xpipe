@@ -3,10 +3,11 @@ package io.xpipe.app.issue;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.TitledPaneComp;
-import io.xpipe.app.core.AppFont;
+import io.xpipe.app.comp.base.ModalOverlay;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.LicenseRequiredException;
 
 import javafx.beans.property.Property;
@@ -41,9 +42,9 @@ public class ErrorHandlerComp extends SimpleComp {
 
     private Region createActionButtonGraphic(String nameString, String descString) {
         var header = new Label(nameString);
-        AppFont.header(header);
+        AppFontSizes.xl(header);
         var desc = new Label(descString);
-        AppFont.small(desc);
+        AppFontSizes.xs(desc);
         var text = new VBox(header, desc);
         text.setSpacing(2);
         return text;
@@ -66,9 +67,17 @@ public class ErrorHandlerComp extends SimpleComp {
     }
 
     private Region createDetails() {
-        var content = new ErrorDetailsComp(event);
-        var tp = new TitledPaneComp(AppI18n.observable("errorDetails"), content, 250);
-        var r = tp.createRegion();
+        var content = new ErrorDetailsComp(event).prefWidth(600).prefHeight(750);
+        var modal = ModalOverlay.of("errorDetails", content);
+        var button = new ButtonComp(
+                null,
+                new SimpleObjectProperty<>(new LabelGraphic.NodeGraphic(() -> {
+                    return createActionButtonGraphic(AppI18n.get("showDetails"), AppI18n.get("showDetailsDescription"));
+                })),
+                () -> {
+                    modal.show();
+                });
+        var r = button.grow(true, false).createRegion();
         r.getStyleClass().add("details");
         return r;
     }
@@ -93,7 +102,7 @@ public class ErrorHandlerComp extends SimpleComp {
         descriptionField.setWrapText(true);
         descriptionField.setEditable(false);
         descriptionField.setPadding(Insets.EMPTY);
-        AppFont.small(descriptionField);
+        AppFontSizes.xs(descriptionField);
         var text = new VBox(descriptionField);
         text.setFillWidth(true);
         text.setSpacing(8);
@@ -105,7 +114,7 @@ public class ErrorHandlerComp extends SimpleComp {
         var top = createTop();
         var content = new VBox(top, new Separator(Orientation.HORIZONTAL));
         var header = new Label(AppI18n.get("possibleActions"));
-        AppFont.header(header);
+        AppFontSizes.xl(header);
         var actionBox = new VBox(header);
         actionBox.getStyleClass().add("actions");
         actionBox.setFillWidth(true);
@@ -164,7 +173,6 @@ public class ErrorHandlerComp extends SimpleComp {
         if (event.getThrowable() != null) {
             content.getChildren().add(new Separator(Orientation.HORIZONTAL));
             var details = createDetails();
-            AppFont.medium(details);
             layout.getChildren().add(details);
             layout.prefHeightProperty().bind(content.heightProperty().add(65).add(details.prefHeightProperty()));
         }

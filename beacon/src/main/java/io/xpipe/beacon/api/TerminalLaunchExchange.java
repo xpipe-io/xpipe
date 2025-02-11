@@ -14,7 +14,7 @@ public class TerminalLaunchExchange extends BeaconInterface<TerminalLaunchExchan
 
     @Override
     public String getPath() {
-        return "/terminalLaunch";
+        return "/terminal/launch";
     }
 
     @Jacksonized

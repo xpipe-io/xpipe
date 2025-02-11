@@ -36,10 +36,10 @@ public class StoreIconComp extends SimpleComp {
         dots.setIconSize((int) (h * 1.3));
 
         var stack = new StackPane(background, storeIcon, dots);
-        stack.setMinHeight(w + 7);
-        stack.setMinWidth(w + 7);
-        stack.setMaxHeight(w + 7);
-        stack.setMaxWidth(w + 7);
+        stack.setMinHeight(w + 5);
+        stack.setMinWidth(w + 5);
+        stack.setMaxHeight(w + 5);
+        stack.setMaxWidth(w + 5);
         stack.getStyleClass().add("icon");
         stack.setAlignment(Pos.CENTER);
 

@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface SelfReferentialStore extends DataStore {
 
-    static Map<DataStore, DataStoreEntry> FALLBACK = new HashMap<>();
+    Map<DataStore, DataStoreEntry> FALLBACK = new HashMap<>();
 
     default DataStoreEntry getSelfEntry() {
         return DataStorage.get()

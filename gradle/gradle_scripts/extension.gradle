@@ -7,23 +7,6 @@
 // Do we need this?
 // jar.dependsOn(copyRuntimeLibs)
 
-def dev = tasks.register('createDevOutput', Copy) {
-    dependsOn jar
-    mustRunAfter jar
-
-    // Project equality does no longer work in gradle 8.10
-    if (project.allExtensions.stream().map(p -> p.toString()).toList().contains(project.toString())) {
-        var source = "${project.jar.destinationDirectory.get()}"
-        from source
-        into "${project.rootDir}/app/build/ext_dev/$project.name"
-    }
-}
-jar.finalizedBy(dev)
-
-project(':app').tasks.withType(JavaExec).configureEach {
-    dependsOn(dev)
-}
-
 tasks.register('createExtOutput', Copy) {
     mustRunAfter jar
 

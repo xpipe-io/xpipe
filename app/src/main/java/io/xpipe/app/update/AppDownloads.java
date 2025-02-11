@@ -1,5 +1,6 @@
 package io.xpipe.app.update;
 
+import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
@@ -150,7 +151,7 @@ public class AppDownloads {
         req.put("version", AppProperties.get().getVersion());
         req.put("first", first);
         req.put("license", LicenseProvider.get().getLicenseId());
-        req.put("dist", XPipeDistributionType.get().getId());
+        req.put("dist", AppDistributionType.get().getId());
         var url = URI.create("https://api.xpipe.io/version");
 
         var builder = HttpRequest.newBuilder();
@@ -163,6 +164,11 @@ public class AppDownloads {
         var response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() != 200) {
             throw new IOException(response.body());
+        }
+
+        var dateEntry = response.headers().firstValue("Date");
+        if (dateEntry.isPresent()) {
+            LicenseProvider.get().updateDate(dateEntry.get());
         }
 
         var json = JacksonMapper.getDefault().readTree(response.body());

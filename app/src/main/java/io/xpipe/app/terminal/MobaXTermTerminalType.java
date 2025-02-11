@@ -26,7 +26,8 @@ public class MobaXTermTerminalType extends ExternalTerminalType.WindowsType {
     protected Optional<Path> determineInstallation() {
         try {
             var r = WindowsRegistry.local()
-                    .readValue(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\mobaxterm\\DefaultIcon");
+                    .readStringValueIfPresent(
+                            WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\mobaxterm\\DefaultIcon");
             return r.map(Path::of);
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).omit().handle();
@@ -40,7 +41,7 @@ public class MobaXTermTerminalType extends ExternalTerminalType.WindowsType {
     }
 
     @Override
-    public boolean supportsColoredTitle() {
+    public boolean useColoredTitle() {
         return true;
     }
 
@@ -54,17 +55,20 @@ public class MobaXTermTerminalType extends ExternalTerminalType.WindowsType {
         try (var sc = LocalShell.getShell()) {
             SshLocalBridge.init();
             var b = SshLocalBridge.get();
+            var abs = b.getIdentityKey().toAbsolutePath();
+            var drivePath = "/drives/" + abs.getRoot().toString().substring(0, 1).toLowerCase() + "/" + abs.getRoot().relativize(abs).toString().replaceAll("\\\\", "/");
+            var winPath = b.getIdentityKey().toString().replaceAll("\\\\", "\\\\\\\\");
             var command = CommandBuilder.of()
-                    .addFile("ssh")
+                    .add("ssh")
                     .addQuoted(b.getUser() + "@localhost")
                     .add("-i")
-                    .add("\"$(cygpath \"" + b.getIdentityKey().toString() + "\")\"")
+                    .add("\"$(cygpath -u \"" + winPath + "\" || echo \"" + drivePath + "\")\"")
                     .add("-p")
                     .add("" + b.getPort());
             // Don't use local shell to build as it uses cygwin
             var rawCommand = command.buildSimple();
             var script = ScriptHelper.getExecScriptFile(sc, "sh");
-            Files.writeString(Path.of(script.toString()), rawCommand);
+            Files.writeString(Path.of(script.toString()), "#!/usr/bin/env bash\n" + rawCommand);
             var fixedFile = script.toString().replaceAll("\\\\", "/").replaceAll("\\s", "\\$0");
             sc.command(CommandBuilder.of()
                             .addFile(file.toString())

@@ -2,6 +2,7 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ListSelectorComp;
+import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.comp.base.ModalOverlayContentComp;
 import io.xpipe.app.comp.store.StoreChoiceComp;
 import io.xpipe.app.comp.store.StoreViewState;
@@ -14,15 +15,15 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 
 import javafx.application.Platform;
 import javafx.beans.property.*;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
+import lombok.Getter;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.function.Function;
 
 import static javafx.scene.layout.Priority.ALWAYS;
@@ -32,20 +33,18 @@ class ScanDialogComp extends ModalOverlayContentComp {
     private final DataStoreEntryRef<ShellStore> initialStore;
     private final ScanDialogAction action;
     private final ObjectProperty<DataStoreEntryRef<ShellStore>> entry;
-    private final ObservableList<ScanProvider.ScanOpportunity> available = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
+    private final ObservableList<ScanProvider.ScanOpportunity> available =
+            FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
     private final ListProperty<ScanProvider.ScanOpportunity> selected =
             new SimpleListProperty<>(FXCollections.synchronizedObservableList(FXCollections.observableArrayList()));
+
+    @Getter
     private final BooleanProperty busy = new SimpleBooleanProperty();
 
     ScanDialogComp(DataStoreEntryRef<ShellStore> entry, ScanDialogAction action) {
         this.initialStore = entry;
         this.entry = new SimpleObjectProperty<>(entry);
         this.action = action;
-    }
-
-    @Override
-    protected ObservableValue<Boolean> busy() {
-        return busy;
     }
 
     protected void finish() {
@@ -132,10 +131,11 @@ class ScanDialogComp extends ModalOverlayContentComp {
                                 ShellStore.class,
                                 store1 -> true,
                                 StoreViewState.get().getAllConnectionsCategory())
-                        .disable(new SimpleBooleanProperty(initialStore != null)))
+                        .disable(busy.or(new SimpleBooleanProperty(initialStore != null))))
                 .name("scanAlertHeader")
                 .description("scanAlertHeaderDescription")
-                .addComp(Comp.of(() -> stackPane).vgrow())
+                .addComp(LoadingOverlayComp.noProgress(Comp.of(() -> stackPane), busy)
+                        .vgrow())
                 .buildComp()
                 .prefWidth(500)
                 .prefHeight(680)

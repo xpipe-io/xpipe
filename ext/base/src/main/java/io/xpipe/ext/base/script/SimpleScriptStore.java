@@ -120,4 +120,9 @@ public class SimpleScriptStore extends ScriptStore implements ShellInitCommand.T
     public Optional<String> terminalContent(ShellControl shellControl) {
         return Optional.ofNullable(assembleScriptChain(shellControl));
     }
+
+    @Override
+    public boolean canPotentiallyRunInDialect(ShellDialect dialect) {
+        return this.minimumDialect.isCompatibleTo(dialect);
+    }
 }

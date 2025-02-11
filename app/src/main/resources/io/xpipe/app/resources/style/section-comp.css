@@ -9,11 +9,16 @@
 
 .options-comp .name {
     -fx-padding: 9px 0 0 0;
-    -fx-font-size: 1.1em;
+    -fx-font-size: 1.0em;
 }
 
 .options-comp .description {
     -fx-opacity: 0.75;
+    -fx-font-size: 0.95em;
+}
+
+.options-comp .options-content {
+    -fx-font-size: 0.95em;
 }
 
 .options-comp .long-description {

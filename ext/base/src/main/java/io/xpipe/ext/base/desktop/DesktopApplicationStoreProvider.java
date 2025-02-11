@@ -110,8 +110,8 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public List<String> getPossibleNames() {
-        return List.of("desktopApplication");
+    public String getId() {
+        return "desktopApplication";
     }
 
     @Override

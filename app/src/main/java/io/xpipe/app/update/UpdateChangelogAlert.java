@@ -4,6 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
+import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.Hyperlinks;
@@ -13,8 +14,8 @@ public class UpdateChangelogAlert {
     private static boolean shown = false;
 
     public static void showIfNeeded() {
-        var update = XPipeDistributionType.get().getUpdateHandler().getPerformedUpdate();
-        if (update != null && !XPipeDistributionType.get().getUpdateHandler().isUpdateSucceeded()) {
+        var update = AppDistributionType.get().getUpdateHandler().getPerformedUpdate();
+        if (update != null && !AppDistributionType.get().getUpdateHandler().isUpdateSucceeded()) {
             ErrorEvent.fromMessage(
                             """
             Update installation did not succeed.

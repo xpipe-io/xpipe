@@ -73,8 +73,8 @@ public class IncusInstallStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public List<String> getPossibleNames() {
-        return List.of("incusInstall");
+    public String getId() {
+        return "incusInstall";
     }
 
     @Override

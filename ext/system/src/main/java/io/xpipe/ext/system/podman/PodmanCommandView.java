@@ -112,9 +112,10 @@ public class PodmanCommandView extends CommandViewBase {
         }
 
         public ShellControl exec(String container) {
-            return shellControl
-                    .subShell(createOpenFunction(container, false), createOpenFunction(container, true))
-                    .withErrorFormatter(PodmanCommandView::formatErrorMessage)
+            var sub = shellControl.subShell();
+            sub.setDumbOpen(createOpenFunction(container, false));
+            sub.setTerminalOpen(createOpenFunction(container, true));
+            return sub.withErrorFormatter(PodmanCommandView::formatErrorMessage)
                     .withExceptionConverter(PodmanCommandView::convertException);
         }
 

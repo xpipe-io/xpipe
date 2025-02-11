@@ -20,6 +20,7 @@ public class SecretQueryProgress {
     private final List<SecretQuery> suppliers;
     private final SecretQuery fallback;
     private final List<SecretQueryFilter> filters;
+    private final List<SecretQueryFormatter> formatters;
     private final List<String> seenPrompts;
     private final CountDown countDown;
     private final boolean interactive;
@@ -31,6 +32,7 @@ public class SecretQueryProgress {
             @NonNull List<SecretQuery> suppliers,
             @NonNull SecretQuery fallback,
             @NonNull List<SecretQueryFilter> filters,
+            List<SecretQueryFormatter> formatters,
             @NonNull CountDown countDown,
             boolean interactive) {
         this.requestId = requestId;
@@ -38,6 +40,7 @@ public class SecretQueryProgress {
         this.suppliers = new ArrayList<>(suppliers);
         this.fallback = fallback;
         this.filters = filters;
+        this.formatters = formatters;
         this.countDown = countDown;
         this.interactive = interactive;
         this.seenPrompts = new ArrayList<>();
@@ -60,6 +63,13 @@ public class SecretQueryProgress {
             var o = filter.filter(prompt);
             if (o.isPresent()) {
                 return o.get();
+            }
+        }
+
+        for (var formatter : formatters) {
+            var r = formatter.format(prompt);
+            if (r.isPresent()) {
+                prompt = r.get();
             }
         }
 

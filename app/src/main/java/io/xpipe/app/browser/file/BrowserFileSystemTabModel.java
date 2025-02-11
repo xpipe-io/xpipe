@@ -10,7 +10,6 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.*;
 import io.xpipe.app.util.BooleanScope;
@@ -26,6 +25,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.SneakyThrows;
 
 import java.io.IOException;
@@ -121,13 +121,15 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
 
             var current = getCurrentDirectory();
             // We might close this after storage shutdown
-            if (DataStorage.get() != null
-                    && DataStorage.get().getStoreEntries().contains(getEntry().get())
-                    && savedState != null
-                    && current != null) {
+            // If this entry does not exist, it's not that bad if we save it anyway
+            if (
+            //                    DataStorage.get() != null
+            //                    && DataStorage.get().getStoreEntries().contains(getEntry().get())
+            savedState != null && current != null) {
                 savedState.cd(current.getPath(), false);
                 BrowserHistorySavedStateImpl.get()
                         .add(new BrowserHistorySavedState.Entry(getEntry().get().getUuid(), current.getPath()));
+                BrowserHistorySavedStateImpl.get().save();
             }
             try {
                 fileSystem.close();
@@ -301,11 +303,22 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                 if (ShellDialects.getStartableDialects().stream().anyMatch(dialect -> adjustedPath
                         .toLowerCase()
                         .startsWith(dialect.getExecutableName().toLowerCase()))) {
-                    var cc = fileSystem
-                            .getShell()
-                            .get()
-                            .singularSubShell(ShellOpenFunction.of(CommandBuilder.ofString(adjustedPath), false));
-                    openTerminalAsync(name, directory, cc, true);
+                    var sub = fileSystem.getShell().get().subShell();
+                    var open = new ShellOpenFunction() {
+
+                        @Override
+                        public CommandBuilder prepareWithoutInitCommand() {
+                            return CommandBuilder.ofString(adjustedPath);
+                        }
+
+                        @Override
+                        public CommandBuilder prepareWithInitCommand(@NonNull String command) {
+                            return CommandBuilder.ofString(command);
+                        }
+                    };
+                    sub.setDumbOpen(open);
+                    sub.setTerminalOpen(open);
+                    openTerminalAsync(name, directory, sub, true);
                 } else {
                     var cc = fileSystem.getShell().get().command(adjustedPath);
                     openTerminalAsync(name, directory, cc, true);
@@ -328,7 +341,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         }
 
         try {
-            BrowserFileSystemHelper.validateDirectoryPath(this, resolvedPath, customInput);
+            BrowserFileSystemHelper.validateDirectoryPath(this, resolvedPath, true);
             cdSyncWithoutCheck(path);
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();

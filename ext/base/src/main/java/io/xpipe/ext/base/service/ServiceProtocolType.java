@@ -1,17 +1,11 @@
 package io.xpipe.ext.base.service;
 
-import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
-import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.Hyperlinks;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.util.LocalShell;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.OsType;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -109,7 +103,6 @@ public interface ServiceProtocolType {
         }
     }
 
-
     @JsonTypeName("custom")
     @Value
     @Jacksonized
@@ -129,14 +122,13 @@ public interface ServiceProtocolType {
                 return;
             }
 
-            var format = commandTemplate.toLowerCase(Locale.ROOT).contains("$address") ? commandTemplate : commandTemplate + " $ADDRESS";
-            try (var pc = LocalShell.getShell().start()) {
-                var toExecute = ExternalApplicationHelper.replaceFileArgument(format, "ADDRESS", url);
-                var command = CommandBuilder.of().add(toExecute);
-                // We can't be sure whether the command is blocking or not, so always make it not blocking
-                command = pc.getShellDialect().launchAsnyc(command);
-                pc.command(command).execute();
-            }
+            var port = url.split(":")[1];
+            var format = commandTemplate.toLowerCase(Locale.ROOT).contains("$port")
+                    ? commandTemplate
+                    : commandTemplate + " localhost:$PORT";
+            var toExecute = ExternalApplicationHelper.replaceFileArgument(format, "PORT", port);
+            // We can't be sure whether the command is blocking or not, so always make it not blocking
+            ExternalApplicationHelper.startAsync(toExecute);
         }
 
         @Override

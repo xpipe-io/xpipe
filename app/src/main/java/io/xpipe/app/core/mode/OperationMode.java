@@ -92,6 +92,11 @@ public abstract class OperationMode {
                     OperationMode.halt(1);
                 }
 
+                if (ex instanceof OutOfMemoryError) {
+                    ex.printStackTrace();
+                    OperationMode.halt(1);
+                }
+
                 ErrorEvent.fromThrowable(ex).unhandled(true).build().handle();
             });
 
@@ -103,7 +108,8 @@ public abstract class OperationMode {
             AppDebugModeCheck.printIfNeeded();
             AppProperties.logSystemProperties();
             AppProperties.get().logArguments();
-            AppExtensionManager.init(true);
+            AppDistributionType.init();
+            AppExtensionManager.init();
             AppI18n.init();
             AppPrefs.initLocal();
             AppBeaconServer.setupPort();
@@ -245,7 +251,13 @@ public abstract class OperationMode {
         var loc = AppProperties.get().isDevelopmentEnvironment()
                 ? XPipeInstallation.getLocalDefaultInstallationBasePath()
                 : XPipeInstallation.getCurrentInstallationBasePath().toString();
-        var exec = XPipeInstallation.createExternalAsyncLaunchCommand(loc, XPipeDaemonMode.GUI, "", true);
+        var dataDir = AppProperties.get().getDataDir();
+        // We have to quote the arguments like this to make it work in PowerShell as well
+        var exec = XPipeInstallation.createExternalAsyncLaunchCommand(
+                loc,
+                XPipeDaemonMode.GUI,
+                "\"-Dio.xpipe.app.acceptEula=true\" \"-Dio.xpipe.app.dataDir=" + dataDir + "\"",
+                true);
         LocalShell.getShell().executeSimpleCommand(exec);
     }
 

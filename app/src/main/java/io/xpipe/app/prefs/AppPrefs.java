@@ -5,13 +5,11 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
+import io.xpipe.app.icon.SystemIconSource;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.ExternalTerminalType;
-import io.xpipe.app.update.XPipeDistributionType;
-import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.PlatformThread;
-import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.ModuleHelper;
 
 import javafx.beans.property.*;
@@ -20,6 +18,7 @@ import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableStringValue;
 import javafx.beans.value.ObservableValue;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -78,6 +77,16 @@ public class AppPrefs {
             mapLocal(new SimpleStringProperty(null), "customTerminalCommand", String.class, false);
     final BooleanProperty clearTerminalOnInit =
             mapLocal(new SimpleBooleanProperty(true), "clearTerminalOnInit", Boolean.class, false);
+    final Property<List<SystemIconSource>> iconSources = map(Mapping.builder()
+            .property(new SimpleObjectProperty<>(new ArrayList<>()))
+            .key("iconSources")
+            .valueType(TypeFactory.defaultInstance().constructType(new TypeReference<List<SystemIconSource>>() {}))
+            .build());
+
+    public final ObservableValue<List<SystemIconSource>> getIconSources() {
+        return iconSources;
+    }
+
     public final BooleanProperty disableCertutilUse =
             mapLocal(new SimpleBooleanProperty(false), "disableCertutilUse", Boolean.class, false);
     public final BooleanProperty useLocalFallbackShell =
@@ -90,8 +99,11 @@ public class AppPrefs {
             mapVaultShared(new SimpleBooleanProperty(false), "dontCachePasswords", Boolean.class, false);
     public final BooleanProperty denyTempScriptCreation =
             mapVaultShared(new SimpleBooleanProperty(false), "denyTempScriptCreation", Boolean.class, false);
-    final Property<ExternalPasswordManager> passwordManager =
-            mapVaultShared(new SimpleObjectProperty<>(), "passwordManager", ExternalPasswordManager.class, false);
+    final Property<ExternalPasswordManager> passwordManager = mapVaultShared(
+            new SimpleObjectProperty<>(ExternalPasswordManager.NONE),
+            "passwordManager",
+            ExternalPasswordManager.class,
+            false);
     final StringProperty passwordManagerCommand =
             mapLocal(new SimpleStringProperty(""), "passwordManagerCommand", String.class, false);
     final ObjectProperty<StartupBehaviour> startupBehaviour = mapLocal(
@@ -144,7 +156,7 @@ public class AppPrefs {
             mapLocal(new SimpleBooleanProperty(false), "developerPrintInitFiles", Boolean.class, false);
 
     final ObjectProperty<SupportedLocale> language = mapLocal(
-            new SimpleObjectProperty<>(SupportedLocale.getEnglish()), "language", SupportedLocale.class, false);
+            new SimpleObjectProperty<>(SupportedLocale.getInitial()), "language", SupportedLocale.class, false);
 
     final BooleanProperty requireDoubleClickForConnections =
             mapLocal(new SimpleBooleanProperty(false), "requireDoubleClickForConnections", Boolean.class, false);
@@ -181,6 +193,10 @@ public class AppPrefs {
             mapVaultShared(new SimpleStringProperty(UUID.randomUUID().toString()), "apiKey", String.class, true);
     final BooleanProperty disableApiAuthentication =
             mapLocal(new SimpleBooleanProperty(false), "disableApiAuthentication", Boolean.class, false);
+
+    public ObservableValue<AppTheme.Theme> theme() {
+        return theme;
+    }
 
     public ObservableBooleanValue developerPrintInitFiles() {
         return developerPrintInitFiles;
@@ -241,6 +257,7 @@ public class AppPrefs {
                         new ConnectionsCategory(),
                         new FileBrowserCategory(),
                         new PasswordManagerCategory(),
+                        new IconsCategory(),
                         new SecurityCategory(),
                         new HttpApiCategory(),
                         new WorkspacesCategory(),
@@ -488,7 +505,7 @@ public class AppPrefs {
         terminalType.set(ExternalTerminalType.determineDefault(terminalType.get()));
         rdpClientType.setValue(ExternalRdpClientType.determineDefault(rdpClientType.get()));
         if (AppProperties.get().isInitialLaunch()) {
-            if (XPipeDistributionType.get() == XPipeDistributionType.WEBTOP) {
+            if (AppDistributionType.get() == AppDistributionType.WEBTOP) {
                 performanceMode.setValue(true);
             } else if (System.getProperty("os.name").toLowerCase().contains("server")) {
                 performanceMode.setValue(true);
@@ -518,16 +535,6 @@ public class AppPrefs {
         // You can set the directory to empty in the settings
         if (storageDirectory.get() == null || storageDirectory.get().toString().isBlank()) {
             storageDirectory.setValue(DEFAULT_STORAGE_DIR);
-        }
-
-        // Fix erroneous fallback shell set on macOS
-        if (OsType.getLocal() == OsType.MACOS
-                && AppProperties.get()
-                        .getCanonicalVersion()
-                        .map(v -> v.getMajor() == 12 && v.getMinor() == 2)
-                        .orElse(false)
-                && AppProperties.get().isNewBuildSession()) {
-            useLocalFallbackShell.setValue(false);
         }
 
         try {
@@ -572,7 +579,7 @@ public class AppPrefs {
             if (!handler.isInitialized()) {
                 continue;
             }
-            handler.updateObject(m.getKey(), m.getProperty().getValue());
+            handler.updateObject(m.getKey(), m.getProperty().getValue(), m.getValueType());
         }
         if (vaultStorageHandler.isInitialized()) {
             vaultStorageHandler.save();

@@ -2,6 +2,7 @@ package io.xpipe.app.update;
 
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.Hyperlinks;
@@ -39,7 +40,7 @@ public class GitHubUpdater extends UpdateHandler {
                 () -> {
                     executeUpdateAndClose();
                 },
-                false,
+                true,
                 true));
         return list;
     }
@@ -58,7 +59,7 @@ public class GitHubUpdater extends UpdateHandler {
         var changelog = changelogString.orElse(null);
         var rel = new PreparedUpdate(
                 AppProperties.get().getVersion(),
-                XPipeDistributionType.get().getId(),
+                AppDistributionType.get().getId(),
                 lastUpdateCheckResult.getValue().getVersion(),
                 lastUpdateCheckResult.getValue().getReleaseUrl(),
                 downloadFile.get(),
@@ -110,7 +111,7 @@ public class GitHubUpdater extends UpdateHandler {
         event("Selected asset " + ghAsset.get().getName());
         lastUpdateCheckResult.setValue(new AvailableRelease(
                 AppProperties.get().getVersion(),
-                XPipeDistributionType.get().getId(),
+                AppDistributionType.get().getId(),
                 rel.get().getTagName(),
                 rel.get().getHtmlUrl().toString(),
                 ghAsset.get().getBrowserDownloadUrl(),

@@ -22,7 +22,7 @@ public class AppShellCheck {
                     case OsType.MacOs macOs -> new AppShellChecker() {
 
                         @Override
-                        protected boolean shouldAttemptFallback() {
+                        protected boolean shouldAttemptFallbackForProcessStartFail() {
                             // We don't want to fall back on macOS as occasional zsh spawn issues would cause many users
                             // to use sh
                             return false;

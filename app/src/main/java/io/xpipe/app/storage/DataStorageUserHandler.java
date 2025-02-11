@@ -12,6 +12,8 @@ public interface DataStorageUserHandler {
         return (DataStorageUserHandler) ProcessControlProvider.get().getStorageUserHandler();
     }
 
+    int getUserCount();
+
     void init() throws IOException;
 
     void save();

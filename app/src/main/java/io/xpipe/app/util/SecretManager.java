@@ -33,9 +33,11 @@ public class SecretManager {
             List<SecretQuery> suppliers,
             SecretQuery fallback,
             List<SecretQueryFilter> filters,
+            List<SecretQueryFormatter> formatters,
             CountDown countDown,
             boolean interactive) {
-        var p = new SecretQueryProgress(request, storeId, suppliers, fallback, filters, countDown, interactive);
+        var p = new SecretQueryProgress(
+                request, storeId, suppliers, fallback, filters, formatters, countDown, interactive);
         progress.add(p);
         return p;
     }
@@ -67,6 +69,7 @@ public class SecretManager {
                 secretId,
                 List.of(strategy.query()),
                 SecretQuery.prompt(false),
+                List.of(),
                 List.of(),
                 CountDown.of(),
                 interactive);

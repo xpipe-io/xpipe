@@ -13,12 +13,11 @@ import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.resources.AppImages;
-import io.xpipe.app.resources.AppResources;
-import io.xpipe.app.resources.SystemIcons;
+import io.xpipe.app.resources.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.terminal.TerminalLauncherManager;
@@ -26,7 +25,6 @@ import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.app.update.UpdateAvailableDialog;
 import io.xpipe.app.update.UpdateChangelogAlert;
 import io.xpipe.app.update.UpdateNagDialog;
-import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.*;
 import io.xpipe.core.util.XPipeDaemonMode;
 
@@ -47,7 +45,7 @@ public class BaseMode extends OperationMode {
     }
 
     @Override
-    public void onSwitchTo() throws Throwable {
+    public void onSwitchTo() {
         if (initialized) {
             return;
         }
@@ -92,8 +90,9 @@ public class BaseMode extends OperationMode {
                     shellLoaded.countDown();
                     AppRosettaCheck.check();
                     AppTestCommandCheck.check();
-                    XPipeDistributionType.init();
                     AppPrefs.setLocalDefaultsIfNeeded();
+                    PlatformInit.init(true);
+                    AppMainWindow.addUpdateTitleListener();
                 },
                 () -> {
                     shellLoaded.await();
@@ -134,8 +133,9 @@ public class BaseMode extends OperationMode {
                 () -> {
                     PlatformInit.init(true);
                     AppImages.init();
-                    SystemIcons.init();
                     imagesLoaded.countDown();
+                    storageLoaded.await();
+                    SystemIconManager.init();
                 },
                 () -> {
                     BrowserIconManager.loadIfNecessary();

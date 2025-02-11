@@ -14,7 +14,7 @@ import javafx.beans.value.ObservableIntegerValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 
-import lombok.Value;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -22,14 +22,14 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
-@Value
+@Getter
 public class StoreSection {
 
-    StoreEntryWrapper wrapper;
-    DerivedObservableList<StoreSection> allChildren;
-    DerivedObservableList<StoreSection> shownChildren;
-    int depth;
-    ObservableBooleanValue showDetails;
+    private final StoreEntryWrapper wrapper;
+    private final DerivedObservableList<StoreSection> allChildren;
+    private final DerivedObservableList<StoreSection> shownChildren;
+    private final int depth;
+    private final ObservableBooleanValue showDetails;
 
     public StoreSection(
             StoreEntryWrapper wrapper,
@@ -85,9 +85,8 @@ public class StoreSection {
             }
         });
         var comp = explicitOrderComp;
-        var mappedSortMode = BindingsHelper.flatMap(
-                category,
-                storeCategoryWrapper -> storeCategoryWrapper.getSortMode());
+        var mappedSortMode =
+                BindingsHelper.flatMap(category, storeCategoryWrapper -> storeCategoryWrapper.getSortMode());
         return list.sorted(
                 (o1, o2) -> {
                     var r = comp.compare(o1, o2);
@@ -114,7 +113,8 @@ public class StoreSection {
             ObservableIntegerValue updateObservable) {
         var topLevel = all.filtered(
                 section -> {
-                    return DataStorage.get().isRootEntry(section.getEntry(), category.getValue().getCategory());
+                    return DataStorage.get()
+                            .isRootEntry(section.getEntry(), category.getValue().getCategory());
                 },
                 category,
                 updateObservable);
@@ -163,7 +163,8 @@ public class StoreSection {
                     //                                        .orElse(false);
 
                     // is children. This check is fast as the children are cached in the storage
-                    if (!DataStorage.get().getStoreChildren(e.getEntry()).contains(other.getEntry())) {
+                    if (DataStorage.get() == null
+                            || !DataStorage.get().getStoreChildren(e.getEntry()).contains(other.getEntry())) {
                         return false;
                     }
 
@@ -200,7 +201,10 @@ public class StoreSection {
                             // If this entry is already shown as root due to a different category than parent, don't
                             // show it
                             // again here
-                            !DataStorage.get().isRootEntry(section.getWrapper().getEntry(), category.getValue().getCategory());
+                            !DataStorage.get()
+                                    .isRootEntry(
+                                            section.getWrapper().getEntry(),
+                                            category.getValue().getCategory());
                 },
                 category,
                 filterString,

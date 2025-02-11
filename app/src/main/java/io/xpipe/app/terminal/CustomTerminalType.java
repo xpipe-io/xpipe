@@ -26,7 +26,7 @@ public class CustomTerminalType extends ExternalApplicationType implements Exter
     }
 
     @Override
-    public boolean supportsColoredTitle() {
+    public boolean useColoredTitle() {
         return true;
     }
 

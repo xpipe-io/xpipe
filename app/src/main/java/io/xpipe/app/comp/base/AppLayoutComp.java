@@ -3,7 +3,6 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.store.StoreViewState;
-import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
@@ -68,7 +67,6 @@ public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
                 }
             });
         });
-        AppFont.normal(pane);
         pane.getStyleClass().add("layout");
         return new Structure(pane, multiR, sidebarR, new ArrayList<>(multiR.getChildren()));
     }

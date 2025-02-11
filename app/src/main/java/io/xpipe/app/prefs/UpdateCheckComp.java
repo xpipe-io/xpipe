@@ -2,9 +2,9 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.TileButtonComp;
+import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.update.UpdateAvailableDialog;
-import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -20,28 +20,28 @@ public class UpdateCheckComp extends SimpleComp {
     public UpdateCheckComp() {
         updateReady = PlatformThread.sync(Bindings.createBooleanBinding(
                 () -> {
-                    return XPipeDistributionType.get()
+                    return AppDistributionType.get()
                                     .getUpdateHandler()
                                     .getPreparedUpdate()
                                     .getValue()
                             != null;
                 },
-                XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate()));
-        checking = PlatformThread.sync(
-                XPipeDistributionType.get().getUpdateHandler().getBusy());
+                AppDistributionType.get().getUpdateHandler().getPreparedUpdate()));
+        checking =
+                PlatformThread.sync(AppDistributionType.get().getUpdateHandler().getBusy());
     }
 
     private void showAlert() {
         ThreadHelper.runFailableAsync(() -> {
-            XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheckSilent(false, false);
+            AppDistributionType.get().getUpdateHandler().refreshUpdateCheckSilent(false, false);
             UpdateAvailableDialog.showIfNeeded();
         });
     }
 
     private void refresh() {
         ThreadHelper.runFailableAsync(() -> {
-            XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheck(false, false);
-            XPipeDistributionType.get().getUpdateHandler().prepareUpdate();
+            AppDistributionType.get().getUpdateHandler().refreshUpdateCheck(false, false);
+            AppDistributionType.get().getUpdateHandler().prepareUpdate();
         });
     }
 
@@ -54,11 +54,11 @@ public class UpdateCheckComp extends SimpleComp {
                     }
 
                     if (updateReady.getValue()) {
-                        var prefix = XPipeDistributionType.get() == XPipeDistributionType.PORTABLE
+                        var prefix = AppDistributionType.get() == AppDistributionType.PORTABLE
                                 ? AppI18n.get("updateReadyPortable")
                                 : AppI18n.get("updateReady");
                         var version = "Version "
-                                + XPipeDistributionType.get()
+                                + AppDistributionType.get()
                                         .getUpdateHandler()
                                         .getPreparedUpdate()
                                         .getValue()
@@ -77,7 +77,7 @@ public class UpdateCheckComp extends SimpleComp {
                     }
 
                     if (updateReady.getValue()) {
-                        return XPipeDistributionType.get() == XPipeDistributionType.PORTABLE
+                        return AppDistributionType.get() == AppDistributionType.PORTABLE
                                 ? AppI18n.get("updateReadyDescriptionPortable")
                                 : AppI18n.get("updateReadyDescription");
                     }

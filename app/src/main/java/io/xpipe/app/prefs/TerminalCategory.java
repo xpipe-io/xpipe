@@ -54,6 +54,16 @@ public class TerminalCategory extends AppPrefsCategory {
                         })))
                 .padding(new Insets(15, 0, 0, 0))
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
+        prefs.enableTerminalLogging.addListener((observable, oldValue, newValue) -> {
+            var feature = LicenseProvider.get().getFeature("logging");
+            if (newValue && !feature.isSupported()) {
+                try {
+                    feature.throwIfUnsupported();
+                } catch (LicenseRequiredException ex) {
+                    ErrorEvent.fromThrowable(ex).handle();
+                }
+            }
+        });
         return new OptionsBuilder()
                 .addTitle("terminalConfiguration")
                 .sub(new OptionsBuilder()

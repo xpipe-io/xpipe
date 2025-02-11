@@ -7,12 +7,10 @@ import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.comp.store.SystemStateComp;
 import io.xpipe.app.ext.*;
-import io.xpipe.app.resources.SystemIcons;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.ShellStoreFormat;
-import io.xpipe.core.process.SystemState;
 import io.xpipe.ext.base.script.ScriptStore;
 
 import javafx.beans.property.BooleanProperty;
@@ -28,15 +26,6 @@ public interface ShellStoreProvider extends DataStoreProvider {
                 var replacement = ProcessControlProvider.get().replace(entry.ref());
                 ShellStore store = replacement.getStore().asNeeded();
                 var control = ScriptStore.controlWithDefaultScripts(store.tempControl());
-                control.onInit(sc -> {
-                    if (entry.getStorePersistentState() instanceof SystemState systemState
-                            && systemState.getShellDialect() == null) {
-                        var found = SystemIcons.detectForSystem(sc);
-                        if (found.isPresent()) {
-                            entry.setIcon(found.get().getIconName(), false);
-                        }
-                    }
-                });
                 TerminalLauncher.open(
                         replacement.get(),
                         DataStorage.get().getStoreEntryDisplayName(replacement.get()),

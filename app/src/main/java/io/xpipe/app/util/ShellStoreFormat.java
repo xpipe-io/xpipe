@@ -2,7 +2,6 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.ShellEnvironmentStoreState;
 import io.xpipe.core.process.ShellStoreState;
@@ -30,7 +29,7 @@ public class ShellStoreFormat {
                             (includeOsName ? formattedOsName(s.getOsName()) : null), s.getShellName());
                     return new ShellStoreFormat(null, name, def).format();
                 },
-                AppPrefs.get().language(),
+                AppI18n.activeLanguage(),
                 section.getWrapper().getPersistentState());
     }
 

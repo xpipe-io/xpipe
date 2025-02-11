@@ -9,12 +9,15 @@ import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.comp.base.TooltipAugment;
 import io.xpipe.app.util.BooleanScope;
+import io.xpipe.app.util.ContextMenuHelper;
+import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.css.PseudoClass;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -84,15 +87,25 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
                         pathRegion.focusedProperty(),
                         model.getInOverview()));
         var stack = new StackPane(pathRegion, breadcrumbsRegion);
+        stack.setAlignment(Pos.CENTER_LEFT);
         pathRegion.prefHeightProperty().bind(stack.heightProperty());
+
+        stack.widthProperty().addListener((observable, oldValue, newValue) -> {
+            setMargin(stack, breadcrumbsRegion);
+        });
+
+        model.getCurrentPath().addListener((observable, oldValue, newValue) -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                setMargin(stack, breadcrumbsRegion);
+            });
+        });
 
         // Prevent overflow
         var clip = new Rectangle();
         clip.widthProperty().bind(stack.widthProperty());
         clip.heightProperty().bind(stack.heightProperty());
-        breadcrumbsRegion.setClip(clip);
+        stack.setClip(clip);
 
-        stack.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(stack, Priority.ALWAYS);
 
         var topBox = new HBox(homeButton, stack, historyButton);
@@ -108,6 +121,15 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
         HBox.setHgrow(topBox, Priority.ALWAYS);
 
         return new Structure(topBox, pathRegion, historyButton);
+    }
+
+    private void setMargin(StackPane stackPane, Region region) {
+        var off = region.getWidth() - stackPane.getWidth();
+        if (off <= 0) {
+            StackPane.setMargin(region, new Insets(0, 0, 0, 0));
+        } else {
+            StackPane.setMargin(region, new Insets(0, 20, 0, -off - 20));
+        }
     }
 
     private Comp<CompStructure<TextField>> createPathBar() {
@@ -172,7 +194,7 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
     }
 
     private ContextMenu createContextMenu() {
-        var cm = new ContextMenu();
+        var cm = ContextMenuHelper.create();
 
         var f = model.getHistory().getForwardHistory(8).stream().toList();
         for (int i = f.size() - 1; i >= 0; i--) {

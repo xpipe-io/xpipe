@@ -9,18 +9,15 @@ import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.comp.base.TooltipAugment;
-import io.xpipe.app.core.App;
-import io.xpipe.app.core.AppActionLinkDetector;
-import io.xpipe.app.core.AppFont;
-import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.*;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.*;
+import io.xpipe.core.process.OsType;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableDoubleValue;
@@ -65,7 +62,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         var forceCondensed = AppPrefs.get() != null
                 && AppPrefs.get().condenseConnectionDisplay().get();
         if (!preferLarge || forceCondensed) {
-            return new DenseStoreEntryComp(section, true, content);
+            return new DenseStoreEntryComp(section, content);
         } else {
             return new StandardStoreEntryComp(section, content);
         }
@@ -78,7 +75,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         } else {
             var forceCondensed = AppPrefs.get() != null
                     && AppPrefs.get().condenseConnectionDisplay().get();
-            return forceCondensed ? new DenseStoreEntryComp(e, true, null) : new StandardStoreEntryComp(e, null);
+            return forceCondensed ? new DenseStoreEntryComp(e, null) : new StandardStoreEntryComp(e, null);
         }
     }
 
@@ -138,7 +135,19 @@ public abstract class StoreEntryComp extends SimpleComp {
 
         var loading = LoadingOverlayComp.noProgress(
                 Comp.of(() -> button), getWrapper().getEffectiveBusy());
-        AppFont.normal(button);
+        if (OsType.getLocal() == OsType.MACOS) {
+            AppFontSizes.base(button);
+        } else if (OsType.getLocal() == OsType.LINUX) {
+            AppFontSizes.xl(button);
+        } else {
+            AppFontSizes.apply(button, sizes -> {
+                if (sizes.getBase().equals("10.5")) {
+                    return sizes.getXl();
+                } else {
+                    return sizes.getLg();
+                }
+            });
+        }
         return loading.createRegion();
     }
 
@@ -175,7 +184,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         button.styleClass("user-icon");
         button.tooltipKey("personalConnection");
         button.apply(struc -> {
-            AppFont.medium(struc.get());
+            AppFontSizes.base(struc.get());
             struc.get().setOpacity(1.0);
         });
         button.hide(Bindings.not(getWrapper().getPerUser()));
@@ -207,7 +216,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         update.run();
         ig.setAlignment(Pos.CENTER_RIGHT);
         ig.getStyleClass().add("button-bar");
-        AppFont.medium(ig);
+        AppFontSizes.base(ig);
         return ig;
     }
 
@@ -266,8 +275,7 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     protected ContextMenu createContextMenu() {
-        var contextMenu = new ContextMenu();
-        AppFont.normal(contextMenu.getStyleableNode());
+        var contextMenu = ContextMenuHelper.create();
 
         var hasSep = false;
         for (var p : getWrapper().getActionProviders()) {
@@ -473,7 +481,7 @@ public abstract class StoreEntryComp extends SimpleComp {
             });
             menu.getItems().add(sc);
 
-            if (XPipeDistributionType.get().isSupportsUrls()) {
+            if (AppDistributionType.get().isSupportsUrls()) {
                 var l = new MenuItem(null, new FontIcon("mdi2c-clipboard-list-outline"));
                 l.textProperty().bind(AppI18n.observable("base.copyShareLink"));
                 l.setOnAction(event -> {

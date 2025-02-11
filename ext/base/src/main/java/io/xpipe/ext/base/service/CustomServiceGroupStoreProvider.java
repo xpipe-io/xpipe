@@ -19,8 +19,8 @@ public class CustomServiceGroupStoreProvider extends AbstractServiceGroupStorePr
     }
 
     @Override
-    public List<String> getPossibleNames() {
-        return List.of("customServiceGroup");
+    public String getId() {
+        return "customServiceGroup";
     }
 
     @Override

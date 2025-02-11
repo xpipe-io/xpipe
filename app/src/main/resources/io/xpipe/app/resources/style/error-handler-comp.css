@@ -6,10 +6,6 @@
     -fx-spacing: 0.3em;
 }
 
-.error-handler-comp .details {
-    -fx-background-color: transparent;
-}
-
 .error-report .report {
     -fx-padding: 1.0em 1.5em 1em 1.5em;
     -fx-spacing: 1.3em;

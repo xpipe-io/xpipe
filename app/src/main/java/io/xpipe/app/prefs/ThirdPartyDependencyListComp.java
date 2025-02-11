@@ -3,7 +3,7 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
-import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.util.Hyperlinks;
 
 import javafx.geometry.Insets;
@@ -23,7 +23,7 @@ public class ThirdPartyDependencyListComp extends Comp<CompStructure<?>> {
         tp.setPadding(Insets.EMPTY);
         tp.setGraphic(link);
         tp.setAlignment(Pos.CENTER_LEFT);
-        AppFont.small(tp);
+        AppFontSizes.xs(tp);
 
         var licenseName = new Label("(" + t.licenseName() + ")");
         var sp = new StackPane(link, licenseName);
@@ -38,9 +38,9 @@ public class ThirdPartyDependencyListComp extends Comp<CompStructure<?>> {
         text.setWrapText(true);
         text.setPrefHeight(300);
         text.maxWidthProperty().bind(tp.widthProperty());
-        AppFont.setSize(text, -4);
+        AppFontSizes.xs(text);
         tp.setContent(text);
-        AppFont.verySmall(tp);
+        AppFontSizes.xs(tp);
         return tp;
     }
 

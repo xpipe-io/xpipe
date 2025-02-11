@@ -4,23 +4,38 @@
     -fx-font-size: 1.1em;
 }
 
+.root:macos .prefs-container .options-comp .name {
+    -fx-font-weight: NORMAL;
+    -fx-font-size: 1.2em;
+}
+
 .prefs-container .options-comp .description {
     -fx-padding: 0.5em 0 0.5em 0;
     -fx-opacity: 0.9;
+    -fx-font-size: 1.0em;
+}
+
+
+.root:light .prefs-container .options-comp .description {
+    -fx-opacity: 0.95;
+}
+
+.prefs-container .options-comp .options-content {
+    -fx-font-size: 1.0em;
 }
 
 .prefs-container > .title-header.first {
-    -fx-padding: 0 0 0 0;
+    -fx-padding: 0 0 -0.5em 0;
 }
 
 .prefs-container > .title-header {
-    -fx-padding: 3em 0 0 0;
+    -fx-padding: 2em 0 -0.5em 0;
     -fx-font-weight: BOLD;
     -fx-font-size: 1.5em;
 }
 
 .prefs-container.options-comp > .options-comp {
-    -fx-padding: 0 0 0 1em;
+    -fx-padding: 0 0 0 0;
 }
 
 .prefs-container.options-comp .name.first {
@@ -48,7 +63,7 @@
 
 .prefs .sidebar .button {
     -fx-background-color: transparent;
-    -fx-padding: 0.5em 1em 0.5em 1.0em;
+    -fx-padding: 0.35em 1em 0.35em 1.0em;
     -fx-background-radius: 0, 4, 4;
     -fx-background-insets: 0, 1 4 1 4;
 }

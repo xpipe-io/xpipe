@@ -12,6 +12,11 @@ public class CmdTerminalType extends ExternalTerminalType.SimplePathType impleme
     }
 
     @Override
+    public boolean supportsEscapes() {
+        return false;
+    }
+
+    @Override
     public TerminalOpenFormat getOpenFormat() {
         return TerminalOpenFormat.NEW_WINDOW;
     }
@@ -29,7 +34,7 @@ public class CmdTerminalType extends ExternalTerminalType.SimplePathType impleme
     }
 
     @Override
-    public boolean supportsColoredTitle() {
+    public boolean useColoredTitle() {
         return false;
     }
 

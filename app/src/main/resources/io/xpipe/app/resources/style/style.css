@@ -96,6 +96,22 @@
     -fx-padding: 6 10;
 }
 
+.error-overlay-comp {
+    -fx-font-size: 0.9em;
+}
+
+.store-creator > .top > .choice-comp {
+    -fx-opacity: 0.9;
+}
+
+.store-creator > .top > .choice-comp * {
+    -fx-opacity: 1.0;
+}
+
+.store-creator .combo-box:disabled .arrow {
+    -fx-background-color: transparent;
+}
+
 .root:pretty:light .store-active-comp .dot {
     -fx-fill: radial-gradient(radius 180%, rgb(30, 180, 30, 0.6), rgb(20, 120, 20, 0.65), rgb(37, 200, 37, 0.6));
 }

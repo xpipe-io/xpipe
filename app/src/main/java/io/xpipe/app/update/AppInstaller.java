@@ -79,7 +79,7 @@ public class AppInstaller {
 
             @Override
             public void installLocal(Path file) throws Exception {
-                var exec = (AppProperties.get().isDevelopmentEnvironment()
+                var restartExec = (AppProperties.get().isDevelopmentEnvironment()
                                 ? Path.of(XPipeInstallation.getLocalDefaultInstallationBasePath())
                                 : XPipeInstallation.getCurrentInstallationBasePath())
                         .resolve(XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()))
@@ -90,8 +90,8 @@ public class AppInstaller {
                         logsDir, "installer_" + file.getFileName().toString() + ".log");
                 var systemWide = isSystemWide();
                 var command = LocalShell.getShell().getShellDialect().equals(ShellDialects.CMD)
-                        ? getCmdCommand(file.toString(), logFile, exec, systemWide)
-                        : getPowershellCommand(file.toString(), logFile, exec, systemWide);
+                        ? getCmdCommand(file.toString(), logFile, restartExec, systemWide)
+                        : getPowershellCommand(file.toString(), logFile, restartExec, systemWide);
                 String toRun;
                 if (ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.CMD) {
                     toRun = systemWide
@@ -181,7 +181,7 @@ public class AppInstaller {
 
                 runAndClose(() -> {
                     // We can't use the SSH bridge
-                    var type = ExternalTerminalType.determineNonSshBridgeFallback(
+                    var type = ExternalTerminalType.determineFallbackTerminalToOpen(
                             AppPrefs.get().terminalType().getValue());
                     TerminalLauncher.openDirect("XPipe Updater", sc -> command, type);
                 });
@@ -222,7 +222,7 @@ public class AppInstaller {
 
                 runAndClose(() -> {
                     // We can't use the SSH bridge
-                    var type = ExternalTerminalType.determineNonSshBridgeFallback(
+                    var type = ExternalTerminalType.determineFallbackTerminalToOpen(
                             AppPrefs.get().terminalType().getValue());
                     TerminalLauncher.openDirect("XPipe Updater", sc -> command, type);
                 });
@@ -263,7 +263,7 @@ public class AppInstaller {
 
                 runAndClose(() -> {
                     // We can't use the SSH bridge
-                    var type = ExternalTerminalType.determineNonSshBridgeFallback(
+                    var type = ExternalTerminalType.determineFallbackTerminalToOpen(
                             AppPrefs.get().terminalType().getValue());
                     TerminalLauncher.openDirect("XPipe Updater", sc -> command, type);
                 });
