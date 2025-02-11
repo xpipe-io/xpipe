@@ -103,7 +103,11 @@ public class AppImages {
         }
 
         var key = file.contains(":") ? file : "app:" + file;
-        return images.containsKey(key);
+        if (images.containsKey(key)) {
+            return true;
+        }
+
+        return false;
     }
 
     public static Image image(String file) {

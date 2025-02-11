@@ -79,6 +79,7 @@ public class BaseMode extends OperationMode {
         }
 
         var imagesLoaded = new CountDownLatch(1);
+        var iconsLoaded = new CountDownLatch(1);
         var browserLoaded = new CountDownLatch(1);
         var shellLoaded = new CountDownLatch(1);
         var storageLoaded = new CountDownLatch(1);
@@ -113,6 +114,7 @@ public class BaseMode extends OperationMode {
                     });
                     imagesLoaded.await();
                     browserLoaded.await();
+                    iconsLoaded.await();
                     AppDialog.waitForAllDialogsClose();
                     PlatformThread.runLaterIfNeededBlocking(() -> {
                         try {
@@ -136,6 +138,7 @@ public class BaseMode extends OperationMode {
                     imagesLoaded.countDown();
                     storageLoaded.await();
                     SystemIconManager.init();
+                    iconsLoaded.countDown();
                 },
                 () -> {
                     BrowserIconManager.loadIfNecessary();
