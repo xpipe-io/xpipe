@@ -56,7 +56,7 @@ public class ModalOverlayComp extends SimpleComp {
         });
         modal.getStyleClass().add("modal-overlay-comp");
         var pane = new StackPane(bgRegion, modal);
-        pane.setAlignment(Pos.CENTER);
+        pane.setAlignment(Pos.TOP_LEFT);
         pane.setPickOnBounds(false);
         pane.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {

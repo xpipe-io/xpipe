@@ -77,7 +77,7 @@ public class AppMainWindowContentComp extends SimpleComp {
             vbox.setAlignment(Pos.CENTER);
 
             var pane = new StackPane(vbox);
-            pane.setAlignment(Pos.CENTER);
+            pane.setAlignment(Pos.TOP_LEFT);
             pane.getStyleClass().add("background");
 
             loaded.subscribe(struc -> {

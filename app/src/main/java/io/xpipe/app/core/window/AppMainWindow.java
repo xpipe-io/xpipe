@@ -81,8 +81,8 @@ public class AppMainWindow {
         }
 
         var stage = App.getApp().getStage();
-        stage.setMinWidth(600);
-        stage.setMinHeight(500);
+        stage.setMinWidth(500);
+        stage.setMinHeight(400);
         INSTANCE = new AppMainWindow(stage);
 
         var content = new AppMainWindowContentComp(stage).createRegion();
