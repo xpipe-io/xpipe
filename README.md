@@ -209,14 +209,10 @@ The distributed XPipe application consists out of two parts:
 Additional features are available in the homelab/professional plan . For more details see https://xpipe.io/pricing.
 If your enterprise puts great emphasis on having access to the full source code, there are also full source-available enterprise options available.
 
-## More links
+## Documentation
 
-You have more questions? Then check out the [FAQ](https://xpipe.io/#faq).
+You can find the documentation at https://docs.xpipe.io.
 
-For information about the security model of XPipe, see the [security page](https://xpipe.io/features#security).
-
-For information about the privacy policy of XPipe, see the [privacy policy](https://docs.xpipe.io/privacy-policy).
-
-In case you're interested in development, check out the [contributing page](/CONTRIBUTING.md).
+## Discord
 
 [![Discord](https://discordapp.com/api/guilds/979695018782646285/widget.png?style=banner2)](https://discord.gg/8y89vS8cRb)

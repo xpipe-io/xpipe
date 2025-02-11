@@ -54,7 +54,7 @@ XPipe does not warrant to you that the software has a certain quality or a certa
 
 ## § 7 Data protection
 
-XPipe is obligated to comply with the applicable data protection regulations. Information on data protection and the processing of personal data by XPipe can be found in the privacy policy for the Software: https://docs.xpipe.io/privacy-policy
+XPipe is obligated to comply with the applicable data protection regulations. Information on data protection and the processing of personal data by XPipe can be found in the privacy policy for the Software: https://docs.xpipe.io/legal/privacy-policy
 
 ## § 8 Final provisions
 
