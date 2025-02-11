@@ -4,15 +4,15 @@ import io.xpipe.app.issue.ErrorEvent;
 
 public class Hyperlinks {
 
-    public static final String DOUBLE_PROMPT = "https://docs.xpipe.io/two-step-connections";
-    public static final String AGENT_SETUP = "https://docs.xpipe.io/ssh-agent-socket";
+    public static final String DOUBLE_PROMPT = "https://docs.xpipe.io/troubleshoot/two-step-connections";
+    public static final String AGENT_SETUP = "https://docs.xpipe.io/troubleshoot/ssh-agent-socket";
     public static final String GITHUB = "https://github.com/xpipe-io/xpipe";
     public static final String GITHUB_PTB = "https://github.com/xpipe-io/xpipe-ptb";
     public static final String GITHUB_LATEST = "https://github.com/xpipe-io/xpipe/releases/latest";
     public static final String GITHUB_PYTHON_API = "https://github.com/xpipe-io/xpipe-python-api";
-    public static final String PRIVACY = "https://docs.xpipe.io/privacy-policy";
-    public static final String EULA = "https://docs.xpipe.io/end-user-license-agreement";
-    public static final String SECURITY = "https://docs.xpipe.io/security";
+    public static final String PRIVACY = "https://docs.xpipe.io/legal/privacy-policy";
+    public static final String EULA = "https://docs.xpipe.io/legal/end-user-license-agreement";
+    public static final String SECURITY = "https://docs.xpipe.io/reference/security";
     public static final String TRANSLATE = "https://github.com/xpipe-io/xpipe/tree/master/lang";
     public static final String DISCORD = "https://discord.gg/8y89vS8cRb";
     public static final String GITHUB_WEBTOP = "https://github.com/xpipe-io/xpipe-webtop";
