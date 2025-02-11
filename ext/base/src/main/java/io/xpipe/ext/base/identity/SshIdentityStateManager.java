@@ -146,7 +146,7 @@ public class SshIdentityStateManager {
                 var r = c.readStdoutAndStderr();
                 if (c.getExitCode() != 0) {
                     var posixMessage = sc.getOsType() != OsType.WINDOWS
-                            ? " and the SSH_AUTH_SOCK variable. See " + Hyperlinks.AGENT_SETUP + " for details"
+                            ? " and the SSH_AUTH_SOCK variable. See " + Hyperlinks.DOCS_AGENT_SETUP + " for details"
                             : "";
                     var ex =
                             new IllegalStateException("Unable to list agent identities via command ssh-add -l:\n" + r[0]
@@ -156,7 +156,7 @@ public class SshIdentityStateManager {
                     ErrorEvent.preconfigure(ErrorEvent.fromThrowable(ex)
                             .noDefaultActions()
                             .expected()
-                            .customAction(ErrorAction.openDocumentation(Hyperlinks.AGENT_SETUP)));
+                            .customAction(ErrorAction.openDocumentation(Hyperlinks.DOCS_AGENT_SETUP)));
                     throw ex;
                 }
             }

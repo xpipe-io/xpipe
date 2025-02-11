@@ -7,6 +7,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.util.XPipeInstallation;
 
 import lombok.Getter;
@@ -86,12 +87,20 @@ public class SshLocalBridge {
                     .createFileExistsCommand(sc, hostKey.toString())
                     .executeAndCheck()) {
                 sc.command(CommandBuilder.of()
-                                .add("ssh-keygen", "-q", "-N")
-                                .addQuoted("")
+                                .add("ssh-keygen", "-q")
                                 .add("-C")
                                 .addQuoted("XPipe SSH bridge host key")
-                                .add("-t", "ed25519", "-f")
-                                .addFile(hostKey.toString()))
+                                .add("-t", "ed25519")
+                                .add("-f")
+                                .addQuoted(hostKey.toString())
+                                .add(ssc -> {
+                                    // Powershell breaks when just using quotes
+                                    if (ShellDialects.isPowershell(ssc)) {
+                                        return "-N '\"\"'";
+                                    } else {
+                                        return "-N \"\"";
+                                    }
+                                }))
                         .execute();
             }
 
@@ -100,12 +109,20 @@ public class SshLocalBridge {
                     .createFileExistsCommand(sc, idKey.toString())
                     .executeAndCheck()) {
                 sc.command(CommandBuilder.of()
-                                .add("ssh-keygen", "-q", "-N")
-                                .addQuoted("")
+                                .add("ssh-keygen", "-q")
                                 .add("-C")
                                 .addQuoted("XPipe SSH bridge identity")
-                                .add("-t", "ed25519", "-f")
-                                .addFile(idKey.toString()))
+                                .add("-t", "ed25519")
+                                .add("-f")
+                                .addQuoted(idKey.toString())
+                                .add(ssc -> {
+                                    // Powershell breaks when just using quotes
+                                    if (ShellDialects.isPowershell(ssc)) {
+                                        return "-N '\"\"'";
+                                    } else {
+                                        return "-N \"\"";
+                                    }
+                                }))
                         .execute();
             }
 

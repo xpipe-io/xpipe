@@ -47,14 +47,14 @@ public class AboutCategory extends AppPrefsCategory {
                         null)
                 .addComp(
                         new TileButtonComp("securityPolicy", "securityPolicyDescription", "mdrmz-security", e -> {
-                                    Hyperlinks.open(Hyperlinks.SECURITY);
+                                    Hyperlinks.open(Hyperlinks.DOCS_SECURITY);
                                     e.consume();
                                 })
                                 .grow(true, false),
                         null)
                 .addComp(
                         new TileButtonComp("privacy", "privacyDescription", "mdomz-privacy_tip", e -> {
-                                    Hyperlinks.open(Hyperlinks.PRIVACY);
+                                    Hyperlinks.open(Hyperlinks.DOCS_PRIVACY);
                                     e.consume();
                                 })
                                 .grow(true, false),
@@ -69,7 +69,7 @@ public class AboutCategory extends AppPrefsCategory {
                         }))
                 .addComp(
                         new TileButtonComp("eula", "eulaDescription", "mdi2c-card-text-outline", e -> {
-                                    Hyperlinks.open(Hyperlinks.EULA);
+                                    Hyperlinks.open(Hyperlinks.DOCS_EULA);
                                     e.consume();
                                 })
                                 .grow(true, false),
