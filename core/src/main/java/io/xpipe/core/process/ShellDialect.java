@@ -31,7 +31,7 @@ public interface ShellDialect {
     String getExecutableName();
 
     default boolean isCompatibleTo(ShellDialect other) {
-        return other.equals(this);
+        return this.equals(other);
     }
 
     String getCatchAllVariable();
