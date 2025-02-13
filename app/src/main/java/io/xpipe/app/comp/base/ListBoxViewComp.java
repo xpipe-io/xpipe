@@ -1,5 +1,6 @@
 package io.xpipe.app.comp.base;
 
+import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
@@ -111,6 +112,11 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
                 });
             });
         }
+        BrowserFullSessionModel.DEFAULT.getSelectedEntry().addListener((observable, oldValue, newValue) -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                updateVisibilities(scroll, vbox);
+            });
+        });
 
         vbox.sceneProperty().addListener((observable, oldValue, newValue) -> {
             Node c = vbox;

@@ -68,7 +68,7 @@ public interface ShellInitCommand {
 
         @Override
         public boolean canPotentiallyRunInDialect(ShellDialect dialect) {
-            return this.dialect.isCompatibleTo(dialect);
+            return this.dialect == null || this.dialect.isCompatibleTo(dialect);
         }
 
         @Override
