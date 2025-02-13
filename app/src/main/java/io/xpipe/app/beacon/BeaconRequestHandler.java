@@ -111,7 +111,7 @@ public class BeaconRequestHandler<T> implements HttpHandler {
             return;
         } catch (BeaconServerException serverException) {
             var cause = serverException.getCause() != null ? serverException.getCause() : serverException;
-            ErrorEvent.fromThrowable(cause).omit().expected().handle();
+            ErrorEvent.fromThrowable(cause).omit().handle();
             writeError(exchange, new BeaconServerErrorResponse(cause), 500);
             return;
         } catch (IOException ex) {
