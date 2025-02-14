@@ -78,7 +78,7 @@ public class StoreIntroComp extends SimpleComp {
 
         var importButton = new Button(null, new FontIcon("mdi2g-git"));
         importButton.textProperty().bind(AppI18n.observable("importConnections"));
-        importButton.setOnAction(event -> AppPrefs.get().selectCategory("sync"));
+        importButton.setOnAction(event -> AppPrefs.get().selectCategory("vaultSync"));
         var importPane = new StackPane(importButton);
         importPane.setAlignment(Pos.CENTER);
 

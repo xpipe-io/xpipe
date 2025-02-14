@@ -45,13 +45,17 @@ public class ConnectionFileSystem implements FileSystem {
         var d = shellControl.getShellDialect().getDumbMode();
         if (!d.supportsAnyPossibleInteraction()) {
             shellControl.close();
-            d.throwIfUnsupported();
+            try {
+                d.throwIfUnsupported();
+            } catch (Exception e) {
+                throw ErrorEvent.expected(e);
+            }
         }
 
         if (!shellControl.getTtyState().isPreservesOutput()
                 || !shellControl.getTtyState().isSupportsInput()) {
-            throw new UnsupportedOperationException(
-                    "Shell has a PTY allocated and as a result does not support file system operations. For more information see " + Hyperlinks.DOCS_TTY);
+            throw ErrorEvent.expected(new UnsupportedOperationException(
+                    "Shell has a PTY allocated and as a result does not support file system operations. For more information see " + Hyperlinks.DOCS_TTY));
         }
 
         shellControl.checkLicenseOrThrow();

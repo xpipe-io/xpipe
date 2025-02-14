@@ -74,7 +74,7 @@ public class VaultCategory extends AppPrefsCategory {
                         .hide(new SimpleBooleanProperty(uh.getUserCount() > 1))
                         .nameAndDescription("syncTeamVaults")
                         .addComp(new ButtonComp(AppI18n.observable("enableGitSync"), () -> AppPrefs.get()
-                                .selectCategory("sync")))
+                                .selectCategory("vaultSync")))
                         .licenseRequirement("team")
                         .disable(!LicenseProvider.get().getFeature("team").isSupported())
                         .hide(new SimpleBooleanProperty(

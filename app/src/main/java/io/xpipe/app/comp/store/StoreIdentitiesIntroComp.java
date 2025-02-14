@@ -86,7 +86,7 @@ public class StoreIdentitiesIntroComp extends SimpleComp {
         var syncButton = new Button(null, new FontIcon("mdi2p-play-circle"));
         syncButton.textProperty().bind(AppI18n.observable("setupSync"));
         syncButton.setOnAction(event -> {
-            AppPrefs.get().selectCategory("sync");
+            AppPrefs.get().selectCategory("vaultSync");
             event.consume();
         });
 

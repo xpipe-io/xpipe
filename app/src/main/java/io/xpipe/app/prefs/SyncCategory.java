@@ -24,7 +24,7 @@ public class SyncCategory extends AppPrefsCategory {
 
     @Override
     protected String getId() {
-        return "sync";
+        return "vaultSync";
     }
 
     private static void showHelpAlert() {
