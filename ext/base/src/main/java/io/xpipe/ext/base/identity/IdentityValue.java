@@ -109,12 +109,12 @@ public interface IdentityValue {
 
         @Override
         public IdentityStore unwrap() {
-            return ref.getStore();
+            return ref != null ? ref.getStore() : LocalIdentityStore.builder().build();
         }
 
         @Override
         public boolean isPerUser() {
-            return ref.get().isPerUserStore();
+            return ref != null && ref.get().isPerUserStore();
         }
     }
 }
