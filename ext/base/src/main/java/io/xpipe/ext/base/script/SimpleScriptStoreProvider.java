@@ -12,7 +12,7 @@ import io.xpipe.app.ext.EnabledParentStoreProvider;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DataStoreFormatter;
-import io.xpipe.app.util.MarkdownBuilder;
+import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.Validator;
 import io.xpipe.core.process.ShellDialect;
@@ -30,10 +30,14 @@ import lombok.SneakyThrows;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, DataStoreProvider {
+
+    @Override
+    public String getHelpLink() {
+        return Hyperlinks.DOCS_SCRIPTING;
+    }
 
     @Override
     public boolean canMoveCategories() {
@@ -53,29 +57,6 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
     @Override
     public Comp<?> stateDisplay(StoreEntryWrapper w) {
         return new SystemStateComp(new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
-    }
-
-    public String createInsightsMarkdown(DataStore store) {
-        var s = (SimpleScriptStore) store;
-
-        var builder = MarkdownBuilder.of()
-                .addParagraph("XPipe will run the script in ")
-                .addCode(s.getMinimumDialect() != null ? s.getMinimumDialect().getDisplayName() : "default")
-                .add(" shells");
-
-        if (s.getEffectiveScripts() != null && !s.getEffectiveScripts().isEmpty()) {
-            builder.add(" with the following scripts prior")
-                    .addCodeBlock(s.getEffectiveScripts().stream()
-                            .map(scriptStoreDataStoreEntryRef ->
-                                    scriptStoreDataStoreEntryRef.get().getName())
-                            .collect(Collectors.joining("\n")));
-        }
-
-        if (s.getCommands() != null) {
-            builder.add(" with command contents").addCodeBlock(s.getCommands());
-        }
-
-        return builder.build();
     }
 
     @Override

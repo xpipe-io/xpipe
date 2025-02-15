@@ -125,10 +125,9 @@ public class AppInstaller {
                         echo + msiexec /i "%s" /lv "%s" /qb %s
                         start "" /wait msiexec /i "%s" /lv "%s" /qb %s
                         echo Starting XPipe ...
-                        echo + "%s"
-                        start "" "%s"
+                        start "" "%s" "-Dio.xpipe.app.dataDir=%s"
                         """,
-                        file, file, logFile, args, file, logFile, args, exec, exec);
+                        file, file, logFile, args, file, logFile, args, exec, exec, AppProperties.get().getDataDir());
             }
 
             private String getPowershellCommand(String file, String logFile, String exec, boolean systemWide) {
@@ -142,10 +141,9 @@ public class AppInstaller {
                         echo '+ msiexec /i "%s" /lv "%s" /qb%s'
                         Start-Process %s -FilePath msiexec -Wait -ArgumentList "/i", "`"%s`"", "/lv", "`"%s`"", "/qb"%s
                         echo 'Starting XPipe ...'
-                        echo '+ "%s"'
-                        Start-Process -FilePath "%s"
+                        & "%s" "-Dio.xpipe.app.dataDir=%s"
                         """,
-                        file, file, logFile, property, runas, file, logFile, startProcessProperty, exec, exec);
+                        file, file, logFile, property, runas, file, logFile, startProcessProperty, exec, exec, AppProperties.get().getDataDir());
             }
         }
 
@@ -168,13 +166,13 @@ public class AppInstaller {
                                                  echo "Installing downloaded .deb installer ..."
                                                  echo "+ sudo apt install \\"%s\\""
                                                  DEBIAN_FRONTEND=noninteractive sudo apt-get install -qy "%s" || return 1
-                                                 %s open || return 1
+                                                 %s open -d "%s" || return 1
                                              }
 
                                              cd ~
                                              runinstaller || echo "Update failed ..." && read key
                                              """,
-                        file, file, name);
+                        file, file, name, AppProperties.get().getDataDir());
 
                 runAndClose(() -> {
                     // We can't use the SSH bridge
@@ -209,13 +207,13 @@ public class AppInstaller {
                                                  echo "Installing downloaded .rpm installer ..."
                                                  echo "+ sudo rpm -U -v --force \\"%s\\""
                                                  sudo rpm -U -v --force "%s" || return 1
-                                                 %s open || return 1
+                                                 %s open -d "%s" || return 1
                                              }
 
                                              cd ~
                                              runinstaller || read -rsp "Update failed ..."$'\\n' -n 1 key
                                              """,
-                        file, file, name);
+                        file, file, name, AppProperties.get().getDataDir());
 
                 runAndClose(() -> {
                     // We can't use the SSH bridge
@@ -250,13 +248,13 @@ public class AppInstaller {
                                                echo "Installing downloaded .pkg installer ..."
                                                echo "+ sudo installer -verboseR -pkg \\"%s\\" -target /"
                                                sudo installer -verboseR -pkg "%s" -target / || return 1
-                                               %s open || return 1
+                                               %s open -d "%s" || return 1
                                            }
 
                                            cd ~
                                            runinstaller || echo "Update failed ..." && read -rs -k 1 key
                                            """,
-                        file, file, name);
+                        file, file, name, AppProperties.get().getDataDir());
 
                 runAndClose(() -> {
                     // We can't use the SSH bridge

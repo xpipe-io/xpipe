@@ -45,20 +45,6 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
         return false;
     }
 
-    public String createInsightsMarkdown(DataStore store) {
-        var podman = (PodmanContainerStore) store;
-        return String.format(
-                """
-                    XPipe will execute:
-                    ```
-                    %s
-                    ```
-                    in a host shell of `%s` to open a shell into the container.
-                    """,
-                podman.commandView(null).execCommand(true).buildSimple(),
-                podman.getCmd().get().getName());
-    }
-
     @Override
     public DataStoreEntry getDisplayParent(DataStoreEntry store) {
         PodmanContainerStore s = store.getStore().asNeeded();

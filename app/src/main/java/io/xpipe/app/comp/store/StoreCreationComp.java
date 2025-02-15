@@ -420,27 +420,13 @@ public class StoreCreationComp extends DialogComp {
         var disable = Bindings.createBooleanBinding(
                 () -> {
                     return provider.getValue() == null
-                            || store.getValue() == null
-                            || !store.getValue().isComplete()
-                            // When switching providers, both observables change one after another.
-                            // So temporarily there might be a store class mismatch
-                            || provider.getValue().getStoreClasses().stream()
-                                    .noneMatch(aClass -> aClass.isAssignableFrom(
-                                            store.getValue().getClass()))
-                            || provider.getValue().createInsightsMarkdown(store.getValue()) == null;
+                            || provider.getValue().getHelpLink() == null;
                 },
-                provider,
-                store);
-        return new PopupMenuButtonComp(
-                        new SimpleStringProperty("Insights >"),
-                        Comp.of(() -> {
-                            return provider.getValue() != null
-                                    ? provider.getValue()
-                                            .createInsightsComp(store)
-                                            .createRegion()
-                                    : null;
-                        }),
-                        true)
+                provider);
+        return new ButtonComp(
+                AppI18n.observable("docs"), () -> {
+                    Hyperlinks.open(provider.getValue().getHelpLink());
+        })
                 .hide(disable)
                 .styleClass("button-comp");
     }

@@ -5,6 +5,7 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.storage.DataStorageSyncHandler;
+import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -25,14 +26,6 @@ public class SyncCategory extends AppPrefsCategory {
     @Override
     protected String getId() {
         return "vaultSync";
-    }
-
-    private static void showHelpAlert() {
-        var md = AppI18n.get().getMarkdownDocumentation("vault");
-        var markdown = new MarkdownComp(md, s -> s, true).prefWidth(600);
-        var modal = ModalOverlay.of(markdown);
-        modal.addButton(ModalButton.ok());
-        AppDialog.show(modal);
     }
 
     public Comp<?> create() {
@@ -61,7 +54,7 @@ public class SyncCategory extends AppPrefsCategory {
 
         var remoteRepo = new TextFieldComp(prefs.storageGitRemote).hgrow();
         var helpButton = new ButtonComp(AppI18n.observable("help"), new FontIcon("mdi2h-help-circle-outline"), () -> {
-            showHelpAlert();
+            Hyperlinks.open(Hyperlinks.DOCS_SYNC);
         });
         var remoteRow = new HorizontalComp(List.of(remoteRepo, helpButton)).spacing(10);
         remoteRow.apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));

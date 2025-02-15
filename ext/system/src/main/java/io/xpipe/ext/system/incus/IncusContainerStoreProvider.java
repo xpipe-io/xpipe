@@ -38,22 +38,6 @@ public class IncusContainerStoreProvider implements ShellStoreProvider {
         return false;
     }
 
-    public String createInsightsMarkdown(DataStore store) {
-        var c = (IncusContainerStore) store;
-        return String.format(
-                """
-                    XPipe will execute:
-                    ```
-                    %s
-                    ```
-                    in a host shell of `%s` to open a shell into the container.
-                    """,
-                new IncusCommandView(null)
-                        .execCommand(c.getContainerName(), true)
-                        .buildSimple(),
-                c.getInstall().getStore().getHost().get().getName());
-    }
-
     @Override
     public DataStoreEntry getDisplayParent(DataStoreEntry store) {
         IncusContainerStore s = store.getStore().asNeeded();

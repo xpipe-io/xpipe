@@ -73,7 +73,6 @@ open module io.xpipe.app {
     requires java.management;
     requires jdk.management;
     requires jdk.management.agent;
-    requires net.steppschuh.markdowngenerator;
     requires com.shinyhut.vernacular;
     requires org.kordamp.ikonli.core;
     requires jdk.httpserver;

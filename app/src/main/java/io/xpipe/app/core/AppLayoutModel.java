@@ -121,7 +121,7 @@ public class AppLayoutModel {
                 //                                "http://localhost:" + AppBeaconServer.get().getPort()),
                 //                        null),
                 new Entry(
-                        AppI18n.observable("documentation"),
+                        AppI18n.observable("docs"),
                         new LabelGraphic.IconGraphic("mdi2b-book-open-variant"),
                         null,
                         () -> Hyperlinks.open(Hyperlinks.DOCS),
