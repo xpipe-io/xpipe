@@ -132,6 +132,8 @@ public class AppPrefs {
             mapLocal(new SimpleBooleanProperty(false), "enforceWindowModality", Boolean.class, false);
     final BooleanProperty checkForSecurityUpdates =
             mapLocal(new SimpleBooleanProperty(true), "checkForSecurityUpdates", Boolean.class, false);
+    final BooleanProperty disableApiHttpsTlsCheck =
+            mapLocal(new SimpleBooleanProperty(false), "disableApiHttpsTlsCheck", Boolean.class, false);
     final BooleanProperty condenseConnectionDisplay =
             mapLocal(new SimpleBooleanProperty(false), "condenseConnectionDisplay", Boolean.class, false);
     final BooleanProperty showChildCategoriesInParentCategory =

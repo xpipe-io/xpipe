@@ -7,8 +7,6 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.Hyperlinks;
 
-import org.kohsuke.github.GHRelease;
-
 import java.nio.file.Files;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -45,25 +43,18 @@ public class GitHubUpdater extends UpdateHandler {
         return list;
     }
 
-    public void prepareUpdateImpl() {
-        var downloadFile = AppDownloads.downloadInstaller(
-                lastUpdateCheckResult.getValue().getAssetType(),
-                lastUpdateCheckResult.getValue().getVersion(),
-                false);
-        if (downloadFile.isEmpty()) {
-            return;
-        }
-
+    public void prepareUpdateImpl() throws Exception {
+        var downloadFile =
+                AppDownloads.downloadInstaller(lastUpdateCheckResult.getValue().getVersion());
         var changelogString =
-                AppDownloads.downloadChangelog(lastUpdateCheckResult.getValue().getVersion(), false);
-        var changelog = changelogString.orElse(null);
+                AppDownloads.downloadChangelog(lastUpdateCheckResult.getValue().getVersion());
         var rel = new PreparedUpdate(
                 AppProperties.get().getVersion(),
                 AppDistributionType.get().getId(),
                 lastUpdateCheckResult.getValue().getVersion(),
                 lastUpdateCheckResult.getValue().getReleaseUrl(),
-                downloadFile.get(),
-                changelog,
+                downloadFile,
+                changelogString,
                 lastUpdateCheckResult.getValue().getAssetType(),
                 lastUpdateCheckResult.getValue().isSecurityOnly());
         preparedUpdate.setValue(rel);
@@ -91,30 +82,16 @@ public class GitHubUpdater extends UpdateHandler {
 
     public synchronized AvailableRelease refreshUpdateCheckImpl(boolean first, boolean securityOnly) throws Exception {
         var rel = AppDownloads.queryLatestRelease(first, securityOnly);
-        event("Determined latest suitable release "
-                + rel.map(GHRelease::getName).orElse(null));
-
-        if (rel.isEmpty()) {
-            lastUpdateCheckResult.setValue(null);
-            return null;
-        }
-
-        var isUpdate = isUpdate(rel.get().getTagName());
+        event("Determined latest suitable release " + rel.getTag());
+        var isUpdate = isUpdate(rel.getTag());
         var assetType = AppInstaller.getSuitablePlatformAsset();
-        var ghAsset = rel.orElseThrow().listAssets().toList().stream()
-                .filter(g -> assetType.isCorrectAsset(g.getName()))
-                .findAny();
-        if (ghAsset.isEmpty()) {
-            return null;
-        }
-
-        event("Selected asset " + ghAsset.get().getName());
+        event("Selected asset " + rel.getFile());
         lastUpdateCheckResult.setValue(new AvailableRelease(
                 AppProperties.get().getVersion(),
                 AppDistributionType.get().getId(),
-                rel.get().getTagName(),
-                rel.get().getHtmlUrl().toString(),
-                ghAsset.get().getBrowserDownloadUrl(),
+                rel.getTag(),
+                rel.getBrowserUrl(),
+                rel.getUrl(),
                 assetType,
                 Instant.now(),
                 isUpdate,

@@ -5,8 +5,6 @@ import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.util.Hyperlinks;
 
-import org.kohsuke.github.GHRelease;
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,20 +35,13 @@ public class PortableUpdater extends UpdateHandler {
 
     public synchronized AvailableRelease refreshUpdateCheckImpl(boolean first, boolean securityOnly) throws Exception {
         var rel = AppDownloads.queryLatestRelease(first, securityOnly);
-        event("Determined latest suitable release "
-                + rel.map(GHRelease::getName).orElse(null));
-
-        if (rel.isEmpty()) {
-            lastUpdateCheckResult.setValue(null);
-            return null;
-        }
-
-        var isUpdate = isUpdate(rel.get().getTagName());
+        event("Determined latest suitable release " + rel.getTag());
+        var isUpdate = isUpdate(rel.getTag());
         lastUpdateCheckResult.setValue(new AvailableRelease(
                 AppProperties.get().getVersion(),
                 AppDistributionType.get().getId(),
-                rel.get().getTagName(),
-                rel.get().getHtmlUrl().toString(),
+                rel.getTag(),
+                rel.getBrowserUrl(),
                 null,
                 null,
                 Instant.now(),

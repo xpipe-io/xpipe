@@ -181,23 +181,23 @@ public abstract class UpdateHandler {
             if (AppProperties.get().isStaging() && preparedUpdate.getValue() != null) {
                 UpdateAvailableDialog.showIfNeeded();
             }
+        } catch (Throwable t) {
+            ErrorEvent.fromThrowable(t).handle();
         }
     }
 
     public abstract List<ModalButton> createActions();
 
-    public void prepareUpdateImpl() {
+    public void prepareUpdateImpl() throws Exception {
         var changelogString =
-                AppDownloads.downloadChangelog(lastUpdateCheckResult.getValue().getVersion(), false);
-        var changelog = changelogString.orElse(null);
-
+                AppDownloads.downloadChangelog(lastUpdateCheckResult.getValue().getVersion());
         var rel = new PreparedUpdate(
                 AppProperties.get().getVersion(),
                 AppDistributionType.get().getId(),
                 lastUpdateCheckResult.getValue().getVersion(),
                 lastUpdateCheckResult.getValue().getReleaseUrl(),
                 null,
-                changelog,
+                changelogString,
                 lastUpdateCheckResult.getValue().getAssetType(),
                 lastUpdateCheckResult.getValue().isSecurityOnly());
         preparedUpdate.setValue(rel);

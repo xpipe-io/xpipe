@@ -68,7 +68,6 @@ open module io.xpipe.app {
     requires org.kordamp.ikonli.material;
     requires io.sentry;
     requires io.xpipe.beacon;
-    requires org.kohsuke.github;
     requires info.picocli;
     requires java.instrument;
     requires java.management;

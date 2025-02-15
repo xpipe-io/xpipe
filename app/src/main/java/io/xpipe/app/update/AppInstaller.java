@@ -89,21 +89,17 @@ public class AppInstaller {
                 var logFile = FileNames.join(
                         logsDir, "installer_" + file.getFileName().toString() + ".log");
                 var systemWide = isSystemWide();
-                var command = LocalShell.getShell().getShellDialect().equals(ShellDialects.CMD)
-                        ? getCmdCommand(file.toString(), logFile, restartExec, systemWide)
+                var command = LocalShell.getShell().getShellDialect().equals(ShellDialects.CMD) && !systemWide
+                        ? getCmdCommand(file.toString(), logFile, restartExec)
                         : getPowershellCommand(file.toString(), logFile, restartExec, systemWide);
                 String toRun;
-                if (ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.CMD) {
-                    toRun = systemWide
-                            ? "powershell -Command Start-Process -Verb runAs -WindowStyle Minimized -FilePath cmd -ArgumentList  \"/c\", '\""
-                                    + ScriptHelper.createLocalExecScript(command) + "\"'"
-                            : "start \"XPipe Updater\" /min cmd /c \"" + ScriptHelper.createLocalExecScript(command)
-                                    + "\"";
+                if (ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.CMD && !systemWide) {
+                    toRun = "start \"XPipe Updater\" /min cmd /c \"" + ScriptHelper.createLocalExecScript(command)
+                            + "\"";
                 } else {
                     toRun =
                             "Start-Process -WindowStyle Minimized -FilePath powershell -ArgumentList  \"-ExecutionPolicy\", \"Bypass\", \"-File\", \"`\""
-                                    + ScriptHelper.createLocalExecScript(command) + "`\"\""
-                                    + (systemWide ? " -Verb runAs" : "");
+                                    + ScriptHelper.createLocalExecScript(command) + "`\"\"";
                 }
                 runAndClose(() -> {
                     LocalShell.getShell().executeSimpleCommand(toRun);
@@ -112,7 +108,7 @@ public class AppInstaller {
 
             @Override
             public String getExtension() {
-                return ".msi";
+                return "msi";
             }
 
             private boolean isSystemWide() {
@@ -120,8 +116,8 @@ public class AppInstaller {
                         XPipeInstallation.getCurrentInstallationBasePath().resolve("system"));
             }
 
-            private String getCmdCommand(String file, String logFile, String exec, boolean systemWide) {
-                var args = "MSIFASTINSTALL=7 DISABLEROLLBACK=1" + (systemWide ? " ALLUSERS=1" : "");
+            private String getCmdCommand(String file, String logFile, String exec) {
+                var args = "MSIFASTINSTALL=7 DISABLEROLLBACK=1";
                 return String.format(
                         """
                         echo Installing %s ...
@@ -138,17 +134,18 @@ public class AppInstaller {
             private String getPowershellCommand(String file, String logFile, String exec, boolean systemWide) {
                 var property = "MSIFASTINSTALL=7 DISABLEROLLBACK=1" + (systemWide ? " ALLUSERS=1" : "");
                 var startProcessProperty = ", MSIFASTINSTALL=7, DISABLEROLLBACK=1" + (systemWide ? ", ALLUSERS=1" : "");
+                var runas = systemWide ? "-Verb runAs" : "";
                 return String.format(
                         """
                         echo Installing %s ...
                         cd "$env:HOMEDRIVE\\$env:HOMEPATH"
                         echo '+ msiexec /i "%s" /lv "%s" /qb%s'
-                        Start-Process msiexec -Wait -ArgumentList "/i", "`"%s`"", "/lv", "`"%s`"", "/qb"%s
+                        Start-Process %s -FilePath msiexec -Wait -ArgumentList "/i", "`"%s`"", "/lv", "`"%s`"", "/qb"%s
                         echo 'Starting XPipe ...'
                         echo '+ "%s"'
                         Start-Process -FilePath "%s"
                         """,
-                        file, file, logFile, property, file, logFile, startProcessProperty, exec, exec);
+                        file, file, logFile, property, runas, file, logFile, startProcessProperty, exec, exec);
             }
         }
 
@@ -189,7 +186,7 @@ public class AppInstaller {
 
             @Override
             public String getExtension() {
-                return ".deb";
+                return "deb";
             }
         }
 
@@ -230,7 +227,7 @@ public class AppInstaller {
 
             @Override
             public String getExtension() {
-                return ".rpm";
+                return "rpm";
             }
         }
 
@@ -271,7 +268,7 @@ public class AppInstaller {
 
             @Override
             public String getExtension() {
-                return ".pkg";
+                return "pkg";
             }
         }
     }

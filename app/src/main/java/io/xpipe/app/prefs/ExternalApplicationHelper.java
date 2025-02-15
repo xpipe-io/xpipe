@@ -3,10 +3,10 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.ShellDialects;
 
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class ExternalApplicationHelper {
 
@@ -21,17 +21,32 @@ public class ExternalApplicationHelper {
     }
 
     public static void startAsync(String raw) throws Exception {
-        try (var sc = LocalShell.getShell().start()) {
-            if (ShellDialects.isPowershell(sc)) {
-                // Do the best effort here
-                // This does not respect quoting rules, but otherwise powershell wouldn't work at all
-                var split = raw.split("\\s+");
-                var splitBuilder = CommandBuilder.of().addAll(Arrays.asList(split));
-                startAsync(splitBuilder);
-            } else {
-                startAsync(CommandBuilder.ofString(raw));
-            }
+        if (raw == null) {
+            return;
         }
+
+        raw = raw.trim();
+        var split = Arrays.asList(raw.split("\\s+"));
+        if (split.size() == 0) {
+            return;
+        }
+
+        String exec;
+        String args;
+        if (raw.startsWith("\"")) {
+            var end = raw.substring(1).indexOf("\"");
+            if (end == -1) {
+                return;
+            }
+            end++;
+            exec = raw.substring(1, end);
+            args = raw.substring(end + 1).trim();
+        } else {
+            exec = split.getFirst();
+            args = split.stream().skip(1).collect(Collectors.joining(" "));
+        }
+
+        startAsync(CommandBuilder.of().addFile(exec).add(args));
     }
 
     public static void startAsync(CommandBuilder b) throws Exception {
