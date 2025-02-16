@@ -197,7 +197,11 @@ public class StoreCreationComp extends DialogComp {
                             if (e.getStore().equals(newE.getStore())) {
                                 e.setName(newE.getName());
                             } else {
+                                var madeValid = !e.getValidity().isUsable() && newE.getValidity().isUsable();
                                 DataStorage.get().updateEntry(e, newE);
+                                if (madeValid) {
+                                    StoreViewState.get().toggleStoreListUpdate();
+                                }
                             }
                         }
                     });

@@ -133,7 +133,8 @@ public class StoreSection {
                             (showInCategory(category.getValue(), section.getWrapper()));
                 },
                 category,
-                filterString);
+                filterString,
+                updateObservable);
         return new StoreSection(null, ordered, shown, 0);
     }
 
@@ -209,7 +210,8 @@ public class StoreSection {
                 category,
                 filterString,
                 e.getPersistentState(),
-                e.getCache());
+                e.getCache(),
+                updateObservable);
         return new StoreSection(e, cached, filtered, depth);
     }
 
