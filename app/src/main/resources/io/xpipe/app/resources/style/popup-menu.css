@@ -63,7 +63,7 @@
     -fx-border-radius: 0;
 }
 
-.root:performance .context-menu {
+.root:performance .context-menu, .root:performance .combo-box-popup .list-view {
     -fx-effect: NONE;
     -fx-background-radius: 0;
     -fx-border-radius: 0;

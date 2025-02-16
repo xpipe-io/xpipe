@@ -125,14 +125,15 @@ public class AppLayoutModel {
                         new LabelGraphic.IconGraphic("mdi2b-book-open-variant"),
                         null,
                         () -> Hyperlinks.open(Hyperlinks.DOCS),
-                        null),
-                new Entry(
-                        AppI18n.observable("webtop"),
-                        new LabelGraphic.IconGraphic("mdi2d-desktop-mac"),
-                        null,
-                        () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
                         null)));
-
+        if (AppDistributionType.get() != AppDistributionType.WEBTOP) {
+            l.add(new Entry(
+                            AppI18n.observable("webtop"),
+                            new LabelGraphic.IconGraphic("mdi2d-desktop-mac"),
+                            null,
+                            () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
+                            null));
+        }
         return l;
     }
 

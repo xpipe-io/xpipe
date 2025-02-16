@@ -1,5 +1,6 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.prefs.ExternalApplicationType;
@@ -413,6 +414,41 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return CommandBuilder.of().add("-c").addFile(configuration.getScriptFile());
         }
     };
+    ExternalTerminalType UXTERM = new SimplePathType("app.uxterm", "uxterm", true) {
+        @Override
+        public String getWebsite() {
+            return "https://invisible-island.net/xterm/";
+        }
+
+        @Override
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW;
+        }
+
+        @Override
+        public boolean isRecommended() {
+            return false;
+        }
+
+        @Override
+        public boolean useColoredTitle() {
+            return true;
+        }
+
+        @Override
+        public boolean supportsUnicode() {
+            return true;
+        }
+
+        @Override
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
+            return CommandBuilder.of()
+                    .add("-title")
+                    .addQuoted(configuration.getColoredTitle())
+                    .add("-e")
+                    .addFile(configuration.getScriptFile());
+        }
+    };
     ExternalTerminalType XTERM = new SimplePathType("app.xterm", "xterm", true) {
         @Override
         public String getWebsite() {
@@ -612,6 +648,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             TILIX,
             GUAKE,
             TILDA,
+            UXTERM,
             XTERM,
             DEEPIN_TERMINAL,
             FOOT,
@@ -662,6 +699,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         // Verify that our selection is still valid
         if (existing != null && existing.isAvailable()) {
             return existing;
+        }
+
+        if (existing == null && AppDistributionType.get() == AppDistributionType.WEBTOP) {
+            return ExternalTerminalType.KONSOLE;
         }
 
         var r = ALL.stream()
