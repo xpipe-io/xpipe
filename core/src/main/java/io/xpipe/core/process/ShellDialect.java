@@ -102,7 +102,9 @@ public interface ShellDialect {
         return ";";
     }
 
-    String getDiscardOperator();
+    String getDiscardStdoutOperator();
+
+    String getDiscardAllOperator();
 
     String nullStdin(String command);
 

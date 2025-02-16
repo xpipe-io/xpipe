@@ -99,7 +99,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
                     .executeSimpleCommand(CommandBuilder.of()
                             .addFile(file.toString())
                             .addFile(config.toString())
-                            .discardOutput());
+                            .discardAllOutput());
             ThreadHelper.runFailableAsync(() -> {
                 // Startup is slow
                 ThreadHelper.sleep(10000);
