@@ -189,7 +189,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
 
         @Override
         public boolean supportsPasswordPassing() {
-            return false;
+            return true;
         }
     };
 
