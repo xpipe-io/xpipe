@@ -4,6 +4,7 @@ import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.CommandBuilder;
+import io.xpipe.core.process.CommandControl;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.SecretValue;
 
@@ -147,7 +148,9 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
                 var script = ScriptHelper.createExecScript(sc, scriptContent);
                 var cmd = CommandBuilder.of().addFile(script).add("|", "secret-tool", "store", "--label").addQuoted("Remmina: " + title + " - password")
                         .add("xdg:schema", "org.remmina.Password").add("filename").addQuoted(file.toString()).add("key", "password");
-                sc.command(cmd).execute();
+                var command = sc.command(cmd);
+                command.setSensitive();
+                command.execute();
             }
         }
 
