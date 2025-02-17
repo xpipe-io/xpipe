@@ -5,6 +5,8 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.util.PlatformThread;
 
+import io.xpipe.core.process.OsType;
+import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.TextField;
@@ -43,6 +45,12 @@ public class LazyTextFieldComp extends Comp<CompStructure<TextField>> {
         });
 
         r.focusedProperty().addListener((c, o, n) -> {
+            if (n) {
+                Platform.runLater(() -> {
+                    r.selectEnd();
+                });
+            }
+
             if (!n) {
                 appliedValue.setValue(currentValue.getValue());
                 r.setDisable(true);
