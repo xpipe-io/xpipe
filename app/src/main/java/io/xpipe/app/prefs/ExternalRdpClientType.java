@@ -141,6 +141,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
                          name=%s
                          username=%s
                          server=%s
+                         password=.
                          """.formatted(configuration.getTitle(),
                     configuration.getConfig().get("username").orElseThrow().getValue(),
                     configuration.getConfig().get("full address").orElseThrow().getValue()
