@@ -361,7 +361,7 @@ public class AppMainWindow {
         } else if (!AppProperties.get().isShowcase()) {
             if (AppDistributionType.get() == AppDistributionType.WEBTOP) {
                 stage.setWidth(1000);
-                stage.setHeight(600);
+                stage.setHeight(720);
             } else {
                 stage.setWidth(1280);
                 stage.setHeight(720);

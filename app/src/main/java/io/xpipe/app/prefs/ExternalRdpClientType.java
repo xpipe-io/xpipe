@@ -4,7 +4,6 @@ import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.CommandControl;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.SecretValue;
 
@@ -16,7 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public interface ExternalRdpClientType extends PrefsChoiceValue {
 
@@ -115,68 +113,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
         }
     };
 
-    ExternalRdpClientType REMMINA = new PathCheckType("app.remmina", "remmina", false) {
-
-        @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
-            Path file;
-            RdpConfig c = configuration.getConfig();
-            if (c.getContent().size() == 3 && c.getContent().containsKey("username") &&
-                    c.getContent().containsKey("full address") &&
-                    c.getContent().containsKey("auto connect")) {
-                file = writeRemminaConfigFile(configuration);
-                preparePassword(configuration.getTitle(), file, configuration.getPassword());
-            } else {
-                file = writeRdpConfigFile(configuration.getTitle(), c);
-            }
-            LocalShell.getShell()
-                    .executeSimpleCommand(
-                            CommandBuilder.of().add(executable).add("-c").addFile(file.toString()));
-        }
-
-        private void preparePassword(String title, Path file, SecretValue password) throws Exception {
-            if (password == null) {
-                return;
-            }
-
-            try (var sc = LocalShell.getShell().start()) {
-                if (!sc.view().isInPath("secret-tool")) {
-                    return;
-                }
-
-                var scriptContent = sc.getShellDialect().getAskpass().prepareFixedContent(sc, "remmina", List.of(password.getSecretValue()));
-                var script = ScriptHelper.createExecScript(sc, scriptContent);
-                var cmd = CommandBuilder.of().addFile(script).add("|", "secret-tool", "store", "--label").addQuoted("Remmina: " + title + " - password")
-                        .add("xdg:schema", "org.remmina.Password").add("filename").addQuoted(file.toString()).add("key", "password");
-                var command = sc.command(cmd);
-                command.setSensitive();
-                command.execute();
-            }
-        }
-
-        private Path writeRemminaConfigFile(LaunchConfiguration configuration) throws Exception {
-            var name = OsType.getLocal().makeFileSystemCompatible(configuration.getTitle());
-            var file = LocalShell.getShell().getSystemTemporaryDirectory().join(name + ".remmina");
-            var string = """
-                         [remmina]
-                         protocol=RDP
-                         name=%s
-                         username=%s
-                         server=%s
-                         password=.
-                         """.formatted(configuration.getTitle(),
-                    configuration.getConfig().get("username").orElseThrow().getValue(),
-                    configuration.getConfig().get("full address").orElseThrow().getValue()
-            );
-            Files.writeString(file.toLocalPath(), string);
-            return file.toLocalPath();
-        }
-
-        @Override
-        public boolean supportsPasswordPassing() {
-            return false;
-        }
-    };
+    ExternalRdpClientType REMMINA = new RemminaRdpType();
 
     ExternalRdpClientType X_FREE_RDP = new PathCheckType("app.xfreeRdp", "xfreerdp", true) {
 
@@ -362,6 +299,77 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
         @Override
         public boolean isAvailable() {
             return true;
+        }
+    }
+
+    class RemminaRdpType extends ExternalApplicationType.PathApplication implements ExternalRdpClientType  {
+
+        public RemminaRdpType() {super("app.remmina", "remmina", true);}
+
+        @Override
+        public void launch(LaunchConfiguration configuration) throws Exception {
+            RdpConfig c = configuration.getConfig();
+            if (c.getContent().size() == 3 && c.getContent().containsKey("username") &&
+                    c.getContent().containsKey("full address") &&
+                    c.getContent().containsKey("auto connect")) {
+                var encrypted = encryptPassword(configuration.getPassword());
+                if (encrypted.isPresent()) {
+                    var file = writeRemminaConfigFile(configuration);
+                    launch(configuration.getTitle(), CommandBuilder.of().add("-c").addFile(file.toString()));
+                    return;
+                }
+            }
+
+            var file = writeRdpConfigFile(configuration.getTitle(), c);
+            launch(configuration.getTitle(), CommandBuilder.of().add("-c").addFile(file.toString()));
+        }
+
+        private Optional<String> encryptPassword(SecretValue password) throws Exception {
+            if (password == null) {
+                return Optional.empty();
+            }
+
+            try (var sc = LocalShell.getShell().start()) {
+                var secretKey = sc.command("sed -n 's/^secret=//p' ~/.config/remmina/remmina.pref | base64 -d | hexdump -ve '/1 \"%02x\"'").readStdoutIfPossible();
+                if (secretKey.isEmpty()) {
+                    return Optional.empty();
+                }
+
+                var paddedPassword = password.getSecretValue();
+                paddedPassword = paddedPassword + "\0".repeat(paddedPassword.length() % 8);
+
+                var secretKeyStart = secretKey.get().substring(0, 48);
+                var scriptContent = sc.getShellDialect().getAskpass().prepareFixedContent(sc, "remmina", List.of(paddedPassword));
+                var script = ScriptHelper.createExecScript(sc, scriptContent);
+                var encryptCommand = CommandBuilder.of().addFile(script).add("openssl des3 -a -nopad -K " + secretKeyStart + " -iv " + paddedPassword);
+                var command = sc.command(encryptCommand);
+                command.setSensitive();
+                var out = command.readStdoutIfPossible();
+                return out;
+            }
+        }
+
+        private Path writeRemminaConfigFile(LaunchConfiguration configuration) throws Exception {
+            var name = OsType.getLocal().makeFileSystemCompatible(configuration.getTitle());
+            var file = LocalShell.getShell().getSystemTemporaryDirectory().join(name + ".remmina");
+            var string = """
+                         [remmina]
+                         protocol=RDP
+                         name=%s
+                         username=%s
+                         server=%s
+                         password=.
+                         """.formatted(configuration.getTitle(),
+                    configuration.getConfig().get("username").orElseThrow().getValue(),
+                    configuration.getConfig().get("full address").orElseThrow().getValue()
+            );
+            Files.writeString(file.toLocalPath(), string);
+            return file.toLocalPath();
+        }
+
+        @Override
+        public boolean supportsPasswordPassing() {
+            return false;
         }
     }
 }
