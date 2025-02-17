@@ -124,12 +124,30 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
                     c.getContent().containsKey("full address") &&
                     c.getContent().containsKey("auto connect")) {
                 file = writeRemminaConfigFile(configuration);
+                preparePassword(configuration.getTitle(), file, configuration.getPassword());
             } else {
                 file = writeRdpConfigFile(configuration.getTitle(), c);
             }
             LocalShell.getShell()
                     .executeSimpleCommand(
                             CommandBuilder.of().add(executable).add("-c").addFile(file.toString()));
+        }
+
+        private void preparePassword(String title, Path file, SecretValue password) throws Exception {
+            if (password == null) {
+                return;
+            }
+
+            try (var sc = LocalShell.getShell().start()) {
+                if (!sc.view().isInPath("secret-tool")) {
+                    return;
+                }
+
+                var script = sc.getShellDialect().getAskpass().prepareFixedContent(sc, "remmina", List.of(password.getSecretValue()));
+                var cmd = CommandBuilder.of().addFile(script).add("|", "secret-tool", "store", "--label").addQuoted("Remmina: " + title + " - password")
+                        .add("xdg:schema", "org.remmina.Password").add("filename").addQuoted(file.toString()).add("key", "password");
+                sc.command(cmd).execute();
+            }
         }
 
         private Path writeRemminaConfigFile(LaunchConfiguration configuration) throws Exception {
