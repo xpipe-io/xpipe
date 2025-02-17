@@ -143,7 +143,8 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
                     return;
                 }
 
-                var script = sc.getShellDialect().getAskpass().prepareFixedContent(sc, "remmina", List.of(password.getSecretValue()));
+                var scriptContent = sc.getShellDialect().getAskpass().prepareFixedContent(sc, "remmina", List.of(password.getSecretValue()));
+                var script = ScriptHelper.createExecScript(sc, scriptContent);
                 var cmd = CommandBuilder.of().addFile(script).add("|", "secret-tool", "store", "--label").addQuoted("Remmina: " + title + " - password")
                         .add("xdg:schema", "org.remmina.Password").add("filename").addQuoted(file.toString()).add("key", "password");
                 sc.command(cmd).execute();
