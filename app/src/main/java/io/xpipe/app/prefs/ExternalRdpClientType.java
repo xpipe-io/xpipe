@@ -319,7 +319,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
                     c.getContent().containsKey("auto connect")) {
                 var encrypted = encryptPassword(configuration.getPassword());
                 if (encrypted.isPresent()) {
-                    var file = writeRemminaConfigFile(configuration);
+                    var file = writeRemminaConfigFile(configuration, encrypted.get());
                     launch(configuration.getTitle(), CommandBuilder.of().add("-c").addFile(file.toString()));
                     ThreadHelper.runFailableAsync(() -> {
                         ThreadHelper.sleep(5000);
@@ -339,13 +339,13 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
             }
 
             try (var sc = LocalShell.getShell().start()) {
-                var prefSecretBase64 = sc.command("sed -n 's/^secret=//p' ~/.config/remmina/remmina.pref | base64 -d | hexdump -ve '/1 \"%02x\"'").readStdoutIfPossible();
+                var prefSecretBase64 = sc.command("sed -n 's/^secret=//p' ~/.config/remmina/remmina.pref").readStdoutIfPossible();
                 if (prefSecretBase64.isEmpty()) {
                     return Optional.empty();
                 }
 
                 var paddedPassword = password.getSecretValue();
-                paddedPassword = paddedPassword + "\0".repeat((8 - paddedPassword.length()) % 8);
+                paddedPassword = paddedPassword + "\0".repeat(8 - paddedPassword.length() % 8);
                 var prefSecret = Base64.getDecoder().decode(prefSecretBase64.get());
                 var key = Arrays.copyOfRange(prefSecret, 0, 24);
                 var iv = Arrays.copyOfRange(prefSecret, 24, prefSecret.length);
@@ -360,7 +360,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
             }
         }
 
-        private Path writeRemminaConfigFile(LaunchConfiguration configuration) throws Exception {
+        private Path writeRemminaConfigFile(LaunchConfiguration configuration, String password) throws Exception {
             var name = OsType.getLocal().makeFileSystemCompatible(configuration.getTitle());
             var file = LocalShell.getShell().getSystemTemporaryDirectory().join(name + ".remmina");
             var string = """
@@ -369,10 +369,11 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
                          name=%s
                          username=%s
                          server=%s
-                         password=.
+                         password=%s
                          """.formatted(configuration.getTitle(),
                     configuration.getConfig().get("username").orElseThrow().getValue(),
-                    configuration.getConfig().get("full address").orElseThrow().getValue()
+                    configuration.getConfig().get("full address").orElseThrow().getValue(),
+                    password
             );
             Files.writeString(file.toLocalPath(), string);
             return file.toLocalPath();
