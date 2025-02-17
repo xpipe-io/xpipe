@@ -115,7 +115,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
         }
     };
 
-    ExternalRdpClientType REMMINA = new PathCheckType("app.remmina", "remmina", true) {
+    ExternalRdpClientType REMMINA = new PathCheckType("app.remmina", "remmina", false) {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
@@ -183,9 +183,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
             var file = writeRdpConfigFile(configuration.getTitle(), configuration.getConfig());
-            LocalShell.getShell()
-                    .executeSimpleCommand(
-                            CommandBuilder.of().add(executable).addFile(file.toString()));
+            launch(configuration.getTitle(), CommandBuilder.of().add("/cert-ignore").addFile(file.toString()));
         }
 
         @Override
