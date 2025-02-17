@@ -177,6 +177,23 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
             return false;
         }
     };
+
+    ExternalRdpClientType X_FREE_RDP = new PathCheckType("app.xfreeRdp", "xfreerdp", true) {
+
+        @Override
+        public void launch(LaunchConfiguration configuration) throws Exception {
+            var file = writeRdpConfigFile(configuration.getTitle(), configuration.getConfig());
+            LocalShell.getShell()
+                    .executeSimpleCommand(
+                            CommandBuilder.of().add(executable).addFile(file.toString()));
+        }
+
+        @Override
+        public boolean supportsPasswordPassing() {
+            return false;
+        }
+    };
+
     ExternalRdpClientType MICROSOFT_REMOTE_DESKTOP_MACOS_APP =
             new MacOsType("app.microsoftRemoteDesktopApp", "Microsoft Remote Desktop") {
 
@@ -216,7 +233,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
 
     ExternalRdpClientType CUSTOM = new CustomType();
     List<ExternalRdpClientType> WINDOWS_CLIENTS = List.of(MSTSC, DEVOLUTIONS);
-    List<ExternalRdpClientType> LINUX_CLIENTS = List.of(REMMINA);
+    List<ExternalRdpClientType> LINUX_CLIENTS = List.of(REMMINA, X_FREE_RDP);
     List<ExternalRdpClientType> MACOS_CLIENTS = List.of(MICROSOFT_REMOTE_DESKTOP_MACOS_APP, WINDOWS_APP_MACOS);
 
     @SuppressWarnings("TrivialFunctionalExpressionUsage")
