@@ -311,12 +311,16 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
 
         public RemminaRdpType() {super("app.remmina", "remmina", true);}
 
+        private List<String> toStrip() {
+            return List.of("auto connect");
+        }
+
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
             RdpConfig c = configuration.getConfig();
-            if (c.getContent().size() == 3 && c.getContent().containsKey("username") &&
-                    c.getContent().containsKey("full address") &&
-                    c.getContent().containsKey("auto connect")) {
+            var l = new HashSet<>(c.getContent().keySet());
+            toStrip().forEach(l::remove);
+            if (l.size() == 2 && l.contains("username") && l.contains("full address")) {
                 var encrypted = encryptPassword(configuration.getPassword());
                 if (encrypted.isPresent()) {
                     var file = writeRemminaConfigFile(configuration, encrypted.get());
@@ -370,6 +374,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
                          username=%s
                          server=%s
                          password=%s
+                         cert_ignore=1
                          """.formatted(configuration.getTitle(),
                     configuration.getConfig().get("username").orElseThrow().getValue(),
                     configuration.getConfig().get("full address").orElseThrow().getValue(),
