@@ -10,7 +10,12 @@ import io.xpipe.core.util.SecretValue;
 import lombok.Value;
 import org.apache.commons.io.FileUtils;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -316,6 +321,10 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
                 if (encrypted.isPresent()) {
                     var file = writeRemminaConfigFile(configuration);
                     launch(configuration.getTitle(), CommandBuilder.of().add("-c").addFile(file.toString()));
+                    ThreadHelper.runFailableAsync(() -> {
+                        ThreadHelper.sleep(5000);
+                        FileUtils.deleteQuietly(file.toFile());
+                    });
                     return;
                 }
             }
@@ -330,22 +339,23 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
             }
 
             try (var sc = LocalShell.getShell().start()) {
-                var secretKey = sc.command("sed -n 's/^secret=//p' ~/.config/remmina/remmina.pref | base64 -d | hexdump -ve '/1 \"%02x\"'").readStdoutIfPossible();
-                if (secretKey.isEmpty()) {
+                var prefSecret = sc.command("sed -n 's/^secret=//p' ~/.config/remmina/remmina.pref | base64 -d | hexdump -ve '/1 \"%02x\"'").readStdoutIfPossible();
+                if (prefSecret.isEmpty()) {
                     return Optional.empty();
                 }
 
                 var paddedPassword = password.getSecretValue();
-                paddedPassword = paddedPassword + "\0".repeat(paddedPassword.length() % 8);
+                paddedPassword = paddedPassword + "\0".repeat((8 - paddedPassword.length()) % 8);
+                var key = prefSecret.get().substring(0, 24);
+                var iv = prefSecret.get().substring(24);
 
-                var secretKeyStart = secretKey.get().substring(0, 48);
-                var scriptContent = sc.getShellDialect().getAskpass().prepareFixedContent(sc, "remmina", List.of(paddedPassword));
-                var script = ScriptHelper.createExecScript(sc, scriptContent);
-                var encryptCommand = CommandBuilder.of().addFile(script).add("openssl des3 -a -nopad -K " + secretKeyStart + " -iv " + paddedPassword);
-                var command = sc.command(encryptCommand);
-                command.setSensitive();
-                var out = command.readStdoutIfPossible();
-                return out;
+                var cipher = Cipher.getInstance("DESede/CBC/Nopadding");
+                var keySpec = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "DESede");
+                var ivspec = new IvParameterSpec(iv.getBytes(StandardCharsets.UTF_8));
+                cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivspec);
+                byte[] encryptedText = cipher.doFinal(paddedPassword.getBytes(StandardCharsets.UTF_8));
+                var base64Encrypted = Base64.getEncoder().encodeToString(encryptedText);
+                return Optional.ofNullable(base64Encrypted);
             }
         }
 
