@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public interface ExternalRdpClientType extends PrefsChoiceValue {
 
@@ -31,7 +32,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
             var adaptedRdpConfig = getAdaptedConfig(configuration);
-            var file = writeConfig(configuration.getTitle(), adaptedRdpConfig);
+            var file = writeRdpConfigFile(configuration.getTitle(), adaptedRdpConfig);
             LocalShell.getShell()
                     .executeSimpleCommand(CommandBuilder.of().add(executable).addFile(file.toString()));
             ThreadHelper.runFailableAsync(() -> {
@@ -94,7 +95,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
 
         @Override
         protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
-            var config = writeConfig(configuration.getTitle(), configuration.getConfig());
+            var config = writeRdpConfigFile(configuration.getTitle(), configuration.getConfig());
             LocalShell.getShell()
                     .executeSimpleCommand(CommandBuilder.of()
                             .addFile(file.toString())
@@ -117,10 +118,22 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
-            var file = writeConfig(configuration.getTitle(), configuration.getConfig());
+            var file = writeRemminaConfigFile(configuration);
             LocalShell.getShell()
                     .executeSimpleCommand(
                             CommandBuilder.of().add(executable).add("-c").addFile(file.toString()));
+        }
+
+        private Path writeRemminaConfigFile(LaunchConfiguration configuration) throws Exception {
+            var name = OsType.getLocal().makeFileSystemCompatible(configuration.getTitle());
+            var file = LocalShell.getShell().getSystemTemporaryDirectory().join(name + ".remmina");
+            var string = configuration.getConfig().getContent().entrySet().stream()
+                    .map(e -> {
+                        return e.getKey() + ":" + e.getValue().getValue();
+                    })
+                    .collect(Collectors.joining("\n"));
+            Files.writeString(file.toLocalPath(), string);
+            return file.toLocalPath();
         }
 
         @Override
@@ -133,7 +146,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
 
                 @Override
                 public void launch(LaunchConfiguration configuration) throws Exception {
-                    var file = writeConfig(configuration.getTitle(), configuration.getConfig());
+                    var file = writeRdpConfigFile(configuration.getTitle(), configuration.getConfig());
                     LocalShell.getShell()
                             .executeSimpleCommand(CommandBuilder.of()
                                     .add("open", "-a")
@@ -151,7 +164,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
-            var file = writeConfig(configuration.getTitle(), configuration.getConfig());
+            var file = writeRdpConfigFile(configuration.getTitle(), configuration.getConfig());
             LocalShell.getShell()
                     .executeSimpleCommand(CommandBuilder.of()
                             .add("open", "-a")
@@ -214,7 +227,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
 
     boolean supportsPasswordPassing();
 
-    default Path writeConfig(String title, RdpConfig input) throws Exception {
+    default Path writeRdpConfigFile(String title, RdpConfig input) throws Exception {
         var name = OsType.getLocal().makeFileSystemCompatible(title);
         var file = LocalShell.getShell().getSystemTemporaryDirectory().join(name + ".rdp");
         var string = input.toString();
@@ -286,7 +299,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
                     .add(ExternalApplicationHelper.replaceFileArgument(
                             format,
                             "FILE",
-                            writeConfig(configuration.getTitle(), configuration.getConfig()).toString())));
+                            writeRdpConfigFile(configuration.getTitle(), configuration.getConfig()).toString())));
         }
 
         @Override
