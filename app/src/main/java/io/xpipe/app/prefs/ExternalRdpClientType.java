@@ -118,7 +118,15 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
-            var file = writeRemminaConfigFile(configuration);
+            Path file;
+            RdpConfig c = configuration.getConfig();
+            if (c.getContent().size() == 3 && c.getContent().containsKey("username") &&
+                    c.getContent().containsKey("full address") &&
+                    c.getContent().containsKey("auto connect")) {
+                file = writeRemminaConfigFile(configuration);
+            } else {
+                file = writeRdpConfigFile(configuration.getTitle(), c);
+            }
             LocalShell.getShell()
                     .executeSimpleCommand(
                             CommandBuilder.of().add(executable).add("-c").addFile(file.toString()));
@@ -127,11 +135,16 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
         private Path writeRemminaConfigFile(LaunchConfiguration configuration) throws Exception {
             var name = OsType.getLocal().makeFileSystemCompatible(configuration.getTitle());
             var file = LocalShell.getShell().getSystemTemporaryDirectory().join(name + ".remmina");
-            var string = configuration.getConfig().getContent().entrySet().stream()
-                    .map(e -> {
-                        return e.getKey() + ":" + e.getValue().getValue();
-                    })
-                    .collect(Collectors.joining("\n"));
+            var string = """
+                         [remmina]
+                         protocol=RDP
+                         name=%s
+                         username=%s
+                         server=%s
+                         """.formatted(
+                                 configuration.getTitle(),
+                    configuration.getConfig().get("username").orElseThrow(),
+                    configuration.getConfig().get("full address").orElseThrow());
             Files.writeString(file.toLocalPath(), string);
             return file.toLocalPath();
         }
