@@ -31,7 +31,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
             var adaptedRdpConfig = getAdaptedConfig(configuration);
-            var file = writeConfig(adaptedRdpConfig);
+            var file = writeConfig(configuration.getTitle(), adaptedRdpConfig);
             LocalShell.getShell()
                     .executeSimpleCommand(CommandBuilder.of().add(executable).addFile(file.toString()));
             ThreadHelper.runFailableAsync(() -> {
@@ -94,7 +94,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
 
         @Override
         protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
-            var config = writeConfig(configuration.getConfig());
+            var config = writeConfig(configuration.getTitle(), configuration.getConfig());
             LocalShell.getShell()
                     .executeSimpleCommand(CommandBuilder.of()
                             .addFile(file.toString())
@@ -117,7 +117,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
-            var file = writeConfig(configuration.getConfig());
+            var file = writeConfig(configuration.getTitle(), configuration.getConfig());
             LocalShell.getShell()
                     .executeSimpleCommand(
                             CommandBuilder.of().add(executable).add("-c").addFile(file.toString()));
@@ -133,7 +133,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
 
                 @Override
                 public void launch(LaunchConfiguration configuration) throws Exception {
-                    var file = writeConfig(configuration.getConfig());
+                    var file = writeConfig(configuration.getTitle(), configuration.getConfig());
                     LocalShell.getShell()
                             .executeSimpleCommand(CommandBuilder.of()
                                     .add("open", "-a")
@@ -151,7 +151,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
-            var file = writeConfig(configuration.getConfig());
+            var file = writeConfig(configuration.getTitle(), configuration.getConfig());
             LocalShell.getShell()
                     .executeSimpleCommand(CommandBuilder.of()
                             .add("open", "-a")
@@ -214,9 +214,9 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
 
     boolean supportsPasswordPassing();
 
-    default Path writeConfig(RdpConfig input) throws Exception {
-        var file =
-                LocalShell.getShell().getSystemTemporaryDirectory().join("exec-" + ScriptHelper.getScriptId() + ".rdp");
+    default Path writeConfig(String title, RdpConfig input) throws Exception {
+        var name = OsType.getLocal().makeFileSystemCompatible(title);
+        var file = LocalShell.getShell().getSystemTemporaryDirectory().join(name + ".rdp");
         var string = input.toString();
         Files.writeString(file.toLocalPath(), string);
         return file.toLocalPath();
@@ -286,7 +286,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
                     .add(ExternalApplicationHelper.replaceFileArgument(
                             format,
                             "FILE",
-                            writeConfig(configuration.getConfig()).toString())));
+                            writeConfig(configuration.getTitle(), configuration.getConfig()).toString())));
         }
 
         @Override
