@@ -126,7 +126,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
         public void launch(LaunchConfiguration configuration) throws Exception {
             var file = writeRdpConfigFile(configuration.getTitle(), configuration.getConfig());
             var escapedPw = configuration.getPassword().getSecretValue().replaceAll("'", "\\\\'");
-            launch(configuration.getTitle(), CommandBuilder.of().addFile(file.toString()).add("/cert-ignore").add("/p:'" + escapedPw + "'"));
+            launch(configuration.getTitle(), CommandBuilder.of().addFile(file.toString()).add("/cert-ignore").add("/smart-sizing").add("/p:'" + escapedPw + "'"));
         }
 
         @Override
@@ -312,7 +312,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
         public RemminaRdpType() {super("app.remmina", "remmina", true);}
 
         private List<String> toStrip() {
-            return List.of("auto connect");
+            return List.of("auto connect", "password 51", "prompt for credentials", "smart sizing");
         }
 
         @Override
