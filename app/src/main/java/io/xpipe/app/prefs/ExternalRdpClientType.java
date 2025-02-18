@@ -126,7 +126,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
         public void launch(LaunchConfiguration configuration) throws Exception {
             var file = writeRdpConfigFile(configuration.getTitle(), configuration.getConfig());
             var escapedPw = configuration.getPassword().getSecretValue().replaceAll("'", "\\\\'");
-            launch(configuration.getTitle(), CommandBuilder.of().addFile(file.toString()).add("/cert-ignore").add("/smart-sizing").add("/p:'" + escapedPw + "'"));
+            launch(configuration.getTitle(), CommandBuilder.of().addFile(file.toString()).add("/cert-ignore").add("/p:'" + escapedPw + "'"));
         }
 
         @Override
