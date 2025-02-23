@@ -414,6 +414,34 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return CommandBuilder.of().add("-c").addFile(configuration.getScriptFile());
         }
     };
+    ExternalTerminalType COSMIC_TERM = new SimplePathType("app.cosmicTerm", "cosmic-term", true) {
+        @Override
+        public String getWebsite() {
+            return "https://github.com/pop-os/cosmic-term";
+        }
+
+        @Override
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW;
+        }
+
+        @Override
+        public boolean isRecommended() {
+            return false;
+        }
+
+        @Override
+        public boolean useColoredTitle() {
+            return true;
+        }
+
+        @Override
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
+            return CommandBuilder.of()
+                    .add("-e")
+                    .addFile(configuration.getScriptFile());
+        }
+    };
     ExternalTerminalType UXTERM = new SimplePathType("app.uxterm", "uxterm", true) {
         @Override
         public String getWebsite() {
@@ -648,6 +676,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             TILIX,
             GUAKE,
             TILDA,
+            COSMIC_TERM,
             UXTERM,
             XTERM,
             DEEPIN_TERMINAL,
