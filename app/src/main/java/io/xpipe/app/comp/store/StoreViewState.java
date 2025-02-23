@@ -202,6 +202,7 @@ public class StoreViewState {
                                                         .getUuid())))
                                 .forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
                     }
+                    l.forEach(storeEntryWrapper -> storeEntryWrapper.update());
                 });
             }
 
