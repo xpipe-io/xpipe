@@ -90,16 +90,20 @@ public class IdentityChoice {
                     if (ref.get() != null) {
                         return IdentityValue.Ref.builder().ref(ref.get()).build();
                     } else {
-                        return IdentityValue.InPlace.builder()
-                                .identityStore(LocalIdentityStore.builder()
-                                        .username(user.get())
-                                        .password(EncryptedValue.CurrentKey.of(pass.get()))
-                                        .sshIdentity(
-                                                keyInput
-                                                        ? EncryptedValue.CurrentKey.of(identityStrategy.get())
-                                                        : EncryptedValue.CurrentKey.of(new SshIdentityStrategy.None()))
-                                        .build())
-                                .build();
+                        var u = user.get();
+                        var p = EncryptedValue.CurrentKey.of(pass.get());
+                        EncryptedValue<SshIdentityStrategy> i = keyInput
+                                ? EncryptedValue.CurrentKey.of(identityStrategy.get())
+                                : null;
+                        if (u == null && p == null && i == null) {
+                            return null;
+                        } else {
+                            return IdentityValue.InPlace.builder().identityStore(LocalIdentityStore.builder()
+                                    .username(u)
+                                    .password(p)
+                                    .sshIdentity(i)
+                                    .build()).build();
+                        }
                     }
                 },
                 identity);
