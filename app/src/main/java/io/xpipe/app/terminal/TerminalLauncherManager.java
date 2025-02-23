@@ -1,5 +1,7 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.util.SecretManager;
+import io.xpipe.app.util.SecretQueryProgress;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.BeaconServerException;
 import io.xpipe.core.process.ProcessControl;
@@ -7,6 +9,7 @@ import io.xpipe.core.process.TerminalInitScriptConfig;
 
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
+import java.util.Optional;
 import java.util.SequencedMap;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
@@ -72,6 +75,9 @@ public class TerminalLauncherManager {
         TerminalLaunchRequest req;
         synchronized (entries) {
             req = entries.get(request);
+        }
+        if (req == null) {
+            throw new BeaconClientException("Unknown launch request " + request);
         }
         var byPid = ProcessHandle.of(pid);
         if (byPid.isEmpty()) {

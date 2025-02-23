@@ -32,6 +32,5 @@ public class TerminalPrepareExchange extends BeaconInterface<TerminalPrepareExch
     public static class Response {
         boolean supportsUnicode;
         boolean supportsEscapeSequences;
-        boolean alreadyFinished;
     }
 }

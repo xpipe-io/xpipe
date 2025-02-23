@@ -17,11 +17,9 @@ public class TerminalPrepareExchangeImpl extends TerminalPrepareExchange {
         var term = AppPrefs.get().terminalType().getValue();
         var unicode = term.supportsUnicode();
         var escapes = term.supportsEscapes();
-        var finished = TerminalLauncherManager.isCompletedSuccessfully(msg.getRequest());
         return Response.builder()
                 .supportsUnicode(unicode)
                 .supportsEscapeSequences(escapes)
-                .alreadyFinished(finished)
                 .build();
     }
 
