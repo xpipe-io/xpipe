@@ -36,6 +36,53 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
+    WindowsType CURSOR_WINDOWS = new WindowsType("app.cursor", "Cursor", true) {
+
+        @Override
+        protected Optional<Path> determineInstallation() {
+            return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
+                    .resolve("Programs")
+                    .resolve("cursor")
+                    .resolve("Cursor.exe"));
+        }
+    };
+
+    WindowsType WINDSURF_WINDOWS = new WindowsType("app.windsurf", "windsurf.cmd", false) {
+
+        @Override
+        protected Optional<Path> determineInstallation() {
+            return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
+                    .resolve("Programs")
+                    .resolve("Windsurf")
+                    .resolve("bin")
+                    .resolve("windsurf.cmd"));
+        }
+    };
+
+    // Cli is broken, keep inactive
+    WindowsType THEIAIDE_WINDOWS = new WindowsType("app.theiaide", "Theiaide", true) {
+
+        @Override
+        protected Optional<Path> determineInstallation() {
+            return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
+                    .resolve("Programs")
+                    .resolve("TheiaIDE")
+                    .resolve("TheiaIDE.exe"));
+        }
+    };
+
+    WindowsType TRAE_WINDOWS = new WindowsType("app.trae", "trae.cmd", false) {
+
+        @Override
+        protected Optional<Path> determineInstallation() {
+            return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
+                    .resolve("Programs")
+                    .resolve("Trae")
+                    .resolve("bin")
+                    .resolve("trae.cmd"));
+        }
+    };
+
     WindowsType VSCODE_WINDOWS = new WindowsType("app.vscode", "code.cmd", false) {
 
         @Override
@@ -136,7 +183,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     ExternalEditorType WEBSTORM = new GenericPathType("app.webstorm", "webstorm", false);
     ExternalEditorType CLION = new GenericPathType("app.clion", "clion", false);
     List<ExternalEditorType> WINDOWS_EDITORS =
-            List.of(VSCODIUM_WINDOWS, VSCODE_INSIDERS_WINDOWS, VSCODE_WINDOWS, NOTEPADPLUSPLUS, NOTEPAD);
+            List.of(CURSOR_WINDOWS, WINDSURF_WINDOWS, TRAE_WINDOWS, VSCODIUM_WINDOWS, VSCODE_INSIDERS_WINDOWS, VSCODE_WINDOWS, NOTEPADPLUSPLUS, NOTEPAD);
     List<LinuxPathType> LINUX_EDITORS =
             List.of(VSCODIUM_LINUX, VSCODE_LINUX, ZED_LINUX, KATE, GEDIT, PLUMA, LEAFPAD, MOUSEPAD, GNOME);
     List<ExternalEditorType> MACOS_EDITORS =
