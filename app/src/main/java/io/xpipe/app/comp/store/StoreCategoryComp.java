@@ -80,7 +80,9 @@ public class StoreCategoryComp extends SimpleComp {
                 .apply(struc -> {
                     struc.get().setAlignment(Pos.CENTER);
                     struc.get().setFocusTraversable(false);
-                    if (OsType.getLocal() != OsType.LINUX) {
+                    if (OsType.getLocal() == OsType.WINDOWS) {
+                        HBox.setMargin(struc.get(), new Insets(0, 0, 2.0, 0));
+                    } else if (OsType.getLocal() == OsType.MACOS) {
                         HBox.setMargin(struc.get(), new Insets(0, 0, 2.6, 0));
                     }
                 })

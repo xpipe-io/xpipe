@@ -8,9 +8,7 @@ import io.xpipe.app.util.SecretManager;
 import io.xpipe.app.util.SecretQueryProgress;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.BeaconServerException;
-import io.xpipe.core.process.ProcessControl;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.TerminalInitScriptConfig;
+import io.xpipe.core.process.*;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -130,7 +128,7 @@ public class TerminalLauncherManager {
     }
 
 
-    public static List<String> externalExchange(DataStoreEntryRef<ShellStore> ref) throws BeaconClientException, BeaconServerException {
+    public static List<String> externalExchange(DataStoreEntryRef<ShellStore> ref, List<String> arguments) throws BeaconClientException, BeaconServerException {
         var request = UUID.randomUUID();
         ShellControl session;
         try {
@@ -138,8 +136,16 @@ public class TerminalLauncherManager {
         } catch (Exception e) {
             throw new BeaconServerException(e);
         }
-        var config = TerminalInitScriptConfig.ofName(ref.get().getName());
-        submitAsync(request, session, config, null);
+
+        ProcessControl control;
+        if (arguments.size() > 0) {
+            control = session.command(CommandBuilder.of().addAll(arguments));
+        } else {
+            control = session;
+        }
+
+        var config = new TerminalInitScriptConfig(ref.get().getName(), false, TerminalInitFunction.none());
+        submitAsync(request, control, config, null);
         waitExchange(request);
         var script = launchExchange(request);
         try (var sc = LocalShell.getShell().start()) {

@@ -29,7 +29,7 @@ public class TerminalExternalLaunchExchangeImpl extends TerminalExternalLaunchEx
             throw new BeaconClientException("Connection " + DataStorage.get().getStorePath(e).toString() + " is not a shell connection");
         }
 
-        var r = TerminalLauncherManager.externalExchange(e.ref());
+        var r = TerminalLauncherManager.externalExchange(e.ref(), msg.getArguments());
         return Response.builder().command(r).build();
     }
 
