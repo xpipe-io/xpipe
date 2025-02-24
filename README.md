@@ -13,14 +13,15 @@ XPipe is a new type of shell connection hub and remote file manager that allows 
 XPipe fully integrates with your tools such as your favourite text/code editors, terminals, shells, command-line tools and more. The platform is designed to be extensible, allowing anyone to add easily support for more tools or to implement custom functionality through a modular extension system.
 
 It currently supports:
-- [SSH](https://www.ssh.com/academy/ssh/protocol) connections, config files, and tunnels
-- [Docker](https://www.docker.com/), [Podman](https://podman.io/), [LXD](https://linuxcontainers.org/lxd/introduction/), and [incus](https://linuxcontainers.org/incus/) container instances located on any host
-- [Proxmox PVE](https://www.proxmox.com/en/proxmox-virtual-environment/overview) virtual machines and containers
-- [Hyper-V](https://learn.microsoft.com/en-us/virtualization/hyper-v-on-windows/about/), [KVM/QEMU](https://linux-kvm.org/page/Main_Page), [VMware Player/Workstation/Fusion](https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion) virtual machines
-- [Kubernetes](https://kubernetes.io/) clusters, pods, and containers
-- [Windows Subsystem for Linux](https://ubuntu.com/wsl), [Cygwin](https://www.cygwin.com/), and [MSYS2](https://www.msys2.org/) instances
-- [Powershell Remote Sessions](https://learn.microsoft.com/en-us/powershell/scripting/learn/remoting/running-remote-commands?view=powershell-7.3)
-- [Tailscale SSH](https://tailscale.com/kb/1193/tailscale-ssh) and [Teleport](https://goteleport.com/) connections
+
+- [SSH](https://docs.xpipe.io/guide/ssh) connections, config files, and tunnels
+- [Docker](https://docs.xpipe.io/guide/docker), [Podman](https://docs.xpipe.io/guide/podman), [LXD](https://docs.xpipe.io/guide/lxc), and [incus](https://docs.xpipe.io/guide/lxc) containers
+- [Proxmox PVE](https://docs.xpipe.io/guide/proxmox) virtual machines and containers
+- [Hyper-V](https://docs.xpipe.io/guide/hyperv), [KVM](https://docs.xpipe.io/guide/kvm), [VMware Player/Workstation/Fusion](https://docs.xpipe.io/guide/vmware) virtual machines
+- [Kubernetes](https://docs.xpipe.io/guide/kubernetes) clusters, pods, and containers
+- [Tailscale](https://docs.xpipe.io/guide/tailscale) and [Teleport](https://docs.xpipe.io/guide/teleport) connections
+- Windows Subsystem for Linux, Cygwin, and MSYS2 instances
+- Powershell Remote Sessions
 - RDP and VNC connections
 
 ## Connection hub
@@ -76,13 +77,6 @@ It currently supports:
 - There are no servers involved, all your information stays on your systems. The XPipe application does not send any personal or sensitive information to outside services.
 - Vault changes can be pushed and pulled from your own remote git repository by multiple team members across many systems
 
-## Programmatic connection control via the API
-
-- The XPipe API provides programmatic access to XPipe’s features via an HTTP interface
-- Manage all your remote systems and access their file systems in your own favorite programming language
-- Either call the API directly or with the help of the [python library](https://github.com/xpipe-io/xpipe-python-api)
-- Full documentation can be either found in the application itself under the API tab or in the [OpenAPI](/openapi.yaml) spec file
-
 # Downloads
 
 Note that this is a desktop application that should be run on your local desktop workstation, not on any server or containers. It will be able to connect to your server infrastructure from there.
@@ -93,12 +87,6 @@ Installers are the easiest way to get started and come with an optional automati
 
 - [Windows .msi Installer (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-windows-x86_64.msi)
 
-You can also install XPipe by pasting the installation command into your terminal. This will perform the .msi setup for the current user automatically:
-
-```
-powershell -ExecutionPolicy Bypass -Command iwr "https://github.com/xpipe-io/xpipe/raw/master/get-xpipe.ps1" -OutFile "$env:TEMP\get-xpipe.ps1" ";"  "&" "$env:TEMP\get-xpipe.ps1"
-```
-
 If you don't like installers, you can also use a portable version that is packaged as an archive:
 
 - [Windows .zip Portable (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-windows-x86_64.zip)
@@ -106,6 +94,20 @@ If you don't like installers, you can also use a portable version that is packag
 Alternatively, you can also use the following package managers:
 - [choco](https://community.chocolatey.org/packages/xpipe) to install it with `choco install xpipe`.
 - [winget](https://github.com/microsoft/winget-cli) to install it with `winget install xpipe-io.xpipe --source winget`.
+
+## macOS
+
+Installers are the easiest way to get started and come with an optional automatic update functionality:
+
+- [MacOS .pkg Installer (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-macos-x86_64.pkg)
+- [MacOS .pkg Installer (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-macos-arm64.pkg)
+
+If you don't like installers, you can also use a portable version that is packaged as an archive:
+
+- [MacOS .dmg Portable (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-macos-x86_64.dmg)
+- [MacOS .dmg Portable (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-macos-arm64.dmg)
+
+Alternatively, you can also use [Homebrew](https://github.com/xpipe-io/homebrew-tap) to install XPipe with `brew install --cask xpipe-io/tap/xpipe`.
 
 ## Linux
 
@@ -166,33 +168,7 @@ Alternatively, there are also AppImages available:
 Note that the portable version assumes that you have some basic packages for graphical systems already installed
 as it is not a perfect standalone version. It should however run on most systems.
 
-## macOS
-
-Installers are the easiest way to get started and come with an optional automatic update functionality:
-
-- [MacOS .pkg Installer (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-macos-x86_64.pkg)
-- [MacOS .pkg Installer (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-macos-arm64.pkg)
-
-You also can install XPipe by pasting the installation command into your terminal. This will perform the `.pkg` installation automatically:
-
-```
-bash <(curl -sL https://github.com/xpipe-io/xpipe/raw/master/get-xpipe.sh)
-```
-
-If you don't like installers, you can also use a portable version that is packaged as an archive:
-
-- [MacOS .dmg Portable (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-macos-x86_64.dmg)
-- [MacOS .dmg Portable (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-macos-arm64.dmg)
-
-Alternatively, you can also use [Homebrew](https://github.com/xpipe-io/homebrew-tap) to install XPipe with `brew install --cask xpipe-io/tap/xpipe`.
-
-## Early access releases
-
-Prior to major releases, there will be several Public Test Build (PTB) releases published at https://github.com/xpipe-io/xpipe-ptb to see whether everything is production ready and contain the latest new features.
-
-In case you're interested in trying out the PTB versions, you can easily do so without any limitations. The regular releases and PTB releases are designed to not interfere with each other and can therefore be installed and used side by side.
-
-## XPipe Webtop
+## Docker container
 
 XPipe is a desktop application first and foremost. It requires a full desktop environment to function with various installed applications such as terminals, editors, shells, CLI tools, and more. So there is no true web-based interface for XPipe. Since it might make sense however to access your XPipe environment from the web, there is also a so-called webtop docker container image for XPipe. [XPipe Webtop](https://github.com/xpipe-io/xpipe-webtop) is a web-based desktop environment that can be run in a container and accessed from a browser via KasmVNC. The desktop environment comes with XPipe and various terminals and editors preinstalled and configured. 
 
