@@ -1,17 +1,19 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.SecretManager;
 import io.xpipe.app.util.SecretQueryProgress;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.BeaconServerException;
 import io.xpipe.core.process.ProcessControl;
+import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.TerminalInitScriptConfig;
 
 import java.nio.file.Path;
-import java.util.LinkedHashMap;
-import java.util.Optional;
-import java.util.SequencedMap;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 public class TerminalLauncherManager {
@@ -124,6 +126,35 @@ public class TerminalLauncherManager {
             }
 
             return ((TerminalLaunchResult.ResultSuccess) e.getResult()).getTargetScript();
+        }
+    }
+
+
+    public static List<String> externalExchange(DataStoreEntryRef<ShellStore> ref) throws BeaconClientException, BeaconServerException {
+        var request = UUID.randomUUID();
+        ShellControl session;
+        try {
+            session = ref.getStore().getOrStartSession();
+        } catch (Exception e) {
+            throw new BeaconServerException(e);
+        }
+        var config = TerminalInitScriptConfig.ofName(ref.get().getName());
+        submitAsync(request, session, config, null);
+        waitExchange(request);
+        var script = launchExchange(request);
+        try (var sc = LocalShell.getShell().start()) {
+            var runCommand = ProcessControlProvider.get().getEffectiveLocalDialect().getOpenScriptCommand(script.toString()).buildBaseParts(sc);
+            var cleaned = runCommand.stream().map(s -> {
+                if (s.startsWith("\"") && s.endsWith("\"")) {
+                    s = s.substring(1, s.length() - 1);
+                } else if (s.startsWith("'") && s.endsWith("'")) {
+                    s = s.substring(1, s.length() - 1);
+                }
+                return s;
+            }).toList();
+            return cleaned;
+        } catch (Exception e) {
+            throw new BeaconServerException(e);
         }
     }
 }

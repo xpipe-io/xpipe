@@ -49,6 +49,7 @@ open module io.xpipe.beacon {
             TerminalPrepareExchange,
             TerminalWaitExchange,
             TerminalLaunchExchange,
+            TerminalExternalLaunchExchange,
             SshLaunchExchange,
             FsReadExchange,
             FsBlobExchange,

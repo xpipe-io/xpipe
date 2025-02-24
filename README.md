@@ -20,7 +20,7 @@ It currently supports:
 - [Hyper-V](https://docs.xpipe.io/guide/hyperv), [KVM](https://docs.xpipe.io/guide/kvm), [VMware Player/Workstation/Fusion](https://docs.xpipe.io/guide/vmware) virtual machines
 - [Kubernetes](https://docs.xpipe.io/guide/kubernetes) clusters, pods, and containers
 - [Tailscale](https://docs.xpipe.io/guide/tailscale) and [Teleport](https://docs.xpipe.io/guide/teleport) connections
-- Windows Subsystem for Linux, Cygwin, and MSYS2 instances
+- Windows Subsystem for Linux, Cygwin, and MSYS2 environments
 - Powershell Remote Sessions
 - RDP and VNC connections
 
@@ -170,7 +170,9 @@ as it is not a perfect standalone version. It should however run on most systems
 
 ## Docker container
 
-XPipe is a desktop application first and foremost. It requires a full desktop environment to function with various installed applications such as terminals, editors, shells, CLI tools, and more. So there is no true web-based interface for XPipe. Since it might make sense however to access your XPipe environment from the web, there is also a so-called webtop docker container image for XPipe. [XPipe Webtop](https://github.com/xpipe-io/xpipe-webtop) is a web-based desktop environment that can be run in a container and accessed from a browser via KasmVNC. The desktop environment comes with XPipe and various terminals and editors preinstalled and configured. 
+XPipe is a desktop application first and foremost. It requires a full desktop environment to function with various installed applications such as terminals, editors, shells, CLI tools, and more. So there is no true web-based interface for XPipe.
+
+Since it might make sense however to access your XPipe environment from the web, there is also a so-called webtop docker container image for XPipe. [XPipe Webtop](https://github.com/xpipe-io/xpipe-webtop) is a web-based desktop environment that can be run in a container and accessed from a browser via KasmVNC. The desktop environment comes with XPipe and various terminals and editors preinstalled and configured. 
 
 # Further information
 

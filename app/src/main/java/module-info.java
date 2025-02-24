@@ -151,6 +151,7 @@ open module io.xpipe.app {
             TerminalPrepareExchangeImpl,
             TerminalWaitExchangeImpl,
             TerminalLaunchExchangeImpl,
+            TerminalExternalLaunchExchangeImpl,
             SshLaunchExchangeImpl,
             DaemonVersionExchangeImpl;
 }
