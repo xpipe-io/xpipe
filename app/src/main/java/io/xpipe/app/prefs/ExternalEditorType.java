@@ -159,6 +159,9 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     ExternalEditorType SUBLIME_MACOS = new MacOsEditor("app.sublime", "Sublime Text");
     ExternalEditorType VSCODE_MACOS = new MacOsEditor("app.vscode", "Visual Studio Code");
     ExternalEditorType VSCODIUM_MACOS = new MacOsEditor("app.vscodium", "VSCodium");
+    ExternalEditorType CURSOR_MACOS = new MacOsEditor("app.cursor", "Cursor");
+    ExternalEditorType WINDSURF_MACOS = new MacOsEditor("app.windsurf", "Windsurf");
+    ExternalEditorType TRAE_MACOS = new MacOsEditor("app.trae", "Trae");
     ExternalEditorType CUSTOM = new ExternalEditorType() {
 
         @Override
@@ -189,7 +192,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     List<LinuxPathType> LINUX_EDITORS =
             List.of(ExternalEditorType.WINDSURF_LINUX, VSCODIUM_LINUX, VSCODE_LINUX, ZED_LINUX, KATE, GEDIT, PLUMA, LEAFPAD, MOUSEPAD, GNOME);
     List<ExternalEditorType> MACOS_EDITORS =
-            List.of(BBEDIT, VSCODIUM_MACOS, VSCODE_MACOS, SUBLIME_MACOS, ZED_MACOS, TEXT_EDIT);
+            List.of(CURSOR_MACOS, WINDSURF_MACOS, TRAE_MACOS, BBEDIT, VSCODIUM_MACOS, VSCODE_MACOS, SUBLIME_MACOS, ZED_MACOS, TEXT_EDIT);
     List<ExternalEditorType> CROSS_PLATFORM_EDITORS = List.of(FLEET, INTELLIJ, PYCHARM, WEBSTORM, CLION);
 
     @SuppressWarnings("TrivialFunctionalExpressionUsage")
