@@ -104,9 +104,10 @@ public abstract class UpdateHandler {
                     var checked = false;
                     ThreadHelper.sleep(Duration.ofMinutes(1).toMillis());
                     event("Starting background updater thread");
+                    var run = !AppProperties.get().isRestarted();
                     while (true) {
-                        if (AppPrefs.get().automaticallyUpdate().get()
-                                || AppPrefs.get().checkForSecurityUpdates().get()) {
+                        if (run && (AppPrefs.get().automaticallyUpdate().get()
+                                || AppPrefs.get().checkForSecurityUpdates().get())) {
                             event("Performing background update");
                             refreshUpdateCheckSilent(
                                     !checked,
@@ -116,6 +117,7 @@ public abstract class UpdateHandler {
                         }
 
                         ThreadHelper.sleep(Duration.ofHours(1).toMillis());
+                        run = true;
                     }
                 })
                 .start();
@@ -140,6 +142,8 @@ public abstract class UpdateHandler {
 
         return false;
     }
+
+    public abstract boolean supportsDirectInstallation();
 
     public final AvailableRelease refreshUpdateCheckSilent(boolean first, boolean securityOnly) {
         try {

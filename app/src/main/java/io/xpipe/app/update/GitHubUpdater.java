@@ -21,6 +21,11 @@ public class GitHubUpdater extends UpdateHandler {
     }
 
     @Override
+    public boolean supportsDirectInstallation() {
+        return true;
+    }
+
+    @Override
     public List<ModalButton> createActions() {
         var list = new ArrayList<ModalButton>();
         list.add(new ModalButton("ignore", null, true, false));
