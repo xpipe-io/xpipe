@@ -21,6 +21,10 @@ public class DataStorageQuery {
     }
     
     public static List<DataStoreEntry> query(String categoryFilter, String connectionFilter, String typeFilter) {
+        if (DataStorage.get() == null) {
+            return List.of();
+        }
+
         var catMatcher = Pattern.compile(
                 toRegex("all connections/" + categoryFilter.toLowerCase()));
         var conMatcher = Pattern.compile(toRegex(connectionFilter.toLowerCase()));
