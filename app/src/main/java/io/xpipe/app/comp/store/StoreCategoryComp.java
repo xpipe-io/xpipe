@@ -83,7 +83,7 @@ public class StoreCategoryComp extends SimpleComp {
                     if (OsType.getLocal() == OsType.WINDOWS) {
                         HBox.setMargin(struc.get(), new Insets(0, 0, 2.0, 0));
                     } else if (OsType.getLocal() == OsType.MACOS) {
-                        HBox.setMargin(struc.get(), new Insets(0, 0, 2.6, 0));
+                        HBox.setMargin(struc.get(), new Insets(0, 0, 1.8, 0));
                     }
                 })
                 .disable(Bindings.isEmpty(category.getChildren().getList()))
