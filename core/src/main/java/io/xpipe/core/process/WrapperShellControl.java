@@ -344,11 +344,6 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public void cd(String directory) throws Exception {
-        parent.cd(directory);
-    }
-
-    @Override
     public CommandControl command(CommandBuilder builder) {
         return parent.command(builder);
     }
