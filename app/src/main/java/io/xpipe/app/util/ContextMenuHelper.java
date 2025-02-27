@@ -30,7 +30,10 @@ public class ContextMenuHelper {
             Platform.runLater(() -> {
                 var first = contextMenu.getItems().getFirst();
                 if (first != null) {
-                    first.getStyleableNode().requestFocus();
+                    var s = first.getStyleableNode();
+                    if (s != null) {
+                        s.requestFocus();
+                    }
                 }
             });
         });
