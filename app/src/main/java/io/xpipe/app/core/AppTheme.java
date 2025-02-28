@@ -107,17 +107,19 @@ public class AppTheme {
                 TrackEvent.withTrace("Platform preference changed").tag("change", change.toString()).handle();
             });
 
+            var gtkTheme = Platform.getPreferences().get("GTK.theme_name");
+            updateThemeToThemeName(null, gtkTheme);
+            Platform.getPreferences().addListener((MapChangeListener<? super String, ? super Object>) change -> {
+                if (change.getKey().equals("GTK.theme_name")) {
+                    Platform.runLater(() -> {
+                        updateThemeToThemeName(change.getValueRemoved(), change.getValueAdded());
+                    });
+                }
+            });
+
             Platform.getPreferences().colorSchemeProperty().addListener((observableValue, colorScheme, t1) -> {
                 Platform.runLater(() -> {
-                    if (t1 == ColorScheme.DARK
-                            && !AppPrefs.get().theme().getValue().isDark()) {
-                        AppPrefs.get().theme.setValue(Theme.getDefaultDarkTheme());
-                    }
-
-                    if (t1 != ColorScheme.DARK
-                            && AppPrefs.get().theme().getValue().isDark()) {
-                        AppPrefs.get().theme.setValue(Theme.getDefaultLightTheme());
-                    }
+                    updateThemeToColorScheme(t1);
                 });
             });
         } catch (IllegalStateException ex) {
@@ -136,6 +138,36 @@ public class AppTheme {
         });
 
         init = true;
+    }
+
+    private static void updateThemeToThemeName(Object oldName, Object newName) {
+        if (OsType.getLocal() == OsType.LINUX && newName != null) {
+            var toDark = (oldName == null || !oldName.toString().contains("-dark")) &&
+                    newName.toString().contains("-dark");
+            var toLight = (oldName == null || oldName.toString().contains("-dark")) &&
+                    !newName.toString().contains("-dark");
+            if (toDark) {
+                updateThemeToColorScheme(ColorScheme.DARK);
+            } else if (toLight) {
+                updateThemeToColorScheme(ColorScheme.LIGHT);
+            }
+        }
+    }
+
+    private static void updateThemeToColorScheme(ColorScheme colorScheme) {
+        if (colorScheme == null) {
+            return;
+        }
+
+        if (colorScheme == ColorScheme.DARK
+                && !AppPrefs.get().theme().getValue().isDark()) {
+            AppPrefs.get().theme.setValue(Theme.getDefaultDarkTheme());
+        }
+
+        if (colorScheme != ColorScheme.DARK
+                && AppPrefs.get().theme().getValue().isDark()) {
+            AppPrefs.get().theme.setValue(Theme.getDefaultLightTheme());
+        }
     }
 
     public static void reset() {
