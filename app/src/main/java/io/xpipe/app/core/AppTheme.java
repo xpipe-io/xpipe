@@ -101,7 +101,7 @@ public class AppTheme {
             }
 
             Platform.getPreferences().addListener((MapChangeListener<? super String, ? super Object>) change -> {
-                TrackEvent.withTrace("Platform preference changed").tag("change", change.toString());
+                TrackEvent.withTrace("Platform preference changed").tag("change", change.toString()).handle();
             });
 
             Platform.getPreferences().colorSchemeProperty().addListener((observableValue, colorScheme, t1) -> {
