@@ -7,6 +7,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.store.FileKind;
 
+import io.xpipe.core.store.FilePath;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
@@ -28,8 +29,8 @@ public class OpenTerminalAction implements BrowserLeafAction {
                         .toList()
                 : model.getCurrentDirectory() != null
                         ? List.of(model.getCurrentDirectory().getPath())
-                        : Collections.singletonList((String) null);
-        for (String dir : dirs) {
+                        : Collections.singletonList((FilePath) null);
+        for (var dir : dirs) {
             var name = (dir != null ? dir + " - " : "") + model.getName().getValue();
             model.openTerminalAsync(name, dir, model.getFileSystem().getShell().orElseThrow(), dirs.size() == 1);
         }

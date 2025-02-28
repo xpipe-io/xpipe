@@ -8,6 +8,7 @@ import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
 
+import io.xpipe.core.store.FilePath;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 
@@ -92,9 +93,9 @@ public class SshIdentityStrategyHelper {
             Property<SshIdentityStrategy.File> fileProperty,
             Predicate<Path> perUserFile,
             boolean allowSync) {
-        var keyPath = new SimpleStringProperty(
+        var keyPath = new SimpleObjectProperty<FilePath>(
                 fileProperty.getValue() != null && fileProperty.getValue().getFile() != null
-                        ? fileProperty.getValue().getFile().toAbsoluteFilePath(null)
+                        ? new FilePath(fileProperty.getValue().getFile().toAbsoluteFilePath(null))
                         : null);
         fileProperty.addListener((observable, oldValue, newValue) -> {
             if (keyPath.get() != null
@@ -105,7 +106,7 @@ public class SshIdentityStrategyHelper {
 
             keyPath.setValue(
                     newValue != null && newValue.getFile() != null
-                            ? newValue.getFile().toAbsoluteFilePath(null)
+                            ? new FilePath(newValue.getFile().toAbsoluteFilePath(null))
                             : null);
         });
         var keyPasswordProperty = new SimpleObjectProperty<>(

@@ -59,7 +59,7 @@ public class LxdContainerEditRunConfigAction implements ActionProvider {
                     .elevated(d.getCmd().getStore().getHost().get().ref());
             var file = new FilePath("/run/lxd/" + d.getContainerName() + "/lxc.conf");
             var model = BrowserFullSessionModel.DEFAULT.openFileSystemSync(
-                    elevatedRef, m -> file.getParent().toString(), null, true);
+                    elevatedRef, m -> file.getParent(), null, true);
             var found = model.findFile(file.toString());
             if (found.isEmpty()) {
                 return;

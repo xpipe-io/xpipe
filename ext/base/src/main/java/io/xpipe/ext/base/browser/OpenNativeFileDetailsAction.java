@@ -29,12 +29,12 @@ public class OpenNativeFileDetailsAction implements BrowserLeafAction {
             var localFile = sc.getLocalSystemAccess().translateToLocalSystemPath(e);
             switch (OsType.getLocal()) {
                 case OsType.Windows windows -> {
-                    var parent = FileNames.getParent(localFile);
+                    var parent = localFile.getParent();
                     // If we execute this on a drive root there will be no parent, so we have to check for that!
                     var content = parent != null
                             ? String.format(
                                     "$shell = New-Object -ComObject Shell.Application; $shell.NameSpace('%s').ParseName('%s').InvokeVerb('Properties')",
-                                    FileNames.getParent(localFile), FileNames.getFileName(localFile))
+                                    parent, localFile.getFileName())
                             : String.format(
                                     "$shell = New-Object -ComObject Shell.Application; $shell.NameSpace('%s').Self.InvokeVerb('Properties')",
                                     localFile);
@@ -58,13 +58,12 @@ public class OpenNativeFileDetailsAction implements BrowserLeafAction {
                         return;
                     }
 
-                    var file = new FilePath(e);
                     sc.command(CommandBuilder.of()
                                     .add("xdg-open")
                                     .addFile(
                                             entry.getRawFileEntry().getKind() == FileKind.DIRECTORY
-                                                    ? file
-                                                    : file.getParent()))
+                                                    ? e
+                                                    : e.getParent()))
                             .execute();
                 }
                 case OsType.MacOs macOs -> {

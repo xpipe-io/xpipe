@@ -265,7 +265,7 @@ public class BrowserFileTransferOperation {
                     return;
                 }
 
-                var rel = baseRelative.relativize(fileEntry.getPath()).toUnix();
+                var rel = baseRelative.relativize(fileEntry.getPath()).toUnix().toString();
                 flatFiles.put(fileEntry, rel);
                 if (fileEntry.getKind() == FileKind.FILE) {
                     // This one is up-to-date and does not need to be recalculated
