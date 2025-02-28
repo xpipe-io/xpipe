@@ -26,7 +26,7 @@
 }
 
 .bookmarks-container {
-    -fx-background-radius: 4 0 0 0;
+    -fx-background-radius: 4 2 2 4;
     -fx-background-insets: 0 7 4 4, 1 8 5 5;
     -fx-padding: 1 0 5 5;
     -fx-background-color: -color-border-default, -color-bg-default;
