@@ -19,6 +19,7 @@ import javafx.application.ColorScheme;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.MapChangeListener;
 import javafx.css.PseudoClass;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -98,6 +99,10 @@ public class AppTheme {
             if (AppPrefs.get().theme().getValue() == null || lastSystemDark != nowDark) {
                 setDefault();
             }
+
+            Platform.getPreferences().addListener((MapChangeListener<? super String, ? super Object>) change -> {
+                TrackEvent.withTrace("Platform preference changed").tag("change", change.toString());
+            });
 
             Platform.getPreferences().colorSchemeProperty().addListener((observableValue, colorScheme, t1) -> {
                 Platform.runLater(() -> {
