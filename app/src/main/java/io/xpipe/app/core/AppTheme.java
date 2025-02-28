@@ -84,10 +84,12 @@ public class AppTheme {
 
     public static void init() {
         if (init) {
+            TrackEvent.trace("Theme init requested again");
             return;
         }
 
         if (AppPrefs.get() == null) {
+            TrackEvent.trace("Theme init prior to prefs init, setting theme to default");
             Theme.getDefaultLightTheme().apply();
             return;
         }
@@ -97,6 +99,7 @@ public class AppTheme {
             var nowDark = Platform.getPreferences().getColorScheme() == ColorScheme.DARK;
             AppCache.update("lastDarkTheme", nowDark);
             if (AppPrefs.get().theme().getValue() == null || lastSystemDark != nowDark) {
+                TrackEvent.trace("Updating theme to system theme");
                 setDefault();
             }
 
