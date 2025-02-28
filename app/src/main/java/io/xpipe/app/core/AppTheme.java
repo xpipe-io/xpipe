@@ -96,7 +96,7 @@ public class AppTheme {
 
         try {
             var lastSystemDark = AppCache.getBoolean("lastDarkTheme", false);
-            var nowDark = Platform.getPreferences().getColorScheme() == ColorScheme.DARK;
+            var nowDark = isDarkMode();
             AppCache.update("lastDarkTheme", nowDark);
             if (AppPrefs.get().theme().getValue() == null || lastSystemDark != nowDark) {
                 TrackEvent.trace("Updating theme to system theme");
@@ -107,8 +107,6 @@ public class AppTheme {
                 TrackEvent.withTrace("Platform preference changed").tag("change", change.toString()).handle();
             });
 
-            var gtkTheme = Platform.getPreferences().get("GTK.theme_name");
-            updateThemeToThemeName(null, gtkTheme);
             Platform.getPreferences().addListener((MapChangeListener<? super String, ? super Object>) change -> {
                 if (change.getKey().equals("GTK.theme_name")) {
                     Platform.runLater(() -> {
@@ -154,6 +152,16 @@ public class AppTheme {
         }
     }
 
+    private static boolean isDarkMode() {
+        var nowDark = Platform.getPreferences().getColorScheme() == ColorScheme.DARK;
+        if (nowDark) {
+            return true;
+        }
+
+        var gtkTheme = Platform.getPreferences().get("GTK.theme_name");
+        return gtkTheme != null && gtkTheme.toString().contains("-dark");
+    }
+
     private static void updateThemeToColorScheme(ColorScheme colorScheme) {
         if (colorScheme == null) {
             return;
@@ -175,7 +183,7 @@ public class AppTheme {
             return;
         }
 
-        var nowDark = Platform.getPreferences().getColorScheme() == ColorScheme.DARK;
+        var nowDark = isDarkMode();
         AppCache.update("lastDarkTheme", nowDark);
     }
 
