@@ -32,23 +32,6 @@ import java.util.function.Function;
 
 public class StoreEntryListOverviewComp extends SimpleComp {
 
-    private final Property<StoreSortMode> sortMode;
-
-    public StoreEntryListOverviewComp() {
-        this.sortMode = new SimpleObjectProperty<>();
-        StoreViewState.get().getActiveCategory().subscribe(val -> {
-            sortMode.setValue(val.getSortMode().getValue());
-        });
-        sortMode.addListener((observable, oldValue, newValue) -> {
-            var cat = StoreViewState.get().getActiveCategory().getValue();
-            if (cat == null) {
-                return;
-            }
-
-            cat.getSortMode().setValue(newValue);
-        });
-    }
-
     private Region createGroupListHeader() {
         var label = new Label();
         var name = BindingsHelper.flatMap(
@@ -142,6 +125,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
     }
 
     private Comp<?> createAlphabeticalSortButton() {
+        var sortMode = StoreViewState.get().getSortMode();
         var icon = Bindings.createObjectBinding(
                 () -> {
                     if (sortMode.getValue() == StoreSortMode.ALPHABETICAL_ASC) {
@@ -182,6 +166,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
     }
 
     private Comp<?> createDateSortButton() {
+        var sortMode = StoreViewState.get().getSortMode();
         var icon = Bindings.createObjectBinding(
                 () -> {
                     if (sortMode.getValue() == StoreSortMode.DATE_ASC) {

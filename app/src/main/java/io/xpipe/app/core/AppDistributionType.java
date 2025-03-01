@@ -5,6 +5,7 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.update.GitHubUpdater;
 import io.xpipe.app.update.PortableUpdater;
 import io.xpipe.app.update.UpdateHandler;
+import io.xpipe.app.update.WebtopUpdater;
 import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.Translatable;
 import io.xpipe.core.process.OsType;
@@ -28,7 +29,7 @@ public enum AppDistributionType implements Translatable {
     HOMEBREW("homebrew", true, () -> new PortableUpdater(true)),
     APT_REPO("apt", true, () -> new PortableUpdater(true)),
     RPM_REPO("rpm", true, () -> new PortableUpdater(true)),
-    WEBTOP("webtop", true, () -> new PortableUpdater(false)),
+    WEBTOP("webtop", true, () -> new WebtopUpdater()),
     CHOCO("choco", true, () -> new PortableUpdater(true));
 
     private static AppDistributionType type;

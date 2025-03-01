@@ -14,6 +14,7 @@ import io.xpipe.app.util.ClipboardHelper;
 import io.xpipe.app.util.ContextMenuHelper;
 import io.xpipe.app.util.LabelGraphic;
 
+import io.xpipe.core.process.OsType;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -79,7 +80,11 @@ public class StoreCategoryComp extends SimpleComp {
                 .apply(struc -> {
                     struc.get().setAlignment(Pos.CENTER);
                     struc.get().setFocusTraversable(false);
-                    HBox.setMargin(struc.get(), new Insets(0, 0, 2.6, 0));
+                    if (OsType.getLocal() == OsType.WINDOWS) {
+                        HBox.setMargin(struc.get(), new Insets(0, 0, 2.3, 0));
+                    } else if (OsType.getLocal() == OsType.MACOS) {
+                        HBox.setMargin(struc.get(), new Insets(0, 0, 1.8, 0));
+                    }
                 })
                 .disable(Bindings.isEmpty(category.getChildren().getList()))
                 .styleClass("expand-button")

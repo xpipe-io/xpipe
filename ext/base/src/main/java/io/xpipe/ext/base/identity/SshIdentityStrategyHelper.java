@@ -18,9 +18,17 @@ import java.util.function.Predicate;
 
 public class SshIdentityStrategyHelper {
 
-    private static OptionsBuilder agent(Property<SshIdentityStrategy.SshAgent> p) {
-        var forward =
-                new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
+    private static OptionsBuilder agent(Property<SshIdentityStrategy.SshAgent> p, boolean allowForward) {
+        if (!allowForward) {
+            return new OptionsBuilder()
+                    .bind(
+                            () -> {
+                                return new SshIdentityStrategy.SshAgent(false);
+                            },
+                            p);
+        }
+
+        var forward = new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
         return new OptionsBuilder()
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)
@@ -32,7 +40,16 @@ public class SshIdentityStrategyHelper {
                         p);
     }
 
-    private static OptionsBuilder gpgAgent(Property<SshIdentityStrategy.GpgAgent> p) {
+    private static OptionsBuilder gpgAgent(Property<SshIdentityStrategy.GpgAgent> p, boolean allowForward) {
+        if (!allowForward) {
+            return new OptionsBuilder()
+                    .bind(
+                            () -> {
+                                return new SshIdentityStrategy.GpgAgent(false);
+                            },
+                            p);
+        }
+
         var forward =
                 new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
         return new OptionsBuilder()
@@ -46,7 +63,16 @@ public class SshIdentityStrategyHelper {
                         p);
     }
 
-    private static OptionsBuilder pageant(Property<SshIdentityStrategy.Pageant> p) {
+    private static OptionsBuilder pageant(Property<SshIdentityStrategy.Pageant> p, boolean allowForward) {
+        if (!allowForward) {
+            return new OptionsBuilder()
+                    .bind(
+                            () -> {
+                                return new SshIdentityStrategy.Pageant(false);
+                            },
+                            p);
+        }
+
         var forward =
                 new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
         return new OptionsBuilder()
@@ -60,7 +86,16 @@ public class SshIdentityStrategyHelper {
                         p);
     }
 
-    private static OptionsBuilder otherExternal(Property<SshIdentityStrategy.OtherExternal> p) {
+    private static OptionsBuilder otherExternal(Property<SshIdentityStrategy.OtherExternal> p, boolean allowForward) {
+        if (!allowForward) {
+            return new OptionsBuilder()
+                    .bind(
+                            () -> {
+                                return new SshIdentityStrategy.OtherExternal(false);
+                            },
+                            p);
+        }
+
         var forward =
                 new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
         return new OptionsBuilder()
@@ -137,7 +172,8 @@ public class SshIdentityStrategyHelper {
             Property<DataStoreEntryRef<ShellStore>> proxy,
             Property<SshIdentityStrategy> strategyProperty,
             Predicate<Path> perUserFile,
-            boolean allowSync) {
+            boolean allowSync,
+            boolean allowForward) {
         SshIdentityStrategy strat = strategyProperty.getValue();
         var file = new SimpleObjectProperty<>(
                 strat instanceof SshIdentityStrategy.File f
@@ -156,12 +192,12 @@ public class SshIdentityStrategyHelper {
         var map = new LinkedHashMap<ObservableValue<String>, OptionsBuilder>();
         map.put(AppI18n.observable("base.none"), new OptionsBuilder());
         map.put(AppI18n.observable("base.keyFile"), fileIdentity(proxy, file, perUserFile, allowSync));
-        map.put(AppI18n.observable("base.sshAgent"), agent(agent));
-        map.put(AppI18n.observable("base.pageant"), pageant(pageant));
-        map.put(gpgFeature.suffixObservable("base.gpgAgent"), gpgAgent(gpgAgent));
+        map.put(AppI18n.observable("base.sshAgent"), agent(agent, allowForward));
+        map.put(AppI18n.observable("base.pageant"), pageant(pageant, allowForward));
+        map.put(gpgFeature.suffixObservable("base.gpgAgent"), gpgAgent(gpgAgent, allowForward));
         map.put(pkcs11Feature.suffixObservable("base.yubikeyPiv"), new OptionsBuilder());
         map.put(pkcs11Feature.suffixObservable("base.customPkcs11Library"), customPkcs11Library(customPkcs11));
-        map.put(AppI18n.observable("base.otherExternal"), otherExternal(otherExternal));
+        map.put(AppI18n.observable("base.otherExternal"), otherExternal(otherExternal, allowForward));
         var identityMethodSelected = new SimpleIntegerProperty(
                 strat instanceof SshIdentityStrategy.None
                         ? 0

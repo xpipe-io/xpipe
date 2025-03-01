@@ -89,6 +89,10 @@ public class AppWindowBounds {
             return Optional.empty();
         }
 
+        if (allScreenBounds.getWidth() == 0 || allScreenBounds.getHeight() == 0) {
+            return Optional.empty();
+        }
+
         // Alerts do not have a custom x/y set, but we are able to handle that
 
         boolean changed = false;

@@ -147,8 +147,8 @@ public class BrowserFullSessionComp extends SimpleComp {
                     var rec = new Rectangle();
                     rec.widthProperty().bind(struc.get().widthProperty());
                     rec.heightProperty().bind(struc.get().heightProperty());
-                    rec.setArcHeight(7);
-                    rec.setArcWidth(7);
+                    rec.setArcHeight(11);
+                    rec.setArcWidth(11);
                     struc.get().getChildren().getFirst().setClip(rec);
                 })
                 .vgrow();

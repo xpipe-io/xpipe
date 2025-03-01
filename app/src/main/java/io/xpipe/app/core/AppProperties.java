@@ -47,6 +47,7 @@ public class AppProperties {
     boolean autoAcceptEula;
     UUID uuid;
     boolean initialLaunch;
+    boolean restarted;
     /**
      * Unique identifier that resets on every XPipe restart.
      */
@@ -127,6 +128,9 @@ public class AppProperties {
                 .orElse(true);
         isTest = isJUnitTest();
         autoAcceptEula = Optional.ofNullable(System.getProperty("io.xpipe.app.acceptEula"))
+                .map(Boolean::parseBoolean)
+                .orElse(false);
+        restarted = Optional.ofNullable(System.getProperty("io.xpipe.app.restarted"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
 

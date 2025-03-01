@@ -21,6 +21,13 @@ import javax.imageio.ImageIO;
 
 public class SystemIconCache {
 
+    private static enum ImageColorScheme {
+
+        MIXED,
+        LIGHT,
+        DARK
+    }
+
     private static final Path DIRECTORY =
             AppProperties.get().getDataDir().resolve("cache").resolve("icons").resolve("raster");
     private static final int[] sizes = new int[] {16, 24, 40, 80};
@@ -50,11 +57,25 @@ public class SystemIconCache {
                 Files.createDirectories(target);
 
                 for (var icon : e.getValue().getIcons()) {
-                    if (refreshChecksum(icon.getFile(), target, icon.getName(), icon.isDark())) {
+                    var dark = icon.getColorSchemeData() == SystemIconSourceFile.ColorSchemeData.DARK;
+                    if (refreshChecksum(icon.getFile(), target, icon.getName(), dark)) {
                         continue;
                     }
 
-                    rasterizeSizes(icon.getFile(), target, icon.getName(), icon.isDark());
+                    var scheme = rasterizeSizes(icon.getFile(), target, icon.getName(), dark);
+                    if (scheme != ImageColorScheme.DARK || icon.getColorSchemeData() != SystemIconSourceFile.ColorSchemeData.DEFAULT) {
+                        continue;
+                    }
+
+                    var hasExplicitDark = e.getValue().getIcons().stream().anyMatch(
+                            systemIconSourceFile -> systemIconSourceFile.getSource().equals(icon.getSource()) &&
+                                    systemIconSourceFile.getName().equals(icon.getName()) &&
+                                    systemIconSourceFile.getColorSchemeData() == SystemIconSourceFile.ColorSchemeData.DARK);
+                    if (hasExplicitDark) {
+                        continue;
+                    }
+
+                    rasterizeSizesInverted(icon.getFile(), target, icon.getName(), true);
                 }
             }
         } catch (Exception e) {
@@ -77,28 +98,59 @@ public class SystemIconCache {
         }
     }
 
-    private static boolean rasterizeSizes(Path path, Path dir, String name, boolean dark) throws IOException {
+    private static ImageColorScheme rasterizeSizes(Path path, Path dir, String name, boolean dark) throws IOException {
         try {
+            ImageColorScheme c = null;
             for (var size : sizes) {
-                rasterize(path, dir, name, dark, size);
+                var image = rasterize(path, size);
+                if (image == null) {
+                    continue;
+                }
+                write(dir, name, dark, size, image);
+                if (c == null) {
+                    c = determineColorScheme(image);
+                }
             }
-            return true;
+            return c;
         } catch (Exception ex) {
             if (ex instanceof IOException) {
                 throw ex;
             }
 
             ErrorEvent.fromThrowable(ex).omit().expected().handle();
-            return false;
+            return null;
         }
     }
 
-    private static void rasterize(Path path, Path dir, String name, boolean dark, int px) throws IOException {
+    private static ImageColorScheme rasterizeSizesInverted(Path path, Path dir, String name, boolean dark) throws IOException {
+        try {
+            ImageColorScheme c = null;
+            for (var size : sizes) {
+                var image = rasterize(path, size);
+                if (image == null) {
+                    continue;
+                }
+
+                var invert = invert(image);
+                write(dir, name, dark, size, invert);
+            }
+            return c;
+        } catch (Exception ex) {
+            if (ex instanceof IOException) {
+                throw ex;
+            }
+
+            ErrorEvent.fromThrowable(ex).omit().expected().handle();
+            return null;
+        }
+    }
+
+    private static BufferedImage rasterize(Path path, int px) throws IOException {
         SVGLoader loader = new SVGLoader();
         URL svgUrl = path.toUri().toURL();
         SVGDocument svgDocument = loader.load(svgUrl);
         if (svgDocument == null) {
-            return;
+            return null;
         }
 
         BufferedImage image = new BufferedImage(px, px, BufferedImage.TYPE_INT_ARGB);
@@ -109,8 +161,57 @@ public class SystemIconCache {
         g.setRenderingHint(SVGRenderingHints.KEY_SOFT_CLIPPING, SVGRenderingHints.VALUE_SOFT_CLIPPING_ON);
         svgDocument.render((Component) null, g, new ViewBox(0, 0, px, px));
         g.dispose();
+        return image;
+    }
 
+
+    private static BufferedImage write(Path dir, String name, boolean dark, int px, BufferedImage image) throws IOException {
         var out = dir.resolve(name + "-" + px + (dark ? "-dark" : "") + ".png");
         ImageIO.write(image, "png", out.toFile());
+        return image;
+    }
+
+    private static BufferedImage invert(BufferedImage image) {
+        var buffer = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        for (int y = 0; y < image.getHeight(); y++) {
+            for (int x = 0; x < image.getWidth(); x++) {
+                int  clr   = image.getRGB(x, y);
+                int  alpha   = (clr >> 24) & 0xff;
+                int  red   = (clr & 0x00ff0000) >> 16;
+                int  green = (clr & 0x0000ff00) >> 8;
+                int  blue  =  clr & 0x000000ff;
+                buffer.setRGB(x, y, new Color(255- red, 255- green, 255- blue, alpha).getRGB());
+            }
+        }
+        return buffer;
+    }
+
+    private static ImageColorScheme determineColorScheme(BufferedImage image) {
+        var counter = 0;
+        var mean = 0.0;
+        for (int y = 0; y < image.getHeight(); y++) {
+            for (int x = 0; x < image.getWidth(); x++) {
+                int  clr   = image.getRGB(x, y);
+                int  alpha   = (clr >> 24) & 0xff;
+                int  red   = (clr & 0x00ff0000) >> 16;
+                int  green = (clr & 0x0000ff00) >> 8;
+                int  blue  =  clr & 0x000000ff;
+
+                if (alpha < 200) {
+                    continue;
+                }
+
+                mean += red + green + blue;
+                counter++;
+            }
+        }
+        mean /= counter * 3;
+        if (mean < 50) {
+            return ImageColorScheme.DARK;
+        } else if (mean > 205) {
+            return ImageColorScheme.LIGHT;
+        } else {
+            return ImageColorScheme.MIXED;
+        }
     }
 }

@@ -1,6 +1,7 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.*;
 
 import javafx.beans.property.BooleanProperty;
@@ -11,7 +12,10 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
@@ -413,23 +417,60 @@ public class BrowserFileTransferOperation {
         // Initialize progress immediately prior to reading anything
         updateProgress(new BrowserTransferProgress(sourceFile.getName(), transferred.get(), total.get(), start));
 
-        var bs = (int) Math.min(DEFAULT_BUFFER_SIZE, sourceFile.getSize());
-        byte[] buffer = new byte[bs];
-        int read;
-        while ((read = inputStream.read(buffer, 0, bs)) > 0) {
-            if (cancelled()) {
+        var killStreams = new AtomicBoolean(false);
+        var exception = new AtomicReference<Exception>();
+        var thread = ThreadHelper.createPlatformThread("transfer", true, () -> {
+            try {
+                var bs = (int) Math.min(DEFAULT_BUFFER_SIZE, sourceFile.getSize());
+                byte[] buffer = new byte[bs];
+                int read;
+                while ((read = inputStream.read(buffer, 0, bs)) > 0) {
+                    if (cancelled()) {
+                        killStreams.set(true);
+                        break;
+                    }
+
+                    if (!checkTransferValidity()) {
+                        killStreams.set(true);
+                        break;
+                    }
+
+                    outputStream.write(buffer, 0, read);
+                    transferred.addAndGet(read);
+                    updateProgress(new BrowserTransferProgress(sourceFile.getName(), transferred.get(), total.get(), start));
+                }
+            } catch (Exception ex) {
+                exception.set(ex);
+            }
+        });
+
+        thread.start();
+        while (true) {
+            var alive = thread.isAlive();
+            var cancelled = cancelled();
+
+            if (cancelled) {
+                // Assume that the transfer has stalled if it doesn't finish until then
+                thread.join(1000);
                 killStreams();
                 break;
             }
 
-            if (!checkTransferValidity()) {
-                killStreams();
-                break;
+            if (alive) {
+                Thread.sleep(100);
+                continue;
             }
 
-            outputStream.write(buffer, 0, read);
-            transferred.addAndGet(read);
-            updateProgress(new BrowserTransferProgress(sourceFile.getName(), transferred.get(), total.get(), start));
+            if (killStreams.get()) {
+                killStreams();
+            }
+
+            var ex = exception.get();
+            if (ex != null) {
+                throw ex;
+            } else {
+                break;
+            }
         }
     }
 

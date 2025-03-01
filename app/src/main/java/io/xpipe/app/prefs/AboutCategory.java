@@ -32,8 +32,8 @@ public class AboutCategory extends AppPrefsCategory {
                                 .grow(true, false),
                         null)
                 .addComp(
-                        new TileButtonComp("slack", "slackDescription", "mdi2s-slack", e -> {
-                                    Hyperlinks.open(Hyperlinks.SLACK);
+                        new TileButtonComp("documentation", "documentationDescription", "mdi2b-book-open-variant", e -> {
+                                    Hyperlinks.open(Hyperlinks.DOCS);
                                     e.consume();
                                 })
                                 .grow(true, false),
@@ -41,13 +41,6 @@ public class AboutCategory extends AppPrefsCategory {
                 .addComp(
                         new TileButtonComp("tryPtb", "tryPtbDescription", "mdi2t-test-tube", e -> {
                                     Hyperlinks.open(Hyperlinks.GITHUB_PTB);
-                                    e.consume();
-                                })
-                                .grow(true, false),
-                        null)
-                .addComp(
-                        new TileButtonComp("securityPolicy", "securityPolicyDescription", "mdrmz-security", e -> {
-                                    Hyperlinks.open(Hyperlinks.DOCS_SECURITY);
                                     e.consume();
                                 })
                                 .grow(true, false),
@@ -66,7 +59,8 @@ public class AboutCategory extends AppPrefsCategory {
                                     .styleClass("open-source-notices");
                             var modal = ModalOverlay.of("openSourceNotices", comp);
                             modal.show();
-                        }))
+                        })
+                        .grow(true, false))
                 .addComp(
                         new TileButtonComp("eula", "eulaDescription", "mdi2c-card-text-outline", e -> {
                                     Hyperlinks.open(Hyperlinks.DOCS_EULA);

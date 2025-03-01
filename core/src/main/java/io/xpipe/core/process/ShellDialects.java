@@ -29,6 +29,7 @@ public class ShellDialects {
     public static ShellDialect RBASH;
     public static ShellDialect CONSTRAINED_POWERSHELL;
     public static ShellDialect OVH_BASTION;
+    public static ShellDialect HETZNER_BOX;
 
     public static List<ShellDialect> getStartableDialects() {
         return ALL.stream()
@@ -92,6 +93,7 @@ public class ShellDialects {
             RBASH = byId("rbash");
             CONSTRAINED_POWERSHELL = byId("constrainedPowershell");
             OVH_BASTION = byId("ovhBastion");
+            HETZNER_BOX = byId("hetznerBox");
         }
     }
 }

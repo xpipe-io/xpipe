@@ -227,6 +227,47 @@ public class RunScriptActionMenu implements ActionProvider {
         }
     }
 
+    private static class NoStateActionProvider implements ActionProvider {
+
+        private static class Action implements ActionProvider.Action {
+
+            @Override
+            public void execute() {
+                StoreViewState.get().getAllScriptsCategory().select();
+            }
+        }
+
+        @Override
+        public LeafDataStoreCallSite<?> getLeafDataStoreCallSite() {
+            return new LeafDataStoreCallSite<ShellStore>() {
+                @Override
+                public Action createAction(DataStoreEntryRef<ShellStore> store) {
+                    return new Action() {
+                        @Override
+                        public void execute() {
+                            store.get().validate();
+                        }
+                    };
+                }
+
+                @Override
+                public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
+                    return AppI18n.observable("noScriptStateAvailable");
+                }
+
+                @Override
+                public String getIcon(DataStoreEntryRef<ShellStore> store) {
+                    return "mdi2i-image-filter-none";
+                }
+
+                @Override
+                public Class<?> getApplicableClass() {
+                    return ShellStore.class;
+                }
+            };
+        }
+    }
+
     @Override
     public BranchDataStoreCallSite<?> getBranchDataStoreCallSite() {
         return new BranchDataStoreCallSite<ShellStore>() {
@@ -276,7 +317,7 @@ public class RunScriptActionMenu implements ActionProvider {
                 var replacement = ProcessControlProvider.get().replace(store);
                 var state = replacement.get().getStorePersistentState();
                 if (!(state instanceof SystemState systemState) || systemState.getShellDialect() == null) {
-                    return List.of(new NoScriptsActionProvider());
+                    return List.of(new NoStateActionProvider());
                 }
 
                 var hierarchy = ScriptHierarchy.buildEnabledHierarchy(ref -> {

@@ -36,6 +36,53 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
+    WindowsType CURSOR_WINDOWS = new WindowsType("app.cursor", "Cursor", true) {
+
+        @Override
+        protected Optional<Path> determineInstallation() {
+            return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
+                    .resolve("Programs")
+                    .resolve("cursor")
+                    .resolve("Cursor.exe"));
+        }
+    };
+
+    WindowsType WINDSURF_WINDOWS = new WindowsType("app.windsurf", "windsurf.cmd", false) {
+
+        @Override
+        protected Optional<Path> determineInstallation() {
+            return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
+                    .resolve("Programs")
+                    .resolve("Windsurf")
+                    .resolve("bin")
+                    .resolve("windsurf.cmd"));
+        }
+    };
+
+    // Cli is broken, keep inactive
+    WindowsType THEIAIDE_WINDOWS = new WindowsType("app.theiaide", "Theiaide", true) {
+
+        @Override
+        protected Optional<Path> determineInstallation() {
+            return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
+                    .resolve("Programs")
+                    .resolve("TheiaIDE")
+                    .resolve("TheiaIDE.exe"));
+        }
+    };
+
+    WindowsType TRAE_WINDOWS = new WindowsType("app.trae", "trae.cmd", false) {
+
+        @Override
+        protected Optional<Path> determineInstallation() {
+            return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
+                    .resolve("Programs")
+                    .resolve("Trae")
+                    .resolve("bin")
+                    .resolve("trae.cmd"));
+        }
+    };
+
     WindowsType VSCODE_WINDOWS = new WindowsType("app.vscode", "code.cmd", false) {
 
         @Override
@@ -88,6 +135,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
+    LinuxPathType WINDSURF_LINUX = new LinuxPathType("app.windsurf", "windsurf");
+
     LinuxPathType ZED_LINUX = new LinuxPathType("app.zed", "zed");
 
     ExternalEditorType ZED_MACOS = new MacOsEditor("app.zed", "Zed");
@@ -110,6 +159,9 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     ExternalEditorType SUBLIME_MACOS = new MacOsEditor("app.sublime", "Sublime Text");
     ExternalEditorType VSCODE_MACOS = new MacOsEditor("app.vscode", "Visual Studio Code");
     ExternalEditorType VSCODIUM_MACOS = new MacOsEditor("app.vscodium", "VSCodium");
+    ExternalEditorType CURSOR_MACOS = new MacOsEditor("app.cursor", "Cursor");
+    ExternalEditorType WINDSURF_MACOS = new MacOsEditor("app.windsurf", "Windsurf");
+    ExternalEditorType TRAE_MACOS = new MacOsEditor("app.trae", "Trae");
     ExternalEditorType CUSTOM = new ExternalEditorType() {
 
         @Override
@@ -136,11 +188,11 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     ExternalEditorType WEBSTORM = new GenericPathType("app.webstorm", "webstorm", false);
     ExternalEditorType CLION = new GenericPathType("app.clion", "clion", false);
     List<ExternalEditorType> WINDOWS_EDITORS =
-            List.of(VSCODIUM_WINDOWS, VSCODE_INSIDERS_WINDOWS, VSCODE_WINDOWS, NOTEPADPLUSPLUS, NOTEPAD);
+            List.of(CURSOR_WINDOWS, WINDSURF_WINDOWS, TRAE_WINDOWS, VSCODIUM_WINDOWS, VSCODE_INSIDERS_WINDOWS, VSCODE_WINDOWS, NOTEPADPLUSPLUS, NOTEPAD);
     List<LinuxPathType> LINUX_EDITORS =
-            List.of(VSCODIUM_LINUX, VSCODE_LINUX, ZED_LINUX, KATE, GEDIT, PLUMA, LEAFPAD, MOUSEPAD, GNOME);
+            List.of(ExternalEditorType.WINDSURF_LINUX, VSCODIUM_LINUX, VSCODE_LINUX, ZED_LINUX, KATE, GEDIT, PLUMA, LEAFPAD, MOUSEPAD, GNOME);
     List<ExternalEditorType> MACOS_EDITORS =
-            List.of(BBEDIT, VSCODIUM_MACOS, VSCODE_MACOS, SUBLIME_MACOS, ZED_MACOS, TEXT_EDIT);
+            List.of(CURSOR_MACOS, WINDSURF_MACOS, TRAE_MACOS, BBEDIT, VSCODIUM_MACOS, VSCODE_MACOS, SUBLIME_MACOS, ZED_MACOS, TEXT_EDIT);
     List<ExternalEditorType> CROSS_PLATFORM_EDITORS = List.of(FLEET, INTELLIJ, PYCHARM, WEBSTORM, CLION);
 
     @SuppressWarnings("TrivialFunctionalExpressionUsage")

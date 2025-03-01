@@ -9,6 +9,7 @@ import io.xpipe.app.icon.SystemIconSource;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.ExternalTerminalType;
+import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.util.ModuleHelper;
 
@@ -57,8 +58,6 @@ public class AppPrefs {
             mapVaultShared(new SimpleBooleanProperty(false), "dontAcceptNewHostKeys", Boolean.class, false);
     public final BooleanProperty performanceMode =
             mapLocal(new SimpleBooleanProperty(), "performanceMode", Boolean.class, false);
-    public final BooleanProperty useBundledTools =
-            mapLocal(new SimpleBooleanProperty(false), "useBundledTools", Boolean.class, true);
     public final ObjectProperty<AppTheme.Theme> theme =
             mapLocal(new SimpleObjectProperty<>(), "theme", AppTheme.Theme.class, false);
     final BooleanProperty useSystemFont =
@@ -328,10 +327,6 @@ public class AppPrefs {
         return performanceMode;
     }
 
-    public ObservableBooleanValue useBundledTools() {
-        return useBundledTools;
-    }
-
     public ObservableValue<Boolean> useSystemFont() {
         return useSystemFont;
     }
@@ -512,6 +507,9 @@ public class AppPrefs {
             } else if (System.getProperty("os.name").toLowerCase().contains("server")) {
                 performanceMode.setValue(true);
             }
+
+            var f = PlatformState.determineDefaultScalingFactor();
+            uiScale.setValue(f.isPresent() ? f.getAsInt() : null);
         }
     }
 

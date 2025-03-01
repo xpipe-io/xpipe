@@ -256,7 +256,7 @@ public abstract class OperationMode {
         var exec = XPipeInstallation.createExternalAsyncLaunchCommand(
                 loc,
                 XPipeDaemonMode.GUI,
-                "\"-Dio.xpipe.app.acceptEula=true\" \"-Dio.xpipe.app.dataDir=" + dataDir + "\"",
+                "\"-Dio.xpipe.app.acceptEula=true\" \"-Dio.xpipe.app.dataDir=" + dataDir + "\" \"-Dio.xpipe.app.restarted=true\"",
                 true);
         LocalShell.getShell().executeSimpleCommand(exec);
     }

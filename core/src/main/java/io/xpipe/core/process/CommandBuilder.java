@@ -63,8 +63,13 @@ public class CommandBuilder {
         return this;
     }
 
-    public CommandBuilder discardOutput() {
-        elements.add(sc -> sc.getShellDialect().getDiscardOperator());
+    public CommandBuilder discardStdoutOutput() {
+        elements.add(sc -> sc.getShellDialect().getDiscardStdoutOperator());
+        return this;
+    }
+
+    public CommandBuilder discardAllOutput() {
+        elements.add(sc -> sc.getShellDialect().getDiscardAllOperator());
         return this;
     }
 

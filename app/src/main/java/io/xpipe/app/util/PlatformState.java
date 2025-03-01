@@ -4,6 +4,7 @@ import io.xpipe.app.core.check.AppSystemFontCheck;
 import io.xpipe.app.core.window.ModifiedStage;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 
 import javafx.application.Platform;
@@ -14,6 +15,7 @@ import lombok.Setter;
 import org.apache.commons.lang3.SystemUtils;
 
 import java.awt.*;
+import java.util.OptionalInt;
 import java.util.concurrent.CountDownLatch;
 
 public enum PlatformState {
@@ -164,6 +166,47 @@ public enum PlatformState {
             lastError = ex;
             PlatformState.setCurrent(PlatformState.EXITED);
             return;
+        }
+    }
+
+    public static OptionalInt determineDefaultScalingFactor() {
+        if (OsType.getLocal() != OsType.LINUX) {
+            return OptionalInt.empty();
+        }
+
+        try (var sc = LocalShell.getShell().start()) {
+            var factor = sc.command(CommandBuilder.of().add("gsettings", "get", "org.gnome.desktop.interface", "scaling-factor")).readStdoutIfPossible();
+            if (factor.isEmpty()) {
+                return OptionalInt.empty();
+            }
+
+            var readCustom = factor.get().equals("uint32 1") || factor.get().equals("uint32 2");
+            if (!readCustom) {
+                return OptionalInt.empty();
+            }
+
+            var textFactor = sc.command(CommandBuilder.of().add("gsettings", "get", "org.gnome.desktop.interface", "text-scaling-factor")).readStdoutIfPossible();
+            if (textFactor.isEmpty()) {
+                return OptionalInt.empty();
+            }
+
+            var s = textFactor.get();
+            if (s.equals("1.0")) {
+                return OptionalInt.empty();
+            } else if (s.equals("2.0")) {
+                return OptionalInt.of(200);
+            } else if (s.equals("1.25")) {
+                return OptionalInt.of(125);
+            } else if (s.equals("1.5")) {
+                return OptionalInt.of(150);
+            } else if (s.equals("1.75")) {
+                return OptionalInt.of(175);
+            } else {
+                return OptionalInt.empty();
+            }
+        } catch (Exception e) {
+            ErrorEvent.fromThrowable(e).handle();
+            return OptionalInt.empty();
         }
     }
 }

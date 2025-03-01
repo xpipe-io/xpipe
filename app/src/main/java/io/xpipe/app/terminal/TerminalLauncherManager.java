@@ -1,14 +1,17 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.util.SecretManager;
+import io.xpipe.app.util.SecretQueryProgress;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.BeaconServerException;
-import io.xpipe.core.process.ProcessControl;
-import io.xpipe.core.process.TerminalInitScriptConfig;
+import io.xpipe.core.process.*;
 
 import java.nio.file.Path;
-import java.util.LinkedHashMap;
-import java.util.SequencedMap;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 public class TerminalLauncherManager {
@@ -73,6 +76,9 @@ public class TerminalLauncherManager {
         synchronized (entries) {
             req = entries.get(request);
         }
+        if (req == null) {
+            throw new BeaconClientException("Unknown launch request " + request);
+        }
         var byPid = ProcessHandle.of(pid);
         if (byPid.isEmpty()) {
             throw new BeaconClientException("Unable to find terminal child process " + pid);
@@ -118,6 +124,43 @@ public class TerminalLauncherManager {
             }
 
             return ((TerminalLaunchResult.ResultSuccess) e.getResult()).getTargetScript();
+        }
+    }
+
+
+    public static List<String> externalExchange(DataStoreEntryRef<ShellStore> ref, List<String> arguments) throws BeaconClientException, BeaconServerException {
+        var request = UUID.randomUUID();
+        ShellControl session;
+        try {
+            session = ref.getStore().getOrStartSession();
+        } catch (Exception e) {
+            throw new BeaconServerException(e);
+        }
+
+        ProcessControl control;
+        if (arguments.size() > 0) {
+            control = session.command(CommandBuilder.of().addAll(arguments));
+        } else {
+            control = session;
+        }
+
+        var config = new TerminalInitScriptConfig(ref.get().getName(), false, TerminalInitFunction.none());
+        submitAsync(request, control, config, null);
+        waitExchange(request);
+        var script = launchExchange(request);
+        try (var sc = LocalShell.getShell().start()) {
+            var runCommand = ProcessControlProvider.get().getEffectiveLocalDialect().getOpenScriptCommand(script.toString()).buildBaseParts(sc);
+            var cleaned = runCommand.stream().map(s -> {
+                if (s.startsWith("\"") && s.endsWith("\"")) {
+                    s = s.substring(1, s.length() - 1);
+                } else if (s.startsWith("'") && s.endsWith("'")) {
+                    s = s.substring(1, s.length() - 1);
+                }
+                return s;
+            }).toList();
+            return cleaned;
+        } catch (Exception e) {
+            throw new BeaconServerException(e);
         }
     }
 }

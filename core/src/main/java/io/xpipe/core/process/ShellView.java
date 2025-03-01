@@ -83,4 +83,10 @@ public class ShellView {
         return shellControl.executeSimpleBooleanCommand(
                 shellControl.getShellDialect().getWhichCommand(executable));
     }
+
+    public void cd(String directory) throws Exception {
+        var d = shellControl.getShellDialect();
+        var cmd = shellControl.command(d.getCdCommand(directory));
+        cmd.executeAndCheck();
+    }
 }

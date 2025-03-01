@@ -251,8 +251,6 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl subShell();
 
-    void cd(String directory) throws Exception;
-
     default CommandControl command(String command) {
         return command(CommandBuilder.ofFunction(shellProcessControl -> command));
     }

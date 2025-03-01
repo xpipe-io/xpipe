@@ -38,8 +38,14 @@ public class SecretManager {
             boolean interactive) {
         var p = new SecretQueryProgress(
                 request, storeId, suppliers, fallback, filters, formatters, countDown, interactive);
+        // Clear old ones in case we restarted a session
+        clearSecretProgress(request);
         progress.add(p);
         return p;
+    }
+
+    public static synchronized void clearSecretProgress(UUID request) {
+        progress.removeIf(secretQueryProgress -> secretQueryProgress.getRequestId().equals(request));
     }
 
     public static boolean isSpecialPrompt(String prompt) {

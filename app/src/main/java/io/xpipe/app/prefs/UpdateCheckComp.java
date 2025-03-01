@@ -54,7 +54,7 @@ public class UpdateCheckComp extends SimpleComp {
                     }
 
                     if (updateReady.getValue()) {
-                        var prefix = AppDistributionType.get() == AppDistributionType.PORTABLE
+                        var prefix = !AppDistributionType.get().getUpdateHandler().supportsDirectInstallation()
                                 ? AppI18n.get("updateReadyPortable")
                                 : AppI18n.get("updateReady");
                         var version = "Version "

@@ -20,7 +20,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 public class AppBeaconServer {
@@ -34,6 +36,7 @@ public class AppBeaconServer {
     private final boolean propertyPort;
 
     private boolean running;
+    private ExecutorService executor;
     private HttpServer server;
 
     @Getter
@@ -105,7 +108,11 @@ public class AppBeaconServer {
         }
 
         running = false;
-        server.stop(1);
+        server.stop(0);
+        executor.shutdown();
+        try {
+            executor.awaitTermination(30, TimeUnit.SECONDS);
+        } catch (InterruptedException ignored) {}
     }
 
     private void initAuthSecret() throws IOException {
@@ -127,12 +134,7 @@ public class AppBeaconServer {
     }
 
     private void start() throws IOException {
-        server = HttpServer.create(
-                new InetSocketAddress(Inet4Address.getByAddress(new byte[] {0x7f, 0x00, 0x00, 0x01}), port), 10);
-        BeaconInterface.getAll().forEach(beaconInterface -> {
-            server.createContext(beaconInterface.getPath(), new BeaconRequestHandler<>(beaconInterface));
-        });
-        server.setExecutor(Executors.newFixedThreadPool(5, r -> {
+        executor = Executors.newFixedThreadPool(5, r -> {
             Thread t = Executors.defaultThreadFactory().newThread(r);
             t.setDaemon(true);
             t.setName("http handler");
@@ -140,7 +142,13 @@ public class AppBeaconServer {
                 ErrorEvent.fromThrowable(e).handle();
             });
             return t;
-        }));
+        });
+        server = HttpServer.create(
+                new InetSocketAddress(Inet4Address.getByAddress(new byte[] {0x7f, 0x00, 0x00, 0x01}), port), 10);
+        BeaconInterface.getAll().forEach(beaconInterface -> {
+            server.createContext(beaconInterface.getPath(), new BeaconRequestHandler<>(beaconInterface));
+        });
+        server.setExecutor(executor);
 
         var resourceMap = Map.of(
                 "openapi.yaml", "misc/openapi.yaml",

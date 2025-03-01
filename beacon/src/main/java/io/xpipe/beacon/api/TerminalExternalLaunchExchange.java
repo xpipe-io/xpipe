@@ -1,19 +1,18 @@
 package io.xpipe.beacon.api;
 
 import io.xpipe.beacon.BeaconInterface;
-
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.UUID;
+import java.util.List;
 
-public class TerminalPrepareExchange extends BeaconInterface<TerminalPrepareExchange.Request> {
+public class TerminalExternalLaunchExchange extends BeaconInterface<TerminalExternalLaunchExchange.Request> {
 
     @Override
     public String getPath() {
-        return "/terminal/prepare";
+        return "/terminal/externalLaunch";
     }
 
     @Jacksonized
@@ -21,16 +20,17 @@ public class TerminalPrepareExchange extends BeaconInterface<TerminalPrepareExch
     @Value
     public static class Request {
         @NonNull
-        UUID request;
+        String connection;
 
-        long pid;
+        @NonNull
+        List<String> arguments;
     }
 
     @Jacksonized
     @Builder
     @Value
     public static class Response {
-        boolean supportsUnicode;
-        boolean supportsEscapeSequences;
+        @NonNull
+        List<String> command;
     }
 }
