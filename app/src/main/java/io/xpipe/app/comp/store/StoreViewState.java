@@ -40,6 +40,9 @@ public class StoreViewState {
     private final Property<StoreCategoryWrapper> activeCategory = new SimpleObjectProperty<>();
 
     @Getter
+    private final Property<StoreSortMode> sortMode = new SimpleObjectProperty<>();
+
+    @Getter
     private StoreSection currentTopLevelSection;
 
     private StoreViewState() {
@@ -125,8 +128,17 @@ public class StoreViewState {
                         .map(StoreCategoryWrapper::new)
                         .toList()));
 
+        sortMode.addListener((observable, oldValue, newValue) -> {
+            var cat = getActiveCategory().getValue();
+            if (cat == null) {
+                return;
+            }
+
+            cat.getSortMode().setValue(newValue);
+        });
         activeCategory.addListener((observable, oldValue, newValue) -> {
             DataStorage.get().setSelectedCategory(newValue.getCategory());
+            sortMode.setValue(newValue.getSortMode().getValue());
         });
         var selected = AppCache.getNonNull("selectedCategory", UUID.class, () -> DataStorage.DEFAULT_CATEGORY_UUID);
         activeCategory.setValue(categories.getList().stream()

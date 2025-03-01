@@ -56,9 +56,6 @@ public class BaseMode extends OperationMode {
         TrackEvent.info("Initializing base mode components ...");
         AppMainWindow.loadingText("initializingApp");
         LicenseProvider.get().init();
-        // We no longer need this
-        // AppCertutilCheck.check();
-        AppBundledToolsCheck.check();
         AppHomebrewCoreutilsCheck.check();
         AppAvCheck.check();
         AppJavaOptionsCheck.check();

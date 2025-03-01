@@ -30,8 +30,6 @@ public class ConnectionsCategory extends AppPrefsCategory {
         if (OsType.getLocal() == OsType.WINDOWS) {
             options.addTitle("sshConfiguration")
                     .sub(new OptionsBuilder()
-                            .pref(prefs.useBundledTools)
-                            .addToggle(prefs.useBundledTools)
                             .addComp(prefs.getCustomComp("x11WslInstance")));
         }
         return options.buildComp();

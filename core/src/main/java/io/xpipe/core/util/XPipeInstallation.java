@@ -14,7 +14,6 @@ import java.util.Optional;
 
 public class XPipeInstallation {
 
-    public static final String DATA_DIR_PROP = "io.xpipe.app.dataDir";
     private static final String STAGING_PROP = "io.xpipe.app.staging";
 
     @Getter
@@ -155,29 +154,6 @@ public class XPipeInstallation {
         var v = new String(process.getInputStream().readAllBytes(), StandardCharsets.US_ASCII);
         process.waitFor();
         return v;
-    }
-
-    public static Path getLocalBundledToolsDirectory() {
-        Path path = getCurrentInstallationBasePath();
-
-        // Check for development environment
-        if (!ModuleHelper.isImage()) {
-            if (OsType.getLocal().equals(OsType.WINDOWS)) {
-                return path.resolve("dist").resolve("bundled_bin").resolve("windows");
-            } else if (OsType.getLocal().equals(OsType.LINUX)) {
-                return path.resolve("dist").resolve("bundled_bin").resolve("linux");
-            } else {
-                return path.resolve("dist").resolve("bundled_bin").resolve("osx");
-            }
-        }
-
-        if (OsType.getLocal().equals(OsType.WINDOWS)) {
-            return path.resolve("bundled");
-        } else if (OsType.getLocal().equals(OsType.LINUX)) {
-            return path.resolve("bundled");
-        } else {
-            return path.resolve("Contents").resolve("Resources").resolve("bundled");
-        }
     }
 
     public static String getLocalDefaultCliExecutable() {
