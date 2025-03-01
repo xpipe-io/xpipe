@@ -7,6 +7,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.XPipeInstallation;
 
 import lombok.Getter;
@@ -183,20 +184,13 @@ public class SshLocalBridge {
         Files.writeString(file, updated);
     }
 
-    private static String getSshd(ShellControl sc) throws Exception {
-        if (OsType.getLocal() == OsType.WINDOWS) {
-            return XPipeInstallation.getLocalBundledToolsDirectory()
-                    .resolve("openssh")
-                    .resolve("sshd")
-                    .toString();
-        } else {
-            var exec = CommandSupport.findProgram(sc, "sshd");
-            if (exec.isEmpty()) {
-                throw ErrorEvent.expected(new IllegalStateException(
-                        "No sshd executable found in PATH. The SSH terminal bridge requires a local ssh server"));
-            }
-            return exec.get();
+    private static FilePath getSshd(ShellControl sc) throws Exception {
+        var exec = CommandSupport.findProgram(sc, "sshd");
+        if (exec.isEmpty()) {
+            throw ErrorEvent.expected(new IllegalStateException(
+                    "No sshd executable found in PATH. The SSH terminal bridge requires a local ssh server"));
         }
+        return exec.get();
     }
 
     public static void reset() {
