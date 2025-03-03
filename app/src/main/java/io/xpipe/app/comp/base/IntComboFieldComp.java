@@ -37,7 +37,7 @@ public class IntComboFieldComp extends Comp<CompStructure<ComboBox<String>>> {
         text.setValue(value.getValue() != null ? value.getValue().toString() : null);
         text.setItems(FXCollections.observableList(
                 predefined.stream().map(integer -> "" + integer).toList()));
-        text.setMaxWidth(2000);
+        text.setMaxWidth(20000);
         text.getStyleClass().add("int-combo-field-comp");
         text.setSkin(new ComboBoxListViewSkin<>(text));
         text.setVisibleRowCount(Math.min(10, predefined.size()));

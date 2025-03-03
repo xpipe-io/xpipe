@@ -165,7 +165,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
                 .accessibleText(e.getPath())
                 .disable(disable)
                 .styleClass("directory-button")
-                .apply(struc -> struc.get().setMaxWidth(2000))
+                .apply(struc -> struc.get().setMaxWidth(20000))
                 .styleClass(Styles.RIGHT_PILL)
                 .hgrow()
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
