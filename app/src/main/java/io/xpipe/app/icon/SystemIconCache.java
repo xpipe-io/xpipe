@@ -23,6 +23,7 @@ public class SystemIconCache {
 
     private static enum ImageColorScheme {
 
+        TRANSPARENT,
         MIXED,
         LIGHT,
         DARK
@@ -63,6 +64,10 @@ public class SystemIconCache {
                     }
 
                     var scheme = rasterizeSizes(icon.getFile(), target, icon.getName(), dark);
+                    if (scheme == ImageColorScheme.TRANSPARENT) {
+                        continue;
+                    }
+
                     if (scheme != ImageColorScheme.DARK || icon.getColorSchemeData() != SystemIconSourceFile.ColorSchemeData.DEFAULT) {
                         continue;
                     }
@@ -106,10 +111,13 @@ public class SystemIconCache {
                 if (image == null) {
                     continue;
                 }
-                write(dir, name, dark, size, image);
                 if (c == null) {
                     c = determineColorScheme(image);
+                    if (c == ImageColorScheme.TRANSPARENT) {
+                        return ImageColorScheme.TRANSPARENT;
+                    }
                 }
+                write(dir, name, dark, size, image);
             }
             return c;
         } catch (Exception ex) {
@@ -205,6 +213,11 @@ public class SystemIconCache {
                 counter++;
             }
         }
+
+        if (counter == 0) {
+            return ImageColorScheme.TRANSPARENT;
+        }
+
         mean /= counter * 3;
         if (mean < 50) {
             return ImageColorScheme.DARK;
