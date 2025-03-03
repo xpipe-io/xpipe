@@ -518,14 +518,35 @@ public abstract class DataStorage {
                 .toList());
 
         toUpdate.removeIf(pair -> {
-            if (pair.getKey().getStorePersistentState() != null
-                    && pair.getValue().get().getStorePersistentState() != null) {
-                return pair.getKey()
-                        .getStorePersistentState()
-                        .equals(pair.getValue().get().getStorePersistentState());
-            } else {
+            // Children classes might not be the same, the same goes for state classes
+            // This can happen when there are multiple child classes and the ids got switched around
+            var storeClassMatch = pair.getKey()
+                    .getStore()
+                    .getClass()
+                    .equals(pair.getValue().get().getStore().getClass());
+            if (!storeClassMatch) {
                 return true;
             }
+
+            if (pair.getKey().getStorePersistentState() == null || pair.getValue().get().getStorePersistentState() == null) {
+                return true;
+            }
+
+            var stateClassMatch = pair.getKey()
+                    .getStorePersistentState()
+                    .getClass()
+                    .equals(pair.getValue().get().getStorePersistentState().getClass());
+            if (!stateClassMatch) {
+                return true;
+            }
+
+            DataStore merged = ((FixedChildStore) pair.getKey().getStore())
+                    .merge(pair.getValue().getStore().asNeeded());
+            var mergedStoreChanged = pair.getKey().getStore() != merged;
+            var stateChange = !pair.getKey()
+                    .getStorePersistentState()
+                    .equals(pair.getValue().get().getStorePersistentState());
+            return !mergedStoreChanged && !stateChange;
         });
 
         if (toRemove.isEmpty() && toAdd.isEmpty() && toUpdate.isEmpty()) {
@@ -547,27 +568,15 @@ public abstract class DataStorage {
         }
         addStoreEntriesIfNotPresent(toAdd.stream().map(DataStoreEntryRef::get).toArray(DataStoreEntry[]::new));
         toUpdate.forEach(pair -> {
-            // Update state by merging
-            if (pair.getKey().getStorePersistentState() != null
-                    && pair.getValue().get().getStorePersistentState() != null) {
-                var classMatch = pair.getKey()
-                        .getStorePersistentState()
-                        .getClass()
-                        .equals(pair.getValue().get().getStorePersistentState().getClass());
-                // Children classes might not be the same, the same goes for state classes
-                // This can happen when there are multiple child classes and the ids got switched around
-                if (classMatch) {
-                    DataStore merged = ((FixedChildStore) pair.getKey().getStore())
-                            .merge(pair.getValue().getStore().asNeeded());
-                    if (merged != pair.getKey().getStore()) {
-                        pair.getKey().setStoreInternal(merged, false);
-                    }
-
-                    var s = pair.getKey().getStorePersistentState();
-                    var mergedState = s.mergeCopy(pair.getValue().get().getStorePersistentState());
-                    pair.getKey().setStorePersistentState(mergedState);
-                }
+            DataStore merged = ((FixedChildStore) pair.getKey().getStore())
+                    .merge(pair.getValue().getStore().asNeeded());
+            if (merged != pair.getKey().getStore()) {
+                pair.getKey().setStoreInternal(merged, false);
             }
+
+            var s = pair.getKey().getStorePersistentState();
+            var mergedState = s.mergeCopy(pair.getValue().get().getStorePersistentState());
+            pair.getKey().setStorePersistentState(mergedState);
         });
         refreshEntries();
         saveAsync();
