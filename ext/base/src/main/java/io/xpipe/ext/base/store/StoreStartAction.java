@@ -41,6 +41,32 @@ public class StoreStartAction implements ActionProvider {
         };
     }
 
+    @Override
+    public BatchDataStoreCallSite<?> getBatchDataStoreCallSite() {
+        return new BatchDataStoreCallSite<StartableStore>() {
+
+            @Override
+            public ObservableValue<String> getName() {
+                return AppI18n.observable("start");
+            }
+
+            @Override
+            public String getIcon() {
+                return "mdi2p-play";
+            }
+
+            @Override
+            public Class<?> getApplicableClass() {
+                return StartableStore.class;
+            }
+
+            @Override
+            public ActionProvider.Action createAction(DataStoreEntryRef<StartableStore> store) {
+                return new Action(store);
+            }
+        };
+    }
+
     @Value
     static class Action implements ActionProvider.Action {
 
