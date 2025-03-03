@@ -451,6 +451,7 @@ public abstract class DataStorage {
                 newChildren = l.stream()
                         .filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null)
                         .toList();
+                e.getProvider().onChildrenRefresh(e);
             } else {
                 newChildren = null;
             }
@@ -580,7 +581,6 @@ public abstract class DataStorage {
         });
         refreshEntries();
         saveAsync();
-        e.getProvider().onChildrenRefresh(e);
         toAdd.forEach(
                 dataStoreEntryRef -> dataStoreEntryRef.get().getProvider().onParentRefresh(dataStoreEntryRef.get()));
         toUpdate.forEach(dataStoreEntryRef ->
