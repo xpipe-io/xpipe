@@ -528,9 +528,12 @@ public abstract class DataStorage {
             if (!storeClassMatch) {
                 return true;
             }
+            DataStore merged = ((FixedChildStore) pair.getKey().getStore())
+                    .merge(pair.getValue().getStore().asNeeded());
+            var mergedStoreChanged = pair.getKey().getStore() != merged;
 
             if (pair.getKey().getStorePersistentState() == null || pair.getValue().get().getStorePersistentState() == null) {
-                return true;
+                return !mergedStoreChanged;
             }
 
             var stateClassMatch = pair.getKey()
@@ -541,9 +544,6 @@ public abstract class DataStorage {
                 return true;
             }
 
-            DataStore merged = ((FixedChildStore) pair.getKey().getStore())
-                    .merge(pair.getValue().getStore().asNeeded());
-            var mergedStoreChanged = pair.getKey().getStore() != merged;
             var stateChange = !pair.getKey()
                     .getStorePersistentState()
                     .equals(pair.getValue().get().getStorePersistentState());
