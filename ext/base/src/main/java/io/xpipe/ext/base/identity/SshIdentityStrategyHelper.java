@@ -95,7 +95,7 @@ public class SshIdentityStrategyHelper {
             boolean allowSync) {
         var keyPath = new SimpleObjectProperty<FilePath>(
                 fileProperty.getValue() != null && fileProperty.getValue().getFile() != null
-                        ? new FilePath(fileProperty.getValue().getFile().toAbsoluteFilePath(null))
+                        ? fileProperty.getValue().getFile().toAbsoluteFilePath(null)
                         : null);
         fileProperty.addListener((observable, oldValue, newValue) -> {
             if (keyPath.get() != null
@@ -106,7 +106,7 @@ public class SshIdentityStrategyHelper {
 
             keyPath.setValue(
                     newValue != null && newValue.getFile() != null
-                            ? new FilePath(newValue.getFile().toAbsoluteFilePath(null))
+                            ? newValue.getFile().toAbsoluteFilePath(null)
                             : null);
         });
         var keyPasswordProperty = new SimpleObjectProperty<>(

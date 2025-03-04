@@ -170,11 +170,11 @@ public interface SshIdentityStrategy {
 
             var s = file.toAbsoluteFilePath(parent);
             // The ~ is supported on all platforms, so manually replace it here for Windows
-            if (s.contains("~")) {
-                s = s.replace("~", parent.getOsType().getUserHomeDirectory(parent));
+            if (s.startsWith("~")) {
+                s = s.resolveTildeHome(parent.getOsType().getUserHomeDirectory(parent));
             }
             var resolved =
-                    parent.getShellDialect().evaluateExpression(parent, s).readStdoutOrThrow();
+                    parent.getShellDialect().evaluateExpression(parent, s.toString()).readStdoutOrThrow();
             if (!parent.getShellDialect()
                     .createFileExistsCommand(parent, resolved)
                     .executeAndCheck()) {
@@ -213,11 +213,11 @@ public interface SshIdentityStrategy {
 
                         var s = file.toAbsoluteFilePath(sc);
                         // The ~ is supported on all platforms, so manually replace it here for Windows
-                        if (s.contains("~")) {
-                            s = s.replace("~", sc.getOsType().getUserHomeDirectory(sc));
+                        if (s.startsWith("~")) {
+                            s = s.resolveTildeHome(sc.getOsType().getUserHomeDirectory(sc));
                         }
                         var resolved =
-                                sc.getShellDialect().evaluateExpression(sc, s).readStdoutOrThrow();
+                                sc.getShellDialect().evaluateExpression(sc, s.toString()).readStdoutOrThrow();
                         return sc.getShellDialect().fileArgument(resolved);
                     })
                     .add("-oIdentitiesOnly=yes");

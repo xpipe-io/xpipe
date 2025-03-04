@@ -59,7 +59,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
                     var script = ScriptHelper.createExecScript(
                             shellControl,
                             configuration.getDialectLaunchCommand().buildFull(shellControl));
-                    return script.toString();
+                    return script;
                 });
             }
         } else {

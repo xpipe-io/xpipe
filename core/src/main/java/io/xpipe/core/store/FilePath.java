@@ -174,6 +174,10 @@ public final class FilePath {
         return new FilePath(value.substring(0, value.length() - getFileName().length() - 1));
     }
 
+    public boolean startsWith(String start) {
+        return startsWith(new FilePath(start));
+    }
+
     public boolean startsWith(FilePath start) {
         return normalize().startsWith(start.normalize());
     }
@@ -187,6 +191,10 @@ public final class FilePath {
     public FilePath normalize() {
         var backslash = value.contains("\\");
         return backslash ? toWindows() : toUnix();
+    }
+
+    public FilePath resolveTildeHome(String dir) {
+        return value.startsWith("~") ? new FilePath(value.replace("~", dir)) : this;
     }
 
     private List<String> split() {

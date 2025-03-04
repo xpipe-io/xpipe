@@ -181,7 +181,7 @@ public class CommandBuilder {
         return prepend("\"" + s + "\"");
     }
 
-    public CommandBuilder addFile(FailableFunction<ShellControl, String, Exception> f) {
+    public CommandBuilder addFile(FailableFunction<ShellControl, FilePath, Exception> f) {
         elements.add(sc -> {
             if (f == null) {
                 return null;
