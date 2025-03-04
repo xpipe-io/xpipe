@@ -101,7 +101,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
                 .grow(true, false)
                 .accessibleTextKey("restoreAllSessions");
 
-        var layout = new VerticalComp(List.of(vbox, Comp.vspacer(5), listBox, Comp.separator(), tile));
+        var layout = new VerticalComp(List.of(vbox, Comp.vspacer(5), listBox, Comp.hseparator(), tile));
         layout.styleClass("welcome");
         layout.spacing(14);
         layout.maxWidth(1000);

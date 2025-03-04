@@ -5,32 +5,22 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
-import io.xpipe.app.core.AppActionLinkDetector;
-import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
-import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
-import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.Region;
-import javafx.scene.paint.Color;
-import javafx.scene.text.TextAlignment;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,16 +32,11 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
         var l = new LabelComp(Bindings.createStringBinding(() -> {
             return AppI18n.get("connectionsSelected", StoreViewState.get().getEffectiveBatchModeSelection().getList().size());
         }, StoreViewState.get().getEffectiveBatchModeSelection().getList(), AppI18n.activeLanguage()));
+        l.minWidth(Region.USE_PREF_SIZE);
         l.apply(struc -> {
             struc.get().setAlignment(Pos.CENTER);
-            AppFontSizes.sm(struc.get());
         });
-        var actions = new HorizontalComp(createActions());
-        actions.spacing(8);
-        actions.apply(struc -> {
-            struc.get().setFillHeight(true);
-            struc.get().setAlignment(Pos.CENTER_LEFT);
-        });
+        var actions = new ToolbarComp(createActions());
         var close = new IconButtonComp("mdi2c-close", () -> {
             StoreViewState.get().getBatchMode().setValue(false);
         });
@@ -61,7 +46,7 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
             struc.get().prefWidthProperty().bind(struc.get().heightProperty());
             struc.get().maxWidthProperty().bind(struc.get().heightProperty());
         });
-        var bar = new HorizontalComp(List.of(l, Comp.hspacer(20), actions, Comp.hspacer(), close));
+        var bar = new HorizontalComp(List.of(l, Comp.hspacer(20), actions, Comp.hspacer(), Comp.hspacer(20), close));
         bar.apply(struc -> {
             struc.get().setFillHeight(true);
             struc.get().setAlignment(Pos.CENTER_LEFT);
@@ -176,10 +161,14 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
         }
     }
 
-    private void runActions(ActionProvider.BatchDataStoreCallSite<?> s) {
+    @SuppressWarnings("unchecked")
+    private <T extends DataStore> void runActions(ActionProvider.BatchDataStoreCallSite<?> s) {
         ThreadHelper.runFailableAsync(() -> {
-            for (StoreEntryWrapper w : StoreViewState.get().getEffectiveBatchModeSelection().getList()) {
-                s.createAction(w.getEntry().ref()).execute();
+            var l = new ArrayList<>( StoreViewState.get().getEffectiveBatchModeSelection().getList());
+            var mapped = l.stream().map(w -> w.getEntry().<T>ref()).toList();
+            var action = ((ActionProvider.BatchDataStoreCallSite<T>) s).createAction(mapped);
+            if (action != null) {
+                action.execute();
             }
         });
     }

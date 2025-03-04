@@ -156,7 +156,7 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                 section.getShownChildren().getList());
         var full = new VerticalComp(List.of(
                 topEntryList,
-                Comp.separator().hide(expanded.not()),
+                Comp.hseparator().hide(expanded.not()),
                 content.styleClass("children-content")
                         .hide(Bindings.or(
                                 Bindings.not(section.getWrapper().getExpanded()),
