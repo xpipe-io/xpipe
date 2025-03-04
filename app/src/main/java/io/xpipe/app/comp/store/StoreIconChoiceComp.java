@@ -6,6 +6,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.icon.SystemIcon;
 import io.xpipe.app.icon.SystemIconCache;
 import io.xpipe.app.icon.SystemIconManager;
+import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
@@ -106,14 +107,13 @@ public class StoreIconChoiceComp extends SimpleComp {
     }
 
     private void updateData(TableView<List<SystemIcon>> table, String filterString) {
-        var displayedIcons = filterString == null || filterString.isBlank() || filterString.length() < 2
-                ? icons.stream()
-                        .sorted(Comparator.comparing(systemIcon -> systemIcon.getId()))
-                        .toList()
-                : icons.stream()
-                        .filter(icon -> containsString(icon.getId(), filterString))
-                        .toList();
-
+        var stream = icons.stream()
+                .filter(systemIcon -> AppImages.hasNormalImage("icons/" + systemIcon.getSource().getId() + "/" + systemIcon.getId() + "-40.png"))
+                .sorted(Comparator.comparing(systemIcon -> systemIcon.getId()));
+        if (filterString != null && !filterString.isBlank() && filterString.length() >= 2) {
+            stream = stream.filter(icon -> containsString(icon.getId(), filterString));
+        }
+        var displayedIcons = stream.toList();
         var data = partitionList(displayedIcons, columns);
         table.getItems().setAll(data);
     }

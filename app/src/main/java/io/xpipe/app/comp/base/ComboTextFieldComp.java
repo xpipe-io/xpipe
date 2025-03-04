@@ -42,7 +42,7 @@ public class ComboTextFieldComp extends Comp<CompStructure<ComboBox<String>>> {
             });
         });
         text.setEditable(true);
-        text.setMaxWidth(2000);
+        text.setMaxWidth(20000);
         text.setValue(value.getValue() != null ? value.getValue() : null);
         text.valueProperty().addListener((c, o, n) -> {
             value.setValue(n != null && n.length() > 0 ? n : null);

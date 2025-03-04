@@ -44,15 +44,6 @@ public class NewItemAction implements BrowserAction, BrowserBranchAction {
     }
 
     @Override
-    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return entries.size() == 1
-                && entries.getFirst()
-                        .getRawFileEntry()
-                        .getPath()
-                        .equals(model.getCurrentPath().get());
-    }
-
-    @Override
     public List<BrowserLeafAction> getBranchingActions(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return List.of(
                 new BrowserLeafAction() {

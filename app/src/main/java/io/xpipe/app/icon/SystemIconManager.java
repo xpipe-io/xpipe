@@ -80,7 +80,18 @@ public class SystemIconManager {
         });
     }
 
-    public static void reloadImages() {
+    private static void reloadImages() {
+        AppImages.remove(s -> s.startsWith("icons/"));
+        try {
+            for (var source : getEffectiveSources()) {
+                AppImages.loadRasterImages(SystemIconCache.getDirectory(source), "icons/" + source.getId());
+            }
+        } catch (Exception e) {
+            ErrorEvent.fromThrowable(e).handle();
+        }
+    }
+
+    private static void clearInvalidImages() {
         AppImages.remove(s -> s.startsWith("icons/"));
         try {
             for (var source : getEffectiveSources()) {

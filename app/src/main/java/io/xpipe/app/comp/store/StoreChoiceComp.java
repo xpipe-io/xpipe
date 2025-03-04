@@ -199,7 +199,7 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                         selected),
                 () -> {});
         button.apply(struc -> {
-                    struc.get().setMaxWidth(2000);
+                    struc.get().setMaxWidth(20000);
                     struc.get().setAlignment(Pos.CENTER_LEFT);
                     Comp<?> graphic = PrettyImageHelper.ofFixedSize(
                             Bindings.createStringBinding(
@@ -241,7 +241,7 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
         StackPane.setMargin(icon, new Insets(10));
         pane.setPickOnBounds(false);
         StackPane.setAlignment(icon, Pos.CENTER_RIGHT);
-        pane.setMaxWidth(2000);
+        pane.setMaxWidth(20000);
         r.prefWidthProperty().bind(pane.widthProperty());
         r.maxWidthProperty().bind(pane.widthProperty());
         return pane;

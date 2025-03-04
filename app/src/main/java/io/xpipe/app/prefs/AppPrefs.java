@@ -273,7 +273,7 @@ public class AppPrefs {
         INSTANCE = new AppPrefs();
         PrefsProvider.getAll().forEach(prov -> prov.addPrefs(INSTANCE.extensionHandler));
         INSTANCE.loadLocal();
-        INSTANCE.fixInvalidLocalValues();
+        INSTANCE.adjustLocalValues();
         INSTANCE.vaultStorageHandler = new AppPrefsStorageHandler(
                 INSTANCE.storageDirectory().getValue().resolve("preferences.json"));
     }
@@ -507,9 +507,6 @@ public class AppPrefs {
             } else if (System.getProperty("os.name").toLowerCase().contains("server")) {
                 performanceMode.setValue(true);
             }
-
-            var f = PlatformState.determineDefaultScalingFactor();
-            uiScale.setValue(f.isPresent() ? f.getAsInt() : null);
         }
     }
 
@@ -531,7 +528,7 @@ public class AppPrefs {
         }
     }
 
-    private void fixInvalidLocalValues() {
+    private void adjustLocalValues() {
         // You can set the directory to empty in the settings
         if (storageDirectory.get() == null || storageDirectory.get().toString().isBlank()) {
             storageDirectory.setValue(DEFAULT_STORAGE_DIR);
@@ -542,6 +539,11 @@ public class AppPrefs {
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).expected().build().handle();
             storageDirectory.setValue(DEFAULT_STORAGE_DIR);
+        }
+
+        if (AppProperties.get().isInitialLaunch()) {
+            var f = PlatformState.determineDefaultScalingFactor();
+            uiScale.setValue(f.isPresent() ? f.getAsInt() : null);
         }
     }
 
