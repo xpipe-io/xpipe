@@ -61,6 +61,27 @@ public class ScanStoreAction implements ActionProvider {
         };
     }
 
+    @Override
+    public BatchDataStoreCallSite<?> getBatchDataStoreCallSite() {
+        return new BatchDataStoreCallSite<ShellStore>() {
+
+            @Override
+            public ObservableValue<String> getName() {
+                return AppI18n.observable("scanConnections");
+            }
+
+            @Override
+            public String getIcon() {
+                return "mdi2l-layers-plus";
+            }
+
+            @Override
+            public Class<?> getApplicableClass() {
+                return ShellStore.class;
+            }
+        };
+    }
+
     @Value
     static class Action implements ActionProvider.Action {
 
