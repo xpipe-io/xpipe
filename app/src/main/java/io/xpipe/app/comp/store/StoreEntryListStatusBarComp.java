@@ -29,6 +29,7 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
+        var checkbox = new StoreEntryBatchSelectComp(StoreViewState.get().getCurrentTopLevelSection());
         var l = new LabelComp(Bindings.createStringBinding(() -> {
             return AppI18n.get("connectionsSelected", StoreViewState.get().getEffectiveBatchModeSelection().getList().size());
         }, StoreViewState.get().getEffectiveBatchModeSelection().getList(), AppI18n.activeLanguage()));
@@ -46,7 +47,7 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
             struc.get().prefWidthProperty().bind(struc.get().heightProperty());
             struc.get().maxWidthProperty().bind(struc.get().heightProperty());
         });
-        var bar = new HorizontalComp(List.of(l, Comp.hspacer(20), actions, Comp.hspacer(), Comp.hspacer(20), close));
+        var bar = new HorizontalComp(List.of(checkbox, Comp.hspacer(12), l, Comp.hspacer(20), actions, Comp.hspacer(), Comp.hspacer(20), close));
         bar.apply(struc -> {
             struc.get().setFillHeight(true);
             struc.get().setAlignment(Pos.CENTER_LEFT);

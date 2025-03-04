@@ -15,6 +15,7 @@ import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import lombok.Getter;
 
@@ -79,6 +80,7 @@ public class StoreViewState {
         INSTANCE.initSections();
         INSTANCE.updateContent();
         INSTANCE.initFilterListener();
+        INSTANCE.initBatchListener();
     }
 
     public static void reset() {
@@ -101,20 +103,32 @@ public class StoreViewState {
 
     public void selectBatchMode(StoreSection section) {
         var wrapper = section.getWrapper();
-        if (!batchModeSelection.getList().contains(wrapper)) {
+        if (wrapper != null && !batchModeSelection.getList().contains(wrapper)) {
             batchModeSelection.getList().add(wrapper);
         }
-        if (wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP) {
+        if (wrapper == null || (wrapper.getValidity().getValue().isUsable() && wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP)) {
             section.getShownChildren().getList().forEach(c -> selectBatchMode(c));
         }
     }
 
     public void unselectBatchMode(StoreSection section) {
         var wrapper = section.getWrapper();
-        batchModeSelection.getList().remove(wrapper);
-        if (wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP) {
+        if (wrapper != null) {
+            batchModeSelection.getList().remove(wrapper);
+        }
+        if (wrapper == null || (wrapper.getValidity().getValue().isUsable() && wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP)) {
             section.getShownChildren().getList().forEach(c -> unselectBatchMode(c));
         }
+    }
+
+    public boolean isSectionSelected(StoreSection section) {
+        if (section.getWrapper() == null) {
+            var batchSet = new HashSet<>(batchModeSelection.getList());
+            var childSet = section.getShownChildren().getList().stream().map(s -> s.getWrapper()).toList();
+            return batchSet.containsAll(childSet);
+        }
+
+        return getBatchModeSelection().getList().contains(section.getWrapper());
     }
 
     private void updateContent() {
@@ -149,6 +163,14 @@ public class StoreViewState {
             if (matchingCats.size() == 1) {
                 activeCategory.setValue(matchingCats.getFirst());
             }
+        });
+    }
+
+    private void initBatchListener() {
+        allEntries.getList().addListener((ListChangeListener<? super StoreEntryWrapper>) c -> {
+            batchModeSelection.getList().removeIf(storeEntryWrapper -> {
+                return allEntries.getList().contains(storeEntryWrapper);
+            });
         });
     }
 
