@@ -203,6 +203,10 @@ public interface ActionProvider {
 
         Class<?> getApplicableClass();
 
+        default boolean isApplicable(DataStoreEntryRef<T> o) {
+            return true;
+        }
+
         default Action createAction(List<DataStoreEntryRef<T>> stores) {
             var individual = stores.stream().map(ref -> {
                 return createAction(ref);

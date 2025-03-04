@@ -101,6 +101,10 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
                     return false;
                 }
 
+                if (!s.isApplicable(w.getEntry().ref())) {
+                    return false;
+                }
+
                 return true;
             }).toList();
             all.removeIf(actionProvider -> !actions.contains(actionProvider));
