@@ -15,6 +15,7 @@ import lombok.Value;
 import java.util.Arrays;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Value
 public class ShellStoreFormat {
@@ -35,7 +36,7 @@ public class ShellStoreFormat {
 
     @SuppressWarnings("unchecked")
     public static <T extends ShellStoreState> ObservableValue<String> shellStore(
-            StoreSection section, Function<T, String> f) {
+            StoreSection section, Function<T, String[]> f) {
         return BindingsHelper.map(section.getWrapper().getPersistentState(), o -> {
             var s = (T) o;
             var info = f.apply(s);
@@ -61,11 +62,11 @@ public class ShellStoreFormat {
                         .format();
             }
 
+            var joined = Stream.concat(Stream.of(s.getTtyState() != null && s.getTtyState() != ShellTtyState.NONE ? "TTY" : null), Arrays.stream(info)).toArray(String[]::new);
             return new ShellStoreFormat(
                             LicenseProvider.get().checkOsName(s.getOsName()),
                             formattedOsName(s.getOsName()),
-                            s.getTtyState() != null && s.getTtyState() != ShellTtyState.NONE ? "TTY" : null,
-                            info)
+                            joined)
                     .format();
         });
     }

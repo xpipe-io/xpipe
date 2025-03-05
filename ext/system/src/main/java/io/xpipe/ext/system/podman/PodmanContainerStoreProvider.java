@@ -81,7 +81,9 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
 
     @Override
     public ObservableValue<String> informationString(StoreSection section) {
-        return ShellStoreFormat.shellStore(section, (ContainerStoreState s) -> s.getContainerState());
+        var c = (ContainerStoreState) section.getWrapper().getPersistentState().getValue();
+        var missing = c.getShellMissing() != null && c.getShellMissing() ? "No shell available" : null;
+        return ShellStoreFormat.shellStore(section, (ContainerStoreState s) -> new String[] {missing, s.getContainerState()});
     }
 
     @Override

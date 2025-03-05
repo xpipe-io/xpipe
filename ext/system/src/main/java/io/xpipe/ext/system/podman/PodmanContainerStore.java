@@ -155,16 +155,13 @@ public class PodmanContainerStore
                         return;
                     }
 
-                    var stateBuilder = getState().toBuilder();
-                    stateBuilder.running(false);
                     var hasShell = throwable.getMessage() == null
                             || !throwable.getMessage().contains("OCI runtime exec failed");
                     if (!hasShell) {
-                        stateBuilder.containerState("No shell available");
-                    } else {
-                        stateBuilder.containerState("Connection failed");
+                        var stateBuilder = getState().toBuilder();
+                        stateBuilder.shellMissing(true);
+                        setState(stateBuilder.build());
                     }
-                    setState(stateBuilder.build());
                 });
                 return pc;
             }
