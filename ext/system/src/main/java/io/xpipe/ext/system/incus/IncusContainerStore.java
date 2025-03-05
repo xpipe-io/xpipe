@@ -1,9 +1,6 @@
 package io.xpipe.ext.system.incus;
 
-import io.xpipe.app.ext.ContainerStoreState;
-import io.xpipe.app.ext.ShellControlFunction;
-import io.xpipe.app.ext.ShellControlParentStoreFunction;
-import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.ShellControl;
@@ -36,7 +33,7 @@ public class IncusContainerStore
                 StatefulDataStore<ContainerStoreState>,
                 StartableStore,
                 StoppableStore,
-                PauseableStore {
+                PauseableStore, NameableStore {
 
     DataStoreEntryRef<IncusInstallStore> install;
     String containerName;
@@ -132,5 +129,10 @@ public class IncusContainerStore
         var view = new IncusCommandView(sc);
         view.pause(containerName);
         refreshContainerState(sc);
+    }
+
+    @Override
+    public String getName() {
+        return containerName;
     }
 }

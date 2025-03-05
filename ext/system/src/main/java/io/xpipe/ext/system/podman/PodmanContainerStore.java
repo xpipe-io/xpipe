@@ -1,10 +1,6 @@
 package io.xpipe.ext.system.podman;
 
-import io.xpipe.app.ext.ContainerImageStore;
-import io.xpipe.app.ext.ContainerStoreState;
-import io.xpipe.app.ext.ShellControlFunction;
-import io.xpipe.app.ext.ShellControlParentStoreFunction;
-import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LicenseRequiredException;
@@ -36,17 +32,22 @@ import java.util.regex.Pattern;
 @Value
 public class PodmanContainerStore
         implements StartableStore,
-                StoppableStore,
-                ShellStore,
-                InternalCacheDataStore,
-                FixedChildStore,
-                StatefulDataStore<ContainerStoreState>,
-                FixedServiceCreatorStore,
-                SelfReferentialStore,
-                ContainerImageStore {
+                   StoppableStore,
+                   ShellStore,
+                   InternalCacheDataStore,
+                   FixedChildStore,
+                   StatefulDataStore<ContainerStoreState>,
+                   FixedServiceCreatorStore,
+                   SelfReferentialStore,
+                   ContainerImageStore, NameableStore {
 
     DataStoreEntryRef<PodmanCmdStore> cmd;
     String containerName;
+
+    @Override
+    public String getName() {
+        return containerName;
+    }
 
     @Override
     public String getImageName() {
