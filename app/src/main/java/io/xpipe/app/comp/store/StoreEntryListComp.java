@@ -2,6 +2,7 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.MultiContentComp;
 import io.xpipe.app.comp.base.VerticalComp;

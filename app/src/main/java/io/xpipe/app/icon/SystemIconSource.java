@@ -6,6 +6,7 @@ import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.store.FileNames;
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.ValidationException;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -100,7 +101,7 @@ public interface SystemIconSource {
                             .execute();
                 } else {
                     sc.command(CommandBuilder.of().add("git", "pull"))
-                            .withWorkingDirectory(dir.toString())
+                            .withWorkingDirectory(new FilePath(dir))
                             .execute();
                 }
             }

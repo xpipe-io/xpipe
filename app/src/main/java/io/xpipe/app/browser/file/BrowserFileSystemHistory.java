@@ -1,5 +1,6 @@
 package io.xpipe.app.browser.file;
 
+import io.xpipe.core.store.FilePath;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.IntegerProperty;
@@ -12,33 +13,33 @@ import java.util.Objects;
 public final class BrowserFileSystemHistory {
 
     private final IntegerProperty cursor = new SimpleIntegerProperty(-1);
-    private final List<String> history = new ArrayList<>();
+    private final List<FilePath> history = new ArrayList<>();
     private final BooleanBinding canGoBack =
             Bindings.createBooleanBinding(() -> cursor.get() > 0 && history.size() > 1, cursor);
     private final BooleanBinding canGoForth =
             Bindings.createBooleanBinding(() -> cursor.get() < history.size() - 1, cursor);
 
-    public List<String> getForwardHistory(int max) {
-        var l = new ArrayList<String>();
+    public List<FilePath> getForwardHistory(int max) {
+        var l = new ArrayList<FilePath>();
         for (var i = cursor.get() + 1; i < Math.min(history.size(), cursor.get() + max); i++) {
             l.add(history.get(i));
         }
         return l;
     }
 
-    public List<String> getBackwardHistory(int max) {
-        var l = new ArrayList<String>();
+    public List<FilePath> getBackwardHistory(int max) {
+        var l = new ArrayList<FilePath>();
         for (var i = cursor.get() - 1; i >= Math.max(0, cursor.get() - max); i--) {
             l.add(history.get(i));
         }
         return l;
     }
 
-    public String getCurrent() {
+    public FilePath getCurrent() {
         return history.size() > 0 ? history.get(cursor.get()) : null;
     }
 
-    public void updateCurrent(String s) {
+    public void updateCurrent(FilePath s) {
         var lastString = getCurrent();
         if (cursor.get() != -1 && Objects.equals(lastString, s)) {
             return;
@@ -52,11 +53,11 @@ public final class BrowserFileSystemHistory {
         cursor.set(history.size() - 1);
     }
 
-    public String back() {
+    public FilePath back() {
         return back(1);
     }
 
-    public String back(int i) {
+    public FilePath back(int i) {
         if (!canGoBack.get()) {
             return null;
         }
@@ -64,7 +65,7 @@ public final class BrowserFileSystemHistory {
         return history.get(cursor.get());
     }
 
-    public String forth(int i) {
+    public FilePath forth(int i) {
         if (!canGoForth.get()) {
             return history.getLast();
         }

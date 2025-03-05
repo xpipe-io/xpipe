@@ -46,9 +46,8 @@ public class PodmanCmdStore
         var l = view.container().listContainersAndStates();
         return l.stream()
                 .map(s -> {
-                    boolean running = s.getStatus().startsWith("running")
-                            || s.getStatus().startsWith("up")
-                            || s.getStatus().startsWith("Up");
+                    boolean running =
+                            s.getStatus().startsWith("running") || s.getStatus().startsWith("up") || s.getStatus().startsWith("Up");
                     var c = PodmanContainerStore.builder()
                             .cmd(getSelfEntry().ref())
                             .containerName(s.getName())

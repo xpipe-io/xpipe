@@ -2,6 +2,7 @@ package io.xpipe.beacon.api;
 
 import io.xpipe.beacon.BeaconInterface;
 
+import io.xpipe.core.store.FilePath;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -23,7 +24,7 @@ public class ConnectionBrowseExchange extends BeaconInterface<ConnectionBrowseEx
         @NonNull
         UUID connection;
 
-        String directory;
+        FilePath directory;
     }
 
     @Jacksonized

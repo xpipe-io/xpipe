@@ -16,7 +16,7 @@ public class FsWriteExchangeImpl extends FsWriteExchange {
         var shell = AppBeaconServer.get().getCache().getShellSession(msg.getConnection());
         var fs = new ConnectionFileSystem(shell.getControl());
         try (var in = BlobManager.get().getBlob(msg.getBlob());
-                var os = fs.openOutput(msg.getPath().toString(), in.available())) {
+                var os = fs.openOutput(msg.getPath(), in.available())) {
             in.transferTo(os);
         }
         return Response.builder().build();

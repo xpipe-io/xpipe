@@ -35,6 +35,10 @@ public final class FilePath {
         }
     }
 
+    public FilePath(@NonNull Path value) {
+        this.value = value.toString();
+    }
+
     public FilePath fileSystemCompatible(OsType osType) {
         var split = split();
         var needsReplacement = split.stream().anyMatch(s -> !s.equals(osType.makeFileSystemCompatible(s)));
@@ -70,10 +74,6 @@ public final class FilePath {
 
     public String toString() {
         return value;
-    }
-
-    public String quoteIfNecessary() {
-        return value.contains(" ") ? "\"" + value + "\"" : value;
     }
 
     public FilePath toDirectory() {
@@ -164,7 +164,7 @@ public final class FilePath {
 
     public FilePath getParent() {
         if (split().size() == 0) {
-            return null;
+            return this;
         }
 
         if (split().size() == 1) {
@@ -174,8 +174,12 @@ public final class FilePath {
         return new FilePath(value.substring(0, value.length() - getFileName().length() - 1));
     }
 
+    public boolean startsWith(String start) {
+        return startsWith(new FilePath(start));
+    }
+
     public boolean startsWith(FilePath start) {
-        return normalize().startsWith(start.normalize());
+        return normalize().toString().startsWith(start.normalize().toString());
     }
 
     public FilePath relativize(FilePath base) {
@@ -186,7 +190,11 @@ public final class FilePath {
 
     public FilePath normalize() {
         var backslash = value.contains("\\");
-        return new FilePath(backslash ? toWindows() : toUnix());
+        return backslash ? toWindows() : toUnix();
+    }
+
+    public FilePath resolveTildeHome(String dir) {
+        return value.startsWith("~") ? new FilePath(value.replace("~", dir)) : this;
     }
 
     private List<String> split() {
@@ -194,15 +202,19 @@ public final class FilePath {
         return Arrays.stream(split).filter(s -> !s.isEmpty()).toList();
     }
 
-    public String toUnix() {
+    public FilePath toUnix() {
         var joined = String.join("/", split());
         var prefix = value.startsWith("/") ? "/" : "";
         var suffix = value.endsWith("/") || value.endsWith("\\") ? "/" : "";
-        return prefix + joined + suffix;
+        return new FilePath(prefix + joined + suffix);
     }
 
-    public String toWindows() {
+    public FilePath toWindows() {
         var suffix = value.endsWith("/") || value.endsWith("\\") ? "\\" : "";
-        return String.join("\\", split()) + suffix;
+        return new FilePath(String.join("\\", split()) + suffix);
+    }
+
+    public Path asLocalPath() {
+        return Path.of(value);
     }
 }

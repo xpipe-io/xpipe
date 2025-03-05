@@ -84,8 +84,8 @@ public abstract class BrowserIconFileType {
                 return false;
             }
 
-            var name = FileNames.getFileName(entry.getPath());
-            var ext = FileNames.getExtension(entry.getPath());
+            var name = entry.getPath().getFileName();
+            var ext = entry.getPath().getFileName();
             return (ext != null && endings.contains("." + ext.toLowerCase(Locale.ROOT))) || endings.contains(name);
         }
 

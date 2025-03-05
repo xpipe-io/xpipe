@@ -7,7 +7,7 @@ import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.icon.SystemIconSource;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.*;
-
+import io.xpipe.core.store.FilePath;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -96,7 +96,7 @@ public class IconsCategory extends AppPrefsCategory {
 
         var addDirectoryButton = new TileButtonComp(
                 "addDirectoryIconSource", "addDirectoryIconSourceDescription", "mdi2f-folder-plus", e -> {
-                    var dir = new SimpleStringProperty();
+                    var dir = new SimpleObjectProperty<FilePath>();
                     var modal = ModalOverlay.of(
                             "iconDirectory",
                             new ContextualFileReferenceChoiceComp(
@@ -107,12 +107,12 @@ public class IconsCategory extends AppPrefsCategory {
                                             List.of())
                                     .prefWidth(350));
                     modal.withDefaultButtons(() -> {
-                        if (dir.get() == null || dir.get().isBlank()) {
+                        if (dir.get() == null) {
                             return;
                         }
 
                         var source = SystemIconSource.Directory.builder()
-                                .path(Path.of(dir.get()))
+                                .path(dir.get().asLocalPath())
                                 .id(UUID.randomUUID().toString())
                                 .build();
                         if (!sources.contains(source)) {

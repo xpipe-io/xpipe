@@ -38,7 +38,7 @@ public abstract class BrowserIconDirectoryType {
 
             @Override
             public boolean matches(FileEntry entry) {
-                return entry.getPath().equals("/") || entry.getPath().matches("\\w:\\\\");
+                return entry.getPath().toString().equals("/") || entry.getPath().toString().matches("\\w:\\\\");
             }
 
             @Override
@@ -99,7 +99,7 @@ public abstract class BrowserIconDirectoryType {
                 return false;
             }
 
-            var name = FileNames.getFileName(entry.getPath());
+            var name = entry.getPath().getFileName();
             return names.contains(name);
         }
 

@@ -22,6 +22,7 @@ import javax.imageio.ImageIO;
 public class SystemIconCache {
 
     private static enum ImageColorScheme {
+
         TRANSPARENT,
         MIXED,
         LIGHT,
@@ -67,17 +68,14 @@ public class SystemIconCache {
                         continue;
                     }
 
-                    if (scheme != ImageColorScheme.DARK
-                            || icon.getColorSchemeData() != SystemIconSourceFile.ColorSchemeData.DEFAULT) {
+                    if (scheme != ImageColorScheme.DARK || icon.getColorSchemeData() != SystemIconSourceFile.ColorSchemeData.DEFAULT) {
                         continue;
                     }
 
-                    var hasExplicitDark = e.getValue().getIcons().stream()
-                            .anyMatch(systemIconSourceFile ->
-                                    systemIconSourceFile.getSource().equals(icon.getSource())
-                                            && systemIconSourceFile.getName().equals(icon.getName())
-                                            && systemIconSourceFile.getColorSchemeData()
-                                                    == SystemIconSourceFile.ColorSchemeData.DARK);
+                    var hasExplicitDark = e.getValue().getIcons().stream().anyMatch(
+                            systemIconSourceFile -> systemIconSourceFile.getSource().equals(icon.getSource()) &&
+                                    systemIconSourceFile.getName().equals(icon.getName()) &&
+                                    systemIconSourceFile.getColorSchemeData() == SystemIconSourceFile.ColorSchemeData.DARK);
                     if (hasExplicitDark) {
                         continue;
                     }
@@ -132,8 +130,7 @@ public class SystemIconCache {
         }
     }
 
-    private static ImageColorScheme rasterizeSizesInverted(Path path, Path dir, String name, boolean dark)
-            throws IOException {
+    private static ImageColorScheme rasterizeSizesInverted(Path path, Path dir, String name, boolean dark) throws IOException {
         try {
             ImageColorScheme c = null;
             for (var size : sizes) {
@@ -175,8 +172,8 @@ public class SystemIconCache {
         return image;
     }
 
-    private static BufferedImage write(Path dir, String name, boolean dark, int px, BufferedImage image)
-            throws IOException {
+
+    private static BufferedImage write(Path dir, String name, boolean dark, int px, BufferedImage image) throws IOException {
         var out = dir.resolve(name + "-" + px + (dark ? "-dark" : "") + ".png");
         ImageIO.write(image, "png", out.toFile());
         return image;
@@ -186,12 +183,12 @@ public class SystemIconCache {
         var buffer = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
         for (int y = 0; y < image.getHeight(); y++) {
             for (int x = 0; x < image.getWidth(); x++) {
-                int clr = image.getRGB(x, y);
-                int alpha = (clr >> 24) & 0xff;
-                int red = (clr & 0x00ff0000) >> 16;
-                int green = (clr & 0x0000ff00) >> 8;
-                int blue = clr & 0x000000ff;
-                buffer.setRGB(x, y, new Color(255 - red, 255 - green, 255 - blue, alpha).getRGB());
+                int  clr   = image.getRGB(x, y);
+                int  alpha   = (clr >> 24) & 0xff;
+                int  red   = (clr & 0x00ff0000) >> 16;
+                int  green = (clr & 0x0000ff00) >> 8;
+                int  blue  =  clr & 0x000000ff;
+                buffer.setRGB(x, y, new Color(255- red, 255- green, 255- blue, alpha).getRGB());
             }
         }
         return buffer;
@@ -202,11 +199,11 @@ public class SystemIconCache {
         var mean = 0.0;
         for (int y = 0; y < image.getHeight(); y++) {
             for (int x = 0; x < image.getWidth(); x++) {
-                int clr = image.getRGB(x, y);
-                int alpha = (clr >> 24) & 0xff;
-                int red = (clr & 0x00ff0000) >> 16;
-                int green = (clr & 0x0000ff00) >> 8;
-                int blue = clr & 0x000000ff;
+                int  clr   = image.getRGB(x, y);
+                int  alpha   = (clr >> 24) & 0xff;
+                int  red   = (clr & 0x00ff0000) >> 16;
+                int  green = (clr & 0x0000ff00) >> 8;
+                int  blue  =  clr & 0x000000ff;
 
                 if (alpha < 200) {
                     continue;

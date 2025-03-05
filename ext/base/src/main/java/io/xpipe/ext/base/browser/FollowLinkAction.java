@@ -18,8 +18,7 @@ public class FollowLinkAction implements BrowserLeafAction {
 
     @Override
     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        var target = FileNames.getParent(
-                entries.getFirst().getRawFileEntry().resolved().getPath());
+        var target = entries.getFirst().getRawFileEntry().resolved().getPath().getParent();
         model.cdAsync(target);
     }
 

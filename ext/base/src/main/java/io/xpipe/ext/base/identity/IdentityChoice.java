@@ -22,21 +22,13 @@ public class IdentityChoice {
             ObjectProperty<IdentityValue> identity,
             boolean requireUser) {
         var i = new IdentityChoice(
-                gateway,
-                identity,
-                requireUser,
-                requireUser,
-                true,
-                true,
-                true,
-                "identityChoice",
-                "passwordAuthentication");
+                gateway, identity, requireUser, requireUser, true, true, true, "identityChoice", "passwordAuthentication");
         return i.build();
     }
 
     public static OptionsBuilder container(ObjectProperty<IdentityValue> identity) {
         var i = new IdentityChoice(
-                null, identity, true, false, false, false, false, "customUsername", "customUsernamePassword");
+                null, identity, true, false, false, false, false,"customUsername", "customUsernamePassword");
         return i.build();
     }
 
@@ -100,18 +92,17 @@ public class IdentityChoice {
                     } else {
                         var u = user.get();
                         var p = EncryptedValue.CurrentKey.of(pass.get());
-                        EncryptedValue<SshIdentityStrategy> i =
-                                keyInput ? EncryptedValue.CurrentKey.of(identityStrategy.get()) : null;
+                        EncryptedValue<SshIdentityStrategy> i = keyInput
+                                ? EncryptedValue.CurrentKey.of(identityStrategy.get())
+                                : null;
                         if (u == null && p == null && i == null) {
                             return null;
                         } else {
-                            return IdentityValue.InPlace.builder()
-                                    .identityStore(LocalIdentityStore.builder()
-                                            .username(u)
-                                            .password(p)
-                                            .sshIdentity(i)
-                                            .build())
-                                    .build();
+                            return IdentityValue.InPlace.builder().identityStore(LocalIdentityStore.builder()
+                                    .username(u)
+                                    .password(p)
+                                    .sshIdentity(i)
+                                    .build()).build();
                         }
                     }
                 },

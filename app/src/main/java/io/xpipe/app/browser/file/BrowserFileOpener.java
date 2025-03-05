@@ -72,7 +72,7 @@ public class BrowserFileOpener {
         var key = calculateKey(entry);
         FileBridge.get()
                 .openIO(
-                        FileNames.getFileName(file),
+                        file.getFileName(),
                         key,
                         new BooleanScope(model.getBusy()).exclusive(),
                         () -> {
@@ -93,7 +93,7 @@ public class BrowserFileOpener {
         var key = calculateKey(entry);
         FileBridge.get()
                 .openIO(
-                        FileNames.getFileName(file),
+                        file.getFileName(),
                         key,
                         new BooleanScope(model.getBusy()).exclusive(),
                         () -> {
@@ -119,7 +119,7 @@ public class BrowserFileOpener {
         var key = calculateKey(entry);
         FileBridge.get()
                 .openIO(
-                        FileNames.getFileName(file),
+                        file.getFileName(),
                         key,
                         new BooleanScope(model.getBusy()).exclusive(),
                         () -> {

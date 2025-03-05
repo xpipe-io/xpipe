@@ -78,7 +78,7 @@ public class ChmodAction implements BrowserBranchAction {
                             .add("chmod", option)
                             .addFiles(entries.stream()
                                     .map(browserEntry ->
-                                            browserEntry.getRawFileEntry().getPath())
+                                            browserEntry.getRawFileEntry().getPath().toString())
                                     .toList()));
         }
     }
@@ -105,7 +105,7 @@ public class ChmodAction implements BrowserBranchAction {
                                 .add("chmod", permissions.getValue())
                                 .addFiles(entries.stream()
                                         .map(browserEntry ->
-                                                browserEntry.getRawFileEntry().getPath())
+                                                browserEntry.getRawFileEntry().getPath().toString())
                                         .toList()),
                         false);
             });

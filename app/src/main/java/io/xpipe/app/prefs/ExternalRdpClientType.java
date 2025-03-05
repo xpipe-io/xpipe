@@ -10,15 +10,16 @@ import io.xpipe.core.util.SecretValue;
 import lombok.Value;
 import org.apache.commons.io.FileUtils;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Supplier;
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 
 public interface ExternalRdpClientType extends PrefsChoiceValue {
 
@@ -125,12 +126,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
         public void launch(LaunchConfiguration configuration) throws Exception {
             var file = writeRdpConfigFile(configuration.getTitle(), configuration.getConfig());
             var escapedPw = configuration.getPassword().getSecretValue().replaceAll("'", "\\\\'");
-            launch(
-                    configuration.getTitle(),
-                    CommandBuilder.of()
-                            .addFile(file.toString())
-                            .add("/cert-ignore")
-                            .add("/p:'" + escapedPw + "'"));
+            launch(configuration.getTitle(), CommandBuilder.of().addFile(file.toString()).add("/cert-ignore").add("/p:'" + escapedPw + "'"));
         }
 
         @Override
@@ -297,8 +293,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
                     .add(ExternalApplicationHelper.replaceFileArgument(
                             format,
                             "FILE",
-                            writeRdpConfigFile(configuration.getTitle(), configuration.getConfig())
-                                    .toString())));
+                            writeRdpConfigFile(configuration.getTitle(), configuration.getConfig()).toString())));
         }
 
         @Override
@@ -312,11 +307,9 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
         }
     }
 
-    class RemminaRdpType extends ExternalApplicationType.PathApplication implements ExternalRdpClientType {
+    class RemminaRdpType extends ExternalApplicationType.PathApplication implements ExternalRdpClientType  {
 
-        public RemminaRdpType() {
-            super("app.remmina", "remmina", true);
-        }
+        public RemminaRdpType() {super("app.remmina", "remmina", true);}
 
         private List<String> toStrip() {
             return List.of("auto connect", "password 51", "prompt for credentials", "smart sizing");
@@ -331,9 +324,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
                 var encrypted = encryptPassword(configuration.getPassword());
                 if (encrypted.isPresent()) {
                     var file = writeRemminaConfigFile(configuration, encrypted.get());
-                    launch(
-                            configuration.getTitle(),
-                            CommandBuilder.of().add("-c").addFile(file.toString()));
+                    launch(configuration.getTitle(), CommandBuilder.of().add("-c").addFile(file.toString()));
                     ThreadHelper.runFailableAsync(() -> {
                         ThreadHelper.sleep(5000);
                         FileUtils.deleteQuietly(file.toFile());
@@ -352,8 +343,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
             }
 
             try (var sc = LocalShell.getShell().start()) {
-                var prefSecretBase64 = sc.command("sed -n 's/^secret=//p' ~/.config/remmina/remmina.pref")
-                        .readStdoutIfPossible();
+                var prefSecretBase64 = sc.command("sed -n 's/^secret=//p' ~/.config/remmina/remmina.pref").readStdoutIfPossible();
                 if (prefSecretBase64.isEmpty()) {
                     return Optional.empty();
                 }
@@ -377,8 +367,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
         private Path writeRemminaConfigFile(LaunchConfiguration configuration, String password) throws Exception {
             var name = OsType.getLocal().makeFileSystemCompatible(configuration.getTitle());
             var file = LocalShell.getShell().getSystemTemporaryDirectory().join(name + ".remmina");
-            var string =
-                    """
+            var string = """
                          [remmina]
                          protocol=RDP
                          name=%s
@@ -386,20 +375,11 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
                          server=%s
                          password=%s
                          cert_ignore=1
-                         """
-                            .formatted(
-                                    configuration.getTitle(),
-                                    configuration
-                                            .getConfig()
-                                            .get("username")
-                                            .orElseThrow()
-                                            .getValue(),
-                                    configuration
-                                            .getConfig()
-                                            .get("full address")
-                                            .orElseThrow()
-                                            .getValue(),
-                                    password);
+                         """.formatted(configuration.getTitle(),
+                    configuration.getConfig().get("username").orElseThrow().getValue(),
+                    configuration.getConfig().get("full address").orElseThrow().getValue(),
+                    password
+            );
             Files.writeString(file.toLocalPath(), string);
             return file.toLocalPath();
         }

@@ -15,7 +15,7 @@ public class LinkFileEntry extends FileEntry {
 
     public LinkFileEntry(
             FileSystem fileSystem,
-            @NonNull String path,
+            @NonNull FilePath path,
             Instant date,
             long size,
             @NonNull FileInfo info,

@@ -13,8 +13,8 @@ import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.util.ClipboardHelper;
 import io.xpipe.app.util.ContextMenuHelper;
 import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.core.process.OsType;
 
+import io.xpipe.core.process.OsType;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;

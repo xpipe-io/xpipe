@@ -46,15 +46,15 @@ public class DesktopHelper {
         return Path.of(System.getProperty("user.home") + "/Downloads");
     }
 
-    public static void browsePathRemote(ShellControl sc, String path, FileKind kind) throws Exception {
+    public static void browsePathRemote(ShellControl sc, FilePath path, FileKind kind) throws Exception {
         var d = sc.getShellDialect();
         switch (sc.getOsType()) {
             case OsType.Windows windows -> {
                 // Explorer does not support single quotes, so use normal quotes
                 if (kind == FileKind.DIRECTORY) {
-                    sc.executeSimpleCommand("explorer " + d.quoteArgument(path));
+                    sc.command(CommandBuilder.of().add("explorer").addQuoted(path.toString())).execute();
                 } else {
-                    sc.executeSimpleCommand("explorer /select," + d.quoteArgument(path));
+                    sc.command(CommandBuilder.of().add("explorer", "/select,\"" + path.toString() + "\"")).execute();
                 }
             }
             case OsType.Linux linux -> {
@@ -71,14 +71,13 @@ public class DesktopHelper {
                     return;
                 }
 
-                var file = new FilePath(path);
                 sc.command(CommandBuilder.of()
                                 .add("xdg-open")
-                                .addFile(kind == FileKind.DIRECTORY ? file : file.getParent()))
+                                .addFile(kind == FileKind.DIRECTORY ? path : path.getParent()))
                         .execute();
             }
             case OsType.MacOs macOs -> {
-                sc.executeSimpleCommand("open " + (kind == FileKind.DIRECTORY ? "" : "-R ") + d.fileArgument(path));
+                sc.command(CommandBuilder.of().add("open").addIf(kind == FileKind.DIRECTORY, "-R").addFile(path)).execute();
             }
             case OsType.Bsd bsd -> {}
             case OsType.Solaris solaris -> {}

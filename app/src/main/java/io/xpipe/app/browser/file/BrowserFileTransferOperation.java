@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Timer;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -72,7 +73,7 @@ public class BrowserFileTransferOperation {
         this.progress.accept(progress);
     }
 
-    private BrowserAlerts.FileConflictChoice handleChoice(FileSystem fileSystem, String target, boolean multiple)
+    private BrowserAlerts.FileConflictChoice handleChoice(FileSystem fileSystem, FilePath target, boolean multiple)
             throws Exception {
         if (lastConflictChoice == BrowserAlerts.FileConflictChoice.CANCEL) {
             return BrowserAlerts.FileConflictChoice.CANCEL;
@@ -176,7 +177,7 @@ public class BrowserFileTransferOperation {
         }
 
         var sourceFile = source.getPath();
-        var targetFile = FileNames.join(target.getPath(), FileNames.getFileName(sourceFile));
+        var targetFile = target.getPath().join(sourceFile.getFileName());
 
         if (sourceFile.equals(targetFile)) {
             // Duplicate file by renaming it
@@ -208,7 +209,7 @@ public class BrowserFileTransferOperation {
         }
     }
 
-    private String renameFileLoop(FileSystem fileSystem, String target, boolean dir) throws Exception {
+    private FilePath renameFileLoop(FileSystem fileSystem, FilePath target, boolean dir) throws Exception {
         // Who has more than 10 copies?
         for (int i = 0; i < 10; i++) {
             target = renameFile(target);
@@ -219,23 +220,22 @@ public class BrowserFileTransferOperation {
         return target;
     }
 
-    private String renameFile(String target) {
-        var targetFile = new FilePath(target);
-        var name = targetFile.getFileName();
+    private FilePath renameFile(FilePath target) {
+        var name = target.getFileName();
         var pattern = Pattern.compile("(.+) \\((\\d+)\\)\\.(.+?)");
         var matcher = pattern.matcher(name);
         if (matcher.matches()) {
             try {
                 var number = Integer.parseInt(matcher.group(2));
                 var newFile =
-                        targetFile.getParent().join(matcher.group(1) + " (" + (number + 1) + ")." + matcher.group(3));
-                return newFile.toString();
+                        target.getParent().join(matcher.group(1) + " (" + (number + 1) + ")." + matcher.group(3));
+                return newFile;
             } catch (NumberFormatException ignored) {
             }
         }
 
-        var noExt = targetFile.getFileName().equals(targetFile.getExtension());
-        return targetFile.getBaseName() + " (" + 1 + ")" + (noExt ? "" : "." + targetFile.getExtension());
+        var noExt = target.getFileName().equals(target.getExtension());
+        return new FilePath(target.getBaseName() + " (" + 1 + ")" + (noExt ? "" : "." + target.getExtension()));
     }
 
     private void handleSingleAcrossFileSystems(FileEntry source) throws Exception {
@@ -247,7 +247,7 @@ public class BrowserFileTransferOperation {
 
         // Prevent dropping directory into itself
         if (source.getFileSystem().equals(target.getFileSystem())
-                && FileNames.startsWith(source.getPath(), target.getPath())) {
+                && source.getPath().startsWith(target.getPath())) {
             return;
         }
 
@@ -259,17 +259,17 @@ public class BrowserFileTransferOperation {
                 return;
             }
 
-            var directoryName = FileNames.getFileName(source.getPath());
+            var directoryName = source.getPath().getFileName();
             flatFiles.put(source, directoryName);
 
-            var baseRelative = FileNames.toDirectory(FileNames.getParent(source.getPath()));
+            var baseRelative = source.getPath().getParent().toDirectory();
             List<FileEntry> list = source.getFileSystem().listFilesRecursively(source.getPath());
             for (FileEntry fileEntry : list) {
                 if (cancelled()) {
                     return;
                 }
 
-                var rel = FileNames.toUnix(FileNames.relativize(baseRelative, fileEntry.getPath()));
+                var rel = baseRelative.relativize(fileEntry.getPath()).toUnix().toString();
                 flatFiles.put(fileEntry, rel);
                 if (fileEntry.getKind() == FileKind.FILE) {
                     // This one is up-to-date and does not need to be recalculated
@@ -283,7 +283,7 @@ public class BrowserFileTransferOperation {
                 return;
             }
 
-            flatFiles.put(source, FileNames.getFileName(source.getPath()));
+            flatFiles.put(source, source.getPath().getFileName());
             // Recalculate as it could have been changed meanwhile
             totalSize.addAndGet(source.getFileSystem().getFileSize(source.getPath()));
         }
@@ -299,7 +299,7 @@ public class BrowserFileTransferOperation {
             var fixedRelPath = new FilePath(e.getValue())
                     .fileSystemCompatible(
                             target.getFileSystem().getShell().orElseThrow().getOsType());
-            var targetFile = FileNames.join(target.getPath(), fixedRelPath.toString());
+            var targetFile = target.getPath().join(fixedRelPath.toString());
             if (sourceFile.getFileSystem().equals(target.getFileSystem())) {
                 throw new IllegalStateException();
             }
@@ -327,7 +327,7 @@ public class BrowserFileTransferOperation {
     }
 
     private void transfer(
-            FileEntry sourceFile, String targetFile, AtomicLong transferred, AtomicLong totalSize, Instant start)
+            FileEntry sourceFile, FilePath targetFile, AtomicLong transferred, AtomicLong totalSize, Instant start)
             throws Exception {
         if (cancelled()) {
             return;
@@ -436,8 +436,7 @@ public class BrowserFileTransferOperation {
 
                     outputStream.write(buffer, 0, read);
                     transferred.addAndGet(read);
-                    updateProgress(
-                            new BrowserTransferProgress(sourceFile.getName(), transferred.get(), total.get(), start));
+                    updateProgress(new BrowserTransferProgress(sourceFile.getName(), transferred.get(), total.get(), start));
                 }
             } catch (Exception ex) {
                 exception.set(ex);

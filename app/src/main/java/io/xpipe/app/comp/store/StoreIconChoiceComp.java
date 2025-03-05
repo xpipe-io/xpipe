@@ -108,8 +108,7 @@ public class StoreIconChoiceComp extends SimpleComp {
 
     private void updateData(TableView<List<SystemIcon>> table, String filterString) {
         var stream = icons.stream()
-                .filter(systemIcon -> AppImages.hasNormalImage(
-                        "icons/" + systemIcon.getSource().getId() + "/" + systemIcon.getId() + "-40.png"))
+                .filter(systemIcon -> AppImages.hasNormalImage("icons/" + systemIcon.getSource().getId() + "/" + systemIcon.getId() + "-40.png"))
                 .sorted(Comparator.comparing(systemIcon -> systemIcon.getId()));
         if (filterString != null && !filterString.isBlank() && filterString.length() >= 2) {
             stream = stream.filter(icon -> containsString(icon.getId(), filterString));

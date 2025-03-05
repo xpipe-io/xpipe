@@ -112,8 +112,7 @@ public class AppBeaconServer {
         executor.shutdown();
         try {
             executor.awaitTermination(30, TimeUnit.SECONDS);
-        } catch (InterruptedException ignored) {
-        }
+        } catch (InterruptedException ignored) {}
     }
 
     private void initAuthSecret() throws IOException {

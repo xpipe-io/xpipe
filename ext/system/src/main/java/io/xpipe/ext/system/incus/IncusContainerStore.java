@@ -33,8 +33,7 @@ public class IncusContainerStore
                 StatefulDataStore<ContainerStoreState>,
                 StartableStore,
                 StoppableStore,
-                PauseableStore,
-                NameableStore {
+                PauseableStore, NameableStore {
 
     DataStoreEntryRef<IncusInstallStore> install;
     String containerName;

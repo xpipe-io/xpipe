@@ -3,20 +3,23 @@ package io.xpipe.app.util;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
+import io.xpipe.app.comp.store.StoreChoiceComp;
+import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ScanProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -38,11 +41,7 @@ public class ScanDialogBase {
     @Getter
     private final BooleanProperty busy = new SimpleBooleanProperty();
 
-    public ScanDialogBase(
-            boolean expand,
-            Runnable closeAction,
-            ScanDialogAction action,
-            ObservableList<DataStoreEntryRef<ShellStore>> entries) {
+    public ScanDialogBase(boolean expand, Runnable closeAction, ScanDialogAction action, ObservableList<DataStoreEntryRef<ShellStore>> entries) {
         this.expand = expand;
         this.closeAction = closeAction;
         this.action = action;
@@ -122,18 +121,19 @@ public class ScanDialogBase {
             return n + suffix.getDescriptionSuffix().map(d -> " (" + d + ")").orElse("");
         };
         var r = new ListSelectorComp<>(
-                        available,
-                        nameFunc,
-                        selected,
-                        scanOperation -> scanOperation.isDisabled(),
-                        () -> available.size() > 3)
+                available,
+                nameFunc,
+                selected,
+                scanOperation -> scanOperation.isDisabled(),
+                () -> available.size() > 3)
                 .createRegion();
         stackPane.getChildren().add(r);
 
         onUpdate();
         entries.addListener((ListChangeListener<? super DataStoreEntryRef<ShellStore>>) c -> onUpdate());
 
-        var comp = LoadingOverlayComp.noProgress(Comp.of(() -> stackPane), busy).vgrow();
+        var comp = LoadingOverlayComp.noProgress(Comp.of(() -> stackPane), busy)
+                .vgrow();
         return comp;
     }
 }

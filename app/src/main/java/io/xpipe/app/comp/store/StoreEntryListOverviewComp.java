@@ -1,5 +1,6 @@
 package io.xpipe.app.comp.store;
 
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.CountComp;
@@ -13,6 +14,8 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -24,7 +27,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 
-import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.function.Function;
@@ -129,13 +131,15 @@ public class StoreEntryListOverviewComp extends SimpleComp {
         return menu;
     }
 
+
     private Comp<?> createBatchModeButton() {
         var batchMode = StoreViewState.get().getBatchMode();
         var b = new IconButtonComp("mdi2l-layers", () -> {
             batchMode.setValue(!batchMode.getValue());
         });
         b.apply(struc -> {
-            struc.get()
+            struc
+                    .get()
                     .opacityProperty()
                     .bind(Bindings.createDoubleBinding(
                             () -> {

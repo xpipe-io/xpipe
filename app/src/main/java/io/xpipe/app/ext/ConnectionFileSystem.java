@@ -5,6 +5,7 @@ import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FileEntry;
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.FileSystem;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -28,9 +29,9 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
-    public long getFileSize(String file) throws Exception {
+    public long getFileSize(FilePath file) throws Exception {
         return Long.parseLong(
-                shellControl.getShellDialect().queryFileSize(shellControl, file).readStdoutOrThrow());
+                shellControl.getShellDialect().queryFileSize(shellControl, file.toString()).readStdoutOrThrow());
     }
 
     @Override
@@ -65,114 +66,114 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
-    public InputStream openInput(String file) throws Exception {
+    public InputStream openInput(FilePath file) throws Exception {
         return shellControl
                 .getShellDialect()
-                .getFileReadCommand(shellControl, file)
+                .getFileReadCommand(shellControl, file.toString())
                 .startExternalStdout();
     }
 
     @Override
-    public OutputStream openOutput(String file, long totalBytes) throws Exception {
-        var cmd = shellControl.getShellDialect().createStreamFileWriteCommand(shellControl, file, totalBytes);
+    public OutputStream openOutput(FilePath file, long totalBytes) throws Exception {
+        var cmd = shellControl.getShellDialect().createStreamFileWriteCommand(shellControl, file.toString(), totalBytes);
         cmd.setExitTimeout(Duration.ofMillis(Long.MAX_VALUE));
         return cmd.startExternalStdin();
     }
 
     @Override
-    public boolean fileExists(String file) throws Exception {
+    public boolean fileExists(FilePath file) throws Exception {
         try (var pc = shellControl
                 .getShellDialect()
-                .createFileExistsCommand(shellControl, file)
+                .createFileExistsCommand(shellControl, file.toString())
                 .start()) {
             return pc.discardAndCheckExit();
         }
     }
 
     @Override
-    public void delete(String file) throws Exception {
+    public void delete(FilePath file) throws Exception {
         try (var pc = shellControl
                 .getShellDialect()
-                .deleteFileOrDirectory(shellControl, file)
+                .deleteFileOrDirectory(shellControl, file.toString())
                 .start()) {
             pc.discardOrThrow();
         }
     }
 
     @Override
-    public void copy(String file, String newFile) throws Exception {
+    public void copy(FilePath file, FilePath newFile) throws Exception {
         try (var pc = shellControl
                 .getShellDialect()
-                .getFileCopyCommand(shellControl, file, newFile)
+                .getFileCopyCommand(shellControl, file.toString(), newFile.toString())
                 .start()) {
             pc.discardOrThrow();
         }
     }
 
     @Override
-    public void move(String file, String newFile) throws Exception {
+    public void move(FilePath file, FilePath newFile) throws Exception {
         try (var pc = shellControl
                 .getShellDialect()
-                .getFileMoveCommand(shellControl, file, newFile)
+                .getFileMoveCommand(shellControl, file.toString(), newFile.toString())
                 .start()) {
             pc.discardOrThrow();
         }
     }
 
     @Override
-    public void mkdirs(String file) throws Exception {
+    public void mkdirs(FilePath file) throws Exception {
         try (var pc = shellControl
                 .command(
-                        CommandBuilder.ofFunction(proc -> proc.getShellDialect().getMkdirsCommand(file)))
+                        CommandBuilder.ofFunction(proc -> proc.getShellDialect().getMkdirsCommand(file.toString())))
                 .start()) {
             pc.discardOrThrow();
         }
     }
 
     @Override
-    public void touch(String file) throws Exception {
+    public void touch(FilePath file) throws Exception {
         try (var pc = shellControl
                 .getShellDialect()
-                .getFileTouchCommand(shellControl, file)
+                .getFileTouchCommand(shellControl, file.toString())
                 .start()) {
             pc.discardOrThrow();
         }
     }
 
     @Override
-    public void symbolicLink(String linkFile, String targetFile) throws Exception {
+    public void symbolicLink(FilePath linkFile, FilePath targetFile) throws Exception {
         try (var pc = shellControl
                 .getShellDialect()
-                .symbolicLink(shellControl, linkFile, targetFile)
+                .symbolicLink(shellControl, linkFile.toString(), targetFile.toString())
                 .start()) {
             pc.discardOrThrow();
         }
     }
 
     @Override
-    public boolean directoryExists(String file) throws Exception {
+    public boolean directoryExists(FilePath file) throws Exception {
         return shellControl
                 .getShellDialect()
-                .directoryExists(shellControl, file)
+                .directoryExists(shellControl, file.toString())
                 .executeAndCheck();
     }
 
     @Override
-    public void directoryAccessible(String file) throws Exception {
+    public void directoryAccessible(FilePath file) throws Exception {
         var current = shellControl.executeSimpleStringCommand(
                 shellControl.getShellDialect().getPrintWorkingDirectoryCommand());
-        shellControl.command(shellControl.getShellDialect().getCdCommand(file));
+        shellControl.command(shellControl.getShellDialect().getCdCommand(file.toString()));
         shellControl.command(shellControl.getShellDialect().getCdCommand(current));
     }
 
     @Override
-    public Stream<FileEntry> listFiles(String file) throws Exception {
-        return shellControl.getShellDialect().listFiles(this, shellControl, file);
+    public Stream<FileEntry> listFiles(FilePath file) throws Exception {
+        return shellControl.getShellDialect().listFiles(this, shellControl, file.toString());
     }
 
     @Override
-    public List<String> listRoots() throws Exception {
-        return shellControl.getShellDialect().listRoots(shellControl).toList();
+    public List<FilePath> listRoots() throws Exception {
+        return shellControl.getShellDialect().listRoots(shellControl).map(s -> new FilePath(s)).toList();
     }
 
     @Override

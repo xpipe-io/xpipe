@@ -197,8 +197,7 @@ public class StoreCreationComp extends DialogComp {
                             if (e.getStore().equals(newE.getStore())) {
                                 e.setName(newE.getName());
                             } else {
-                                var madeValid = !e.getValidity().isUsable()
-                                        && newE.getValidity().isUsable();
+                                var madeValid = !e.getValidity().isUsable() && newE.getValidity().isUsable();
                                 DataStorage.get().updateEntry(e, newE);
                                 if (madeValid) {
                                     StoreViewState.get().toggleStoreListUpdate();
@@ -424,12 +423,14 @@ public class StoreCreationComp extends DialogComp {
     public Comp<?> bottom() {
         var disable = Bindings.createBooleanBinding(
                 () -> {
-                    return provider.getValue() == null || provider.getValue().getHelpLink() == null;
+                    return provider.getValue() == null
+                            || provider.getValue().getHelpLink() == null;
                 },
                 provider);
-        return new ButtonComp(AppI18n.observable("docs"), () -> {
+        return new ButtonComp(
+                AppI18n.observable("docs"), () -> {
                     Hyperlinks.open(provider.getValue().getHelpLink());
-                })
+        })
                 .hide(disable)
                 .styleClass("button-comp");
     }

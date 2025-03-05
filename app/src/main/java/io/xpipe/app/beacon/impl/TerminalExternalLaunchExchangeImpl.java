@@ -1,5 +1,8 @@
 package io.xpipe.app.beacon.impl;
 
+import atlantafx.base.layout.ModalBox;
+import com.sun.net.httpserver.HttpExchange;
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.ShellStore;
@@ -10,8 +13,6 @@ import io.xpipe.app.terminal.TerminalLauncherManager;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.BeaconServerException;
 import io.xpipe.beacon.api.TerminalExternalLaunchExchange;
-
-import com.sun.net.httpserver.HttpExchange;
 
 import java.util.List;
 
@@ -25,15 +26,13 @@ public class TerminalExternalLaunchExchangeImpl extends TerminalExternalLaunchEx
         }
 
         if (found.size() > 1) {
-            throw new BeaconServerException("Multiple connections found: "
-                    + found.stream().map(DataStoreEntry::getName).toList());
+            throw new BeaconServerException("Multiple connections found: " + found.stream().map(DataStoreEntry::getName).toList());
         }
 
         var e = found.getFirst();
         var isShell = e.getStore() instanceof ShellStore;
         if (!isShell) {
-            throw new BeaconClientException(
-                    "Connection " + DataStorage.get().getStorePath(e).toString() + " is not a shell connection");
+            throw new BeaconClientException("Connection " + DataStorage.get().getStorePath(e).toString() + " is not a shell connection");
         }
 
         if (!checkPermission()) {

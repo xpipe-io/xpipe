@@ -11,6 +11,7 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
 
+import io.xpipe.core.store.FilePath;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 
@@ -69,18 +70,18 @@ public abstract class BaseUnzipWindowsAction implements BrowserLeafAction {
     @Override
     public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         var sep = model.getFileSystem().getShell().orElseThrow().getOsType().getFileSystemSeparator();
-        var dir = entries.size() > 1 ? "[...]" : getTarget(entries.getFirst().getFileName()) + sep;
+        var dir = entries.size() > 1 ? "[...]" : getTarget(entries.getFirst().getRawFileEntry().getPath()).getFileName() + sep;
         return toDirectory ? AppI18n.observable("unzipDirectory", dir) : AppI18n.observable("unzipHere");
     }
 
-    private String getTarget(String name) {
-        return name.replaceAll("\\.zip$", "");
+    private FilePath getTarget(FilePath name) {
+        return new FilePath(name.toString().replaceAll("\\.zip$", ""));
     }
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return entries.stream()
-                        .allMatch(entry -> entry.getRawFileEntry().getPath().endsWith(".zip"))
+                        .allMatch(entry -> entry.getRawFileEntry().getPath().toString().endsWith(".zip"))
                 && model.getFileSystem().getShell().orElseThrow().getOsType().equals(OsType.WINDOWS);
     }
 }

@@ -29,7 +29,8 @@ public class ConnectionsCategory extends AppPrefsCategory {
                 .sub(new OptionsBuilder().pref(prefs.useLocalFallbackShell).addToggle(prefs.useLocalFallbackShell));
         if (OsType.getLocal() == OsType.WINDOWS) {
             options.addTitle("sshConfiguration")
-                    .sub(new OptionsBuilder().addComp(prefs.getCustomComp("x11WslInstance")));
+                    .sub(new OptionsBuilder()
+                            .addComp(prefs.getCustomComp("x11WslInstance")));
         }
         return options.buildComp();
     }

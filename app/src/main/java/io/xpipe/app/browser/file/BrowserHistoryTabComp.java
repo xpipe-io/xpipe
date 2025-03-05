@@ -154,7 +154,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
         var name = Bindings.createStringBinding(
                 () -> {
                     var n = e.getPath();
-                    return AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n;
+                    return AppPrefs.get().censorMode().get() ? "*".repeat(n.toString().length()) : n.toString();
                 },
                 AppPrefs.get().censorMode());
         return new ButtonComp(name, () -> {
@@ -162,7 +162,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
                         model.restoreStateAsync(e, disable);
                     });
                 })
-                .accessibleText(e.getPath())
+                .accessibleText(e.getPath().toString())
                 .disable(disable)
                 .styleClass("directory-button")
                 .apply(struc -> struc.get().setMaxWidth(20000))

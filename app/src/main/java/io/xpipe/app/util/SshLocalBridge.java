@@ -5,8 +5,10 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.CommandBuilder;
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.XPipeInstallation;
 
 import lombok.Getter;
@@ -199,7 +201,7 @@ public class SshLocalBridge {
         Files.writeString(file, updated);
     }
 
-    private static String getSshd(ShellControl sc) throws Exception {
+    private static FilePath getSshd(ShellControl sc) throws Exception {
         var exec = CommandSupport.findProgram(sc, "sshd");
         if (exec.isEmpty()) {
             throw ErrorEvent.expected(new IllegalStateException(

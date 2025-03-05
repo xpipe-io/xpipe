@@ -14,8 +14,9 @@ import io.xpipe.app.util.PlatformThread;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import lombok.Getter;
 
 import java.util.*;
@@ -46,24 +47,20 @@ public class StoreViewState {
 
     @Getter
     private final BooleanProperty batchMode = new SimpleBooleanProperty(true);
-
     @Getter
-    private final DerivedObservableList<StoreEntryWrapper> batchModeSelection =
-            new DerivedObservableList<>(FXCollections.observableArrayList(), true);
-
+    private final DerivedObservableList<StoreEntryWrapper> batchModeSelection = new DerivedObservableList<>(FXCollections.observableArrayList(), true);
     @Getter
-    private final DerivedObservableList<StoreEntryWrapper> effectiveBatchModeSelection =
-            batchModeSelection.filtered(storeEntryWrapper -> {
-                if (!storeEntryWrapper.getValidity().getValue().isUsable()) {
-                    return false;
-                }
+    private final DerivedObservableList<StoreEntryWrapper> effectiveBatchModeSelection = batchModeSelection.filtered(storeEntryWrapper -> {
+        if (!storeEntryWrapper.getValidity().getValue().isUsable()) {
+            return false;
+        }
 
-                if (storeEntryWrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP) {
-                    return false;
-                }
+        if (storeEntryWrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP) {
+            return false;
+        }
 
-                return true;
-            });
+        return true;
+    });
 
     @Getter
     private StoreSection currentTopLevelSection;
@@ -109,9 +106,7 @@ public class StoreViewState {
         if (wrapper != null && !batchModeSelection.getList().contains(wrapper)) {
             batchModeSelection.getList().add(wrapper);
         }
-        if (wrapper == null
-                || (wrapper.getValidity().getValue().isUsable()
-                        && wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP)) {
+        if (wrapper == null || (wrapper.getValidity().getValue().isUsable() && wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP)) {
             section.getShownChildren().getList().forEach(c -> selectBatchMode(c));
         }
     }
@@ -121,9 +116,7 @@ public class StoreViewState {
         if (wrapper != null) {
             batchModeSelection.getList().remove(wrapper);
         }
-        if (wrapper == null
-                || (wrapper.getValidity().getValue().isUsable()
-                        && wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP)) {
+        if (wrapper == null || (wrapper.getValidity().getValue().isUsable() && wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP)) {
             section.getShownChildren().getList().forEach(c -> unselectBatchMode(c));
         }
     }
@@ -131,9 +124,7 @@ public class StoreViewState {
     public boolean isSectionSelected(StoreSection section) {
         if (section.getWrapper() == null) {
             var batchSet = new HashSet<>(batchModeSelection.getList());
-            var childSet = section.getShownChildren().getList().stream()
-                    .map(s -> s.getWrapper())
-                    .toList();
+            var childSet = section.getShownChildren().getList().stream().map(s -> s.getWrapper()).toList();
             return batchSet.containsAll(childSet);
         }
 

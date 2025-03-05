@@ -4,8 +4,8 @@ import io.xpipe.app.ext.ScanProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellTtyState;
 
+import io.xpipe.core.process.ShellTtyState;
 import javafx.collections.ObservableList;
 
 public interface ScanDialogAction {
@@ -52,6 +52,7 @@ public interface ScanDialogAction {
         };
         return action;
     }
+
 
     boolean scan(
             ObservableList<ScanProvider.ScanOpportunity> all,

@@ -208,12 +208,9 @@ public interface ActionProvider {
         }
 
         default Action createAction(List<DataStoreEntryRef<T>> stores) {
-            var individual = stores.stream()
-                    .map(ref -> {
-                        return createAction(ref);
-                    })
-                    .filter(action -> action != null)
-                    .toList();
+            var individual = stores.stream().map(ref -> {
+                return createAction(ref);
+            }).filter(action -> action != null).toList();
             return new Action() {
                 @Override
                 public void execute() throws Exception {

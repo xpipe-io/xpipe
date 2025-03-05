@@ -534,11 +534,9 @@ public abstract class DataStorage {
                     .merge(pair.getValue().getStore().asNeeded());
             var mergedStoreChanged = pair.getKey().getStore() != merged;
 
-            var nameChanged =
-                    shouldUpdateChildrenStoreName(pair.getKey(), pair.getValue().get());
+            var nameChanged = shouldUpdateChildrenStoreName(pair.getKey(), pair.getValue().get());
 
-            if (pair.getKey().getStorePersistentState() == null
-                    || pair.getValue().get().getStorePersistentState() == null) {
+            if (pair.getKey().getStorePersistentState() == null || pair.getValue().get().getStorePersistentState() == null) {
                 return !mergedStoreChanged && !nameChanged;
             }
 
@@ -576,9 +574,7 @@ public abstract class DataStorage {
         addStoreEntriesIfNotPresent(toAdd.stream().map(DataStoreEntryRef::get).toArray(DataStoreEntry[]::new));
         toUpdate.forEach(pair -> {
             if (shouldUpdateChildrenStoreName(pair.getKey(), pair.getValue().get())) {
-                pair.getKey()
-                        .setName(getNameableStoreName(pair.getValue().get())
-                                .orElse(pair.getKey().getName()));
+                pair.getKey().setName(getNameableStoreName(pair.getValue().get()).orElse(pair.getKey().getName()));
             }
 
             DataStore merged = ((FixedChildStore) pair.getKey().getStore())

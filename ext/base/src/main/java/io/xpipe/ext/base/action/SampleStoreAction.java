@@ -11,6 +11,7 @@ import io.xpipe.core.process.ElevationFunction;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
 
+import io.xpipe.core.store.FilePath;
 import javafx.beans.value.ObservableValue;
 
 import lombok.Value;
@@ -111,7 +112,7 @@ public class SampleStoreAction implements ActionProvider {
                 // You can also set a custom working directory.
                 try (CommandControl cc = sc.command("kill <pid>")
                         .elevated(ElevationFunction.elevated("kill"))
-                        .withWorkingDirectory("/")
+                        .withWorkingDirectory(new FilePath("/"))
                         .start()) {
                     // Discard any output but throw an exception with the stderr contents if the exit code is not 0
                     cc.discardOrThrow();
