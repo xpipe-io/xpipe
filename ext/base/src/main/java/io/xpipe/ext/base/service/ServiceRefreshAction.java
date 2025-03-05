@@ -47,6 +47,37 @@ public class ServiceRefreshAction implements ActionProvider {
         };
     }
 
+    @Override
+    public BatchDataStoreCallSite<?> getBatchDataStoreCallSite() {
+        return new BatchDataStoreCallSite<FixedServiceCreatorStore>() {
+
+            @Override
+            public boolean isApplicable(DataStoreEntryRef<FixedServiceCreatorStore> o) {
+                return o.getStore().allowManualServicesRefresh();
+            }
+
+            @Override
+            public ObservableValue<String> getName() {
+                return AppI18n.observable("refreshServices");
+            }
+
+            @Override
+            public String getIcon() {
+                return "mdi2w-web";
+            }
+
+            @Override
+            public Class<?> getApplicableClass() {
+                return FixedServiceCreatorStore.class;
+            }
+
+            @Override
+            public ActionProvider.Action createAction(DataStoreEntryRef<FixedServiceCreatorStore> store) {
+                return new Action(store);
+            }
+        };
+    }
+
     @Value
     static class Action implements ActionProvider.Action {
 

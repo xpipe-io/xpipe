@@ -52,6 +52,10 @@ public interface ActionProvider {
         return null;
     }
 
+    default BatchDataStoreCallSite<?> getBatchDataStoreCallSite() {
+        return null;
+    }
+
     default DefaultDataStoreCallSite<?> getDefaultDataStoreCallSite() {
         return null;
     }
@@ -188,6 +192,41 @@ public interface ActionProvider {
 
         default boolean requiresValidStore() {
             return true;
+        }
+    }
+
+    interface BatchDataStoreCallSite<T extends DataStore> {
+
+        ObservableValue<String> getName();
+
+        String getIcon();
+
+        Class<?> getApplicableClass();
+
+        default boolean isApplicable(DataStoreEntryRef<T> o) {
+            return true;
+        }
+
+        default Action createAction(List<DataStoreEntryRef<T>> stores) {
+            var individual = stores.stream().map(ref -> {
+                return createAction(ref);
+            }).filter(action -> action != null).toList();
+            return new Action() {
+                @Override
+                public void execute() throws Exception {
+                    for (Action action : individual) {
+                        action.execute();
+                    }
+                }
+            };
+        }
+
+        default Action createAction(DataStoreEntryRef<T> store) {
+            return null;
+        }
+
+        default List<? extends ActionProvider> getChildren(List<DataStoreEntryRef<T>> batch) {
+            return List.of();
         }
     }
 

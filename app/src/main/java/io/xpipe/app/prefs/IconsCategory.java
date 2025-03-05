@@ -131,9 +131,9 @@ public class IconsCategory extends AppPrefsCategory {
         var vbox = new VerticalComp(List.of(
                 Comp.vspacer(10),
                 box,
-                Comp.separator(),
+                Comp.hseparator(),
                 refreshButton,
-                Comp.separator(),
+                Comp.hseparator(),
                 addDirectoryButton,
                 addGitButton));
         vbox.spacing(10);

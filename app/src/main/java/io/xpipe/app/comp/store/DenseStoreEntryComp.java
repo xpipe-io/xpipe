@@ -8,6 +8,7 @@ import javafx.beans.binding.Bindings;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 
@@ -71,9 +72,20 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         var notes = new StoreNotesComp(getWrapper()).createRegion();
         var userIcon = createUserIcon().createRegion();
 
+        var selection = createBatchSelection().createRegion();
+        grid.add(selection, 0, 0, 1, 2);
+        grid.getColumnConstraints().add(new ColumnConstraints(25));
+        StoreViewState.get().getBatchMode().subscribe(batch -> {
+            if (batch) {
+                grid.getColumnConstraints().set(0, new ColumnConstraints(25));
+            } else {
+                grid.getColumnConstraints().set(0, new ColumnConstraints(-8));
+            }
+        });
+
         var storeIcon = createIcon(28, 24);
         GridPane.setHalignment(storeIcon, HPos.CENTER);
-        grid.add(storeIcon, 0, 0);
+        grid.add(storeIcon, 1, 0);
         grid.getColumnConstraints().add(new ColumnConstraints(34));
 
         var customSize = content != null ? 100 : 0;
