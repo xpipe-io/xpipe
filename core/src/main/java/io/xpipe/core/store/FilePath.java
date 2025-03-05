@@ -33,6 +33,8 @@ public final class FilePath {
     @NonNull
     private final String value;
 
+    private FilePath normalized;
+
     private FilePath(@NonNull String value) {
         this.value = value;
         if (value.isBlank()) {
@@ -193,8 +195,14 @@ public final class FilePath {
     }
 
     public FilePath normalize() {
+        if (normalized != null) {
+            return normalized;
+        }
+
         var backslash = value.contains("\\");
-        return backslash ? toWindows() : toUnix();
+        var r = backslash ? toWindows() : toUnix();
+        normalized = r;
+        return r;
     }
 
     public FilePath resolveTildeHome(String dir) {
