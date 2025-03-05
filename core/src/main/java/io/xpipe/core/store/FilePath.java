@@ -179,7 +179,7 @@ public final class FilePath {
     }
 
     public boolean startsWith(FilePath start) {
-        return normalize().startsWith(start.normalize());
+        return normalize().toString().startsWith(start.normalize().toString());
     }
 
     public FilePath relativize(FilePath base) {
@@ -212,5 +212,9 @@ public final class FilePath {
     public FilePath toWindows() {
         var suffix = value.endsWith("/") || value.endsWith("\\") ? "\\" : "";
         return new FilePath(String.join("\\", split()) + suffix);
+    }
+
+    public Path asLocalPath() {
+        return Path.of(value);
     }
 }
