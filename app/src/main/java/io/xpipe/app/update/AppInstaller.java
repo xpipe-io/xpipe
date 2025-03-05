@@ -127,7 +127,16 @@ public class AppInstaller {
                         echo Starting XPipe ...
                         start "" "%s" "-Dio.xpipe.app.dataDir=%s"
                         """,
-                        file, file, logFile, args, file, logFile, args, exec, exec, AppProperties.get().getDataDir());
+                        file,
+                        file,
+                        logFile,
+                        args,
+                        file,
+                        logFile,
+                        args,
+                        exec,
+                        exec,
+                        AppProperties.get().getDataDir());
             }
 
             private String getPowershellCommand(String file, String logFile, String exec, boolean systemWide) {
@@ -143,7 +152,17 @@ public class AppInstaller {
                         echo 'Starting XPipe ...'
                         & "%s" "-Dio.xpipe.app.dataDir=%s"
                         """,
-                        file, file, logFile, property, runas, file, logFile, startProcessProperty, exec, exec, AppProperties.get().getDataDir());
+                        file,
+                        file,
+                        logFile,
+                        property,
+                        runas,
+                        file,
+                        logFile,
+                        startProcessProperty,
+                        exec,
+                        exec,
+                        AppProperties.get().getDataDir());
             }
         }
 

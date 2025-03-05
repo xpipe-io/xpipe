@@ -78,8 +78,10 @@ public class ChgrpAction implements BrowserBranchAction {
                     .executeSimpleCommand(CommandBuilder.of()
                             .add("chgrp", option)
                             .addFiles(entries.stream()
-                                    .map(browserEntry ->
-                                            browserEntry.getRawFileEntry().getPath().toString())
+                                    .map(browserEntry -> browserEntry
+                                            .getRawFileEntry()
+                                            .getPath()
+                                            .toString())
                                     .toList()));
         }
     }
@@ -106,8 +108,10 @@ public class ChgrpAction implements BrowserBranchAction {
                         CommandBuilder.of()
                                 .add("chgrp", group.getValue())
                                 .addFiles(entries.stream()
-                                        .map(browserEntry ->
-                                                browserEntry.getRawFileEntry().getPath().toString())
+                                        .map(browserEntry -> browserEntry
+                                                .getRawFileEntry()
+                                                .getPath()
+                                                .toString())
                                         .toList()),
                         false);
             });

@@ -2,16 +2,13 @@ package io.xpipe.app.storage;
 
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.store.FileNames;
-
 import io.xpipe.core.store.FilePath;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.Value;
 
-import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
 import java.util.Optional;
 import java.util.regex.Matcher;
 
@@ -26,7 +23,9 @@ public class ContextualFileReference {
 
     private static FilePath getDataDir() {
         if (DataStorage.get() == null) {
-            return lastDataDir != null ? lastDataDir : FilePath.of(AppPrefs.DEFAULT_STORAGE_DIR.resolve("data")).toUnix();
+            return lastDataDir != null
+                    ? lastDataDir
+                    : FilePath.of(AppPrefs.DEFAULT_STORAGE_DIR.resolve("data")).toUnix();
         }
 
         return lastDataDir = FilePath.of(DataStorage.get().getDataDir()).toUnix();
@@ -65,7 +64,8 @@ public class ContextualFileReference {
     }
 
     public FilePath toAbsoluteFilePath(ShellControl sc) {
-        return FilePath.of(path.replaceAll("/", Matcher.quoteReplacement(sc != null ? sc.getOsType().getFileSystemSeparator() : "/")));
+        return FilePath.of(path.replaceAll(
+                "/", Matcher.quoteReplacement(sc != null ? sc.getOsType().getFileSystemSeparator() : "/")));
     }
 
     public boolean isInDataDirectory() {

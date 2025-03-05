@@ -13,7 +13,6 @@ import io.xpipe.app.util.ContextMenuHelper;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 
-import io.xpipe.core.store.FilePath;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;

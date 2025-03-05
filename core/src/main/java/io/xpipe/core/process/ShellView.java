@@ -46,9 +46,7 @@ public class ShellView {
     }
 
     public boolean directoryExists(FilePath path) throws Exception {
-        return getDialect()
-                .directoryExists(shellControl, path.toString())
-                .executeAndCheck();
+        return getDialect().directoryExists(shellControl, path.toString()).executeAndCheck();
     }
 
     public String user() throws Exception {
@@ -95,8 +93,10 @@ public class ShellView {
         var cmd = shellControl.command(d.getCdCommand(directory));
         cmd.executeAndCheck();
     }
-    
+
     public String environmentVariable(String name) throws Exception {
-        return shellControl.command(shellControl.getShellDialect().getPrintEnvironmentVariableCommand(name)).readStdoutOrThrow();
+        return shellControl
+                .command(shellControl.getShellDialect().getPrintEnvironmentVariableCommand(name))
+                .readStdoutOrThrow();
     }
 }

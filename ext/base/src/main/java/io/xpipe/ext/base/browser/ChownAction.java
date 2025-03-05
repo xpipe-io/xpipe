@@ -77,8 +77,10 @@ public class ChownAction implements BrowserBranchAction {
                     .executeSimpleCommand(CommandBuilder.of()
                             .add("chown", option)
                             .addFiles(entries.stream()
-                                    .map(browserEntry ->
-                                            browserEntry.getRawFileEntry().getPath().toString())
+                                    .map(browserEntry -> browserEntry
+                                            .getRawFileEntry()
+                                            .getPath()
+                                            .toString())
                                     .toList()));
         }
     }
@@ -104,8 +106,10 @@ public class ChownAction implements BrowserBranchAction {
                         CommandBuilder.of()
                                 .add("chown", user.getValue())
                                 .addFiles(entries.stream()
-                                        .map(browserEntry ->
-                                                browserEntry.getRawFileEntry().getPath().toString())
+                                        .map(browserEntry -> browserEntry
+                                                .getRawFileEntry()
+                                                .getPath()
+                                                .toString())
                                         .toList()),
                         false);
             });

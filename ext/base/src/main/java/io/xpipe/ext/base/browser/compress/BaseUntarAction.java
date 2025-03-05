@@ -9,8 +9,8 @@ import io.xpipe.app.browser.icon.BrowserIcons;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
-
 import io.xpipe.core.store.FilePath;
+
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 
@@ -69,19 +69,27 @@ public class BaseUntarAction implements BrowserApplicationPathAction, BrowserLea
     @Override
     public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         var sep = model.getFileSystem().getShell().orElseThrow().getOsType().getFileSystemSeparator();
-        var dir = entries.size() > 1 ? "[...]" : getTarget(entries.getFirst().getRawFileEntry().getPath()).getFileName() + sep;
+        var dir = entries.size() > 1
+                ? "[...]"
+                : getTarget(entries.getFirst().getRawFileEntry().getPath()).getFileName() + sep;
         return toDirectory ? AppI18n.observable("untarDirectory", dir) : AppI18n.observable("untarHere");
     }
 
     private FilePath getTarget(FilePath name) {
-        return FilePath.of(name.toString().replaceAll("\\.tar$", "").replaceAll("\\.tar.gz$", "").replaceAll("\\.tgz$", ""));
+        return FilePath.of(name.toString()
+                .replaceAll("\\.tar$", "")
+                .replaceAll("\\.tar.gz$", "")
+                .replaceAll("\\.tgz$", ""));
     }
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         if (gz) {
             return entries.stream()
-                    .allMatch(entry -> entry.getRawFileEntry().getPath().toString().endsWith(".tar.gz")
+                    .allMatch(entry -> entry.getRawFileEntry()
+                                    .getPath()
+                                    .toString()
+                                    .endsWith(".tar.gz")
                             || entry.getRawFileEntry().getPath().toString().endsWith(".tgz"));
         }
 

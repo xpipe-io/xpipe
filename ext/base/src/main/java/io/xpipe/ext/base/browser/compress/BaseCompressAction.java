@@ -76,9 +76,12 @@ public abstract class BaseCompressAction implements BrowserAction, BrowserBranch
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         var ext = List.of("zip", "tar", "tar.gz", "tgz", "7z", "rar", "xar");
-        if (entries.stream().anyMatch(browserEntry -> ext.stream()
-                .anyMatch(s ->
-                        browserEntry.getRawFileEntry().getPath().toString().toLowerCase().endsWith("." + s)))) {
+        if (entries.stream().anyMatch(browserEntry -> ext.stream().anyMatch(s -> browserEntry
+                .getRawFileEntry()
+                .getPath()
+                .toString()
+                .toLowerCase()
+                .endsWith("." + s)))) {
             return false;
         }
 
@@ -172,14 +175,10 @@ public abstract class BaseCompressAction implements BrowserAction, BrowserBranch
                     () -> {
                         var sc = model.getFileSystem().getShell().orElseThrow();
                         if (ShellDialects.isPowershell(sc)) {
-                            sc.command(command)
-                                    .withWorkingDirectory(base)
-                                    .execute();
+                            sc.command(command).withWorkingDirectory(base).execute();
                         } else {
                             try (var sub = sc.subShell(ShellDialects.POWERSHELL)) {
-                                sub.command(command)
-                                        .withWorkingDirectory(base)
-                                        .execute();
+                                sub.command(command).withWorkingDirectory(base).execute();
                             }
                         }
                     },
@@ -205,9 +204,7 @@ public abstract class BaseCompressAction implements BrowserAction, BrowserBranch
             var target = base.join(fileName);
             var command = CommandBuilder.of().add("zip", "-r", "-");
             for (BrowserEntry entry : entries) {
-                var rel = entry.getRawFileEntry().getPath()
-                        .relativize(base)
-                        .toUnix();
+                var rel = entry.getRawFileEntry().getPath().relativize(base).toUnix();
                 if (directory) {
                     command.add(".");
                 } else {

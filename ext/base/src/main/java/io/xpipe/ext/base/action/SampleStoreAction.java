@@ -10,8 +10,8 @@ import io.xpipe.core.process.CommandControl;
 import io.xpipe.core.process.ElevationFunction;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
-
 import io.xpipe.core.store.FilePath;
+
 import javafx.beans.value.ObservableValue;
 
 import lombok.Value;

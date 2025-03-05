@@ -32,10 +32,11 @@ public class AboutCategory extends AppPrefsCategory {
                                 .grow(true, false),
                         null)
                 .addComp(
-                        new TileButtonComp("documentation", "documentationDescription", "mdi2b-book-open-variant", e -> {
-                                    Hyperlinks.open(Hyperlinks.DOCS);
-                                    e.consume();
-                                })
+                        new TileButtonComp(
+                                        "documentation", "documentationDescription", "mdi2b-book-open-variant", e -> {
+                                            Hyperlinks.open(Hyperlinks.DOCS);
+                                            e.consume();
+                                        })
                                 .grow(true, false),
                         null)
                 .addComp(
@@ -54,13 +55,13 @@ public class AboutCategory extends AppPrefsCategory {
                         null)
                 .addComp(
                         new TileButtonComp("thirdParty", "thirdPartyDescription", "mdi2o-open-source-initiative", e -> {
-                            var comp = new ThirdPartyDependencyListComp()
-                                    .prefWidth(650)
-                                    .styleClass("open-source-notices");
-                            var modal = ModalOverlay.of("openSourceNotices", comp);
-                            modal.show();
-                        })
-                        .grow(true, false))
+                                    var comp = new ThirdPartyDependencyListComp()
+                                            .prefWidth(650)
+                                            .styleClass("open-source-notices");
+                                    var modal = ModalOverlay.of("openSourceNotices", comp);
+                                    modal.show();
+                                })
+                                .grow(true, false))
                 .addComp(
                         new TileButtonComp("eula", "eulaDescription", "mdi2c-card-text-outline", e -> {
                                     Hyperlinks.open(Hyperlinks.DOCS_EULA);

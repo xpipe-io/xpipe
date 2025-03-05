@@ -7,7 +7,6 @@ import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.FileNames;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;

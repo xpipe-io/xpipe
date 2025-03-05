@@ -6,8 +6,8 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.storage.DataStorage;
-
 import io.xpipe.core.store.FilePath;
+
 import lombok.Value;
 
 import java.net.URI;

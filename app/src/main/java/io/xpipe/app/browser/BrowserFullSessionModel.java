@@ -9,7 +9,6 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.FileSystemStore;
 import io.xpipe.core.util.FailableFunction;

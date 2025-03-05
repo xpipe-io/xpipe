@@ -30,8 +30,10 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public long getFileSize(FilePath file) throws Exception {
-        return Long.parseLong(
-                shellControl.getShellDialect().queryFileSize(shellControl, file.toString()).readStdoutOrThrow());
+        return Long.parseLong(shellControl
+                .getShellDialect()
+                .queryFileSize(shellControl, file.toString())
+                .readStdoutOrThrow());
     }
 
     @Override
@@ -75,7 +77,8 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public OutputStream openOutput(FilePath file, long totalBytes) throws Exception {
-        var cmd = shellControl.getShellDialect().createStreamFileWriteCommand(shellControl, file.toString(), totalBytes);
+        var cmd =
+                shellControl.getShellDialect().createStreamFileWriteCommand(shellControl, file.toString(), totalBytes);
         cmd.setExitTimeout(Duration.ofMillis(Long.MAX_VALUE));
         return cmd.startExternalStdin();
     }
@@ -173,7 +176,11 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public List<FilePath> listRoots() throws Exception {
-        return shellControl.getShellDialect().listRoots(shellControl).map(s -> FilePath.of(s)).toList();
+        return shellControl
+                .getShellDialect()
+                .listRoots(shellControl)
+                .map(s -> FilePath.of(s))
+                .toList();
     }
 
     @Override

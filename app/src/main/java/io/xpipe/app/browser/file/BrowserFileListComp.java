@@ -8,7 +8,6 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileInfo;
 import io.xpipe.core.store.FileKind;
-import io.xpipe.core.store.FileNames;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;

@@ -2,14 +2,9 @@ package io.xpipe.app.beacon.impl;
 
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageQuery;
-import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.beacon.api.ConnectionQueryExchange;
 
 import com.sun.net.httpserver.HttpExchange;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
 
 public class ConnectionQueryExchangeImpl extends ConnectionQueryExchange {
 

@@ -8,6 +8,7 @@ import io.xpipe.app.icon.SystemIconSource;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.FilePath;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -15,7 +16,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.scene.control.TextField;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;

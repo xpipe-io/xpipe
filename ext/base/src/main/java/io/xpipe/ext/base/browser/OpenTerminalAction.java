@@ -6,8 +6,8 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.store.FileKind;
-
 import io.xpipe.core.store.FilePath;
+
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;

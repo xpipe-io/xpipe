@@ -173,8 +173,9 @@ public interface SshIdentityStrategy {
             if (s.startsWith("~")) {
                 s = s.resolveTildeHome(parent.getOsType().getUserHomeDirectory(parent));
             }
-            var resolved =
-                    parent.getShellDialect().evaluateExpression(parent, s.toString()).readStdoutOrThrow();
+            var resolved = parent.getShellDialect()
+                    .evaluateExpression(parent, s.toString())
+                    .readStdoutOrThrow();
             if (!parent.getShellDialect()
                     .createFileExistsCommand(parent, resolved)
                     .executeAndCheck()) {
@@ -194,7 +195,8 @@ public interface SshIdentityStrategy {
             }
 
             if ((parent.getOsType().equals(OsType.LINUX) || parent.getOsType().equals(OsType.MACOS))) {
-                parent.command(CommandBuilder.of().add("chmod", "400").addFile(resolved)).executeAndCheck();
+                parent.command(CommandBuilder.of().add("chmod", "400").addFile(resolved))
+                        .executeAndCheck();
             }
         }
 
@@ -215,8 +217,9 @@ public interface SshIdentityStrategy {
                         if (s.startsWith("~")) {
                             s = s.resolveTildeHome(sc.getOsType().getUserHomeDirectory(sc));
                         }
-                        var resolved =
-                                sc.getShellDialect().evaluateExpression(sc, s.toString()).readStdoutOrThrow();
+                        var resolved = sc.getShellDialect()
+                                .evaluateExpression(sc, s.toString())
+                                .readStdoutOrThrow();
                         return sc.getShellDialect().fileArgument(resolved);
                     })
                     .add("-oIdentitiesOnly=yes");

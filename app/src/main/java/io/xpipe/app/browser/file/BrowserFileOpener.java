@@ -10,7 +10,6 @@ import io.xpipe.core.process.ElevationFunction;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileInfo;
-import io.xpipe.core.store.FileNames;
 
 import java.io.FilterOutputStream;
 import java.io.IOException;

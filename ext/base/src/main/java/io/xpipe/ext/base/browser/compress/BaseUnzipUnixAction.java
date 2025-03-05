@@ -57,7 +57,9 @@ public abstract class BaseUnzipUnixAction extends ExecuteApplicationAction {
     @Override
     public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         var sep = model.getFileSystem().getShell().orElseThrow().getOsType().getFileSystemSeparator();
-        var dir = entries.size() > 1 ? "[...]" : getTarget(entries.getFirst().getRawFileEntry().getPath()).getFileName() + sep;
+        var dir = entries.size() > 1
+                ? "[...]"
+                : getTarget(entries.getFirst().getRawFileEntry().getPath()).getFileName() + sep;
         return toDirectory ? AppI18n.observable("unzipDirectory", dir) : AppI18n.observable("unzipHere");
     }
 
@@ -68,7 +70,8 @@ public abstract class BaseUnzipUnixAction extends ExecuteApplicationAction {
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return entries.stream()
-                        .allMatch(entry -> entry.getRawFileEntry().getPath().toString().endsWith(".zip"))
+                        .allMatch(entry ->
+                                entry.getRawFileEntry().getPath().toString().endsWith(".zip"))
                 && !model.getFileSystem().getShell().orElseThrow().getOsType().equals(OsType.WINDOWS);
     }
 }

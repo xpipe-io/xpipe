@@ -23,16 +23,6 @@ public class CommandSupport {
                 processControl.getShellDialect().getWhichCommand(executable));
     }
 
-    public static boolean isInPathSilent(ShellControl processControl, String executable) {
-        try {
-            return processControl.executeSimpleBooleanCommand(
-                    processControl.getShellDialect().getWhichCommand(executable));
-        } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).handle();
-            return false;
-        }
-    }
-
     public static void isInPathOrThrow(
             ShellControl processControl, String executable, String displayName, DataStoreEntry connection)
             throws Exception {

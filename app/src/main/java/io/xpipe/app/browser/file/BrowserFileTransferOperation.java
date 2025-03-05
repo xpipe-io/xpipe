@@ -12,7 +12,6 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Timer;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -227,8 +226,7 @@ public class BrowserFileTransferOperation {
         if (matcher.matches()) {
             try {
                 var number = Integer.parseInt(matcher.group(2));
-                var newFile =
-                        target.getParent().join(matcher.group(1) + " (" + (number + 1) + ")." + matcher.group(3));
+                var newFile = target.getParent().join(matcher.group(1) + " (" + (number + 1) + ")." + matcher.group(3));
                 return newFile;
             } catch (NumberFormatException ignored) {
             }
@@ -436,7 +434,8 @@ public class BrowserFileTransferOperation {
 
                     outputStream.write(buffer, 0, read);
                     transferred.addAndGet(read);
-                    updateProgress(new BrowserTransferProgress(sourceFile.getName(), transferred.get(), total.get(), start));
+                    updateProgress(
+                            new BrowserTransferProgress(sourceFile.getName(), transferred.get(), total.get(), start));
                 }
             } catch (Exception ex) {
                 exception.set(ex);
