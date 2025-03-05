@@ -36,7 +36,7 @@ public class ShellView {
     }
 
     public FilePath userHome() throws Exception {
-        return new FilePath(shellControl.getOsType().getUserHomeDirectory(shellControl));
+        return FilePath.of(shellControl.getOsType().getUserHomeDirectory(shellControl));
     }
 
     public boolean fileExists(FilePath path) throws Exception {

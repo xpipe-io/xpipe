@@ -81,7 +81,7 @@ public interface SystemIconSource {
                 if (!Files.exists(dir)) {
                     sc.command(CommandBuilder.of().add("git", "clone").addQuoted(remote).addFile(dir.toString())).execute();
                 } else {
-                    sc.command(CommandBuilder.of().add("git", "pull")).withWorkingDirectory(new FilePath(dir)).execute();
+                    sc.command(CommandBuilder.of().add("git", "pull")).withWorkingDirectory(FilePath.of(dir)).execute();
                 }
             }
         }

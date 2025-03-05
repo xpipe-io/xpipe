@@ -73,7 +73,7 @@ public class ScriptHelper {
             content += nl + t.getPassthroughExitCommand();
         }
 
-        return createExecScript(t, processControl, new FilePath(t.initFileName(processControl)), content);
+        return createExecScript(t, processControl, FilePath.of(t.initFileName(processControl)), content);
     }
 
     @SneakyThrows

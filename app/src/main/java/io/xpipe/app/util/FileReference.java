@@ -29,7 +29,7 @@ public class FileReference {
     }
 
     public static FileReference local(Path p) {
-        return new FileReference(DataStorage.get().local().ref(), new FilePath(p.toString()));
+        return new FileReference(DataStorage.get().local().ref(), FilePath.of(p.toString()));
     }
 
     public static FileReference local(FilePath p) {

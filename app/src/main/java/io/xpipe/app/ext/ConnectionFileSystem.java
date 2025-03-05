@@ -167,7 +167,7 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public List<FilePath> listRoots() throws Exception {
-        return shellControl.getShellDialect().listRoots(shellControl).map(s -> new FilePath(s)).toList();
+        return shellControl.getShellDialect().listRoots(shellControl).map(s -> FilePath.of(s)).toList();
     }
 
     @Override

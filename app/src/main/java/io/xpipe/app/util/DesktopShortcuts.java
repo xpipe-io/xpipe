@@ -66,13 +66,13 @@ public class DesktopShortcuts {
             pc.executeSimpleCommand(pc.getShellDialect().getMkdirsCommand(base + "/Contents/Resources"));
 
             var macExec = base + "/Contents/MacOS/" + name;
-            pc.view().writeScriptFile(new FilePath(macExec), content);
+            pc.view().writeScriptFile(FilePath.of(macExec), content);
             pc.executeSimpleCommand("chmod ugo+x \"" + macExec + "\"");
 
-            pc.view().writeTextFile(new FilePath(base + "/Contents/PkgInfo"), "APPL????");
+            pc.view().writeTextFile(FilePath.of(base + "/Contents/PkgInfo"), "APPL????");
             pc.view()
                     .writeTextFile(
-                            new FilePath(base + "/Contents/Info.plist"),
+                            FilePath.of(base + "/Contents/Info.plist"),
                             """
                                                     <?xml version="1.0" encoding="UTF-8"?>
                                                     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">

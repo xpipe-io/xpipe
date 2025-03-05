@@ -79,7 +79,7 @@ public class BrowserFileSystemHelper {
             return path;
         }
 
-        var resolved = new FilePath(shell.get()
+        var resolved = FilePath.of(shell.get()
                 .getShellDialect()
                 .resolveDirectory(shell.get(), path.toString())
                 .readStdoutOrThrow());

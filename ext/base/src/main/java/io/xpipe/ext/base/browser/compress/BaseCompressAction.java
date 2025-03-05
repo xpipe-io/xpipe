@@ -48,7 +48,7 @@ public abstract class BaseCompressAction implements BrowserAction, BrowserBranch
 
             var pf = sc.command(sc.getShellDialect().getPrintEnvironmentVariableCommand("ProgramFiles"))
                     .readStdoutOrThrow();
-            var loc = new FilePath(pf).join("7-Zip", "7z.exe").toWindows();
+            var loc = FilePath.of(pf).join("7-Zip", "7z.exe").toWindows();
             if (model.getFileSystem().fileExists(loc)) {
                 model.getCache().getMultiPurposeCache().put("7zExecutable", loc);
             }

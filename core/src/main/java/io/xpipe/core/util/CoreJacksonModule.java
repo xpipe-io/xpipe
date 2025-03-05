@@ -124,7 +124,7 @@ public class CoreJacksonModule extends SimpleModule {
 
         @Override
         public FilePath deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            return new FilePath(p.getValueAsString());
+            return FilePath.of(p.getValueAsString());
         }
     }
 

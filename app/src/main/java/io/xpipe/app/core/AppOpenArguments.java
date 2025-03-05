@@ -133,7 +133,7 @@ public class AppOpenArguments {
             var dir = Files.isDirectory(file) ? file : file.getParent();
             AppLayoutModel.get().selectBrowser();
             BrowserFullSessionModel.DEFAULT.openFileSystemAsync(
-                    DataStorage.get().local().ref(), model -> new FilePath(dir.toString()), null);
+                    DataStorage.get().local().ref(), model -> FilePath.of(dir.toString()), null);
         }
     }
 }

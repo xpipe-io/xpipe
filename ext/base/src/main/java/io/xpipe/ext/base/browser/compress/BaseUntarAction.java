@@ -74,7 +74,7 @@ public class BaseUntarAction implements BrowserApplicationPathAction, BrowserLea
     }
 
     private FilePath getTarget(FilePath name) {
-        return new FilePath(name.toString().replaceAll("\\.tar$", "").replaceAll("\\.tar.gz$", "").replaceAll("\\.tgz$", ""));
+        return FilePath.of(name.toString().replaceAll("\\.tar$", "").replaceAll("\\.tar.gz$", "").replaceAll("\\.tgz$", ""));
     }
 
     @Override

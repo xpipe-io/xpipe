@@ -111,7 +111,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                     var syncedTarget = handler.addDataFile(
                             source, target, sync.getPerUser().test(source));
                     Platform.runLater(() -> {
-                        filePath.setValue(new FilePath(syncedTarget));
+                        filePath.setValue(FilePath.of(syncedTarget));
                     });
                 }
             } catch (Exception e) {
@@ -155,7 +155,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
             prop.set(s != null ? s.toString() : null);
         }));
         prop.addListener((observable, oldValue, newValue) -> {
-            filePath.setValue(newValue != null ? new FilePath(newValue) : null);
+            filePath.setValue(newValue != null ? FilePath.of(newValue) : null);
         });
         var combo = new ComboTextFieldComp(prop, items, param -> {
             return new ListCell<>() {
@@ -187,7 +187,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
             prop.set(s != null ? s.toString() : null);
         }));
         prop.addListener((observable, oldValue, newValue) -> {
-            filePath.setValue(newValue != null ? new FilePath(newValue) : null);
+            filePath.setValue(newValue != null ? FilePath.of(newValue) : null);
         });
         var fileNameComp = new TextFieldComp(prop)
                 .apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS))

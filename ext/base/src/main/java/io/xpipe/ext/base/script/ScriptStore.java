@@ -136,10 +136,10 @@ public abstract class ScriptStore implements DataStore, StatefulDataStore<Enable
                     .makeFileSystemCompatible(
                             scriptStore.get().getName().toLowerCase(Locale.ROOT).replaceAll(" ", "_"));
             var scriptFile = FileNames.join(targetDir, fileName + "." + d.getScriptFileEnding());
-            proc.view().writeScriptFile(new FilePath(scriptFile), content);
+            proc.view().writeScriptFile(FilePath.of(scriptFile), content);
         }
 
-        proc.view().writeTextFile(new FilePath(hashFile), String.valueOf(hash));
+        proc.view().writeTextFile(FilePath.of(hashFile), String.valueOf(hash));
         return targetDir;
     }
 

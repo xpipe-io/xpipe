@@ -112,7 +112,7 @@ public class SampleStoreAction implements ActionProvider {
                 // You can also set a custom working directory.
                 try (CommandControl cc = sc.command("kill <pid>")
                         .elevated(ElevationFunction.elevated("kill"))
-                        .withWorkingDirectory(new FilePath("/"))
+                        .withWorkingDirectory(FilePath.of("/"))
                         .start()) {
                     // Discard any output but throw an exception with the stderr contents if the exit code is not 0
                     cc.discardOrThrow();

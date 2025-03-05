@@ -26,10 +26,10 @@ public class ContextualFileReference {
 
     private static FilePath getDataDir() {
         if (DataStorage.get() == null) {
-            return lastDataDir != null ? lastDataDir : new FilePath(AppPrefs.DEFAULT_STORAGE_DIR.resolve("data")).toUnix();
+            return lastDataDir != null ? lastDataDir : FilePath.of(AppPrefs.DEFAULT_STORAGE_DIR.resolve("data")).toUnix();
         }
 
-        return lastDataDir = new FilePath(DataStorage.get().getDataDir()).toUnix();
+        return lastDataDir = FilePath.of(DataStorage.get().getDataDir()).toUnix();
     }
 
     public static Optional<FilePath> resolveIfInDataDirectory(ShellControl shellControl, String s) {
@@ -47,7 +47,7 @@ public class ContextualFileReference {
         }
 
         var ns = p.normalize().toUnix();
-        var home = new FilePath(System.getProperty("user.home")).normalize().toUnix();
+        var home = FilePath.of(System.getProperty("user.home")).normalize().toUnix();
 
         String replaced;
         var withHomeResolved = ns.toString().replace("~", home.toString());
@@ -61,11 +61,11 @@ public class ContextualFileReference {
     }
 
     public static ContextualFileReference of(String s) {
-        return of(s != null ? new FilePath(s) : null);
+        return of(s != null ? FilePath.of(s) : null);
     }
 
     public FilePath toAbsoluteFilePath(ShellControl sc) {
-        return new FilePath(path.replaceAll("/", Matcher.quoteReplacement(sc != null ? sc.getOsType().getFileSystemSeparator() : "/")));
+        return FilePath.of(path.replaceAll("/", Matcher.quoteReplacement(sc != null ? sc.getOsType().getFileSystemSeparator() : "/")));
     }
 
     public boolean isInDataDirectory() {
@@ -74,7 +74,7 @@ public class ContextualFileReference {
 
     public String serialize() {
         var start = getDataDir();
-        var normalizedPath = new FilePath(path).normalize().toUnix();
+        var normalizedPath = FilePath.of(path).normalize().toUnix();
         if (normalizedPath.startsWith(start) && !normalizedPath.equals(start)) {
             return "<DATA>" + "/" + start.relativize(normalizedPath);
         }
