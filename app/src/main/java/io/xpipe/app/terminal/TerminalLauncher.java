@@ -47,7 +47,8 @@ public class TerminalLauncher {
         open(null, title, null, cc, request, true);
     }
 
-    public static void open(DataStoreEntry entry, String title, FilePath directory, ProcessControl cc) throws Exception {
+    public static void open(DataStoreEntry entry, String title, FilePath directory, ProcessControl cc)
+            throws Exception {
         open(entry, title, directory, cc, UUID.randomUUID(), true);
     }
 

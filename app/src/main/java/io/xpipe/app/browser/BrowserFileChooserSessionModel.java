@@ -7,7 +7,6 @@ import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.FileReference;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.FileSystemStore;
 import io.xpipe.core.util.FailableFunction;

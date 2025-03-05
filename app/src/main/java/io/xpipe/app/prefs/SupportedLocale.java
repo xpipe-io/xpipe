@@ -14,7 +14,6 @@ import java.util.Locale;
 @AllArgsConstructor
 @Getter
 public enum SupportedLocale implements PrefsChoiceValue {
-
     ENGLISH(Locale.ENGLISH, "en", false),
     GERMAN(Locale.GERMAN, "de", false),
     DUTCH(Locale.of("nl"), "nl", false),
@@ -38,7 +37,8 @@ public enum SupportedLocale implements PrefsChoiceValue {
     public static SupportedLocale getInitial() {
         var s = Locale.getDefault();
         return Arrays.stream(values())
-                .filter(supportedLocale -> supportedLocale.isSetDefault() && supportedLocale.getLocale().getLanguage().equals(s.getLanguage()))
+                .filter(supportedLocale -> supportedLocale.isSetDefault()
+                        && supportedLocale.getLocale().getLanguage().equals(s.getLanguage()))
                 .findFirst()
                 .orElse(getEnglish());
     }

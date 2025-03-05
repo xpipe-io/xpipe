@@ -5,7 +5,6 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.XPipeInstallation;

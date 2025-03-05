@@ -1,6 +1,5 @@
 package io.xpipe.app.prefs;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
@@ -21,6 +20,7 @@ import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableStringValue;
 import javafx.beans.value.ObservableValue;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -84,9 +84,11 @@ public class AppPrefs {
             .key("iconSources")
             .valueType(TypeFactory.defaultInstance().constructType(new TypeReference<List<SystemIconSource>>() {}))
             .build());
+
     public final ObservableValue<List<SystemIconSource>> getIconSources() {
         return iconSources;
     }
+
     public final BooleanProperty disableCertutilUse =
             mapLocal(new SimpleBooleanProperty(false), "disableCertutilUse", Boolean.class, false);
     public final BooleanProperty useLocalFallbackShell =
@@ -99,8 +101,11 @@ public class AppPrefs {
             mapVaultShared(new SimpleBooleanProperty(false), "dontCachePasswords", Boolean.class, false);
     public final BooleanProperty denyTempScriptCreation =
             mapVaultShared(new SimpleBooleanProperty(false), "denyTempScriptCreation", Boolean.class, false);
-    final Property<ExternalPasswordManager> passwordManager =
-            mapVaultShared(new SimpleObjectProperty<>(ExternalPasswordManager.NONE), "passwordManager", ExternalPasswordManager.class, false);
+    final Property<ExternalPasswordManager> passwordManager = mapVaultShared(
+            new SimpleObjectProperty<>(ExternalPasswordManager.NONE),
+            "passwordManager",
+            ExternalPasswordManager.class,
+            false);
     final StringProperty passwordManagerCommand =
             mapLocal(new SimpleStringProperty(""), "passwordManagerCommand", String.class, false);
     final ObjectProperty<StartupBehaviour> startupBehaviour = mapLocal(

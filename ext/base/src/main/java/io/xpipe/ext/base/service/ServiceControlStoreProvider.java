@@ -1,6 +1,5 @@
 package io.xpipe.ext.base.service;
 
-import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.comp.store.*;
 import io.xpipe.app.core.AppI18n;
@@ -11,19 +10,14 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.ShellStoreFormat;
-import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.ext.base.script.ScriptStore;
-import io.xpipe.ext.base.script.SimpleScriptStore;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ServiceControlStoreProvider implements SingletonSessionStoreProvider, DataStoreProvider {
@@ -61,14 +55,13 @@ public class ServiceControlStoreProvider implements SingletonSessionStoreProvide
         return Bindings.createStringBinding(
                 () -> {
                     var state = s.isSessionRunning()
-                                    ? AppI18n.get("active")
-                                    : s.isSessionEnabled() ? AppI18n.get("starting") : AppI18n.get("inactive");
+                            ? AppI18n.get("active")
+                            : s.isSessionEnabled() ? AppI18n.get("starting") : AppI18n.get("inactive");
                     return new ShellStoreFormat(null, state).format();
                 },
                 section.getWrapper().getCache(),
                 AppPrefs.get().language());
     }
-
 
     @Override
     public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
@@ -91,7 +84,7 @@ public class ServiceControlStoreProvider implements SingletonSessionStoreProvide
                         host)
                 .nonNull()
                 .nameAndDescription("serviceStartScript")
-                .addComp(IntegratedTextAreaComp.script(host,start), start)
+                .addComp(IntegratedTextAreaComp.script(host, start), start)
                 .nonNull()
                 .nameAndDescription("serviceStopScript")
                 .addComp(IntegratedTextAreaComp.script(host, stop), stop)
@@ -139,5 +132,4 @@ public class ServiceControlStoreProvider implements SingletonSessionStoreProvide
     public DataStoreCreationCategory getCreationCategory() {
         return DataStoreCreationCategory.SERVICE;
     }
-
 }

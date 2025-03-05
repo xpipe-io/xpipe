@@ -25,11 +25,11 @@ public final class FilePath {
     public static FilePath of(String path) {
         return path != null ? new FilePath(path) : null;
     }
-    
+
     public static FilePath of(Path path) {
         return path != null ? new FilePath(path.toString()) : null;
     }
-    
+
     @NonNull
     private final String value;
 

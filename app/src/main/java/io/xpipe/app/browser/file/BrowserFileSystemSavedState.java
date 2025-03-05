@@ -1,7 +1,6 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.core.AppCache;
-import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.JacksonMapper;
 

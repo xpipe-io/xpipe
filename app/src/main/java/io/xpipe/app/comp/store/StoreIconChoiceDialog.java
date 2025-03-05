@@ -5,7 +5,6 @@ import io.xpipe.app.icon.SystemIcon;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.Hyperlinks;
 
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
@@ -38,21 +37,27 @@ public class StoreIconChoiceDialog {
         var filter = new FilterComp(filterText).grow(true, false);
         filter.focusOnShow();
         var github = new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
-            overlay.close();
-            AppPrefs.get().selectCategory("icons");
+                    overlay.close();
+                    AppPrefs.get().selectCategory("icons");
                 })
                 .grow(false, true);
         var modal = ModalOverlay.of(
                 "chooseCustomIcon",
-                new StoreIconChoiceComp(() -> {
-                    var showing = overlay.isShowing();
-                    overlay.close();
-                    if (showing) {
-                        Platform.runLater(() -> overlay.show());
-                    }
-                }, selected, SystemIconManager.getIcons(), 5, filterText, () -> {
-                            finish();
-                        })
+                new StoreIconChoiceComp(
+                                () -> {
+                                    var showing = overlay.isShowing();
+                                    overlay.close();
+                                    if (showing) {
+                                        Platform.runLater(() -> overlay.show());
+                                    }
+                                },
+                                selected,
+                                SystemIconManager.getIcons(),
+                                5,
+                                filterText,
+                                () -> {
+                                    finish();
+                                })
                         .prefWidth(600));
         modal.addButtonBarComp(github);
         modal.addButtonBarComp(filter);
@@ -72,7 +77,12 @@ public class StoreIconChoiceDialog {
     }
 
     private void finish() {
-        entry.setIcon(selected.get() != null ? selected.getValue().getSource().getId() + "/" + selected.getValue().getId() : null, true);
+        entry.setIcon(
+                selected.get() != null
+                        ? selected.getValue().getSource().getId() + "/"
+                                + selected.getValue().getId()
+                        : null,
+                true);
         overlay.close();
     }
 }

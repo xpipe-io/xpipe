@@ -91,7 +91,8 @@ public class ListSelectorComp<T> extends SimpleComp {
 
         if (showAllSelector.get()) {
             var allSelector = new CheckBox(null);
-            allSelector.setSelected(currentVals.stream().filter(t -> !disable.test(t)).count() == selected.size());
+            allSelector.setSelected(
+                    currentVals.stream().filter(t -> !disable.test(t)).count() == selected.size());
             allSelector.selectedProperty().addListener((observable, oldValue, newValue) -> {
                 cbs.forEach(checkBox -> {
                     if (checkBox.isDisabled()) {

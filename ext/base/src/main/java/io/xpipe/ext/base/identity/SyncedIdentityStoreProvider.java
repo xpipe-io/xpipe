@@ -7,7 +7,6 @@ import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.FileNames;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -43,7 +42,9 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
         var identity = new SimpleObjectProperty<>(st.getSshIdentity());
         var perUser = new SimpleBooleanProperty(st.isPerUser());
         perUser.addListener((observable, oldValue, newValue) -> {
-            if (!(identity.getValue() instanceof SshIdentityStrategy.File f) || f.getFile() == null || !f.getFile().isInDataDirectory()) {
+            if (!(identity.getValue() instanceof SshIdentityStrategy.File f)
+                    || f.getFile() == null
+                    || !f.getFile().isInDataDirectory()) {
                 return;
             }
 
@@ -104,15 +105,18 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
         return wrapper.getEntry().isPerUserStore() ? AppI18n.get("userIdentity") : AppI18n.get("globalIdentity");
     }
 
-@Override
-     public String getId() {
+    @Override
+    public String getId() {
         return "syncedIdentity";
     }
 
     @Override
     public DataStore defaultStore() {
-        return SyncedIdentityStore.builder().password(EncryptedValue.VaultKey.of(new SecretRetrievalStrategy.None())).sshIdentity(
-                EncryptedValue.VaultKey.of(new SshIdentityStrategy.None())).perUser(false).build();
+        return SyncedIdentityStore.builder()
+                .password(EncryptedValue.VaultKey.of(new SecretRetrievalStrategy.None()))
+                .sshIdentity(EncryptedValue.VaultKey.of(new SshIdentityStrategy.None()))
+                .perUser(false)
+                .build();
     }
 
     @Override

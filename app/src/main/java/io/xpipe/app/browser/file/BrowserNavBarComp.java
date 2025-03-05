@@ -11,7 +11,6 @@ import io.xpipe.app.comp.base.TooltipAugment;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 
-import io.xpipe.core.store.FilePath;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;

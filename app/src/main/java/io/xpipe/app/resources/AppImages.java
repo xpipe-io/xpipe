@@ -72,7 +72,6 @@ public class AppImages {
         TrackEvent.trace("Loaded images in " + module + ":" + dir + " in " + elapsed.toMillis() + " ms");
     }
 
-
     public static void loadRasterImages(Path directory, String prefix) throws IOException {
         if (!Files.isDirectory(directory)) {
             return;

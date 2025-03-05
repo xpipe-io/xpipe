@@ -1,14 +1,11 @@
 package io.xpipe.ext.base.service;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.OptionsBuilder;
 
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.control.TextField;
 
 import java.util.LinkedHashMap;
 
@@ -70,8 +67,9 @@ public class ServiceProtocolTypeHelper {
                         ? 0
                         : ex instanceof ServiceProtocolType.Http
                                 ? 1
-                                : ex instanceof ServiceProtocolType.Https ? 2 :
-                        ex instanceof ServiceProtocolType.Custom ? 3 : -1);
+                                : ex instanceof ServiceProtocolType.Https
+                                        ? 2
+                                        : ex instanceof ServiceProtocolType.Custom ? 3 : -1);
         var available = new LinkedHashMap<ObservableValue<String>, OptionsBuilder>();
         available.put(AppI18n.observable("undefined"), new OptionsBuilder());
         available.put(AppI18n.observable("http"), http(http));

@@ -8,7 +8,6 @@ import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
@@ -16,7 +15,6 @@ import io.xpipe.core.store.SingletonSessionStore;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-import javafx.beans.value.ObservableStringValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 
@@ -186,7 +184,7 @@ public class StoreEntryWrapper {
         validity.setValue(entry.getValidity());
         expanded.setValue(entry.isExpanded());
         persistentState.setValue(entry.getStorePersistentState());
-		
+
         // The property values are only registered as changed once they are queried
         // If we use information bindings that depend on some of these properties
         // but use the store methods to retrieve data instead of the wrapper properties,

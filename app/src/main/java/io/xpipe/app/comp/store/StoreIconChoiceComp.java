@@ -1,30 +1,25 @@
 package io.xpipe.app.comp.store;
 
-import atlantafx.base.theme.Styles;
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.icon.SystemIcon;
-
 import io.xpipe.app.icon.SystemIconCache;
 import io.xpipe.app.icon.SystemIconManager;
-import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
-import javafx.application.Platform;
+
 import javafx.beans.property.*;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
-
-import atlantafx.base.theme.Tweaks;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
+
+import atlantafx.base.theme.Styles;
+import atlantafx.base.theme.Tweaks;
 
 import java.util.*;
 
@@ -40,7 +35,8 @@ public class StoreIconChoiceComp extends SimpleComp {
     private final Runnable doubleClick;
 
     public StoreIconChoiceComp(
-            Runnable reshow, Property<SystemIcon> selected,
+            Runnable reshow,
+            Property<SystemIcon> selected,
             Set<SystemIcon> icons,
             int columns,
             SimpleStringProperty filter,
@@ -83,17 +79,23 @@ public class StoreIconChoiceComp extends SimpleComp {
         table.getStyleClass().add("icon-browser");
 
         var busy = new SimpleBooleanProperty(false);
-        var refreshButton = new ButtonComp(AppI18n.observable("refreshIcons"), new SimpleObjectProperty<>(new LabelGraphic.IconGraphic("mdi2r-refresh")), () -> {
-            ThreadHelper.runFailableAsync(() -> {
-                try (var ignored = new BooleanScope(busy).start()) {
-                    SystemIconManager.reload();
-                }
-                reshow.run();
-            });
-        });
+        var refreshButton = new ButtonComp(
+                AppI18n.observable("refreshIcons"),
+                new SimpleObjectProperty<>(new LabelGraphic.IconGraphic("mdi2r-refresh")),
+                () -> {
+                    ThreadHelper.runFailableAsync(() -> {
+                        try (var ignored = new BooleanScope(busy).start()) {
+                            SystemIconManager.reload();
+                        }
+                        reshow.run();
+                    });
+                });
         refreshButton.disable(busy);
-        var text = new LabelComp(AppI18n.observable("refreshIconsDescription", SystemIconManager.getSources().values().stream()
-                .mapToInt(value -> value.getIcons().size()).sum()));
+        var text = new LabelComp(AppI18n.observable(
+                "refreshIconsDescription",
+                SystemIconManager.getSources().values().stream()
+                        .mapToInt(value -> value.getIcons().size())
+                        .sum()));
         text.apply(struc -> {
             struc.get().setWrapText(true);
             struc.get().setTextAlignment(TextAlignment.CENTER);
@@ -109,7 +111,9 @@ public class StoreIconChoiceComp extends SimpleComp {
 
     private void updateData(TableView<List<SystemIcon>> table, String filterString) {
         var displayedIcons = filterString == null || filterString.isBlank() || filterString.length() < 2
-                ? icons.stream().sorted(Comparator.<SystemIcon, String>comparing(systemIcon -> systemIcon.getId())).toList()
+                ? icons.stream()
+                        .sorted(Comparator.<SystemIcon, String>comparing(systemIcon -> systemIcon.getId()))
+                        .toList()
                 : icons.stream()
                         .filter(icon -> containsString(icon.getId(), filterString))
                         .toList();

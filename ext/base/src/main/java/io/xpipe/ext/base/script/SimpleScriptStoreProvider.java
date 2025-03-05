@@ -18,7 +18,6 @@ import io.xpipe.app.util.Validator;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.core.util.Identifiers;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -101,7 +100,14 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                 new SimpleListProperty<>(FXCollections.observableArrayList(new ArrayList<>(st.getEffectiveScripts())));
         Property<String> commandProp = new SimpleObjectProperty<>(st.getCommands());
 
-        var availableDialects = List.of(ShellDialects.SH, ShellDialects.BASH, ShellDialects.ZSH, ShellDialects.FISH, ShellDialects.CMD, ShellDialects.POWERSHELL, ShellDialects.POWERSHELL_CORE);
+        var availableDialects = List.of(
+                ShellDialects.SH,
+                ShellDialects.BASH,
+                ShellDialects.ZSH,
+                ShellDialects.FISH,
+                ShellDialects.CMD,
+                ShellDialects.POWERSHELL,
+                ShellDialects.POWERSHELL_CORE);
         Comp<?> choice = (Comp<?>) Class.forName(
                         AppExtensionManager.getInstance()
                                 .getExtendedLayer()

@@ -52,9 +52,11 @@ public class DesktopHelper {
             case OsType.Windows windows -> {
                 // Explorer does not support single quotes, so use normal quotes
                 if (kind == FileKind.DIRECTORY) {
-                    sc.command(CommandBuilder.of().add("explorer").addQuoted(path.toString())).execute();
+                    sc.command(CommandBuilder.of().add("explorer").addQuoted(path.toString()))
+                            .execute();
                 } else {
-                    sc.command(CommandBuilder.of().add("explorer", "/select,\"" + path.toString() + "\"")).execute();
+                    sc.command(CommandBuilder.of().add("explorer", "/select,\"" + path.toString() + "\""))
+                            .execute();
                 }
             }
             case OsType.Linux linux -> {
@@ -77,7 +79,11 @@ public class DesktopHelper {
                         .execute();
             }
             case OsType.MacOs macOs -> {
-                sc.command(CommandBuilder.of().add("open").addIf(kind == FileKind.DIRECTORY, "-R").addFile(path)).execute();
+                sc.command(CommandBuilder.of()
+                                .add("open")
+                                .addIf(kind == FileKind.DIRECTORY, "-R")
+                                .addFile(path))
+                        .execute();
             }
             case OsType.Bsd bsd -> {}
             case OsType.Solaris solaris -> {}

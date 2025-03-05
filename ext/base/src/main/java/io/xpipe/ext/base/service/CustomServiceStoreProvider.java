@@ -68,8 +68,8 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
         return CustomServiceStore.builder().build();
     }
 
-@Override
-     public String getId() {
+    @Override
+    public String getId() {
         return "customService";
     }
 

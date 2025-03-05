@@ -1,6 +1,7 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.core.store.FilePath;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.IntegerProperty;

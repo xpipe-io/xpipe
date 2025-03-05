@@ -1,17 +1,13 @@
 package io.xpipe.ext.base.service;
 
-import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
-import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.Hyperlinks;
+import io.xpipe.app.util.LocalShell;
+import io.xpipe.core.process.CommandBuilder;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.util.LocalShell;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.OsType;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -109,7 +105,6 @@ public interface ServiceProtocolType {
         }
     }
 
-
     @JsonTypeName("custom")
     @Value
     @Jacksonized
@@ -130,7 +125,9 @@ public interface ServiceProtocolType {
             }
 
             var port = url.split(":")[1];
-            var format = commandTemplate.toLowerCase(Locale.ROOT).contains("$port") ? commandTemplate : commandTemplate + ":$PORT";
+            var format = commandTemplate.toLowerCase(Locale.ROOT).contains("$port")
+                    ? commandTemplate
+                    : commandTemplate + ":$PORT";
             try (var pc = LocalShell.getShell().start()) {
                 var toExecute = ExternalApplicationHelper.replaceFileArgument(format, "PORT", port);
                 var command = CommandBuilder.of().add(toExecute);

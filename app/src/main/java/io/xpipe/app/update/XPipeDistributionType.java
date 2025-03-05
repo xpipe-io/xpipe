@@ -147,7 +147,9 @@ public enum XPipeDistributionType {
                     }
                 }
 
-                var yumRepo = sc.command(CommandBuilder.of().add("test", "-f").addFile("/etc/yum.repos.d/rpm.xpipe.io.repo")).executeAndCheck();
+                var yumRepo = sc.command(
+                                CommandBuilder.of().add("test", "-f").addFile("/etc/yum.repos.d/rpm.xpipe.io.repo"))
+                        .executeAndCheck();
                 if (yumRepo) {
                     return RPM_REPO;
                 }

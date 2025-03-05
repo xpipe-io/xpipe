@@ -71,14 +71,17 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
         return AppI18n.get("localIdentity");
     }
 
-@Override
-     public String getId() {
+    @Override
+    public String getId() {
         return "localIdentity";
     }
 
     @Override
     public DataStore defaultStore() {
-        return LocalIdentityStore.builder().password(EncryptedValue.of(new SecretRetrievalStrategy.None())).sshIdentity(EncryptedValue.of(new SshIdentityStrategy.None())).build();
+        return LocalIdentityStore.builder()
+                .password(EncryptedValue.of(new SecretRetrievalStrategy.None()))
+                .sshIdentity(EncryptedValue.of(new SshIdentityStrategy.None()))
+                .build();
     }
 
     @Override

@@ -10,7 +10,6 @@ import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-import javafx.beans.value.ObservableNumberValue;
 import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 
@@ -185,17 +184,22 @@ public class StoreCategoryWrapper {
                         .equals(storeCategoryWrapper.getCategory().getParentCategory()))
                 .toList());
         var direct = directContainedEntries.getList().size();
-        var sub = children.getList().stream().mapToInt(value -> value.allContainedEntriesCount.get()).sum();
+        var sub = children.getList().stream()
+                .mapToInt(value -> value.allContainedEntriesCount.get())
+                .sum();
         allContainedEntriesCount.setValue(direct + sub);
 
-        var directFiltered = directContainedEntries.getList().stream().filter(storeEntryWrapper ->
-                storeEntryWrapper.matchesFilter(StoreViewState.get().getFilterString().getValue())).count();
-        var subFiltered = children.getList().stream().mapToInt(value -> value.shownContainedEntriesCount.get()).sum();
+        var directFiltered = directContainedEntries.getList().stream()
+                .filter(storeEntryWrapper -> storeEntryWrapper.matchesFilter(
+                        StoreViewState.get().getFilterString().getValue()))
+                .count();
+        var subFiltered = children.getList().stream()
+                .mapToInt(value -> value.shownContainedEntriesCount.get())
+                .sum();
         shownContainedEntriesCount.setValue(directFiltered + subFiltered);
         Optional.ofNullable(getParent()).ifPresent(storeCategoryWrapper -> {
             storeCategoryWrapper.update();
         });
-
     }
 
     private String translatedName(String original) {

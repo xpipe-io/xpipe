@@ -42,9 +42,7 @@ public class DataStoreProviders {
             throw new IllegalStateException("Not initialized");
         }
 
-        return ALL.stream()
-                .filter(d -> d.getId().equalsIgnoreCase(id))
-                .findAny();
+        return ALL.stream().filter(d -> d.getId().equalsIgnoreCase(id)).findAny();
     }
 
     @SuppressWarnings("unchecked")

@@ -9,7 +9,6 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.ClipboardHelper;
 import io.xpipe.core.store.FileKind;
-import io.xpipe.core.store.FileNames;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -51,7 +50,11 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
                             BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
                             return new SimpleObjectProperty<>(BrowserActionFormatter.centerEllipsis(
-                                    entries.getFirst().getRawFileEntry().getPath().toString(), 50));
+                                    entries.getFirst()
+                                            .getRawFileEntry()
+                                            .getPath()
+                                            .toString(),
+                                    50));
                         }
 
                         return AppI18n.observable("absolutePaths");
@@ -71,7 +74,11 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
                             BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
                             return new SimpleObjectProperty<>(BrowserActionFormatter.centerEllipsis(
-                                    entries.getFirst().getRawFileEntry().getPath().toString(), 50));
+                                    entries.getFirst()
+                                            .getRawFileEntry()
+                                            .getPath()
+                                            .toString(),
+                                    50));
                         }
 
                         return AppI18n.observable("absoluteLinkPaths");
@@ -104,7 +111,11 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
                         if (entries.size() == 1) {
                             return new SimpleObjectProperty<>("\""
                                     + BrowserActionFormatter.centerEllipsis(
-                                            entries.getFirst().getRawFileEntry().getPath().toString(), 50)
+                                            entries.getFirst()
+                                                    .getRawFileEntry()
+                                                    .getPath()
+                                                    .toString(),
+                                            50)
                                     + "\"");
                         }
 
@@ -113,9 +124,10 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
 
                     @Override
                     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                        return entries.stream()
-                                .anyMatch(entry ->
-                                        entry.getRawFileEntry().getPath().toString().contains(" "));
+                        return entries.stream().anyMatch(entry -> entry.getRawFileEntry()
+                                .getPath()
+                                .toString()
+                                .contains(" "));
                     }
 
                     @Override
@@ -138,7 +150,10 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
                             BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
                             return new SimpleObjectProperty<>(BrowserActionFormatter.centerEllipsis(
-                                    entries.getFirst().getRawFileEntry().getPath().getFileName(),
+                                    entries.getFirst()
+                                            .getRawFileEntry()
+                                            .getPath()
+                                            .getFileName(),
                                     50));
                         }
 
@@ -159,7 +174,10 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
                             BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
                             return new SimpleObjectProperty<>(BrowserActionFormatter.centerEllipsis(
-                                    entries.getFirst().getRawFileEntry().getPath().getFileName(),
+                                    entries.getFirst()
+                                            .getRawFileEntry()
+                                            .getPath()
+                                            .getFileName(),
                                     50));
                         }
 
@@ -176,7 +194,8 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
                                         .equals(browserEntry
                                                 .getRawFileEntry()
                                                 .resolved()
-                                                .getPath().getFileName()));
+                                                .getPath()
+                                                .getFileName()));
                     }
 
                     @Override
@@ -198,9 +217,11 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
                             BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
                             return new SimpleObjectProperty<>("\""
-                                    + BrowserActionFormatter.centerEllipsis(entries.getFirst()
+                                    + BrowserActionFormatter.centerEllipsis(
+                                            entries.getFirst()
                                                     .getRawFileEntry()
-                                                    .getPath().getFileName(),
+                                                    .getPath()
+                                                    .getFileName(),
                                             50)
                                     + "\"");
                         }
@@ -210,15 +231,17 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
 
                     @Override
                     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                        return entries.stream().anyMatch(entry -> entry.getRawFileEntry().getPath().getFileName()
+                        return entries.stream().anyMatch(entry -> entry.getRawFileEntry()
+                                .getPath()
+                                .getFileName()
                                 .contains(" "));
                     }
 
                     @Override
                     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         var s = entries.stream()
-                                .map(entry -> "\""
-                                        + entry.getRawFileEntry().getPath().getFileName() + "\"")
+                                .map(entry ->
+                                        "\"" + entry.getRawFileEntry().getPath().getFileName() + "\"")
                                 .collect(Collectors.joining("\n"));
                         ClipboardHelper.copyText(s);
                     }

@@ -1,6 +1,5 @@
 package io.xpipe.ext.base.browser;
 
-import atlantafx.base.layout.ModalBox;
 import io.xpipe.app.browser.action.BrowserBranchAction;
 import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
@@ -9,7 +8,6 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.CommandBuilder;
@@ -19,7 +17,6 @@ import io.xpipe.core.process.ShellControl;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.StackPane;
-import javafx.scene.text.Text;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -95,9 +92,10 @@ public abstract class MultiExecuteSelectionAction implements BrowserBranchAction
 
                                         if (out.length() > 10000) {
                                             var counter = new AtomicInteger();
-                                            var start = out.lines().filter(s -> {
-                                                counter.incrementAndGet();
-                                                return true;
+                                            var start = out.lines()
+                                                    .filter(s -> {
+                                                        counter.incrementAndGet();
+                                                        return true;
                                                     })
                                                     .limit(100)
                                                     .collect(Collectors.joining("\n"));
@@ -114,16 +112,19 @@ public abstract class MultiExecuteSelectionAction implements BrowserBranchAction
                                     }
 
                                     String finalOut = out;
-                                    var modal = ModalOverlay.of("commandOutput", Comp.of(() -> {
-                                                var text = new TextArea(finalOut);
-                                                text.setWrapText(true);
-                                                text.setEditable(false);
-                                                text.setPrefRowCount(Math.max(8,( int) finalOut.lines().count()));
-                                                AppFont.medium(text);
-                                                var sp = new StackPane(text);
-                                                return sp;
-                                            })
-                                            .prefWidth(650));
+                                    var modal = ModalOverlay.of(
+                                            "commandOutput",
+                                            Comp.of(() -> {
+                                                        var text = new TextArea(finalOut);
+                                                        text.setWrapText(true);
+                                                        text.setEditable(false);
+                                                        text.setPrefRowCount(Math.max(8, (int)
+                                                                finalOut.lines().count()));
+                                                        AppFont.medium(text);
+                                                        var sp = new StackPane(text);
+                                                        return sp;
+                                                    })
+                                                    .prefWidth(650));
                                     modal.show();
                                 },
                                 true);

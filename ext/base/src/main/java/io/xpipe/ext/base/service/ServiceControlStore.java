@@ -1,19 +1,13 @@
 package io.xpipe.ext.base.service;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.HostHelper;
-import io.xpipe.app.util.LicenseProvider;
-import io.xpipe.core.process.ShellScript;
 import io.xpipe.app.util.Validators;
+import io.xpipe.core.process.ShellScript;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.NetworkTunnelSession;
-import io.xpipe.core.store.NetworkTunnelStore;
 import io.xpipe.core.store.SingletonSessionStore;
-import io.xpipe.ext.base.store.StartableStore;
-import io.xpipe.ext.base.store.StoppableStore;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;

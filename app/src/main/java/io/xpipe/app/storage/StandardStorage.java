@@ -41,9 +41,9 @@ public class StandardStorage extends DataStorage {
 
     @Getter
     private boolean disposed;
+
     private boolean saveQueued;
     private final ReentrantLock busyIo = new ReentrantLock();
-
 
     StandardStorage() {
         this.dataStorageSyncHandler = DataStorageSyncHandler.getInstance();

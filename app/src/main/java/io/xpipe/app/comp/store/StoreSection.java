@@ -85,9 +85,8 @@ public class StoreSection {
             }
         });
         var comp = explicitOrderComp;
-        var mappedSortMode = BindingsHelper.flatMap(
-                category,
-                storeCategoryWrapper -> storeCategoryWrapper.getSortMode());
+        var mappedSortMode =
+                BindingsHelper.flatMap(category, storeCategoryWrapper -> storeCategoryWrapper.getSortMode());
         return list.sorted(
                 (o1, o2) -> {
                     var r = comp.compare(o1, o2);
@@ -114,7 +113,8 @@ public class StoreSection {
             ObservableIntegerValue updateObservable) {
         var topLevel = all.filtered(
                 section -> {
-                    return DataStorage.get().isRootEntry(section.getEntry(), category.getValue().getCategory());
+                    return DataStorage.get()
+                            .isRootEntry(section.getEntry(), category.getValue().getCategory());
                 },
                 category,
                 updateObservable);
@@ -200,7 +200,10 @@ public class StoreSection {
                             // If this entry is already shown as root due to a different category than parent, don't
                             // show it
                             // again here
-                            !DataStorage.get().isRootEntry(section.getWrapper().getEntry(), category.getValue().getCategory());
+                            !DataStorage.get()
+                                    .isRootEntry(
+                                            section.getWrapper().getEntry(),
+                                            category.getValue().getCategory());
                 },
                 category,
                 filterString,

@@ -41,14 +41,20 @@ public interface WaveTerminalType extends ExternalTerminalType, TrackableTermina
     default void launch(TerminalLaunchConfiguration configuration) throws Exception {
         try (var sc = LocalShell.getShell().start()) {
             var wsh = CommandSupport.findProgram(sc, "wsh");
-            var env = sc.command(sc.getShellDialect().getPrintEnvironmentVariableCommand("WAVETERM_JWT")).readStdoutOrThrow();
+            var env = sc.command(sc.getShellDialect().getPrintEnvironmentVariableCommand("WAVETERM_JWT"))
+                    .readStdoutOrThrow();
             if (wsh.isEmpty() || env.isEmpty()) {
                 var inPath = CommandSupport.findProgram(sc, "xpipe").isPresent();
-                var msg = """
+                var msg =
+                        """
                 The Wave integration requires XPipe to be launched from Wave itself to have access to its environment variables. Otherwise, XPipe does not have access to the token to control Wave.
-                
+
                 You can do this by running the command "%s" in a local terminal block inside Wave.
-                """.formatted(inPath ? "xpipe open" : XPipeInstallation.getLocalDefaultCliExecutable() + " open");
+                """
+                                .formatted(
+                                        inPath
+                                                ? "xpipe open"
+                                                : XPipeInstallation.getLocalDefaultCliExecutable() + " open");
                 throw ErrorEvent.expected(new IllegalStateException(msg));
             }
 

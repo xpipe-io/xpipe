@@ -36,7 +36,8 @@ public class SecretManager {
             List<SecretQueryFormatter> formatters,
             CountDown countDown,
             boolean interactive) {
-        var p = new SecretQueryProgress(request, storeId, suppliers, fallback, filters, formatters, countDown, interactive);
+        var p = new SecretQueryProgress(
+                request, storeId, suppliers, fallback, filters, formatters, countDown, interactive);
         progress.add(p);
         return p;
     }

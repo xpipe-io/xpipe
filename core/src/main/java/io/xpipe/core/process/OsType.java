@@ -1,6 +1,5 @@
 package io.xpipe.core.process;
 
-import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FilePath;
 
 import java.util.ArrayList;
@@ -58,11 +57,7 @@ public interface OsType {
         @Override
         public List<FilePath> determineInterestingPaths(ShellControl pc) throws Exception {
             var home = pc.view().userHome();
-            return List.of(
-                    home,
-                    home.join("Documents"),
-                    home.join("Downloads"),
-                    home.join("Desktop"));
+            return List.of(home, home.join("Documents"), home.join("Downloads"), home.join("Desktop"));
         }
 
         @Override
@@ -180,8 +175,7 @@ public interface OsType {
                     FilePath.of("/Library"),
                     FilePath.of("/System"),
                     FilePath.of("/etc"),
-                    FilePath.of("/tmp")
-            );
+                    FilePath.of("/tmp"));
             return list;
         }
 

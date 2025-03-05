@@ -3,11 +3,11 @@ package io.xpipe.app.ext;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.FileSystem;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 
 import java.io.InputStream;
@@ -29,8 +29,10 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public long getFileSize(FilePath file) throws Exception {
-        return Long.parseLong(
-                shellControl.getShellDialect().queryFileSize(shellControl, file.toString()).readStdoutOrThrow());
+        return Long.parseLong(shellControl
+                .getShellDialect()
+                .queryFileSize(shellControl, file.toString())
+                .readStdoutOrThrow());
     }
 
     @Override
@@ -69,7 +71,8 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public OutputStream openOutput(FilePath file, long totalBytes) throws Exception {
-        var cmd = shellControl.getShellDialect().createStreamFileWriteCommand(shellControl, file.toString(), totalBytes);
+        var cmd =
+                shellControl.getShellDialect().createStreamFileWriteCommand(shellControl, file.toString(), totalBytes);
         cmd.setExitTimeout(Duration.ofMillis(Long.MAX_VALUE));
         return cmd.startExternalStdin();
     }
@@ -167,7 +170,11 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public List<FilePath> listRoots() throws Exception {
-        return shellControl.getShellDialect().listRoots(shellControl).map(s -> FilePath.of(s)).toList();
+        return shellControl
+                .getShellDialect()
+                .listRoots(shellControl)
+                .map(s -> FilePath.of(s))
+                .toList();
     }
 
     @Override

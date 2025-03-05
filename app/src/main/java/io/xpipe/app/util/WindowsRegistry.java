@@ -180,13 +180,14 @@ public abstract class WindowsRegistry {
         @Override
         public List<String> listSubKeys(int hkey, String key) throws Exception {
             var prefix = hkey(hkey) + "\\" + key;
-            var command = CommandBuilder.of()
-                    .add("reg", "query")
-                    .addQuoted(prefix);
+            var command = CommandBuilder.of().add("reg", "query").addQuoted(prefix);
             var out = shellControl.command(command).readStdoutOrThrow();
-            return out.lines().filter(s -> {
-                return s.contains(prefix + "\\");
-            }).map(s -> s.replace(prefix + "\\", "")).toList();
+            return out.lines()
+                    .filter(s -> {
+                        return s.contains(prefix + "\\");
+                    })
+                    .map(s -> s.replace(prefix + "\\", ""))
+                    .toList();
         }
 
         @Override

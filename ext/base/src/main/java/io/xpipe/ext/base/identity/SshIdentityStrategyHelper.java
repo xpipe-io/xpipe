@@ -7,8 +7,8 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
-
 import io.xpipe.core.store.FilePath;
+
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 

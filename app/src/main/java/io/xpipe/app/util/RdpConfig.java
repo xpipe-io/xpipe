@@ -22,8 +22,8 @@ public class RdpConfig {
     Map<String, TypedValue> content;
 
     public static RdpConfig parseFile(FilePath file) throws Exception {
-        try (var in = new BufferedReader(
-                StreamCharset.detectedReader(new BufferedInputStream(Files.newInputStream(Path.of(file.toString())))))) {
+        try (var in = new BufferedReader(StreamCharset.detectedReader(
+                new BufferedInputStream(Files.newInputStream(Path.of(file.toString())))))) {
             var content = in.lines().collect(Collectors.joining("\n"));
             return parseContent(content);
         } catch (NoSuchFileException e) {

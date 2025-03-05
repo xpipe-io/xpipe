@@ -169,7 +169,9 @@ public class BrowserHistoryTabComp extends SimpleComp {
         var name = Bindings.createStringBinding(
                 () -> {
                     var n = e.getPath();
-                    return AppPrefs.get().censorMode().get() ? "*".repeat(n.toString().length()) : n.toString();
+                    return AppPrefs.get().censorMode().get()
+                            ? "*".repeat(n.toString().length())
+                            : n.toString();
                 },
                 AppPrefs.get().censorMode());
         return new ButtonComp(name, () -> {

@@ -5,7 +5,6 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
-import io.xpipe.core.store.FileNames;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -66,7 +65,10 @@ public final class BrowserFileListModel {
         List<BrowserEntry> filtered = fileSystemModel.getFilter().getValue() != null
                 ? all.getValue().stream()
                         .filter(entry -> {
-                            var name = entry.getRawFileEntry().getPath().getFileName().toLowerCase(Locale.ROOT);
+                            var name = entry.getRawFileEntry()
+                                    .getPath()
+                                    .getFileName()
+                                    .toLowerCase(Locale.ROOT);
                             var filterString =
                                     fileSystemModel.getFilter().getValue().toLowerCase(Locale.ROOT);
                             return name.contains(filterString);

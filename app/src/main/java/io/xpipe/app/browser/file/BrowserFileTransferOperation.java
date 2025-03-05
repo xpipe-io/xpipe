@@ -223,8 +223,7 @@ public class BrowserFileTransferOperation {
         if (matcher.matches()) {
             try {
                 var number = Integer.parseInt(matcher.group(2));
-                var newFile =
-                        target.getParent().join(matcher.group(1) + " (" + (number + 1) + ")." + matcher.group(3));
+                var newFile = target.getParent().join(matcher.group(1) + " (" + (number + 1) + ")." + matcher.group(3));
                 return newFile;
             } catch (NumberFormatException ignored) {
             }
