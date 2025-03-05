@@ -15,7 +15,7 @@ public class CommandSupport {
         var out = processControl
                 .command(processControl.getShellDialect().getWhichCommand(name))
                 .readStdoutIfPossible();
-        return out.flatMap(s -> s.lines().findFirst()).map(String::trim).map(FilePath::new);
+        return out.flatMap(s -> s.lines().findFirst()).map(String::trim).map(FilePath::of);
     }
 
     public static boolean isInPath(ShellControl processControl, String executable) throws Exception {

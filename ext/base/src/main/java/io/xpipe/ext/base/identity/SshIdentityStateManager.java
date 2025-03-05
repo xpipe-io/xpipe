@@ -114,7 +114,7 @@ public class SshIdentityStateManager {
         if (sc.getOsType() == OsType.WINDOWS) {
             if (!content.contains("enable-win32-openssh-support")) {
                 content += "\nenable-win32-openssh-support\n";
-                sc.view().writeTextFile(new FilePath(confFile), content);
+                sc.view().writeTextFile(FilePath.of(confFile), content);
                 // reloadagent does not work correctly, so kill it
                 handleWindowsGpgAgentStop(sc);
             }
@@ -122,7 +122,7 @@ public class SshIdentityStateManager {
         } else {
             if (!content.contains("enable-ssh-support")) {
                 content += "\nenable-ssh-support\n";
-                sc.view().writeTextFile(new FilePath(confFile), content);
+                sc.view().writeTextFile(FilePath.of(confFile), content);
                 sc.executeSimpleCommand(CommandBuilder.of().add("gpg-connect-agent", "reloadagent", "/bye"));
             } else {
                 sc.executeSimpleCommand(CommandBuilder.of().add("gpg-connect-agent", "/bye"));

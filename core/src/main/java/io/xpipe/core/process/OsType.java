@@ -102,9 +102,9 @@ public interface OsType {
                     home,
                     home.join("Downloads"),
                     home.join("Documents"),
-                    new FilePath("/etc"),
+                    FilePath.of("/etc"),
                     pc.getSystemTemporaryDirectory(),
-                    new FilePath("/var")));
+                    FilePath.of("/var")));
             var parentHome = home.getParent();
             if (parentHome != null && !parentHome.toString().equals("/")) {
                 list.add(3, parentHome);
@@ -176,11 +176,11 @@ public interface OsType {
                     home.join("Downloads"),
                     home.join("Documents"),
                     home.join("Desktop"),
-                    new FilePath("/Applications"),
-                    new FilePath("/Library"),
-                    new FilePath("/System"),
-                    new FilePath("/etc"),
-                    new FilePath("/tmp")
+                    FilePath.of("/Applications"),
+                    FilePath.of("/Library"),
+                    FilePath.of("/System"),
+                    FilePath.of("/etc"),
+                    FilePath.of("/tmp")
             );
             return list;
         }

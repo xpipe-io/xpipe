@@ -335,7 +335,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         // Evaluate optional links
         FilePath resolvedPath;
         try {
-            resolvedPath = BrowserFileSystemHelper.resolveDirectoryPath(this, new FilePath(evaluatedPath), customInput);
+            resolvedPath = BrowserFileSystemHelper.resolveDirectoryPath(this, FilePath.of(evaluatedPath), customInput);
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
             return Optional.ofNullable(cps);

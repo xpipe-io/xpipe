@@ -120,7 +120,7 @@ public class NewItemAction implements BrowserAction, BrowserBranchAction {
                                         .buildComp()
                                         .prefWidth(350));
                         modal.withDefaultButtons(() -> {
-                            model.createLinkAsync(linkName.getValue(), new FilePath(target.getValue()));
+                            model.createLinkAsync(linkName.getValue(), FilePath.of(target.getValue()));
                         });
                         modal.show();
                     }

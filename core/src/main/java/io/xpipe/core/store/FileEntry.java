@@ -33,7 +33,7 @@ public class FileEntry {
             @NonNull FileKind kind) {
         this.fileSystem = fileSystem;
         this.kind = kind;
-        this.path = kind == FileKind.DIRECTORY ? new FilePath(path.toDirectory().toString()) : path;
+        this.path = kind == FileKind.DIRECTORY ? FilePath.of(path.toDirectory().toString()) : path;
         this.date = date;
         this.info = info;
         this.size = size;

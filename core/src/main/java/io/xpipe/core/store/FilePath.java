@@ -22,10 +22,20 @@ public final class FilePath {
         return s.startsWith("/");
     }
 
+    public static FilePath of(String path) {
+        return path != null ? new FilePath(path) : null;
+    }
+
+    public static FilePath of(Path path) {
+        return path != null ? new FilePath(path.toString()) : null;
+    }
+
     @NonNull
     private final String value;
 
-    public FilePath(@NonNull String value) {
+    private FilePath normalized;
+
+    private FilePath(@NonNull String value) {
         this.value = value;
         if (value.isBlank()) {
             throw new IllegalArgumentException();
@@ -33,10 +43,6 @@ public final class FilePath {
         if (!value.equals(value.trim())) {
             throw new IllegalArgumentException();
         }
-    }
-
-    public FilePath(@NonNull Path value) {
-        this.value = value.toString();
     }
 
     public FilePath fileSystemCompatible(OsType osType) {
@@ -49,19 +55,19 @@ public final class FilePath {
         var p = Pattern.compile("[^/\\\\]+");
         var m = p.matcher(value);
         var replaced = m.replaceAll(matchResult -> osType.makeFileSystemCompatible(matchResult.group()));
-        return new FilePath(replaced);
+        return FilePath.of(replaced);
     }
 
     public FilePath getRoot() {
         if (value.startsWith("/")) {
-            return new FilePath("/");
+            return FilePath.of("/");
         } else if (value.length() >= 2 && value.charAt(1) == ':') {
             // Without the trailing slash, many programs struggle with this
-            return new FilePath(value.substring(0, 2) + "\\");
+            return FilePath.of(value.substring(0, 2) + "\\");
         } else if (value.startsWith("\\\\")) {
             var split = split();
             if (split.size() > 0) {
-                return new FilePath("\\\\" + split.getFirst());
+                return FilePath.of("\\\\" + split.getFirst());
             }
         }
 
@@ -78,25 +84,25 @@ public final class FilePath {
 
     public FilePath toDirectory() {
         if (value.endsWith("/") || value.endsWith("\\")) {
-            return new FilePath(value);
+            return FilePath.of(value);
         }
 
         if (value.contains("\\")) {
-            return new FilePath(value + "\\");
+            return FilePath.of(value + "\\");
         }
 
-        return new FilePath(value + "/");
+        return FilePath.of(value + "/");
     }
 
     public FilePath removeTrailingSlash() {
         if (value.equals("/")) {
-            return new FilePath(value);
+            return FilePath.of(value);
         }
 
         if (value.endsWith("/") || value.endsWith("\\")) {
-            return new FilePath(value.substring(0, value.length() - 1));
+            return FilePath.of(value.substring(0, value.length() - 1));
         }
-        return new FilePath(value);
+        return FilePath.of(value);
     }
 
     public String getFileName() {
@@ -147,7 +153,7 @@ public final class FilePath {
 
     public FilePath join(String... parts) {
         var joined = String.join("/", parts);
-        return new FilePath(value + "/" + joined).normalize();
+        return FilePath.of(value + "/" + joined).normalize();
     }
 
     public boolean isAbsolute() {
@@ -168,14 +174,14 @@ public final class FilePath {
         }
 
         if (split().size() == 1) {
-            return value.startsWith("/") && !value.equals("/") ? new FilePath("/") : null;
+            return value.startsWith("/") && !value.equals("/") ? FilePath.of("/") : null;
         }
 
-        return new FilePath(value.substring(0, value.length() - getFileName().length() - 1));
+        return FilePath.of(value.substring(0, value.length() - getFileName().length() - 1));
     }
 
     public boolean startsWith(String start) {
-        return startsWith(new FilePath(start));
+        return startsWith(FilePath.of(start));
     }
 
     public boolean startsWith(FilePath start) {
@@ -183,18 +189,24 @@ public final class FilePath {
     }
 
     public FilePath relativize(FilePath base) {
-        return new FilePath(normalize()
+        return FilePath.of(normalize()
                 .toString()
                 .substring(base.normalize().toDirectory().toString().length()));
     }
 
     public FilePath normalize() {
+        if (normalized != null) {
+            return normalized;
+        }
+
         var backslash = value.contains("\\");
-        return backslash ? toWindows() : toUnix();
+        var r = backslash ? toWindows() : toUnix();
+        normalized = r;
+        return r;
     }
 
     public FilePath resolveTildeHome(String dir) {
-        return value.startsWith("~") ? new FilePath(value.replace("~", dir)) : this;
+        return value.startsWith("~") ? FilePath.of(value.replace("~", dir)) : this;
     }
 
     private List<String> split() {
@@ -206,12 +218,12 @@ public final class FilePath {
         var joined = String.join("/", split());
         var prefix = value.startsWith("/") ? "/" : "";
         var suffix = value.endsWith("/") || value.endsWith("\\") ? "/" : "";
-        return new FilePath(prefix + joined + suffix);
+        return FilePath.of(prefix + joined + suffix);
     }
 
     public FilePath toWindows() {
         var suffix = value.endsWith("/") || value.endsWith("\\") ? "\\" : "";
-        return new FilePath(String.join("\\", split()) + suffix);
+        return FilePath.of(String.join("\\", split()) + suffix);
     }
 
     public Path asLocalPath() {

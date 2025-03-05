@@ -235,7 +235,7 @@ public class BrowserFileTransferOperation {
         }
 
         var noExt = target.getFileName().equals(target.getExtension());
-        return new FilePath(target.getBaseName() + " (" + 1 + ")" + (noExt ? "" : "." + target.getExtension()));
+        return FilePath.of(target.getBaseName() + " (" + 1 + ")" + (noExt ? "" : "." + target.getExtension()));
     }
 
     private void handleSingleAcrossFileSystems(FileEntry source) throws Exception {
@@ -296,7 +296,7 @@ public class BrowserFileTransferOperation {
             }
 
             var sourceFile = e.getKey();
-            var fixedRelPath = new FilePath(e.getValue())
+            var fixedRelPath = FilePath.of(e.getValue())
                     .fileSystemCompatible(
                             target.getFileSystem().getShell().orElseThrow().getOsType());
             var targetFile = target.getPath().join(fixedRelPath.toString());

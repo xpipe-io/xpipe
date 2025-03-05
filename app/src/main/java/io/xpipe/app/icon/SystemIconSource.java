@@ -101,7 +101,7 @@ public interface SystemIconSource {
                             .execute();
                 } else {
                     sc.command(CommandBuilder.of().add("git", "pull"))
-                            .withWorkingDirectory(new FilePath(dir))
+                            .withWorkingDirectory(FilePath.of(dir))
                             .execute();
                 }
             }

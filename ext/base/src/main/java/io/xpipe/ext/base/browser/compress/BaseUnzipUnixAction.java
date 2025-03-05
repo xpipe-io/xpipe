@@ -62,7 +62,7 @@ public abstract class BaseUnzipUnixAction extends ExecuteApplicationAction {
     }
 
     private FilePath getTarget(FilePath name) {
-        return new FilePath(name.toString().replaceAll("\\.zip$", ""));
+        return FilePath.of(name.toString().replaceAll("\\.zip$", ""));
     }
 
     @Override

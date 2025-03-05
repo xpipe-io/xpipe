@@ -34,7 +34,7 @@ public class BrowserLocalFileSystem {
 
         return new FileEntry(
                 localFileSystem.open(),
-                new FilePath(file),
+                FilePath.of(file),
                 Files.getLastModifiedTime(file).toInstant(),
                 Files.size(file),
                 null,
