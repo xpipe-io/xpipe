@@ -437,9 +437,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
-            return CommandBuilder.of()
-                    .add("-e")
-                    .addFile(configuration.getScriptFile());
+            return CommandBuilder.of().add("-e").addFile(configuration.getScriptFile());
         }
     };
     ExternalTerminalType UXTERM = new SimplePathType("app.uxterm", "uxterm", true) {

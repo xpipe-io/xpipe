@@ -32,14 +32,15 @@ import java.util.regex.Pattern;
 @Value
 public class PodmanContainerStore
         implements StartableStore,
-                   StoppableStore,
-                   ShellStore,
-                   InternalCacheDataStore,
-                   FixedChildStore,
-                   StatefulDataStore<ContainerStoreState>,
-                   FixedServiceCreatorStore,
-                   SelfReferentialStore,
-                   ContainerImageStore, NameableStore {
+                StoppableStore,
+                ShellStore,
+                InternalCacheDataStore,
+                FixedChildStore,
+                StatefulDataStore<ContainerStoreState>,
+                FixedServiceCreatorStore,
+                SelfReferentialStore,
+                ContainerImageStore,
+                NameableStore {
 
     DataStoreEntryRef<PodmanCmdStore> cmd;
     String containerName;

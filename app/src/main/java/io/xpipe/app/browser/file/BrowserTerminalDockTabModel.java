@@ -4,7 +4,6 @@ import io.xpipe.app.browser.BrowserAbstractSessionModel;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.BrowserSessionTab;
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.AppMainWindowContentComp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;

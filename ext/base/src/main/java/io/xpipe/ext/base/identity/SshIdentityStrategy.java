@@ -194,7 +194,8 @@ public interface SshIdentityStrategy {
             }
 
             if ((parent.getOsType().equals(OsType.LINUX) || parent.getOsType().equals(OsType.MACOS))) {
-                parent.command(CommandBuilder.of().add("chmod", "400").addFile(resolved)).executeAndCheck();
+                parent.command(CommandBuilder.of().add("chmod", "400").addFile(resolved))
+                        .executeAndCheck();
             }
         }
 

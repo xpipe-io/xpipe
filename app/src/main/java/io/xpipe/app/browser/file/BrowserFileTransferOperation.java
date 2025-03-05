@@ -12,7 +12,6 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Timer;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -437,7 +436,8 @@ public class BrowserFileTransferOperation {
 
                     outputStream.write(buffer, 0, read);
                     transferred.addAndGet(read);
-                    updateProgress(new BrowserTransferProgress(sourceFile.getName(), transferred.get(), total.get(), start));
+                    updateProgress(
+                            new BrowserTransferProgress(sourceFile.getName(), transferred.get(), total.get(), start));
                 }
             } catch (Exception ex) {
                 exception.set(ex);

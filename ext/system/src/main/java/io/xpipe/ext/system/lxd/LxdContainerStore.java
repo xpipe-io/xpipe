@@ -27,11 +27,12 @@ import java.util.OptionalInt;
 @AllArgsConstructor
 public class LxdContainerStore
         implements ShellStore,
-                   FixedChildStore,
-                   StatefulDataStore<ContainerStoreState>,
-                   StartableStore,
-                   StoppableStore,
-                   PauseableStore, NameableStore {
+                FixedChildStore,
+                StatefulDataStore<ContainerStoreState>,
+                StartableStore,
+                StoppableStore,
+                PauseableStore,
+                NameableStore {
 
     DataStoreEntryRef<LxdCmdStore> cmd;
     String containerName;

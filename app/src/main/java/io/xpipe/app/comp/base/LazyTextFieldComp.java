@@ -4,8 +4,8 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.util.PlatformThread;
-
 import io.xpipe.core.process.OsType;
+
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;

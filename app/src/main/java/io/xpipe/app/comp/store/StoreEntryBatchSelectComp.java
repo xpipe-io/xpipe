@@ -1,20 +1,21 @@
 package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.SimpleComp;
+
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 
 public class StoreEntryBatchSelectComp extends SimpleComp {
 
     private final StoreSection section;
 
-    public StoreEntryBatchSelectComp(StoreSection section) {this.section = section;}
+    public StoreEntryBatchSelectComp(StoreSection section) {
+        this.section = section;
+    }
 
     @Override
     protected Region createSimple() {
@@ -28,11 +29,13 @@ public class StoreEntryBatchSelectComp extends SimpleComp {
             }
         });
 
-        StoreViewState.get().getBatchModeSelection().getList().addListener((ListChangeListener<? super StoreEntryWrapper>) c -> {
-            Platform.runLater(() -> {
-                update(cb);
-            });
-        });
+        StoreViewState.get().getBatchModeSelection().getList().addListener((ListChangeListener<
+                        ? super StoreEntryWrapper>)
+                c -> {
+                    Platform.runLater(() -> {
+                        update(cb);
+                    });
+                });
         section.getShownChildren().getList().addListener((ListChangeListener<? super StoreSection>) c -> {
             if (cb.isSelected()) {
                 StoreViewState.get().selectBatchMode(section);
@@ -59,8 +62,12 @@ public class StoreEntryBatchSelectComp extends SimpleComp {
             return;
         }
 
-        var count = section.getShownChildren().getList().stream().filter(c -> StoreViewState.get().getBatchModeSelection().getList().contains(c.getWrapper())).count();
-        checkBox.setIndeterminate(count > 0 && count != section.getShownChildren().getList().size());
+        var count = section.getShownChildren().getList().stream()
+                .filter(c ->
+                        StoreViewState.get().getBatchModeSelection().getList().contains(c.getWrapper()))
+                .count();
+        checkBox.setIndeterminate(
+                count > 0 && count != section.getShownChildren().getList().size());
         return;
     }
 }

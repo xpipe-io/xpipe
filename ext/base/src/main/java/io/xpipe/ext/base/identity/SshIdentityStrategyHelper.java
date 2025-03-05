@@ -28,7 +28,8 @@ public class SshIdentityStrategyHelper {
                             p);
         }
 
-        var forward = new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
+        var forward =
+                new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
         return new OptionsBuilder()
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)

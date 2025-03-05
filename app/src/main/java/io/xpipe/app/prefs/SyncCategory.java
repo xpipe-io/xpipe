@@ -3,7 +3,6 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.OptionsBuilder;

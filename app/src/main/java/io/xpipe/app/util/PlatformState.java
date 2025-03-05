@@ -4,7 +4,6 @@ import io.xpipe.app.core.check.AppSystemFontCheck;
 import io.xpipe.app.core.window.ModifiedStage;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 
 import javafx.application.Platform;
@@ -174,7 +173,8 @@ public enum PlatformState {
             return OptionalInt.empty();
         }
 
-        var factor = LocalExec.readStdoutIfPossible("gsettings", "get", "org.gnome.desktop.interface", "scaling-factor");
+        var factor =
+                LocalExec.readStdoutIfPossible("gsettings", "get", "org.gnome.desktop.interface", "scaling-factor");
         if (factor.isEmpty()) {
             return OptionalInt.empty();
         }
@@ -184,7 +184,8 @@ public enum PlatformState {
             return OptionalInt.empty();
         }
 
-        var textFactor = LocalExec.readStdoutIfPossible("gsettings", "get", "org.gnome.desktop.interface", "text-scaling-factor");
+        var textFactor = LocalExec.readStdoutIfPossible(
+                "gsettings", "get", "org.gnome.desktop.interface", "text-scaling-factor");
         if (textFactor.isEmpty()) {
             return OptionalInt.empty();
         }

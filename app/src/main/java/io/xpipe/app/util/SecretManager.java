@@ -45,7 +45,8 @@ public class SecretManager {
     }
 
     public static synchronized void clearSecretProgress(UUID request) {
-        progress.removeIf(secretQueryProgress -> secretQueryProgress.getRequestId().equals(request));
+        progress.removeIf(
+                secretQueryProgress -> secretQueryProgress.getRequestId().equals(request));
     }
 
     public static boolean isSpecialPrompt(String prompt) {
