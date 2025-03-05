@@ -174,7 +174,7 @@ public final class FilePath {
         }
 
         if (split().size() == 1) {
-            return value.startsWith("/") && !value.equals("/") ? FilePath.of("/") : null;
+            return value.startsWith("/") && !value.equals("/") ? FilePath.of("/") : this;
         }
 
         return FilePath.of(value.substring(0, value.length() - getFileName().length() - 1));
