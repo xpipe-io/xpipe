@@ -11,10 +11,7 @@ import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.EnabledParentStoreProvider;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.DataStoreFormatter;
-import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.Validator;
+import io.xpipe.app.util.*;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.DataStore;
@@ -36,7 +33,7 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
 
     @Override
     public String getHelpLink() {
-        return Hyperlinks.DOCS_SCRIPTING;
+        return DocumentationLink.SCRIPTING.getLink();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
@@ -57,9 +58,11 @@ public class ConnectionFileSystem implements FileSystem {
 
         if (!shellControl.getTtyState().isPreservesOutput()
                 || !shellControl.getTtyState().isSupportsInput()) {
-            throw ErrorEvent.expected(new UnsupportedOperationException(
-                    "Shell has a PTY allocated and as a result does not support file system operations. For more information see "
-                            + Hyperlinks.DOCS_TTY));
+            var ex = new UnsupportedOperationException(
+                    "Shell has a PTY allocated and as a result does not support file system operations.");
+            ErrorEvent.preconfigure(ErrorEvent.fromThrowable(ex)
+                    .documentationLink(DocumentationLink.TTY));
+            throw ex;
         }
 
         shellControl.checkLicenseOrThrow();

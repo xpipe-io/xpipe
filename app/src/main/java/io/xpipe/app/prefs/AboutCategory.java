@@ -8,6 +8,7 @@ import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.JfxHelper;
 import io.xpipe.app.util.OptionsBuilder;
@@ -48,7 +49,7 @@ public class AboutCategory extends AppPrefsCategory {
                         null)
                 .addComp(
                         new TileButtonComp("privacy", "privacyDescription", "mdomz-privacy_tip", e -> {
-                                    Hyperlinks.open(Hyperlinks.DOCS_PRIVACY);
+                            DocumentationLink.PRIVACY.open();
                                     e.consume();
                                 })
                                 .grow(true, false),
@@ -64,7 +65,7 @@ public class AboutCategory extends AppPrefsCategory {
                                 .grow(true, false))
                 .addComp(
                         new TileButtonComp("eula", "eulaDescription", "mdi2c-card-text-outline", e -> {
-                                    Hyperlinks.open(Hyperlinks.DOCS_EULA);
+                                   DocumentationLink.EULA.open();
                                     e.consume();
                                 })
                                 .grow(true, false),
