@@ -2,6 +2,7 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.SecretManager;
@@ -77,7 +78,7 @@ public class TerminalLauncherManager {
             req = entries.get(request);
         }
         if (req == null) {
-            throw new BeaconClientException("Unknown launch request " + request);
+            return;
         }
         var byPid = ProcessHandle.of(pid);
         if (byPid.isEmpty()) {
@@ -90,33 +91,44 @@ public class TerminalLauncherManager {
         req.setPid(shell.pid());
     }
 
-    public static Path waitExchange(UUID request) throws BeaconClientException, BeaconServerException {
+    public static void waitExchange(UUID request) throws BeaconClientException, BeaconServerException {
         TerminalLaunchRequest req;
         synchronized (entries) {
             req = entries.get(request);
         }
         if (req == null) {
-            throw new BeaconClientException("Unknown launch request " + request);
+            return;
         }
 
         if (req.isSetupCompleted()) {
             submitAsync(req.getRequest(), req.getProcessControl(), req.getConfig(), req.getWorkingDirectory());
         }
         try {
-            return req.waitForCompletion();
+            req.waitForCompletion();
         } finally {
             req.setSetupCompleted(true);
         }
     }
 
-    public static Path launchExchange(UUID request) throws BeaconClientException {
+    public static Path launchExchange(UUID request) throws BeaconClientException, BeaconServerException {
         synchronized (entries) {
             var e = entries.values().stream()
                     .filter(entry -> entry.getRequest().equals(request))
                     .findFirst()
                     .orElse(null);
             if (e == null) {
-                throw new BeaconClientException("Unknown launch request " + request);
+                // It seems like that some terminals might enter a restart loop to try to start an older process again
+                // This would spam XPipe continuously with launch requests if we returned an error here
+                // Therefore, we just return a new local shell session
+                TrackEvent.withTrace("Unknown launch request").tag("request", request.toString()).handle();
+                try (var sc = LocalShell.getShell().start()) {
+                    var defaultShell = ProcessControlProvider.get().getEffectiveLocalDialect();
+                    var shellExec = defaultShell.getExecutableName();
+                    var absExec = sc.view().findProgram(shellExec).orElse(shellExec);
+                    return Path.of(absExec);
+                } catch (Exception ex) {
+                    throw new BeaconServerException(ex);
+                }
             }
 
             if (!(e.getResult() instanceof TerminalLaunchResult.ResultSuccess)) {
