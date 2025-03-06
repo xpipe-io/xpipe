@@ -21,8 +21,7 @@ public class FsScriptExchangeImpl extends FsScriptExchange {
             data = new String(in.readAllBytes(), StandardCharsets.UTF_8);
         }
         data = shell.getControl().getShellDialect().prepareScriptContent(data);
-        var file = ScriptHelper.getExecScriptFile(shell.getControl());
-        shell.getControl().view().writeScriptFile(file, data);
+        var file = ScriptHelper.createExecScript(shell.getControl(), data);
         return Response.builder().path(file).build();
     }
 }

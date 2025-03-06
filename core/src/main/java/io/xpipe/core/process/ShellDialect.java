@@ -42,7 +42,7 @@ public interface ShellDialect {
 
     CommandControl prepareUserTempDirectory(ShellControl shellControl, String directory);
 
-    String initFileName(ShellControl sc) throws Exception;
+    FilePath getInitFileName(ShellControl sc, int hash) throws Exception;
 
     CommandControl directoryExists(ShellControl shellControl, String directory);
 

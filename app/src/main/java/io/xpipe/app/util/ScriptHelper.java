@@ -14,11 +14,8 @@ import java.util.stream.Collectors;
 
 public class ScriptHelper {
 
-    public static int getScriptId() {
-        // A deterministic approach can cause permission problems when two different users execute the same command on a
-        // system
-        // Therefore, use a random approach
-        return new Random().nextInt(Integer.MAX_VALUE);
+    public static int getScriptHash(String content) {
+        return Math.abs(content.hashCode());
     }
 
     @SneakyThrows
@@ -73,20 +70,9 @@ public class ScriptHelper {
             content += nl + t.getPassthroughExitCommand();
         }
 
-        return createExecScript(t, processControl, FilePath.of(t.initFileName(processControl)), content);
-    }
-
-    @SneakyThrows
-    public static FilePath getExecScriptFile(ShellControl processControl) {
-        return getExecScriptFile(
-                processControl, processControl.getShellDialect().getScriptFileEnding());
-    }
-
-    @SneakyThrows
-    public static FilePath getExecScriptFile(ShellControl processControl, String fileEnding) {
-        var fileName = "xpipe-" + getScriptId();
-        var temp = processControl.getSystemTemporaryDirectory();
-        return temp.join(fileName + "." + fileEnding);
+        var hash = getScriptHash(content);
+        var file = t.getInitFileName(processControl, hash);
+        return createExecScript(t, processControl, file, content);
     }
 
     @SneakyThrows
@@ -96,15 +82,14 @@ public class ScriptHelper {
 
     @SneakyThrows
     public static FilePath createExecScript(ShellDialect type, ShellControl processControl, String content) {
-        var fileName = "xpipe-" + getScriptId();
+        var fileName = "xpipe-" + getScriptHash(content);
         var temp = processControl.getSystemTemporaryDirectory();
         var file = temp.join(fileName + "." + type.getScriptFileEnding());
         return createExecScript(type, processControl, file, content);
     }
 
     @SneakyThrows
-    public static FilePath createExecScript(
-            ShellDialect type, ShellControl processControl, FilePath file, String content) {
+    public static FilePath createExecScript(ShellDialect type, ShellControl processControl, FilePath file, String content) {
         content = type.prepareScriptContent(content);
 
         TrackEvent.withTrace("Writing exec script")
@@ -125,18 +110,21 @@ public class ScriptHelper {
             type = parent.getOsType().equals(OsType.WINDOWS) ? ShellDialects.CMD : ShellDialects.SH;
         }
 
-        var fileName = "xpipe-" + getScriptId() + "." + type.getScriptFileEnding();
-        var temp = parent.getSystemTemporaryDirectory();
-        var file = temp.join(fileName);
         if (type != parent.getShellDialect()) {
             try (var sub = parent.subShell(type).start()) {
                 var content =
                         sub.getShellDialect().getAskpass().prepareStderrPassthroughContent(sub, requestId, prefix);
+                var fileName = "xpipe-" + getScriptHash(content) + "." + type.getScriptFileEnding();
+                var temp = parent.getSystemTemporaryDirectory();
+                var file = temp.join(fileName);
                 return createExecScript(sub.getShellDialect(), sub, file, content);
             }
         } else {
             var content =
                     parent.getShellDialect().getAskpass().prepareStderrPassthroughContent(parent, requestId, prefix);
+            var fileName = "xpipe-" + getScriptHash(content) + "." + type.getScriptFileEnding();
+            var temp = parent.getSystemTemporaryDirectory();
+            var file = temp.join(fileName);
             return createExecScript(parent.getShellDialect(), parent, file, content);
         }
     }
@@ -160,31 +148,31 @@ public class ScriptHelper {
 
     private static FilePath createTerminalPreparedAskpassScript(
             List<SecretValue> pass, ShellControl parent, ShellDialect type) throws Exception {
-        var fileName = "xpipe-" + getScriptId() + "." + type.getScriptFileEnding();
+        var fileName = "xpipe-" + new Random().nextInt();
         var temp = parent.getSystemTemporaryDirectory();
-        var file = temp.join(fileName);
+        var fileBase = temp.join(fileName);
         if (type != parent.getShellDialect()) {
             try (var sub = parent.subShell(type).start()) {
                 var content = sub.getShellDialect()
                         .getAskpass()
                         .prepareFixedContent(
                                 sub,
-                                file.toString(),
+                                fileBase.toString(),
                                 pass.stream()
                                         .map(secretValue -> secretValue.getSecretValue())
                                         .toList());
-                return createExecScript(sub.getShellDialect(), sub, file, content);
+                return createExecScript(sub.getShellDialect(), sub, content);
             }
         } else {
             var content = parent.getShellDialect()
                     .getAskpass()
                     .prepareFixedContent(
                             parent,
-                            file.toString(),
+                            fileBase.toString(),
                             pass.stream()
                                     .map(secretValue -> secretValue.getSecretValue())
                                     .toList());
-            return createExecScript(parent.getShellDialect(), parent, file, content);
+            return createExecScript(parent.getShellDialect(), parent, content);
         }
     }
 }

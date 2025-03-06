@@ -96,14 +96,11 @@ public class ShellTemp {
                 .formatted(d.fileArgument(dir), d.fileArgument(dir), d.fileArgument(dir)));
     }
 
-    public static String getSubDirectory(ShellControl proc, String... sub) throws Exception {
+    public static FilePath getSubDirectory(ShellControl proc, String... sub) throws Exception {
         var base = proc.getSystemTemporaryDirectory();
-        var arr = Stream.concat(Stream.of(base.toString()), Arrays.stream(sub)).toArray(String[]::new);
-        var dir = FileNames.join(arr);
-
+        var dir = base.join(sub);
         // We assume that this directory does not exist yet and therefore don't perform any checks
-        proc.getShellDialect().prepareUserTempDirectory(proc, dir).execute();
-
+        proc.getShellDialect().prepareUserTempDirectory(proc, dir.toString()).execute();
         return dir;
     }
 }
