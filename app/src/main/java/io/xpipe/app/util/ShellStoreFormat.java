@@ -62,7 +62,8 @@ public class ShellStoreFormat {
                         .format();
             }
 
-            var joined = Stream.concat(Stream.of(s.getTtyState() != null && s.getTtyState() != ShellTtyState.NONE ? "TTY" : null), Arrays.stream(info)).toArray(String[]::new);
+            var joined = Stream.concat(Stream.of(s.getTtyState() != null && s.getTtyState() != ShellTtyState.NONE ? "TTY" : null),
+                    info != null ? Arrays.stream(info) : Stream.of()).toArray(String[]::new);
             return new ShellStoreFormat(
                             LicenseProvider.get().checkOsName(s.getOsName()),
                             formattedOsName(s.getOsName()),

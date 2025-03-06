@@ -5,6 +5,7 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.util.PlatformThread;
 
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -34,6 +35,7 @@ public class ToolbarComp extends Comp<CompStructure<ToolBar>> {
         for (var entry : entries) {
             b.getItems().add(entry.createRegion());
         }
+        b.visibleProperty().bind(Bindings.isNotEmpty(entries));
         return new SimpleCompStructure<>(b);
     }
 }
