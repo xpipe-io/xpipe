@@ -4,6 +4,7 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.TooltipAugment;
 
+import io.xpipe.app.storage.DataStoreEntry;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
 import javafx.scene.input.MouseButton;
@@ -54,6 +55,10 @@ public class StoreIconComp extends SimpleComp {
 
         stack.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
+                if (wrapper.getValidity().getValue() == DataStoreEntry.Validity.LOAD_FAILED) {
+                    return;
+                }
+
                 StoreIconChoiceDialog.show(wrapper.getEntry());
                 event.consume();
             }
