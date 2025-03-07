@@ -24,15 +24,11 @@
     -fx-text-fill: -color-fg-muted;
 }
 
-.store-entry-grid:failed .jfx-text-field {
-    -fx-text-fill: #ee4829;
-}
-
-.root:dark .store-entry-grid:incomplete .name {
+.root:dark .store-entry-grid:incomplete .name, .root:dark .store-entry-grid:failed .name {
     -fx-text-fill: #aa473c;
 }
 
-.root:light .store-entry-grid:incomplete .name {
+.root:light .store-entry-grid:incomplete .name, .root:light .store-entry-grid:failed .name {
     -fx-text-fill: #88352b;
 }
 
