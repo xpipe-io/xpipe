@@ -10,7 +10,6 @@ import lombok.SneakyThrows;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class ScriptHelper {
 
@@ -25,56 +24,6 @@ public class ScriptHelper {
         }
     }
 
-    public static FilePath constructTerminalInitFile(
-            ShellDialect t,
-            ShellControl processControl,
-            WorkingDirectoryFunction workingDirectory,
-            List<String> preInit,
-            List<String> postInit,
-            TerminalInitScriptConfig config,
-            boolean exit)
-            throws Exception {
-        String nl = t.getNewLine().getNewLineString();
-        var content = "";
-
-        var clear = t.clearDisplayCommand();
-        if (clear != null && config.isClearScreen()) {
-            content += clear + nl;
-        }
-
-        // Normalize line endings
-        content += nl + preInit.stream().flatMap(s -> s.lines()).collect(Collectors.joining(nl)) + nl;
-
-        // We just apply the profile files always, as we can't be sure that they definitely have been applied.
-        // Especially if we launch something that is not the system default shell
-        var applyCommand = t.applyInitFileCommand(processControl);
-        if (applyCommand != null) {
-            content += nl + applyCommand + nl;
-        }
-
-        if (config.getDisplayName() != null) {
-            content += nl + t.changeTitleCommand(config.getDisplayName()) + nl;
-        }
-
-        if (workingDirectory != null && workingDirectory.isSpecified()) {
-            var wd = workingDirectory.apply(processControl);
-            if (wd != null) {
-                content += t.getCdCommand(wd.toString()) + nl;
-            }
-        }
-
-        // Normalize line endings
-        content += nl + postInit.stream().flatMap(s -> s.lines()).collect(Collectors.joining(nl)) + nl;
-
-        if (exit) {
-            content += nl + t.getPassthroughExitCommand();
-        }
-
-        var hash = getScriptHash(content);
-        var file = t.getInitFileName(processControl, hash);
-        return createExecScript(t, processControl, file, content);
-    }
-
     @SneakyThrows
     public static FilePath createExecScript(ShellControl processControl, String content) {
         return createExecScript(processControl.getShellDialect(), processControl, content);
@@ -82,21 +31,23 @@ public class ScriptHelper {
 
     @SneakyThrows
     public static FilePath createExecScript(ShellDialect type, ShellControl processControl, String content) {
+        content = type.prepareScriptContent(content);
         var fileName = "xpipe-" + getScriptHash(content);
         var temp = processControl.getSystemTemporaryDirectory();
         var file = temp.join(fileName + "." + type.getScriptFileEnding());
-        return createExecScript(type, processControl, file, content);
+        return createExecScriptRaw(processControl, file, content);
     }
 
     @SneakyThrows
-    public static FilePath createExecScript(ShellDialect type, ShellControl processControl, FilePath file, String content) {
-        content = type.prepareScriptContent(content);
+    public static FilePath createExecScriptRaw(ShellControl processControl, FilePath file, String content) {
+        if (processControl.view().fileExists(file)) {
+            return file;
+        }
 
         TrackEvent.withTrace("Writing exec script")
                 .tag("file", file)
                 .tag("content", content)
                 .handle();
-
         processControl.view().writeScriptFile(file, content);
         return file;
     }
@@ -112,20 +63,20 @@ public class ScriptHelper {
 
         if (type != parent.getShellDialect()) {
             try (var sub = parent.subShell(type).start()) {
-                var content =
-                        sub.getShellDialect().getAskpass().prepareStderrPassthroughContent(sub, requestId, prefix);
+                var content = sub.getShellDialect().prepareScriptContent(
+                        sub.getShellDialect().getAskpass().prepareStderrPassthroughContent(sub, requestId, prefix));
                 var fileName = "xpipe-" + getScriptHash(content) + "." + type.getScriptFileEnding();
                 var temp = parent.getSystemTemporaryDirectory();
                 var file = temp.join(fileName);
-                return createExecScript(sub.getShellDialect(), sub, file, content);
+                return createExecScriptRaw(sub, file, content);
             }
         } else {
-            var content =
-                    parent.getShellDialect().getAskpass().prepareStderrPassthroughContent(parent, requestId, prefix);
+            var content = parent.getShellDialect().prepareScriptContent(
+                    parent.getShellDialect().getAskpass().prepareStderrPassthroughContent(parent, requestId, prefix));
             var fileName = "xpipe-" + getScriptHash(content) + "." + type.getScriptFileEnding();
             var temp = parent.getSystemTemporaryDirectory();
             var file = temp.join(fileName);
-            return createExecScript(parent.getShellDialect(), parent, file, content);
+            return createExecScriptRaw(parent, file, content);
         }
     }
 

@@ -1,5 +1,6 @@
 package io.xpipe.ext.base.script;
 
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -10,10 +11,40 @@ import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellInitCommand;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FilePath;
+import lombok.Value;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ScriptStoreSetup {
+
+    @Value
+    private static class GeneratedScriptCache {
+
+        UUID storeId;
+        List<Integer> scriptStoreHashes;
+    }
+
+    private static final Set<GeneratedScriptCache> generatedScriptCaches = new HashSet<>();
+
+    private static synchronized boolean hasGeneratedScriptsCached(UUID storeId, List<DataStoreEntryRef<SimpleScriptStore>> scripts) {
+        var c = generatedScriptCaches.stream().filter(e -> e.storeId.equals(storeId)).findFirst();
+        if (c.isEmpty()) {
+            return false;
+        }
+
+        return scripts.stream().allMatch(ref -> c.get().getScriptStoreHashes().contains(ref.getStore().hashCode()));
+    }
+
+    private static synchronized void cacheScripts(UUID storeId, List<DataStoreEntryRef<SimpleScriptStore>> scripts) {
+        var c = generatedScriptCaches.stream().filter(e -> e.storeId.equals(storeId)).findFirst();
+        if (c.isEmpty()) {
+            var newC = new GeneratedScriptCache(storeId, new ArrayList<>());
+            generatedScriptCaches.add(newC);
+            c = Optional.of(newC);
+        }
+        c.get().getScriptStoreHashes().addAll(scripts.stream().map(ref -> ref.getStore().hashCode()).toList());
+    }
 
     public static ShellControl controlWithDefaultScripts(ShellControl pc) {
         return controlWithScripts(pc, getEnabledScripts());
@@ -39,16 +70,36 @@ public class ScriptStoreSetup {
                 return pc;
             }
 
+            var source = pc.getSourceStoreId();
+            if (source.isPresent()) {
+                var useCached = pc.getSourceStore().map(dataStore -> dataStore instanceof ShellStore s && s.isConnectionAttemptCostly()).orElse(false);
+                if (useCached) {
+                    var cached = hasGeneratedScriptsCached(source.get(), initFlattened) &&  hasGeneratedScriptsCached(source.get(), bringFlattened);
+                    if (cached) {
+                        return pc;
+                    }
+                }
+            }
+
             initFlattened.forEach(simpleScriptStore -> {
                 pc.withInitSnippet(simpleScriptStore.getStore());
             });
-            if (!bringFlattened.isEmpty()) {
+            if (!bringFlattened.isEmpty() || source.isPresent()) {
                 pc.withInitSnippet(new ShellInitCommand() {
 
                     String dir;
 
                     @Override
                     public Optional<String> terminalContent(ShellControl shellControl) throws Exception {
+                        if (source.isPresent()) {
+                            cacheScripts(source.get(), initFlattened);
+                            cacheScripts(source.get(), bringFlattened);
+                        }
+
+                        if (bringFlattened.isEmpty()) {
+                            return Optional.empty();
+                        }
+
                         if (dir == null) {
                             dir = initScriptsDirectory(shellControl, bringFlattened);
                         }

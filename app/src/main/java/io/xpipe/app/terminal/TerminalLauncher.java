@@ -14,14 +14,67 @@ import io.xpipe.core.util.FailableFunction;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class TerminalLauncher {
+
+    public static FilePath constructTerminalInitFile(
+            ShellDialect t,
+            ShellControl processControl,
+            WorkingDirectoryFunction workingDirectory,
+            List<String> preInit,
+            List<String> postInit,
+            TerminalInitScriptConfig config,
+            boolean exit)
+            throws Exception {
+        String nl = t.getNewLine().getNewLineString();
+        var content = "";
+
+        var clear = t.clearDisplayCommand();
+        if (clear != null && config.isClearScreen()) {
+            content += clear + nl;
+        }
+
+        // Normalize line endings
+        content += nl + preInit.stream().flatMap(s -> s.lines()).collect(Collectors.joining(nl)) + nl;
+
+        // We just apply the profile files always, as we can't be sure that they definitely have been applied.
+        // Especially if we launch something that is not the system default shell
+        var applyCommand = t.applyInitFileCommand(processControl);
+        if (applyCommand != null) {
+            content += nl + applyCommand + nl;
+        }
+
+        if (config.getDisplayName() != null) {
+            content += nl + t.changeTitleCommand(config.getDisplayName()) + nl;
+        }
+
+        if (workingDirectory != null && workingDirectory.isSpecified()) {
+            var wd = workingDirectory.apply(processControl);
+            if (wd != null) {
+                content += t.getCdCommand(wd.toString()) + nl;
+            }
+        }
+
+        // Normalize line endings
+        content += nl + postInit.stream().flatMap(s -> s.lines()).collect(Collectors.joining(nl)) + nl;
+
+        if (exit) {
+            content += nl + t.getPassthroughExitCommand();
+        }
+
+        content = t.prepareScriptContent(content);
+
+        var hash = ScriptHelper.getScriptHash(content);
+        var file = t.getInitFileName(processControl, hash);
+        return ScriptHelper.createExecScriptRaw(processControl, file, content);
+    }
 
     public static void openDirect(
             String title, FailableFunction<ShellControl, String, Exception> command, ExternalTerminalType type)
             throws Exception {
         try (var sc = LocalShell.getShell().start()) {
-            var script = ScriptHelper.constructTerminalInitFile(
+            var script = constructTerminalInitFile(
                     sc.getShellDialect(),
                     sc,
                     WorkingDirectoryFunction.none(),
