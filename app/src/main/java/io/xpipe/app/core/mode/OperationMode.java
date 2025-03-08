@@ -19,6 +19,7 @@ import javafx.application.Platform;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
+import java.time.Duration;
 import java.util.List;
 
 public abstract class OperationMode {
@@ -33,9 +34,6 @@ public abstract class OperationMode {
 
     @Getter
     private static boolean inShutdown;
-
-    @Getter
-    private static boolean inShutdownHook;
 
     private static OperationMode CURRENT = null;
 
@@ -73,7 +71,7 @@ public abstract class OperationMode {
                 }
 
                 TrackEvent.info("Received SIGTERM externally");
-                OperationMode.shutdown(true, false);
+                OperationMode.shutdown(false);
             }));
 
             // Handle uncaught exceptions
@@ -174,7 +172,7 @@ public abstract class OperationMode {
             if (OsType.getLocal() != OsType.LINUX) {
                 OperationMode.switchToSyncOrThrow(OperationMode.GUI);
             }
-            OperationMode.shutdown(false, false);
+            OperationMode.shutdown(false);
             return;
         }
 
@@ -275,7 +273,6 @@ public abstract class OperationMode {
             }
 
             inShutdown = true;
-            inShutdownHook = false;
             try {
                 if (CURRENT != null) {
                     CURRENT.finalTeardown();
@@ -320,15 +317,10 @@ public abstract class OperationMode {
         });
     }
 
-    public static void shutdown(boolean inShutdownHook, boolean hasError) {
+    @SneakyThrows
+    public static void shutdown(boolean hasError) {
         if (isInStartup()) {
             TrackEvent.info("Received shutdown request while in startup. Halting ...");
-            OperationMode.halt(1);
-        }
-
-        // In case we are stuck while in shutdown, instantly exit this application
-        if (inShutdown && inShutdownHook) {
-            TrackEvent.info("Received another shutdown request while in shutdown hook. Halting ...");
             OperationMode.halt(1);
         }
 
@@ -336,19 +328,9 @@ public abstract class OperationMode {
             return;
         }
 
-        // Run a timer to always exit after some time in case we get stuck
-        if (!hasError && !AppProperties.get().isDevelopmentEnvironment()) {
-            ThreadHelper.runAsync(() -> {
-                ThreadHelper.sleep(25000);
-                TrackEvent.info("Shutdown took too long. Halting ...");
-                OperationMode.halt(1);
-            });
-        }
-
         TrackEvent.info("Starting shutdown ...");
 
         inShutdown = true;
-        OperationMode.inShutdownHook = inShutdownHook;
         // Keep a non-daemon thread running
         var thread = ThreadHelper.createPlatformThread("shutdown", false, () -> {
             try {
@@ -364,6 +346,14 @@ public abstract class OperationMode {
             OperationMode.halt(hasError ? 1 : 0);
         });
         thread.start();
+
+        // Use a timer to always exit after some time in case we get stuck
+        var limit = !hasError && !AppProperties.get().isDevelopmentEnvironment() ? 25000 : Integer.MAX_VALUE;
+        var exited = thread.join(Duration.ofMillis(limit));
+        if (!exited) {
+            TrackEvent.info("Shutdown took too long. Halting ...");
+            OperationMode.halt(1);
+        }
     }
 
     private static synchronized void set(OperationMode newMode) {
@@ -381,7 +371,7 @@ public abstract class OperationMode {
 
         try {
             if (newMode == null) {
-                shutdown(false, false);
+                shutdown(false);
                 return;
             }
 

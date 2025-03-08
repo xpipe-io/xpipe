@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.core.AppWindowsShutdown;
 import io.xpipe.app.core.check.AppSystemFontCheck;
 import io.xpipe.app.core.window.ModifiedStage;
 import io.xpipe.app.issue.ErrorEvent;
@@ -11,6 +12,7 @@ import javafx.scene.text.Font;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.SystemUtils;
 
 import java.awt.*;
@@ -102,6 +104,9 @@ public enum PlatformState {
 
         // Check if we have no fonts and set properties to load bundled ones
         AppSystemFontCheck.init();
+
+        // We use our own shutdown hook
+        disableToolkitShutdownHook();
 
         if (AppPrefs.get() != null) {
             var s = AppPrefs.get().uiScale().getValue();
@@ -204,5 +209,17 @@ public enum PlatformState {
         } else {
             return OptionalInt.empty();
         }
+    }
+
+    @SneakyThrows
+    private static void disableToolkitShutdownHook() {
+        var tkClass = Class.forName(ModuleLayer.boot().findModule("javafx.graphics").orElseThrow(), "com.sun.javafx.tk.Toolkit");
+        var getToolkitMethod = tkClass.getDeclaredMethod("getToolkit");
+        getToolkitMethod.setAccessible(true);
+        var tk = getToolkitMethod.invoke(null);
+        var shutdownHookField = tk.getClass().getDeclaredField("shutdownHook");
+        shutdownHookField.setAccessible(true);
+        var thread = (Thread) shutdownHookField.get(tk);
+        Runtime.getRuntime().removeShutdownHook(thread);
     }
 }

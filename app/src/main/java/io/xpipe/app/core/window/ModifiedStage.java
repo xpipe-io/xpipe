@@ -1,7 +1,12 @@
 package io.xpipe.app.core.window;
 
+import io.xpipe.app.core.AppLogs;
+import io.xpipe.app.core.AppWindowsShutdown;
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 
 import javafx.animation.PauseTransition;
@@ -14,7 +19,10 @@ import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import javafx.util.Duration;
 
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.SystemUtils;
+
+import java.awt.*;
 
 public class ModifiedStage extends Stage {
 
@@ -55,6 +63,7 @@ public class ModifiedStage extends Stage {
         });
     }
 
+    @SneakyThrows
     private static void applyModes(Stage stage) {
         if (stage.getScene() == null) {
             return;
@@ -71,47 +80,40 @@ public class ModifiedStage extends Stage {
             return;
         }
 
-        switch (OsType.getLocal()) {
-            case OsType.Linux linux -> {}
-            case OsType.MacOs macOs -> {
-                var ctrl = new NativeMacOsWindowControl(stage);
-                var seamlessFrame = AppMainWindow.getInstance() != null
-                        && AppMainWindow.getInstance().getStage() == stage
-                        && !AppPrefs.get().performanceMode().get()
-                        && mergeFrame();
-                var seamlessFrameApplied = ctrl.setAppearance(
-                                seamlessFrame, AppPrefs.get().theme().getValue().isDark())
-                        && seamlessFrame;
-                stage.getScene()
-                        .getRoot()
-                        .pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), seamlessFrameApplied);
-                stage.getScene()
-                        .getRoot()
-                        .pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), !seamlessFrameApplied);
-            }
-            case OsType.Windows windows -> {
-                var ctrl = new NativeWinWindowControl(stage);
-                ctrl.setWindowAttribute(
-                        NativeWinWindowControl.DmwaWindowAttribute.DWMWA_USE_IMMERSIVE_DARK_MODE.get(),
-                        AppPrefs.get().theme().getValue().isDark());
-                boolean seamlessFrame;
-                if (AppPrefs.get().performanceMode().get()
-                        || !mergeFrame()
-                        || AppMainWindow.getInstance() == null
-                        || stage != AppMainWindow.getInstance().getStage()) {
-                    seamlessFrame = false;
-                } else {
-                    // This is not available on Windows 10
-                    seamlessFrame = ctrl.setWindowBackdrop(NativeWinWindowControl.DwmSystemBackDropType.MICA_ALT)
-                            || SystemUtils.IS_OS_WINDOWS_10;
+        try {
+            switch (OsType.getLocal()) {
+                case OsType.Linux linux -> {
                 }
-                stage.getScene()
-                        .getRoot()
-                        .pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), seamlessFrame);
-                stage.getScene()
-                        .getRoot()
-                        .pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), !seamlessFrame);
+                case OsType.MacOs macOs -> {
+                    var ctrl = new NativeMacOsWindowControl(stage);
+                    var seamlessFrame = AppMainWindow.getInstance() != null &&
+                            AppMainWindow.getInstance().getStage() == stage &&
+                            !AppPrefs.get().performanceMode().get() &&
+                            mergeFrame();
+                    var seamlessFrameApplied = ctrl.setAppearance(seamlessFrame, AppPrefs.get().theme().getValue().isDark()) && seamlessFrame;
+                    stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), seamlessFrameApplied);
+                    stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), !seamlessFrameApplied);
+                }
+                case OsType.Windows windows -> {
+                    var ctrl = new NativeWinWindowControl(stage);
+                    ctrl.setWindowAttribute(NativeWinWindowControl.DmwaWindowAttribute.DWMWA_USE_IMMERSIVE_DARK_MODE.get(),
+                            AppPrefs.get().theme().getValue().isDark());
+                    boolean seamlessFrame;
+                    if (AppPrefs.get().performanceMode().get() ||
+                            !mergeFrame() ||
+                            AppMainWindow.getInstance() == null ||
+                            stage != AppMainWindow.getInstance().getStage()) {
+                        seamlessFrame = false;
+                    } else {
+                        // This is not available on Windows 10
+                        seamlessFrame = ctrl.setWindowBackdrop(NativeWinWindowControl.DwmSystemBackDropType.MICA_ALT) || SystemUtils.IS_OS_WINDOWS_10;
+                    }
+                    stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), seamlessFrame);
+                    stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), !seamlessFrame);
+                }
             }
+        } catch (Throwable t) {
+            ErrorEvent.fromThrowable(t).omit().handle();
         }
     }
 

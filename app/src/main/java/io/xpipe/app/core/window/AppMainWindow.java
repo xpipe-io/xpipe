@@ -56,6 +56,8 @@ public class AppMainWindow {
     @Getter
     private static final Property<String> loadingText = new SimpleObjectProperty<>();
 
+    private boolean shown = false;
+
     private AppMainWindow(Stage stage) {
         this.stage = stage;
     }
@@ -145,9 +147,12 @@ public class AppMainWindow {
 
     public void show() {
         stage.show();
-        if (OsType.getLocal() == OsType.WINDOWS) {
-            NativeWinWindowControl.MAIN_WINDOW = new NativeWinWindowControl(stage);
+        if (OsType.getLocal() == OsType.WINDOWS && !shown) {
+            var ctrl = new NativeWinWindowControl(stage);
+            NativeWinWindowControl.MAIN_WINDOW = ctrl;
+            AppWindowsShutdown.registerHook(ctrl.getWindowHandle());
         }
+        shown = true;
     }
 
     private static String createTitle() {
