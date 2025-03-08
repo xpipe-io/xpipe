@@ -65,6 +65,8 @@ public class SystemIconCache {
 
                     var scheme = rasterizeSizes(icon.getFile(), target, icon.getName(), dark);
                     if (scheme == ImageColorScheme.TRANSPARENT) {
+                        var message = "Failed to rasterize icon icon " + icon.getName() + ": Rasterized image is transparent";
+                        ErrorEvent.fromMessage(message).omit().expected().handle();
                         continue;
                     }
 
@@ -125,7 +127,8 @@ public class SystemIconCache {
                 throw ex;
             }
 
-            ErrorEvent.fromThrowable(ex).omit().expected().handle();
+            var message = "Failed to rasterize icon icon " + name + ": " + ex.getMessage();
+            ErrorEvent.fromThrowable(ex).description(message).omit().expected().handle();
             return null;
         }
     }
