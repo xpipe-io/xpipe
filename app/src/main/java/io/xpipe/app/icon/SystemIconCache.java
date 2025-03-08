@@ -65,7 +65,7 @@ public class SystemIconCache {
 
                     var scheme = rasterizeSizes(icon.getFile(), target, icon.getName(), dark);
                     if (scheme == ImageColorScheme.TRANSPARENT) {
-                        var message = "Failed to rasterize icon icon " + icon.getName() + ": Rasterized image is transparent";
+                        var message = "Failed to rasterize icon icon " + icon.getFile().getFileName().toString() + ": Rasterized image is transparent";
                         ErrorEvent.fromMessage(message).omit().expected().handle();
                         continue;
                     }
@@ -123,11 +123,7 @@ public class SystemIconCache {
             }
             return c;
         } catch (Exception ex) {
-            if (ex instanceof IOException) {
-                throw ex;
-            }
-
-            var message = "Failed to rasterize icon icon " + name + ": " + ex.getMessage();
+            var message = "Failed to rasterize icon icon " + path.getFileName().toString() + ": " + ex.getMessage();
             ErrorEvent.fromThrowable(ex).description(message).omit().expected().handle();
             return null;
         }
@@ -198,6 +194,7 @@ public class SystemIconCache {
     }
 
     private static ImageColorScheme determineColorScheme(BufferedImage image) {
+        var transparent = true;
         var counter = 0;
         var mean = 0.0;
         for (int y = 0; y < image.getHeight(); y++) {
@@ -208,6 +205,10 @@ public class SystemIconCache {
                 int  green = (clr & 0x0000ff00) >> 8;
                 int  blue  =  clr & 0x000000ff;
 
+                if (alpha > 0) {
+                    transparent = false;
+                }
+
                 if (alpha < 200) {
                     continue;
                 }
@@ -217,7 +218,7 @@ public class SystemIconCache {
             }
         }
 
-        if (counter == 0) {
+        if (transparent) {
             return ImageColorScheme.TRANSPARENT;
         }
 
