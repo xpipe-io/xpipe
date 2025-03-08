@@ -62,6 +62,10 @@
     -fx-border-color: -color-border-default;
 }
 
+.root:dark:seamless-frame.primer .layout > .background, .root:dark:seamless-frame.mocha .layout > .background {
+    -fx-border-color: #444;
+}
+
 .root:macos:seamless-frame .layout > .background {
     -fx-background-insets: 0;
     -fx-border-insets: 0;
