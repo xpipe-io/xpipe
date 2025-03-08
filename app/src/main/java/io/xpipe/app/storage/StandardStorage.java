@@ -161,16 +161,6 @@ public class StandardStorage extends DataStorage {
                         }
 
                         storeEntries.put(entry.get(), entry.get());
-                    } catch (JacksonException ex) {
-                        // Data corruption and schema changes are expected
-
-                        // We only keep invalid entries in developer mode as there's no point in keeping them in
-                        // production.
-                        if (AppPrefs.get().isDevelopmentEnvironment()) {
-                            directoriesToKeep.add(path);
-                        }
-
-                        ErrorEvent.fromThrowable(ex).expected().omit().build().handle();
                     } catch (IOException ex) {
                         // IO exceptions are not expected
                         exception.set(new IOException("Unable to load data from " + path + ". Is it corrupted?", ex));

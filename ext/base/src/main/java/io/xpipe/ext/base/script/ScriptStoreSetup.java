@@ -8,13 +8,12 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ShellTemp;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialect;
-import io.xpipe.core.process.ShellInitCommand;
+import io.xpipe.core.process.ShellTerminalInitCommand;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FilePath;
 import lombok.Value;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ScriptStoreSetup {
 
@@ -72,7 +71,7 @@ public class ScriptStoreSetup {
 
             var source = pc.getSourceStoreId();
             if (source.isPresent()) {
-                var useCached = pc.getSourceStore().map(dataStore -> dataStore instanceof ShellStore s && s.isConnectionAttemptCostly()).orElse(false);
+                var useCached = true || pc.getSourceStore().map(dataStore -> dataStore instanceof ShellStore s && s.isConnectionAttemptCostly()).orElse(false);
                 if (useCached) {
                     var cached = hasGeneratedScriptsCached(source.get(), initFlattened) &&  hasGeneratedScriptsCached(source.get(), bringFlattened);
                     if (cached) {
@@ -81,11 +80,22 @@ public class ScriptStoreSetup {
                 }
             }
 
-            initFlattened.forEach(simpleScriptStore -> {
-                pc.withInitSnippet(simpleScriptStore.getStore());
+            initFlattened.forEach(s -> {
+                pc.withInitSnippet(new ShellTerminalInitCommand.Static(s.getStore().))
+                pc.withInitSnippet(new ShellTerminalInitCommand() {
+                    @Override
+                    public Optional<String> terminalContent(ShellControl shellControl) {
+                        return Optional.ofNullable(s.getStore().assembleScriptChain(shellControl));
+                    }
+
+                    @Override
+                    public boolean canPotentiallyRunInDialect(ShellDialect dialect) {
+                        return s.getStore().getMinimumDialect().isCompatibleTo(dialect);
+                    }
+                });
             });
             if (!bringFlattened.isEmpty() || source.isPresent()) {
-                pc.withInitSnippet(new ShellInitCommand() {
+                pc.withInitSnippet(new ShellTerminalInitCommand.Terminal() {
 
                     String dir;
 
@@ -114,11 +124,6 @@ public class ScriptStoreSetup {
 
                     @Override
                     public boolean canPotentiallyRunInDialect(ShellDialect dialect) {
-                        return true;
-                    }
-
-                    @Override
-                    public boolean runInTerminal() {
                         return true;
                     }
                 });

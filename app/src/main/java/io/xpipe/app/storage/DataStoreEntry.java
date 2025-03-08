@@ -1,5 +1,6 @@
 package io.xpipe.app.storage;
 
+import com.fasterxml.jackson.core.JacksonException;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.ext.UserScopeStore;
@@ -285,8 +286,15 @@ public class DataStoreEntry extends StorageElement {
             notes = null;
         }
 
-        var fileNode = mapper.readTree(storeFile.toFile());
-        var node = DataStorageNode.readPossiblyEncryptedNode(fileNode);
+        DataStorageNode node = null;
+        try {
+            var fileNode = mapper.readTree(storeFile.toFile());
+            node = DataStorageNode.readPossiblyEncryptedNode(fileNode);
+        } catch (JacksonException ex) {
+            ErrorEvent.fromThrowable(ex).omit().expected().handle();
+            node = DataStorageNode.fail();
+        }
+
         var store = node.parseStore();
         return Optional.of(new DataStoreEntry(
                 dir,
@@ -481,7 +489,7 @@ public class DataStoreEntry extends StorageElement {
             var notesNode = JsonNodeFactory.instance.objectNode();
             notesNode.put("markdown", notes);
             var storageNode = DataStorageNode.encryptNodeIfNeeded(new DataStorageNode(
-                    notesNode, storeNode.isPerUser(), storeNode.isAvailableForUser(), storeNode.isEncrypted()));
+                    notesNode, storeNode.isPerUser(), storeNode.isReadableForUser(), storeNode.isEncrypted()));
             var string = mapper.writeValueAsString(storageNode);
             Files.writeString(encryptedNotesFile, string);
         } else if (notes != null) {

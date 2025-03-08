@@ -1,6 +1,8 @@
 package io.xpipe.ext.base.identity;
 
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.SecretRetrievalStrategy;
@@ -176,7 +178,7 @@ public interface SshIdentityStrategy {
 
         @Override
         public boolean isConnectionAttemptCostly() {
-            return false;
+            return password.expectsQuery() && AppPrefs.get().dontCachePasswords().get();
         }
 
         public void checkComplete() throws ValidationException {

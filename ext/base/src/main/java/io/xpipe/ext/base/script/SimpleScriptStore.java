@@ -6,7 +6,6 @@ import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialect;
-import io.xpipe.core.process.ShellInitCommand;
 import io.xpipe.core.util.ValidationException;
 import io.xpipe.ext.base.SelfReferentialStore;
 
@@ -20,7 +19,6 @@ import lombok.extern.jackson.Jacksonized;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @SuperBuilder(toBuilder = true)
@@ -29,7 +27,7 @@ import java.util.stream.Collectors;
 @JsonTypeName("script")
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class SimpleScriptStore extends ScriptStore implements ShellInitCommand.Terminal, SelfReferentialStore {
+public class SimpleScriptStore extends ScriptStore implements SelfReferentialStore {
 
     ShellDialect minimumDialect;
     String commands;
@@ -62,7 +60,7 @@ public class SimpleScriptStore extends ScriptStore implements ShellInitCommand.T
                             shellControl.getShellDialect().getNewLine().getNewLineString()));
             var targetType = shellControl.getOriginalShellDialect();
             var script = ScriptHelper.createExecScript(targetType, shellControl, fixedCommands);
-            return targetType.sourceScriptCommand(shellControl, script.toString());
+            return targetType.sourceScriptCommand(script.toString());
         }
 
         return null;
@@ -114,15 +112,5 @@ public class SimpleScriptStore extends ScriptStore implements ShellInitCommand.T
                         .filter(ref -> ref.get().getValidity().isUsable())
                         .toList()
                 : List.of();
-    }
-
-    @Override
-    public Optional<String> terminalContent(ShellControl shellControl) {
-        return Optional.ofNullable(assembleScriptChain(shellControl));
-    }
-
-    @Override
-    public boolean canPotentiallyRunInDialect(ShellDialect dialect) {
-        return this.minimumDialect.isCompatibleTo(dialect);
     }
 }

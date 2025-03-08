@@ -95,7 +95,7 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public List<ShellInitCommand> getInitCommands() {
+    public List<ShellTerminalInitCommand> getInitCommands() {
         return parent.getInitCommands();
     }
 
@@ -334,7 +334,7 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public ShellControl withInitSnippet(ShellInitCommand snippet) {
+    public ShellControl withInitSnippet(ShellTerminalInitCommand snippet) {
         return parent.withInitSnippet(snippet);
     }
 

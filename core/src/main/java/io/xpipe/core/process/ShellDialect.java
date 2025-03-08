@@ -138,7 +138,7 @@ public interface ShellDialect {
 
     String runScriptCommand(ShellControl parent, String file);
 
-    String sourceScriptCommand(ShellControl parent, String file);
+    String sourceScriptCommand(String file);
 
     String executeCommandWithShell(String cmd);
 

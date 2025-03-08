@@ -133,11 +133,17 @@ public class DataStorageNode {
     }
 
     public boolean hasAccess() {
-        return !perUser || availableForUser;
+        // In this case the loading failed
+        // We have access to it, we just can't read it
+        if (!perUser && !readableForUser) {
+            return true;
+        }
+
+        return !perUser || readableForUser;
     }
 
     JsonNode contentNode;
     boolean perUser;
-    boolean availableForUser;
+    boolean readableForUser;
     boolean encrypted;
 }

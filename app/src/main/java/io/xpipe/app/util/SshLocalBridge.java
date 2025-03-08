@@ -204,7 +204,7 @@ public class SshLocalBridge {
         var exec = CommandSupport.findProgram(sc, "sshd");
         if (exec.isEmpty()) {
             throw ErrorEvent.expected(new IllegalStateException(
-                    "No sshd executable found in PATH. The SSH terminal bridge requires a local ssh server"));
+                    "No sshd executable found in PATH. The SSH terminal bridge requires a local ssh server to connect to an SSH terminal"));
         }
         return exec.get();
     }

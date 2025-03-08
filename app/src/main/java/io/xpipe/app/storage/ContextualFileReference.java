@@ -76,7 +76,7 @@ public class ContextualFileReference {
         var start = getDataDir();
         var normalizedPath = FilePath.of(path).normalize().toUnix();
         if (normalizedPath.startsWith(start) && !normalizedPath.equals(start)) {
-            return "<DATA>" + "/" + start.relativize(normalizedPath);
+            return "<DATA>" + "/" + normalizedPath.relativize(start);
         }
         return path;
     }

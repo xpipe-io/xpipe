@@ -238,7 +238,7 @@ public class AppJacksonModule extends SimpleModule {
             var e = DataStorage.get()
                     .getStoreEntryIfPresent(id)
                     .filter(dataStoreEntry -> dataStoreEntry.getValidity() != DataStoreEntry.Validity.LOAD_FAILED
-                            || !dataStoreEntry.getStoreNode().isAvailableForUser())
+                            || !dataStoreEntry.getStoreNode().isReadableForUser())
                     .orElse(null);
             if (e == null) {
                 return null;
