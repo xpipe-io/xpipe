@@ -67,6 +67,12 @@ public class EncryptionToken {
     @JsonIgnore
     private Boolean isVault;
 
+    @JsonIgnore
+    private Boolean isUser;
+
+    @JsonIgnore
+    private EncryptionToken usedUserToken;
+
     public boolean canDecrypt() {
         return isVault() || isUser();
     }
@@ -82,12 +88,18 @@ public class EncryptionToken {
     }
 
     public boolean isUser() {
+        if (userToken == EncryptionToken.ofUser() && isUser != null) {
+            return isUser;
+        }
+
         var userHandler = DataStorageUserHandler.getInstance();
         if (userHandler.getActiveUser() == null) {
             return false;
         }
 
-        return userHandler.getActiveUser().equals(decode(userHandler.getEncryptionKey()));
+        usedUserToken = ofUser();
+        isUser = userHandler.getActiveUser().equals(decode(userHandler.getEncryptionKey()));
+        return isUser;
     }
 
     public boolean isVault() {
