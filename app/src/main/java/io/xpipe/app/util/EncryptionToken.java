@@ -88,13 +88,13 @@ public class EncryptionToken {
     }
 
     public boolean isUser() {
-        if (userToken == EncryptionToken.ofUser() && isUser != null) {
-            return isUser;
-        }
-
         var userHandler = DataStorageUserHandler.getInstance();
         if (userHandler.getActiveUser() == null) {
             return false;
+        }
+
+        if (userToken == EncryptionToken.ofUser() && isUser != null) {
+            return isUser;
         }
 
         usedUserToken = ofUser();
