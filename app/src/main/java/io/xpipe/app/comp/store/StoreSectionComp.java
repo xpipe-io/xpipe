@@ -12,6 +12,7 @@ import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
 import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -26,85 +27,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class StoreSectionComp extends Comp<CompStructure<VBox>> {
+public class StoreSectionComp extends StoreSectionBaseComp {
 
-    public static final PseudoClass EXPANDED = PseudoClass.getPseudoClass("expanded");
-    private static final PseudoClass ROOT = PseudoClass.getPseudoClass("root");
-    private static final PseudoClass SUB = PseudoClass.getPseudoClass("sub");
-    private static final PseudoClass ODD = PseudoClass.getPseudoClass("odd-depth");
-    private static final PseudoClass EVEN = PseudoClass.getPseudoClass("even-depth");
-    private final StoreSection section;
-    private final boolean topLevel;
-
-    public StoreSectionComp(StoreSection section, boolean topLevel) {
-        this.section = section;
-        this.topLevel = topLevel;
-    }
-
-    private Comp<CompStructure<Button>> createQuickAccessButton() {
-        var quickAccessDisabled = Bindings.createBooleanBinding(
-                () -> {
-                    return section.getShownChildren().getList().isEmpty();
-                },
-                section.getShownChildren().getList());
-        Consumer<StoreSection> quickAccessAction = w -> {
-            ThreadHelper.runFailableAsync(() -> {
-                w.getWrapper().executeDefaultAction();
-            });
-        };
-        var quickAccessButton = new StoreQuickAccessButtonComp(section, quickAccessAction)
-                .vgrow()
-                .styleClass("quick-access-button")
-                .apply(struc -> struc.get().setMinWidth(30))
-                .apply(struc -> struc.get().setPrefWidth(30))
-                .maxHeight(100)
-                .accessibleText(Bindings.createStringBinding(
-                        () -> {
-                            return "Access " + section.getWrapper().getName().getValue();
-                        },
-                        section.getWrapper().getName()))
-                .disable(quickAccessDisabled)
-                .focusTraversableForAccessibility()
-                .tooltipKey("accessSubConnections", new KeyCodeCombination(KeyCode.RIGHT));
-        return quickAccessButton;
-    }
-
-    private Comp<CompStructure<Button>> createExpandButton() {
-        var expandButton = new IconButtonComp(
-                Bindings.createObjectBinding(
-                        () -> new LabelGraphic.IconGraphic(
-                                section.getWrapper().getExpanded().get()
-                                                && section.getShownChildren()
-                                                                .getList()
-                                                                .size()
-                                                        > 0
-                                        ? "mdal-keyboard_arrow_down"
-                                        : "mdal-keyboard_arrow_right"),
-                        section.getWrapper().getExpanded(),
-                        section.getShownChildren().getList()),
-                () -> {
-                    section.getWrapper().toggleExpanded();
-                });
-        expandButton
-                .apply(struc -> struc.get().setMinWidth(30))
-                .apply(struc -> struc.get().setPrefWidth(30))
-                .focusTraversableForAccessibility()
-                .tooltipKey("expand", new KeyCodeCombination(KeyCode.SPACE))
-                .accessibleText(Bindings.createStringBinding(
-                        () -> {
-                            return "Expand " + section.getWrapper().getName().getValue();
-                        },
-                        section.getWrapper().getName()))
-                .disable(Bindings.size(section.getShownChildren().getList()).isEqualTo(0))
-                .styleClass("expand-button")
-                .maxHeight(100)
-                .vgrow();
-        return expandButton;
+    public StoreSectionComp(StoreSection section) {
+        super(section);
     }
 
     @Override
     public CompStructure<VBox> createBase() {
-        var entryButton = StoreEntryComp.customSection(section, topLevel);
+        var entryButton = StoreEntryComp.customSection(section);
         entryButton.hgrow();
         entryButton.apply(struc -> {
             struc.get().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
@@ -123,8 +54,17 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
             });
         });
 
-        var quickAccessButton = createQuickAccessButton();
-        var expandButton = createExpandButton();
+        var quickAccessButton = createQuickAccessButton(30, c -> {
+            ThreadHelper.runFailableAsync(() -> {
+                c.getWrapper().executeDefaultAction();
+            });
+        });
+        quickAccessButton.focusTraversableForAccessibility();
+        quickAccessButton.tooltipKey("accessSubConnections", new KeyCodeCombination(KeyCode.RIGHT));
+
+        var expandButton = createExpandButton(() -> section.getWrapper().toggleExpanded(), 30, section.getWrapper().getExpanded());
+        expandButton.focusTraversableForAccessibility();
+        expandButton.tooltipKey("expand", new KeyCodeCombination(KeyCode.SPACE));
         var buttonList = new ArrayList<Comp<?>>();
         if (entryButton.isFullSize()) {
             buttonList.add(quickAccessButton);
@@ -137,95 +77,21 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
         topEntryList.maxHeight(entryButton.getHeight());
         topEntryList.prefHeight(entryButton.getHeight());
 
-        // Optimization for large sections. If there are more than 20 children, only add the nodes to the scene if the
-        // section is actually expanded
-        var listSections = section.getShownChildren()
-                .filtered(
-                        storeSection -> section.getAllChildren().getList().size() <= 20
-                                || section.getWrapper().getExpanded().get(),
-                        section.getWrapper().getExpanded(),
-                        section.getAllChildren().getList());
-        var content = new ListBoxViewComp<>(
-                listSections.getList(),
-                section.getAllChildren().getList(),
-                (StoreSection e) -> {
-                    return StoreSection.customSection(e, false).apply(GrowAugment.create(true, false));
-                },
-                false);
-        content.minHeight(0).hgrow();
+        var effectiveExpanded = effectiveExpanded(section.getWrapper().getExpanded());
+        var content = createChildrenList(c -> StoreSection.customSection(c), Bindings.not(effectiveExpanded));
 
-        var expanded = Bindings.createBooleanBinding(
-                () -> {
-                    return section.getWrapper().getExpanded().get()
-                            && section.getShownChildren().getList().size() > 0;
-                },
-                section.getWrapper().getExpanded(),
-                section.getShownChildren().getList());
         var full = new VerticalComp(List.of(
                 topEntryList,
-                Comp.separator().hide(expanded.not()),
-                content.styleClass("children-content")
-                        .hide(Bindings.or(
-                                Bindings.not(section.getWrapper().getExpanded()),
-                                Bindings.size(section.getShownChildren().getList())
-                                        .isEqualTo(0)))));
-
+                Comp.separator().hide(Bindings.not(effectiveExpanded)),
+                content));
+        full.styleClass("store-entry-section-comp");
         full.apply(struc -> {
-            var hbox = ((HBox) struc.get().getChildren().getFirst());
-            var buttonsRegion = hbox.getChildren().getFirst();
-            var storeRegion = hbox.getChildren().get(1);
-            hbox.getChildren().remove(buttonsRegion);
-            hbox.getChildren().remove(storeRegion);
-            struc.get().visibleProperty().subscribe((newValue) -> {
-                if (newValue) {
-                    if (!hbox.getChildren().contains(buttonsRegion)) {
-                        hbox.getChildren().add(buttonsRegion);
-                    }
-                    if (!hbox.getChildren().contains(storeRegion)) {
-                        hbox.getChildren().add(storeRegion);
-                    }
-                } else {
-                    hbox.getChildren().remove(storeRegion);
-                    hbox.getChildren().remove(buttonsRegion);
-                }
-            });
-        });
-
-
-        return full.styleClass("store-entry-section-comp")
-                .apply(struc -> {
                     struc.get().setFillWidth(true);
-                    expanded.subscribe(val -> {
-                        struc.get().pseudoClassStateChanged(EXPANDED, val);
-                    });
-                    struc.get().pseudoClassStateChanged(EVEN, section.getDepth() % 2 == 0);
-                    struc.get().pseudoClassStateChanged(ODD, section.getDepth() % 2 != 0);
-                    struc.get().pseudoClassStateChanged(ROOT, topLevel);
-                    struc.get().pseudoClassStateChanged(SUB, !topLevel);
-
-                    section.getWrapper().getColor().subscribe(val -> {
-                        if (!topLevel) {
-                            return;
-                        }
-
-                        var newList = new ArrayList<>(struc.get().getStyleClass());
-                        newList.removeIf(s -> Arrays.stream(DataColor.values())
-                                .anyMatch(
-                                        dataStoreColor -> dataStoreColor.getId().equals(s)));
-                        newList.remove("gray");
-                        newList.add("color-box");
-                        if (val != null) {
-                            newList.add(val.getId());
-                        } else {
-                            newList.add("gray");
-                        }
-                        struc.get().getStyleClass().setAll(newList);
-                    });
-
-                    section.getWrapper().getPerUser().subscribe(val -> {
-                        struc.get().pseudoClassStateChanged(PseudoClass.getPseudoClass("per-user"), val);
-                    });
+                    var hbox = ((HBox) struc.get().getChildren().getFirst());
+                    addPseudoClassListeners(struc.get(), section.getWrapper().getExpanded());
+                    addVisibilityListeners(struc.get(), hbox);
                 })
                 .createStructure();
+        return full.createStructure();
     }
 }

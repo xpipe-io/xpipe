@@ -27,7 +27,7 @@ public class StoreEntryListComp extends SimpleComp {
                         .getAllChildren()
                         .getList(),
                 (StoreSection e) -> {
-                    var custom = StoreSection.customSection(e, true).hgrow();
+                    var custom = StoreSection.customSection(e).hgrow();
                     return custom;
                 },
                 true);

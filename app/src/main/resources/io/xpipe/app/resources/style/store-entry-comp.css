@@ -133,7 +133,7 @@
     -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 2, 0.5, 0, 1);
 }
 
-.store-entry-section-comp:root {
+.store-entry-section-comp:top {
     -fx-border-radius: 4px;
     -fx-background-radius: 4px;
 }

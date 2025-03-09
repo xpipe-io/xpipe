@@ -93,8 +93,8 @@ public interface DataStoreProvider {
         return StoreEntryComp.create(s, null, preferLarge);
     }
 
-    default StoreSectionComp customSectionComp(StoreSection section, boolean topLevel) {
-        return new StoreSectionComp(section, topLevel);
+    default StoreSectionComp customSectionComp(StoreSection section) {
+        return new StoreSectionComp(section);
     }
 
     default boolean shouldShowScan() {
