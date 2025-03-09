@@ -21,6 +21,11 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         return true;
     }
 
+    @Override
+    public int getHeight() {
+        return 57;
+    }
+
     private Label createSummary() {
         var summary = new Label();
         summary.textProperty().bind(getWrapper().getShownSummary());

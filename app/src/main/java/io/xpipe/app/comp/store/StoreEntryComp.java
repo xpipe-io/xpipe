@@ -81,6 +81,8 @@ public abstract class StoreEntryComp extends SimpleComp {
 
     public abstract boolean isFullSize();
 
+    public abstract int getHeight();
+
     @Override
     protected final Region createSimple() {
         var r = createContent();

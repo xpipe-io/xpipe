@@ -13,10 +13,12 @@ import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.binding.Bindings;
 import javafx.css.PseudoClass;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
@@ -103,24 +105,15 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
     @Override
     public CompStructure<VBox> createBase() {
         var entryButton = StoreEntryComp.customSection(section, topLevel);
-        var quickAccessButton = createQuickAccessButton();
-        var expandButton = createExpandButton();
-        var buttonList = new ArrayList<Comp<?>>();
-        if (entryButton.isFullSize()) {
-            buttonList.add(quickAccessButton);
-        }
-        buttonList.add(expandButton);
-        var buttons = new VerticalComp(buttonList);
-        var topEntryList = new HorizontalComp(List.of(buttons, entryButton.hgrow()));
-        topEntryList.apply(struc -> {
-            var mainButton = struc.get().getChildren().get(1);
-            mainButton.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+        entryButton.hgrow();
+        entryButton.apply(struc -> {
+            struc.get().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
                 if (event.getCode() == KeyCode.SPACE) {
                     section.getWrapper().toggleExpanded();
                     event.consume();
                 }
                 if (event.getCode() == KeyCode.RIGHT) {
-                    var ref = (VBox) struc.get().getChildren().getFirst();
+                    var ref = (VBox) ((HBox) struc.get().getParent()).getChildren().getFirst();
                     if (entryButton.isFullSize()) {
                         var btn = (Button) ref.getChildren().getFirst();
                         btn.fire();
@@ -129,6 +122,20 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                 }
             });
         });
+
+        var quickAccessButton = createQuickAccessButton();
+        var expandButton = createExpandButton();
+        var buttonList = new ArrayList<Comp<?>>();
+        if (entryButton.isFullSize()) {
+            buttonList.add(quickAccessButton);
+        }
+        buttonList.add(expandButton);
+        var buttons = new VerticalComp(buttonList);
+        var topEntryList = new HorizontalComp(List.of(buttons, entryButton));
+        topEntryList.apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
+        topEntryList.minHeight(entryButton.getHeight());
+        topEntryList.maxHeight(entryButton.getHeight());
+        topEntryList.prefHeight(entryButton.getHeight());
 
         // Optimization for large sections. If there are more than 20 children, only add the nodes to the scene if the
         // section is actually expanded
@@ -162,6 +169,23 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                                 Bindings.not(section.getWrapper().getExpanded()),
                                 Bindings.size(section.getShownChildren().getList())
                                         .isEqualTo(0)))));
+
+        full.apply(struc -> {
+            var hbox = ((HBox) struc.get().getChildren().getFirst());
+            var r = hbox.getChildren().get(1);
+            hbox.getChildren().remove(r);
+            struc.get().visibleProperty().subscribe((newValue) -> {
+                if (newValue) {
+                    if (!hbox.getChildren().contains(r)) {
+                        hbox.getChildren().add(r);
+                    }
+                } else {
+                    hbox.getChildren().remove(r);
+                }
+            });
+        });
+
+
         return full.styleClass("store-entry-section-comp")
                 .apply(struc -> {
                     struc.get().setFillWidth(true);
