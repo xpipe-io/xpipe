@@ -4,6 +4,7 @@ import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.PlatformThread;
@@ -111,6 +112,15 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
                 updateVisibilities(scroll, vbox);
             });
         });
+        if (StoreViewState.get() != null) {
+            StoreViewState.get().getSortMode().addListener((observable, oldValue, newValue) -> {
+                Platform.runLater(() -> {
+                    Platform.runLater(() -> {
+                        updateVisibilities(scroll, vbox);
+                    });
+                });
+            });
+        }
 
         vbox.sceneProperty().addListener((observable, oldValue, newValue) -> {
             Node c = vbox;

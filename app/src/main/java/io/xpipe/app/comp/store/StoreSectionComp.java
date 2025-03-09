@@ -172,15 +172,21 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
 
         full.apply(struc -> {
             var hbox = ((HBox) struc.get().getChildren().getFirst());
-            var r = hbox.getChildren().get(1);
-            hbox.getChildren().remove(r);
+            var buttonsRegion = hbox.getChildren().getFirst();
+            var storeRegion = hbox.getChildren().get(1);
+            hbox.getChildren().remove(buttonsRegion);
+            hbox.getChildren().remove(storeRegion);
             struc.get().visibleProperty().subscribe((newValue) -> {
                 if (newValue) {
-                    if (!hbox.getChildren().contains(r)) {
-                        hbox.getChildren().add(r);
+                    if (!hbox.getChildren().contains(buttonsRegion)) {
+                        hbox.getChildren().add(buttonsRegion);
+                    }
+                    if (!hbox.getChildren().contains(storeRegion)) {
+                        hbox.getChildren().add(storeRegion);
                     }
                 } else {
-                    hbox.getChildren().remove(r);
+                    hbox.getChildren().remove(storeRegion);
+                    hbox.getChildren().remove(buttonsRegion);
                 }
             });
         });
