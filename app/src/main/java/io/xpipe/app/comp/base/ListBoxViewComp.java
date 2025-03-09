@@ -62,12 +62,6 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             refresh(scroll, vbox, c.getList(), all, cache, true, true);
         });
 
-        all.addListener((ListChangeListener<? super T>) c -> {
-            synchronized (cache) {
-                cache.keySet().retainAll(c.getList());
-            }
-        });
-
         if (scrollBar) {
             scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
             scroll.skinProperty().subscribe(newValue -> {
@@ -178,9 +172,16 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
     }
 
     private void updateVisibilities(ScrollPane scroll, VBox vbox) {
+        int count = 0;
         for (Node child : vbox.getChildren()) {
             var v = isVisible(scroll, vbox, child);
             child.setVisible(v);
+            if (v) {
+                count++;
+            }
+        }
+        if (count > 10) {
+            // System.out.println("Visible: " + count);
         }
     }
 

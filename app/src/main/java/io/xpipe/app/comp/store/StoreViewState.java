@@ -37,6 +37,9 @@ public class StoreViewState {
     private final IntegerProperty entriesListUpdateObservable = new SimpleIntegerProperty();
 
     @Getter
+    private final IntegerProperty sortModeObservable = new SimpleIntegerProperty();
+
+    @Getter
     private final Property<StoreCategoryWrapper> activeCategory = new SimpleObjectProperty<>();
 
     @Getter
@@ -121,7 +124,6 @@ public class StoreViewState {
                 .setAll(FXCollections.observableArrayList(DataStorage.get().getStoreEntries().stream()
                         .map(StoreEntryWrapper::new)
                         .toList()));
-        allEntries.getList().forEach(e -> e.applyLastAccess());
         categories
                 .getList()
                 .setAll(FXCollections.observableArrayList(DataStorage.get().getStoreCategories().stream()
@@ -153,7 +155,7 @@ public class StoreViewState {
     }
 
     public void updateDisplay() {
-        allEntries.getList().forEach(e -> e.applyLastAccess());
+        sortModeObservable.setValue(sortModeObservable.get() + 1);
         toggleStoreListUpdate();
     }
 
@@ -192,7 +194,6 @@ public class StoreViewState {
                     var l = Arrays.stream(entry)
                             .map(StoreEntryWrapper::new)
                             .peek(storeEntryWrapper -> storeEntryWrapper.update())
-                            .peek(wrapper -> wrapper.applyLastAccess())
                             .toList();
 
                     // Don't update anything if we have already reset

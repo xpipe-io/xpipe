@@ -85,9 +85,19 @@ public class DerivedObservableList<T> {
         target.setAll(newList);
     }
 
+    private int indexOfFromStart(List<? extends T> list, T value, int start) {
+        for (int i = start; i < list.size(); i++) {
+            if (Objects.equals(list.get(i), value)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     private void setContentUnique(List<? extends T> newList) {
         var listSet = new HashSet<>(list);
         var newSet = new HashSet<>(newList);
+
         // Addition
         if (newSet.containsAll(list)) {
             var l = new ArrayList<>(newList);
@@ -100,7 +110,7 @@ public class DerivedObservableList<T> {
 
             var start = 0;
             for (int end = 0; end <= list.size(); end++) {
-                var index = end < list.size() ? newList.indexOf(list.get(end)) : newList.size();
+                var index = end < list.size() ? indexOfFromStart(newList, list.get(end), end) : newList.size();
                 for (; start < index; start++) {
                     list.add(start, newList.get(start));
                 }
@@ -133,7 +143,8 @@ public class DerivedObservableList<T> {
         var cache = new HashMap<T, V>();
         var l1 = this.<V>createNewDerived();
         Runnable runnable = () -> {
-            cache.keySet().removeIf(t -> !getList().contains(t));
+            var listSet = new HashSet<>(list);
+            cache.keySet().removeIf(t -> !listSet.contains(t));
             l1.setContent(list.stream()
                     .map(v -> {
                         if (!cache.containsKey(v)) {
