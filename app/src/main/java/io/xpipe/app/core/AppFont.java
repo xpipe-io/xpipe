@@ -20,10 +20,6 @@ public class AppFont {
         // Load ikonli fonts
         TrackEvent.info("Loading ikonli fonts ...");
         new FontIcon("mdi2s-stop");
-        new FontIcon("mdi2m-magnify");
-        new FontIcon("mdi2d-database-plus");
-        new FontIcon("mdi2p-professional-hexagon");
-        new FontIcon("mdi2c-chevron-double-right");
 
         TrackEvent.info("Loading bundled fonts ...");
         AppResources.with(

@@ -18,6 +18,11 @@ import javax.crypto.SecretKey;
 public class EncryptionToken {
 
     private static EncryptionToken vaultToken;
+    private static EncryptionToken userToken;
+
+    public static void invalidateUserToken() {
+        userToken = null;
+    }
 
     private static EncryptionToken createUserToken() {
         var userHandler = DataStorageUserHandler.getInstance();
@@ -39,12 +44,15 @@ public class EncryptionToken {
     }
 
     public static EncryptionToken ofUser() {
-        var userHandler = DataStorageUserHandler.getInstance();
-        if (userHandler.getActiveUser() == null) {
-            throw new IllegalStateException("No active user available");
-        }
+        if (userToken == null) {
+            var userHandler = DataStorageUserHandler.getInstance();
+            if (userHandler.getActiveUser() == null) {
+                throw new IllegalStateException("No active user available");
+            }
 
-        return createUserToken();
+            userToken = createUserToken();
+        }
+        return userToken;
     }
 
     public static EncryptionToken ofVaultKey() {

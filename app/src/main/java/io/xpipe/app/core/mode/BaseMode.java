@@ -103,11 +103,11 @@ public class BaseMode extends OperationMode {
                     DataStorage.init();
                     storageLoaded.countDown();
                     StoreViewState.init();
+                    AppMainWindow.loadingText("loadingUserInterface");
                     AppLayoutModel.init();
                     PlatformInit.init(true);
                     PlatformThread.runLaterIfNeededBlocking(() -> {
                         AppGreetingsDialog.showIfNeeded();
-                        AppMainWindow.loadingText("initializingApp");
                     });
                     imagesLoaded.await();
                     browserLoaded.await();
