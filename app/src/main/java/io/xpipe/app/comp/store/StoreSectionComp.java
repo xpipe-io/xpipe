@@ -59,10 +59,12 @@ public class StoreSectionComp extends StoreSectionBaseComp {
                 c.getWrapper().executeDefaultAction();
             });
         });
+        quickAccessButton.vgrow();
         quickAccessButton.focusTraversableForAccessibility();
         quickAccessButton.tooltipKey("accessSubConnections", new KeyCodeCombination(KeyCode.RIGHT));
 
         var expandButton = createExpandButton(() -> section.getWrapper().toggleExpanded(), 30, section.getWrapper().getExpanded());
+        expandButton.vgrow();
         expandButton.focusTraversableForAccessibility();
         expandButton.tooltipKey("expand", new KeyCodeCombination(KeyCode.SPACE));
         var buttonList = new ArrayList<Comp<?>>();

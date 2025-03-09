@@ -31,7 +31,6 @@ public class StoreEntryListComp extends SimpleComp {
                     return custom;
                 },
                 true);
-        content.setPlatformPauseInterval(250);
         content.apply(struc -> {
             // Reset scroll
             StoreViewState.get().getActiveCategory().addListener((observable, oldValue, newValue) -> {

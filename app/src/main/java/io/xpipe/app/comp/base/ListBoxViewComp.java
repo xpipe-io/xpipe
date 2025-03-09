@@ -7,6 +7,7 @@ import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.util.DerivedObservableList;
+import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.application.Platform;
@@ -126,7 +127,9 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             Node c = vbox;
             while ((c = c.getParent()) != null) {
                 c.boundsInParentProperty().addListener((observable1, oldValue1, newValue1) -> {
-                    updateVisibilities(scroll, vbox);
+                    Platform.runLater(() -> {
+                        updateVisibilities(scroll, vbox);
+                    });
                 });
             }
             Platform.runLater(() -> {
@@ -150,7 +153,8 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         var paneHeight = pane.getHeight();
         var scrollCenter = box.getBoundsInLocal().getHeight() * pane.getVvalue();
         var minBoundsHeight = scrollCenter - paneHeight;
-        var maxBoundsHeight = scrollCenter + paneHeight;
+        // Expand a little bit more to the bottom for scrolling
+        var maxBoundsHeight = scrollCenter + (paneHeight * 1.5);
 
         var nodeMinHeight = node.getBoundsInParent().getMinY();
         var nodeMaxHeight = node.getBoundsInParent().getMaxY();
@@ -182,6 +186,10 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
     }
 
     private void updateVisibilities(ScrollPane scroll, VBox vbox) {
+        if (!Platform.isFxApplicationThread()) {
+            throw new IllegalStateException("Cannot update visibilities");
+        }
+
         int count = 0;
         for (Node child : vbox.getChildren()) {
             var v = isVisible(scroll, vbox, child);

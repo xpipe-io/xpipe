@@ -45,7 +45,7 @@ public interface StoreSortMode {
 
         @Override
         protected int compare(Instant s1, Instant s2) {
-            return s2.compareTo(s1);
+            return s1.compareTo(s2);
         }
 
         @Override
@@ -66,7 +66,7 @@ public interface StoreSortMode {
 
         @Override
         protected int compare(Instant s1, Instant s2) {
-            return s1.compareTo(s2);
+            return s2.compareTo(s1);
         }
 
         @Override
