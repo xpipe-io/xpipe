@@ -32,3 +32,7 @@
 .options-comp .titled-pane > .title {
     -fx-padding: 8 20 8 10;
 }
+
+.options-comp .titled-pane > .title .text {
+    -fx-font-size: 0.95em;
+}

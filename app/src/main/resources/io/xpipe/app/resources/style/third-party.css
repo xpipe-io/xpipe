@@ -2,10 +2,10 @@
     -fx-background-color: transparent;
 }
 
-.titled-pane {
+.third-party-dependency-list-comp .titled-pane {
     -fx-background-radius: 5;
 }
 
-.titled-pane .content {
+.third-party-dependency-list-comp .titled-pane .content {
     -fx-padding: 4;
 }
