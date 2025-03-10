@@ -144,6 +144,8 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         }
 
         vbox.sceneProperty().addListener((observable, oldValue, newValue) -> {
+            dirty.set(true);
+
             if (newValue != null) {
                 animationTimer.start();
             } else {
@@ -151,12 +153,12 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             }
 
             Node c = vbox;
-            while ((c = c.getParent()) != null) {
+            do {
                 c.boundsInParentProperty().addListener((observable1, oldValue1, newValue1) -> {
                     dirty.set(true);
                 });
-            }
-            dirty.set(true);
+            } while ((c = c.getParent()) != null);
+
             if (newValue != null) {
                 newValue.heightProperty().addListener((observable1, oldValue1, newValue1) -> {
                     dirty.set(true);
@@ -173,8 +175,7 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         var paneHeight = pane.getHeight();
         var scrollCenter = box.getBoundsInLocal().getHeight() * pane.getVvalue();
         var minBoundsHeight = scrollCenter - paneHeight;
-        // Expand a little bit more to the bottom for scrolling
-        var maxBoundsHeight = scrollCenter + (paneHeight * 1.5);
+        var maxBoundsHeight = scrollCenter + paneHeight;
 
         var nodeMinHeight = node.getBoundsInParent().getMinY();
         var nodeMaxHeight = node.getBoundsInParent().getMaxY();
