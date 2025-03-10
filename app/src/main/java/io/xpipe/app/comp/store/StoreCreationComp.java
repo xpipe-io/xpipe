@@ -183,6 +183,10 @@ public class StoreCreationComp extends DialogComp {
     }
 
     public static void showEdit(DataStoreEntry e) {
+        showEdit(e, dataStoreEntry -> {});
+    }
+
+    public static void showEdit(DataStoreEntry e, Consumer<DataStoreEntry> consumer) {
         show(
                 e.getName(),
                 e.getProvider(),
@@ -204,6 +208,7 @@ public class StoreCreationComp extends DialogComp {
                                 }
                             }
                         }
+                        consumer.accept(e);
                     });
                 },
                 true,

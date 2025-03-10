@@ -56,10 +56,7 @@ public class AppInstance {
         try {
             var inputs = AppProperties.get().getArguments().getOpenArgs();
             // Assume that we want to open the GUI if we launched again
-            client.get()
-                    .performRequest(DaemonFocusExchange.Request.builder()
-                            .mode(XPipeDaemonMode.GUI)
-                            .build());
+            client.get().performRequest(DaemonFocusExchange.Request.builder().build());
             if (!inputs.isEmpty()) {
                 client.get()
                         .performRequest(DaemonOpenExchange.Request.builder()

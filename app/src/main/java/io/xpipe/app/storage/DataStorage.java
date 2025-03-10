@@ -600,25 +600,6 @@ public abstract class DataStorage {
         }
     }
 
-    public void deleteChildren(DataStoreEntry e) {
-        var c = getDeepStoreChildren(e);
-        if (c.isEmpty()) {
-            return;
-        }
-
-        c.forEach(entry -> entry.finalizeEntry());
-        this.storeEntriesSet.removeAll(c);
-        synchronized (identityStoreEntryMapCache) {
-            identityStoreEntryMapCache.remove(e.getStore());
-        }
-        synchronized (storeEntryMapCache) {
-            storeEntryMapCache.remove(e.getStore());
-        }
-        this.listeners.forEach(l -> l.onStoreRemove(c.toArray(DataStoreEntry[]::new)));
-        refreshEntries();
-        saveAsync();
-    }
-
     public void deleteWithChildren(DataStoreEntry... entries) {
         List<DataStoreEntry> toDelete = Arrays.stream(entries)
                 .flatMap(entry -> {

@@ -125,8 +125,7 @@ public class StoreEntryWrapper {
 
     public void delete() {
         ThreadHelper.runAsync(() -> {
-            DataStorage.get().deleteChildren(this.entry);
-            DataStorage.get().deleteStoreEntry(this.entry);
+            DataStorage.get().deleteWithChildren(this.entry);
         });
     }
 

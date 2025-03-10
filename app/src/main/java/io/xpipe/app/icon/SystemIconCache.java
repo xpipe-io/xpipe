@@ -7,6 +7,7 @@ import com.github.weisj.jsvg.SVGDocument;
 import com.github.weisj.jsvg.SVGRenderingHints;
 import com.github.weisj.jsvg.attributes.ViewBox;
 import com.github.weisj.jsvg.parser.SVGLoader;
+import io.xpipe.app.issue.TrackEvent;
 import lombok.Getter;
 
 import java.awt.*;
@@ -106,6 +107,7 @@ public class SystemIconCache {
     }
 
     private static ImageColorScheme rasterizeSizes(Path path, Path dir, String name, boolean dark) throws IOException {
+        TrackEvent.trace("Rasterizing image " + path.getFileName().toString());
         try {
             ImageColorScheme c = null;
             for (var size : sizes) {

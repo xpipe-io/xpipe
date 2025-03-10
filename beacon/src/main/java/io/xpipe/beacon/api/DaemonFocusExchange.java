@@ -18,10 +18,7 @@ public class DaemonFocusExchange extends BeaconInterface<DaemonFocusExchange.Req
     @Jacksonized
     @Builder
     @Value
-    public static class Request {
-        @NonNull
-        XPipeDaemonMode mode;
-    }
+    public static class Request {}
 
     @Jacksonized
     @Builder

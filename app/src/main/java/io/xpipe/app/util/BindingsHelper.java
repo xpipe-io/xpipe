@@ -8,6 +8,7 @@ import lombok.Value;
 
 import java.lang.ref.WeakReference;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -15,12 +16,14 @@ import java.util.function.Function;
 @SuppressWarnings("InfiniteLoopStatement")
 public class BindingsHelper {
 
-    private static final Set<ReferenceEntry> REFERENCES = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private static final Set<ReferenceEntry> REFERENCES = new HashSet<>();
 
     static {
         ThreadHelper.createPlatformThread("referenceGC", true, () -> {
                     while (true) {
-                        REFERENCES.removeIf(ReferenceEntry::canGc);
+                        synchronized (REFERENCES) {
+                            REFERENCES.removeIf(ReferenceEntry::canGc);
+                        }
                         ThreadHelper.sleep(1000);
 
                         // Use for testing
@@ -31,7 +34,9 @@ public class BindingsHelper {
     }
 
     public static void preserve(Object source, Object target) {
-        REFERENCES.add(new ReferenceEntry(new WeakReference<>(source), target));
+        synchronized (REFERENCES) {
+            REFERENCES.add(new ReferenceEntry(new WeakReference<>(source), target));
+        }
     }
 
     public static <T, U> ObservableValue<U> map(
