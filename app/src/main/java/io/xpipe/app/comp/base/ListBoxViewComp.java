@@ -10,8 +10,10 @@ import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.PlatformThread;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
@@ -91,63 +93,76 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         scroll.setFitToWidth(true);
         scroll.getStyleClass().add("list-box-view-comp");
 
-        if (visibilityControl) {
-            scroll.vvalueProperty().addListener((observable, oldValue, newValue) -> {
-                updateVisibilities(scroll, vbox);
-            });
-            scroll.heightProperty().addListener((observable, oldValue, newValue) -> {
-                updateVisibilities(scroll, vbox);
-            });
-            vbox.heightProperty().addListener((observable, oldValue, newValue) -> {
-                Platform.runLater(() -> {
-                    updateVisibilities(scroll, vbox);
-                });
-            });
+        registerVisibilityListeners(scroll, vbox);
 
-            // We can't directly listen to any parent element changing visibility, so this is a compromise
-            if (AppLayoutModel.get() != null) {
-                AppLayoutModel.get().getSelected().addListener((observable, oldValue, newValue) -> {
-                    PlatformThread.runLaterIfNeeded(() -> {
-                        updateVisibilities(scroll, vbox);
-                    });
-                });
-            }
-            BrowserFullSessionModel.DEFAULT.getSelectedEntry().addListener((observable, oldValue, newValue) -> {
-                PlatformThread.runLaterIfNeeded(() -> {
-                    updateVisibilities(scroll, vbox);
-                });
-            });
-            if (StoreViewState.get() != null) {
-                StoreViewState.get().getSortMode().addListener((observable, oldValue, newValue) -> {
-                    Platform.runLater(() -> {
-                        Platform.runLater(() -> {
-                            updateVisibilities(scroll, vbox);
-                        });
-                    });
-                });
-            }
+        return new SimpleCompStructure<>(scroll);
+    }
 
-            vbox.sceneProperty().addListener((observable, oldValue, newValue) -> {
-                Node c = vbox;
-                while ((c = c.getParent()) != null) {
-                    c.boundsInParentProperty().addListener((observable1, oldValue1, newValue1) -> {
-                        Platform.runLater(() -> {
-                            updateVisibilities(scroll, vbox);
-                        });
-                    });
+    private void registerVisibilityListeners(ScrollPane scroll, VBox vbox) {
+        if (!visibilityControl) {
+            return;
+        }
+
+        var dirty = new SimpleBooleanProperty();
+        var animationTimer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                if (!dirty.get()) {
+                    return;
                 }
+
+                updateVisibilities(scroll, vbox);
+                dirty.set(false);
+            }
+        };
+
+        scroll.vvalueProperty().addListener((observable, oldValue, newValue) -> {
+            dirty.set(true);
+        });
+        scroll.heightProperty().addListener((observable, oldValue, newValue) -> {
+            dirty.set(true);
+        });
+        vbox.heightProperty().addListener((observable, oldValue, newValue) -> {
+            dirty.set(true);
+        });
+
+        // We can't directly listen to any parent element changing visibility, so this is a compromise
+        if (AppLayoutModel.get() != null) {
+            AppLayoutModel.get().getSelected().addListener((observable, oldValue, newValue) -> {
+                dirty.set(true);
+            });
+        }
+        BrowserFullSessionModel.DEFAULT.getSelectedEntry().addListener((observable, oldValue, newValue) -> {
+            dirty.set(true);
+        });
+        if (StoreViewState.get() != null) {
+            StoreViewState.get().getSortMode().addListener((observable, oldValue, newValue) -> {
                 Platform.runLater(() -> {
-                    updateVisibilities(scroll, vbox);
+                    dirty.set(true);
                 });
-                if (newValue != null) {
-                    newValue.heightProperty().addListener((observable1, oldValue1, newValue1) -> {
-                        updateVisibilities(scroll, vbox);
-                    });
-                }
             });
         }
 
-        return new SimpleCompStructure<>(scroll);
+        vbox.sceneProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                animationTimer.start();
+            } else {
+                animationTimer.stop();
+            }
+
+            Node c = vbox;
+            while ((c = c.getParent()) != null) {
+                c.boundsInParentProperty().addListener((observable1, oldValue1, newValue1) -> {
+                    dirty.set(true);
+                });
+            }
+            dirty.set(true);
+            if (newValue != null) {
+                newValue.heightProperty().addListener((observable1, oldValue1, newValue1) -> {
+                    dirty.set(true);
+                });
+            }
+        });
     }
 
     private boolean isVisible(ScrollPane pane, VBox box, Node node) {
