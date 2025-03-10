@@ -39,6 +39,9 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
     private final boolean scrollBar;
 
     @Setter
+    private boolean visibilityControl = false;
+
+    @Setter
     private int platformPauseInterval = -1;
 
     public ListBoxViewComp(
@@ -88,59 +91,61 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         scroll.setFitToWidth(true);
         scroll.getStyleClass().add("list-box-view-comp");
 
-        scroll.vvalueProperty().addListener((observable, oldValue, newValue) -> {
-            updateVisibilities(scroll, vbox);
-        });
-        scroll.heightProperty().addListener((observable, oldValue, newValue) -> {
-            updateVisibilities(scroll, vbox);
-        });
-        vbox.heightProperty().addListener((observable, oldValue, newValue) -> {
-            Platform.runLater(() -> {
+        if (visibilityControl) {
+            scroll.vvalueProperty().addListener((observable, oldValue, newValue) -> {
                 updateVisibilities(scroll, vbox);
             });
-        });
+            scroll.heightProperty().addListener((observable, oldValue, newValue) -> {
+                updateVisibilities(scroll, vbox);
+            });
+            vbox.heightProperty().addListener((observable, oldValue, newValue) -> {
+                Platform.runLater(() -> {
+                    updateVisibilities(scroll, vbox);
+                });
+            });
 
-        // We can't directly listen to any parent element changing visibility, so this is a compromise
-        if (AppLayoutModel.get() != null) {
-            AppLayoutModel.get().getSelected().addListener((observable, oldValue, newValue) -> {
+            // We can't directly listen to any parent element changing visibility, so this is a compromise
+            if (AppLayoutModel.get() != null) {
+                AppLayoutModel.get().getSelected().addListener((observable, oldValue, newValue) -> {
+                    PlatformThread.runLaterIfNeeded(() -> {
+                        updateVisibilities(scroll, vbox);
+                    });
+                });
+            }
+            BrowserFullSessionModel.DEFAULT.getSelectedEntry().addListener((observable, oldValue, newValue) -> {
                 PlatformThread.runLaterIfNeeded(() -> {
                     updateVisibilities(scroll, vbox);
                 });
             });
-        }
-        BrowserFullSessionModel.DEFAULT.getSelectedEntry().addListener((observable, oldValue, newValue) -> {
-            PlatformThread.runLaterIfNeeded(() -> {
-                updateVisibilities(scroll, vbox);
-            });
-        });
-        if (StoreViewState.get() != null) {
-            StoreViewState.get().getSortMode().addListener((observable, oldValue, newValue) -> {
-                Platform.runLater(() -> {
+            if (StoreViewState.get() != null) {
+                StoreViewState.get().getSortMode().addListener((observable, oldValue, newValue) -> {
                     Platform.runLater(() -> {
-                        updateVisibilities(scroll, vbox);
-                    });
-                });
-            });
-        }
-
-        vbox.sceneProperty().addListener((observable, oldValue, newValue) -> {
-            Node c = vbox;
-            while ((c = c.getParent()) != null) {
-                c.boundsInParentProperty().addListener((observable1, oldValue1, newValue1) -> {
-                    Platform.runLater(() -> {
-                        updateVisibilities(scroll, vbox);
+                        Platform.runLater(() -> {
+                            updateVisibilities(scroll, vbox);
+                        });
                     });
                 });
             }
-            Platform.runLater(() -> {
-                updateVisibilities(scroll, vbox);
-            });
-            if (newValue != null) {
-                newValue.heightProperty().addListener((observable1, oldValue1, newValue1) -> {
+
+            vbox.sceneProperty().addListener((observable, oldValue, newValue) -> {
+                Node c = vbox;
+                while ((c = c.getParent()) != null) {
+                    c.boundsInParentProperty().addListener((observable1, oldValue1, newValue1) -> {
+                        Platform.runLater(() -> {
+                            updateVisibilities(scroll, vbox);
+                        });
+                    });
+                }
+                Platform.runLater(() -> {
                     updateVisibilities(scroll, vbox);
                 });
-            }
-        });
+                if (newValue != null) {
+                    newValue.heightProperty().addListener((observable1, oldValue1, newValue1) -> {
+                        updateVisibilities(scroll, vbox);
+                    });
+                }
+            });
+        }
 
         return new SimpleCompStructure<>(scroll);
     }
@@ -186,8 +191,8 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
     }
 
     private void updateVisibilities(ScrollPane scroll, VBox vbox) {
-        if (!Platform.isFxApplicationThread()) {
-            throw new IllegalStateException("Cannot update visibilities");
+        if (!visibilityControl) {
+            return;
         }
 
         int count = 0;
@@ -236,7 +241,9 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
                             var comp = compFunction.apply(v);
                             if (comp != null) {
                                 var r = comp.createRegion();
-                                r.setVisible(false);
+                                if (visibilityControl) {
+                                    r.setVisible(false);
+                                }
                                 cache.put(v, r);
                             } else {
                                 cache.put(v, null);

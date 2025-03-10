@@ -170,6 +170,7 @@ public class StoreCategoryComp extends SimpleComp {
                 new ListBoxViewComp<>(l, l, storeCategoryWrapper -> new StoreCategoryComp(storeCategoryWrapper), false);
         children.styleClass("children");
         children.minHeight(0);
+        children.setVisibilityControl(true);
 
         var hide = Bindings.createBooleanBinding(
                 () -> {

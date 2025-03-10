@@ -37,9 +37,6 @@ public class StoreViewState {
     private final IntegerProperty entriesListUpdateObservable = new SimpleIntegerProperty();
 
     @Getter
-    private final IntegerProperty sortModeObservable = new SimpleIntegerProperty();
-
-    @Getter
     private final Property<StoreCategoryWrapper> activeCategory = new SimpleObjectProperty<>();
 
     @Getter
@@ -155,7 +152,6 @@ public class StoreViewState {
     }
 
     public void updateDisplay() {
-        sortModeObservable.setValue(sortModeObservable.get() + 1);
         toggleStoreListUpdate();
     }
 

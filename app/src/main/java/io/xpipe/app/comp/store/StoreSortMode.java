@@ -93,7 +93,7 @@ public interface StoreSortMode {
 
     abstract class DateSortMode implements StoreSortMode {
 
-        private int sortModeIndex = -1;
+        private int entriesListOberservableIndex = -1;
         private final Map<StoreSection, StoreSection> cachedRepresentatives = new IdentityHashMap<>();
 
         private StoreSection computeRepresentative(StoreSection s) {
@@ -110,9 +110,9 @@ public interface StoreSortMode {
         }
 
         private StoreSection getRepresentative(StoreSection s) {
-            if (StoreViewState.get().getSortModeObservable().get() != sortModeIndex) {
+            if (StoreViewState.get().getEntriesListUpdateObservable().get() != entriesListOberservableIndex) {
                 cachedRepresentatives.clear();
-                sortModeIndex = StoreViewState.get().getSortModeObservable().get();
+                entriesListOberservableIndex = StoreViewState.get().getEntriesListUpdateObservable().get();
             }
 
             if (cachedRepresentatives.containsKey(s)) {

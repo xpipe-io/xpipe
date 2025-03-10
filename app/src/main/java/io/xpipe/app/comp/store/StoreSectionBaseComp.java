@@ -111,6 +111,7 @@ public abstract class StoreSectionBaseComp extends Comp<CompStructure<VBox>> {
                     return function.apply(e).grow(true, false);
                 },
                 section.getWrapper() == null);
+        content.setVisibilityControl(true);
         content.minHeight(0);
         content.hgrow();
         content.styleClass("children-content");

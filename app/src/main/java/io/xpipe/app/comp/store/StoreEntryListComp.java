@@ -31,6 +31,7 @@ public class StoreEntryListComp extends SimpleComp {
                     return custom;
                 },
                 true);
+        content.setVisibilityControl(true);
         content.apply(struc -> {
             // Reset scroll
             StoreViewState.get().getActiveCategory().addListener((observable, oldValue, newValue) -> {
