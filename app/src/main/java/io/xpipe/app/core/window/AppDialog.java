@@ -108,6 +108,7 @@ public class AppDialog {
     public static Comp<?> dialogText(String s) {
         return Comp.of(() -> {
                     var text = new Text(s);
+                    text.getStyleClass().add("dialog-text");
                     text.setWrappingWidth(450);
                     var sp = new StackPane(text);
                     return sp;
@@ -118,6 +119,7 @@ public class AppDialog {
     public static Comp<?> dialogText(ObservableValue<String> s) {
         return Comp.of(() -> {
                     var text = new Text();
+                    text.getStyleClass().add("dialog-text");
                     text.textProperty().bind(s);
                     text.setWrappingWidth(450);
                     var sp = new StackPane(text);
