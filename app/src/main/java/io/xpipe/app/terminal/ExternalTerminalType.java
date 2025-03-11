@@ -59,14 +59,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     //    };
 
     static ExternalTerminalType determineFallbackTerminalToOpen(ExternalTerminalType type) {
-        if (type == XSHELL || type == MOBAXTERM || type == SECURECRT) {
-            return ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.CMD ? CMD : POWERSHELL;
-        }
-
-        if (type != TERMIUS && type instanceof WaveTerminalType) {
+        if (type != XSHELL && type != MOBAXTERM && type != SECURECRT && type != TERMIUS && !(type instanceof WaveTerminalType)) {
             return type;
         }
 
+        // Fallback to an available default
         switch (OsType.getLocal()) {
             case OsType.Linux linux -> {
                 // This should not be termius or wave as all others take precedence

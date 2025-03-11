@@ -22,7 +22,6 @@ public class AnchorComp extends Comp<CompStructure<AnchorPane>> {
         for (var c : comps) {
             pane.getChildren().add(c.createRegion());
         }
-        pane.setPickOnBounds(false);
         return new SimpleCompStructure<>(pane);
     }
 }

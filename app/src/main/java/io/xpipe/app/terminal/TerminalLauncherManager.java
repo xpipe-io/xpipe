@@ -5,6 +5,7 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.SecretManager;
 import io.xpipe.app.util.SecretQueryProgress;
 import io.xpipe.beacon.BeaconClientException;
@@ -124,8 +125,8 @@ public class TerminalLauncherManager {
                 try (var sc = LocalShell.getShell().start()) {
                     var defaultShell = ProcessControlProvider.get().getEffectiveLocalDialect();
                     var shellExec = defaultShell.getExecutableName();
-                    var absExec = sc.view().findProgram(shellExec).orElse(shellExec);
-                    return Path.of(absExec);
+                    var script = ScriptHelper.createExecScript(sc, shellExec);
+                    return Path.of(script.toString());
                 } catch (Exception ex) {
                     throw new BeaconServerException(ex);
                 }

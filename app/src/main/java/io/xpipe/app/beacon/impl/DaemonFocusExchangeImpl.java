@@ -13,7 +13,7 @@ public class DaemonFocusExchangeImpl extends DaemonFocusExchange {
         OperationMode.switchUp(OperationMode.GUI);
         var w = AppMainWindow.getInstance();
         if (w != null) {
-            w.getStage().requestFocus();
+            w.focus();
         }
         return Response.builder().build();
     }

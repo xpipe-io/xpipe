@@ -150,6 +150,13 @@ public class AppMainWindow {
         }
     }
 
+    public void focus() {
+        PlatformThread.runLaterIfNeeded(() -> {
+            stage.setIconified(false);
+            stage.requestFocus();
+        });
+    }
+
     private static String createTitle() {
         var t = LicenseProvider.get().licenseTitle();
         var base =
