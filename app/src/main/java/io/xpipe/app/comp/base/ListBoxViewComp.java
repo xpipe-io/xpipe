@@ -4,12 +4,16 @@ import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.util.DerivedObservableList;
+import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.PlatformThread;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
@@ -37,6 +41,9 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
     private final boolean scrollBar;
 
     @Setter
+    private boolean visibilityControl = false;
+
+    @Setter
     private int platformPauseInterval = -1;
 
     public ListBoxViewComp(
@@ -60,12 +67,6 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
 
         shown.addListener((ListChangeListener<? super T>) (c) -> {
             refresh(scroll, vbox, c.getList(), all, cache, true, true);
-        });
-
-        all.addListener((ListChangeListener<? super T>) c -> {
-            synchronized (cache) {
-                cache.keySet().retainAll(c.getList());
-            }
         });
 
         if (scrollBar) {
@@ -92,50 +93,78 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         scroll.setFitToWidth(true);
         scroll.getStyleClass().add("list-box-view-comp");
 
+        registerVisibilityListeners(scroll, vbox);
+
+        return new SimpleCompStructure<>(scroll);
+    }
+
+    private void registerVisibilityListeners(ScrollPane scroll, VBox vbox) {
+        if (!visibilityControl) {
+            return;
+        }
+
+        var dirty = new SimpleBooleanProperty();
+        var animationTimer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                if (!dirty.get()) {
+                    return;
+                }
+
+                updateVisibilities(scroll, vbox);
+                dirty.set(false);
+            }
+        };
+
         scroll.vvalueProperty().addListener((observable, oldValue, newValue) -> {
-            updateVisibilities(scroll, vbox);
+            dirty.set(true);
         });
         scroll.heightProperty().addListener((observable, oldValue, newValue) -> {
-            updateVisibilities(scroll, vbox);
+            dirty.set(true);
         });
         vbox.heightProperty().addListener((observable, oldValue, newValue) -> {
-            Platform.runLater(() -> {
-                updateVisibilities(scroll, vbox);
-            });
+            dirty.set(true);
         });
 
         // We can't directly listen to any parent element changing visibility, so this is a compromise
         if (AppLayoutModel.get() != null) {
             AppLayoutModel.get().getSelected().addListener((observable, oldValue, newValue) -> {
-                PlatformThread.runLaterIfNeeded(() -> {
-                    updateVisibilities(scroll, vbox);
-                });
+                dirty.set(true);
             });
         }
         BrowserFullSessionModel.DEFAULT.getSelectedEntry().addListener((observable, oldValue, newValue) -> {
-            PlatformThread.runLaterIfNeeded(() -> {
-                updateVisibilities(scroll, vbox);
-            });
+            dirty.set(true);
         });
+        if (StoreViewState.get() != null) {
+            StoreViewState.get().getSortMode().addListener((observable, oldValue, newValue) -> {
+                Platform.runLater(() -> {
+                    dirty.set(true);
+                });
+            });
+        }
 
         vbox.sceneProperty().addListener((observable, oldValue, newValue) -> {
-            Node c = vbox;
-            while ((c = c.getParent()) != null) {
-                c.boundsInParentProperty().addListener((observable1, oldValue1, newValue1) -> {
-                    updateVisibilities(scroll, vbox);
-                });
+            dirty.set(true);
+
+            if (newValue != null) {
+                animationTimer.start();
+            } else {
+                animationTimer.stop();
             }
-            Platform.runLater(() -> {
-                updateVisibilities(scroll, vbox);
-            });
+
+            Node c = vbox;
+            do {
+                c.boundsInParentProperty().addListener((observable1, oldValue1, newValue1) -> {
+                    dirty.set(true);
+                });
+            } while ((c = c.getParent()) != null);
+
             if (newValue != null) {
                 newValue.heightProperty().addListener((observable1, oldValue1, newValue1) -> {
-                    updateVisibilities(scroll, vbox);
+                    dirty.set(true);
                 });
             }
         });
-
-        return new SimpleCompStructure<>(scroll);
     }
 
     private boolean isVisible(ScrollPane pane, VBox box, Node node) {
@@ -178,9 +207,20 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
     }
 
     private void updateVisibilities(ScrollPane scroll, VBox vbox) {
+        if (!visibilityControl) {
+            return;
+        }
+
+        int count = 0;
         for (Node child : vbox.getChildren()) {
             var v = isVisible(scroll, vbox, child);
             child.setVisible(v);
+            if (v) {
+                count++;
+            }
+        }
+        if (count > 10) {
+            // System.out.println("Visible: " + count);
         }
     }
 
@@ -217,7 +257,9 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
                             var comp = compFunction.apply(v);
                             if (comp != null) {
                                 var r = comp.createRegion();
-                                r.setVisible(false);
+                                if (visibilityControl) {
+                                    r.setVisible(false);
+                                }
                                 cache.put(v, r);
                             } else {
                                 cache.put(v, null);

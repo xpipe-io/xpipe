@@ -24,7 +24,6 @@ public class StackComp extends Comp<CompStructure<StackPane>> {
             pane.getChildren().add(c.createRegion());
         }
         pane.setAlignment(Pos.CENTER);
-        pane.setPickOnBounds(false);
         return new SimpleCompStructure<>(pane);
     }
 }

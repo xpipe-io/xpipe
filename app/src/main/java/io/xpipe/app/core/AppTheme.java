@@ -349,7 +349,7 @@ public class AppTheme {
                 AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10, AppFontSizes.BASE_11),
                 () -> ColorHelper.withOpacity(
                         Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2),
-                115);
+                91);
 
         // Adjust this to create your own theme
         public static final Theme CUSTOM = new DerivedTheme(

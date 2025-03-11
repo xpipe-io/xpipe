@@ -68,10 +68,10 @@ public abstract class StoreEntryComp extends SimpleComp {
         }
     }
 
-    public static StoreEntryComp customSection(StoreSection e, boolean topLevel) {
+    public static StoreEntryComp customSection(StoreSection e) {
         var prov = e.getWrapper().getEntry().getProvider();
         if (prov != null) {
-            return prov.customEntryComp(e, topLevel);
+            return prov.customEntryComp(e, e.getDepth() == 1);
         } else {
             var forceCondensed = AppPrefs.get() != null
                     && AppPrefs.get().condenseConnectionDisplay().get();
@@ -80,6 +80,8 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     public abstract boolean isFullSize();
+
+    public abstract int getHeight();
 
     @Override
     protected final Region createSimple() {

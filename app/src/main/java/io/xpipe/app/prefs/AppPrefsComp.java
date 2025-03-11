@@ -52,7 +52,6 @@ public class AppPrefsComp extends SimpleComp {
         split.setFillHeight(true);
         split.getStyleClass().add("prefs");
         var stack = new StackPane(split);
-        stack.setPickOnBounds(false);
         return stack;
     }
 }

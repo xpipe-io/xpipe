@@ -4,6 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.util.PlatformThread;
 
+import io.xpipe.core.process.OsType;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -55,6 +56,11 @@ public class DenseStoreEntryComp extends StoreEntryComp {
     @Override
     public boolean isFullSize() {
         return false;
+    }
+
+    @Override
+    public int getHeight() {
+        return OsType.getLocal() == OsType.WINDOWS ? 38 : 37;
     }
 
     protected Region createContent() {

@@ -22,12 +22,19 @@ public class InPlaceSecretValue extends AesSecretValue {
 
     private static final int AES_KEY_BIT = 128;
     private static final int SALT_BIT = 16;
+    private static final int ITERATION_COUNT = 2048;
     private static final SecretKeyFactory SECRET_FACTORY;
+    private static final SecretKey SECRET_KEY;
 
     static {
         try {
             SECRET_FACTORY = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-        } catch (NoSuchAlgorithmException e) {
+
+            var salt = new byte[SALT_BIT];
+            new Random(AES_KEY_BIT).nextBytes(salt);
+            KeySpec spec = new PBEKeySpec(new char[] {'X', 'P', 'E' << 1}, salt, ITERATION_COUNT, AES_KEY_BIT);
+            SECRET_KEY = new SecretKeySpec(SECRET_FACTORY.generateSecret(spec).getEncoded(), "AES");
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             throw new IllegalStateException(e);
         }
     }
@@ -52,10 +59,6 @@ public class InPlaceSecretValue extends AesSecretValue {
         return new InPlaceSecretValue(b);
     }
 
-    protected int getIterationCount() {
-        return 2048;
-    }
-
     protected byte[] getNonce(int numBytes) {
         byte[] nonce = new byte[numBytes];
         new Random(1 - 28 + 213213).nextBytes(nonce);
@@ -63,11 +66,8 @@ public class InPlaceSecretValue extends AesSecretValue {
     }
 
     @Override
-    protected SecretKey getSecretKey() throws InvalidKeySpecException {
-        var salt = new byte[SALT_BIT];
-        new Random(AES_KEY_BIT).nextBytes(salt);
-        KeySpec spec = new PBEKeySpec(new char[] {'X', 'P', 'E' << 1}, salt, getIterationCount(), AES_KEY_BIT);
-        return new SecretKeySpec(SECRET_FACTORY.generateSecret(spec).getEncoded(), "AES");
+    protected SecretKey getSecretKey() {
+        return SECRET_KEY;
     }
 
     @Override

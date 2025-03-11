@@ -32,7 +32,6 @@ public class StoreEntryWrapper {
     private final Property<String> name;
     private final DataStoreEntry entry;
     private final Property<Instant> lastAccess;
-    private final Property<Instant> lastAccessApplied = new SimpleObjectProperty<>();
     private final BooleanProperty disabled = new SimpleBooleanProperty();
     private final BooleanProperty busy = new SimpleBooleanProperty();
     private final Property<DataStoreEntry.Validity> validity = new SimpleObjectProperty<>();
@@ -104,10 +103,6 @@ public class StoreEntryWrapper {
         setupListeners();
     }
 
-    public void applyLastAccess() {
-        this.lastAccessApplied.setValue(lastAccess.getValue());
-    }
-
     public void moveTo(DataStoreCategory category) {
         ThreadHelper.runAsync(() -> {
             DataStorage.get().moveEntryToCategory(entry, category);
@@ -130,8 +125,7 @@ public class StoreEntryWrapper {
 
     public void delete() {
         ThreadHelper.runAsync(() -> {
-            DataStorage.get().deleteChildren(this.entry);
-            DataStorage.get().deleteStoreEntry(this.entry);
+            DataStorage.get().deleteWithChildren(this.entry);
         });
     }
 

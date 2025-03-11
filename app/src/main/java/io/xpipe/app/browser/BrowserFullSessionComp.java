@@ -73,6 +73,7 @@ public class BrowserFullSessionComp extends SimpleComp {
         var pinnedStack = createSplitStack(rightSplit, tabs);
 
         var loadingStack = new AnchorComp(List.of(tabs, pinnedStack, loadingIndicator));
+        loadingStack.apply(struc -> struc.get().setPickOnBounds(false));
         var splitPane = new LeftSplitPaneComp(vertical, loadingStack)
                 .withInitialWidth(AppLayoutModel.get().getSavedState().getBrowserConnectionsWidth())
                 .withOnDividerChange(d -> {

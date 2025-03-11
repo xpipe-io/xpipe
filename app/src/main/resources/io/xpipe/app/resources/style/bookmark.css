@@ -38,3 +38,7 @@
     -fx-max-height: 2.8em;
     -fx-padding: 6 6 6 4;
 }
+
+.bookmarks-header .ikonli-font-icon {
+    -fx-icon-color: -color-fg-default;
+}

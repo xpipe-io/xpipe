@@ -7,6 +7,7 @@ import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.comp.base.VerticalComp;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.util.BindingsHelper;
@@ -115,6 +116,7 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                 .minHeight(120);
         var templates = Comp.of(() -> {
             var cb = new MenuButton();
+            AppFontSizes.base(cb);
             cb.textProperty().bind(BindingsHelper.flatMap(prefs.passwordManager, externalPasswordManager -> {
                 return externalPasswordManager != null
                         ? AppI18n.observable(externalPasswordManager.getId())
@@ -145,6 +147,7 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                 new TextFieldComp(testPasswordManagerValue)
                         .apply(struc -> struc.get().setPromptText("Enter password key"))
                         .styleClass(Styles.LEFT_PILL)
+                        .prefWidth(400)
                         .apply(struc -> struc.get().setOnKeyPressed(event -> {
                             if (event.getCode() == KeyCode.ENTER) {
                                 test.run();
@@ -153,14 +156,17 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                         })),
                 new ButtonComp(null, new FontIcon("mdi2p-play"), test).styleClass(Styles.RIGHT_PILL)));
         testInput.apply(struc -> {
+            struc.get().setFillHeight(true);
             var first = ((Region) struc.get().getChildren().get(0));
             var second = ((Region) struc.get().getChildren().get(1));
+            second.minHeightProperty().bind(first.heightProperty());
+            second.maxHeightProperty().bind(first.heightProperty());
             second.prefHeightProperty().bind(first.heightProperty());
         });
 
         var testPasswordManager = new HorizontalComp(List.of(
                         testInput, Comp.hspacer(25), new LabelComp(testPasswordManagerResult).apply(struc -> struc.get()
-                                .setOpacity(0.5))))
+                                .setOpacity(0.8))))
                 .padding(new Insets(10, 0, 0, 0))
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
                 .apply(struc -> struc.get().setFillHeight(true));

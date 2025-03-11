@@ -189,7 +189,6 @@ public class StoreViewState {
                 .setAll(FXCollections.observableArrayList(DataStorage.get().getStoreEntries().stream()
                         .map(StoreEntryWrapper::new)
                         .toList()));
-        allEntries.getList().forEach(e -> e.applyLastAccess());
         categories
                 .getList()
                 .setAll(FXCollections.observableArrayList(DataStorage.get().getStoreCategories().stream()
@@ -221,7 +220,6 @@ public class StoreViewState {
     }
 
     public void updateDisplay() {
-        allEntries.getList().forEach(e -> e.applyLastAccess());
         toggleStoreListUpdate();
     }
 
@@ -260,7 +258,6 @@ public class StoreViewState {
                     var l = Arrays.stream(entry)
                             .map(StoreEntryWrapper::new)
                             .peek(storeEntryWrapper -> storeEntryWrapper.update())
-                            .peek(wrapper -> wrapper.applyLastAccess())
                             .toList();
 
                     // Don't update anything if we have already reset

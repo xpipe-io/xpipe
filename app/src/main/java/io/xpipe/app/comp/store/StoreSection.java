@@ -53,12 +53,12 @@ public class StoreSection {
         }
     }
 
-    public static Comp<?> customSection(StoreSection e, boolean topLevel) {
+    public static Comp<?> customSection(StoreSection e) {
         var prov = e.getWrapper().getEntry().getProvider();
         if (prov != null) {
-            return prov.customSectionComp(e, topLevel);
+            return prov.customSectionComp(e);
         } else {
-            return new StoreSectionComp(e, topLevel);
+            return new StoreSectionComp(e);
         }
     }
 
@@ -96,7 +96,7 @@ public class StoreSection {
 
                     var current = mappedSortMode.getValue();
                     if (current != null) {
-                        return current.comparator().compare(current.representative(o1), current.representative(o2));
+                        return current.comparator().compare(o1, o2);
                     } else {
                         return 0;
                     }

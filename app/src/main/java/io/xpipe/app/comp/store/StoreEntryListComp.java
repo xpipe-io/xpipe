@@ -31,11 +31,11 @@ public class StoreEntryListComp extends SimpleComp {
                         .getAllChildren()
                         .getList(),
                 (StoreSection e) -> {
-                    var custom = StoreSection.customSection(e, true).hgrow();
+                    var custom = StoreSection.customSection(e).hgrow();
                     return custom;
                 },
                 true);
-        content.setPlatformPauseInterval(50);
+        content.setVisibilityControl(true);
         content.apply(struc -> {
             // Reset scroll
             StoreViewState.get().getActiveCategory().addListener((observable, oldValue, newValue) -> {

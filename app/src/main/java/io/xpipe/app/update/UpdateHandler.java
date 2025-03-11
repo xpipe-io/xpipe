@@ -4,6 +4,7 @@ import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -185,7 +186,7 @@ public abstract class UpdateHandler {
             prepareUpdateImpl();
 
             // Show available update in PTB more aggressively
-            if (AppProperties.get().isStaging() && preparedUpdate.getValue() != null) {
+            if (AppProperties.get().isStaging() && preparedUpdate.getValue() != null && !OperationMode.isInStartup()) {
                 UpdateAvailableDialog.showIfNeeded();
             }
         } catch (Throwable t) {

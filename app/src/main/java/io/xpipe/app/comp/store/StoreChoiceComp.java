@@ -24,6 +24,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.MenuButton;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -222,6 +223,14 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                         } else {
                             popover.hide();
                         }
+                        event.consume();
+                    });
+                    struc.get().setOnMouseClicked(event -> {
+                        if (event.getButton() != MouseButton.SECONDARY) {
+                            return;
+                        }
+
+                        selected.setValue(mode == Mode.PROXY ? DataStorage.get().local().ref() : null);
                         event.consume();
                     });
                 })
