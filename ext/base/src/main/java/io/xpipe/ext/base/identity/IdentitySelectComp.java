@@ -3,12 +3,11 @@ package io.xpipe.ext.base.identity;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
-import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.ComboTextFieldComp;
-import io.xpipe.app.comp.base.HorizontalComp;
+import io.xpipe.app.comp.base.*;
 import io.xpipe.app.comp.store.StoreCreationComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreViewState;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.storage.DataStorage;
@@ -29,12 +28,16 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.control.ListCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 
 import atlantafx.base.theme.Styles;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
 
@@ -201,6 +204,8 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                     var s = formatName(newValue.get());
                     prop.setValue(s);
                 });
+            } else {
+                prop.setValue(null);
             }
         });
 
@@ -218,7 +223,6 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
             };
         });
         combo.apply(struc -> struc.get().setEditable(allowUserInput));
-        combo.hgrow();
         combo.styleClass(Styles.LEFT_PILL);
         combo.grow(false, true);
         combo.apply(struc -> {
@@ -258,6 +262,32 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
             });
         });
 
-        return combo;
+        var clearButton = new IconButtonComp("mdi2c-close", () -> {
+            selectedReference.setValue(null);
+            inPlaceUser.setValue(null);
+        });
+        clearButton.styleClass(Styles.FLAT);
+        clearButton.hide(selectedReference.isNull());
+        clearButton.apply(struc -> {
+            struc.get().setOpacity(0.7);
+            struc.get().getStyleClass().add("clear-button");
+            AppFontSizes.xs(struc.get());
+            AnchorPane.setRightAnchor(struc.get(), 30.0);
+            AnchorPane.setTopAnchor(struc.get(),  3.0);
+            AnchorPane.setBottomAnchor(struc.get(), 3.0);
+        });
+
+        var stack = new AnchorComp(List.of(combo, clearButton));
+        stack.styleClass("identity-select-comp");
+        stack.hgrow();
+        stack.apply(struc -> {
+            var comboRegion = (Region) struc.get().getChildren().getFirst();
+            struc.get().prefWidthProperty().bind(comboRegion.prefWidthProperty());
+            struc.get().prefHeightProperty().bind(comboRegion.prefHeightProperty());
+            AnchorPane.setLeftAnchor(comboRegion, 0.0);
+            AnchorPane.setRightAnchor(comboRegion, 0.0);
+        });
+
+        return stack;
     }
 }

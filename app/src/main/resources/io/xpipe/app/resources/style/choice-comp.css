@@ -2,6 +2,18 @@
     -fx-focus-color: transparent;
 }
 
+.combo-box-base:hover .arrow-button:hover .arrow {
+    -fx-background-color: -color-accent-fg;
+}
+
+.identity-select-comp .clear-button:hover .ikonli-font-icon {
+    -fx-icon-color: -color-accent-fg;
+}
+
+.identity-select-comp .clear-button {
+    -fx-background-color: transparent;
+}
+
 .combo-box-popup .list-cell:hover, .combo-box-popup .list-cell:focused {
     -fx-background-color: -color-context-menu;
 }
