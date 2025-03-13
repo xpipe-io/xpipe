@@ -216,6 +216,11 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
+    public boolean isInitialized() {
+        return parent.isInitialized();
+    }
+
+    @Override
     public void setDumbOpen(ShellOpenFunction openFunction) {
         parent.setDumbOpen(openFunction);
     }
