@@ -216,8 +216,8 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public boolean isInitialized() {
-        return parent.isInitialized();
+    public boolean isInitializing() {
+        return parent.isInitializing();
     }
 
     @Override

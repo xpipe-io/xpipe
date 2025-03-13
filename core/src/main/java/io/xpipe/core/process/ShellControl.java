@@ -18,7 +18,7 @@ import java.util.function.Function;
 
 public interface ShellControl extends ProcessControl {
 
-    boolean isInitialized();
+    boolean isInitializing();
 
     void setDumbOpen(ShellOpenFunction openFunction);
 
