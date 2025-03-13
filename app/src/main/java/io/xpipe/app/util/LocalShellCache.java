@@ -1,7 +1,6 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.prefs.ExternalEditorType;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
@@ -15,7 +14,7 @@ public class LocalShellCache extends ShellControlCache {
         super(shellControl);
     }
 
-    public Optional<Path> getVsCodePath() {
+    public Optional<Path> getVsCodeCliPath() {
         if (!has("codePath")) {
             try {
                 var app =
@@ -25,8 +24,8 @@ public class LocalShellCache extends ShellControlCache {
                                         .map(s -> Path.of(s));
                             }
                             case OsType.MacOs macOs -> {
-                                yield new ExternalApplicationType.MacApplication(
-                                        "app.vscode", "Visual Studio Code") {}.findApp();
+                                yield CommandSupport.findProgram(getShellControl(), "code")
+                                        .map(s -> Path.of(s));
                             }
                             case OsType.Windows windows -> {
                                 yield ExternalEditorType.VSCODE_WINDOWS.findExecutable();
