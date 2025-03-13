@@ -139,6 +139,7 @@ public class BaseMode extends OperationMode {
                 },
                 () -> {
                     BrowserIconManager.loadIfNecessary();
+                    shellLoaded.await();
                     BrowserLocalFileSystem.init();
                     storageLoaded.await();
                     BrowserFullSessionModel.init();
