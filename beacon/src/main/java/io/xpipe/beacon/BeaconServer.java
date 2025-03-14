@@ -74,9 +74,8 @@ public class BeaconServer {
         var out = new Thread(
                 null,
                 () -> {
-                    try {
-                        InputStreamReader isr = new InputStreamReader(proc.getInputStream());
-                        BufferedReader br = new BufferedReader(isr);
+                    try (InputStreamReader isr = new InputStreamReader(proc.getErrorStream());
+                            BufferedReader br = new BufferedReader(isr)) {
                         String line;
                         while ((line = br.readLine()) != null) {
                             if (print) {
@@ -94,9 +93,8 @@ public class BeaconServer {
         var err = new Thread(
                 null,
                 () -> {
-                    try {
-                        InputStreamReader isr = new InputStreamReader(proc.getErrorStream());
-                        BufferedReader br = new BufferedReader(isr);
+                    try (InputStreamReader isr = new InputStreamReader(proc.getErrorStream());
+                            BufferedReader br = new BufferedReader(isr)) {
                         String line;
                         while ((line = br.readLine()) != null) {
                             if (print) {
