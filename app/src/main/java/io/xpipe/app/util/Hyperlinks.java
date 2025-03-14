@@ -13,6 +13,7 @@ public class Hyperlinks {
     public static final String DOCS_EULA = "https://docs.xpipe.io/legal/end-user-license-agreement";
     public static final String DOCS_SECURITY = "https://docs.xpipe.io/reference/security";
     public static final String DOCS_WEBTOP_UPDATE = "https://docs.xpipe.io/guide/webtop#updating";
+    public static final String DOCS_SYNC = "https://docs.xpipe.io/guide/sync";
 
     public static final String GITHUB = "https://github.com/xpipe-io/xpipe";
     public static final String GITHUB_PTB = "https://github.com/xpipe-io/xpipe-ptb";
