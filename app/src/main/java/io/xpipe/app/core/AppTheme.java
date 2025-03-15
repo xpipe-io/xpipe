@@ -210,19 +210,26 @@ public class AppTheme {
         }
 
         PlatformThread.runLaterIfNeeded(() -> {
-            if (AppMainWindow.getInstance() == null) {
+            var window = AppMainWindow.getInstance();
+            if (window == null) {
                 return;
             }
 
-            var window = AppMainWindow.getInstance().getStage();
-            var scene = window.getScene();
+            TrackEvent.debug("Setting theme " + newTheme.getId() + " for scene");
+
+            // Don't animate transition in performance mode
+            if (AppPrefs.get() == null || AppPrefs.get().performanceMode().get()) {
+                newTheme.apply();
+                return;
+            }
+
+            var stage = window.getStage();
+            var scene = stage.getScene();
             Pane root = (Pane) scene.getRoot();
             Image snapshot = scene.snapshot(null);
             ImageView imageView = new ImageView(snapshot);
             root.getChildren().add(imageView);
-
             newTheme.apply();
-            TrackEvent.debug("Set theme " + newTheme.getId() + " for scene");
 
             Platform.runLater(() -> {
                 // Animate!
