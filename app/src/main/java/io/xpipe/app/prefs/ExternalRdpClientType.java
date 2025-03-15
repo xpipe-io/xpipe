@@ -108,7 +108,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
             ThreadHelper.runFailableAsync(() -> {
                 // Startup is slow
                 ThreadHelper.sleep(10000);
-                Files.delete(config);
+                FileUtils.deleteQuietly(config.toFile());
             });
         }
 
