@@ -73,7 +73,7 @@ public abstract class ScriptStore implements DataStore, StatefulDataStore<Enable
                         }
 
                         return Optional.ofNullable(
-                                shellControl.getShellDialect().addToPathVariableCommand(List.of(dir), true));
+                                shellControl.getOriginalShellDialect().addToPathVariableCommand(List.of(dir), true));
                     }
 
                     @Override
@@ -104,7 +104,7 @@ public abstract class ScriptStore implements DataStore, StatefulDataStore<Enable
 
         var applicable = refs.stream()
                 .filter(simpleScriptStore ->
-                        simpleScriptStore.getStore().getMinimumDialect().isCompatibleTo(proc.getShellDialect()))
+                        simpleScriptStore.getStore().getMinimumDialect().isCompatibleTo(proc.getOriginalShellDialect()))
                 .toList();
         if (applicable.isEmpty()) {
             return null;
@@ -115,7 +115,7 @@ public abstract class ScriptStore implements DataStore, StatefulDataStore<Enable
                         value.get().getName().hashCode() + value.getStore().hashCode())
                 .sum();
         var targetDir = ShellTemp.createUserSpecificTempDataDirectory(proc, "scripts")
-                .join(proc.getShellDialect().getId())
+                .join(proc.getOriginalShellDialect().getId())
                 .toString();
         var hashFile = FileNames.join(targetDir, "hash");
         var d = proc.getShellDialect();
