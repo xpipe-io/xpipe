@@ -67,7 +67,7 @@ public class FilterComp extends Comp<CompStructure<CustomTextField>> {
         filterText.subscribe(val -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 clear.setVisible(val != null);
-                if (!Objects.equals(filter.getText(), val)) {
+                if (!Objects.equals(filter.getText(), val) && !(val == null && "".equals(filter.getText()))) {
                     filter.setText(val);
                 }
             });
