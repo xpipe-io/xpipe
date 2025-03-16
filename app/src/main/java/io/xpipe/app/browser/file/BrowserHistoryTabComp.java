@@ -60,7 +60,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
         var map = new LinkedHashMap<Comp<?>, ObservableValue<Boolean>>();
         map.put(emptyDisplay, empty);
         map.put(contentDisplay, empty.not());
-        var stack = new MultiContentComp(map);
+        var stack = new MultiContentComp(map, false);
         return stack.createRegion();
     }
 
