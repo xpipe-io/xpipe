@@ -11,6 +11,7 @@ import lombok.NonNull;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class LxdCommandView extends CommandViewBase {
@@ -150,16 +151,16 @@ public class LxdCommandView extends CommandViewBase {
         }
     }
 
-    public ShellControl exec(String container, String user) {
+    public ShellControl exec(String container, String user, Supplier<Boolean> busybox) {
         var sub = shellControl.subShell();
-        sub.setDumbOpen(createOpenFunction(container, user, false));
-        sub.setTerminalOpen(createOpenFunction(container, user, true));
+        sub.setDumbOpen(createOpenFunction(container, user, false, busybox));
+        sub.setTerminalOpen(createOpenFunction(container, user, true, busybox));
         return sub.withErrorFormatter(LxdCommandView::formatErrorMessage)
                 .withExceptionConverter(LxdCommandView::convertException)
                 .elevated(requiresElevation());
     }
 
-    private ShellOpenFunction createOpenFunction(String containerName, String user, boolean terminal) {
+    private ShellOpenFunction createOpenFunction(String containerName, String user, boolean terminal, Supplier<Boolean> busybox) {
         return new ShellOpenFunction() {
             @Override
             public CommandBuilder prepareWithoutInitCommand() {
@@ -176,7 +177,14 @@ public class LxdCommandView extends CommandViewBase {
                 if (user != null) {
                     b.addQuoted(user);
                 }
-                return b.add("--session-command").addLiteral(command);
+                return b.add(sc -> {
+                    var suType = busybox.get();
+                    if (suType) {
+                        return "-c";
+                    } else {
+                        return "--session-command";
+                    }
+                }).addLiteral(command);
             }
         };
     }
