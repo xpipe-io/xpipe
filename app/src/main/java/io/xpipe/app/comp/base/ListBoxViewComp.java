@@ -154,15 +154,11 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
 
             Node c = vbox;
             do {
-                if (c.getParent() == null) {
-                    // break;
-                }
-
-                c.boundsInParentProperty().subscribe((newValue1) -> {
+                c.boundsInParentProperty().addListener((change, oldBounds,newBounds) -> {
                     dirty.set(true);
-                    vbox.setVisible(!vbox.visibleProperty().get());
                 });
-            } while ((c = c.getParent()) != null);
+                // Don't listen to root node changes, that seemingly can cause exceptions
+            } while ((c = c.getParent()) != null && c.getParent() != null);
 
             if (newValue != null) {
                 newValue.heightProperty().addListener((observable1, oldValue1, newValue1) -> {
