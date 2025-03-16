@@ -154,8 +154,13 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
 
             Node c = vbox;
             do {
-                c.boundsInParentProperty().addListener((observable1, oldValue1, newValue1) -> {
+                if (c.getParent() == null) {
+                    // break;
+                }
+
+                c.boundsInParentProperty().subscribe((newValue1) -> {
                     dirty.set(true);
+                    vbox.setVisible(!vbox.visibleProperty().get());
                 });
             } while ((c = c.getParent()) != null);
 
