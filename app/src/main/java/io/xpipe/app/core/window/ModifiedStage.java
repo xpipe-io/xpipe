@@ -116,6 +116,11 @@ public class ModifiedStage extends Stage {
     }
 
     private static void updateStage(Stage stage) {
+        // We only need to update the frame by resizing on Windows
+        if (OsType.getLocal() != OsType.WINDOWS) {
+            return;
+        }
+
         if (!stage.isShowing()) {
             return;
         }
