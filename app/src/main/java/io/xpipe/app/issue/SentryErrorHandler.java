@@ -39,6 +39,14 @@ public class SentryErrorHandler implements ErrorHandler {
         return hasEmail || hasText;
     }
 
+    private static boolean doesExceedCommentSize(String text) {
+        if (text == null || text.isEmpty()) {
+            return false;
+        }
+
+        return text.length() > 5000;
+    }
+
     private static Throwable adjustCopy(Throwable throwable, boolean clear) {
         if (throwable == null) {
             return null;
@@ -139,6 +147,16 @@ public class SentryErrorHandler implements ErrorHandler {
             atts.forEach(attachment -> s.addAttachment(attachment));
         }
 
+        if (doesExceedCommentSize(ee.getUserReport())) {
+            try {
+                var report = Files.createTempFile("report", ".txt");
+                Files.writeString(report, ee.getUserReport());
+                s.addAttachment(new Attachment(report.toString()));
+            } catch (Exception ex) {
+                AppLogs.get().logException("Unable to create report file", ex);
+            }
+        }
+
         s.setTag(
                 "hasLicense",
                 String.valueOf(
@@ -231,7 +249,11 @@ public class SentryErrorHandler implements ErrorHandler {
             if (hasEmail) {
                 fb.setEmail(email);
             }
-            fb.setComments(text);
+            if (doesExceedCommentSize(text)) {
+                fb.setComments("<Attachment>");
+            } else {
+                fb.setComments(text);
+            }
             Sentry.captureUserFeedback(fb);
         }
         Sentry.flush(3000);
