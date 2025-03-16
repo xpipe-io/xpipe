@@ -24,6 +24,8 @@ public abstract class AbstractServiceGroupStore<T extends DataStore> implements 
     @Override
     public void checkComplete() throws Throwable {
         Validators.nonNull(parent);
+        // Essentially a null check
+        Validators.isType(parent, DataStore.class);
         parent.checkComplete();
     }
 }
