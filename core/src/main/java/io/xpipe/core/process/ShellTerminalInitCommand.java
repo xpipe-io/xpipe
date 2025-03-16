@@ -6,35 +6,74 @@ import java.util.Optional;
 
 public interface ShellTerminalInitCommand {
 
-    boolean isStatic();
+    default void runDumb(ShellControl shellControl) throws Exception {
+        throw new UnsupportedOperationException();
+    }
 
-    Optional<String> content(ShellControl sc);
+    default Optional<String> terminalContent(ShellControl shellControl) throws Exception {
+        throw new UnsupportedOperationException();
+    }
+
+    default boolean runInDumb() {
+        return false;
+    }
 
     boolean canPotentiallyRunInDialect(ShellDialect dialect);
 
-    class Static implements ShellTerminalInitCommand {
+    default boolean runInTerminal() {
+        return false;
+    }
 
-        private final String content;
-        private final ShellDialect dialect;
+    interface Terminal extends ShellTerminalInitCommand {
 
-        public Static(String content, ShellDialect dialect) {
-            this.content = content;
-            this.dialect = dialect;
-        }
+        Optional<String> terminalContent(ShellControl shellControl) throws Exception;
 
-        @Override
-        public boolean isStatic() {
+        default boolean runInTerminal() {
             return true;
         }
+    }
+
+    class Simple implements ShellTerminalInitCommand {
+
+        @NonNull
+        private final String content;
+
+        private final ShellDialect dialect;
+
+        private final boolean dumb;
+
+        private final boolean terminal;
+
+        public Simple(@NonNull String content, ShellDialect dialect, boolean dumb, boolean terminal) {
+            this.content = content;
+            this.dialect = dialect;
+            this.dumb = dumb;
+            this.terminal = terminal;
+        }
 
         @Override
-        public Optional<String> content(ShellControl sc) {
+        public void runDumb(ShellControl shellControl) throws Exception {
+            shellControl.executeSimpleCommand(content);
+        }
+
+        @Override
+        public Optional<String> terminalContent(ShellControl shellControl) {
             return Optional.of(content);
+        }
+
+        @Override
+        public boolean runInDumb() {
+            return dumb;
         }
 
         @Override
         public boolean canPotentiallyRunInDialect(ShellDialect dialect) {
             return this.dialect == null || this.dialect.isCompatibleTo(dialect);
+        }
+
+        @Override
+        public boolean runInTerminal() {
+            return terminal;
         }
     }
 }

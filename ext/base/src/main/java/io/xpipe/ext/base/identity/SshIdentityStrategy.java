@@ -1,8 +1,6 @@
 package io.xpipe.ext.base.identity;
 
-import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.SecretRetrievalStrategy;
@@ -38,8 +36,6 @@ import java.io.IOException;
 public interface SshIdentityStrategy {
     default void checkComplete() throws ValidationException {}
 
-    boolean isConnectionAttemptCostly();
-
     void prepareParent(ShellControl parent) throws Exception;
 
     void buildCommand(CommandBuilder builder);
@@ -51,11 +47,6 @@ public interface SshIdentityStrategy {
     @JsonTypeName("none")
     @Value
     class None implements SshIdentityStrategy {
-
-        @Override
-        public boolean isConnectionAttemptCostly() {
-            return false;
-        }
 
         @Override
         public void prepareParent(ShellControl parent) {}
@@ -74,11 +65,6 @@ public interface SshIdentityStrategy {
     class SshAgent implements SshIdentityStrategy {
 
         boolean forwardAgent;
-
-        @Override
-        public boolean isConnectionAttemptCostly() {
-            return false;
-        }
 
         @Override
         public void prepareParent(ShellControl parent) throws Exception {
@@ -100,11 +86,6 @@ public interface SshIdentityStrategy {
     class Pageant implements SshIdentityStrategy {
 
         boolean forwardAgent;
-
-        @Override
-        public boolean isConnectionAttemptCostly() {
-            return false;
-        }
 
         @Override
         public void prepareParent(ShellControl parent) throws Exception {
@@ -175,11 +156,6 @@ public interface SshIdentityStrategy {
 
         ContextualFileReference file;
         SecretRetrievalStrategy password;
-
-        @Override
-        public boolean isConnectionAttemptCostly() {
-            return password.expectsQuery() && AppPrefs.get().dontCachePasswords().get();
-        }
 
         public void checkComplete() throws ValidationException {
             Validators.nonNull(file);
@@ -264,11 +240,6 @@ public interface SshIdentityStrategy {
         boolean forwardAgent;
 
         @Override
-        public boolean isConnectionAttemptCostly() {
-            return true;
-        }
-
-        @Override
         public void prepareParent(ShellControl parent) throws Exception {
             parent.requireLicensedFeature("gpgAgent");
             SshIdentityStateManager.prepareGpgAgent(parent);
@@ -296,11 +267,6 @@ public interface SshIdentityStrategy {
     @JsonTypeName("yubikeyPiv")
     @AllArgsConstructor
     class YubikeyPiv implements SshIdentityStrategy {
-
-        @Override
-        public boolean isConnectionAttemptCostly() {
-            return true;
-        }
 
         private String getFile(ShellControl parent) throws Exception {
             var file =
@@ -379,11 +345,6 @@ public interface SshIdentityStrategy {
         String file;
 
         @Override
-        public boolean isConnectionAttemptCostly() {
-            return true;
-        }
-
-        @Override
         public void prepareParent(ShellControl parent) throws Exception {
             parent.requireLicensedFeature("pkcs11Identity");
 
@@ -416,11 +377,6 @@ public interface SshIdentityStrategy {
     class OtherExternal implements SshIdentityStrategy {
 
         boolean forwardAgent;
-
-        @Override
-        public boolean isConnectionAttemptCostly() {
-            return true;
-        }
 
         @Override
         public void prepareParent(ShellControl parent) {}
