@@ -138,8 +138,10 @@ public class AppMainWindow {
     }
 
     public static synchronized void initContent() {
+        TrackEvent.info("Window content node creation started");
         var content = new AppLayoutComp();
         var s = content.createStructure();
+        TrackEvent.info("Window content node structure created");
         loadedContent.setValue(s);
     }
 

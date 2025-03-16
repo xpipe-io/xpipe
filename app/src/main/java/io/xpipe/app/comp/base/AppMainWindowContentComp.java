@@ -6,6 +6,7 @@ import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.util.PlatformThread;
@@ -82,6 +83,7 @@ public class AppMainWindowContentComp extends SimpleComp {
 
             loaded.subscribe(struc -> {
                 if (struc != null) {
+                    TrackEvent.info("Window content node set");
                     PlatformThread.runNestedLoopIteration();
                     anim.stop();
                     struc.prepareAddition();
@@ -90,6 +92,7 @@ public class AppMainWindowContentComp extends SimpleComp {
                     pane.getStyleClass().remove("background");
                     pane.getChildren().remove(vbox);
                     struc.show();
+                    TrackEvent.info("Window content node shown");
                 }
             });
 

@@ -2,6 +2,7 @@ package io.xpipe.app.ext;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.FailableConsumer;
@@ -21,6 +22,7 @@ public interface ActionProvider {
     List<ActionProvider> ALL_STANDALONE = new ArrayList<>();
 
     static void initProviders() {
+        TrackEvent.trace("Starting action provider initialization");
         for (ActionProvider actionProvider : ALL) {
             try {
                 actionProvider.init();
@@ -28,6 +30,7 @@ public interface ActionProvider {
                 ErrorEvent.fromThrowable(t).handle();
             }
         }
+        TrackEvent.trace("Finished action provider initialization");
     }
 
     default void init() throws Exception {}
