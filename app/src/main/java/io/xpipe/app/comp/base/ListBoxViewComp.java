@@ -43,9 +43,6 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
     @Setter
     private boolean visibilityControl = false;
 
-    @Setter
-    private int platformPauseInterval = -1;
-
     public ListBoxViewComp(
             ObservableList<T> shown, ObservableList<T> all, Function<T, Comp<?>> compFunction, boolean scrollBar) {
         this.shown = shown;
@@ -243,17 +240,10 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
                 cache.keySet().removeIf(t -> !set.contains(t));
             }
 
-            final long[] lastPause = {System.currentTimeMillis()};
             // Create copy to reduce chances of concurrent modification
             var shownCopy = new ArrayList<>(shown);
             var newShown = shownCopy.stream()
                     .map(v -> {
-                        var elapsed = System.currentTimeMillis() - lastPause[0];
-                        if (platformPauseInterval != -1 && elapsed > platformPauseInterval) {
-                            PlatformThread.runNestedLoopIteration();
-                            lastPause[0] = System.currentTimeMillis();
-                        }
-
                         if (!cache.containsKey(v)) {
                             var comp = compFunction.apply(v);
                             if (comp != null) {
