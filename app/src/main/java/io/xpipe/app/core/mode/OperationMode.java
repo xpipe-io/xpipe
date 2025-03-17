@@ -180,6 +180,8 @@ public abstract class OperationMode {
 
         var startupMode = getStartupMode();
         switchToSyncOrThrow(map(startupMode));
+        // If it doesn't find time, the JVM will not gc the startup workload
+        System.gc();
         inStartup = false;
         AppOpenArguments.init();
     }
