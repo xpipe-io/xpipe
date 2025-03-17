@@ -194,7 +194,7 @@ public class SentryErrorHandler implements ErrorHandler {
                 AppPrefs.get() != null
                         ? String.valueOf(AppPrefs.get().useLocalFallbackShell().get())
                         : "unknown");
-        s.setTag("initial", AppProperties.get() != null ? AppProperties.get().isInitialLaunch() + "" : null);
+        s.setTag("initial", AppProperties.get() != null ? AppProperties.get().isInitialLaunch() + "" : "false");
 
         var exMessage = ee.getThrowable() != null ? ee.getThrowable().getMessage() : null;
         if (ee.getDescription() != null
