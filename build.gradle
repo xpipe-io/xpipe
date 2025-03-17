@@ -145,7 +145,7 @@ project.ext {
     ]
 
     // GC config
-    jvmRunArgs += ['-Xms300m', '-Xmx4G', '-XX:MinHeapFreeRatio=15', '-XX:MaxHeapFreeRatio=25', '-XX:GCTimeRatio=9'];
+    jvmRunArgs += ['-XX:+UseG1GC', '-Xms300m', '-Xmx4G', '-XX:GCTimeRatio=9', '-XX:+UseStringDeduplication'];
 
     if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
         jvmRunArgs += ["-Dapple.awt.application.appearance=system"]
