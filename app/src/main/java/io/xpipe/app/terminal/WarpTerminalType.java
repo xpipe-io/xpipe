@@ -27,7 +27,11 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
 
         @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-            DesktopHelper.openUrl("warp://action/new_tab?path=" + configuration.getScriptFile());
+            if (!configuration.isPreferTabs()) {
+                DesktopHelper.openUrl("warp://action/new_window?path=" + configuration.getScriptFile());
+            } else {
+                DesktopHelper.openUrl("warp://action/new_tab?path=" + configuration.getScriptFile());
+            }
         }
 
         @Override
@@ -38,6 +42,13 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
         @Override
         public String getId() {
             return "app.warp";
+        }
+
+        @Override
+        public TerminalOpenFormat getOpenFormat() {
+            // Warp always opens the new separate window, so we don't want to use it in the file browser for docking
+            // Just say that we don't support new windows, that way it doesn't dock
+            return TerminalOpenFormat.TABBED;
         }
     }
 
@@ -51,7 +62,11 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
 
         @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-            DesktopHelper.openUrl("warp://action/new_tab?path=" + configuration.getScriptFile());
+            if (!configuration.isPreferTabs()) {
+                DesktopHelper.openUrl("warp://action/new_window?path=" + configuration.getScriptFile());
+            } else {
+                DesktopHelper.openUrl("warp://action/new_tab?path=" + configuration.getScriptFile());
+            }
         }
 
         @Override
@@ -62,6 +77,13 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
         @Override
         public String getId() {
             return "app.warp";
+        }
+
+        @Override
+        public TerminalOpenFormat getOpenFormat() {
+            // Warp always opens the new separate window, so we don't want to use it in the file browser for docking
+            // Just say that we don't support new windows, that way it doesn't dock
+            return TerminalOpenFormat.TABBED;
         }
     }
 
@@ -85,11 +107,10 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
                             .addFile(configuration.getScriptFile()));
         }
 
-    }
-
-    @Override
-    default TerminalOpenFormat getOpenFormat() {
-        return TerminalOpenFormat.TABBED;
+        @Override
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.TABBED;
+        }
     }
 
     @Override
