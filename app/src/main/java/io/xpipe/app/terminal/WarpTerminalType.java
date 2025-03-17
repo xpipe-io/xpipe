@@ -46,7 +46,7 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
 
         @Override
         public int getProcessHierarchyOffset() {
-            return 1;
+            return 2;
         }
 
         @Override
@@ -56,7 +56,7 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
 
         @Override
         public boolean isAvailable() {
-            return Files.exists(Path.of("/opt/warp"));
+            return Files.exists(Path.of("/opt/warpdotdev"));
         }
 
         @Override
