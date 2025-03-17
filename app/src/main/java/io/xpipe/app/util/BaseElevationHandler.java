@@ -3,7 +3,6 @@ package io.xpipe.app.util;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.process.CountDown;
 import io.xpipe.core.process.ElevationHandler;
-import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.SecretReference;
 
@@ -21,7 +20,7 @@ public class BaseElevationHandler implements ElevationHandler {
     }
 
     @Override
-    public boolean handleRequest(ShellControl parent, UUID requestId, CountDown countDown, boolean confirmIfNeeded) {
+    public boolean handleRequest(UUID requestId, CountDown countDown, boolean confirmIfNeeded, boolean interactive) {
         var ref = getSecretRef();
         if (ref == null) {
             return false;
@@ -35,7 +34,7 @@ public class BaseElevationHandler implements ElevationHandler {
                 List.of(),
                 List.of(),
                 countDown,
-                parent.isInteractive());
+                interactive);
         return true;
     }
 
