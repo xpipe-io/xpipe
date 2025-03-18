@@ -61,23 +61,31 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         vbox.setFocusTraversable(false);
         var scroll = new ScrollPane(vbox);
 
-        refresh(scroll, vbox, shown, all, cache, false);
+        refresh(scroll, vbox, shown, all, cache);
 
-        var hadScene = new AtomicBoolean(false);
-        scroll.sceneProperty().subscribe(scene -> {
-            if (scene != null) {
-                hadScene.set(true);
-            }
-        });
-
-        shown.addListener((ListChangeListener<? super T>) (c) -> {
+        var l = (ListChangeListener<? super T>) (c) -> {
             Platform.runLater(() -> {
-                if (scroll.getScene() == null && hadScene.get()) {
+                // This node might have been removed since when the change was triggered
+                if (scroll.getScene() == null) {
                     return;
                 }
 
-                refresh(scroll, vbox, c.getList(), all, cache, true);
+                refresh(scroll, vbox, c.getList(), all, cache);
             });
+        };
+        // Don't listen after our lifetime
+        scroll.sceneProperty().subscribe(scene -> {
+            if (scene != null) {
+                shown.addListener(l);
+            } else {
+                shown.removeListener(l);
+            }
+        });
+        scroll.sceneProperty().addListener((observableValue, oldScene, newScene) -> {
+            // Apply changes made since last scene assign
+            if (oldScene == null && newScene != null) {
+                refresh(scroll, vbox, shown, all, cache);
+            }
         });
 
         if (scrollBar) {
@@ -223,6 +231,10 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             return;
         }
 
+        if (scroll.getScene() == null || vbox.getScene() == null) {
+            return;
+        }
+
         int count = 0;
         for (Node child : vbox.getChildren()) {
             var v = isVisible(scroll, vbox, child);
@@ -241,58 +253,52 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             VBox listView,
             List<? extends T> shown,
             List<? extends T> all,
-            Map<T, Region> cache,
-            boolean refreshVisibilities) {
-        Runnable update = () -> {
-            synchronized (cache) {
-                var set = new HashSet<T>();
-                // These lists might diverge on updates
-                set.addAll(shown);
-                set.addAll(all);
-                // Clear cache of unused values
-                cache.keySet().removeIf(t -> !set.contains(t));
-            }
+            Map<T, Region> cache) {
+        synchronized (cache) {
+            var set = new HashSet<T>();
+            // These lists might diverge on updates
+            set.addAll(shown);
+            set.addAll(all);
+            // Clear cache of unused values
+            cache.keySet().removeIf(t -> !set.contains(t));
+        }
 
-            // Create copy to reduce chances of concurrent modification
-            var shownCopy = new ArrayList<>(shown);
-            var newShown = shownCopy.stream()
-                    .map(v -> {
-                        if (!cache.containsKey(v)) {
-                            var comp = compFunction.apply(v);
-                            if (comp != null) {
-                                var r = comp.createRegion();
-                                if (visibilityControl) {
-                                    r.setVisible(false);
-                                }
-                                cache.put(v, r);
-                            } else {
-                                cache.put(v, null);
+        // Create copy to reduce chances of concurrent modification
+        var shownCopy = new ArrayList<>(shown);
+        var newShown = shownCopy.stream()
+                .map(v -> {
+                    if (!cache.containsKey(v)) {
+                        var comp = compFunction.apply(v);
+                        if (comp != null) {
+                            var r = comp.createRegion();
+                            if (visibilityControl) {
+                                r.setVisible(false);
                             }
+                            cache.put(v, r);
+                        } else {
+                            cache.put(v, null);
                         }
+                    }
 
-                        return cache.get(v);
-                    })
-                    .filter(region -> region != null)
-                    .toList();
+                    return cache.get(v);
+                })
+                .filter(region -> region != null)
+                .toList();
 
-            if (listView.getChildren().equals(newShown)) {
-                return;
-            }
+        if (listView.getChildren().equals(newShown)) {
+            return;
+        }
 
-            for (int i = 0; i < newShown.size(); i++) {
-                var r = newShown.get(i);
-                r.pseudoClassStateChanged(ODD, i % 2 != 0);
-                r.pseudoClassStateChanged(EVEN, i % 2 == 0);
-                r.pseudoClassStateChanged(FIRST, i == 0);
-                r.pseudoClassStateChanged(LAST, i == newShown.size() - 1);
-            }
+        for (int i = 0; i < newShown.size(); i++) {
+            var r = newShown.get(i);
+            r.pseudoClassStateChanged(ODD, i % 2 != 0);
+            r.pseudoClassStateChanged(EVEN, i % 2 == 0);
+            r.pseudoClassStateChanged(FIRST, i == 0);
+            r.pseudoClassStateChanged(LAST, i == newShown.size() - 1);
+        }
 
-            var d = new DerivedObservableList<>(listView.getChildren(), true);
-            d.setContent(newShown);
-            if (refreshVisibilities) {
-                updateVisibilities(scroll, listView);
-            }
-        };
-        update.run();
+        var d = new DerivedObservableList<>(listView.getChildren(), true);
+        d.setContent(newShown);
+        updateVisibilities(scroll, listView);
     }
 }

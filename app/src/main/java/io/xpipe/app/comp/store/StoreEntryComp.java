@@ -198,23 +198,25 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     protected Region createButtonBar() {
-        var list = new DerivedObservableList<>(getWrapper().getActionProviders(), false);
-        var buttons = list.mapped(actionProvider -> {
-                    var button = buildButton(actionProvider);
-                    return button != null ? button.createRegion() : null;
-                })
-                .filtered(region -> region != null)
-                .getList();
-
         var ig = new InputGroup();
         Runnable update = () -> {
-            var l = new ArrayList<Node>(buttons);
+            var buttons = new ArrayList<Node>();
+            for (ActionProvider actionProvider : getWrapper().getActionProviders()) {
+                var button = buildButton(actionProvider);
+                if (button != null) {
+                    buttons.add(button.createRegion());
+                }
+            }
+            var l = new ArrayList<>(buttons);
             var settingsButton = createSettingsButton().createRegion();
             l.add(settingsButton);
             l.forEach(o -> o.getStyleClass().remove(Styles.FLAT));
             ig.getChildren().setAll(l);
         };
-        buttons.subscribe(update);
+        update.run();
+        getWrapper().getActionProviders().addListener((observableValue, actionProviders, t1) -> {
+            update.run();
+        });
         update.run();
         ig.setAlignment(Pos.CENTER_RIGHT);
         ig.getStyleClass().add("button-bar");
