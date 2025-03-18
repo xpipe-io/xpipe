@@ -214,9 +214,9 @@ public abstract class StoreEntryComp extends SimpleComp {
             ig.getChildren().setAll(l);
         };
         update.run();
-        getWrapper().getActionProviders().addListener((observableValue, actionProviders, t1) -> {
+        getWrapper().getActionProviders().addListener(BindingsHelper.weak(getWrapper(), (observableValue, actionProviders, t1) -> {
             update.run();
-        });
+        }));
         update.run();
         ig.setAlignment(Pos.CENTER_RIGHT);
         ig.getStyleClass().add("button-bar");

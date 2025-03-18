@@ -144,12 +144,11 @@ public abstract class Comp<S extends CompStructure<?>> {
     public Comp<S> visible(ObservableValue<Boolean> o) {
         return apply(struc -> {
             var region = struc.get();
-            BindingsHelper.preserve(region, o);
-            o.subscribe(n -> {
+            o.subscribe(BindingsHelper.weak(region, n -> {
                 PlatformThread.runLaterIfNeeded(() -> {
                     region.setVisible(n);
                 });
-            });
+            }));
         });
     }
 
@@ -164,8 +163,7 @@ public abstract class Comp<S extends CompStructure<?>> {
     public Comp<S> hide(ObservableValue<Boolean> o) {
         return apply(struc -> {
             var region = struc.get();
-            BindingsHelper.preserve(region, o);
-            o.subscribe(n -> {
+            o.subscribe(BindingsHelper.weak(region, n -> {
                 PlatformThread.runLaterIfNeeded(() -> {
                     if (!n) {
                         region.setVisible(true);
@@ -175,7 +173,7 @@ public abstract class Comp<S extends CompStructure<?>> {
                         region.setManaged(false);
                     }
                 });
-            });
+            }));
         });
     }
 
