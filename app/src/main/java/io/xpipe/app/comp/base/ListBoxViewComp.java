@@ -67,6 +67,7 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         scroll.sceneProperty().subscribe(scene -> {
             if (scene != null) {
                 hadScene.set(true);
+                refresh(scroll, vbox, shown, all, cache, true);
             }
         });
 
