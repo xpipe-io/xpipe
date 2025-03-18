@@ -244,6 +244,10 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             var shownCopy = new ArrayList<>(shown);
             var newShown = shownCopy.stream()
                     .map(v -> {
+                        if (asynchronous && scroll.getScene() == null) {
+                            return null;
+                        }
+
                         if (!cache.containsKey(v)) {
                             var comp = compFunction.apply(v);
                             if (comp != null) {
