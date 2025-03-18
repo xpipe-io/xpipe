@@ -661,7 +661,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             AlacrittyTerminalType.ALACRITTY_LINUX,
             WezTerminalType.WEZTERM_LINUX,
             KittyTerminalType.KITTY_LINUX,
-            WarpTerminalType.LINUX,
             GNOME_CONSOLE,
             PTYXIS,
             TERMINATOR,
@@ -680,6 +679,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             DEEPIN_TERMINAL,
             FOOT,
             Q_TERMINAL,
+            WarpTerminalType.LINUX,
             TERMIUS,
             WaveTerminalType.WAVE_LINUX);
     List<ExternalTerminalType> MACOS_TERMINALS = List.of(
