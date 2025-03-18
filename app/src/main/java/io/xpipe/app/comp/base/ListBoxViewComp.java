@@ -26,6 +26,7 @@ import javafx.scene.layout.VBox;
 import lombok.Setter;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
@@ -60,10 +61,23 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         vbox.setFocusTraversable(false);
         var scroll = new ScrollPane(vbox);
 
-        refresh(scroll, vbox, shown, all, cache, false, false);
+        refresh(scroll, vbox, shown, all, cache, false);
+
+        var hadScene = new AtomicBoolean(false);
+        scroll.sceneProperty().subscribe(scene -> {
+            if (scene != null) {
+                hadScene.set(true);
+            }
+        });
 
         shown.addListener((ListChangeListener<? super T>) (c) -> {
-            refresh(scroll, vbox, c.getList(), all, cache, true, true);
+            Platform.runLater(() -> {
+                if (scroll.getScene() == null && hadScene.get()) {
+                    return;
+                }
+
+                refresh(scroll, vbox, c.getList(), all, cache, true);
+            });
         });
 
         if (scrollBar) {
@@ -228,7 +242,6 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             List<? extends T> shown,
             List<? extends T> all,
             Map<T, Region> cache,
-            boolean asynchronous,
             boolean refreshVisibilities) {
         Runnable update = () -> {
             synchronized (cache) {
@@ -244,10 +257,6 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             var shownCopy = new ArrayList<>(shown);
             var newShown = shownCopy.stream()
                     .map(v -> {
-                        if (asynchronous && scroll.getScene() == null) {
-                            return null;
-                        }
-
                         if (!cache.containsKey(v)) {
                             var comp = compFunction.apply(v);
                             if (comp != null) {
@@ -284,11 +293,6 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
                 updateVisibilities(scroll, listView);
             }
         };
-
-        if (asynchronous) {
-            Platform.runLater(update);
-        } else {
-            PlatformThread.runLaterIfNeeded(update);
-        }
+        update.run();
     }
 }
