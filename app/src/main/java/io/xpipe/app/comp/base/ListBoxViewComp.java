@@ -26,7 +26,6 @@ import javafx.scene.layout.VBox;
 import lombok.Setter;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
@@ -61,26 +60,10 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         vbox.setFocusTraversable(false);
         var scroll = new ScrollPane(vbox);
 
-        var l = (ListChangeListener<? super T>) (c) -> {
-            Platform.runLater(() -> {
-                refresh(scroll, vbox, c.getList(), all, cache, true);
-            });
-        };
-        scroll.sceneProperty().subscribe(scene -> {
-            if (scene != null) {
-                shown.addListener(l);
-            } else {
-                shown.removeListener(l);
-            }
-        });
-        scroll.sceneProperty().addListener((observableValue, oldScene, newScene) -> {
-            // Apply changes made since init and scene assign
-            if (oldScene == null && newScene != null) {
-                refresh(scroll, vbox, shown, all, cache, true);
-            }
-            if (oldScene != null && newScene == null) {
-                cache.clear();
-            }
+        refresh(scroll, vbox, shown, all, cache, false, false);
+
+        shown.addListener((ListChangeListener<? super T>) (c) -> {
+            refresh(scroll, vbox, c.getList(), all, cache, true, true);
         });
 
         if (scrollBar) {
@@ -245,6 +228,7 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             List<? extends T> shown,
             List<? extends T> all,
             Map<T, Region> cache,
+            boolean asynchronous,
             boolean refreshVisibilities) {
         Runnable update = () -> {
             synchronized (cache) {
@@ -253,9 +237,7 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
                 set.addAll(shown);
                 set.addAll(all);
                 // Clear cache of unused values
-                cache.keySet().removeIf(t -> {
-                    return !set.contains(t);
-                });
+                cache.keySet().removeIf(t -> !set.contains(t));
             }
 
             // Create copy to reduce chances of concurrent modification
@@ -263,12 +245,6 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             var newShown = shownCopy.stream()
                     .map(v -> {
                         if (!cache.containsKey(v)) {
-                            // System.out.println("cache miss: " + v);
-                            if (scroll.getScene() == null) {
-                                // System.out.println("Ignored " + v);
-                                return null;
-                            }
-
                             var comp = compFunction.apply(v);
                             if (comp != null) {
                                 var r = comp.createRegion();
@@ -304,6 +280,11 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
                 updateVisibilities(scroll, listView);
             }
         };
-        update.run();
+
+        if (asynchronous) {
+            Platform.runLater(update);
+        } else {
+            PlatformThread.runLaterIfNeeded(update);
+        }
     }
 }
