@@ -92,8 +92,7 @@ public class StoreSectionComp extends StoreSectionBaseComp {
                     var hbox = ((HBox) struc.get().getChildren().getFirst());
                     addPseudoClassListeners(struc.get(), section.getWrapper().getExpanded());
                     addVisibilityListeners(struc.get(), hbox);
-                })
-                .createStructure();
+                });
         return full.createStructure();
     }
 }

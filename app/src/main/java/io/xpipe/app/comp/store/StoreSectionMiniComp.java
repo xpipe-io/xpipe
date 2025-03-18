@@ -85,8 +85,7 @@ public class StoreSectionMiniComp extends StoreSectionBaseComp {
                         var hbox = ((HBox) struc.get().getChildren().getFirst());
                         addVisibilityListeners(struc.get(), hbox);
                     }
-                })
-                .createStructure();
+                });
         return full.createStructure();
     }
 }
