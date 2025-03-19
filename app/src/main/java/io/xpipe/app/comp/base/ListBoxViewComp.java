@@ -14,6 +14,7 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
@@ -46,7 +47,7 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
 
     public ListBoxViewComp(
             ObservableList<T> shown, ObservableList<T> all, Function<T, Comp<?>> compFunction, boolean scrollBar) {
-        this.shown = shown;
+        this.shown = FXCollections.synchronizedObservableList(shown);
         this.all = all;
         this.compFunction = compFunction;
         this.scrollBar = scrollBar;
@@ -247,34 +248,34 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         Runnable update = () -> {
             synchronized (cache) {
                 var set = new HashSet<T>();
-                // These lists might diverge on updates
-                set.addAll(shown);
+                // These lists might diverge on updates, so add both
+                synchronized (shown) {
+                    set.addAll(shown);
+                }
                 set.addAll(all);
                 // Clear cache of unused values
                 cache.keySet().removeIf(t -> !set.contains(t));
             }
 
-            // Create copy to reduce chances of concurrent modification
-            var shownCopy = new ArrayList<>(shown);
-            var newShown = shownCopy.stream()
-                    .map(v -> {
-                        if (!cache.containsKey(v)) {
-                            var comp = compFunction.apply(v);
-                            if (comp != null) {
-                                var r = comp.createRegion();
-                                if (visibilityControl) {
-                                    r.setVisible(false);
-                                }
-                                cache.put(v, r);
-                            } else {
-                                cache.put(v, null);
+            List<Region> newShown;
+            synchronized (shown) {
+                newShown = shown.stream().map(v -> {
+                    if (!cache.containsKey(v)) {
+                        var comp = compFunction.apply(v);
+                        if (comp != null) {
+                            var r = comp.createRegion();
+                            if (visibilityControl) {
+                                r.setVisible(false);
                             }
+                            cache.put(v, r);
+                        } else {
+                            cache.put(v, null);
                         }
+                    }
 
-                        return cache.get(v);
-                    })
-                    .filter(region -> region != null)
-                    .toList();
+                    return cache.get(v);
+                }).filter(region -> region != null).toList();
+            }
 
             if (listView.getChildren().equals(newShown)) {
                 return;
