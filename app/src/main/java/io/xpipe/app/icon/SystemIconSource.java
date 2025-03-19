@@ -1,11 +1,13 @@
 package io.xpipe.app.icon;
 
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.store.FileNames;
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.ValidationException;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -90,7 +92,14 @@ public interface SystemIconSource {
         @Override
         public void refresh() throws Exception {
             try (var sc =
-                    ProcessControlProvider.get().createLocalProcessControl(true).start()) {
+                         ProcessControlProvider.get().createLocalProcessControl(true).start()) {
+                var present = sc.view().findProgram("git").isPresent();
+                if (!present) {
+                    var msg = "Git command-line tools are not available in the PATH but are required to use icons from a git repository. For more details, see https://git-scm.com/downloads.";
+                    ErrorEvent.fromMessage(msg).expected().handle();
+                    return;
+                }
+
                 var dir = SystemIconManager.getPoolPath().resolve(id);
                 if (!Files.exists(dir)) {
                     sc.command(CommandBuilder.of()
