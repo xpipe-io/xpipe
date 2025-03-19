@@ -4,6 +4,7 @@ import io.xpipe.app.ext.ScanProvider;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.process.ProcessOutputException;
 import io.xpipe.core.process.ShellControl;
 
 public class LxdScanProvider extends ScanProvider {
@@ -18,12 +19,18 @@ public class LxdScanProvider extends ScanProvider {
     }
 
     @Override
-    public void scan(DataStoreEntry entry, ShellControl sc) {
+    public void scan(DataStoreEntry entry, ShellControl sc) throws Exception {
         var e = DataStorage.get()
                 .addStoreIfNotPresent(
                         entry,
                         "LXD containers",
                         LxdCmdStore.builder().host(entry.ref()).build());
-        DataStorage.get().refreshChildren(e);
+        try {
+            DataStorage.get().refreshChildrenOrThrow(e);
+        } catch (ProcessOutputException ex) {
+            if (!ex.getOutput().contains("unknown shorthand flag: 'f' in -f")) {
+                throw ex;
+            }
+        }
     }
 }
