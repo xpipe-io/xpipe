@@ -23,7 +23,7 @@ public enum SecretQueryState {
                 yield "Session is not interactive but required user input for authentication";
             }
             case FIXED_SECRET_WRONG -> {
-                yield "Authentication failed: Provided authentication secret is wrong";
+                yield "Authentication failed: Provided authentication secret was not accepted by the server, probably because it is incorrect";
             }
             case RETRIEVAL_FAILURE -> {
                 yield "Failed to retrieve secret for authentication";

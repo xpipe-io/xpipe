@@ -15,6 +15,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.scene.control.TextField;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -111,8 +112,13 @@ public class IconsCategory extends AppPrefsCategory {
                             return;
                         }
 
+                        var path = Path.of(dir.get());
+                        if (Files.isRegularFile(path)) {
+                            throw new IllegalArgumentException("A custom icon directory requires to be a directory of .svg files, not a single file");
+                        }
+
                         var source = SystemIconSource.Directory.builder()
-                                .path(Path.of(dir.get()))
+                                .path(path)
                                 .id(UUID.randomUUID().toString())
                                 .build();
                         if (!sources.contains(source)) {
