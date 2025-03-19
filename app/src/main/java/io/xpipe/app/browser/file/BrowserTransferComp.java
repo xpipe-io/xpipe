@@ -81,14 +81,14 @@ public class BrowserTransferComp extends SimpleComp {
         var dragNotice = new LabelComp(AppI18n.observable("dragLocalFiles"))
                 .apply(struc -> struc.get().setGraphic(new FontIcon("mdi2h-hand-left")))
                 .apply(struc -> struc.get().setWrapText(true))
-                .hide(model.getEmpty());
+                .hide(Bindings.or(model.getEmpty(), model.getTransferring()));
 
         var clearButton = new IconButtonComp("mdi2c-close", () -> {
                     ThreadHelper.runAsync(() -> {
                         model.clear(true);
                     });
                 })
-                .hide(model.getEmpty())
+                .hide(Bindings.or(model.getEmpty(), model.getTransferring()))
                 .tooltipKey("clearTransferDescription");
 
         var downloadButton = new IconButtonComp("mdi2f-folder-move-outline", () -> {
@@ -96,7 +96,7 @@ public class BrowserTransferComp extends SimpleComp {
                         model.transferToDownloads();
                     });
                 })
-                .hide(model.getEmpty())
+                .hide(Bindings.or(model.getEmpty(), model.getTransferring()))
                 .tooltipKey("downloadStageDescription");
 
         var bottom = new HorizontalComp(

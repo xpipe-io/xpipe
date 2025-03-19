@@ -8,7 +8,9 @@ import io.xpipe.app.util.ShellTemp;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.FXCollections;
@@ -34,6 +36,7 @@ public class BrowserTransferModel {
     BrowserFullSessionModel browserSessionModel;
     ObservableList<Item> items = FXCollections.observableArrayList();
     ObservableBooleanValue empty = Bindings.createBooleanBinding(() -> items.isEmpty(), items);
+    BooleanProperty transferring = new SimpleBooleanProperty();
 
     public BrowserTransferModel(BrowserFullSessionModel browserSessionModel) {
         this.browserSessionModel = browserSessionModel;
@@ -126,6 +129,7 @@ public class BrowserTransferModel {
         }
 
         try {
+            transferring.setValue(true);
             var op = new BrowserFileTransferOperation(
                     BrowserLocalFileSystem.getLocalFileEntry(TEMP),
                     List.of(item.getBrowserEntry().getRawFileEntry()),
@@ -150,6 +154,8 @@ public class BrowserTransferModel {
             synchronized (items) {
                 items.remove(item);
             }
+        } finally {
+            transferring.setValue(false);
         }
     }
 

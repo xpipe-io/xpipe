@@ -154,7 +154,15 @@ public abstract class Comp<S extends CompStructure<?>> {
     }
 
     public Comp<S> disable(ObservableValue<Boolean> o) {
-        return apply(struc -> struc.get().disableProperty().bind(o));
+        return apply(struc -> {
+            var region = struc.get();
+            BindingsHelper.preserve(region, o);
+            o.subscribe(n -> {
+                PlatformThread.runLaterIfNeeded(() -> {
+                    region.setDisable(n);
+                });
+            });
+        });
     }
 
     public Comp<S> padding(Insets insets) {
