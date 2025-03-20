@@ -34,7 +34,10 @@ public class DataStoreEntryRef<T extends DataStore> {
     }
 
     public void checkComplete() throws Throwable {
-        getStore().checkComplete();
+        var store = getStore();
+        if (store != null) {
+            getStore().checkComplete();
+        }
     }
 
     public DataStoreEntry get() {
@@ -42,7 +45,7 @@ public class DataStoreEntryRef<T extends DataStore> {
     }
 
     public T getStore() {
-        return entry.getStore().asNeeded();
+        return entry.getStore() != null ? entry.getStore().asNeeded() : null;
     }
 
     @SuppressWarnings("unchecked")

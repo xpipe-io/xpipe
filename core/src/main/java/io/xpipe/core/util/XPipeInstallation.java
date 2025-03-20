@@ -57,10 +57,17 @@ public class XPipeInstallation {
 
     @SneakyThrows
     public static Path getCurrentInstallationBasePath() {
+        var command = ProcessHandle.current().info().command();
         // We should always have a command associated with the current process, otherwise something went seriously wrong
+        if (command.isEmpty()) {
+            var javaHome = System.getProperty("java.home");
+            var javaExec = toRealPathIfPossible(Path.of(javaHome, "bin", "java"));
+            var path = getLocalInstallationBasePathForJavaExecutable(javaExec);
+            return path;
+        }
+
         // Resolve any possible links to a real path
-        Path path = toRealPathIfPossible(
-                Path.of(ProcessHandle.current().info().command().orElseThrow()));
+        Path path = toRealPathIfPossible(Path.of(command.get()));
         // Check if the process was started using a relative path, and adapt it if necessary
         if (!path.isAbsolute()) {
             path = toRealPathIfPossible(Path.of(System.getProperty("user.dir")).resolve(path));

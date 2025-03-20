@@ -84,7 +84,7 @@ public class AppDialog {
                                 var transition = new PauseTransition(Duration.millis(200));
                                 transition.setOnFinished(e -> {
                                     if (wait) {
-                                        Platform.exitNestedEventLoop(key, null);
+                                        PlatformThread.exitNestedEventLoop(key);
                                     }
                                 });
                                 transition.play();
@@ -95,7 +95,7 @@ public class AppDialog {
                 }
             });
             if (wait) {
-                Platform.enterNestedEventLoop(key);
+                PlatformThread.enterNestedEventLoop(key);
                 waitForDialogClose(o);
             }
         }

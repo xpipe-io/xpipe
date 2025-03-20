@@ -92,8 +92,7 @@ public interface SystemIconSource {
 
         @Override
         public void refresh() throws Exception {
-            try (var sc =
-                    ProcessControlProvider.get().createLocalProcessControl(true).start()) {
+            try (var sc = ProcessControlProvider.get().createLocalProcessControl(true).start()) {
                 var present = sc.view().findProgram("git").isPresent();
                 if (!present) {
                     var msg = "Git command-line tools are not available in the PATH but are required to use icons from a git repository. For more details, see https://git-scm.com/downloads.";

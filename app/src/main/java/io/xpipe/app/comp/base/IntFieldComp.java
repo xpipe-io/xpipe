@@ -5,6 +5,7 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.util.PlatformThread;
 
+import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.control.TextField;
@@ -12,6 +13,8 @@ import javafx.scene.input.KeyEvent;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+
+import java.util.Objects;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class IntFieldComp extends Comp<CompStructure<TextField>> {
@@ -34,29 +37,38 @@ public class IntFieldComp extends Comp<CompStructure<TextField>> {
 
     @Override
     public CompStructure<TextField> createBase() {
-        var text = new TextField(value.getValue() != null ? value.getValue().toString() : null);
+        var field = new TextField(value.getValue() != null ? value.getValue().toString() : null);
 
         value.addListener((ChangeListener<Number>) (observableValue, oldValue, newValue) -> {
             PlatformThread.runLaterIfNeeded(() -> {
-                if (newValue == null) {
-                    text.setText("");
-                } else {
-                    if (newValue.intValue() < minValue) {
-                        value.setValue(minValue);
-                        return;
-                    }
-
-                    if (newValue.intValue() > maxValue) {
-                        value.setValue(maxValue);
-                        return;
-                    }
-
-                    text.setText(newValue.toString());
+                // Check if control value is the same. Then don't set it as that might cause bugs
+                if ((newValue == null && field.getText().isEmpty())
+                        || Objects.equals(field.getText(), newValue != null ? newValue.toString() : null)) {
+                    return;
                 }
+
+                if (newValue == null) {
+                    Platform.runLater(() -> {
+                        field.setText(null);
+                    });
+                    return;
+                }
+
+                if (newValue.intValue() < minValue) {
+                    value.setValue(minValue);
+                    return;
+                }
+
+                if (newValue.intValue() > maxValue) {
+                    value.setValue(maxValue);
+                    return;
+                }
+
+                field.setText(newValue.toString());
             });
         });
 
-        text.addEventFilter(KeyEvent.KEY_TYPED, keyEvent -> {
+        field.addEventFilter(KeyEvent.KEY_TYPED, keyEvent -> {
             if (minValue < 0) {
                 if (!"-0123456789".contains(keyEvent.getCharacter())) {
                     keyEvent.consume();
@@ -68,7 +80,7 @@ public class IntFieldComp extends Comp<CompStructure<TextField>> {
             }
         });
 
-        text.textProperty().addListener((observableValue, oldValue, newValue) -> {
+        field.textProperty().addListener((observableValue, oldValue, newValue) -> {
             if (newValue == null
                     || newValue.isEmpty()
                     || (minValue < 0 && "-".equals(newValue))
@@ -79,12 +91,12 @@ public class IntFieldComp extends Comp<CompStructure<TextField>> {
 
             int intValue = Integer.parseInt(newValue);
             if (minValue > intValue || intValue > maxValue) {
-                text.textProperty().setValue(oldValue);
+                field.textProperty().setValue(oldValue);
             }
 
-            value.setValue(Integer.parseInt(text.textProperty().get()));
+            value.setValue(Integer.parseInt(field.textProperty().get()));
         });
 
-        return new SimpleCompStructure<>(text);
+        return new SimpleCompStructure<>(field);
     }
 }

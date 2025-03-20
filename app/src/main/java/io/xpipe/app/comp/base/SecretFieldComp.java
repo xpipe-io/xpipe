@@ -10,6 +10,8 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
@@ -68,23 +70,32 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
 
     @Override
     public Structure createBase() {
-        var text = new PasswordField();
-        text.setText(value.getValue() != null ? value.getValue().getSecretValue() : null);
-        text.textProperty().addListener((c, o, n) -> {
+        var field = new PasswordField();
+        field.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+            if (e.isControlDown() && e.getCode() == KeyCode.BACK_SPACE) {
+                var sel = field.getSelection();
+                if (sel.getEnd() > 0) {
+                    field.setText(field.getText().substring(sel.getEnd()));
+                    e.consume();
+                }
+            }
+        });
+        field.setText(value.getValue() != null ? value.getValue().getSecretValue() : null);
+        field.textProperty().addListener((c, o, n) -> {
             value.setValue(n != null && n.length() > 0 ? encrypt(n.toCharArray()) : null);
         });
         value.addListener((c, o, n) -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 // Check if control value is the same. Then don't set it as that might cause bugs
-                if ((n == null && text.getText().isEmpty())
-                        || Objects.equals(text.getText(), n != null ? n.getSecretValue() : null)) {
+                if ((n == null && field.getText().isEmpty())
+                        || Objects.equals(field.getText(), n != null ? n.getSecretValue() : null)) {
                     return;
                 }
 
-                text.setText(n != null ? n.getSecretValue() : null);
+                field.setText(n != null ? n.getSecretValue() : null);
             });
         });
-        HBox.setHgrow(text, Priority.ALWAYS);
+        HBox.setHgrow(field, Priority.ALWAYS);
 
         var copyButton = new ButtonComp(null, new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
                     ClipboardHelper.copyPassword(value.getValue());
@@ -93,7 +104,7 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
                 .tooltipKey("copyPassword")
                 .createRegion();
 
-        var ig = new InputGroup(text);
+        var ig = new InputGroup(field);
         ig.setFillHeight(true);
         ig.getStyleClass().add("secret-field-comp");
         if (allowCopy) {
@@ -103,10 +114,10 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
 
         ig.focusedProperty().addListener((c, o, n) -> {
             if (n) {
-                text.requestFocus();
+                field.requestFocus();
             }
         });
 
-        return new Structure(ig, text);
+        return new Structure(ig, field);
     }
 }

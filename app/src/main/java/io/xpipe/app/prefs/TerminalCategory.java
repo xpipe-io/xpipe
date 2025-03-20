@@ -15,6 +15,7 @@ import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.*;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -58,6 +59,10 @@ public class TerminalCategory extends AppPrefsCategory {
             var feature = LicenseProvider.get().getFeature("logging");
             if (newValue && !feature.isSupported()) {
                 try {
+                    // Disable it again so people don't forget that they left it on
+                    Platform.runLater(() -> {
+                        prefs.enableTerminalLogging.set(false);
+                    });
                     feature.throwIfUnsupported();
                 } catch (LicenseRequiredException ex) {
                     ErrorEvent.fromThrowable(ex).handle();

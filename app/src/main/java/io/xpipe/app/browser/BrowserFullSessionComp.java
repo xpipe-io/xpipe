@@ -174,6 +174,7 @@ public class BrowserFullSessionComp extends SimpleComp {
     private StackComp createSplitStack(SimpleDoubleProperty rightSplit, BrowserSessionTabsComp tabs) {
         var cache = new HashMap<BrowserSessionTab, Region>();
         var splitStack = new StackComp(List.of());
+        splitStack.apply(struc -> struc.get().setPickOnBounds(false));
         splitStack.apply(struc -> {
             model.getEffectiveRightTab().subscribe((newValue) -> {
                 PlatformThread.runLaterIfNeeded(() -> {

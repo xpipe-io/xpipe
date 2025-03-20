@@ -638,7 +638,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                             .addFile(configuration.getScriptFile()));
         }
     };
-    ExternalTerminalType WARP = new WarpTerminalType();
     ExternalTerminalType CUSTOM = new CustomTerminalType();
     List<ExternalTerminalType> WINDOWS_TERMINALS = List.of(
             WindowsTerminalType.WINDOWS_TERMINAL_CANARY,
@@ -646,6 +645,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             WindowsTerminalType.WINDOWS_TERMINAL,
             AlacrittyTerminalType.ALACRITTY_WINDOWS,
             WezTerminalType.WEZTERM_WINDOWS,
+            WarpTerminalType.WINDOWS,
             CMD,
             PWSH,
             POWERSHELL,
@@ -677,10 +677,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             DEEPIN_TERMINAL,
             FOOT,
             Q_TERMINAL,
+            WarpTerminalType.LINUX,
             TERMIUS,
             WaveTerminalType.WAVE_LINUX);
     List<ExternalTerminalType> MACOS_TERMINALS = List.of(
-            WARP,
+            WarpTerminalType.MACOS,
             ITERM2,
             KittyTerminalType.KITTY_MACOS,
             TabbyTerminalType.TABBY_MAC_OS,

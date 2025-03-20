@@ -22,15 +22,7 @@ public class IdentityChoice {
             ObjectProperty<IdentityValue> identity,
             boolean requireUser) {
         var i = new IdentityChoice(
-                gateway,
-                identity,
-                requireUser,
-                requireUser,
-                true,
-                true,
-                true,
-                "identityChoice",
-                "passwordAuthentication");
+                gateway, identity, true, requireUser, true, true, true, "identityChoice", "passwordAuthentication");
         return i.build();
     }
 

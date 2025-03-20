@@ -84,7 +84,7 @@ public class StoreSectionComp extends StoreSectionBaseComp {
 
         var full = new VerticalComp(List.of(
                 topEntryList,
-                Comp.vseparator().hide(Bindings.not(effectiveExpanded)),
+                Comp.hseparator().hide(Bindings.not(effectiveExpanded)),
                 content));
         full.styleClass("store-entry-section-comp");
         full.apply(struc -> {
@@ -92,8 +92,7 @@ public class StoreSectionComp extends StoreSectionBaseComp {
                     var hbox = ((HBox) struc.get().getChildren().getFirst());
                     addPseudoClassListeners(struc.get(), section.getWrapper().getExpanded());
                     addVisibilityListeners(struc.get(), hbox);
-                })
-                .createStructure();
+                });
         return full.createStructure();
     }
 }

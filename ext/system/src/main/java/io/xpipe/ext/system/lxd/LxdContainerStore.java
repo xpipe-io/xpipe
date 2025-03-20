@@ -76,7 +76,11 @@ public class LxdContainerStore
             @Override
             public ShellControl control(ShellControl parent) {
                 var user = identity != null ? identity.unwrap().getUsername() : null;
-                var base = new LxdCommandView(parent).exec(containerName, user);
+                var base = new LxdCommandView(parent).exec(containerName, user, () -> {
+                    var state = getState();
+                    var alpine = state.getOsName() != null && state.getOsName().toLowerCase().contains("alpine");
+                    return alpine;
+                });
                 if (identity != null && identity.unwrap().getPassword() != null) {
                     base.setElevationHandler(new BaseElevationHandler(
                                     LxdContainerStore.this, identity.unwrap().getPassword())

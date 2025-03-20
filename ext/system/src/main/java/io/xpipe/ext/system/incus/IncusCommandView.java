@@ -1,16 +1,19 @@
 package io.xpipe.ext.system.incus;
 
 import io.xpipe.app.ext.ContainerStoreState;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.CommandViewBase;
 import io.xpipe.core.process.*;
 
+import io.xpipe.core.store.StatefulDataStore;
 import lombok.NonNull;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class IncusCommandView extends CommandViewBase {
@@ -138,16 +141,16 @@ public class IncusCommandView extends CommandViewBase {
         }
     }
 
-    public ShellControl exec(String container, String user) {
+    public ShellControl exec(String container, String user, Supplier<Boolean> busybox) {
         var sub = shellControl.subShell();
-        sub.setDumbOpen(createOpenFunction(container, user, false));
-        sub.setTerminalOpen(createOpenFunction(container, user, true));
+        sub.setDumbOpen(createOpenFunction(container, user, false, busybox));
+        sub.setTerminalOpen(createOpenFunction(container, user, true, busybox));
         return sub.withErrorFormatter(IncusCommandView::formatErrorMessage)
                 .withExceptionConverter(IncusCommandView::convertException)
                 .elevated(requiresElevation());
     }
 
-    private ShellOpenFunction createOpenFunction(String containerName, String user, boolean terminal) {
+    private ShellOpenFunction createOpenFunction(String containerName, String user, boolean terminal, Supplier<Boolean> busybox) {
         return new ShellOpenFunction() {
             @Override
             public CommandBuilder prepareWithoutInitCommand() {
@@ -164,7 +167,14 @@ public class IncusCommandView extends CommandViewBase {
                 if (user != null) {
                     b.addQuoted(user);
                 }
-                return b.add("--session-command").addLiteral(command);
+                return b.add(sc -> {
+                    var suType = busybox.get();
+                    if (suType) {
+                        return "-c";
+                    } else {
+                        return "--session-command";
+                    }
+                }).addLiteral(command);
             }
         };
     }

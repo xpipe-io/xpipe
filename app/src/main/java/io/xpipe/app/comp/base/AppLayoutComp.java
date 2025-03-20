@@ -39,7 +39,7 @@ public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
                                     return model.getSelected().getValue().equals(entry);
                                 },
                                 model.getSelected())));
-        var multi = new MultiContentComp(map);
+        var multi = new MultiContentComp(map, true);
         multi.styleClass("background");
 
         var pane = new BorderPane();

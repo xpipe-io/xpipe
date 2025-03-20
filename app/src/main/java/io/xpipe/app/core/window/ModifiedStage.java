@@ -126,10 +126,13 @@ public class ModifiedStage extends Stage {
             var transition = new PauseTransition(Duration.millis(300));
             transition.setOnFinished(e -> {
                 applyModes(stage);
-                stage.setWidth(stage.getWidth() - 1);
-                Platform.runLater(() -> {
-                    stage.setWidth(stage.getWidth() + 1);
-                });
+                // We only need to update the frame by resizing on Windows
+                if (OsType.getLocal() == OsType.WINDOWS) {
+                    stage.setWidth(stage.getWidth() - 1);
+                    Platform.runLater(() -> {
+                        stage.setWidth(stage.getWidth() + 1);
+                    });
+                }
             });
             transition.play();
         });

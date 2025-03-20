@@ -208,7 +208,7 @@ public class BrowserFileSystemTabComp extends SimpleComp {
                 home,
                 model.getCurrentPath().isNull(),
                 fileList,
-                model.getCurrentPath().isNull().not()));
+                model.getCurrentPath().isNull().not()), false);
         var r = stack.styleClass("browser-content-container").createRegion();
         r.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {

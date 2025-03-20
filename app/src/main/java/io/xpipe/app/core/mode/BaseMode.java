@@ -91,6 +91,7 @@ public class BaseMode extends OperationMode {
                     AppPrefs.setLocalDefaultsIfNeeded();
                     PlatformInit.init(true);
                     AppMainWindow.addUpdateTitleListener();
+                    TrackEvent.info("Shell initialization thread completed");
                 },
                 () -> {
                     shellLoaded.await();
@@ -112,6 +113,7 @@ public class BaseMode extends OperationMode {
                     imagesLoaded.await();
                     browserLoaded.await();
                     iconsLoaded.await();
+                    TrackEvent.info("Waiting for startup dialogs to close");
                     AppDialog.waitForAllDialogsClose();
                     PlatformThread.runLaterIfNeededBlocking(() -> {
                         try {
@@ -121,6 +123,7 @@ public class BaseMode extends OperationMode {
                         }
                     });
                     UpdateChangelogAlert.showIfNeeded();
+                    TrackEvent.info("Connection storage initialization thread completed");
                 },
                 () -> {
                     AppFileWatcher.init();
@@ -128,6 +131,7 @@ public class BaseMode extends OperationMode {
                     BlobManager.init();
                     TerminalView.init();
                     TerminalLauncherManager.init();
+                    TrackEvent.info("File/Watcher initialization thread completed");
                 },
                 () -> {
                     PlatformInit.init(true);
@@ -136,13 +140,16 @@ public class BaseMode extends OperationMode {
                     storageLoaded.await();
                     SystemIconManager.init();
                     iconsLoaded.countDown();
+                    TrackEvent.info("Platform initialization thread completed");
                 },
                 () -> {
                     BrowserIconManager.loadIfNecessary();
+                    shellLoaded.await();
                     BrowserLocalFileSystem.init();
                     storageLoaded.await();
                     BrowserFullSessionModel.init();
                     browserLoaded.countDown();
+                    TrackEvent.info("Browser initialization thread completed");
                 });
         ActionProvider.initProviders();
         DataStoreProviders.init();

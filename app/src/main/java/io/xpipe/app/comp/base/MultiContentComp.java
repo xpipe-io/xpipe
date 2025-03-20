@@ -2,6 +2,7 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.value.ObservableValue;
@@ -15,9 +16,11 @@ import java.util.Map;
 
 public class MultiContentComp extends SimpleComp {
 
+    private final boolean log;
     private final Map<Comp<?>, ObservableValue<Boolean>> content;
 
-    public MultiContentComp(Map<Comp<?>, ObservableValue<Boolean>> content) {
+    public MultiContentComp(Map<Comp<?>, ObservableValue<Boolean>> content, boolean log) {
+        this.log = log;
         this.content = FXCollections.observableMap(content);
     }
 
@@ -34,7 +37,14 @@ public class MultiContentComp extends SimpleComp {
         });
 
         for (Map.Entry<Comp<?>, ObservableValue<Boolean>> e : content.entrySet()) {
+            var name = e.getKey().getClass().getSimpleName();
+            if (log) {
+                TrackEvent.trace("Creating content tab region for element " + name);
+            }
             var r = e.getKey().createRegion();
+            if (log) {
+                TrackEvent.trace("Created content tab region for element " + name);
+            }
             e.getValue().subscribe(val -> {
                 PlatformThread.runLaterIfNeeded(() -> {
                     r.setManaged(val);
@@ -42,6 +52,9 @@ public class MultiContentComp extends SimpleComp {
                 });
             });
             m.put(e.getKey(), r);
+            if (log) {
+                TrackEvent.trace("Added content tab region for element " + name);
+            }
         }
 
         return stack;

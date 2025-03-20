@@ -8,10 +8,47 @@ import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FilePath;
 
 import java.awt.*;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class DesktopHelper {
+
+    private static final String[] browsers = {
+            "xdg-open", "google-chrome", "firefox", "opera", "konqueror", "mozilla", "gnome-open", "open"
+    };
+
+    public static void openUrl(String uri) {
+        try {
+            if (OsType.getLocal() == OsType.WINDOWS) {
+                var pb = new ProcessBuilder("rundll32", "url.dll,FileProtocolHandler", uri);
+                pb.directory(new File(System.getProperty("user.home")));
+                pb.redirectErrorStream(true);
+                pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
+                pb.start();
+            } else if (OsType.getLocal() == OsType.LINUX) {
+                String browser = null;
+                for (String b : browsers) {
+                    if (browser == null
+                            && Runtime.getRuntime()
+                            .exec(new String[] {"which", b})
+                            .getInputStream()
+                            .read()
+                            != -1) {
+                        Runtime.getRuntime().exec(new String[] {browser = b, uri});
+                    }
+                }
+            } else {
+                var pb = new ProcessBuilder("open", uri);
+                pb.directory(new File(System.getProperty("user.home")));
+                pb.redirectErrorStream(true);
+                pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
+                pb.start();
+            }
+        } catch (Exception e) {
+            ErrorEvent.fromThrowable(e).handle();
+        }
+    }
 
     public static Path getDesktopDirectory() throws Exception {
         if (OsType.getLocal() == OsType.WINDOWS) {

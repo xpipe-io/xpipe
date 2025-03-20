@@ -8,6 +8,7 @@ import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.storage.DataColor;
+import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.Observable;
@@ -59,7 +60,9 @@ public abstract class StoreSectionBaseComp extends Comp<CompStructure<VBox>> {
     }
 
     protected void addPseudoClassListeners(VBox vbox, ObservableBooleanValue expanded) {
-        effectiveExpanded(expanded).subscribe(val -> {
+        var observable = effectiveExpanded(expanded);
+        BindingsHelper.preserve(this, observable);
+        observable.subscribe(val -> {
             vbox.pseudoClassStateChanged(EXPANDED, val);
         });
 

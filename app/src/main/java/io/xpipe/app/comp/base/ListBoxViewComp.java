@@ -14,6 +14,7 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
@@ -26,6 +27,7 @@ import javafx.scene.layout.VBox;
 import lombok.Setter;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
@@ -43,12 +45,9 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
     @Setter
     private boolean visibilityControl = false;
 
-    @Setter
-    private int platformPauseInterval = -1;
-
     public ListBoxViewComp(
             ObservableList<T> shown, ObservableList<T> all, Function<T, Comp<?>> compFunction, boolean scrollBar) {
-        this.shown = shown;
+        this.shown = FXCollections.synchronizedObservableList(shown);
         this.all = all;
         this.compFunction = compFunction;
         this.scrollBar = scrollBar;
@@ -63,10 +62,24 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         vbox.setFocusTraversable(false);
         var scroll = new ScrollPane(vbox);
 
-        refresh(scroll, vbox, shown, all, cache, false, false);
+        refresh(scroll, vbox, shown, all, cache, false);
+
+        var hadScene = new AtomicBoolean(false);
+        scroll.sceneProperty().subscribe(scene -> {
+            if (scene != null) {
+                hadScene.set(true);
+                refresh(scroll, vbox, shown, all, cache, true);
+            }
+        });
 
         shown.addListener((ListChangeListener<? super T>) (c) -> {
-            refresh(scroll, vbox, c.getList(), all, cache, true, true);
+            Platform.runLater(() -> {
+                if (scroll.getScene() == null && hadScene.get()) {
+                    return;
+                }
+
+                refresh(scroll, vbox, c.getList(), all, cache, true);
+            });
         });
 
         if (scrollBar) {
@@ -154,10 +167,11 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
 
             Node c = vbox;
             do {
-                c.boundsInParentProperty().addListener((observable1, oldValue1, newValue1) -> {
+                c.boundsInParentProperty().addListener((change, oldBounds,newBounds) -> {
                     dirty.set(true);
                 });
-            } while ((c = c.getParent()) != null);
+                // Don't listen to root node changes, that seemingly can cause exceptions
+            } while ((c = c.getParent()) != null && c.getParent() != null);
 
             if (newValue != null) {
                 newValue.heightProperty().addListener((observable1, oldValue1, newValue1) -> {
@@ -230,46 +244,38 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             List<? extends T> shown,
             List<? extends T> all,
             Map<T, Region> cache,
-            boolean asynchronous,
             boolean refreshVisibilities) {
         Runnable update = () -> {
             synchronized (cache) {
                 var set = new HashSet<T>();
-                // These lists might diverge on updates
-                set.addAll(shown);
+                // These lists might diverge on updates, so add both
+                synchronized (shown) {
+                    set.addAll(shown);
+                }
                 set.addAll(all);
                 // Clear cache of unused values
                 cache.keySet().removeIf(t -> !set.contains(t));
             }
 
-            final long[] lastPause = {System.currentTimeMillis()};
-            // Create copy to reduce chances of concurrent modification
-            var shownCopy = new ArrayList<>(shown);
-            var newShown = shownCopy.stream()
-                    .map(v -> {
-                        var elapsed = System.currentTimeMillis() - lastPause[0];
-                        if (platformPauseInterval != -1 && elapsed > platformPauseInterval) {
-                            PlatformThread.runNestedLoopIteration();
-                            lastPause[0] = System.currentTimeMillis();
-                        }
-
-                        if (!cache.containsKey(v)) {
-                            var comp = compFunction.apply(v);
-                            if (comp != null) {
-                                var r = comp.createRegion();
-                                if (visibilityControl) {
-                                    r.setVisible(false);
-                                }
-                                cache.put(v, r);
-                            } else {
-                                cache.put(v, null);
+            List<Region> newShown;
+            synchronized (shown) {
+                newShown = shown.stream().map(v -> {
+                    if (!cache.containsKey(v)) {
+                        var comp = compFunction.apply(v);
+                        if (comp != null) {
+                            var r = comp.createRegion();
+                            if (visibilityControl) {
+                                r.setVisible(false);
                             }
+                            cache.put(v, r);
+                        } else {
+                            cache.put(v, null);
                         }
+                    }
 
-                        return cache.get(v);
-                    })
-                    .filter(region -> region != null)
-                    .toList();
+                    return cache.get(v);
+                }).filter(region -> region != null).toList();
+            }
 
             if (listView.getChildren().equals(newShown)) {
                 return;
@@ -289,11 +295,6 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
                 updateVisibilities(scroll, listView);
             }
         };
-
-        if (asynchronous) {
-            Platform.runLater(update);
-        } else {
-            PlatformThread.runLaterIfNeeded(update);
-        }
+        update.run();
     }
 }

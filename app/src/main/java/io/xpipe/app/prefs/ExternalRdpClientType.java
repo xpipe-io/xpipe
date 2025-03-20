@@ -107,7 +107,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
             ThreadHelper.runFailableAsync(() -> {
                 // Startup is slow
                 ThreadHelper.sleep(10000);
-                Files.delete(config);
+                FileUtils.deleteQuietly(config.toFile());
             });
         }
 
@@ -124,13 +124,12 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
             var file = writeRdpConfigFile(configuration.getTitle(), configuration.getConfig());
-            var escapedPw = configuration.getPassword().getSecretValue().replaceAll("'", "\\\\'");
-            launch(
-                    configuration.getTitle(),
-                    CommandBuilder.of()
-                            .addFile(file.toString())
-                            .add("/cert-ignore")
-                            .add("/p:'" + escapedPw + "'"));
+            var b = CommandBuilder.of().addFile(file.toString()).add("/cert-ignore");
+            if (configuration.getPassword() != null) {
+                var escapedPw = configuration.getPassword().getSecretValue().replaceAll("'", "\\\\'");
+                b.add("/p:'" + escapedPw + "'");
+            }
+            launch(configuration.getTitle(), b);
         }
 
         @Override

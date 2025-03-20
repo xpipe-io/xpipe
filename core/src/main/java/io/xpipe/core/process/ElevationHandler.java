@@ -11,9 +11,9 @@ public interface ElevationHandler {
 
             @Override
             public boolean handleRequest(
-                    ShellControl parent, UUID requestId, CountDown countDown, boolean confirmIfNeeded) {
-                var r = ElevationHandler.this.handleRequest(parent, requestId, countDown, confirmIfNeeded);
-                return r || other.handleRequest(parent, requestId, countDown, confirmIfNeeded);
+                    UUID requestId, CountDown countDown, boolean confirmIfNeeded, boolean interactive) {
+                var r = ElevationHandler.this.handleRequest(requestId, countDown, confirmIfNeeded, interactive);
+                return r || other.handleRequest(requestId, countDown, confirmIfNeeded, interactive);
             }
 
             @Override
@@ -24,7 +24,7 @@ public interface ElevationHandler {
         };
     }
 
-    boolean handleRequest(ShellControl parent, UUID requestId, CountDown countDown, boolean confirmIfNeeded);
+    boolean handleRequest(UUID requestId, CountDown countDown, boolean confirmIfNeeded, boolean interactive);
 
     SecretReference getSecretRef();
 }

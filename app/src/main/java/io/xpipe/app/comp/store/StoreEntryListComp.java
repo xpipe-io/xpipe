@@ -154,6 +154,6 @@ public class StoreEntryListComp extends SimpleComp {
         map.put(new StoreScriptsIntroComp(scriptsIntroShowing), showScriptsIntro);
         map.put(new StoreIdentitiesIntroComp(), showIdentitiesIntro);
 
-        return new MultiContentComp(map).createRegion();
+        return new MultiContentComp(map, false).createRegion();
     }
 }
