@@ -98,10 +98,10 @@ public class AppPrefs {
             mapVaultShared(new SimpleBooleanProperty(false), "dontCachePasswords", Boolean.class, false);
     public final BooleanProperty denyTempScriptCreation =
             mapVaultShared(new SimpleBooleanProperty(false), "denyTempScriptCreation", Boolean.class, false);
-    final Property<ExternalPasswordManager> passwordManager = mapVaultShared(
-            new SimpleObjectProperty<>(ExternalPasswordManager.NONE),
+    final Property<PasswordManager> passwordManager = mapLocal(
+            new SimpleObjectProperty<>(new PasswordManager.None()),
             "passwordManager",
-            ExternalPasswordManager.class,
+            PasswordManager.class,
             false);
     final StringProperty passwordManagerCommand =
             mapLocal(new SimpleStringProperty(""), "passwordManagerCommand", String.class, false);
@@ -307,7 +307,7 @@ public class AppPrefs {
         return developerMode().getValue() && !ModuleHelper.isImage();
     }
 
-    public ObservableValue<ExternalPasswordManager> externalPasswordManager() {
+    public ObservableValue<PasswordManager> externalPasswordManager() {
         return passwordManager;
     }
 

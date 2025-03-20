@@ -10,13 +10,11 @@ import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.util.BindingsHelper;
-import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.util.*;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.MenuButton;
@@ -33,62 +31,36 @@ import java.util.List;
 
 public class PasswordManagerCategory extends AppPrefsCategory {
 
-    @Value
-    private static class Choice {
-
-        public static Choice ofOther(ExternalPasswordManager externalPasswordManager) {
-            return new Choice(
-                    externalPasswordManager.getId(),
-                    null,
-                    externalPasswordManager.getDocsLink(),
-                    externalPasswordManager);
-        }
-
-        String id;
-        String template;
-        String docsLink;
-        ExternalPasswordManager passwordManager;
-    }
-
     @Override
     protected String getId() {
         return "passwordManager";
     }
 
-    @Override
-    protected Comp<?> create() {
-        var choices = new ArrayList<Choice>();
-        choices.add(Choice.ofOther(ExternalPasswordManager.NONE));
-        ExternalPasswordManagerTemplate.ALL.forEach(externalPasswordManagerTemplate -> {
-            choices.add(new Choice(
-                    externalPasswordManagerTemplate.getId(),
-                    externalPasswordManagerTemplate.getTemplate(),
-                    externalPasswordManagerTemplate.getDocsLink(),
-                    ExternalPasswordManager.COMMAND));
-        });
-        choices.add(Choice.ofOther(ExternalPasswordManager.WINDOWS_CREDENTIAL_MANAGER));
-
+    private void testPasswordManager(String key, StringProperty testPasswordManagerResult) {
         var prefs = AppPrefs.get();
-        var testPasswordManagerValue = new SimpleStringProperty();
-        var testPasswordManagerResult = new SimpleStringProperty();
-        Runnable test = () -> {
-            ThreadHelper.runFailableAsync(() -> {
-                if (prefs.passwordManager.getValue() == null) {
-                    return;
-                }
+        ThreadHelper.runFailableAsync(() -> {
+            if (prefs.passwordManager.getValue() == null) {
+                return;
+            }
 
-                var r = prefs.passwordManager.getValue().retrievePassword(testPasswordManagerValue.get());
-                Platform.runLater(() -> {
-                    testPasswordManagerResult.set(r);
-                    ThreadHelper.runAsync(() -> {
-                        ThreadHelper.sleep(5000);
-                        Platform.runLater(() -> {
-                            testPasswordManagerResult.set(null);
-                        });
+            var r = prefs.passwordManager.getValue().retrievePassword(key);
+            Platform.runLater(() -> {
+                testPasswordManagerResult.set(r);
+                ThreadHelper.runAsync(() -> {
+                    ThreadHelper.sleep(5000);
+                    Platform.runLater(() -> {
+                        testPasswordManagerResult.set(null);
                     });
                 });
             });
-        };
+        });
+    }
+
+    @Override
+    protected Comp<?> create() {
+        var prefs = AppPrefs.get();
+        var testPasswordManagerValue = new SimpleStringProperty();
+        var testPasswordManagerResult = new SimpleStringProperty();
 
         var docsLinkProperty = new SimpleStringProperty();
         var docsLinkButton =
@@ -114,27 +86,7 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                 .hide(prefs.passwordManagerCommand.isNull())
                 .minWidth(350)
                 .minHeight(120);
-        var templates = Comp.of(() -> {
-            var cb = new MenuButton();
-            AppFontSizes.base(cb);
-            cb.textProperty().bind(BindingsHelper.flatMap(prefs.passwordManager, externalPasswordManager -> {
-                return externalPasswordManager != null
-                        ? AppI18n.observable(externalPasswordManager.getId())
-                        : AppI18n.observable("selectType");
-            }));
-            choices.forEach(e -> {
-                var m = new MenuItem();
-                m.textProperty().bind(AppI18n.observable(e.getId()));
-                m.setOnAction(event -> {
-                    AppPrefs.get().passwordManagerCommand.set(e.getTemplate());
-                    AppPrefs.get().passwordManager.setValue(e.getPasswordManager());
-                    docsLinkProperty.set(e.getDocsLink());
-                    event.consume();
-                });
-                cb.getItems().add(m);
-            });
-            return cb;
-        });
+        var templates = OptionsChoiceBuilder.comp(prefs.passwordManager, PasswordManager.getClasses()).buildComp().prefWidth(500);
         var top = new HorizontalComp(List.of(templates, docsLinkButton))
                 .spacing(10)
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
@@ -150,11 +102,13 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                         .prefWidth(400)
                         .apply(struc -> struc.get().setOnKeyPressed(event -> {
                             if (event.getCode() == KeyCode.ENTER) {
-                                test.run();
+                                testPasswordManager(testPasswordManagerValue.get(), testPasswordManagerResult);
                                 event.consume();
                             }
                         })),
-                new ButtonComp(null, new FontIcon("mdi2p-play"), test).styleClass(Styles.RIGHT_PILL)));
+                new ButtonComp(null, new FontIcon("mdi2p-play"), () -> {
+                    testPasswordManager(testPasswordManagerValue.get(), testPasswordManagerResult);
+                }).styleClass(Styles.RIGHT_PILL)));
         testInput.apply(struc -> {
             struc.get().setFillHeight(true);
             var first = ((Region) struc.get().getChildren().get(0));
