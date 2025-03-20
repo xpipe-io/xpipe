@@ -274,6 +274,25 @@ public class PlatformThread {
         return true;
     }
 
+    public static void enterNestedEventLoop(Object key) {
+        try {
+            Platform.enterNestedEventLoop(key);
+        } catch (IllegalStateException ex) {
+            // We might be in an animation or layout call
+            ErrorEvent.fromThrowable(ex).omit().expected().handle();
+        }
+    }
+
+    public static void exitNestedEventLoop(Object key) {
+        try {
+            Platform.exitNestedEventLoop(key, null);
+        } catch (IllegalArgumentException ex) {
+            // The event loop might have died somehow
+            // Or we passed an invalid key
+            ErrorEvent.fromThrowable(ex).omit().expected().handle();
+        }
+    }
+
     public static void runNestedLoopIteration() {
         if (!Platform.canStartNestedEventLoop()) {
             return;
@@ -281,9 +300,9 @@ public class PlatformThread {
 
         var key = new Object();
         Platform.runLater(() -> {
-            Platform.exitNestedEventLoop(key, null);
+            exitNestedEventLoop(key);
         });
-        Platform.enterNestedEventLoop(key);
+        enterNestedEventLoop(key);
     }
 
     public static void runLaterIfNeeded(Runnable r) {
