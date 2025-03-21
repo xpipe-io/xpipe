@@ -18,8 +18,9 @@ public class KeePassClient {
 
     @SneakyThrows
     public static String receive(String key) {
+        var fixedKey = key.startsWith("http://") || key.startsWith("https://") ? key : "https://" + key;
         var client = getOrCreate();
-        var response = client.getLoginsMessage("https://redirect.pizza");
+        var response = client.getLoginsMessage(fixedKey);
         var password = client.getPassword(response);
         return password;
     }
