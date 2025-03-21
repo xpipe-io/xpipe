@@ -117,6 +117,8 @@ public class AppPrefs {
             mapLocal(new SimpleObjectProperty<>(), "externalEditor", ExternalEditorType.class, false);
     final StringProperty customEditorCommand =
             mapLocal(new SimpleStringProperty(""), "customEditorCommand", String.class, false);
+    final BooleanProperty customEditorCommandInTerminal =
+            mapLocal(new SimpleBooleanProperty(false), "customEditorCommandInTerminal", Boolean.class, false);
     final BooleanProperty automaticallyCheckForUpdates =
             mapLocal(new SimpleBooleanProperty(true), "automaticallyCheckForUpdates", Boolean.class, false);
     final BooleanProperty encryptAllVaultData =
@@ -403,6 +405,10 @@ public class AppPrefs {
 
     public ObservableValue<String> customEditorCommand() {
         return customEditorCommand;
+    }
+
+    public ObservableBooleanValue customEditorCommandInTerminal() {
+        return customEditorCommandInTerminal;
     }
 
     public final ReadOnlyIntegerProperty editorReloadTimeout() {
