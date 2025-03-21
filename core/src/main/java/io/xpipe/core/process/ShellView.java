@@ -76,11 +76,11 @@ public class ShellView {
         return isRoot;
     }
 
-    public Optional<String> findProgram(String name) throws Exception {
+    public Optional<FilePath> findProgram(String name) throws Exception {
         var out = shellControl
                 .command(shellControl.getShellDialect().getWhichCommand(name))
                 .readStdoutIfPossible();
-        return out.flatMap(s -> s.lines().findFirst()).map(String::trim);
+        return out.flatMap(s -> s.lines().findFirst()).map(String::trim).map(s -> FilePath.of(s));
     }
 
     public boolean isInPath(String executable) throws Exception {
