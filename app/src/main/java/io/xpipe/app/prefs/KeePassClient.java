@@ -19,8 +19,9 @@ public class KeePassClient {
     @SneakyThrows
     public static String receive(String key) {
         var client = getOrCreate();
-        client.getDatabaseGroups();
-        return client.getLogins("abc");
+        var response = client.getLoginsMessage("https://redirect.pizza");
+        var password = client.getPassword(response);
+        return password;
     }
 
     public static void reset() {
