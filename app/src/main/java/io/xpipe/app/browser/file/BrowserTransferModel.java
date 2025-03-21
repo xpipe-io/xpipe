@@ -50,8 +50,9 @@ public class BrowserTransferModel {
                 }
                 if (toDownload.isPresent()) {
                     downloadSingle(toDownload.get());
+                } else {
+                    ThreadHelper.sleep(20);
                 }
-                ThreadHelper.sleep(20);
             }
         });
         thread.start();
