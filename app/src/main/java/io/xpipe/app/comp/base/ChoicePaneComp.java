@@ -16,18 +16,24 @@ import javafx.util.StringConverter;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 import java.util.function.Function;
 
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-@AllArgsConstructor
 public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
 
-    List<Entry> entries;
-    Property<Entry> selected;
-    Function<ComboBox<Entry>, Region> transformer = c -> c;
+    private final List<Entry> entries;
+    private final Property<Entry> selected;
+
+    @Setter
+    private Function<ComboBox<Entry>, Region> transformer = c -> c;
+
+    public ChoicePaneComp(List<Entry> entries, Property<Entry> selected) {
+        this.entries = entries;
+        this.selected = selected;
+    }
 
     @Override
     public CompStructure<VBox> createBase() {

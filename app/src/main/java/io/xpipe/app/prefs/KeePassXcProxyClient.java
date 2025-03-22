@@ -28,25 +28,23 @@ import java.util.regex.Pattern;
  *
  * Native messaging uses length-prefixed JSON messages over stdin/stdout.
  */
-public class KeePassNativeClient {
+public class KeePassXcProxyClient {
 
     // Default timeouts for different operations (milliseconds)
     private static final long TIMEOUT_ASSOCIATE = 30000;      // Associate needs user interaction
     private static final long TIMEOUT_GET_LOGINS = 5000;      // Getting logins is usually fast
     private static final long TIMEOUT_TEST_ASSOCIATE = 2000;  // Testing association is quick
-    private static final long TIMEOUT_GET_DATABASE_GROUPS = 3000; // Getting database groups
 
     private final Path proxyExecutable;
     private Process process;
     private String clientId;
     private TweetNaClHelper.KeyPair keyPair;
     private byte[] serverPublicKey;
-    private boolean connected = false;
     @Getter
-    private KeePassAssociationKey associationKey;
+    private KeePassXcAssociationKey associationKey;
 
 
-    public KeePassNativeClient(Path proxyExecutable) {this.proxyExecutable = proxyExecutable;}
+    public KeePassXcProxyClient(Path proxyExecutable) {this.proxyExecutable = proxyExecutable;}
 
 
     /**
@@ -69,7 +67,7 @@ public class KeePassNativeClient {
         return null;
     }
 
-    public void useExistingAssociationKey(KeePassAssociationKey key) {
+    public void useExistingAssociationKey(KeePassXcAssociationKey key) {
         this.associationKey = key;
     }
 
@@ -89,8 +87,6 @@ public class KeePassNativeClient {
 
         var pb = new ProcessBuilder(List.of(proxyExecutable.toString()));
         this.process = pb.start();
-
-        connected = true;
     }
     
     /**
@@ -345,26 +341,6 @@ public class KeePassNativeClient {
     }
 
     /**
-     * Extracts the requestId from a JSON message.
-     *
-     * @param message The JSON message
-     * @return The requestId, or null if not found
-     */
-    private String extractRequestId(String message) {
-        try {
-            Pattern pattern = Pattern.compile("\"requestId\":\"([^\"]+)\"");
-            Matcher matcher = pattern.matcher(message);
-
-            if (matcher.find()) {
-                return matcher.group(1);
-            }
-        } catch (Exception e) {
-            System.err.println("Error extracting requestId: " + e.getMessage());
-        }
-        return null;
-    }
-
-    /**
      * Sends a message to KeePassXC using the native messaging protocol.
      * The message is prefixed with a 32-bit length (little-endian).
      *
@@ -514,7 +490,7 @@ public class KeePassNativeClient {
                 String id = (String) parsedResponse.get("id");
                 String hash = (String) parsedResponse.get("hash");
 
-                associationKey = new KeePassAssociationKey(id, TweetNaClHelper.encodeBase64(idKeyPair.getPublicKey()), hash);
+                associationKey = new KeePassXcAssociationKey(id, TweetNaClHelper.encodeBase64(idKeyPair.getPublicKey()), hash);
 
                 return;
             }

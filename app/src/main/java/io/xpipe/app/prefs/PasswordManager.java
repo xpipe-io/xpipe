@@ -3,18 +3,13 @@ package io.xpipe.app.prefs;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.ext.PrefsChoiceValue;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.ValidationException;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import lombok.Builder;
 import lombok.Value;
-import lombok.extern.jackson.Jacksonized;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,13 +17,15 @@ import java.util.List;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = PasswordManager.None.class),
-    @JsonSubTypes.Type(value = PasswordManager.WindowsCredentialManager.class)
+    @JsonSubTypes.Type(value = PasswordManager.WindowsCredentialManager.class),
+    @JsonSubTypes.Type(value = KeePassXcManager.class)
 })
 public interface PasswordManager {
 
     static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();
         l.add(PasswordManager.None.class);
+        l.add(KeePassXcManager.class);
         if (OsType.getLocal() == OsType.WINDOWS) {
             l.add(PasswordManager.WindowsCredentialManager.class);
         }

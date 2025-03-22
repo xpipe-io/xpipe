@@ -7,7 +7,7 @@ import lombok.extern.jackson.Jacksonized;
 @Value
 @Jacksonized
 @Builder
-public class KeePassAssociationKey {
+public class KeePassXcAssociationKey {
     String id;
     String key;
     String hash;

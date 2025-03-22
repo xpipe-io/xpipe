@@ -7,26 +7,24 @@ import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.comp.base.VerticalComp;
-import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.util.*;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.theme.Styles;
-import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PasswordManagerCategory extends AppPrefsCategory {
@@ -62,16 +60,6 @@ public class PasswordManagerCategory extends AppPrefsCategory {
         var testPasswordManagerValue = new SimpleStringProperty();
         var testPasswordManagerResult = new SimpleStringProperty();
 
-        var docsLinkProperty = new SimpleStringProperty();
-        var docsLinkButton =
-                new ButtonComp(AppI18n.observable("docs"), new FontIcon("mdi2h-help-circle-outline"), () -> {
-                    var l = docsLinkProperty.get();
-                    if (l != null) {
-                        Hyperlinks.open(l);
-                    }
-                });
-        docsLinkButton.disable(docsLinkProperty.isNull());
-
         var command = new IntegratedTextAreaComp(
                         prefs.passwordManagerCommand,
                         false,
@@ -86,10 +74,29 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                 .hide(prefs.passwordManagerCommand.isNull())
                 .minWidth(350)
                 .minHeight(120);
-        var templates = OptionsChoiceBuilder.comp(prefs.passwordManager, PasswordManager.getClasses()).buildComp().prefWidth(500);
-        var top = new HorizontalComp(List.of(templates, docsLinkButton))
-                .spacing(10)
-                .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
+        var choiceBuilder = OptionsChoiceBuilder.builder()
+                .property(prefs.passwordManager)
+                .subclasses(PasswordManager.getClasses())
+                .transformer(entryComboBox -> {
+                    var docsLinkButton =
+                            new ButtonComp(AppI18n.observable("docs"), new FontIcon("mdi2h-help-circle-outline"), () -> {
+                                var l = prefs.passwordManager.getValue().getDocsLink();
+                                if (l != null) {
+                                    Hyperlinks.open(l);
+                                }
+                            });
+                    docsLinkButton.minWidth(Region.USE_PREF_SIZE);
+                    docsLinkButton.disable(Bindings.createBooleanBinding(() -> {
+                        return prefs.passwordManager.getValue().getDocsLink() == null;
+                    }, prefs.passwordManager));
+
+                    var hbox = new HBox(entryComboBox, docsLinkButton.createRegion());
+                    HBox.setHgrow(entryComboBox, Priority.ALWAYS);
+                    hbox.setSpacing(10);
+                    return hbox;
+        }).build();
+
+        var top = choiceBuilder.build().buildComp().maxWidth(500);
         var choice = new VerticalComp(List.of(top, command)).apply(struc -> {
             struc.get().setAlignment(Pos.CENTER_LEFT);
             struc.get().setSpacing(10);

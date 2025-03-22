@@ -1,19 +1,22 @@
 package io.xpipe.app.util;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.comp.base.ChoicePaneComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.prefs.PasswordManager;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
-import lombok.SneakyThrows;
+import javafx.scene.control.ComboBox;
+import javafx.scene.layout.Region;
+import lombok.Builder;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.function.Function;
 
+@Builder
 public class OptionsChoiceBuilder {
 
     private static String createIdForClass(Class<?> c) {
@@ -30,14 +33,20 @@ public class OptionsChoiceBuilder {
             var method = c.getDeclaredMethod("createOptions", Property.class);
             method.setAccessible(true);
             var r = method.invoke(null, property);
-            return (OptionsBuilder) r;
+            return r != null ? (OptionsBuilder) r : new OptionsBuilder();
         } catch (Exception e) {
             return new OptionsBuilder();
         }
     }
 
+    private final Property<?> property;
+    private final List<Class<?>> subclasses;
+    private final Function<ComboBox<ChoicePaneComp.Entry>, Region> transformer;
+
     @SuppressWarnings("unchecked")
-    public static <T> OptionsBuilder comp(Property<T> s, List<Class<?>> sub) {
+    public <T> OptionsBuilder build() {
+        Property<T> s = (Property<T>) property;
+        var sub = subclasses;
         var selectedIndex = s.getValue() == null ? -1 : sub.stream().filter(c -> c.equals(s.getValue().getClass()))
                 .findFirst().map(c -> sub.indexOf(c))
                 .orElse(0);
@@ -54,7 +63,7 @@ public class OptionsChoiceBuilder {
         }
 
         return new OptionsBuilder()
-                .choice(selected, map)
+                .choice(selected, map, transformer)
                 .bindChoice(
                         () -> {
                             if (selected.get() == -1) {

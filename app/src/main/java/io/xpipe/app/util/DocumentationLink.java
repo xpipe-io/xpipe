@@ -15,6 +15,7 @@ public enum DocumentationLink {
     WEBTOP_UPDATE("guide/webtop#updating"),
     SYNC("guide/sync"),
     SCRIPTING("guide/scripting"),
+    KEEPASSXC("guide/keepassxc"),
     SSH("guide/ssh");
 
 

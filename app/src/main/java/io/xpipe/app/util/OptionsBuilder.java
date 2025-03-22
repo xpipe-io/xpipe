@@ -10,6 +10,7 @@ import io.xpipe.core.util.InPlaceSecretValue;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
+import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.controls.Spacer;
@@ -53,7 +54,12 @@ public class OptionsBuilder {
         return new ChainedValidator(allValidators);
     }
 
+
     public OptionsBuilder choice(IntegerProperty selectedIndex, Map<ObservableValue<String>, OptionsBuilder> options) {
+        return choice(selectedIndex, options, null);
+    }
+
+    public OptionsBuilder choice(IntegerProperty selectedIndex, Map<ObservableValue<String>, OptionsBuilder> options, Function<ComboBox<ChoicePaneComp.Entry>, Region> transformer) {
         var list = options.entrySet().stream()
                 .map(e -> new ChoicePaneComp.Entry(
                         e.getKey(), e.getValue() != null ? e.getValue().buildComp() : Comp.empty()))
@@ -67,6 +73,9 @@ public class OptionsBuilder {
             selectedIndex.setValue(newValue != null ? list.indexOf(newValue) : null);
         });
         var pane = new ChoicePaneComp(list, selected);
+        if (transformer != null) {
+            pane.setTransformer(transformer);
+        }
 
         var validatorMap = new LinkedHashMap<ChoicePaneComp.Entry, Validator>();
         for (int i = 0; i < list.size(); i++) {
@@ -281,6 +290,15 @@ public class OptionsBuilder {
                         Boolean.TRUE, AppI18n.observable("app.yes"), Boolean.FALSE, AppI18n.observable("app.no"))));
         pushComp(comp);
         props.add(prop);
+        return this;
+    }
+
+    public OptionsBuilder addStaticString(ObservableValue<String> s) {
+        var prop = new SimpleStringProperty();
+        s.subscribe(prop::set);
+        var comp = new TextFieldComp(prop, false);
+        comp.apply(struc -> struc.get().setDisable(true));
+        pushComp(comp);
         return this;
     }
 
