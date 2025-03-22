@@ -26,7 +26,7 @@ public class BrowserHistorySavedStateImpl implements BrowserHistorySavedState {
     ObservableList<Entry> lastSystems;
 
     public BrowserHistorySavedStateImpl(List<Entry> lastSystems) {
-        this.lastSystems = FXCollections.observableArrayList(lastSystems);
+        this.lastSystems = FXCollections.synchronizedObservableList(FXCollections.observableArrayList(lastSystems));
     }
 
     private static BrowserHistorySavedStateImpl INSTANCE;

@@ -135,7 +135,7 @@ public class StoreSection {
                 category,
                 filterString,
                 updateObservable);
-        return new StoreSection(null, ordered.createSynchronized(), shown.createSynchronized(), 0);
+        return new StoreSection(null, ordered, shown, 0);
     }
 
     private static StoreSection create(
@@ -212,7 +212,7 @@ public class StoreSection {
                 e.getPersistentState(),
                 e.getCache(),
                 updateObservable);
-        return new StoreSection(e, cached.createSynchronized(), filtered.createSynchronized(), depth);
+        return new StoreSection(e, cached, filtered, depth);
     }
 
     private static boolean showInCategory(StoreCategoryWrapper categoryWrapper, StoreEntryWrapper entryWrapper) {

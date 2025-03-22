@@ -70,7 +70,6 @@ public class BrowserOverviewComp extends SimpleComp {
 
         var recent = new DerivedObservableList<>(model.getSavedState().getRecentDirectories(), true)
                 .mapped(s -> FileEntry.ofDirectory(model.getFileSystem(), s.getDirectory()))
-                .createSynchronized()
                 .getList();
         var recentOverview = new BrowserFileOverviewComp(model, recent, true);
         var recentPane = new SimpleTitledPaneComp(AppI18n.observable("recent"), recentOverview, false);

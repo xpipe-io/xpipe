@@ -163,7 +163,6 @@ public class StoreCategoryComp extends SimpleComp {
         });
 
         var l = category.getChildren()
-                .createSynchronized()
                 .getList()
                 .sorted(Comparator.comparing(storeCategoryWrapper ->
                         storeCategoryWrapper.nameProperty().getValue().toLowerCase(Locale.ROOT)));

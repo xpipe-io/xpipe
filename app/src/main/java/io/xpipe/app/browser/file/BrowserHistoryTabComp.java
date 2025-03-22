@@ -53,7 +53,6 @@ public class BrowserHistoryTabComp extends SimpleComp {
 
                     return true;
                 })
-                .createSynchronized()
                 .getList();
         var empty = Bindings.createBooleanBinding(() -> list.isEmpty(), list);
         var contentDisplay = createListDisplay(list);
