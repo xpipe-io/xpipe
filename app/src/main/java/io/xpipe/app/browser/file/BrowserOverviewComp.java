@@ -38,7 +38,7 @@ public class BrowserOverviewComp extends SimpleComp {
 
         ShellControl sc = model.getFileSystem().getShell().orElseThrow();
 
-        var commonPlatform = FXCollections.<FileEntry>observableArrayList();
+        var commonPlatform = FXCollections.<FileEntry>synchronizedObservableList(FXCollections.observableArrayList());
         ThreadHelper.runFailableAsync(() -> {
             var common = sc.getOsType().determineInterestingPaths(sc).stream()
                     .map(s -> FileEntry.ofDirectory(model.getFileSystem(), s))

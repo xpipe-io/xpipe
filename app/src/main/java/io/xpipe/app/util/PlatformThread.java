@@ -274,6 +274,10 @@ public class PlatformThread {
     }
 
     public static void enterNestedEventLoop(Object key) {
+        if (!Platform.canStartNestedEventLoop()) {
+            return;
+        }
+
         try {
             Platform.enterNestedEventLoop(key);
         } catch (IllegalStateException ex) {

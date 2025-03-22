@@ -1,6 +1,8 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
@@ -132,47 +134,46 @@ public class DesktopHelper {
             return;
         }
 
-        if (!Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
-            return;
-        }
-
         if (!Files.exists(file)) {
             return;
         }
 
         ThreadHelper.runAsync(() -> {
-            try {
-                Desktop.getDesktop().open(file.toFile());
-            } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).expected().handle();
+            var xdg = OsType.getLocal() == OsType.LINUX;
+            if (Desktop.getDesktop().isSupported(Desktop.Action.OPEN) && AppDistributionType.get() != AppDistributionType.WEBTOP) {
+                try {
+                    Desktop.getDesktop().open(file.toFile());
+                    return;
+                } catch (Exception e) {
+                    ErrorEvent.fromThrowable(e).expected().omitted(xdg).handle();
+                }
+            }
+
+            if (xdg) {
+                LocalExec.readStdoutIfPossible("xdg-open", file.toString());
             }
         });
     }
 
     public static void browseFileInDirectory(Path file) {
         if (!Desktop.getDesktop().isSupported(Desktop.Action.BROWSE_FILE_DIR)) {
-            if (!Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
-                ErrorEvent.fromMessage("Desktop integration unable to open file " + file)
-                        .expected()
-                        .handle();
-                return;
-            }
-
-            ThreadHelper.runAsync(() -> {
-                try {
-                    Desktop.getDesktop().open(file.getParent().toFile());
-                } catch (Exception e) {
-                    ErrorEvent.fromThrowable(e).expected().handle();
-                }
-            });
+            browsePathLocal(file.getParent());
             return;
         }
 
         ThreadHelper.runAsync(() -> {
-            try {
-                Desktop.getDesktop().browseFileDirectory(file.toFile());
-            } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).expected().handle();
+            var xdg = OsType.getLocal() == OsType.LINUX;
+            if (AppDistributionType.get() != AppDistributionType.WEBTOP) {
+                try {
+                    Desktop.getDesktop().browseFileDirectory(file.toFile());
+                    return;
+                } catch (Exception e) {
+                    ErrorEvent.fromThrowable(e).expected().omitted(xdg).handle();
+                }
+            }
+
+            if (xdg) {
+                LocalExec.readStdoutIfPossible("xdg-open", file.getParent().toString());
             }
         });
     }

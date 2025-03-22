@@ -2,6 +2,7 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.process.CommandBuilder;
@@ -171,10 +172,13 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                 throw ErrorEvent.expected(new IllegalStateException("No custom editor command specified"));
             }
 
-            var format =
-                    customCommand.toLowerCase(Locale.ROOT).contains("$file") ? customCommand : customCommand + " $FILE";
-            ExternalApplicationHelper.startAsync(CommandBuilder.of()
-                    .add(ExternalApplicationHelper.replaceFileArgument(format, "FILE", file.toString())));
+            var format = customCommand.toLowerCase(Locale.ROOT).contains("$file") ? customCommand : customCommand + " $FILE";
+            var command = CommandBuilder.of().add(ExternalApplicationHelper.replaceFileArgument(format, "FILE", file.toString()));
+            if (AppPrefs.get().customEditorCommandInTerminal().get()) {
+                TerminalLauncher.openDirect(file.toString(), sc -> command.buildFull(sc), AppPrefs.get().terminalType.get());
+            } else {
+                ExternalApplicationHelper.startAsync(command);
+            }
         }
 
         @Override

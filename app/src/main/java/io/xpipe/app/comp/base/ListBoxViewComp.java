@@ -47,7 +47,7 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
 
     public ListBoxViewComp(
             ObservableList<T> shown, ObservableList<T> all, Function<T, Comp<?>> compFunction, boolean scrollBar) {
-        this.shown = FXCollections.synchronizedObservableList(shown);
+        this.shown = shown;
         this.all = all;
         this.compFunction = compFunction;
         this.scrollBar = scrollBar;
@@ -257,30 +257,34 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
                 synchronized (shown) {
                     set.addAll(shown);
                 }
-                set.addAll(all);
+                synchronized (all) {
+                    set.addAll(all);
+                }
                 // Clear cache of unused values
                 cache.keySet().removeIf(t -> !set.contains(t));
             }
 
-            List<Region> newShown;
+            // Use copy to prevent concurrent modifications and to not synchronize to long
+            List<T> shownCopy;
             synchronized (shown) {
-                newShown = shown.stream().map(v -> {
-                    if (!cache.containsKey(v)) {
-                        var comp = compFunction.apply(v);
-                        if (comp != null) {
-                            var r = comp.createRegion();
-                            if (visibilityControl) {
-                                r.setVisible(false);
-                            }
-                            cache.put(v, r);
-                        } else {
-                            cache.put(v, null);
-                        }
-                    }
-
-                    return cache.get(v);
-                }).filter(region -> region != null).toList();
+                shownCopy = new ArrayList<>(shown);
             }
+            List<Region> newShown = shownCopy.stream().map(v -> {
+                if (!cache.containsKey(v)) {
+                    var comp = compFunction.apply(v);
+                    if (comp != null) {
+                        var r = comp.createRegion();
+                        if (visibilityControl) {
+                            r.setVisible(false);
+                        }
+                        cache.put(v, r);
+                    } else {
+                        cache.put(v, null);
+                    }
+                }
+
+                return cache.get(v);
+            }).filter(region -> region != null).toList();
 
             if (listView.getChildren().equals(newShown)) {
                 return;

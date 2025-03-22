@@ -11,6 +11,7 @@ import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
 
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -118,9 +119,15 @@ public class StoreIconChoiceComp extends SimpleComp {
         }
         var data = partitionList(filtered, columns);
         table.getItems().setAll(data);
+        if (filtered.size() == 1) {
+            table.getSelectionModel().select(0, table.getColumns().getFirst());
+            selected.setValue(filtered.getFirst());
+        } else {
+            selected.setValue(null);
+        }
     }
 
-    private <T> Collection<List<T>> partitionList(List<T> list, int size) {
+    private <T> List<List<T>> partitionList(List<T> list, int size) {
         List<List<T>> partitions = new ArrayList<>();
         if (list.size() == 0) {
             return partitions;

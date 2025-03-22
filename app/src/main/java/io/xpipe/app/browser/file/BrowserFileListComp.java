@@ -154,8 +154,8 @@ public final class BrowserFileListComp extends SimpleComp {
         var os = fileList.getFileSystemModel()
                 .getFileSystem()
                 .getShell()
-                .orElseThrow()
-                .getOsType();
+                .map(shellControl -> shellControl.getOsType())
+                .orElse(null);
         table.widthProperty().subscribe((newValue) -> {
             if (os != OsType.WINDOWS && os != OsType.MACOS) {
                 ownerCol.setVisible(newValue.doubleValue() > 1000);
