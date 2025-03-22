@@ -24,6 +24,9 @@ public class BrowserAbstractSessionModel<T extends BrowserSessionTab> {
 
     public void closeAsync(BrowserSessionTab e) {
         ThreadHelper.runAsync(() -> {
+            // This is a bit ugly
+            // If we die on tab init, wait a bit with closing to avoid removal while it is still being inited/added
+            ThreadHelper.sleep(100);
             closeSync(e);
         });
     }
