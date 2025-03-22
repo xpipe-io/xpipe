@@ -274,18 +274,16 @@ public class PlatformThread {
         return true;
     }
 
-    public static boolean enterNestedEventLoop(Object key) {
+    public static void enterNestedEventLoop(Object key) {
         if (!Platform.canStartNestedEventLoop()) {
-            return false;
+            return;
         }
 
         try {
             Platform.enterNestedEventLoop(key);
-            return true;
         } catch (IllegalStateException ex) {
             // We might be in an animation or layout call
             ErrorEvent.fromThrowable(ex).omit().expected().handle();
-            return false;
         }
     }
 

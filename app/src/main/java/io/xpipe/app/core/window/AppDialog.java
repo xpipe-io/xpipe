@@ -94,7 +94,8 @@ public class AppDialog {
                     });
                 }
             });
-            if (wait && PlatformThread.enterNestedEventLoop(key)) {
+            if (wait) {
+                PlatformThread.enterNestedEventLoop(key);
                 waitForDialogClose(o);
             }
         }
