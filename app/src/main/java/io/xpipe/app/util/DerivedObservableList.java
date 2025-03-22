@@ -32,6 +32,11 @@ public class DerivedObservableList<T> {
         return new DerivedObservableList<>(l, unique);
     }
 
+    public DerivedObservableList<T> createSynchronized() {
+        var l = FXCollections.synchronizedObservableList(list);
+        return new DerivedObservableList<>(l, unique);
+    }
+
     public void setContent(List<? extends T> newList) {
         if (list.equals(newList)) {
             return;

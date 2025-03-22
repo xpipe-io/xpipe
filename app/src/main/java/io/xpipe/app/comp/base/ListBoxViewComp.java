@@ -47,7 +47,7 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
 
     public ListBoxViewComp(
             ObservableList<T> shown, ObservableList<T> all, Function<T, Comp<?>> compFunction, boolean scrollBar) {
-        this.shown = FXCollections.synchronizedObservableList(shown);
+        this.shown = shown;
         this.all = all;
         this.compFunction = compFunction;
         this.scrollBar = scrollBar;
@@ -257,7 +257,9 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
                 synchronized (shown) {
                     set.addAll(shown);
                 }
-                set.addAll(all);
+                synchronized (all) {
+                    set.addAll(all);
+                }
                 // Clear cache of unused values
                 cache.keySet().removeIf(t -> !set.contains(t));
             }

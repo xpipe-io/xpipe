@@ -38,7 +38,7 @@ public class BrowserOverviewComp extends SimpleComp {
 
         ShellControl sc = model.getFileSystem().getShell().orElseThrow();
 
-        var commonPlatform = FXCollections.<FileEntry>observableArrayList();
+        var commonPlatform = FXCollections.<FileEntry>synchronizedObservableList(FXCollections.observableArrayList());
         ThreadHelper.runFailableAsync(() -> {
             var common = sc.getOsType().determineInterestingPaths(sc).stream()
                     .filter(s -> !s.isBlank())
@@ -70,6 +70,7 @@ public class BrowserOverviewComp extends SimpleComp {
 
         var recent = new DerivedObservableList<>(model.getSavedState().getRecentDirectories(), true)
                 .mapped(s -> FileEntry.ofDirectory(model.getFileSystem(), s.getDirectory()))
+                .createSynchronized()
                 .getList();
         var recentOverview = new BrowserFileOverviewComp(model, recent, true);
         var recentPane = new SimpleTitledPaneComp(AppI18n.observable("recent"), recentOverview, false);
