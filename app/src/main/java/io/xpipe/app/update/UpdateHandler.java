@@ -107,8 +107,11 @@ public abstract class UpdateHandler {
                     event("Starting background updater thread");
                     var run = !AppProperties.get().isRestarted();
                     while (true) {
-                        if (run && (AppPrefs.get().automaticallyUpdate().get()
-                                || AppPrefs.get().checkForSecurityUpdates().get())) {
+                        if (run
+                                && (AppPrefs.get().automaticallyUpdate().get()
+                                        || AppPrefs.get()
+                                                .checkForSecurityUpdates()
+                                                .get())) {
                             event("Performing background update");
                             refreshUpdateCheckSilent(
                                     !checked,
@@ -186,23 +189,23 @@ public abstract class UpdateHandler {
             if (AppProperties.get().isStaging() && preparedUpdate.getValue() != null && !OperationMode.isInStartup()) {
                 UpdateAvailableDialog.showIfNeeded();
             }
+        } catch (Throwable t) {
+            ErrorEvent.fromThrowable(t).handle();
         }
     }
 
     public abstract List<ModalButton> createActions();
 
-    public void prepareUpdateImpl() {
+    public void prepareUpdateImpl() throws Exception {
         var changelogString =
-                AppDownloads.downloadChangelog(lastUpdateCheckResult.getValue().getVersion(), false);
-        var changelog = changelogString.orElse(null);
-
+                AppDownloads.downloadChangelog(lastUpdateCheckResult.getValue().getVersion());
         var rel = new PreparedUpdate(
                 AppProperties.get().getVersion(),
                 AppDistributionType.get().getId(),
                 lastUpdateCheckResult.getValue().getVersion(),
                 lastUpdateCheckResult.getValue().getReleaseUrl(),
                 null,
-                changelog,
+                changelogString,
                 lastUpdateCheckResult.getValue().getAssetType(),
                 lastUpdateCheckResult.getValue().isSecurityOnly());
         preparedUpdate.setValue(rel);

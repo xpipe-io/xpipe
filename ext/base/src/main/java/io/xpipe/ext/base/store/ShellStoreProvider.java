@@ -11,8 +11,8 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.ShellStoreFormat;
-import io.xpipe.ext.base.script.ScriptStore;
 
+import io.xpipe.ext.base.script.ScriptStoreSetup;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ObservableValue;
 
@@ -25,7 +25,7 @@ public interface ShellStoreProvider extends DataStoreProvider {
             public void execute() throws Exception {
                 var replacement = ProcessControlProvider.get().replace(entry.ref());
                 ShellStore store = replacement.getStore().asNeeded();
-                var control = ScriptStore.controlWithDefaultScripts(store.tempControl());
+                var control = ScriptStoreSetup.controlWithDefaultScripts(store.tempControl());
                 TerminalLauncher.open(
                         replacement.get(),
                         DataStorage.get().getStoreEntryDisplayName(replacement.get()),

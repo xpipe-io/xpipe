@@ -1,6 +1,7 @@
 package io.xpipe.beacon.api;
 
 import io.xpipe.beacon.BeaconInterface;
+import io.xpipe.core.store.FilePath;
 
 import lombok.Builder;
 import lombok.NonNull;
@@ -23,7 +24,7 @@ public class ConnectionTerminalExchange extends BeaconInterface<ConnectionTermin
         @NonNull
         UUID connection;
 
-        String directory;
+        FilePath directory;
     }
 
     @Jacksonized

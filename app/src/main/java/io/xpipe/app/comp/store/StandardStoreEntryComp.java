@@ -43,15 +43,26 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         grid.setHgap(6);
         grid.setVgap(OsType.getLocal() == OsType.MACOS ? 2 : 0);
 
+        var selection = createBatchSelection();
+        grid.add(selection.createRegion(), 0, 0, 1, 2);
+        grid.getColumnConstraints().add(new ColumnConstraints(25));
+        StoreViewState.get().getBatchMode().subscribe(batch -> {
+            if (batch) {
+                grid.getColumnConstraints().set(0, new ColumnConstraints(25));
+            } else {
+                grid.getColumnConstraints().set(0, new ColumnConstraints(-6));
+            }
+        });
+
         var storeIcon = createIcon(46, 40);
-        grid.add(storeIcon, 0, 0, 1, 2);
+        grid.add(storeIcon, 1, 0, 1, 2);
         grid.getColumnConstraints().add(new ColumnConstraints(52));
 
         var active = new StoreActiveComp(getWrapper()).createRegion();
         var nameBox = new HBox(name, userIcon, notes);
         nameBox.setSpacing(6);
         nameBox.setAlignment(Pos.CENTER_LEFT);
-        grid.add(nameBox, 1, 0);
+        grid.add(nameBox, 2, 0);
         GridPane.setVgrow(nameBox, Priority.ALWAYS);
         getWrapper().getSessionActive().subscribe(aBoolean -> {
             if (!aBoolean) {
@@ -64,7 +75,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         var summaryBox = new HBox(createSummary());
         summaryBox.setAlignment(Pos.TOP_LEFT);
         GridPane.setVgrow(summaryBox, Priority.ALWAYS);
-        grid.add(summaryBox, 1, 1);
+        grid.add(summaryBox, 2, 1);
 
         var nameCC = new ColumnConstraints();
         nameCC.setMinWidth(100);
@@ -72,7 +83,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         nameCC.setPrefWidth(100);
         grid.getColumnConstraints().addAll(nameCC);
 
-        grid.add(createInformation(), 2, 0, 1, 2);
+        grid.add(createInformation(), 3, 0, 1, 2);
         var info = new ColumnConstraints();
         info.prefWidthProperty().bind(content != null ? INFO_WITH_CONTENT_WIDTH : INFO_NO_CONTENT_WIDTH);
         info.setHalignment(HPos.LEFT);
@@ -89,7 +100,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         controls.setAlignment(Pos.CENTER_RIGHT);
         controls.setSpacing(10);
         controls.setPadding(new Insets(0, 0, 0, 10));
-        grid.add(controls, 3, 0, 1, 2);
+        grid.add(controls, 4, 0, 1, 2);
         grid.getColumnConstraints().add(custom);
 
         grid.getStyleClass().add("store-entry-grid");

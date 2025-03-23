@@ -322,7 +322,7 @@ public class OptionsBuilder {
     }
 
     public OptionsBuilder separator() {
-        return addComp(Comp.separator());
+        return addComp(Comp.hseparator());
     }
 
     public OptionsBuilder name(String nameKey) {

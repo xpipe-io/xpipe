@@ -1,6 +1,7 @@
 package io.xpipe.app.update;
 
 import io.xpipe.app.comp.base.ModalButton;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.Hyperlinks;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class WebtopUpdater extends PortableUpdater {
                         return;
                     }
 
-                    Hyperlinks.open(Hyperlinks.DOCS_WEBTOP_UPDATE);
+                    DocumentationLink.WEBTOP_UPDATE.open();
                 },
                 false,
                 false));

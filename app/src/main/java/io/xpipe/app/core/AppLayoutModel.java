@@ -12,6 +12,8 @@ import io.xpipe.app.util.LicenseProvider;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -19,6 +21,7 @@ import javafx.scene.input.KeyCombination;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
+import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.util.ArrayList;
@@ -35,10 +38,13 @@ public class AppLayoutModel {
 
     private final Property<Entry> selected;
 
+    private final ObservableList<QueueEntry> queueEntries;
+
     public AppLayoutModel(SavedState savedState) {
         this.savedState = savedState;
         this.entries = createEntryList();
         this.selected = new SimpleObjectProperty<>(entries.getFirst());
+        this.queueEntries = FXCollections.observableArrayList();
     }
 
     public static AppLayoutModel get() {
@@ -46,7 +52,7 @@ public class AppLayoutModel {
     }
 
     public static void init() {
-        var state = AppCache.getNonNull("layoutState", SavedState.class, () -> new SavedState(260, 300));
+        var state = AppCache.getNonNull("layoutState", SavedState.class, () -> new SavedState(270, 300));
         INSTANCE = new AppLayoutModel(state);
     }
 
@@ -121,18 +127,18 @@ public class AppLayoutModel {
                 //                                "http://localhost:" + AppBeaconServer.get().getPort()),
                 //                        null),
                 new Entry(
-                        AppI18n.observable("documentation"),
+                        AppI18n.observable("docs"),
                         new LabelGraphic.IconGraphic("mdi2b-book-open-variant"),
                         null,
                         () -> Hyperlinks.open(Hyperlinks.DOCS),
                         null)));
         if (AppDistributionType.get() != AppDistributionType.WEBTOP) {
             l.add(new Entry(
-                            AppI18n.observable("webtop"),
-                            new LabelGraphic.IconGraphic("mdi2d-desktop-mac"),
-                            null,
-                            () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
-                            null));
+                    AppI18n.observable("webtop"),
+                    new LabelGraphic.IconGraphic("mdi2d-desktop-mac"),
+                    null,
+                    () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
+                    null));
         }
         return l;
     }
@@ -152,4 +158,12 @@ public class AppLayoutModel {
             Comp<?> comp,
             Runnable action,
             KeyCombination combination) {}
+
+    @Value
+    public static class QueueEntry {
+
+        ObservableValue<String> name;
+        LabelGraphic icon;
+        Runnable action;
+    }
 }

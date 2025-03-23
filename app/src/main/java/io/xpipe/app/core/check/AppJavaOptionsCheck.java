@@ -20,7 +20,6 @@ public class AppJavaOptionsCheck {
                                         .formatted(env)
                                 + " This will forcefully apply all custom JVM options to XPipe and can cause a variety of different issues."
                                 + " Please remove this global environment variable and use local configuration instead for your other JVM programs.")
-                .noDefaultActions()
                 .expected()
                 .handle();
         AppCache.update("javaOptionsWarningShown", true);

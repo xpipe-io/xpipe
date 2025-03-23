@@ -1,5 +1,6 @@
 package io.xpipe.app.issue;
 
+import io.xpipe.app.util.DocumentationLink;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,9 +24,6 @@ public class ErrorEvent {
     @Builder.Default
     private final boolean reportable = true;
 
-    @Setter
-    private boolean disableDefaultActions;
-
     private final Throwable throwable;
 
     @Singular
@@ -42,6 +40,8 @@ public class ErrorEvent {
 
     @Singular
     private List<Path> attachments;
+
+    private DocumentationLink documentationLink;
 
     private String email;
     private String userReport;
@@ -160,10 +160,6 @@ public class ErrorEvent {
 
         public ErrorEventBuilder discard() {
             return omit().expected();
-        }
-
-        public ErrorEventBuilder noDefaultActions() {
-            return disableDefaultActions(true);
         }
 
         public void handle() {

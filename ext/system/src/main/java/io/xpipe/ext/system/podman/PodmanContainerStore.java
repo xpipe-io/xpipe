@@ -1,10 +1,6 @@
 package io.xpipe.ext.system.podman;
 
-import io.xpipe.app.ext.ContainerImageStore;
-import io.xpipe.app.ext.ContainerStoreState;
-import io.xpipe.app.ext.ShellControlFunction;
-import io.xpipe.app.ext.ShellControlParentStoreFunction;
-import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LicenseRequiredException;
@@ -43,10 +39,16 @@ public class PodmanContainerStore
                 StatefulDataStore<ContainerStoreState>,
                 FixedServiceCreatorStore,
                 SelfReferentialStore,
-                ContainerImageStore {
+                ContainerImageStore,
+                NameableStore {
 
     DataStoreEntryRef<PodmanCmdStore> cmd;
     String containerName;
+
+    @Override
+    public String getName() {
+        return containerName;
+    }
 
     @Override
     public String getImageName() {
@@ -153,16 +155,13 @@ public class PodmanContainerStore
                         return;
                     }
 
-                    var stateBuilder = getState().toBuilder();
-                    stateBuilder.running(false);
                     var hasShell = throwable.getMessage() == null
                             || !throwable.getMessage().contains("OCI runtime exec failed");
                     if (!hasShell) {
-                        stateBuilder.containerState("No shell available");
-                    } else {
-                        stateBuilder.containerState("Connection failed");
+                        var stateBuilder = getState().toBuilder();
+                        stateBuilder.shellMissing(true);
+                        setState(stateBuilder.build());
                     }
-                    setState(stateBuilder.build());
                 });
                 return pc;
             }

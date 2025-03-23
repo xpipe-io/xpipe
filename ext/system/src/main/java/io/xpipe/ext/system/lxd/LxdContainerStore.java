@@ -1,9 +1,6 @@
 package io.xpipe.ext.system.lxd;
 
-import io.xpipe.app.ext.ContainerStoreState;
-import io.xpipe.app.ext.ShellControlFunction;
-import io.xpipe.app.ext.ShellControlParentStoreFunction;
-import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.ShellControl;
@@ -34,11 +31,17 @@ public class LxdContainerStore
                 StatefulDataStore<ContainerStoreState>,
                 StartableStore,
                 StoppableStore,
-                PauseableStore {
+                PauseableStore,
+                NameableStore {
 
     DataStoreEntryRef<LxdCmdStore> cmd;
     String containerName;
     IdentityValue identity;
+
+    @Override
+    public String getName() {
+        return containerName;
+    }
 
     @Override
     public Class<ContainerStoreState> getStateClass() {

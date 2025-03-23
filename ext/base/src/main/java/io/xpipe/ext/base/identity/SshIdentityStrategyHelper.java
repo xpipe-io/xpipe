@@ -7,6 +7,7 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
+import io.xpipe.core.store.FilePath;
 
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
@@ -28,7 +29,8 @@ public class SshIdentityStrategyHelper {
                             p);
         }
 
-        var forward = new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
+        var forward =
+                new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
         return new OptionsBuilder()
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)
@@ -127,7 +129,7 @@ public class SshIdentityStrategyHelper {
             Property<SshIdentityStrategy.File> fileProperty,
             Predicate<Path> perUserFile,
             boolean allowSync) {
-        var keyPath = new SimpleStringProperty(
+        var keyPath = new SimpleObjectProperty<FilePath>(
                 fileProperty.getValue() != null && fileProperty.getValue().getFile() != null
                         ? fileProperty.getValue().getFile().toAbsoluteFilePath(null)
                         : null);

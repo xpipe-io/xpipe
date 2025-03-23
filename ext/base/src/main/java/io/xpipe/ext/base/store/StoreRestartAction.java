@@ -47,6 +47,37 @@ public class StoreRestartAction implements ActionProvider {
         };
     }
 
+    @Override
+    public BatchDataStoreCallSite<?> getBatchDataStoreCallSite() {
+        return new BatchDataStoreCallSite<DataStore>() {
+
+            @Override
+            public ObservableValue<String> getName() {
+                return AppI18n.observable("restart");
+            }
+
+            @Override
+            public String getIcon() {
+                return "mdi2r-restart";
+            }
+
+            @Override
+            public Class<?> getApplicableClass() {
+                return DataStore.class;
+            }
+
+            @Override
+            public ActionProvider.Action createAction(DataStoreEntryRef<DataStore> store) {
+                return new Action(store);
+            }
+
+            @Override
+            public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
+                return o.getStore() instanceof StartableStore && o.getStore() instanceof StoppableStore;
+            }
+        };
+    }
+
     @Value
     static class Action implements ActionProvider.Action {
 

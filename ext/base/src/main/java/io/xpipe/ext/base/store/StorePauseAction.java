@@ -41,6 +41,32 @@ public class StorePauseAction implements ActionProvider {
         };
     }
 
+    @Override
+    public BatchDataStoreCallSite<?> getBatchDataStoreCallSite() {
+        return new BatchDataStoreCallSite<PauseableStore>() {
+
+            @Override
+            public ObservableValue<String> getName() {
+                return AppI18n.observable("pause");
+            }
+
+            @Override
+            public String getIcon() {
+                return "mdi2p-pause";
+            }
+
+            @Override
+            public Class<?> getApplicableClass() {
+                return PauseableStore.class;
+            }
+
+            @Override
+            public ActionProvider.Action createAction(DataStoreEntryRef<PauseableStore> store) {
+                return new Action(store);
+            }
+        };
+    }
+
     @Value
     static class Action implements ActionProvider.Action {
 

@@ -88,6 +88,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         var r = createContent();
         var buttonBar = r.lookup(".button-bar");
         var iconChooser = r.lookup(".icon");
+        var batchMode = r.lookup(".batch-mode-selector");
 
         var button = new Button();
         button.setGraphic(r);
@@ -105,6 +106,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         });
         button.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             var notOnButton = NodeHelper.isParent(iconChooser, event.getTarget())
+                    || NodeHelper.isParent(batchMode, event.getTarget())
                     || NodeHelper.isParent(buttonBar, event.getTarget());
             if (AppPrefs.get().requireDoubleClickForConnections().get() && !notOnButton) {
                 if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() != 2) {
@@ -118,6 +120,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         });
         button.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
             var notOnButton = NodeHelper.isParent(iconChooser, event.getTarget())
+                    || NodeHelper.isParent(batchMode, event.getTarget())
                     || NodeHelper.isParent(buttonBar, event.getTarget());
             if (AppPrefs.get().requireDoubleClickForConnections().get() && !notOnButton) {
                 if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() != 2) {
@@ -274,6 +277,12 @@ public abstract class StoreEntryComp extends SimpleComp {
                 () -> StoreEntryComp.this.createContextMenu()));
         settingsButton.tooltipKey("more");
         return settingsButton;
+    }
+
+    protected Comp<?> createBatchSelection() {
+        var c = new StoreEntryBatchSelectComp(section);
+        c.hide(StoreViewState.get().getBatchMode().not());
+        return c;
     }
 
     protected ContextMenu createContextMenu() {

@@ -3,7 +3,6 @@ package io.xpipe.app.browser.icon;
 import io.xpipe.app.resources.AppResources;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
-import io.xpipe.core.store.FileNames;
 
 import lombok.Getter;
 
@@ -84,8 +83,8 @@ public abstract class BrowserIconFileType {
                 return false;
             }
 
-            var name = FileNames.getFileName(entry.getPath());
-            var ext = FileNames.getExtension(entry.getPath());
+            var name = entry.getPath().getFileName();
+            var ext = entry.getPath().getFileName();
             return (ext != null && endings.contains("." + ext.toLowerCase(Locale.ROOT))) || endings.contains(name);
         }
 

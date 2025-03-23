@@ -2,15 +2,13 @@ package io.xpipe.app.storage;
 
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.store.FileNames;
+import io.xpipe.core.store.FilePath;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.Value;
 
-import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
 import java.util.Optional;
 import java.util.regex.Matcher;
 
@@ -18,42 +16,23 @@ import java.util.regex.Matcher;
 @Value
 public class ContextualFileReference {
 
-    private static String lastDataDir;
+    private static FilePath lastDataDir;
 
     @NonNull
     String path;
 
-    private static String getDataDir() {
+    private static FilePath getDataDir() {
         if (DataStorage.get() == null) {
-            return lastDataDir != null ? lastDataDir : normalized(AppPrefs.DEFAULT_STORAGE_DIR.resolve("data"));
+            return lastDataDir != null
+                    ? lastDataDir
+                    : FilePath.of(AppPrefs.DEFAULT_STORAGE_DIR.resolve("data")).toUnix();
         }
 
-        return lastDataDir = normalized(DataStorage.get().getDataDir());
+        return lastDataDir = FilePath.of(DataStorage.get().getDataDir()).toUnix();
     }
 
-    private static String normalized(Path p) {
-        return p.normalize().toString().replaceAll("\\\\", "/");
-    }
-
-    private static String normalized(String s) {
-        try {
-            return Path.of(s).normalize().toString().replaceAll("\\\\", "/");
-        } catch (InvalidPathException ex) {
-            return s;
-        }
-    }
-
-    public static Optional<ContextualFileReference> parseIfInDataDirectory(String s) {
-        var cf = of(s);
-        if (cf.serialize().contains("<DATA>")) {
-            return Optional.of(cf);
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    public static Optional<String> resolveIfInDataDirectory(ShellControl shellControl, String s) {
-        if (s.contains("<DATA>")) {
+    public static Optional<FilePath> resolveIfInDataDirectory(ShellControl shellControl, String s) {
+        if (s.startsWith("<DATA>")) {
             var cf = of(s);
             return Optional.of(cf.toAbsoluteFilePath(shellControl));
         } else {
@@ -61,27 +40,32 @@ public class ContextualFileReference {
         }
     }
 
-    public static ContextualFileReference of(String s) {
-        if (s == null) {
+    public static ContextualFileReference of(FilePath p) {
+        if (p == null) {
             return null;
         }
 
-        var ns = normalized(s.trim());
+        var ns = p.normalize().toUnix();
+        var home = FilePath.of(System.getProperty("user.home")).normalize().toUnix();
 
         String replaced;
-        var withHomeResolved = ns.replace("~", normalized(System.getProperty("user.home")));
+        var withHomeResolved = ns.toString().replace("~", home.toString());
         // Only replace ~ if it is part of data dir, otherwise keep it raw
-        if (withHomeResolved.startsWith(getDataDir())) {
-            replaced = withHomeResolved.replace("<DATA>", getDataDir());
+        if (withHomeResolved.startsWith(getDataDir().toString())) {
+            replaced = withHomeResolved.replace("<DATA>", getDataDir().toString());
         } else {
-            replaced = ns.replace("<DATA>", getDataDir());
+            replaced = ns.toString().replace("<DATA>", getDataDir().toString());
         }
-        return new ContextualFileReference(normalized(replaced));
+        return new ContextualFileReference(replaced);
     }
 
-    public String toAbsoluteFilePath(ShellControl sc) {
-        return path.replaceAll(
-                "/", Matcher.quoteReplacement(sc != null ? sc.getOsType().getFileSystemSeparator() : "/"));
+    public static ContextualFileReference of(String s) {
+        return of(s != null ? FilePath.of(s) : null);
+    }
+
+    public FilePath toAbsoluteFilePath(ShellControl sc) {
+        return FilePath.of(path.replaceAll(
+                "/", Matcher.quoteReplacement(sc != null ? sc.getOsType().getFileSystemSeparator() : "/")));
     }
 
     public boolean isInDataDirectory() {
@@ -90,9 +74,9 @@ public class ContextualFileReference {
 
     public String serialize() {
         var start = getDataDir();
-        var normalizedPath = normalized(path);
+        var normalizedPath = FilePath.of(path).normalize().toUnix();
         if (normalizedPath.startsWith(start) && !normalizedPath.equals(start)) {
-            return "<DATA>" + "/" + FileNames.relativize(start, normalizedPath);
+            return "<DATA>" + "/" + start.relativize(normalizedPath);
         }
         return path;
     }

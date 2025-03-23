@@ -7,6 +7,10 @@ import io.xpipe.core.store.*;
 
 public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore, SingletonSessionStore<ShellSession> {
 
+    default boolean isConnectionAttemptCostly() {
+        return false;
+    }
+
     default ShellControl getOrStartSession() throws Exception {
         var session = getSession();
         if (session != null) {

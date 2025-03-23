@@ -43,7 +43,7 @@ public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
         multi.styleClass("background");
 
         var pane = new BorderPane();
-        var sidebar = new SideMenuBarComp(model.getSelected(), model.getEntries());
+        var sidebar = new SideMenuBarComp(model.getSelected(), model.getEntries(), model.getQueueEntries());
         StackPane multiR = (StackPane) multi.createRegion();
         pane.setCenter(multiR);
         var sidebarR = sidebar.createRegion();

@@ -57,9 +57,9 @@ public class IncusContainerEditRunConfigAction implements ActionProvider {
             var d = (IncusContainerStore) store.getStore();
             var elevatedRef = ProcessControlProvider.get()
                     .elevated(d.getInstall().getStore().getHost().get().ref());
-            var file = new FilePath("/run/incus/" + d.getContainerName() + "/lxc.conf");
-            var model = BrowserFullSessionModel.DEFAULT.openFileSystemSync(
-                    elevatedRef, m -> file.getParent().toString(), null, true);
+            var file = FilePath.of("/run/incus/" + d.getContainerName() + "/lxc.conf");
+            var model =
+                    BrowserFullSessionModel.DEFAULT.openFileSystemSync(elevatedRef, m -> file.getParent(), null, true);
             var found = model.findFile(file.toString());
             if (found.isEmpty()) {
                 return;

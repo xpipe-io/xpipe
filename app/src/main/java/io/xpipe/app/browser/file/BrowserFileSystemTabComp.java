@@ -10,6 +10,7 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.PlatformThread;
+import io.xpipe.core.store.FilePath;
 
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
@@ -49,7 +50,7 @@ public class BrowserFileSystemTabComp extends SimpleComp {
     private Region createContent() {
         var root = new VBox();
         var overview = new Button(null, new FontIcon("mdi2m-monitor"));
-        overview.setOnAction(e -> model.cdAsync(null));
+        overview.setOnAction(e -> model.cdAsync((FilePath) null));
         new TooltipAugment<>("overview", new KeyCodeCombination(KeyCode.HOME, KeyCombination.ALT_DOWN))
                 .augment(overview);
         overview.disableProperty().bind(model.getInOverview());
@@ -158,14 +159,14 @@ public class BrowserFileSystemTabComp extends SimpleComp {
                 root, new KeyCodeCombination(KeyCode.UP, KeyCombination.ALT_DOWN), true, keyEvent -> {
                     var p = model.getCurrentParentDirectory();
                     if (p != null) {
-                        model.cdAsync(p.getPath());
+                        model.cdAsync(p.getPath().toString());
                     }
                     keyEvent.consume();
                 });
         InputHelper.onKeyCombination(root, new KeyCodeCombination(KeyCode.BACK_SPACE), false, keyEvent -> {
             var p = model.getCurrentParentDirectory();
             if (p != null) {
-                model.cdAsync(p.getPath());
+                model.cdAsync(p.getPath().toString());
             }
             keyEvent.consume();
         });

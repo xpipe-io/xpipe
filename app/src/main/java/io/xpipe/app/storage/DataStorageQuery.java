@@ -1,8 +1,5 @@
 package io.xpipe.app.storage;
 
-import com.sun.net.httpserver.HttpExchange;
-import io.xpipe.beacon.api.ConnectionQueryExchange;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -12,21 +9,22 @@ public class DataStorageQuery {
     public static List<DataStoreEntry> queryUserInput(String connection) {
         var found = query("**", "**" + connection + "*", "*");
         if (found.size() > 1) {
-            var narrow = found.stream().filter(dataStoreEntry -> dataStoreEntry.getName().equalsIgnoreCase(connection)).toList();
+            var narrow = found.stream()
+                    .filter(dataStoreEntry -> dataStoreEntry.getName().equalsIgnoreCase(connection))
+                    .toList();
             if (narrow.size() == 1) {
                 return narrow;
             }
         }
         return found;
     }
-    
+
     public static List<DataStoreEntry> query(String categoryFilter, String connectionFilter, String typeFilter) {
         if (DataStorage.get() == null) {
             return List.of();
         }
 
-        var catMatcher = Pattern.compile(
-                toRegex("all connections/" + categoryFilter.toLowerCase()));
+        var catMatcher = Pattern.compile(toRegex("all connections/" + categoryFilter.toLowerCase()));
         var conMatcher = Pattern.compile(toRegex(connectionFilter.toLowerCase()));
         var typeMatcher = Pattern.compile(toRegex(typeFilter.toLowerCase()));
 

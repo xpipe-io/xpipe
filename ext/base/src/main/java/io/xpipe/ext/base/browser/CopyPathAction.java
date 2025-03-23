@@ -9,7 +9,6 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.ClipboardHelper;
 import io.xpipe.core.store.FileKind;
-import io.xpipe.core.store.FileNames;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -51,7 +50,11 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
                             BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
                             return new SimpleObjectProperty<>(BrowserActionFormatter.centerEllipsis(
-                                    entries.getFirst().getRawFileEntry().getPath(), 50));
+                                    entries.getFirst()
+                                            .getRawFileEntry()
+                                            .getPath()
+                                            .toString(),
+                                    50));
                         }
 
                         return AppI18n.observable("absolutePaths");
@@ -60,7 +63,7 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
                     @Override
                     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         var s = entries.stream()
-                                .map(entry -> entry.getRawFileEntry().getPath())
+                                .map(entry -> entry.getRawFileEntry().getPath().toString())
                                 .collect(Collectors.joining("\n"));
                         ClipboardHelper.copyText(s);
                     }
@@ -71,7 +74,11 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
                             BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
                             return new SimpleObjectProperty<>(BrowserActionFormatter.centerEllipsis(
-                                    entries.getFirst().getRawFileEntry().getPath(), 50));
+                                    entries.getFirst()
+                                            .getRawFileEntry()
+                                            .getPath()
+                                            .toString(),
+                                    50));
                         }
 
                         return AppI18n.observable("absoluteLinkPaths");
@@ -92,7 +99,7 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
                     @Override
                     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         var s = entries.stream()
-                                .map(entry -> entry.getRawFileEntry().getPath())
+                                .map(entry -> entry.getRawFileEntry().getPath().toString())
                                 .collect(Collectors.joining("\n"));
                         ClipboardHelper.copyText(s);
                     }
@@ -104,7 +111,11 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
                         if (entries.size() == 1) {
                             return new SimpleObjectProperty<>("\""
                                     + BrowserActionFormatter.centerEllipsis(
-                                            entries.getFirst().getRawFileEntry().getPath(), 50)
+                                            entries.getFirst()
+                                                    .getRawFileEntry()
+                                                    .getPath()
+                                                    .toString(),
+                                            50)
                                     + "\"");
                         }
 
@@ -113,9 +124,10 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
 
                     @Override
                     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                        return entries.stream()
-                                .anyMatch(entry ->
-                                        entry.getRawFileEntry().getPath().contains(" "));
+                        return entries.stream().anyMatch(entry -> entry.getRawFileEntry()
+                                .getPath()
+                                .toString()
+                                .contains(" "));
                     }
 
                     @Override
@@ -138,8 +150,10 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
                             BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
                             return new SimpleObjectProperty<>(BrowserActionFormatter.centerEllipsis(
-                                    FileNames.getFileName(
-                                            entries.getFirst().getRawFileEntry().getPath()),
+                                    entries.getFirst()
+                                            .getRawFileEntry()
+                                            .getPath()
+                                            .getFileName(),
                                     50));
                         }
 
@@ -149,8 +163,7 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
                     @Override
                     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         var s = entries.stream()
-                                .map(entry -> FileNames.getFileName(
-                                        entry.getRawFileEntry().getPath()))
+                                .map(entry -> entry.getRawFileEntry().getPath().getFileName())
                                 .collect(Collectors.joining("\n"));
                         ClipboardHelper.copyText(s);
                     }
@@ -161,8 +174,10 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
                             BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
                             return new SimpleObjectProperty<>(BrowserActionFormatter.centerEllipsis(
-                                    FileNames.getFileName(
-                                            entries.getFirst().getRawFileEntry().getPath()),
+                                    entries.getFirst()
+                                            .getRawFileEntry()
+                                            .getPath()
+                                            .getFileName(),
                                     50));
                         }
 
@@ -176,10 +191,11 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
                                                 browserEntry.getRawFileEntry().getKind() == FileKind.LINK)
                                 && entries.stream().anyMatch(browserEntry -> !browserEntry
                                         .getFileName()
-                                        .equals(FileNames.getFileName(browserEntry
+                                        .equals(browserEntry
                                                 .getRawFileEntry()
                                                 .resolved()
-                                                .getPath())));
+                                                .getPath()
+                                                .getFileName()));
                     }
 
                     @Override
@@ -190,8 +206,7 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
                     @Override
                     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         var s = entries.stream()
-                                .map(entry -> FileNames.getFileName(
-                                        entry.getRawFileEntry().getPath()))
+                                .map(entry -> entry.getRawFileEntry().getPath().getFileName())
                                 .collect(Collectors.joining("\n"));
                         ClipboardHelper.copyText(s);
                     }
@@ -203,9 +218,10 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
                         if (entries.size() == 1) {
                             return new SimpleObjectProperty<>("\""
                                     + BrowserActionFormatter.centerEllipsis(
-                                            FileNames.getFileName(entries.getFirst()
+                                            entries.getFirst()
                                                     .getRawFileEntry()
-                                                    .getPath()),
+                                                    .getPath()
+                                                    .getFileName(),
                                             50)
                                     + "\"");
                         }
@@ -215,17 +231,17 @@ public class CopyPathAction implements BrowserAction, BrowserBranchAction {
 
                     @Override
                     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                        return entries.stream().anyMatch(entry -> FileNames.getFileName(
-                                        entry.getRawFileEntry().getPath())
+                        return entries.stream().anyMatch(entry -> entry.getRawFileEntry()
+                                .getPath()
+                                .getFileName()
                                 .contains(" "));
                     }
 
                     @Override
                     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         var s = entries.stream()
-                                .map(entry -> "\""
-                                        + FileNames.getFileName(
-                                                entry.getRawFileEntry().getPath()) + "\"")
+                                .map(entry ->
+                                        "\"" + entry.getRawFileEntry().getPath().getFileName() + "\"")
                                 .collect(Collectors.joining("\n"));
                         ClipboardHelper.copyText(s);
                     }

@@ -4,7 +4,6 @@ import io.xpipe.app.browser.icon.BrowserIconDirectoryType;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
-import io.xpipe.core.store.FileNames;
 
 import lombok.Getter;
 
@@ -74,6 +73,6 @@ public class BrowserEntry {
     }
 
     public String getFileName() {
-        return FileNames.getFileName(getRawFileEntry().getPath());
+        return getRawFileEntry().getPath().getFileName();
     }
 }

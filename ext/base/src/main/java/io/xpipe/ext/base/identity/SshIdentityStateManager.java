@@ -3,6 +3,7 @@ package io.xpipe.ext.base.identity;
 import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.CommandSupport;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
@@ -73,7 +74,7 @@ public class SshIdentityStateManager {
                 return true;
             }
         };
-        event.customAction(shutdown).noDefaultActions().handle();
+        event.customAction(shutdown).handle();
 
         if (r.get()) {
             if (sc.getShellDialect().equals(ShellDialects.CMD)) {
@@ -114,7 +115,7 @@ public class SshIdentityStateManager {
         if (sc.getOsType() == OsType.WINDOWS) {
             if (!content.contains("enable-win32-openssh-support")) {
                 content += "\nenable-win32-openssh-support\n";
-                sc.view().writeTextFile(new FilePath(confFile), content);
+                sc.view().writeTextFile(FilePath.of(confFile), content);
                 // reloadagent does not work correctly, so kill it
                 handleWindowsGpgAgentStop(sc);
             }
@@ -122,7 +123,7 @@ public class SshIdentityStateManager {
         } else {
             if (!content.contains("enable-ssh-support")) {
                 content += "\nenable-ssh-support\n";
-                sc.view().writeTextFile(new FilePath(confFile), content);
+                sc.view().writeTextFile(FilePath.of(confFile), content);
                 sc.executeSimpleCommand(CommandBuilder.of().add("gpg-connect-agent", "reloadagent", "/bye"));
             } else {
                 sc.executeSimpleCommand(CommandBuilder.of().add("gpg-connect-agent", "/bye"));
@@ -146,7 +147,7 @@ public class SshIdentityStateManager {
                 var r = c.readStdoutAndStderr();
                 if (c.getExitCode() != 0) {
                     var posixMessage = sc.getOsType() != OsType.WINDOWS
-                            ? " and the SSH_AUTH_SOCK variable. See " + Hyperlinks.DOCS_AGENT_SETUP + " for details"
+                            ? " and the SSH_AUTH_SOCK variable."
                             : "";
                     var ex =
                             new IllegalStateException("Unable to list agent identities via command ssh-add -l:\n" + r[0]
@@ -154,9 +155,8 @@ public class SshIdentityStateManager {
                                     + r[1]
                                     + "\nPlease check your SSH agent CLI configuration%s.".formatted(posixMessage));
                     ErrorEvent.preconfigure(ErrorEvent.fromThrowable(ex)
-                            .noDefaultActions()
                             .expected()
-                            .customAction(ErrorAction.openDocumentation(Hyperlinks.DOCS_AGENT_SETUP)));
+                            .documentationLink(DocumentationLink.SSH_AGENT));
                     throw ex;
                 }
             }

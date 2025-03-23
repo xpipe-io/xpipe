@@ -36,13 +36,17 @@ public class ShellView {
     }
 
     public FilePath userHome() throws Exception {
-        return new FilePath(shellControl.getOsType().getUserHomeDirectory(shellControl));
+        return FilePath.of(shellControl.getOsType().getUserHomeDirectory(shellControl));
     }
 
     public boolean fileExists(FilePath path) throws Exception {
         return getDialect()
                 .createFileExistsCommand(shellControl, path.toString())
                 .executeAndCheck();
+    }
+
+    public boolean directoryExists(FilePath path) throws Exception {
+        return getDialect().directoryExists(shellControl, path.toString()).executeAndCheck();
     }
 
     public String user() throws Exception {
@@ -88,5 +92,11 @@ public class ShellView {
         var d = shellControl.getShellDialect();
         var cmd = shellControl.command(d.getCdCommand(directory));
         cmd.executeAndCheck();
+    }
+
+    public String environmentVariable(String name) throws Exception {
+        return shellControl
+                .command(shellControl.getShellDialect().getPrintEnvironmentVariableCommand(name))
+                .readStdoutOrThrow();
     }
 }

@@ -5,6 +5,7 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.comp.store.StoreCreationComp;
+import io.xpipe.app.comp.store.StoreCreationDialog;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppFontSizes;
@@ -95,7 +96,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                     .sshIdentity(ssh)
                     .build();
         }
-        StoreCreationComp.showCreation(
+        StoreCreationDialog.showCreation(
                 id,
                 DataStoreCreationCategory.IDENTITY,
                 dataStoreEntry -> {
@@ -112,7 +113,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
             return;
         }
 
-        StoreCreationComp.showEdit(id.get());
+        StoreCreationDialog.showEdit(id.get());
     }
 
     @Override

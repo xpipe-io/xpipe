@@ -36,6 +36,8 @@ import java.io.IOException;
 public interface SshIdentityStrategy {
     default void checkComplete() throws ValidationException {}
 
+    boolean isConnectionAttemptCostly();
+
     void prepareParent(ShellControl parent) throws Exception;
 
     void buildCommand(CommandBuilder builder);
@@ -47,6 +49,11 @@ public interface SshIdentityStrategy {
     @JsonTypeName("none")
     @Value
     class None implements SshIdentityStrategy {
+
+        @Override
+        public boolean isConnectionAttemptCostly() {
+            return false;
+        }
 
         @Override
         public void prepareParent(ShellControl parent) {}
@@ -65,6 +72,11 @@ public interface SshIdentityStrategy {
     class SshAgent implements SshIdentityStrategy {
 
         boolean forwardAgent;
+
+        @Override
+        public boolean isConnectionAttemptCostly() {
+            return false;
+        }
 
         @Override
         public void prepareParent(ShellControl parent) throws Exception {
@@ -86,6 +98,11 @@ public interface SshIdentityStrategy {
     class Pageant implements SshIdentityStrategy {
 
         boolean forwardAgent;
+
+        @Override
+        public boolean isConnectionAttemptCostly() {
+            return false;
+        }
 
         @Override
         public void prepareParent(ShellControl parent) throws Exception {
@@ -157,6 +174,11 @@ public interface SshIdentityStrategy {
         ContextualFileReference file;
         SecretRetrievalStrategy password;
 
+        @Override
+        public boolean isConnectionAttemptCostly() {
+            return false;
+        }
+
         public void checkComplete() throws ValidationException {
             Validators.nonNull(file);
             Validators.nonNull(password);
@@ -170,11 +192,12 @@ public interface SshIdentityStrategy {
 
             var s = file.toAbsoluteFilePath(parent);
             // The ~ is supported on all platforms, so manually replace it here for Windows
-            if (s.contains("~")) {
-                s = s.replace("~", parent.getOsType().getUserHomeDirectory(parent));
+            if (s.startsWith("~")) {
+                s = s.resolveTildeHome(parent.getOsType().getUserHomeDirectory(parent));
             }
-            var resolved =
-                    parent.getShellDialect().evaluateExpression(parent, s).readStdoutOrThrow();
+            var resolved = parent.getShellDialect()
+                    .evaluateExpression(parent, s.toString())
+                    .readStdoutOrThrow();
             if (!parent.getShellDialect()
                     .createFileExistsCommand(parent, resolved)
                     .executeAndCheck()) {
@@ -194,7 +217,8 @@ public interface SshIdentityStrategy {
             }
 
             if ((parent.getOsType().equals(OsType.LINUX) || parent.getOsType().equals(OsType.MACOS))) {
-                parent.command(CommandBuilder.of().add("chmod", "400").addFile(resolved)).executeAndCheck();
+                parent.command(CommandBuilder.of().add("chmod", "400").addFile(resolved))
+                        .executeAndCheck();
             }
         }
 
@@ -212,11 +236,12 @@ public interface SshIdentityStrategy {
 
                         var s = file.toAbsoluteFilePath(sc);
                         // The ~ is supported on all platforms, so manually replace it here for Windows
-                        if (s.contains("~")) {
-                            s = s.replace("~", sc.getOsType().getUserHomeDirectory(sc));
+                        if (s.startsWith("~")) {
+                            s = s.resolveTildeHome(sc.getOsType().getUserHomeDirectory(sc));
                         }
-                        var resolved =
-                                sc.getShellDialect().evaluateExpression(sc, s).readStdoutOrThrow();
+                        var resolved = sc.getShellDialect()
+                                .evaluateExpression(sc, s.toString())
+                                .readStdoutOrThrow();
                         return sc.getShellDialect().fileArgument(resolved);
                     })
                     .add("-oIdentitiesOnly=yes");
@@ -235,6 +260,11 @@ public interface SshIdentityStrategy {
     class GpgAgent implements SshIdentityStrategy {
 
         boolean forwardAgent;
+
+        @Override
+        public boolean isConnectionAttemptCostly() {
+            return true;
+        }
 
         @Override
         public void prepareParent(ShellControl parent) throws Exception {
@@ -264,6 +294,11 @@ public interface SshIdentityStrategy {
     @JsonTypeName("yubikeyPiv")
     @AllArgsConstructor
     class YubikeyPiv implements SshIdentityStrategy {
+
+        @Override
+        public boolean isConnectionAttemptCostly() {
+            return true;
+        }
 
         private String getFile(ShellControl parent) throws Exception {
             var file =
@@ -342,6 +377,11 @@ public interface SshIdentityStrategy {
         String file;
 
         @Override
+        public boolean isConnectionAttemptCostly() {
+            return true;
+        }
+
+        @Override
         public void prepareParent(ShellControl parent) throws Exception {
             parent.requireLicensedFeature("pkcs11Identity");
 
@@ -374,6 +414,11 @@ public interface SshIdentityStrategy {
     class OtherExternal implements SshIdentityStrategy {
 
         boolean forwardAgent;
+
+        @Override
+        public boolean isConnectionAttemptCostly() {
+            return true;
+        }
 
         @Override
         public void prepareParent(ShellControl parent) {}

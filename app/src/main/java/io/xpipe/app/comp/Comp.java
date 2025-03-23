@@ -58,8 +58,12 @@ public abstract class Comp<S extends CompStructure<?>> {
         };
     }
 
-    public static Comp<CompStructure<Separator>> separator() {
+    public static Comp<CompStructure<Separator>> hseparator() {
         return of(() -> new Separator(Orientation.HORIZONTAL));
+    }
+
+    public static Comp<CompStructure<Separator>> vseparator() {
+        return of(() -> new Separator(Orientation.VERTICAL));
     }
 
     @SuppressWarnings("unchecked")

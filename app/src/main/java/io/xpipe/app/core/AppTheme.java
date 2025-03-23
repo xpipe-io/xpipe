@@ -104,7 +104,9 @@ public class AppTheme {
             }
 
             Platform.getPreferences().addListener((MapChangeListener<? super String, ? super Object>) change -> {
-                TrackEvent.withTrace("Platform preference changed").tag("change", change.toString()).handle();
+                TrackEvent.withTrace("Platform preference changed")
+                        .tag("change", change.toString())
+                        .handle();
             });
 
             Platform.getPreferences().addListener((MapChangeListener<? super String, ? super Object>) change -> {
@@ -140,10 +142,10 @@ public class AppTheme {
 
     private static void updateThemeToThemeName(Object oldName, Object newName) {
         if (OsType.getLocal() == OsType.LINUX && newName != null) {
-            var toDark = (oldName == null || !oldName.toString().contains("-dark")) &&
-                    newName.toString().contains("-dark");
-            var toLight = (oldName == null || oldName.toString().contains("-dark")) &&
-                    !newName.toString().contains("-dark");
+            var toDark = (oldName == null || !oldName.toString().contains("-dark"))
+                    && newName.toString().contains("-dark");
+            var toLight = (oldName == null || oldName.toString().contains("-dark"))
+                    && !newName.toString().contains("-dark");
             if (toDark) {
                 updateThemeToColorScheme(ColorScheme.DARK);
             } else if (toLight) {
@@ -172,8 +174,7 @@ public class AppTheme {
             AppPrefs.get().theme.setValue(Theme.getDefaultDarkTheme());
         }
 
-        if (colorScheme != ColorScheme.DARK
-                && AppPrefs.get().theme().getValue().isDark()) {
+        if (colorScheme != ColorScheme.DARK && AppPrefs.get().theme().getValue().isDark()) {
             AppPrefs.get().theme.setValue(Theme.getDefaultLightTheme());
         }
     }

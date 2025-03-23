@@ -24,6 +24,21 @@ import java.util.List;
 @EqualsAndHashCode
 public class NativeWinWindowControl {
 
+    @SneakyThrows
+    public static WinDef.HWND byWindow(Window window) {
+        Method tkStageGetter = Window.class.getDeclaredMethod("getPeer");
+        tkStageGetter.setAccessible(true);
+        Object tkStage = tkStageGetter.invoke(window);
+        Method getPlatformWindow = tkStage.getClass().getDeclaredMethod("getPlatformWindow");
+        getPlatformWindow.setAccessible(true);
+        Object platformWindow = getPlatformWindow.invoke(tkStage);
+        Method getNativeHandle = platformWindow.getClass().getMethod("getNativeHandle");
+        getNativeHandle.setAccessible(true);
+        Object nativeHandle = getNativeHandle.invoke(platformWindow);
+        var hwnd = new WinDef.HWND(new Pointer((long) nativeHandle));
+        return hwnd;
+    }
+
     public static List<NativeWinWindowControl> byPid(long pid) {
         var refs = new ArrayList<NativeWinWindowControl>();
         User32.INSTANCE.EnumWindows(
@@ -50,17 +65,7 @@ public class NativeWinWindowControl {
 
     @SneakyThrows
     public NativeWinWindowControl(Window stage) {
-        Method tkStageGetter = Window.class.getDeclaredMethod("getPeer");
-        tkStageGetter.setAccessible(true);
-        Object tkStage = tkStageGetter.invoke(stage);
-        Method getPlatformWindow = tkStage.getClass().getDeclaredMethod("getPlatformWindow");
-        getPlatformWindow.setAccessible(true);
-        Object platformWindow = getPlatformWindow.invoke(tkStage);
-        Method getNativeHandle = platformWindow.getClass().getMethod("getNativeHandle");
-        getNativeHandle.setAccessible(true);
-        Object nativeHandle = getNativeHandle.invoke(platformWindow);
-        var hwnd = new WinDef.HWND(new Pointer((long) nativeHandle));
-        this.windowHandle = hwnd;
+        this.windowHandle = byWindow(stage);
     }
 
     public NativeWinWindowControl(WinDef.HWND windowHandle) {

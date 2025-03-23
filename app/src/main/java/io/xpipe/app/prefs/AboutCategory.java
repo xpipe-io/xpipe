@@ -8,6 +8,7 @@ import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.JfxHelper;
 import io.xpipe.app.util.OptionsBuilder;
@@ -32,10 +33,11 @@ public class AboutCategory extends AppPrefsCategory {
                                 .grow(true, false),
                         null)
                 .addComp(
-                        new TileButtonComp("documentation", "documentationDescription", "mdi2b-book-open-variant", e -> {
-                                    Hyperlinks.open(Hyperlinks.DOCS);
-                                    e.consume();
-                                })
+                        new TileButtonComp(
+                                        "documentation", "documentationDescription", "mdi2b-book-open-variant", e -> {
+                                            Hyperlinks.open(Hyperlinks.DOCS);
+                                            e.consume();
+                                        })
                                 .grow(true, false),
                         null)
                 .addComp(
@@ -47,23 +49,23 @@ public class AboutCategory extends AppPrefsCategory {
                         null)
                 .addComp(
                         new TileButtonComp("privacy", "privacyDescription", "mdomz-privacy_tip", e -> {
-                                    Hyperlinks.open(Hyperlinks.DOCS_PRIVACY);
+                            DocumentationLink.PRIVACY.open();
                                     e.consume();
                                 })
                                 .grow(true, false),
                         null)
                 .addComp(
                         new TileButtonComp("thirdParty", "thirdPartyDescription", "mdi2o-open-source-initiative", e -> {
-                            var comp = new ThirdPartyDependencyListComp()
-                                    .prefWidth(650)
-                                    .styleClass("open-source-notices");
-                            var modal = ModalOverlay.of("openSourceNotices", comp);
-                            modal.show();
-                        })
-                        .grow(true, false))
+                                    var comp = new ThirdPartyDependencyListComp()
+                                            .prefWidth(650)
+                                            .styleClass("open-source-notices");
+                                    var modal = ModalOverlay.of("openSourceNotices", comp);
+                                    modal.show();
+                                })
+                                .grow(true, false))
                 .addComp(
                         new TileButtonComp("eula", "eulaDescription", "mdi2c-card-text-outline", e -> {
-                                    Hyperlinks.open(Hyperlinks.DOCS_EULA);
+                                   DocumentationLink.EULA.open();
                                     e.consume();
                                 })
                                 .grow(true, false),
@@ -80,7 +82,7 @@ public class AboutCategory extends AppPrefsCategory {
     protected Comp<?> create() {
         var props = createProperties().padding(new Insets(0, 0, 0, 5));
         var update = new UpdateCheckComp().grow(true, false);
-        return new VerticalComp(List.of(props, Comp.separator(), update, Comp.separator(), createLinks()))
+        return new VerticalComp(List.of(props, Comp.hseparator(), update, Comp.hseparator(), createLinks()))
                 .apply(s -> s.get().setFillWidth(true))
                 .apply(struc -> struc.get().setSpacing(15))
                 .styleClass("information")

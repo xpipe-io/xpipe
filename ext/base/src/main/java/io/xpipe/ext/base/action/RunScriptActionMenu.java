@@ -71,6 +71,40 @@ public class RunScriptActionMenu implements ActionProvider {
                 }
             };
         }
+
+        @Override
+        public BatchDataStoreCallSite<ShellStore> getBatchDataStoreCallSite() {
+            return new BatchDataStoreCallSite<ShellStore>() {
+
+                @Override
+                public ObservableValue<String> getName() {
+                    var t = AppPrefs.get().terminalType().getValue();
+                    return AppI18n.observable(
+                            "executeInTerminal",
+                            t != null ? t.toTranslatedString().getValue() : "?");
+                }
+
+                @Override
+                public String getIcon() {
+                    return "mdi2d-desktop-mac";
+                }
+
+                @Override
+                public Class<?> getApplicableClass() {
+                    return ShellStore.class;
+                }
+
+                @Override
+                public ActionProvider.Action createAction(DataStoreEntryRef<ShellStore> store) {
+                    return new Action(store);
+                }
+
+                @Override
+                public List<? extends ActionProvider> getChildren(List<DataStoreEntryRef<ShellStore>> batch) {
+                    return List.of();
+                }
+            };
+        }
     }
 
     @Value
@@ -113,6 +147,37 @@ public class RunScriptActionMenu implements ActionProvider {
                 @Override
                 public Class<?> getApplicableClass() {
                     return ShellStore.class;
+                }
+            };
+        }
+
+        @Override
+        public BatchDataStoreCallSite<?> getBatchDataStoreCallSite() {
+            return new BatchDataStoreCallSite<ShellStore>() {
+
+                @Override
+                public Class<ShellStore> getApplicableClass() {
+                    return ShellStore.class;
+                }
+
+                @Override
+                public ObservableValue<String> getName() {
+                    return AppI18n.observable("executeInBackground");
+                }
+
+                @Override
+                public String getIcon() {
+                    return "mdi2f-flip-to-back";
+                }
+
+                @Override
+                public ActionProvider.Action createAction(DataStoreEntryRef<ShellStore> store) {
+                    return new Action(store);
+                }
+
+                @Override
+                public List<ActionProvider> getChildren(List<DataStoreEntryRef<ShellStore>> batch) {
+                    return List.of();
                 }
             };
         }
@@ -189,6 +254,44 @@ public class RunScriptActionMenu implements ActionProvider {
                 }
             };
         }
+
+        @Override
+        public BatchDataStoreCallSite<?> getBatchDataStoreCallSite() {
+            return new BatchDataStoreCallSite<ShellStore>() {
+
+                @Override
+                public ObservableValue<String> getName() {
+                    return new SimpleStringProperty(hierarchy.getBase().get().getName());
+                }
+
+                @Override
+                public String getIcon() {
+                    return "mdi2p-play-box-multiple-outline";
+                }
+
+                @Override
+                public Class<?> getApplicableClass() {
+                    return ShellStore.class;
+                }
+
+                @Override
+                public Action createAction(DataStoreEntryRef<ShellStore> store) {
+                    return null;
+                }
+
+                @Override
+                public List<? extends ActionProvider> getChildren(List<DataStoreEntryRef<ShellStore>> batch) {
+                    if (hierarchy.isLeaf()) {
+                        return List.of(
+                                new TerminalRunActionProvider(hierarchy), new BackgroundRunActionProvider(hierarchy));
+                    }
+
+                    return hierarchy.getChildren().stream()
+                            .map(c -> new ScriptActionProvider(c))
+                            .toList();
+                }
+            };
+        }
     }
 
     private static class NoScriptsActionProvider implements ActionProvider {
@@ -222,6 +325,36 @@ public class RunScriptActionMenu implements ActionProvider {
                 @Override
                 public Class<?> getApplicableClass() {
                     return ShellStore.class;
+                }
+            };
+        }
+
+        @Override
+        public BatchDataStoreCallSite<?> getBatchDataStoreCallSite() {
+            return new BatchDataStoreCallSite<ShellStore>() {
+                @Override
+                public ObservableValue<String> getName() {
+                    return AppI18n.observable("noScriptsAvailable");
+                }
+
+                @Override
+                public String getIcon() {
+                    return "mdi2i-image-filter-none";
+                }
+
+                @Override
+                public Class<?> getApplicableClass() {
+                    return ShellStore.class;
+                }
+
+                @Override
+                public ActionProvider.Action createAction(DataStoreEntryRef<ShellStore> store) {
+                    return null;
+                }
+
+                @Override
+                public List<ActionProvider> getChildren(List<DataStoreEntryRef<ShellStore>> batch) {
+                    return List.of();
                 }
             };
         }
@@ -333,6 +466,51 @@ public class RunScriptActionMenu implements ActionProvider {
                 });
                 var list = hierarchy.getChildren().stream()
                         .map(c -> new ScriptActionProvider(c))
+                        .toList();
+                if (list.isEmpty()) {
+                    return List.of(new NoScriptsActionProvider());
+                } else {
+                    return list;
+                }
+            }
+        };
+    }
+
+    @Override
+    public BatchDataStoreCallSite<?> getBatchDataStoreCallSite() {
+        return new BatchDataStoreCallSite<ShellStore>() {
+
+            @Override
+            public Class<ShellStore> getApplicableClass() {
+                return ShellStore.class;
+            }
+
+            @Override
+            public ObservableValue<String> getName() {
+                return AppI18n.observable("runScript");
+            }
+
+            @Override
+            public String getIcon() {
+                return "mdi2p-play-box-multiple-outline";
+            }
+
+            @Override
+            public Action createAction(DataStoreEntryRef<ShellStore> store) {
+                return null;
+            }
+
+            @Override
+            public List<ActionProvider> getChildren(List<DataStoreEntryRef<ShellStore>> batch) {
+                var hierarchy = ScriptHierarchy.buildEnabledHierarchy(ref -> {
+                    if (!ref.getStore().isRunnableScript()) {
+                        return false;
+                    }
+
+                    return true;
+                });
+                var list = hierarchy.getChildren().stream()
+                        .<ActionProvider>map(c -> new ScriptActionProvider(c))
                         .toList();
                 if (list.isEmpty()) {
                     return List.of(new NoScriptsActionProvider());

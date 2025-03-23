@@ -1,5 +1,7 @@
 package io.xpipe.core.process;
 
+import io.xpipe.core.store.FilePath;
+
 public interface ParentSystemAccess {
 
     static ParentSystemAccess none() {
@@ -25,12 +27,12 @@ public interface ParentSystemAccess {
             }
 
             @Override
-            public String translateFromLocalSystemPath(String path) {
+            public FilePath translateFromLocalSystemPath(FilePath path) {
                 throw new UnsupportedOperationException();
             }
 
             @Override
-            public String translateToLocalSystemPath(String path) {
+            public FilePath translateToLocalSystemPath(FilePath path) {
                 throw new UnsupportedOperationException();
             }
 
@@ -64,12 +66,12 @@ public interface ParentSystemAccess {
             }
 
             @Override
-            public String translateFromLocalSystemPath(String path) {
+            public FilePath translateFromLocalSystemPath(FilePath path) {
                 return path;
             }
 
             @Override
-            public String translateToLocalSystemPath(String path) {
+            public FilePath translateToLocalSystemPath(FilePath path) {
                 return path;
             }
 
@@ -103,12 +105,12 @@ public interface ParentSystemAccess {
             }
 
             @Override
-            public String translateFromLocalSystemPath(String path) throws Exception {
+            public FilePath translateFromLocalSystemPath(FilePath path) throws Exception {
                 return a2.translateFromLocalSystemPath(a1.translateFromLocalSystemPath(path));
             }
 
             @Override
-            public String translateToLocalSystemPath(String path) throws Exception {
+            public FilePath translateToLocalSystemPath(FilePath path) throws Exception {
                 return a1.translateToLocalSystemPath(a2.translateToLocalSystemPath(path));
             }
 
@@ -131,9 +133,9 @@ public interface ParentSystemAccess {
 
     boolean supportsExecutableEnvironment();
 
-    String translateFromLocalSystemPath(String path) throws Exception;
+    FilePath translateFromLocalSystemPath(FilePath path) throws Exception;
 
-    String translateToLocalSystemPath(String path) throws Exception;
+    FilePath translateToLocalSystemPath(FilePath path) throws Exception;
 
     boolean isIdentity();
 }

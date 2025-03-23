@@ -41,6 +41,32 @@ public class StoreStopAction implements ActionProvider {
         };
     }
 
+    @Override
+    public BatchDataStoreCallSite<?> getBatchDataStoreCallSite() {
+        return new BatchDataStoreCallSite<StoppableStore>() {
+
+            @Override
+            public ObservableValue<String> getName() {
+                return AppI18n.observable("stop");
+            }
+
+            @Override
+            public String getIcon() {
+                return "mdi2s-stop";
+            }
+
+            @Override
+            public Class<?> getApplicableClass() {
+                return StoppableStore.class;
+            }
+
+            @Override
+            public ActionProvider.Action createAction(DataStoreEntryRef<StoppableStore> store) {
+                return new Action(store);
+            }
+        };
+    }
+
     @Value
     static class Action implements ActionProvider.Action {
 

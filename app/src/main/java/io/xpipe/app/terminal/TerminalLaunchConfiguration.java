@@ -63,7 +63,7 @@ public class TerminalLaunchConfiguration {
 
         var logDir = AppProperties.get().getDataDir().resolve("sessions");
         Files.createDirectories(logDir);
-        var logFile = logDir.resolve(new FilePath(DataStorage.get().getStoreEntryDisplayName(entry) + " ("
+        var logFile = logDir.resolve(FilePath.of(DataStorage.get().getStoreEntryDisplayName(entry) + " ("
                         + DATE_FORMATTER.format(Instant.now()) + ").log")
                 .fileSystemCompatible(OsType.getLocal())
                 .toString()

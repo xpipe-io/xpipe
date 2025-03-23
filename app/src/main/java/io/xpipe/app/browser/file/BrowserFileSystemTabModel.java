@@ -41,7 +41,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
 
     private final Property<String> filter = new SimpleStringProperty();
     private final BrowserFileListModel fileList;
-    private final ReadOnlyObjectWrapper<String> currentPath = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<FilePath> currentPath = new ReadOnlyObjectWrapper<>();
     private final BrowserFileSystemHistory history = new BrowserFileSystemHistory();
     private final BooleanProperty inOverview = new SimpleBooleanProperty();
     private final Property<BrowserTransferProgress> progress = new SimpleObjectProperty<>();
@@ -193,7 +193,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             return null;
         }
 
-        var parent = FileNames.getParent(currentPath.get());
+        var parent = currentPath.get().getParent();
         if (parent == null) {
             return null;
         }
@@ -211,6 +211,10 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         }
 
         return new FileEntry(fileSystem, currentPath.get(), null, 0, null, FileKind.DIRECTORY);
+    }
+
+    public void cdAsync(FilePath path) {
+        cdAsync(path != null ? path.toString() : null);
     }
 
     public void cdAsync(String path) {
@@ -260,7 +264,8 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     public Optional<String> cdSyncOrRetry(String path, boolean customInput) {
-        if (Objects.equals(path, currentPath.get())) {
+        var cps = currentPath.get() != null ? currentPath.get().toString() : null;
+        if (Objects.equals(path, cps)) {
             return Optional.empty();
         }
 
@@ -273,7 +278,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             startIfNeeded();
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
-            return Optional.ofNullable(currentPath.get());
+            return Optional.ofNullable(cps);
         }
 
         // Fix common issues with paths
@@ -288,12 +293,15 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             evaluatedPath = BrowserFileSystemHelper.evaluatePath(this, adjustedPath);
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
-            return Optional.ofNullable(currentPath.get());
+            return Optional.ofNullable(cps);
+        }
+
+        if (evaluatedPath == null) {
+            return Optional.empty();
         }
 
         // Handle commands typed into navigation bar
         if (customInput
-                && evaluatedPath != null
                 && !evaluatedPath.isBlank()
                 && !FileNames.isAbsolute(evaluatedPath)
                 && fileSystem.getShell().isPresent()) {
@@ -324,34 +332,34 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                     openTerminalAsync(name, directory, cc, true);
                 }
             });
-            return Optional.ofNullable(currentPath.get());
+            return Optional.ofNullable(cps);
         }
 
         // Evaluate optional links
-        String resolvedPath;
+        FilePath resolvedPath;
         try {
-            resolvedPath = BrowserFileSystemHelper.resolveDirectoryPath(this, evaluatedPath, customInput);
+            resolvedPath = BrowserFileSystemHelper.resolveDirectoryPath(this, FilePath.of(evaluatedPath), customInput);
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
-            return Optional.ofNullable(currentPath.get());
+            return Optional.ofNullable(cps);
         }
 
-        if (!Objects.equals(path, resolvedPath)) {
-            return Optional.ofNullable(resolvedPath);
+        if (!Objects.equals(path, resolvedPath.toString())) {
+            return Optional.ofNullable(resolvedPath.toString());
         }
 
         try {
             BrowserFileSystemHelper.validateDirectoryPath(this, resolvedPath, true);
-            cdSyncWithoutCheck(path);
+            cdSyncWithoutCheck(resolvedPath);
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
-            return Optional.ofNullable(currentPath.get());
+            return Optional.ofNullable(cps);
         }
 
         return Optional.empty();
     }
 
-    private void cdSyncWithoutCheck(String path) throws Exception {
+    private void cdSyncWithoutCheck(FilePath path) throws Exception {
         if (fileSystem == null) {
             var fs = entry.getStore().createFileSystem();
             fs.open();
@@ -368,7 +376,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         loadFilesSync(path);
     }
 
-    public void withFiles(String dir, FailableConsumer<Stream<FileEntry>, Exception> consumer) throws Exception {
+    public void withFiles(FilePath dir, FailableConsumer<Stream<FileEntry>, Exception> consumer) throws Exception {
         BooleanScope.executeExclusive(busy, () -> {
             if (dir != null) {
                 startIfNeeded();
@@ -385,7 +393,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         });
     }
 
-    private boolean loadFilesSync(String dir) {
+    private boolean loadFilesSync(FilePath dir) {
         try {
             startIfNeeded();
             var fs = getFileSystem();
@@ -456,7 +464,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                 }
 
                 startIfNeeded();
-                var abs = FileNames.join(getCurrentDirectory().getPath(), name);
+                var abs = getCurrentDirectory().getPath().join(name);
                 if (fileSystem.directoryExists(abs)) {
                     throw ErrorEvent.expected(
                             new IllegalStateException(String.format("Directory %s already exists", abs)));
@@ -468,8 +476,8 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         });
     }
 
-    public void createLinkAsync(String linkName, String targetFile) {
-        if (linkName == null || linkName.isBlank() || targetFile == null || targetFile.isBlank()) {
+    public void createLinkAsync(String linkName, FilePath targetFile) {
+        if (linkName == null || linkName.isBlank() || targetFile == null) {
             return;
         }
 
@@ -484,7 +492,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                 }
 
                 startIfNeeded();
-                var abs = FileNames.join(getCurrentDirectory().getPath(), linkName);
+                var abs = getCurrentDirectory().getPath().join(linkName);
                 fileSystem.symbolicLink(abs, targetFile);
                 refreshSync();
             });
@@ -549,7 +557,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                     return;
                 }
 
-                var abs = FileNames.join(getCurrentDirectory().getPath(), name);
+                var abs = getCurrentDirectory().getPath().join(name);
                 fileSystem.touch(abs);
                 refreshSync();
             });
@@ -560,8 +568,8 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         return fileSystem == null;
     }
 
-    public void initWithGivenDirectory(String dir) {
-        cdSync(dir);
+    public void initWithGivenDirectory(FilePath dir) {
+        cdSync(dir != null ? dir.toString() : null);
     }
 
     public void initWithDefaultDirectory() {
@@ -570,7 +578,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     public void openTerminalAsync(
-            String name, String directory, ProcessControl processControl, boolean dockIfPossible) {
+            String name, FilePath directory, ProcessControl processControl, boolean dockIfPossible) {
         ThreadHelper.runFailableAsync(() -> {
             if (fileSystem == null) {
                 return;
@@ -597,11 +605,17 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     public void backSync(int i) {
-        cdSync(history.back(i));
+        var b = history.back(i);
+        if (b != null) {
+            cdSync(b.toString());
+        }
     }
 
     public void forthSync(int i) {
-        cdSync(history.forth(i));
+        var f = history.forth(i);
+        if (f != null) {
+            cdSync(f.toString());
+        }
     }
 
     @Getter

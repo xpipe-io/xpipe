@@ -13,8 +13,6 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -26,6 +24,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 
+import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.function.Function;
@@ -91,24 +90,30 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                 StoreViewState.get().getFilterString().setValue(newValue);
             });
         });
-        var filter = new FilterComp(StoreViewState.get().getFilterString());
-        var f = filter.createRegion();
-        var button = createAddButton();
-        var hbox = new HBox(button, f);
-        f.minHeightProperty().bind(button.heightProperty());
-        f.prefHeightProperty().bind(button.heightProperty());
-        f.maxHeightProperty().bind(button.heightProperty());
+        var filter = new FilterComp(StoreViewState.get().getFilterString()).createRegion();
+        var add = createAddButton();
+        var batchMode = createBatchModeButton().createRegion();
+        var hbox = new HBox(add, filter, batchMode);
+        filter.minHeightProperty().bind(add.heightProperty());
+        filter.prefHeightProperty().bind(add.heightProperty());
+        filter.maxHeightProperty().bind(add.heightProperty());
+        batchMode.minHeightProperty().bind(add.heightProperty());
+        batchMode.prefHeightProperty().bind(add.heightProperty());
+        batchMode.maxHeightProperty().bind(add.heightProperty());
+        batchMode.minWidthProperty().bind(add.heightProperty());
+        batchMode.prefWidthProperty().bind(add.heightProperty());
+        batchMode.maxWidthProperty().bind(add.heightProperty());
         hbox.setSpacing(8);
         hbox.setAlignment(Pos.CENTER);
-        HBox.setHgrow(f, Priority.ALWAYS);
+        HBox.setHgrow(filter, Priority.ALWAYS);
 
-        f.getStyleClass().add("filter-bar");
+        filter.getStyleClass().add("filter-bar");
         return hbox;
     }
 
     private Region createAddButton() {
         var menu = new MenuButton(null, new FontIcon("mdi2p-plus-thick"));
-        menu.textProperty().bind(AppI18n.observable("addConnections"));
+        menu.textProperty().bind(AppI18n.observable("new"));
         menu.setAlignment(Pos.CENTER);
         menu.setTextAlignment(TextAlignment.CENTER);
         StoreCreationMenu.addButtons(menu);
@@ -122,6 +127,27 @@ public class StoreEntryListOverviewComp extends SimpleComp {
         }
 
         return menu;
+    }
+
+    private Comp<?> createBatchModeButton() {
+        var batchMode = StoreViewState.get().getBatchMode();
+        var b = new IconButtonComp("mdi2l-layers", () -> {
+            batchMode.setValue(!batchMode.getValue());
+        });
+        b.apply(struc -> {
+            struc.get()
+                    .opacityProperty()
+                    .bind(Bindings.createDoubleBinding(
+                            () -> {
+                                if (batchMode.getValue()) {
+                                    return 1.0;
+                                }
+                                return 0.4;
+                            },
+                            batchMode));
+            struc.get().getStyleClass().remove(Styles.FLAT);
+        });
+        return b;
     }
 
     private Comp<?> createAlphabeticalSortButton() {

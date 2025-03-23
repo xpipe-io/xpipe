@@ -1,8 +1,11 @@
 package io.xpipe.app.comp.base;
 
+import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.mode.OperationMode;
 
+import io.xpipe.app.util.LabelGraphic;
 import javafx.beans.property.Property;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Button;
 
 import lombok.Value;
@@ -26,6 +29,12 @@ public class ModalButton {
 
     @NonFinal
     Consumer<Button> augment;
+
+    public static ModalButton hide(ObservableValue<String> name, LabelGraphic icon, Runnable action) {
+        return new ModalButton("hide", () -> {
+            AppLayoutModel.get().getQueueEntries().add(new AppLayoutModel.QueueEntry(name, icon, action));
+        }, true, false);
+    }
 
     public static ModalButton finish(Runnable action) {
         return new ModalButton("finish", action, true, true);

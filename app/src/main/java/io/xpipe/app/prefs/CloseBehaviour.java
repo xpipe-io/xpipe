@@ -10,7 +10,7 @@ public enum CloseBehaviour implements PrefsChoiceValue {
     QUIT("app.quit") {
         @Override
         public void run() {
-            OperationMode.shutdown(false, false);
+            OperationMode.shutdown(false);
         }
     },
 

@@ -20,7 +20,7 @@ public class TerminalLaunchRequest {
     UUID request;
     ProcessControl processControl;
     TerminalInitScriptConfig config;
-    String workingDirectory;
+    FilePath workingDirectory;
 
     @Setter
     @NonFinal
@@ -89,7 +89,7 @@ public class TerminalLaunchRequest {
                     return null;
                 }
 
-                return new FilePath(workingDirectory);
+                return workingDirectory;
             }
         };
 

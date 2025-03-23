@@ -17,6 +17,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
+import javax.print.Doc;
+
 public class AskpassAlert {
 
     public static SecretQueryResult queryRaw(String prompt, InPlaceSecretValue secretValue) {
@@ -33,7 +35,7 @@ public class AskpassAlert {
                         alert.getButtonTypes().add(type);
                         var button = alert.getDialogPane().lookupButton(type);
                         button.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-                            Hyperlinks.open(Hyperlinks.DOCS_DOUBLE_PROMPT);
+                            DocumentationLink.DOUBLE_PROMPT.open();
                             event.consume();
                         });
                     }

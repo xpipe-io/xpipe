@@ -7,7 +7,6 @@ import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.FileNames;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -49,8 +48,8 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                 return;
             }
 
-            var source = Path.of(f.getFile().toAbsoluteFilePath(null));
-            var target = Path.of("keys", FileNames.getFileName(f.getFile().toAbsoluteFilePath(null)));
+            var source = Path.of(f.getFile().toAbsoluteFilePath(null).toString());
+            var target = Path.of("keys", f.getFile().toAbsoluteFilePath(null).getFileName());
             DataStorageSyncHandler.getInstance().addDataFile(source, target, newValue);
         });
 

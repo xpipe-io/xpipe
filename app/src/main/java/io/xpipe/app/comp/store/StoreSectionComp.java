@@ -84,7 +84,7 @@ public class StoreSectionComp extends StoreSectionBaseComp {
 
         var full = new VerticalComp(List.of(
                 topEntryList,
-                Comp.separator().hide(Bindings.not(effectiveExpanded)),
+                Comp.hseparator().hide(Bindings.not(effectiveExpanded)),
                 content));
         full.styleClass("store-entry-section-comp");
         full.apply(struc -> {

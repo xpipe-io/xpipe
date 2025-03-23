@@ -56,6 +56,8 @@ public class AppMainWindow {
     @Getter
     private static final Property<String> loadingText = new SimpleObjectProperty<>();
 
+    private boolean shown = false;
+
     private AppMainWindow(Stage stage) {
         this.stage = stage;
     }
@@ -145,9 +147,12 @@ public class AppMainWindow {
 
     public void show() {
         stage.show();
-        if (OsType.getLocal() == OsType.WINDOWS) {
-            NativeWinWindowControl.MAIN_WINDOW = new NativeWinWindowControl(stage);
+        if (OsType.getLocal() == OsType.WINDOWS && !shown) {
+            var ctrl = new NativeWinWindowControl(stage);
+            NativeWinWindowControl.MAIN_WINDOW = ctrl;
+            AppWindowsShutdown.registerHook(ctrl.getWindowHandle());
         }
+        shown = true;
     }
 
     public void focus() {
@@ -306,7 +311,7 @@ public class AppMainWindow {
             }
 
             // Close dialogs
-            AppDialog.getModalOverlay().clear();
+            AppDialog.getModalOverlays().clear();
 
             // Close other windows
             Stage.getWindows().stream().filter(w -> !w.equals(stage)).toList().forEach(w -> w.fireEvent(e));
