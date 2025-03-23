@@ -135,7 +135,7 @@ public interface SecretRetrievalStrategy {
             return new SecretQuery() {
                 @Override
                 public SecretQueryResult query(String prompt) {
-                    var pm = AppPrefs.get().externalPasswordManager().getValue();
+                    var pm = AppPrefs.get().passwordManager().getValue();
                     if (pm == null) {
                         return new SecretQueryResult(null, SecretQueryState.RETRIEVAL_FAILURE);
                     }

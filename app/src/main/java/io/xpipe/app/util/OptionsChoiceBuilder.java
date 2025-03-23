@@ -3,6 +3,7 @@ package io.xpipe.app.util;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.ChoicePaneComp;
 import io.xpipe.app.core.AppI18n;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -52,10 +53,23 @@ public class OptionsChoiceBuilder {
                 .orElse(0);
         var selected = new SimpleIntegerProperty(selectedIndex);
 
-        var properties = new ArrayList<Property<?>>();
+        var properties = new ArrayList<Property<Object>>();
         for (int i = 0; i < sub.size(); i++) {
             properties.add(new SimpleObjectProperty<>(selectedIndex == i ? s.getValue() : null));
         }
+
+        property.addListener((obs, oldValue, newValue) -> {
+            if (newValue == null) {
+                return;
+            }
+
+            for (int i = 0; i < subclasses.size(); i++) {
+                var c = subclasses.get(i);
+                if (c.isAssignableFrom(newValue.getClass())) {
+                    properties.get(i).setValue(newValue);
+                }
+            }
+        });
 
         var map = new LinkedHashMap<ObservableValue<String>, OptionsBuilder>();
         for (int i = 0; i < sub.size(); i++) {

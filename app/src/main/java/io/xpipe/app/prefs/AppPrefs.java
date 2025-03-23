@@ -7,11 +7,14 @@ import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
 import io.xpipe.app.icon.SystemIconSource;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.password.NoPasswordManager;
 import io.xpipe.app.password.PasswordManager;
+import io.xpipe.app.password.PasswordManagerCommand;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.PlatformThread;
+import io.xpipe.core.process.ShellScript;
 import io.xpipe.core.util.ModuleHelper;
 
 import javafx.beans.property.*;
@@ -100,12 +103,12 @@ public class AppPrefs {
     public final BooleanProperty denyTempScriptCreation =
             mapVaultShared(new SimpleBooleanProperty(false), "denyTempScriptCreation", Boolean.class, false);
     final Property<PasswordManager> passwordManager = mapLocal(
-            new SimpleObjectProperty<>(new PasswordManager.None()),
+            new SimpleObjectProperty<>(new NoPasswordManager()),
             "passwordManager",
             PasswordManager.class,
             false);
     public final StringProperty passwordManagerCommand =
-            mapLocal(new SimpleStringProperty(""), "passwordManagerCommand", String.class, false);
+            mapLocal(new SimpleStringProperty(null), "passwordManagerCommand", String.class, false);
     final ObjectProperty<StartupBehaviour> startupBehaviour = mapLocal(
             new SimpleObjectProperty<>(StartupBehaviour.GUI), "startupBehaviour", StartupBehaviour.class, true);
     public final BooleanProperty enableGitStorage =
@@ -310,7 +313,7 @@ public class AppPrefs {
         return developerMode().getValue() && !ModuleHelper.isImage();
     }
 
-    public ObservableValue<PasswordManager> externalPasswordManager() {
+    public ObservableValue<PasswordManager> passwordManager() {
         return passwordManager;
     }
 
@@ -551,6 +554,11 @@ public class AppPrefs {
         if (AppProperties.get().isInitialLaunch()) {
             var f = PlatformState.determineDefaultScalingFactor();
             uiScale.setValue(f.isPresent() ? f.getAsInt() : null);
+        }
+
+        // Migrate legacy password manager
+        if (passwordManagerCommand.get() != null && passwordManager.getValue() instanceof NoPasswordManager) {
+            passwordManager.setValue(PasswordManagerCommand.builder().script(new ShellScript(passwordManagerCommand.get())).build());
         }
     }
 

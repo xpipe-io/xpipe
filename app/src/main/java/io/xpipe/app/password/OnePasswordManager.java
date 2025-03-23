@@ -22,4 +22,9 @@ public class OnePasswordManager extends PasswordManagerFixedCommand {
     public String getDocsLink() {
         return "https://developer.1password.com/docs/cli/reference/commands/read";
     }
+
+    @Override
+    public String getKeyPlaceholder() {
+        return "op://<vault>/<item>/<field>";
+    }
 }

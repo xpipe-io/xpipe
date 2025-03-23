@@ -86,4 +86,9 @@ public class WindowsCredentialManager implements PasswordManager {
             return null;
         }
     }
+
+    @Override
+    public String getKeyPlaceholder() {
+        return "<credential name>";
+    }
 }

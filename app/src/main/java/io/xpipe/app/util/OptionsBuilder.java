@@ -8,6 +8,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.util.InPlaceSecretValue;
 
 import javafx.beans.property.*;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
 import javafx.scene.control.ComboBox;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -411,13 +413,22 @@ public class OptionsBuilder {
 
     public final <T, V extends T> OptionsBuilder bindChoice(
             Supplier<Property<? extends V>> creator, Property<T> toSet) {
+        var current = new AtomicReference<Property<? extends V>>(creator.get());
+        var listener = new ChangeListener<V>() {
+            @Override
+            public void changed(ObservableValue<? extends V> observable, V oldValue, V newValue) {
+                toSet.setValue(newValue);
+            }
+        };
+        current.get().addListener(listener);
         props.forEach(prop -> {
             prop.addListener((c, o, n) -> {
-                toSet.unbind();
-                toSet.bind(creator.get());
+                current.get().removeListener(listener);
+                current.set(creator.get());
+                toSet.setValue(current.get().getValue());
+                current.get().addListener(listener);
             });
         });
-        toSet.bind(creator.get());
         return this;
     }
 

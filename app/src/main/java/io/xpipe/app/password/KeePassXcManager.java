@@ -5,10 +5,12 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -19,9 +21,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 @ToString
 @Jacksonized
 @JsonTypeName("keePassXc")
@@ -33,7 +36,9 @@ public class KeePassXcManager implements PasswordManager {
 
     public static OptionsBuilder createOptions(Property<KeePassXcManager> p) {
         var prop = new SimpleObjectProperty<KeePassXcAssociationKey>();
-        p.subscribe(keePassXcManager -> prop.set(keePassXcManager != null ? keePassXcManager.getAssociationKey() : null));
+        p.subscribe(keePassXcManager -> {
+            prop.set(keePassXcManager != null ? keePassXcManager.getAssociationKey() : null);
+        });
         return new OptionsBuilder()
                 .nameAndDescription("keePassXcNotAssociated")
                 .addComp(new ButtonComp(AppI18n.observable("keePassXcNotAssociatedButton"), () -> {
@@ -44,14 +49,14 @@ public class KeePassXcManager implements PasswordManager {
                 }))
                 .hide(prop.isNotNull())
                 .nameAndDescription("keePassXcAssociated")
-                .sub(new OptionsBuilder()
+                .addComp(new OptionsBuilder()
                 .name("identifier")
                 .addStaticString(prop.map(k -> k.getId()))
                 .name("key")
                 .addStaticString(prop.map(k -> {
                     var s = k.getKey().getSecretValue();
                     return s.substring(0, 6) + "*".repeat(s.length() - 6);
-                }))
+                })).buildComp()
                 )
                 .hide(prop.isNull())
                 .addProperty(prop)
@@ -73,14 +78,14 @@ public class KeePassXcManager implements PasswordManager {
             c.associate();
             c.testAssociation();
             return c.getAssociationKey();
-        } catch (Exception e) {
+        } finally {
             c.disconnect();
-            throw e;
         }
     }
 
     private static String receive(String key) throws Exception {
-        var fixedKey = key.startsWith("http://") || key.startsWith("https://") ? key : "https://" + key;
+        var hasScheme = Pattern.compile("^\\w+://").matcher(key).find();
+        var fixedKey = hasScheme ? key : "https://" + key;
         var client = getOrCreate();
         var response = client.getLoginsMessage(fixedKey);
         var password = client.getPassword(response);
@@ -104,7 +109,8 @@ public class KeePassXcManager implements PasswordManager {
             var c = new KeePassXcProxyClient(found.get());
             c.connect();
             c.exchangeKeys();
-            KeePassXcAssociationKey cached = AppCache.getNonNull("keepassxc-association", KeePassXcAssociationKey.class, () -> null);
+            var pref = AppPrefs.get().passwordManager();
+            KeePassXcAssociationKey cached = pref.getValue() instanceof KeePassXcManager kpm ? kpm.getAssociationKey() : null;
             if (cached != null) {
                 c.useExistingAssociationKey(cached);
                 try {
@@ -118,7 +124,9 @@ public class KeePassXcManager implements PasswordManager {
             if (cached == null) {
                 c.associate();
                 c.testAssociation();
-                AppCache.update("keepassxc-association", c.getAssociationKey());
+                if (pref.getValue() instanceof KeePassXcManager kpm && !c.getAssociationKey().equals(kpm.getAssociationKey())) {
+                    AppPrefs.get().setFromExternal(AppPrefs.get().passwordManager(), kpm.toBuilder().associationKey(c.getAssociationKey()).build());
+                }
             }
             client = c;
         }
@@ -182,5 +190,10 @@ public class KeePassXcManager implements PasswordManager {
             ErrorEvent.fromThrowable(e).handle();
             return null;
         }
+    }
+
+    @Override
+    public String getKeyPlaceholder() {
+        return AppI18n.get("keePassXcPlaceholder");
     }
 }

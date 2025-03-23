@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.ext.LocalStore;
+import io.xpipe.app.password.PasswordManager;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.core.util.InPlaceSecretValue;
@@ -40,6 +41,10 @@ public class AppJacksonModule extends SimpleModule {
         addDeserializer(EncryptedValue.CurrentKey.class, new EncryptedValueDeserializer<>());
         addSerializer(EncryptedValue.VaultKey.class, new EncryptedValueSerializer());
         addDeserializer(EncryptedValue.VaultKey.class, new EncryptedValueDeserializer<>());
+
+        for (Class<?> c : PasswordManager.getClasses()) {
+            context.registerSubtypes(c);
+        }
 
         context.addSerializers(_serializers);
         context.addDeserializers(_deserializers);

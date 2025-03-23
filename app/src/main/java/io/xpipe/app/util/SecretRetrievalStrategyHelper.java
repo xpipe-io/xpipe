@@ -8,6 +8,7 @@ import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -43,11 +44,15 @@ public class SecretRetrievalStrategyHelper {
     }
 
     private static OptionsBuilder passwordManager(Property<SecretRetrievalStrategy.PasswordManager> p) {
+        var prefs = AppPrefs.get();
         var keyProperty =
                 new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getKey() : null);
         var content = new HorizontalComp(List.of(
                         new TextFieldComp(keyProperty)
-                                .apply(struc -> struc.get().setPromptText("$KEY"))
+                                .apply(struc -> struc.get().promptTextProperty().bind(
+                                        Bindings.createStringBinding(() -> {
+                                                    return prefs.passwordManager().getValue() != null ? prefs.passwordManager().getValue().getKeyPlaceholder() : "?";
+                                                }, prefs.passwordManager())))
                                 .hgrow(),
                         new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
                                     AppPrefs.get().selectCategory("passwordManager");

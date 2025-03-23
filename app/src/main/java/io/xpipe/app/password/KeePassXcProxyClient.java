@@ -55,15 +55,11 @@ public class KeePassXcProxyClient {
      * @return The action, or null if not found
      */
     private String extractAction(String response) {
-        try {
-            Pattern pattern = Pattern.compile("\"action\":\"([^\"]+)\"");
-            Matcher matcher = pattern.matcher(response);
+        Pattern pattern = Pattern.compile("\"action\":\"([^\"]+)\"");
+        Matcher matcher = pattern.matcher(response);
 
-            if (matcher.find()) {
-                return matcher.group(1);
-            }
-        } catch (Exception e) {
-            System.err.println("Error extracting action: " + e.getMessage());
+        if (matcher.find()) {
+            return matcher.group(1);
         }
         return null;
     }
@@ -320,14 +316,11 @@ public class KeePassXcProxyClient {
     }
 
     private boolean filterResponse(String action, String response) {
-        System.out.println("Received response: " + response);
-
         // Extract action
         String extractedAction = extractAction(response);
 
         // Special handling for action-specific responses
         if ("database-locked".equals(extractedAction) || "database-unlocked".equals(extractedAction)) {
-            System.out.println("Database state changed: " + extractedAction);
             // Update state based on the action
             if ("database-locked".equals(extractedAction)) {
                 return true;

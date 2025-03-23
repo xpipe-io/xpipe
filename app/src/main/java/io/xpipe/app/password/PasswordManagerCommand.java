@@ -19,10 +19,14 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
+import lombok.Builder;
 import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
 @JsonTypeName("passwordManagerCommand")
 @Value
+@Jacksonized
+@Builder
 public class PasswordManagerCommand implements PasswordManager {
 
     static OptionsBuilder createOptions(Property<PasswordManagerCommand> property) {
@@ -104,5 +108,10 @@ public class PasswordManagerCommand implements PasswordManager {
     public String retrievePassword(String key) {
         var cmd = ExternalApplicationHelper.replaceFileArgument(script.getValue(), "KEY", key);
         return retrieveWithCommand(cmd);
+    }
+
+    @Override
+    public String getKeyPlaceholder() {
+        return "$KEY";
     }
 }

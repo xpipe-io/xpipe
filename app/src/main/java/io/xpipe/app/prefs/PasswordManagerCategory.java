@@ -9,6 +9,7 @@ import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.password.NoPasswordManager;
 import io.xpipe.app.password.PasswordManager;
 import io.xpipe.app.util.*;
 
@@ -61,20 +62,6 @@ public class PasswordManagerCategory extends AppPrefsCategory {
         var testPasswordManagerValue = new SimpleStringProperty();
         var testPasswordManagerResult = new SimpleStringProperty();
 
-        var command = new IntegratedTextAreaComp(
-                        prefs.passwordManagerCommand,
-                        false,
-                        "command",
-                        new SimpleStringProperty(ProcessControlProvider.get()
-                                .getEffectiveLocalDialect()
-                                .getScriptFileEnding()))
-                .apply(struc -> {
-                    struc.getTextArea().setPromptText("mypassmgr get $KEY");
-                })
-                .disable(prefs.passwordManagerCommand.isNull())
-                .hide(prefs.passwordManagerCommand.isNull())
-                .minWidth(350)
-                .minHeight(120);
         var choiceBuilder = OptionsChoiceBuilder.builder()
                 .property(prefs.passwordManager)
                 .subclasses(PasswordManager.getClasses())
@@ -96,20 +83,13 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                     hbox.setSpacing(10);
                     return hbox;
         }).build();
-
-        var top = choiceBuilder.build().buildComp();
-        var choice = new VerticalComp(List.of(top, command)).apply(struc -> {
-            struc.get().setAlignment(Pos.CENTER_LEFT);
-            struc.get().setSpacing(10);
-        });
-
-        prefs.passwordManager.addListener((observable, oldValue, newValue) -> {
-            System.out.println(newValue);
-        });
+        var choice = choiceBuilder.build().buildComp();
 
         var testInput = new HorizontalComp(List.<Comp<?>>of(
                 new TextFieldComp(testPasswordManagerValue)
-                        .apply(struc -> struc.get().setPromptText("Enter password key"))
+                        .apply(struc -> struc.get().promptTextProperty().bind(Bindings.createStringBinding(() -> {
+                            return prefs.passwordManager.getValue() != null ? prefs.passwordManager.getValue().getKeyPlaceholder() : "?";
+                        }, prefs.passwordManager)))
                         .styleClass(Styles.LEFT_PILL)
                         .prefWidth(400)
                         .apply(struc -> struc.get().setOnKeyPressed(event -> {
@@ -136,13 +116,16 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                 .padding(new Insets(10, 0, 0, 0))
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
                 .apply(struc -> struc.get().setFillHeight(true));
+
         return new OptionsBuilder()
                 .addTitle("passwordManager")
                 .sub(new OptionsBuilder()
                         .pref(prefs.passwordManager)
                         .addComp(choice)
                         .nameAndDescription("passwordManagerCommandTest")
-                        .addComp(testPasswordManager))
+                        .addComp(testPasswordManager)
+                        .hide(BindingsHelper.map(prefs.passwordManager, p -> p == null || p instanceof NoPasswordManager))
+                )
                 .buildComp();
     }
 }
