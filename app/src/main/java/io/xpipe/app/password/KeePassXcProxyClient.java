@@ -1,10 +1,11 @@
-package io.xpipe.app.prefs;
+package io.xpipe.app.password;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.JacksonMapper;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -174,7 +175,7 @@ public class KeePassXcProxyClient {
         Map<String, Object> messageData = new HashMap<>();
         messageData.put("action", "test-associate");
         messageData.put("id", associationKey.getId());
-        messageData.put("key", associationKey.getKey());
+        messageData.put("key", associationKey.getKey().getSecretValue());
         
         // Encrypt the message
         String encryptedMessage = encrypt(messageData, nonce);
@@ -236,7 +237,7 @@ public class KeePassXcProxyClient {
         // Add the keys
         Map<String, Object> keyData = new HashMap<>();
         keyData.put("id", associationKey.getId());
-        keyData.put("key", associationKey.getKey());
+        keyData.put("key", associationKey.getKey().getSecretValue());
         
         messageData.put("keys", new Map[] { keyData });
         
@@ -488,9 +489,9 @@ public class KeePassXcProxyClient {
 
             if (success && parsedResponse.containsKey("id") && parsedResponse.containsKey("hash")) {
                 String id = (String) parsedResponse.get("id");
-                String hash = (String) parsedResponse.get("hash");
+                var key = InPlaceSecretValue.of(TweetNaClHelper.encodeBase64(idKeyPair.getPublicKey()));
 
-                associationKey = new KeePassXcAssociationKey(id, TweetNaClHelper.encodeBase64(idKeyPair.getPublicKey()), hash);
+                associationKey = new KeePassXcAssociationKey(id, key);
 
                 return;
             }

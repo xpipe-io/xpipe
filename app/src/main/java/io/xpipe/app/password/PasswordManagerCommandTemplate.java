@@ -1,4 +1,4 @@
-package io.xpipe.app.prefs;
+package io.xpipe.app.password;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.core.process.OsType;
@@ -6,13 +6,13 @@ import io.xpipe.core.process.OsType;
 import java.util.List;
 import java.util.stream.Stream;
 
-public interface ExternalPasswordManagerTemplate extends PrefsChoiceValue {
+public interface PasswordManagerCommandTemplate extends PrefsChoiceValue {
 
     String getTemplate();
 
     String getDocsLink();
 
-    ExternalPasswordManagerTemplate BITWARDEN = new ExternalPasswordManagerTemplate() {
+    PasswordManagerCommandTemplate BITWARDEN = new PasswordManagerCommandTemplate() {
         @Override
         public String getTemplate() {
             return "bw get password $KEY --nointeraction --raw";
@@ -29,7 +29,7 @@ public interface ExternalPasswordManagerTemplate extends PrefsChoiceValue {
         }
     };
 
-    ExternalPasswordManagerTemplate ONEPASSWORD = new ExternalPasswordManagerTemplate() {
+    PasswordManagerCommandTemplate ONEPASSWORD = new PasswordManagerCommandTemplate() {
         @Override
         public String getTemplate() {
             return "op read $KEY --force";
@@ -46,7 +46,7 @@ public interface ExternalPasswordManagerTemplate extends PrefsChoiceValue {
         }
     };
 
-    ExternalPasswordManagerTemplate DASHLANE = new ExternalPasswordManagerTemplate() {
+    PasswordManagerCommandTemplate DASHLANE = new PasswordManagerCommandTemplate() {
         @Override
         public String getTemplate() {
             return "dcli password --output console $KEY";
@@ -63,7 +63,7 @@ public interface ExternalPasswordManagerTemplate extends PrefsChoiceValue {
         }
     };
 
-    ExternalPasswordManagerTemplate LASTPASS = new ExternalPasswordManagerTemplate() {
+    PasswordManagerCommandTemplate LASTPASS = new PasswordManagerCommandTemplate() {
         @Override
         public String getTemplate() {
             return "lpass show --password $KEY";
@@ -80,7 +80,7 @@ public interface ExternalPasswordManagerTemplate extends PrefsChoiceValue {
         }
     };
 
-    ExternalPasswordManagerTemplate MACOS_KEYCHAIN = new ExternalPasswordManagerTemplate() {
+    PasswordManagerCommandTemplate MACOS_KEYCHAIN = new PasswordManagerCommandTemplate() {
         @Override
         public String getTemplate() {
             return "security find-generic-password -w -l $KEY";
@@ -102,7 +102,7 @@ public interface ExternalPasswordManagerTemplate extends PrefsChoiceValue {
         }
     };
 
-    ExternalPasswordManagerTemplate KEEPER = new ExternalPasswordManagerTemplate() {
+    PasswordManagerCommandTemplate KEEPER = new PasswordManagerCommandTemplate() {
         @Override
         public String getTemplate() {
             var exec = OsType.getLocal() == OsType.WINDOWS ? "@keeper" : "keeper";
@@ -120,7 +120,7 @@ public interface ExternalPasswordManagerTemplate extends PrefsChoiceValue {
         }
     };
 
-    List<ExternalPasswordManagerTemplate> ALL = Stream.of(
+    List<PasswordManagerCommandTemplate> ALL = Stream.of(
                     ONEPASSWORD, BITWARDEN, DASHLANE, LASTPASS, KEEPER, MACOS_KEYCHAIN)
             .filter(externalPasswordManager -> externalPasswordManager.isSelectable())
             .toList();

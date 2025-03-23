@@ -40,6 +40,7 @@ open module io.xpipe.app {
     exports io.xpipe.app.resources;
     exports io.xpipe.app.comp;
     exports io.xpipe.app.icon;
+    exports io.xpipe.app.password;
 
     requires com.sun.jna;
     requires com.sun.jna.platform;

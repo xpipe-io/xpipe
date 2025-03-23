@@ -9,6 +9,7 @@ import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.password.PasswordManager;
 import io.xpipe.app.util.*;
 
 import javafx.application.Platform;
@@ -96,10 +97,14 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                     return hbox;
         }).build();
 
-        var top = choiceBuilder.build().buildComp().maxWidth(500);
+        var top = choiceBuilder.build().buildComp();
         var choice = new VerticalComp(List.of(top, command)).apply(struc -> {
             struc.get().setAlignment(Pos.CENTER_LEFT);
             struc.get().setSpacing(10);
+        });
+
+        prefs.passwordManager.addListener((observable, oldValue, newValue) -> {
+            System.out.println(newValue);
         });
 
         var testInput = new HorizontalComp(List.<Comp<?>>of(
@@ -134,7 +139,7 @@ public class PasswordManagerCategory extends AppPrefsCategory {
         return new OptionsBuilder()
                 .addTitle("passwordManager")
                 .sub(new OptionsBuilder()
-                        .pref(prefs.passwordManagerCommand)
+                        .pref(prefs.passwordManager)
                         .addComp(choice)
                         .nameAndDescription("passwordManagerCommandTest")
                         .addComp(testPasswordManager))

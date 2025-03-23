@@ -1,4 +1,4 @@
-package io.xpipe.app.prefs;
+package io.xpipe.app.password;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.ButtonComp;
@@ -11,7 +11,7 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Value;
+import lombok.ToString;
 import lombok.extern.jackson.Jacksonized;
 
 import java.io.IOException;
@@ -22,6 +22,7 @@ import java.util.Optional;
 
 @Getter
 @Builder
+@ToString
 @Jacksonized
 @JsonTypeName("keePassXc")
 public class KeePassXcManager implements PasswordManager {
@@ -31,7 +32,8 @@ public class KeePassXcManager implements PasswordManager {
     private final KeePassXcAssociationKey associationKey;
 
     public static OptionsBuilder createOptions(Property<KeePassXcManager> p) {
-        var prop = new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getAssociationKey() : null);
+        var prop = new SimpleObjectProperty<KeePassXcAssociationKey>();
+        p.subscribe(keePassXcManager -> prop.set(keePassXcManager != null ? keePassXcManager.getAssociationKey() : null));
         return new OptionsBuilder()
                 .nameAndDescription("keePassXcNotAssociated")
                 .addComp(new ButtonComp(AppI18n.observable("keePassXcNotAssociatedButton"), () -> {
@@ -41,17 +43,18 @@ public class KeePassXcManager implements PasswordManager {
                     });
                 }))
                 .hide(prop.isNotNull())
-                .name("abc")
-                .addStaticString(prop.map(k -> k.getId()))
-                .hide(prop.isNull())
                 .nameAndDescription("keePassXcAssociated")
-                .addComp(new ButtonComp(AppI18n.observable("keePassXcNotAssociatedButton"), () -> {
-                    ThreadHelper.runFailableAsync(() -> {
-                        var r = associate();
-                        prop.setValue(r);
-                    });
+                .sub(new OptionsBuilder()
+                .name("identifier")
+                .addStaticString(prop.map(k -> k.getId()))
+                .name("key")
+                .addStaticString(prop.map(k -> {
+                    var s = k.getKey().getSecretValue();
+                    return s.substring(0, 6) + "*".repeat(s.length() - 6);
                 }))
+                )
                 .hide(prop.isNull())
+                .addProperty(prop)
                 .bind(() -> {
                     return new KeePassXcManager(prop.getValue());
                 }, p);

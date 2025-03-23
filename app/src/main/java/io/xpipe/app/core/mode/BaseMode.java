@@ -17,7 +17,7 @@ import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.prefs.KeePassXcManager;
+import io.xpipe.app.password.KeePassXcManager;
 import io.xpipe.app.resources.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageSyncHandler;

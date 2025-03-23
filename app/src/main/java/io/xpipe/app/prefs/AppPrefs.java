@@ -7,6 +7,7 @@ import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
 import io.xpipe.app.icon.SystemIconSource;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.password.PasswordManager;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.util.PlatformState;
@@ -103,7 +104,7 @@ public class AppPrefs {
             "passwordManager",
             PasswordManager.class,
             false);
-    final StringProperty passwordManagerCommand =
+    public final StringProperty passwordManagerCommand =
             mapLocal(new SimpleStringProperty(""), "passwordManagerCommand", String.class, false);
     final ObjectProperty<StartupBehaviour> startupBehaviour = mapLocal(
             new SimpleObjectProperty<>(StartupBehaviour.GUI), "startupBehaviour", StartupBehaviour.class, true);
@@ -605,17 +606,6 @@ public class AppPrefs {
         found.ifPresent(appPrefsCategory -> {
             selectedCategory.setValue(appPrefsCategory);
         });
-    }
-
-    public String passwordManagerString(String key) {
-        if (passwordManagerCommand.get() == null
-                || passwordManagerCommand.get().isEmpty()
-                || key == null
-                || key.isEmpty()) {
-            return null;
-        }
-
-        return ExternalApplicationHelper.replaceFileArgument(passwordManagerCommand.get(), "KEY", key);
     }
 
     public Mapping getMapping(Object property) {

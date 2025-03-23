@@ -1,5 +1,6 @@
-package io.xpipe.app.prefs;
+package io.xpipe.app.password;
 
+import io.xpipe.core.util.InPlaceSecretValue;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -9,6 +10,5 @@ import lombok.extern.jackson.Jacksonized;
 @Builder
 public class KeePassXcAssociationKey {
     String id;
-    String key;
-    String hash;
+    InPlaceSecretValue key;
 }
