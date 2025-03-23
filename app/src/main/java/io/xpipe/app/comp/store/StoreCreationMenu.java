@@ -67,7 +67,7 @@ public class StoreCreationMenu {
             item.setGraphic(new FontIcon(graphic));
             item.textProperty().bind(AppI18n.observable(name));
             item.setOnAction(event -> {
-                StoreCreationComp.showCreation(
+                StoreCreationDialog.showCreation(
                         defaultProvider != null
                                 ? DataStoreProviders.byId(defaultProvider).orElseThrow()
                                 : null,
@@ -85,7 +85,7 @@ public class StoreCreationMenu {
                 return;
             }
 
-            StoreCreationComp.showCreation(
+            StoreCreationDialog.showCreation(
                     defaultProvider != null
                             ? DataStoreProviders.byId(defaultProvider).orElseThrow()
                             : null,
@@ -108,7 +108,7 @@ public class StoreCreationMenu {
             item.setGraphic(PrettyImageHelper.ofFixedSizeSquare(dataStoreProvider.getDisplayIconFileName(null), 16)
                     .createRegion());
             item.setOnAction(event -> {
-                StoreCreationComp.showCreation(dataStoreProvider, category);
+                StoreCreationDialog.showCreation(dataStoreProvider, category);
                 event.consume();
             });
             menu.getItems().add(item);

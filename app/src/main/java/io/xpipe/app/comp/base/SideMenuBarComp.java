@@ -12,29 +12,109 @@ import io.xpipe.app.util.PlatformThread;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import lombok.AllArgsConstructor;
 
 import java.util.List;
 
+@AllArgsConstructor
 public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
 
     private final Property<AppLayoutModel.Entry> value;
     private final List<AppLayoutModel.Entry> entries;
-
-    public SideMenuBarComp(Property<AppLayoutModel.Entry> value, List<AppLayoutModel.Entry> entries) {
-        this.value = value;
-        this.entries = entries;
-    }
+    private final ObservableList<AppLayoutModel.QueueEntry> queueEntries;
 
     @Override
     public CompStructure<VBox> createBase() {
         var vbox = new VBox();
         vbox.setFillWidth(true);
+
+        for (AppLayoutModel.Entry e : entries) {
+            var b = new IconButtonComp(e.icon(), () -> {
+                if (e.action() != null) {
+                    e.action().run();
+                    return;
+                }
+
+                value.setValue(e);
+            });
+            b.tooltip(e.name());
+            b.accessibleText(e.name());
+
+            var stack = createStyle(e, b);
+            var shortcut = e.combination();
+            if (shortcut != null) {
+                stack.apply(struc -> struc.get().getProperties().put("shortcut", shortcut));
+            }
+            vbox.getChildren().add(stack.createRegion());
+        }
+
+        {
+            var b = new IconButtonComp("mdi2u-update", () -> UpdateAvailableDialog.showIfNeeded());
+            b
+                    .tooltipKey("updateAvailableTooltip")
+                    .accessibleTextKey("updateAvailableTooltip");
+            var stack = createStyle(null, b);
+            stack.hide(PlatformThread.sync(Bindings.createBooleanBinding(
+                    () -> {
+                        return AppDistributionType.get()
+                                        .getUpdateHandler()
+                                        .getPreparedUpdate()
+                                        .getValue()
+                                == null;
+                    },
+                    AppDistributionType.get().getUpdateHandler().getPreparedUpdate())));
+            vbox.getChildren().add(stack.createRegion());
+        }
+
+        var filler = new Button();
+        filler.setDisable(true);
+        filler.setMaxHeight(3000);
+        vbox.getChildren().add(filler);
+        VBox.setVgrow(filler, Priority.ALWAYS);
+        vbox.getStyleClass().add("sidebar-comp");
+
+        var queueButtons = new VBox();
+        queueEntries.addListener((ListChangeListener<? super AppLayoutModel.QueueEntry>) c -> {
+            queueButtons.getChildren().clear();
+            for (int i = c.getList().size() - 1; i >= 0; i--) {
+                var item = c.getList().get(i);
+                var b = new IconButtonComp(item.getIcon(), () -> {
+                    item.getAction().run();
+                    queueEntries.remove(item);
+                });
+                b.tooltip(item.getName());
+                b.accessibleText(item.getName());
+                var stack = createStyle(null, b);
+                queueButtons.getChildren().add(stack.createRegion());
+            }
+        });
+        vbox.getChildren().add(queueButtons);
+
+        return new SimpleCompStructure<>(vbox);
+    }
+
+    private Comp<?> createStyle(AppLayoutModel.Entry e, IconButtonComp b) {
+        var selected = PseudoClass.getPseudoClass("selected");
+
+        b.apply(struc -> {
+            AppFontSizes.lg(struc.get());
+            struc.get().setAlignment(Pos.CENTER);
+
+            struc.get().pseudoClassStateChanged(selected, value.getValue().equals(e));
+            value.addListener((c, o, n) -> {
+                PlatformThread.runLaterIfNeeded(() -> {
+                    struc.get().pseudoClassStateChanged(selected, n.equals(e));
+                });
+            });
+        });
 
         var selectedBorder = Bindings.createObjectBinding(
                 () -> {
@@ -45,7 +125,6 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                     return new Background(new BackgroundFill(c, new CornerRadii(8), new Insets(14, 1, 14, 2)));
                 },
                 Platform.getPreferences().accentColorProperty());
-
         var hoverBorder = Bindings.createObjectBinding(
                 () -> {
                     var c = Platform.getPreferences()
@@ -56,95 +135,38 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                     return new Background(new BackgroundFill(c, new CornerRadii(8), new Insets(14, 1, 14, 2)));
                 },
                 Platform.getPreferences().accentColorProperty());
-
         var noneBorder = Bindings.createObjectBinding(
                 () -> {
                     return Background.fill(Color.TRANSPARENT);
                 },
                 Platform.getPreferences().accentColorProperty());
 
-        var selected = PseudoClass.getPseudoClass("selected");
-        for (AppLayoutModel.Entry e : entries) {
-            var b = new IconButtonComp(e.icon(), () -> {
-                if (e.action() != null) {
-                    e.action().run();
-                    return;
-                }
+        var indicator = Comp.empty().styleClass("indicator");
+        var stack = new StackComp(List.of(indicator, b))
+                .apply(struc -> struc.get().setAlignment(Pos.CENTER_RIGHT));
+        stack.apply(struc -> {
+            var indicatorRegion = (Region) struc.get().getChildren().getFirst();
+            indicatorRegion.setMaxWidth(7);
+            indicatorRegion
+                    .backgroundProperty()
+                    .bind(Bindings.createObjectBinding(
+                            () -> {
+                                if (value.getValue().equals(e)) {
+                                    return selectedBorder.get();
+                                }
 
-                value.setValue(e);
-            });
-            var shortcut = e.combination();
-            b.apply(new TooltipAugment<>(e.name(), shortcut));
-            b.apply(struc -> {
-                AppFontSizes.lg(struc.get());
-                struc.get().setAlignment(Pos.CENTER);
+                                if (struc.get().isHover()) {
+                                    return hoverBorder.get();
+                                }
 
-                struc.get().pseudoClassStateChanged(selected, value.getValue().equals(e));
-                value.addListener((c, o, n) -> {
-                    PlatformThread.runLaterIfNeeded(() -> {
-                        struc.get().pseudoClassStateChanged(selected, n.equals(e));
-                    });
-                });
-            });
-            b.accessibleText(e.name());
-
-            var indicator = Comp.empty().styleClass("indicator");
-            var stack = new StackComp(List.of(indicator, b))
-                    .apply(struc -> struc.get().setAlignment(Pos.CENTER_RIGHT));
-            stack.apply(struc -> {
-                var indicatorRegion = (Region) struc.get().getChildren().getFirst();
-                indicatorRegion.setMaxWidth(7);
-                indicatorRegion
-                        .backgroundProperty()
-                        .bind(Bindings.createObjectBinding(
-                                () -> {
-                                    if (value.getValue().equals(e)) {
-                                        return selectedBorder.get();
-                                    }
-
-                                    if (struc.get().isHover()) {
-                                        return hoverBorder.get();
-                                    }
-
-                                    return noneBorder.get();
-                                },
-                                struc.get().hoverProperty(),
-                                value,
-                                hoverBorder,
-                                selectedBorder,
-                                noneBorder));
-            });
-            if (shortcut != null) {
-                stack.apply(struc -> struc.get().getProperties().put("shortcut", shortcut));
-            }
-            vbox.getChildren().add(stack.createRegion());
-        }
-
-        {
-            var b = new IconButtonComp("mdi2u-update", () -> UpdateAvailableDialog.showIfNeeded())
-                    .tooltipKey("updateAvailableTooltip")
-                    .accessibleTextKey("updateAvailableTooltip");
-            b.apply(struc -> {
-                AppFontSizes.lg(struc.get());
-            });
-            b.hide(PlatformThread.sync(Bindings.createBooleanBinding(
-                    () -> {
-                        return AppDistributionType.get()
-                                        .getUpdateHandler()
-                                        .getPreparedUpdate()
-                                        .getValue()
-                                == null;
-                    },
-                    AppDistributionType.get().getUpdateHandler().getPreparedUpdate())));
-            vbox.getChildren().add(b.createRegion());
-        }
-
-        var filler = new Button();
-        filler.setDisable(true);
-        filler.setMaxHeight(3000);
-        vbox.getChildren().add(filler);
-        VBox.setVgrow(filler, Priority.ALWAYS);
-        vbox.getStyleClass().add("sidebar-comp");
-        return new SimpleCompStructure<>(vbox);
+                                return noneBorder.get();
+                            },
+                            struc.get().hoverProperty(),
+                            value,
+                            hoverBorder,
+                            selectedBorder,
+                            noneBorder));
+        });
+        return stack;
     }
 }

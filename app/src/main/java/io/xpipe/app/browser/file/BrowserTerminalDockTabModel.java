@@ -137,7 +137,7 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
                 dockModel.toggleView(aBoolean);
             });
         });
-        AppDialog.getModalOverlay().addListener((ListChangeListener<? super ModalOverlay>) c -> {
+        AppDialog.getModalOverlays().addListener((ListChangeListener<? super ModalOverlay>) c -> {
             if (c.getList().size() > 0) {
                 dockModel.toggleView(false);
             } else {

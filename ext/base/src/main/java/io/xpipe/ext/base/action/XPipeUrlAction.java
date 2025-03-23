@@ -1,6 +1,7 @@
 package io.xpipe.ext.base.action;
 
 import io.xpipe.app.comp.store.StoreCreationComp;
+import io.xpipe.app.comp.store.StoreCreationDialog;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.issue.TrackEvent;
@@ -110,7 +111,7 @@ public class XPipeUrlAction implements ActionProvider {
                             .getUuid(),
                     "",
                     store);
-            StoreCreationComp.showEdit(entry);
+            StoreCreationDialog.showEdit(entry);
         }
     }
 }

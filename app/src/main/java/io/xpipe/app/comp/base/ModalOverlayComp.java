@@ -281,6 +281,7 @@ public class ModalOverlayComp extends SimpleComp {
         if (mb.getAugment() != null) {
             mb.getAugment().accept(button);
         }
+        button.managedProperty().bind(button.visibleProperty());
         button.setOnAction(event -> {
             if (mb.getAction() != null) {
                 mb.getAction().run();

@@ -35,7 +35,7 @@ public class AppMainWindowContentComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var overlay = AppDialog.getModalOverlay();
+        var overlay = AppDialog.getModalOverlays();
         var loaded = AppMainWindow.getLoadedContent();
         var bg = Comp.of(() -> {
             var loadingIcon = new ImageView();

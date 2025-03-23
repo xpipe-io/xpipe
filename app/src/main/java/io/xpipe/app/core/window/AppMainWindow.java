@@ -313,7 +313,7 @@ public class AppMainWindow {
             }
 
             // Close dialogs
-            AppDialog.getModalOverlay().clear();
+            AppDialog.getModalOverlays().clear();
 
             // Close other windows
             Stage.getWindows().stream().filter(w -> !w.equals(stage)).toList().forEach(w -> w.fireEvent(e));

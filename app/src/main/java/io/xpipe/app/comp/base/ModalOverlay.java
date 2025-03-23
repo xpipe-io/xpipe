@@ -65,7 +65,7 @@ public class ModalOverlay {
     }
 
     public boolean isShowing() {
-        return AppDialog.getModalOverlay().contains(this);
+        return AppDialog.getModalOverlays().contains(this);
     }
 
     public void showAndWait() {

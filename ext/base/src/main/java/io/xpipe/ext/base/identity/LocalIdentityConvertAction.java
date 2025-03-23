@@ -1,6 +1,7 @@
 package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.comp.store.StoreCreationComp;
+import io.xpipe.app.comp.store.StoreCreationDialog;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataStoreCreationCategory;
@@ -63,7 +64,7 @@ public class LocalIdentityConvertAction implements ActionProvider {
                     .sshIdentity(EncryptedValue.VaultKey.of(st.getSshIdentity()))
                     .perUser(false)
                     .build();
-            StoreCreationComp.showCreation(synced, DataStoreCreationCategory.IDENTITY, dataStoreEntry -> {}, true);
+            StoreCreationDialog.showCreation(synced, DataStoreCreationCategory.IDENTITY, dataStoreEntry -> {}, true);
         }
     }
 }

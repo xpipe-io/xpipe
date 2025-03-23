@@ -52,7 +52,7 @@ public class StoreIdentitiesIntroComp extends SimpleComp {
             var prov = canSync
                     ? DataStoreProviders.byId("syncedIdentity").orElseThrow()
                     : DataStoreProviders.byId("localIdentity").orElseThrow();
-            StoreCreationComp.showCreation(prov, DataStoreCreationCategory.IDENTITY);
+            StoreCreationDialog.showCreation(prov, DataStoreCreationCategory.IDENTITY);
             event.consume();
         });
 
