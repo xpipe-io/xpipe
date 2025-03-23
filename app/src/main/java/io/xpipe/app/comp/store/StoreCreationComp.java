@@ -205,7 +205,7 @@ public class StoreCreationComp extends DialogComp {
                                         && newE.getValidity().isUsable();
                                 DataStorage.get().updateEntry(e, newE);
                                 if (madeValid) {
-                                    StoreViewState.get().toggleStoreListUpdate();
+                                    StoreViewState.get().triggerStoreListUpdate();
                                 }
                             }
                         }

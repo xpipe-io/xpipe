@@ -55,7 +55,7 @@ public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
             }
 
             if (o != null && o.equals(model.getEntries().get(0))) {
-                StoreViewState.get().updateDisplay();
+                StoreViewState.get().triggerStoreListUpdate();
             }
         });
         pane.addEventHandler(KeyEvent.KEY_PRESSED, event -> {

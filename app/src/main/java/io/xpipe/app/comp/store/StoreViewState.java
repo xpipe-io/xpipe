@@ -19,7 +19,6 @@ import javafx.collections.ListChangeListener;
 import lombok.Getter;
 
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 public class StoreViewState {
@@ -34,6 +33,9 @@ public class StoreViewState {
     @Getter
     private final DerivedObservableList<StoreCategoryWrapper> categories =
             new DerivedObservableList<>(FXCollections.synchronizedObservableList(FXCollections.observableArrayList()), true);
+
+    @Getter
+    private final IntegerProperty entriesListVisibilityObservable = new SimpleIntegerProperty();
 
     @Getter
     private final IntegerProperty entriesListUpdateObservable = new SimpleIntegerProperty();
@@ -148,7 +150,7 @@ public class StoreViewState {
     private void initSections() {
         try {
             currentTopLevelSection = StoreSection.createTopLevel(
-                    allEntries, storeEntryWrapper -> true, filter, activeCategory, entriesListUpdateObservable);
+                    allEntries, storeEntryWrapper -> true, filter, activeCategory, entriesListVisibilityObservable, entriesListUpdateObservable);
         } catch (Exception exception) {
             currentTopLevelSection = new StoreSection(
                     null,
@@ -219,11 +221,13 @@ public class StoreViewState {
                         .orElseThrow()));
     }
 
-    public void updateDisplay() {
-        toggleStoreListUpdate();
+    public void triggerStoreListVisibilityUpdate() {
+        PlatformThread.runLaterIfNeeded(() -> {
+            entriesListVisibilityObservable.set(entriesListVisibilityObservable.get() + 1);
+        });
     }
 
-    public void toggleStoreListUpdate() {
+    public void triggerStoreListUpdate() {
         PlatformThread.runLaterIfNeeded(() -> {
             entriesListUpdateObservable.set(entriesListUpdateObservable.get() + 1);
         });
@@ -248,7 +252,7 @@ public class StoreViewState {
             @Override
             public void onStoreListUpdate() {
                 Platform.runLater(() -> {
-                    toggleStoreListUpdate();
+                    triggerStoreListUpdate();
                 });
             }
 

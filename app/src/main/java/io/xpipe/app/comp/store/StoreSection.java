@@ -110,6 +110,7 @@ public class StoreSection {
             Predicate<StoreEntryWrapper> entryFilter,
             ObservableValue<String> filterString,
             ObservableValue<StoreCategoryWrapper> category,
+            ObservableIntegerValue visibilityObservable,
             ObservableIntegerValue updateObservable) {
         var topLevel = all.filtered(
                 section -> {
@@ -119,7 +120,7 @@ public class StoreSection {
                 category,
                 updateObservable);
         var cached = topLevel.mapped(storeEntryWrapper ->
-                create(List.of(), storeEntryWrapper, 1, all, entryFilter, filterString, category, updateObservable));
+                create(List.of(), storeEntryWrapper, 1, all, entryFilter, filterString, category, visibilityObservable, updateObservable));
         var ordered = sorted(cached, category, updateObservable);
         var shown = ordered.filtered(
                 section -> {
@@ -146,6 +147,7 @@ public class StoreSection {
             Predicate<StoreEntryWrapper> entryFilter,
             ObservableValue<String> filterString,
             ObservableValue<StoreCategoryWrapper> category,
+            ObservableIntegerValue visibilityObservable,
             ObservableIntegerValue updateObservable) {
         if (e.getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
             return new StoreSection(
@@ -178,11 +180,12 @@ public class StoreSection {
                 },
                 e.getPersistentState(),
                 e.getCache(),
+                visibilityObservable,
                 updateObservable);
         var l = new ArrayList<>(parents);
         l.add(e);
         var cached = allChildren.mapped(
-                c -> create(l, c, depth + 1, all, entryFilter, filterString, category, updateObservable));
+                c -> create(l, c, depth + 1, all, entryFilter, filterString, category, visibilityObservable, updateObservable));
         var ordered = sorted(cached, category, updateObservable);
         var filtered = ordered.filtered(
                 section -> {
