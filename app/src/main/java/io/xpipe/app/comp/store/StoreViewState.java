@@ -29,11 +29,11 @@ public class StoreViewState {
 
     @Getter
     private final DerivedObservableList<StoreEntryWrapper> allEntries =
-            new DerivedObservableList<>(FXCollections.observableList(new CopyOnWriteArrayList<>()), true);
+            new DerivedObservableList<>(FXCollections.synchronizedObservableList(FXCollections.observableArrayList()), true);
 
     @Getter
     private final DerivedObservableList<StoreCategoryWrapper> categories =
-            new DerivedObservableList<>(FXCollections.observableList(new CopyOnWriteArrayList<>()), true);
+            new DerivedObservableList<>(FXCollections.synchronizedObservableList(FXCollections.observableArrayList()), true);
 
     @Getter
     private final IntegerProperty entriesListUpdateObservable = new SimpleIntegerProperty();
