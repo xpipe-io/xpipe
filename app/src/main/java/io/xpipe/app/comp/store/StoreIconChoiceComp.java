@@ -119,7 +119,8 @@ public class StoreIconChoiceComp extends SimpleComp {
         }
         var data = partitionList(filtered, columns);
         table.getItems().setAll(data);
-        if (filtered.size() == 1) {
+        // Table updates seem to not always be instant, sometimes the column is not there yet
+        if (filtered.size() == 1 && table.getColumns().size() > 0) {
             table.getSelectionModel().select(0, table.getColumns().getFirst());
             selected.setValue(filtered.getFirst());
         } else {
