@@ -142,23 +142,36 @@ public class SshIdentityStateManager {
             handleWindowsGpgAgentStop(sc);
             CommandSupport.isInPathOrThrow(sc, "ssh-agent", "SSH Agent", null);
             sc.executeSimpleBooleanCommand("ssh-agent start");
-        } else {
-            try (var c = sc.command("ssh-add -l").start()) {
-                var r = c.readStdoutAndStderr();
-                if (c.getExitCode() != 0) {
-                    var posixMessage = sc.getOsType() != OsType.WINDOWS
-                            ? " and the SSH_AUTH_SOCK variable."
-                            : "";
-                    var ex =
-                            new IllegalStateException("Unable to list agent identities via command ssh-add -l:\n" + r[0]
-                                    + "\n"
-                                    + r[1]
-                                    + "\nPlease check your SSH agent CLI configuration%s.".formatted(posixMessage));
-                    ErrorEvent.preconfigure(ErrorEvent.fromThrowable(ex)
-                            .expected()
-                            .documentationLink(DocumentationLink.SSH_AGENT));
-                    throw ex;
+        } else if (OsType.getLocal() == OsType.LINUX) {
+            // Use desktop session agent socket
+            // This is useful when people have misconfigured their init files to always source ssh-agent -s
+            // even if it is already set
+            if (sc.getLocalSystemAccess().supportsExecutableEnvironment()) {
+                var socketEnvVariable = System.getenv("SSH_AUTH_SOCK");
+                if (socketEnvVariable != null) {
+                    sc.command(sc.getShellDialect().getSetEnvironmentVariableCommand("SSH_AUTH_SOCK", socketEnvVariable)).execute();
                 }
+            }
+        }
+
+        try (var c = sc.command("ssh-add -l").start()) {
+            var r = c.readStdoutAndStderr();
+            if (c.getExitCode() != 0) {
+                var posixMessage = sc.getOsType() != OsType.WINDOWS
+                        ? " and the SSH_AUTH_SOCK variable."
+                        : "";
+                var ex =
+                        new IllegalStateException("Unable to list agent identities via command ssh-add -l:\n" + r[0]
+                                + "\n"
+                                + r[1]
+                                + "\nPlease check your SSH agent configuration%s.".formatted(posixMessage));
+                var eventBuilder = ErrorEvent.fromThrowable(ex)
+                        .expected();
+                if (OsType.getLocal() != OsType.WINDOWS) {
+                    eventBuilder.documentationLink(DocumentationLink.SSH_AGENT);
+                }
+                ErrorEvent.preconfigure(eventBuilder);
+                throw ex;
             }
         }
 
