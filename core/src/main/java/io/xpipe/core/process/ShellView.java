@@ -17,6 +17,16 @@ public class ShellView {
         return shellControl.getShellDialect();
     }
 
+    public byte[] readRawFile(FilePath path) throws Exception {
+        var s = getDialect().getFileReadCommand(shellControl, path.toString()).readRawBytesOrThrow();
+        return s;
+    }
+
+    public String readTextFile(FilePath path) throws Exception {
+        var s = getDialect().getFileReadCommand(shellControl, path.toString()).readStdoutOrThrow();
+        return s;
+    }
+
     public void writeTextFile(FilePath path, String text) throws Exception {
         var cc = getDialect().createTextFileWriteCommand(shellControl, text, path.toString());
         cc.execute();

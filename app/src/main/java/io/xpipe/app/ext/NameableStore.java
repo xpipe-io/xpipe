@@ -1,6 +1,8 @@
 package io.xpipe.app.ext;
 
-public interface NameableStore {
+import io.xpipe.core.store.DataStore;
+
+public interface NameableStore extends DataStore {
 
     String getName();
 }

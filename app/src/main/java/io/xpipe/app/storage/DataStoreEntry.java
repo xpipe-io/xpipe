@@ -3,6 +3,7 @@ package io.xpipe.app.storage;
 import com.fasterxml.jackson.core.JacksonException;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
+import io.xpipe.app.ext.NameableStore;
 import io.xpipe.app.ext.UserScopeStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ThreadHelper;
@@ -141,6 +142,11 @@ public class DataStoreEntry extends StorageElement {
                 store,
                 null,
                 null);
+    }
+
+    public static DataStoreEntry createNew(@NonNull NameableStore store) {
+        return createNew(
+                UUID.randomUUID(), DataStorage.get().getSelectedCategory().getUuid(), store.getName(), store);
     }
 
     public static DataStoreEntry createNew(@NonNull String name, @NonNull DataStore store) {

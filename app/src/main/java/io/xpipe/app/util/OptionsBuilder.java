@@ -295,6 +295,10 @@ public class OptionsBuilder {
         return this;
     }
 
+    public OptionsBuilder addStaticString(Object o) {
+        return addStaticString(new SimpleStringProperty(o != null ? o.toString() : null));
+    }
+
     public OptionsBuilder addStaticString(ObservableValue<String> s) {
         var prop = new SimpleStringProperty();
         s.subscribe(prop::set);

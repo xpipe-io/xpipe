@@ -134,12 +134,12 @@ public final class FilePath {
         return list;
     }
 
-    public String getBaseName() {
+    public FilePath getBaseName() {
         var split = value.lastIndexOf(".");
         if (split == -1) {
-            return value;
+            return this;
         }
-        return value.substring(0, split);
+        return FilePath.of(value.substring(0, split));
     }
 
     public String getExtension() {
