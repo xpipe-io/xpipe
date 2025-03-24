@@ -3,6 +3,7 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BooleanScope;
+import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FileKind;
 
@@ -16,6 +17,7 @@ import javafx.scene.input.*;
 import lombok.Getter;
 
 import java.io.File;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Timer;
@@ -24,15 +26,13 @@ import java.util.TimerTask;
 @Getter
 public class BrowserFileListCompEntry {
 
-    public static final Timer DROP_TIMER = new Timer("dnd", true);
-
     private final TableView<BrowserEntry> tv;
     private final Node row;
     private final BrowserEntry item;
     private final BrowserFileListModel model;
 
     private Point2D lastOver = new Point2D(-1, -1);
-    private TimerTask activeTask;
+    private Runnable activeTask;
     private ContextMenu lastContextMenu;
 
     public BrowserFileListCompEntry(
@@ -283,7 +283,7 @@ public class BrowserFileListCompEntry {
         }
 
         lastOver = (new Point2D(event.getX(), event.getY()));
-        activeTask = new TimerTask() {
+        activeTask = new Runnable() {
             @Override
             public void run() {
                 if (activeTask != this) {
@@ -298,7 +298,7 @@ public class BrowserFileListCompEntry {
                         .cdAsync(item.getRawFileEntry().getPath().toString());
             }
         };
-        DROP_TIMER.schedule(activeTask, 1200);
+        GlobalTimer.delayAsync(activeTask, Duration.ofMillis(1200));
     }
 
     public void onDragEntered(DragEvent event) {

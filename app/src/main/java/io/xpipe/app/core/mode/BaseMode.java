@@ -186,6 +186,7 @@ public class BaseMode extends OperationMode {
         AppDataLock.unlock();
         BlobManager.reset();
         FileBridge.reset();
+        GlobalTimer.reset();
         TrackEvent.info("Base mode shutdown finished");
     }
 }

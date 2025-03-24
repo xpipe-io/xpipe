@@ -5,6 +5,7 @@ import io.xpipe.core.process.CountDown;
 import io.xpipe.core.util.SecretReference;
 import io.xpipe.core.util.SecretValue;
 
+import java.time.Duration;
 import java.util.*;
 
 public class SecretManager {
@@ -105,8 +106,15 @@ public class SecretManager {
         secrets.remove(ref);
     }
 
-    public static synchronized void set(SecretReference ref, SecretValue value) {
+    public static synchronized void cache(SecretReference ref, SecretValue value, Duration duration) {
         secrets.put(ref, value);
+        if (duration != null && duration.isPositive()) {
+            GlobalTimer.delay(() -> {
+                synchronized (SecretManager.class) {
+                    secrets.remove(ref);
+                }
+            }, duration);
+        }
     }
 
     public static synchronized Optional<SecretValue> get(SecretReference ref) {

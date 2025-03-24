@@ -1,6 +1,7 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.core.AppCache;
+import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.JacksonMapper;
 
@@ -23,6 +24,7 @@ import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
@@ -35,7 +37,6 @@ import java.util.stream.Collectors;
 @JsonDeserialize(using = BrowserFileSystemSavedState.Deserializer.class)
 public class BrowserFileSystemSavedState {
 
-    private static final Timer TIMEOUT_TIMER = new Timer(true);
     private static final int STORED = 15;
 
     @Setter
@@ -83,8 +84,8 @@ public class BrowserFileSystemSavedState {
 
         if (delay) {
             // After 10 seconds
-            TIMEOUT_TIMER.schedule(
-                    new TimerTask() {
+            GlobalTimer.delayAsync(
+                    new Runnable() {
                         @Override
                         public void run() {
                             // Synchronize with platform thread
@@ -99,8 +100,7 @@ public class BrowserFileSystemSavedState {
                                 }
                             });
                         }
-                    },
-                    10000);
+                    }, Duration.ofMillis(10000));
         } else {
             updateRecent(dir);
             save();

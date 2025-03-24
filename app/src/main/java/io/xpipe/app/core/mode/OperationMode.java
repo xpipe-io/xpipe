@@ -100,6 +100,7 @@ public abstract class OperationMode {
 
             TrackEvent.info("Initial setup");
             AppMainWindow.loadingText("initializingApp");
+            GlobalTimer.init();
             AppProperties.init(args);
             AppLogs.init();
             AppTempCheck.check();

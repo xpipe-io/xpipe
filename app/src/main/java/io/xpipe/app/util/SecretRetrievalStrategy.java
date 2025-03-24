@@ -13,6 +13,8 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.time.Duration;
+
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = SecretRetrievalStrategy.None.class),
@@ -70,8 +72,8 @@ public interface SecretRetrievalStrategy {
                 }
 
                 @Override
-                public boolean cache() {
-                    return false;
+                public Duration cacheDuration() {
+                    return Duration.ZERO;
                 }
 
                 @Override
@@ -100,8 +102,8 @@ public interface SecretRetrievalStrategy {
                 }
 
                 @Override
-                public boolean cache() {
-                    return true;
+                public Duration cacheDuration() {
+                    return null;
                 }
 
                 @Override
@@ -157,8 +159,9 @@ public interface SecretRetrievalStrategy {
                 }
 
                 @Override
-                public boolean cache() {
-                    return false;
+                public Duration cacheDuration() {
+                    // To reduce password manager access, cache it for a few seconds
+                    return Duration.ofSeconds(10);
                 }
 
                 @Override
@@ -210,8 +213,8 @@ public interface SecretRetrievalStrategy {
                 }
 
                 @Override
-                public boolean cache() {
-                    return false;
+                public Duration cacheDuration() {
+                    return Duration.ZERO;
                 }
 
                 @Override
