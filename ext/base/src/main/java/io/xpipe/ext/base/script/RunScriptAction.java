@@ -6,6 +6,7 @@ import io.xpipe.app.browser.action.BrowserBranchAction;
 import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
+import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
@@ -93,6 +94,11 @@ public class RunScriptAction implements BrowserAction, BrowserBranchAction {
                 .toList();
         return new BrowserBranchAction() {
             @Override
+            public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                return PrettyImageHelper.ofFixedSize(hierarchy.getBase().get().getEffectiveIconFile(), 16, 16).createRegion();
+            }
+
+            @Override
             public List<? extends BrowserAction> getBranchingActions(
                     BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                 return list;
@@ -109,6 +115,11 @@ public class RunScriptAction implements BrowserAction, BrowserBranchAction {
     private BrowserBranchAction createActionForScript(
             BrowserFileSystemTabModel model, DataStoreEntryRef<SimpleScriptStore> ref) {
         return new MultiExecuteSelectionAction() {
+
+            @Override
+            public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                return PrettyImageHelper.ofFixedSize(ref.get().getEffectiveIconFile(), 16, 16).createRegion();
+            }
 
             @Override
             public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
