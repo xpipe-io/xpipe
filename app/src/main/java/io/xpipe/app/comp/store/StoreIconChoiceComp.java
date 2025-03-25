@@ -119,8 +119,10 @@ public class StoreIconChoiceComp extends SimpleComp {
         }
         var data = partitionList(filtered, columns);
         table.getItems().setAll(data);
+
+        var selectMatch = filtered.size() == 1 || filtered.stream().anyMatch(systemIcon -> systemIcon.getId().equals(filterString));
         // Table updates seem to not always be instant, sometimes the column is not there yet
-        if (filtered.size() == 1 && table.getColumns().size() > 0) {
+        if (selectMatch && table.getColumns().size() > 0) {
             table.getSelectionModel().select(0, table.getColumns().getFirst());
             selected.setValue(filtered.getFirst());
         } else {
