@@ -25,9 +25,9 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
         @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             try (var sc = LocalShell.getShell().start()) {
-                var command = sc.getShellDialect().getSetEnvironmentVariableCommand("PSModulePath", "") + "\n" +
-                        sc.getShellDialect().runScriptCommand(sc, configuration.getScriptFile().toString());
-                var script = ScriptHelper.createExecScript(sc, command);
+                var command = configuration.getScriptDialect().getSetEnvironmentVariableCommand("PSModulePath", "") + "\n" +
+                        configuration.getScriptDialect().runScriptCommand(sc, configuration.getScriptFile().toString());
+                var script = ScriptHelper.createExecScript(configuration.getScriptDialect(), sc, command);
                 if (!configuration.isPreferTabs()) {
                     DesktopHelper.openUrl("warp://action/new_window?path=" + script);
                 } else {

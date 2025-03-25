@@ -1,5 +1,6 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.beacon.BeaconServerException;
@@ -94,8 +95,9 @@ public class TerminalLaunchRequest {
         };
 
         try {
-            var file = ScriptHelper.createLocalExecScript(processControl.prepareTerminalOpen(config, wd));
-            setResult(new TerminalLaunchResult.ResultSuccess(Path.of(file.toString())));
+            var command = TerminalLauncher.launchMultiplexer(processControl, config, wd);
+            var file = ScriptHelper.createLocalExecScript(command);
+            setResult(new TerminalLaunchResult.ResultSuccess(file.asLocalPath()));
         } catch (Exception e) {
             setResult(new TerminalLaunchResult.ResultFailure(e));
         }

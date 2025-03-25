@@ -5,13 +5,17 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.icon.SystemIconSource;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.password.NoPasswordManager;
 import io.xpipe.app.password.PasswordManager;
 import io.xpipe.app.password.PasswordManagerCommand;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.ExternalTerminalType;
+import io.xpipe.app.terminal.TerminalMultiplexer;
+import io.xpipe.app.terminal.ZellijTerminalMultiplexer;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.ShellScript;
@@ -107,6 +111,24 @@ public class AppPrefs {
             "passwordManager",
             PasswordManager.class,
             false);
+    final Property<ShellScript> terminalInitScript = mapLocal(
+            new SimpleObjectProperty<>(null),
+            "terminalInitScript",
+            ShellScript.class,
+            false);
+    final Property<UUID> terminalProxy = mapLocal(
+            new SimpleObjectProperty<>(),
+            "terminalProxy",
+            UUID.class,
+            false);
+    final Property<TerminalMultiplexer> terminalMultiplexer = mapLocal(
+            new SimpleObjectProperty<>(ZellijTerminalMultiplexer.builder().build()),
+            "terminalMultiplexer",
+            TerminalMultiplexer.class,
+            false);
+    public ObservableValue<UUID> terminalProxy() {
+        return terminalProxy;
+    }
     public final StringProperty passwordManagerCommand =
             mapLocal(new SimpleStringProperty(null), "passwordManagerCommand", String.class, false);
     final ObjectProperty<StartupBehaviour> startupBehaviour = mapLocal(
@@ -291,6 +313,7 @@ public class AppPrefs {
                 DataStorage.get().forceRewrite();
             }
         });
+        INSTANCE.terminalProxy.setValue(UUID.fromString("08438e45-1d9f-4ce6-bbd7-cf47514d15f1"));
     }
 
     public static void setLocalDefaultsIfNeeded() {
@@ -315,6 +338,14 @@ public class AppPrefs {
 
     public ObservableValue<PasswordManager> passwordManager() {
         return passwordManager;
+    }
+
+    public ObservableValue<TerminalMultiplexer> terminalMultiplexer() {
+        return terminalMultiplexer;
+    }
+
+    public ObservableValue<ShellScript> terminalInitScript() {
+        return terminalInitScript;
     }
 
     public ObservableValue<SupportedLocale> language() {

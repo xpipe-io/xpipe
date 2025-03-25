@@ -128,7 +128,9 @@ public class TerminalLauncher {
         var config = TerminalLaunchConfiguration.create(request, entry, cleanTitle, adjustedTitle, preferTabs);
         var latch = TerminalLauncherManager.submitAsync(request, cc, terminalConfig, directory);
         try {
-            type.launch(config);
+            if (!checkMultiplexerLaunch(request, config)) {
+                type.launch(config);
+            }
             latch.await();
         } catch (Exception ex) {
             var modMsg = ex.getMessage() != null && ex.getMessage().contains("Unable to find application named")
@@ -136,6 +138,41 @@ public class TerminalLauncher {
                     : ex.getMessage();
             throw ErrorEvent.expected(new IOException(
                     "Unable to launch terminal " + type.toTranslatedString().getValue() + ": " + modMsg, ex));
+        }
+    }
+
+    private static boolean checkMultiplexerLaunch(UUID request, TerminalLaunchConfiguration config) throws Exception {
+        if (!TerminalMultiplexerManager.requiresNewTerminalSession(request)) {
+            var control = TerminalProxyManager.getProxy();
+            if (control.isPresent()) {
+                var type = AppPrefs.get().terminalType().getValue();
+                var title = type.useColoredTitle() ? config.getColoredTitle() : config.getCleanTitle();
+                var openCommand = control.get().prepareTerminalOpen(TerminalInitScriptConfig.ofName(title), WorkingDirectoryFunction.none());
+                var multiplexer = AppPrefs.get().terminalMultiplexer().getValue();
+                var fullCommand = multiplexer.launchScriptExternal(openCommand).toString();
+                control.get().command(fullCommand).execute();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static String launchMultiplexer(ProcessControl processControl, TerminalInitScriptConfig config, WorkingDirectoryFunction wd) throws Exception {
+        var initScript = AppPrefs.get().terminalInitScript().getValue();
+        var initialCommand = initScript != null ? initScript.toString() : "";
+        var openCommand = processControl.prepareTerminalOpen(config, wd);
+        var proxy = TerminalProxyManager.getProxy();
+        var multiplexer = AppPrefs.get().terminalMultiplexer().getValue();
+        var fullCommand = initialCommand + "\n" + (multiplexer != null ? multiplexer.launchScriptSession(openCommand).toString() : openCommand);
+        if (proxy.isPresent()) {
+            var proxyOpenCommand = fullCommand;
+            var proxyLaunchCommand = proxy.get().prepareIntermediateTerminalOpen(
+                    TerminalInitFunction.fixed(proxyOpenCommand),
+                    TerminalInitScriptConfig.ofName("XPipe"),
+                    WorkingDirectoryFunction.none());
+            return proxyLaunchCommand;
+        } else {
+            return fullCommand;
         }
     }
 }
