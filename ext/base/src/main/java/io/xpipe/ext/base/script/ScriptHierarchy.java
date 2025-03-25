@@ -69,7 +69,7 @@ public class ScriptHierarchy {
     private static ScriptHierarchy buildHierarchy(
             DataStoreEntryRef<ScriptStore> ref, Predicate<DataStoreEntryRef<ScriptStore>> include) {
         if (ref.getStore() instanceof ScriptGroupStore groupStore) {
-            var children = groupStore.getEffectiveScripts().stream()
+            var children = groupStore.getImmediateChildrenScripts().stream()
                     .filter(include)
                     .map(c -> buildHierarchy(c, include))
                     .filter(hierarchy -> hierarchy.show())
