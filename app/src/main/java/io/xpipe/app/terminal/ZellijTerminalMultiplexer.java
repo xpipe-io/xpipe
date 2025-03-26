@@ -22,9 +22,7 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.jackson.Jacksonized;
 
-@Getter
-@Builder(toBuilder = true)
-@ToString
+@Builder
 @Jacksonized
 @JsonTypeName("zellij")
 public class ZellijTerminalMultiplexer implements TerminalMultiplexer {

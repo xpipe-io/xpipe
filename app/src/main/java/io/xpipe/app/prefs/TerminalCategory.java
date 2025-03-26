@@ -217,7 +217,7 @@ public class TerminalCategory extends AppPrefsCategory {
                             });
                     websiteLinkButton.minWidth(Region.USE_PREF_SIZE);
                     websiteLinkButton.disable(Bindings.createBooleanBinding(() -> {
-                        return prefs.terminalMultiplexer.getValue().getDocsLink() == null;
+                        return prefs.terminalMultiplexer.getValue() == null || prefs.terminalMultiplexer.getValue().getDocsLink() == null;
                     }, prefs.terminalMultiplexer));
 
                     var hbox = new HBox(entryComboBox, websiteLinkButton.createRegion());

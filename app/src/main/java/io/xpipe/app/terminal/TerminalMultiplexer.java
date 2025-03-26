@@ -14,6 +14,7 @@ public interface TerminalMultiplexer {
 
     static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();
+        l.add(TmuxTerminalMultiplexer.class);
         l.add(ZellijTerminalMultiplexer.class);
         return l;
     }

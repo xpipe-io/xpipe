@@ -3,6 +3,7 @@ package io.xpipe.app.util;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.ChoicePaneComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.terminal.ZellijTerminalMultiplexer;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -29,12 +30,25 @@ public class OptionsChoiceBuilder {
         return null;
     }
 
-    private static OptionsBuilder createOptionsForClass(Class<?> c, Property<?> property) {
+    private static OptionsBuilder createOptionsForClass(Class<?> c, Property<Object> property) {
         try {
             var method = c.getDeclaredMethod("createOptions", Property.class);
             method.setAccessible(true);
             var r = method.invoke(null, property);
-            return r != null ? (OptionsBuilder) r : new OptionsBuilder();
+            if (r != null) {
+                return (OptionsBuilder) r;
+            }
+        } catch (Exception ignored) {}
+
+        try {
+            var bm = c.getDeclaredMethod("builder");
+            bm.setAccessible(true);
+            var b = bm.invoke(null);
+            var m = b.getClass().getDeclaredMethod("build");
+            m.setAccessible(true);
+            var defValue = c.cast(m.invoke(b));
+            var def = new OptionsBuilder().bind(() -> defValue, property);
+            return def;
         } catch (Exception e) {
             return new OptionsBuilder();
         }
@@ -80,7 +94,7 @@ public class OptionsChoiceBuilder {
             map.put(AppI18n.observable("none"), new OptionsBuilder());
         }
         for (int i = 0; i < sub.size(); i++) {
-            map.put(AppI18n.observable(createIdForClass(sub.get(i))), createOptionsForClass(sub.get(i), properties.get(i)));
+            map.put(AppI18n.observable(createIdForClass(sub.get(i))), createOptionsForClass(sub.get(i), properties.get(i + (allowNull ? 1 : 0))));
         }
 
         return new OptionsBuilder()
