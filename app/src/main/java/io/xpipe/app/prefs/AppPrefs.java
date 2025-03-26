@@ -126,8 +126,16 @@ public class AppPrefs {
             "terminalMultiplexer",
             TerminalMultiplexer.class,
             false);
+    final Property<Boolean> terminalPromptForRestart = mapLocal(
+            new SimpleBooleanProperty(true),
+            "terminalPromptForRestart",
+            Boolean.class,
+            false);
     public ObservableValue<UUID> terminalProxy() {
         return terminalProxy;
+    }
+    public ObservableValue<Boolean> terminalPromptForRestart() {
+        return terminalPromptForRestart;
     }
     public final StringProperty passwordManagerCommand =
             mapLocal(new SimpleStringProperty(null), "passwordManagerCommand", String.class, false);

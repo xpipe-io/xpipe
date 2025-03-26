@@ -42,11 +42,11 @@ public class TerminalLaunchConfiguration {
             DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").withZone(ZoneId.systemDefault());
 
     public static TerminalLaunchConfiguration create(
-            UUID request, DataStoreEntry entry, String cleanTitle, String adjustedTitle, boolean preferTabs)
+            UUID request, DataStoreEntry entry, String cleanTitle, String adjustedTitle, boolean preferTabs, boolean promptRestart)
             throws Exception {
         var color = entry != null ? DataStorage.get().getEffectiveColor(entry) : null;
         var d = ProcessControlProvider.get().getEffectiveLocalDialect();
-        var launcherScript = d.terminalLauncherScript(request, adjustedTitle);
+        var launcherScript = d.terminalLauncherScript(request, adjustedTitle, promptRestart);
         var preparationScript = ScriptHelper.createLocalExecScript(launcherScript);
 
         if (!AppPrefs.get().enableTerminalLogging().get()) {

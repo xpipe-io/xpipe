@@ -125,10 +125,11 @@ public class TerminalLauncher {
                         && AppPrefs.get().clearTerminalOnInit().get()
                         && !AppPrefs.get().developerPrintInitFiles().get(),
                 cc instanceof ShellControl ? type.additionalInitCommands() : TerminalInitFunction.none());
-        var config = TerminalLaunchConfiguration.create(request, entry, cleanTitle, adjustedTitle, preferTabs);
+        var promptRestart = AppPrefs.get().terminalPromptForRestart().getValue() && AppPrefs.get().terminalMultiplexer().getValue() == null;
+        var config = TerminalLaunchConfiguration.create(request, entry, cleanTitle, adjustedTitle, preferTabs, promptRestart);
         var latch = TerminalLauncherManager.submitAsync(request, cc, terminalConfig, directory);
         try {
-            if (!checkMultiplexerLaunch(request, config)) {
+            if (!checkMultiplexerLaunch(cc, request, config)) {
                 if (preferTabs && shouldUseMultiplexer()) {
                     config = config.withPreferTabs(false).withCleanTitle("XPipe").withColoredTitle("XPipe");
                 }
@@ -154,7 +155,7 @@ public class TerminalLauncher {
         return multiplexer != null;
     }
 
-    private static boolean checkMultiplexerLaunch(UUID request, TerminalLaunchConfiguration config) throws Exception {
+    private static boolean checkMultiplexerLaunch(ProcessControl processControl, UUID request, TerminalLaunchConfiguration config) throws Exception {
         if (!config.isPreferTabs()) {
             return false;
         }
@@ -168,9 +169,9 @@ public class TerminalLauncher {
             if (control.isPresent()) {
                 var type = AppPrefs.get().terminalType().getValue();
                 var title = type.useColoredTitle() ? config.getColoredTitle() : config.getCleanTitle();
-                var openCommand = control.get().prepareTerminalOpen(TerminalInitScriptConfig.ofName(title), WorkingDirectoryFunction.none());
+                var openCommand = processControl.prepareTerminalOpen(TerminalInitScriptConfig.ofName(title), WorkingDirectoryFunction.none());
                 var multiplexer = AppPrefs.get().terminalMultiplexer().getValue();
-                var fullCommand = multiplexer.launchScriptExternal(control.get(), openCommand).toString();
+                var fullCommand = multiplexer.launchScriptExternal(control.get(), openCommand, TerminalInitScriptConfig.ofName(title)).toString();
                 control.get().command(fullCommand).execute();
                 return true;
             }
@@ -184,7 +185,8 @@ public class TerminalLauncher {
         var openCommand = processControl.prepareTerminalOpen(config, wd);
         var proxy = TerminalProxyManager.getProxy();
         var multiplexer = AppPrefs.get().terminalMultiplexer().getValue();
-        var fullCommand = initialCommand + "\n" + (multiplexer != null ? multiplexer.launchScriptSession(proxy.isPresent() ? proxy.get() : LocalShell.getShell(), openCommand).toString() : openCommand);
+        var fullCommand = initialCommand + "\n" + (multiplexer != null ?
+                multiplexer.launchScriptSession(proxy.isPresent() ? proxy.get() : LocalShell.getShell(), openCommand, config).toString() : openCommand);
         if (proxy.isPresent()) {
             var proxyOpenCommand = fullCommand;
             var proxyLaunchCommand = proxy.get().prepareIntermediateTerminalOpen(

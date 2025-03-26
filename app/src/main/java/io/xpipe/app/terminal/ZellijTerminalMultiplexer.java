@@ -13,6 +13,7 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellScript;
+import io.xpipe.core.process.TerminalInitScriptConfig;
 import io.xpipe.core.store.FilePath;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -28,43 +29,39 @@ import lombok.extern.jackson.Jacksonized;
 @JsonTypeName("zellij")
 public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
 
-    private final String wslDistribution;
-    private final FilePath config;
-
-    public static OptionsBuilder createOptions(Property<ZellijTerminalMultiplexer> p) {
-        var config = new SimpleObjectProperty<FilePath>(p.getValue() != null ? p.getValue().getConfig() : null);
-        return new OptionsBuilder()
-                .addProperty(config)
-                .bind(() -> {
-                    return null; //new ZellijTerminalMultiplexer(config.getValue());
-                }, p);
-    }
-
     @Override
     public String getDocsLink() {
-        return "";
+        return "https://zellij.dev/documentation/creating-a-layout.html#default-tab-template";
     }
 
     @Override
-    public ShellScript launchScriptExternal(ShellControl control, String command) throws Exception {
+    public ShellScript launchScriptExternal(ShellControl control, String command, TerminalInitScriptConfig config) throws Exception {
         return ShellScript.lines(
                 "zellij attach --create-background xpipe",
-                "zellij -s xpipe action new-tab",
-                "zellij -s xpipe action write-chars -- " + command.replaceAll("\\\\", "\\\\\\\\").replaceAll("\"", "\\\\\"")
-                        .replaceAll(" ", "\\\\ "),
+                "zellij -s xpipe action new-tab --name \"" + escape(config.getDisplayName(), false, true) + "\"",
+                "zellij -s xpipe action write-chars -- " + escape(command, true, true),
                 "zellij -s xpipe action write 10"
         );
     }
 
     @Override
-    public ShellScript launchScriptSession(ShellControl control, String command) throws Exception {
+    public ShellScript launchScriptSession(ShellControl control, String command, TerminalInitScriptConfig config) throws Exception {
         return ShellScript.lines(
                 "zellij delete-session -f xpipe",
                 "zellij attach --create-background xpipe",
-                "zellij -s xpipe action new-tab",
-                "zellij -s xpipe action write-chars -- " + command.replaceAll("\\\\", "\\\\\\\\").replaceAll("\"", "\\\\\"").replaceAll(" ", "\\\\ "),
-                "zellij -s xpipe action write 10",
+                "zellij -s xpipe run --name \"" + escape(config.getDisplayName(), false, true) + "\" -- " + escape(command, false, false),
                 "zellij attach xpipe"
         );
+    }
+
+    private String escape(String s, boolean spaces, boolean quotes) {
+        var r = s.replaceAll("\\\\", "\\\\\\\\");
+        if (quotes) {
+            r = r.replaceAll("\"", "\\\\\"");
+        }
+        if (spaces) {
+            r = r.replaceAll(" ", "\\\\ ");
+        }
+        return r;
     }
 }

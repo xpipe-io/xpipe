@@ -50,7 +50,7 @@ public class OptionsChoiceBuilder {
         Property<T> s = (Property<T>) property;
         var sub = subclasses;
         var selectedIndex = s.getValue() == null ? (allowNull ? 0 : -1) : sub.stream().filter(c -> c.equals(s.getValue().getClass()))
-                .findFirst().map(c -> sub.indexOf(c))
+                .findFirst().map(c -> sub.indexOf(c) + 1)
                 .orElse(-1);
         var selected = new SimpleIntegerProperty(selectedIndex);
 

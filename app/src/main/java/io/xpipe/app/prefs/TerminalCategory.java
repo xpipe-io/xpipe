@@ -96,6 +96,8 @@ public class TerminalCategory extends AppPrefsCategory {
                 .sub(new OptionsBuilder()
                 .pref(prefs.clearTerminalOnInit)
                 .addToggle(prefs.clearTerminalOnInit)
+                .pref(prefs.terminalPromptForRestart)
+                .addToggle(prefs.terminalPromptForRestart)
                 )
                 .addTitle("sessionLogging")
                 .sub(new OptionsBuilder()
