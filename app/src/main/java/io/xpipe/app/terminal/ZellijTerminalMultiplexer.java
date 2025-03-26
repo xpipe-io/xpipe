@@ -46,18 +46,24 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
     }
 
     @Override
-    public ShellScript launchScriptExternal(String command) throws Exception {
+    public ShellScript launchScriptExternal(ShellControl control, String command) throws Exception {
         return ShellScript.lines(
                 "zellij attach --create-background xpipe",
-                "zellij run --close-on-exit -- " + command
+                "zellij -s xpipe action new-tab",
+                "zellij -s xpipe action write-chars -- " + command.replaceAll("\\\\", "\\\\\\\\").replaceAll("\"", "\\\\\"")
+                        .replaceAll(" ", "\\\\ "),
+                "zellij -s xpipe action write 10"
         );
     }
 
     @Override
-    public ShellScript launchScriptSession(String command) throws Exception {
+    public ShellScript launchScriptSession(ShellControl control, String command) throws Exception {
         return ShellScript.lines(
+                "zellij delete-session -f xpipe",
                 "zellij attach --create-background xpipe",
-                "zellij run --close-on-exit -- " + command,
+                "zellij -s xpipe action new-tab",
+                "zellij -s xpipe action write-chars -- " + command.replaceAll("\\\\", "\\\\\\\\").replaceAll("\"", "\\\\\"").replaceAll(" ", "\\\\ "),
+                "zellij -s xpipe action write 10",
                 "zellij attach xpipe"
         );
     }

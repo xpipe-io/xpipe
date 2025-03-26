@@ -313,7 +313,6 @@ public class AppPrefs {
                 DataStorage.get().forceRewrite();
             }
         });
-        INSTANCE.terminalProxy.setValue(UUID.fromString("08438e45-1d9f-4ce6-bbd7-cf47514d15f1"));
     }
 
     public static void setLocalDefaultsIfNeeded() {

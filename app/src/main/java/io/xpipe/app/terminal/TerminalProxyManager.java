@@ -13,6 +13,7 @@ import io.xpipe.core.process.WorkingDirectoryFunction;
 import io.xpipe.core.store.DataStore;
 import lombok.Value;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -25,6 +26,28 @@ public class TerminalProxyManager {
     }
 
     private static ActiveSession activeSession;
+
+    public static boolean canUseAsProxy(DataStoreEntryRef<ShellStore> ref) {
+        if (!ref.get().getValidity().isUsable()) {
+            return false;
+        }
+
+        if (ref.get().equals(DataStorage.get().local())) {
+            return true;
+        }
+
+        var parent = DataStorage.get().getDefaultDisplayParent(ref.get());
+        if (parent.isEmpty()) {
+            return false;
+        }
+
+        if (!parent.get().equals(DataStorage.get().local()) && !DataStorage.get().local().equals(DataStorage.get().getDefaultDisplayParent(parent.get()).orElse(null))) {
+            return false;
+        }
+
+        var id = ref.get().getProvider().getId();
+        return List.of("gitWindows", "cygwin", "msys2", "wsl").contains(id);
+    }
 
     public static Optional<ShellControl> getProxy() {
         var uuid = AppPrefs.get().terminalProxy().getValue();

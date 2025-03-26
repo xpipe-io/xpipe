@@ -27,13 +27,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @Value
+@With
 public class TerminalLaunchConfiguration {
     DataColor color;
     String coloredTitle;
     String cleanTitle;
     boolean preferTabs;
 
-    @With
     FilePath scriptFile;
 
     ShellDialect scriptDialect;

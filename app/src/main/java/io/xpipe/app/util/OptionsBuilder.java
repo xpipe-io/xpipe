@@ -213,6 +213,10 @@ public class OptionsBuilder {
         return this;
     }
 
+    public OptionsBuilder hide(boolean b) {
+        return hide(new SimpleBooleanProperty(b));
+    }
+
     public OptionsBuilder hide(ObservableValue<Boolean> b) {
         lastCompHeadReference.hide(b);
         return this;

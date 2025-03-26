@@ -43,17 +43,21 @@ public class OptionsChoiceBuilder {
     private final Property<?> property;
     private final List<Class<?>> subclasses;
     private final Function<ComboBox<ChoicePaneComp.Entry>, Region> transformer;
+    private final boolean allowNull;
 
     @SuppressWarnings("unchecked")
     public <T> OptionsBuilder build() {
         Property<T> s = (Property<T>) property;
         var sub = subclasses;
-        var selectedIndex = s.getValue() == null ? -1 : sub.stream().filter(c -> c.equals(s.getValue().getClass()))
+        var selectedIndex = s.getValue() == null ? (allowNull ? 0 : -1) : sub.stream().filter(c -> c.equals(s.getValue().getClass()))
                 .findFirst().map(c -> sub.indexOf(c))
-                .orElse(0);
+                .orElse(-1);
         var selected = new SimpleIntegerProperty(selectedIndex);
 
         var properties = new ArrayList<Property<Object>>();
+        if (allowNull) {
+            properties.add(new SimpleObjectProperty<>());
+        }
         for (int i = 0; i < sub.size(); i++) {
             properties.add(new SimpleObjectProperty<>(selectedIndex == i ? s.getValue() : null));
         }
@@ -72,6 +76,9 @@ public class OptionsChoiceBuilder {
         });
 
         var map = new LinkedHashMap<ObservableValue<String>, OptionsBuilder>();
+        if (allowNull) {
+            map.put(AppI18n.observable("none"), new OptionsBuilder());
+        }
         for (int i = 0; i < sub.size(); i++) {
             map.put(AppI18n.observable(createIdForClass(sub.get(i))), createOptionsForClass(sub.get(i), properties.get(i)));
         }
