@@ -7,6 +7,7 @@ import io.xpipe.app.password.KeePassXcAssociationKey;
 import io.xpipe.app.password.KeePassXcManager;
 import io.xpipe.app.password.KeePassXcProxyClient;
 import io.xpipe.app.password.PasswordManager;
+import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.ThreadHelper;
@@ -30,6 +31,11 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
     @Override
     public String getDocsLink() {
         return "https://zellij.dev/documentation/creating-a-layout.html#default-tab-template";
+    }
+
+    @Override
+    public void checkSupported(ShellControl sc) throws Exception {
+        CommandSupport.isInPathOrThrow(sc, "zellij");
     }
 
     @Override

@@ -16,12 +16,15 @@ public interface TerminalMultiplexer {
         var l = new ArrayList<Class<?>>();
         l.add(TmuxTerminalMultiplexer.class);
         l.add(ZellijTerminalMultiplexer.class);
+        l.add(ScreenTerminalMultiplexer.class);
         return l;
     }
 
     default void checkComplete() throws ValidationException {}
 
     String getDocsLink();
+
+    void checkSupported(ShellControl sc) throws Exception;
 
     ShellScript launchScriptExternal(ShellControl control, String command, TerminalInitScriptConfig config) throws Exception;
 

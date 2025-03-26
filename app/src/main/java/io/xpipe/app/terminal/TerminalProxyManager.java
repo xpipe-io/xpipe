@@ -46,7 +46,7 @@ public class TerminalProxyManager {
         }
 
         var id = ref.get().getProvider().getId();
-        return List.of("gitWindows", "cygwin", "msys2", "wsl").contains(id);
+        return List.of("cygwin", "wsl").contains(id);
     }
 
     public static Optional<ShellControl> getProxy() {
@@ -96,9 +96,6 @@ public class TerminalProxyManager {
 
         var store = ss;
         var control = store.standaloneControl();
-        if (!control.getLocalSystemAccess().supportsExecutables() || !control.getLocalSystemAccess().supportsFileSystemAccess()) {
-            return Optional.empty();
-        }
         return Optional.of(control);
     }
 }

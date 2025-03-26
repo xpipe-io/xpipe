@@ -122,7 +122,7 @@ public class AppPrefs {
             UUID.class,
             false);
     final Property<TerminalMultiplexer> terminalMultiplexer = mapLocal(
-            new SimpleObjectProperty<>(ZellijTerminalMultiplexer.builder().build()),
+            new SimpleObjectProperty<>(null),
             "terminalMultiplexer",
             TerminalMultiplexer.class,
             false);

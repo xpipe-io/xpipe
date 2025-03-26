@@ -8,8 +8,13 @@ public class TerminalMultiplexerManager {
 
     private static final Set<UUID> connectionHubRequests = new HashSet<>();
 
+    public static Optional<TerminalMultiplexer> getEffectiveMultiplexer() {
+        var multiplexer = AppPrefs.get().terminalMultiplexer().getValue();
+        return Optional.ofNullable(multiplexer);
+    }
+
     public static boolean requiresNewTerminalSession(UUID requestUuid) {
-        if (AppPrefs.get().terminalMultiplexer().getValue() == null) {
+        if (getEffectiveMultiplexer().isEmpty()) {
             connectionHubRequests.add(requestUuid);
             return true;
         }
