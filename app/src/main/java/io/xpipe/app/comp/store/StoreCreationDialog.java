@@ -4,6 +4,7 @@ import io.xpipe.app.comp.base.DialogComp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProvider;
@@ -15,6 +16,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
@@ -134,18 +136,12 @@ public class StoreCreationDialog {
     }
 
     private static boolean showInvalidConfirmAlert() {
-        return AppWindowHelper.showBlockingAlert(alert -> {
-                    alert.setTitle(AppI18n.get("confirmInvalidStoreTitle"));
-                    alert.setHeaderText(AppI18n.get("confirmInvalidStoreHeader"));
-                    alert.getDialogPane()
-                            .setContent(AppWindowHelper.alertContentText(AppI18n.get("confirmInvalidStoreContent")));
-                    alert.setAlertType(Alert.AlertType.CONFIRMATION);
-                    alert.getButtonTypes().clear();
-                    alert.getButtonTypes().add(new ButtonType(AppI18n.get("retry"), ButtonBar.ButtonData.CANCEL_CLOSE));
-                    alert.getButtonTypes().add(new ButtonType(AppI18n.get("skip"), ButtonBar.ButtonData.OK_DONE));
-                })
-                .map(b -> b.getButtonData().isDefaultButton())
-                .orElse(false);
+        var skipped = new SimpleBooleanProperty();
+        var modal = ModalOverlay.of("confirmInvalidStoreTitle", AppDialog.dialogTextKey("confirmInvalidStoreContent"));
+        modal.addButton(new ModalButton("retry", null, true, false));
+        modal.addButton(new ModalButton("skip", () -> skipped.set(true), true, true));
+        modal.showAndWait();
+        return skipped.get();
     }
 
     private static ModalOverlay createModalOverlay(StoreCreationModel model) {
@@ -153,6 +149,13 @@ public class StoreCreationDialog {
         comp.prefWidth(650);
         var nameKey = model.storeTypeNameKey() + "Add";
         var modal = ModalOverlay.of(nameKey, comp);
+        var provider = model.getProvider().getValue();
+        var graphic = provider != null && provider.getDisplayIconFileName(model.getStore().get()) != null?
+                new LabelGraphic.ImageGraphic(provider.getDisplayIconFileName(model.getStore().get()), 20) :
+                new LabelGraphic.IconGraphic("mdi2b-beaker-plus-outline");
+        modal.hideable(AppI18n.observable(model.storeTypeNameKey() + "Add"), graphic, () -> {
+            modal.show();
+        });
         modal.persist();
         modal.addButton(new ModalButton("docs", () -> {
             model.showDocs();
@@ -160,27 +163,26 @@ public class StoreCreationDialog {
             button.visibleProperty().bind(Bindings.not(model.canShowDocs()));
         }));
         modal.addButton(ModalButton.cancel());
-        var graphic = model.getProvider().getValue() != null ?
-                new LabelGraphic.ImageGraphic(model.getProvider().getValue().getDisplayIconFileName(null), 20) :
-                new LabelGraphic.IconGraphic("mdi2b-beaker-plus-outline");
-        modal.addButton(ModalButton.hide(AppI18n.observable(model.storeTypeNameKey() + "Add"), graphic, () -> {
-            modal.show();
-        }));
         modal.addButton(new ModalButton("connect", () -> {
             model.connect();
         }, false, false).augment(button -> {
             button.visibleProperty().bind(Bindings.not(model.canConnect()));
         }));
-        modal.addButton(new ModalButton("skipValidation", () -> {
-            if (showInvalidConfirmAlert()) {
+        modal.addButton(new ModalButton("skip", () -> {
+            if (!showInvalidConfirmAlert()) {
                 model.commit();
             } else {
                 model.finish();
             }
-        }, true, false));
+        }, true, false)).augment(button -> {
+            button.visibleProperty().bind(model.getSkippable());
+        });
         modal.addButton(new ModalButton("finish", () -> {
             model.finish();
-        }, true, true));
+        }, false, true));
+        model.getFinished().addListener((obs, oldValue, newValue) -> {
+            modal.close();
+        });
         return modal;
     }
 }

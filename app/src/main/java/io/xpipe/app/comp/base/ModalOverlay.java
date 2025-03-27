@@ -1,9 +1,11 @@
 package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.util.LabelGraphic;
 
+import javafx.beans.value.ObservableValue;
 import lombok.*;
 import lombok.experimental.NonFinal;
 
@@ -24,7 +26,7 @@ public class ModalOverlay {
     }
 
     public static ModalOverlay of(String titleKey, Comp<?> content, LabelGraphic graphic) {
-        return new ModalOverlay(titleKey, content, graphic, new ArrayList<>(), false);
+        return new ModalOverlay(titleKey, content, graphic, new ArrayList<>(), false, null);
     }
 
     public ModalOverlay withDefaultButtons(Runnable action) {
@@ -47,9 +49,19 @@ public class ModalOverlay {
     @NonFinal
     boolean persistent;
 
+    @NonFinal
+    @Setter
+    Runnable hideAction;
+
     public ModalButton addButton(ModalButton button) {
         buttons.add(button);
         return button;
+    }
+
+    public void hideable(ObservableValue<String> name, LabelGraphic icon, Runnable action) {
+        setHideAction(() -> {
+            AppLayoutModel.get().getQueueEntries().add(new AppLayoutModel.QueueEntry(name, icon, action));
+        });
     }
 
     public void addButtonBarComp(Comp<?> comp) {

@@ -173,7 +173,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             }
 
             var format = customCommand.toLowerCase(Locale.ROOT).contains("$file") ? customCommand : customCommand + " $FILE";
-            var command = CommandBuilder.of().add(ExternalApplicationHelper.replaceFileArgument(format, "FILE", file.toString()));
+            var command = CommandBuilder.of().add(ExternalApplicationHelper.replaceVariableArgument(format, "FILE", file.toString()));
             if (AppPrefs.get().customEditorCommandInTerminal().get()) {
                 TerminalLauncher.openDirect(file.toString(), sc -> command.buildFull(sc), AppPrefs.get().terminalType.get());
             } else {

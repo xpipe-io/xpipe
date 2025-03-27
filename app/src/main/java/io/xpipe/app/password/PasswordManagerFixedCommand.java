@@ -11,7 +11,7 @@ public abstract class PasswordManagerFixedCommand implements PasswordManager {
 
     @Override
     public synchronized String retrievePassword(String key) {
-        var cmd = ExternalApplicationHelper.replaceFileArgument(getScript().getValue(), "KEY", key);
+        var cmd = ExternalApplicationHelper.replaceVariableArgument(getScript().getValue(), "KEY", key);
         return PasswordManagerCommand.retrieveWithCommand(cmd);
     }
 }

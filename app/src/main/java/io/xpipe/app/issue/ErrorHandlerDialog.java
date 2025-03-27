@@ -60,7 +60,10 @@ public class ErrorHandlerDialog {
                 }, false, false));
             }
             errorModal.addButton(new ModalButton("report", () -> {
-                UserReportComp.show(event);
+                if (UserReportComp.show(event)) {
+                    comp.getTakenAction().setValue(ErrorAction.ignore());
+                    errorModal.close();
+                }
             }, false, false));
             errorModal.addButton(ModalButton.ok());
             modal.set(errorModal);

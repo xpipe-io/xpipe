@@ -293,7 +293,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
             var format =
                     customCommand.toLowerCase(Locale.ROOT).contains("$file") ? customCommand : customCommand + " $FILE";
             ExternalApplicationHelper.startAsync(CommandBuilder.of()
-                    .add(ExternalApplicationHelper.replaceFileArgument(
+                    .add(ExternalApplicationHelper.replaceVariableArgument(
                             format,
                             "FILE",
                             writeRdpConfigFile(configuration.getTitle(), configuration.getConfig())

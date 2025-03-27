@@ -30,12 +30,6 @@ public class ModalButton {
     @NonFinal
     Consumer<Button> augment;
 
-    public static ModalButton hide(ObservableValue<String> name, LabelGraphic icon, Runnable action) {
-        return new ModalButton("hide", () -> {
-            AppLayoutModel.get().getQueueEntries().add(new AppLayoutModel.QueueEntry(name, icon, action));
-        }, true, false);
-    }
-
     public static ModalButton finish(Runnable action) {
         return new ModalButton("finish", action, true, true);
     }

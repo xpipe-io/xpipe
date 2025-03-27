@@ -1,5 +1,6 @@
 package io.xpipe.app.comp.base;
 
+import atlantafx.base.controls.Spacer;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppFontSizes;
@@ -21,6 +22,7 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -39,6 +41,22 @@ public class ModalOverlayComp extends SimpleComp {
     public ModalOverlayComp(Comp<?> background, Property<ModalOverlay> overlayContent) {
         this.background = background;
         this.overlayContent = overlayContent;
+    }
+
+    private Animation showAnimation(Node node) {
+        if (OsType.getLocal() == OsType.LINUX) {
+            return null;
+        }
+
+        Timeline t = new Timeline(new KeyFrame(Duration.ZERO, new KeyValue(node.opacityProperty(), 0.01)),
+                new KeyFrame(Duration.millis(100), new KeyValue(node.opacityProperty(), 0.01)),
+                new KeyFrame(Duration.millis(200), new KeyValue(node.opacityProperty(), 1)));
+        t.statusProperty().addListener((obs, old, val) -> {
+            if (val == Animation.Status.STOPPED) {
+                node.setOpacity(1.0F);
+            }
+        });
+        return t;
     }
 
     @Override
@@ -150,6 +168,7 @@ public class ModalOverlayComp extends SimpleComp {
 
     private void showModalBox(ModalPane modal, ModalOverlay overlay) {
         var modalBox = toBox(modal, overlay);
+        modalBox.setOpacity(0.01);
         modal.setPersistent(overlay.isPersistent());
         modal.show(modalBox);
         if (overlay.isPersistent() || overlay.getTitleKey() == null) {
@@ -158,6 +177,19 @@ public class ModalOverlayComp extends SimpleComp {
                 closeButton.setVisible(false);
             }
         }
+
+        // This is ugly, but works better than animations
+        // The content layout takes some time, resulting in shifting content
+        // We don't want to show that, so wait after that is done
+        Platform.runLater(() -> {
+            Platform.runLater(() -> {
+                Platform.runLater(() -> {
+                    Platform.runLater(() -> {
+                        modalBox.setOpacity(1.0);
+                    });
+                });
+            });
+        });
     }
 
     private Region toBox(ModalPane pane, ModalOverlay newValue) {
@@ -184,11 +216,12 @@ public class ModalOverlayComp extends SimpleComp {
         }
 
         if (newValue.getButtons().size() > 0) {
-            var buttonBar = new ButtonBar();
+            var buttonBar = new HBox();
+            buttonBar.setSpacing(10);
+            buttonBar.setAlignment(Pos.CENTER_RIGHT);
             for (var o : newValue.getButtons()) {
                 var node = o instanceof ModalButton mb ? toButton(mb) : ((Comp<?>) o).createRegion();
-                buttonBar.getButtons().add(node);
-                ButtonBar.setButtonUniformSize(node, o instanceof ModalButton);
+                buttonBar.getChildren().add(node);
                 if (o instanceof ModalButton) {
                     node.prefHeightProperty().bind(buttonBar.heightProperty());
                 }
@@ -197,7 +230,7 @@ public class ModalOverlayComp extends SimpleComp {
             AppFontSizes.xs(buttonBar);
         }
 
-        var modalBox = new ModalBox(content) {
+        var modalBox = new ModalBox(pane, content) {
 
             @Override
             protected void setCloseButtonPosition() {
@@ -205,6 +238,12 @@ public class ModalOverlayComp extends SimpleComp {
                 setRightAnchor(closeButton, 19d);
             }
         };
+        if (newValue.getHideAction() != null) {
+            modalBox.setOnMinimize(event -> {
+                newValue.getHideAction().run();
+                event.consume();
+            });
+        }
         modalBox.setOnClose(event -> {
             overlayContent.setValue(null);
             event.consume();

@@ -7,7 +7,6 @@ import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.*;
@@ -16,7 +15,6 @@ import io.xpipe.core.process.ShellScript;
 import io.xpipe.core.util.ValidationException;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import lombok.Builder;
@@ -106,7 +104,7 @@ public class PasswordManagerCommand implements PasswordManager {
 
     @Override
     public String retrievePassword(String key) {
-        var cmd = ExternalApplicationHelper.replaceFileArgument(script.getValue(), "KEY", key);
+        var cmd = ExternalApplicationHelper.replaceVariableArgument(script.getValue(), "KEY", key);
         return retrieveWithCommand(cmd);
     }
 

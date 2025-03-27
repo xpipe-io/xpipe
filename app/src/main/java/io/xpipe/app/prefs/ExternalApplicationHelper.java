@@ -10,12 +10,12 @@ import java.util.stream.Collectors;
 
 public class ExternalApplicationHelper {
 
-    public static String replaceFileArgument(String format, String variable, String file) {
+    public static String replaceVariableArgument(String format, String variable, String value) {
         // Support for legacy variables that were not upper case
         variable = variable.toUpperCase(Locale.ROOT);
         format = format.replace("$" + variable.toLowerCase(Locale.ROOT), "$" + variable.toUpperCase(Locale.ROOT));
 
-        var fileString = file.contains(" ") ? "\"" + file + "\"" : file;
+        var fileString = value.contains(" ") ? "\"" + value + "\"" : value;
         // Check if the variable is already quoted
         return format.replace("\"$" + variable + "\"", fileString).replace("$" + variable, fileString);
     }
