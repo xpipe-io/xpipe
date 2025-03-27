@@ -8,7 +8,6 @@ import io.xpipe.app.ext.PrefsProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.icon.SystemIconSource;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.password.NoPasswordManager;
 import io.xpipe.app.password.PasswordManager;
 import io.xpipe.app.password.PasswordManagerCommand;
 import io.xpipe.app.storage.DataStorage;
@@ -107,7 +106,7 @@ public class AppPrefs {
     public final BooleanProperty denyTempScriptCreation =
             mapVaultShared(new SimpleBooleanProperty(false), "denyTempScriptCreation", Boolean.class, false);
     final Property<PasswordManager> passwordManager = mapLocal(
-            new SimpleObjectProperty<>(new NoPasswordManager()),
+            new SimpleObjectProperty<>(),
             "passwordManager",
             PasswordManager.class,
             false);
@@ -289,6 +288,7 @@ public class AppPrefs {
                         new VaultCategory(),
                         new SyncCategory(),
                         new TerminalCategory(),
+                        new LoggingCategory(),
                         new EditorCategory(),
                         new RdpCategory(),
                         new ConnectionsCategory(),
@@ -595,7 +595,7 @@ public class AppPrefs {
         }
 
         // Migrate legacy password manager
-        if (passwordManagerCommand.get() != null && passwordManager.getValue() instanceof NoPasswordManager) {
+        if (passwordManagerCommand.get() != null && passwordManager.getValue() == null) {
             passwordManager.setValue(PasswordManagerCommand.builder().script(new ShellScript(passwordManagerCommand.get())).build());
         }
     }

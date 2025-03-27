@@ -11,10 +11,6 @@ import lombok.Value;
 @Value
 public class WindowsCredentialManager implements PasswordManager {
 
-    static OptionsBuilder createOptions(Property<io.xpipe.app.password.WindowsCredentialManager> property) {
-        return new OptionsBuilder().bind(() -> new WindowsCredentialManager(), property);
-    }
-
     private static boolean loaded = false;
 
     @Override

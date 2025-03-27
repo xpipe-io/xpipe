@@ -40,7 +40,7 @@ public class AppearanceCategory extends AppPrefsCategory {
                         .pref(prefs.theme)
                         .addComp(
                                 ChoiceComp.ofTranslatable(prefs.theme, AppTheme.Theme.ALL, false)
-                                        .styleClass("theme-switcher"),
+                                        .styleClass("theme-switcher").minWidth(getCompWidth() / 2),
                                 prefs.theme)
                         .pref(prefs.performanceMode)
                         .addToggle(prefs.performanceMode)
@@ -61,7 +61,7 @@ public class AppearanceCategory extends AppPrefsCategory {
                                     prefs.windowOpacity.bind(s.valueProperty());
                                     s.setSkin(new ProgressSliderSkin(s));
                                     return s;
-                                }),
+                                }).maxWidth(getCompWidth()),
                                 prefs.windowOpacity)
                         .pref(prefs.saveWindowLocation)
                         .addToggle(prefs.saveWindowLocation)
@@ -73,12 +73,15 @@ public class AppearanceCategory extends AppPrefsCategory {
     private Comp<?> languageChoice() {
         var prefs = AppPrefs.get();
         var c = ChoiceComp.ofTranslatable(prefs.language, Arrays.asList(SupportedLocale.values()), false);
+        c.prefWidth(getCompWidth() / 2);
+        c.hgrow();
         var visit = new ButtonComp(AppI18n.observable("translate"), new FontIcon("mdi2w-web"), () -> {
             Hyperlinks.open(Hyperlinks.TRANSLATE);
         });
-        return new HorizontalComp(List.of(c, visit)).apply(struc -> {
+        var h = new HorizontalComp(List.of(c, visit)).apply(struc -> {
             struc.get().setAlignment(Pos.CENTER_LEFT);
             struc.get().setSpacing(10);
         });
+        return h;
     }
 }

@@ -8,10 +8,6 @@ import javafx.beans.property.Property;
 @JsonTypeName("onePassword")
 public class OnePasswordManager extends PasswordManagerFixedCommand {
 
-    static OptionsBuilder createOptions(Property<OnePasswordManager> property) {
-        return new OptionsBuilder().bind(() -> new OnePasswordManager(), property);
-    }
-
     @Override
     protected ShellScript getScript() {
         var s = "op read $KEY --force";

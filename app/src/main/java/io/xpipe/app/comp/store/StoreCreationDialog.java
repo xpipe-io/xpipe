@@ -50,6 +50,12 @@ public class StoreCreationDialog {
                                 DataStorage.get().updateEntry(e, newE);
                                 if (madeValid) {
                                     StoreViewState.get().triggerStoreListUpdate();
+                                    if (e.getProvider().shouldShowScan()
+                                            && AppPrefs.get()
+                                            .openConnectionSearchWindowOnConnectionCreation()
+                                            .get()) {
+                                        ScanDialog.showAsync(e);
+                                    }
                                 }
                             }
                         }

@@ -49,6 +49,12 @@ public class OptionsChoiceBuilder {
             var defValue = c.cast(m.invoke(b));
             var def = new OptionsBuilder().bind(() -> defValue, property);
             return def;
+        } catch (Exception e) {}
+
+        try {
+            var defConstructor = c.getDeclaredConstructor();
+            var defValue = defConstructor.newInstance();
+            return new OptionsBuilder().bind(() -> defValue, property);
         } catch (Exception e) {
             return new OptionsBuilder();
         }
@@ -64,7 +70,7 @@ public class OptionsChoiceBuilder {
         Property<T> s = (Property<T>) property;
         var sub = subclasses;
         var selectedIndex = s.getValue() == null ? (allowNull ? 0 : -1) : sub.stream().filter(c -> c.equals(s.getValue().getClass()))
-                .findFirst().map(c -> sub.indexOf(c) + 1)
+                .findFirst().map(c -> sub.indexOf(c) + (allowNull ? 1 : 0))
                 .orElse(-1);
         var selected = new SimpleIntegerProperty(selectedIndex);
 
@@ -84,7 +90,7 @@ public class OptionsChoiceBuilder {
             for (int i = 0; i < subclasses.size(); i++) {
                 var c = subclasses.get(i);
                 if (c.isAssignableFrom(newValue.getClass())) {
-                    properties.get(i).setValue(newValue);
+                    properties.get(i + (allowNull ? 1 : 0)).setValue(newValue);
                 }
             }
         });

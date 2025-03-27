@@ -63,7 +63,7 @@ public class TerminalCategory extends AppPrefsCategory {
                                 }
                             });
                         })))
-                .padding(new Insets(15, 0, 0, 0))
+                .padding(new Insets(7, 0, 0, 0))
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
         prefs.enableTerminalLogging.addListener((observable, oldValue, newValue) -> {
             var feature = LicenseProvider.get().getFeature("logging");
@@ -99,21 +99,6 @@ public class TerminalCategory extends AppPrefsCategory {
                 .pref(prefs.terminalPromptForRestart)
                 .addToggle(prefs.terminalPromptForRestart)
                 )
-                .addTitle("sessionLogging")
-                .sub(new OptionsBuilder()
-                        .pref(prefs.enableTerminalLogging)
-                        .addToggle(prefs.enableTerminalLogging)
-                        .nameAndDescription("terminalLoggingDirectory")
-                        .addComp(new ButtonComp(AppI18n.observable("openSessionLogs"), () -> {
-                                    var dir = AppProperties.get().getDataDir().resolve("sessions");
-                                    try {
-                                        Files.createDirectories(dir);
-                                        DesktopHelper.browsePathLocal(dir);
-                                    } catch (IOException e) {
-                                        ErrorEvent.fromThrowable(e).handle();
-                                    }
-                                })
-                                .disable(prefs.enableTerminalLogging.not())))
                 .buildComp();
     }
 
@@ -121,6 +106,7 @@ public class TerminalCategory extends AppPrefsCategory {
         var prefs = AppPrefs.get();
         var c = ChoiceComp.ofTranslatable(
                 prefs.terminalType, PrefsChoiceValue.getSupported(ExternalTerminalType.class), false);
+        c.maxWidth(1000);
         c.apply(struc -> {
             struc.get().setCellFactory(param -> {
                 return new ListCell<>() {
@@ -144,6 +130,7 @@ public class TerminalCategory extends AppPrefsCategory {
                 };
             });
         });
+        c.hgrow();
 
         var visit = new ButtonComp(AppI18n.observable("website"), new FontIcon("mdi2w-web"), () -> {
             var t = prefs.terminalType().getValue();
@@ -165,10 +152,12 @@ public class TerminalCategory extends AppPrefsCategory {
                 prefs.terminalType());
         visit.visible(visitVisible);
 
-        return new HorizontalComp(List.of(c, visit)).apply(struc -> {
+        var h = new HorizontalComp(List.of(c, visit)).apply(struc -> {
             struc.get().setAlignment(Pos.CENTER_LEFT);
             struc.get().setSpacing(10);
         });
+        h.maxWidth(getCompWidth());
+        return h;
     }
 
     private OptionsBuilder terminalProxy() {
@@ -182,7 +171,7 @@ public class TerminalCategory extends AppPrefsCategory {
         return new OptionsBuilder()
                 .nameAndDescription("terminalEnvironment")
                 .addComp(new StoreChoiceComp<>(StoreChoiceComp.Mode.PROXY, null, ref, ShellStore.class,
-                        r -> TerminalProxyManager.canUseAsProxy(r), StoreViewState.get().getAllConnectionsCategory()), ref)
+                        r -> TerminalProxyManager.canUseAsProxy(r), StoreViewState.get().getAllConnectionsCategory()).maxWidth(getCompWidth()), ref)
                 .hide(OsType.getLocal() != OsType.WINDOWS);
     }
 
@@ -198,7 +187,7 @@ public class TerminalCategory extends AppPrefsCategory {
         var script = new SimpleObjectProperty<>(prefs.terminalInitScript().getValue());
         return new OptionsBuilder()
                 .nameAndDescription("terminalInitScript")
-                .addComp(IntegratedTextAreaComp.script(ref, script).minHeight(150), script);
+                .addComp(IntegratedTextAreaComp.script(ref, script).maxWidth(getCompWidth()).minHeight(150), script);
     }
 
     private OptionsBuilder terminalMultiplexer() {
@@ -226,6 +215,7 @@ public class TerminalCategory extends AppPrefsCategory {
                     return hbox;
                 }).build();
         var choice = choiceBuilder.build().buildComp();
+        choice.maxWidth(getCompWidth());
         return new OptionsBuilder()
                 .nameAndDescription("terminalMultiplexer")
                 .addComp(choice);

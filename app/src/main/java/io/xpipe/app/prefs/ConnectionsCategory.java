@@ -32,7 +32,7 @@ public class ConnectionsCategory extends AppPrefsCategory {
                 .sub(localShellBuilder);
         if (OsType.getLocal() == OsType.WINDOWS) {
             options.addTitle("sshConfiguration")
-                    .sub(new OptionsBuilder().addComp(prefs.getCustomComp("x11WslInstance")));
+                    .sub(new OptionsBuilder().addComp(prefs.getCustomComp("x11WslInstance").maxWidth(getCompWidth())));
         }
         return options.buildComp();
     }

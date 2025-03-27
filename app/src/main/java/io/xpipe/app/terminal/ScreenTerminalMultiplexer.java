@@ -15,7 +15,7 @@ public class ScreenTerminalMultiplexer implements TerminalMultiplexer {
 
     @Override
     public String getDocsLink() {
-        return "https://github.com/tmux/tmux/wiki/Getting-Started";
+        return "https://www.gnu.org/software/screen/manual/screen.html";
     }
 
     @Override

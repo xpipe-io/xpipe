@@ -51,6 +51,7 @@ public class ScanDialogBase {
 
     public void finish() throws Exception {
         if (entries.isEmpty()) {
+            closeAction.run();
             return;
         }
 
@@ -78,6 +79,7 @@ public class ScanDialogBase {
                 }
             }
         });
+        closeAction.run();
     }
 
     private void onUpdate() {

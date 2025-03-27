@@ -31,10 +31,9 @@ public class IconsCategory extends AppPrefsCategory {
 
     @Override
     protected Comp<?> create() {
-        var prefs = AppPrefs.get();
         return new OptionsBuilder()
                 .addTitle("customIcons")
-                .sub(new OptionsBuilder().nameAndDescription("iconSources").addComp(createOverview()))
+                .sub(new OptionsBuilder().nameAndDescription("iconSources").addComp(createOverview().maxWidth(getCompWidth())))
                 .buildComp();
     }
 

@@ -9,7 +9,6 @@ import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.password.NoPasswordManager;
 import io.xpipe.app.password.PasswordManager;
 import io.xpipe.app.util.*;
 
@@ -27,6 +26,7 @@ import javafx.scene.layout.Region;
 import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.time.Duration;
 import java.util.List;
 
 public class PasswordManagerCategory extends AppPrefsCategory {
@@ -39,20 +39,30 @@ public class PasswordManagerCategory extends AppPrefsCategory {
     private void testPasswordManager(String key, StringProperty testPasswordManagerResult) {
         var prefs = AppPrefs.get();
         ThreadHelper.runFailableAsync(() -> {
-            if (prefs.passwordManager.getValue() == null) {
+            if (prefs.passwordManager.getValue() == null || key == null) {
                 return;
             }
 
-            var r = prefs.passwordManager.getValue().retrievePassword(key);
             Platform.runLater(() -> {
-                testPasswordManagerResult.set(r);
-                ThreadHelper.runAsync(() -> {
-                    ThreadHelper.sleep(5000);
+               testPasswordManagerResult.set(AppI18n.get("querying") + " ...");
+            });
+
+            try {
+                var r = prefs.passwordManager.getValue().retrievePassword(key);
+                Platform.runLater(() -> {
+                    testPasswordManagerResult.set(AppI18n.get("retrievedPassword", r));
+                });
+                GlobalTimer.delay(() -> {
                     Platform.runLater(() -> {
                         testPasswordManagerResult.set(null);
                     });
+                }, Duration.ofSeconds(5));
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    testPasswordManagerResult.set(null);
                 });
-            });
+                throw e;
+            }
         });
     }
 
@@ -65,6 +75,7 @@ public class PasswordManagerCategory extends AppPrefsCategory {
         var choiceBuilder = OptionsChoiceBuilder.builder()
                 .property(prefs.passwordManager)
                 .subclasses(PasswordManager.getClasses())
+                .allowNull(true)
                 .transformer(entryComboBox -> {
                     var docsLinkButton =
                             new ButtonComp(AppI18n.observable("docs"), new FontIcon("mdi2h-help-circle-outline"), () -> {
@@ -81,6 +92,7 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                     var hbox = new HBox(entryComboBox, docsLinkButton.createRegion());
                     HBox.setHgrow(entryComboBox, Priority.ALWAYS);
                     hbox.setSpacing(10);
+                    hbox.setMaxWidth(getCompWidth());
                     return hbox;
         }).build();
         var choice = choiceBuilder.build().buildComp();
@@ -91,7 +103,7 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                             return prefs.passwordManager.getValue() != null ? prefs.passwordManager.getValue().getKeyPlaceholder() : "?";
                         }, prefs.passwordManager)))
                         .styleClass(Styles.LEFT_PILL)
-                        .prefWidth(400)
+                        .hgrow()
                         .apply(struc -> struc.get().setOnKeyPressed(event -> {
                             if (event.getCode() == KeyCode.ENTER) {
                                 testPasswordManager(testPasswordManagerValue.get(), testPasswordManagerResult);
@@ -109,6 +121,8 @@ public class PasswordManagerCategory extends AppPrefsCategory {
             second.maxHeightProperty().bind(first.heightProperty());
             second.prefHeightProperty().bind(first.heightProperty());
         });
+        testInput.maxWidth(getCompWidth());
+        testInput.hgrow();
 
         var testPasswordManager = new HorizontalComp(List.of(
                         testInput, Comp.hspacer(25), new LabelComp(testPasswordManagerResult).apply(struc -> struc.get()
@@ -124,7 +138,7 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                         .addComp(choice)
                         .nameAndDescription("passwordManagerCommandTest")
                         .addComp(testPasswordManager)
-                        .hide(BindingsHelper.map(prefs.passwordManager, p -> p == null || p instanceof NoPasswordManager))
+                        .hide(BindingsHelper.map(prefs.passwordManager, p -> p == null))
                 )
                 .buildComp();
     }

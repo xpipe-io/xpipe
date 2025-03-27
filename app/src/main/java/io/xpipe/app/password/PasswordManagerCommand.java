@@ -55,8 +55,9 @@ public class PasswordManagerCommand implements PasswordManager {
 
         var area = IntegratedTextAreaComp.script(new SimpleObjectProperty<>(DataStorage.get().local().ref()), script);
         area.minHeight(200);
+        area.maxWidth(600);
 
-        return new OptionsBuilder().addComp(area, script).addComp(templates).bind(() -> new PasswordManagerCommand(script.get()), property);
+        return new OptionsBuilder().nameAndDescription("passwordManagerCommand").addComp(area, script).addComp(templates).bind(() -> new PasswordManagerCommand(script.get()), property);
     }
 
     @Override
@@ -80,8 +81,7 @@ public class PasswordManagerCommand implements PasswordManager {
             var out = cc.readStdoutOrThrow();
 
             // Dashlane fixes
-            var rawCmd = AppPrefs.get().passwordManagerCommand.get();
-            if (rawCmd.contains("dcli")) {
+            if (cmd.contains("dcli")) {
                 out = out.lines()
                         .findFirst()
                         .map(s -> s.trim().replaceAll("\\s+$", ""))
