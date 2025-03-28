@@ -46,7 +46,7 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
                             ? BrowserIconManager.getFileIcon(model.getCurrentDirectory())
                             : null;
                 },
-                model.getCurrentPath());
+                PlatformThread.sync(model.getCurrentPath()));
         var breadcrumbsGraphic = PrettyImageHelper.ofFixedSize(graphic, 24, 24)
                 .styleClass("path-graphic")
                 .createRegion();
@@ -85,7 +85,7 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
                                     && !model.getInOverview().get();
                         },
                         pathRegion.focusedProperty(),
-                        model.getInOverview()));
+                        PlatformThread.sync(model.getInOverview())));
         var stack = new StackPane(pathRegion, breadcrumbsRegion);
         stack.setAlignment(Pos.CENTER_LEFT);
         pathRegion.prefHeightProperty().bind(stack.heightProperty());
@@ -135,7 +135,9 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
     private Comp<CompStructure<TextField>> createPathBar() {
         var path = new SimpleStringProperty();
         model.getCurrentPath().subscribe((newValue) -> {
-            path.set(newValue != null ? newValue.toString() : null);
+            PlatformThread.runLaterIfNeeded(() -> {
+                path.set(newValue != null ? newValue.toString() : null);
+            });
         });
         path.addListener((observable, oldValue, newValue) -> {
             ThreadHelper.runFailableAsync(() -> {

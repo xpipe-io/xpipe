@@ -6,11 +6,9 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabComp;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.DialogComp;
-import io.xpipe.app.comp.base.LeftSplitPaneComp;
-import io.xpipe.app.comp.base.StackComp;
-import io.xpipe.app.comp.base.VerticalComp;
+import io.xpipe.app.comp.base.*;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -21,16 +19,11 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FileSystemStore;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
-import javafx.geometry.Pos;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Stage;
-import javafx.stage.Window;
-import javafx.stage.WindowEvent;
 
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -38,65 +31,51 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class BrowserFileChooserSessionComp extends DialogComp {
+public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
 
-    private final Stage stage;
     private final BrowserFileChooserSessionModel model;
 
-    public BrowserFileChooserSessionComp(Stage stage, BrowserFileChooserSessionModel model) {
-        this.stage = stage;
+    public BrowserFileChooserSessionComp(BrowserFileChooserSessionModel model) {
         this.model = model;
     }
 
     public static void openSingleFile(
             Supplier<DataStoreEntryRef<? extends FileSystemStore>> store, Consumer<FileReference> file, boolean save) {
-        PlatformThread.runLaterIfNeeded(() -> {
-            var lastWindow = Window.getWindows().stream()
-                    .filter(window -> window.isFocused())
-                    .findFirst();
-            var model = new BrowserFileChooserSessionModel(BrowserFileSystemTabModel.SelectionMode.SINGLE_FILE);
-            DialogComp.showWindow(save ? "saveFileTitle" : "openFileTitle", stage -> {
-                stage.addEventFilter(WindowEvent.WINDOW_HIDDEN, event -> {
-                    lastWindow.ifPresent(window -> window.requestFocus());
-                });
-                var comp = new BrowserFileChooserSessionComp(stage, model);
-                comp.apply(struc -> struc.get().setPrefSize(1200, 700))
-                        .styleClass("browser")
-                        .styleClass("chooser");
-                return comp;
-            });
-            model.setOnFinish(fileStores -> {
-                file.accept(fileStores.size() > 0 ? fileStores.getFirst() : null);
-            });
-            ThreadHelper.runAsync(() -> {
-                model.openFileSystemAsync(store.get(), null, null);
-            });
+        var model = new BrowserFileChooserSessionModel(BrowserFileSystemTabModel.SelectionMode.SINGLE_FILE);
+        model.setOnFinish(fileStores -> {
+            file.accept(fileStores.size() > 0 ? fileStores.getFirst() : null);
+        });
+        var comp = new BrowserFileChooserSessionComp(model)
+                .styleClass("browser")
+                .styleClass("chooser");
+        var selection = new SimpleStringProperty();
+        model.getFileSelection().addListener((ListChangeListener<? super BrowserEntry>) c -> {
+            selection.set(c.getList().size() > 0 ? c.getList().getFirst().getRawFileEntry().getPath().toString() : null);
+        });
+        var selectionField = new TextFieldComp(selection);
+        selectionField.apply(struc -> {
+            struc.get().setEditable(false);
+            AppFontSizes.base(struc.get());
+        });
+        selectionField.styleClass("chooser-selection");
+        selectionField.hgrow();
+        var modal = ModalOverlay.of(save ? "saveFileTitle" : "openFileTitle", comp);
+        modal.setRequireCloseButtonForClose(true);
+        modal.addButtonBarComp(selectionField);
+        modal.addButton(new ModalButton("select", () -> model.finishChooser(), true, true));
+        modal.show();
+        ThreadHelper.runAsync(() -> {
+            model.openFileSystemAsync(store.get(), null, null);
         });
     }
 
     @Override
-    protected String finishKey() {
-        return "select";
+    protected void onClose() {
+        model.closeFileSystem();
     }
 
     @Override
-    protected Comp<?> pane(Comp<?> content) {
-        return content;
-    }
-
-    @Override
-    protected void finish() {
-        stage.close();
-        model.finishChooser();
-    }
-
-    @Override
-    protected void discard() {
-        model.finishWithoutChoice();
-    }
-
-    @Override
-    public Comp<?> content() {
+    protected Region createSimple() {
         Predicate<StoreEntryWrapper> applicable = storeEntryWrapper -> {
             return (storeEntryWrapper.getEntry().getStore() instanceof ShellStore)
                     && storeEntryWrapper.getEntry().getValidity().isUsable();
@@ -163,33 +142,6 @@ public class BrowserFileChooserSessionComp extends DialogComp {
                     struc.getLeft().setMinWidth(200);
                     struc.getLeft().setMaxWidth(500);
                 });
-        return splitPane;
-    }
-
-    @Override
-    public Comp<?> bottom() {
-        return Comp.of(() -> {
-            var selected = new HBox();
-            selected.setAlignment(Pos.CENTER_LEFT);
-            model.getFileSelection().addListener((ListChangeListener<? super BrowserEntry>) c -> {
-                PlatformThread.runLaterIfNeeded(() -> {
-                    selected.getChildren()
-                            .setAll(c.getList().stream()
-                                    .map(s -> {
-                                        var field = new TextField(
-                                                s.getRawFileEntry().getPath().toString());
-                                        field.setEditable(false);
-                                        field.getStyleClass().add("chooser-selection");
-                                        HBox.setHgrow(field, Priority.ALWAYS);
-                                        return field;
-                                    })
-                                    .toList());
-                });
-            });
-            var bottomBar = new HBox(selected);
-            HBox.setHgrow(selected, Priority.ALWAYS);
-            bottomBar.setAlignment(Pos.CENTER);
-            return bottomBar;
-        });
+        return splitPane.createRegion();
     }
 }

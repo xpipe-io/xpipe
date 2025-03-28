@@ -189,6 +189,7 @@ public class ModalOverlayComp extends SimpleComp {
 
         if (newValue.getButtons().size() > 0) {
             var buttonBar = new HBox();
+            buttonBar.getStyleClass().add("button-bar");
             buttonBar.setSpacing(10);
             buttonBar.setAlignment(Pos.CENTER_RIGHT);
             for (var o : newValue.getButtons()) {
@@ -199,7 +200,7 @@ public class ModalOverlayComp extends SimpleComp {
                 }
             }
             content.getChildren().add(buttonBar);
-            AppFontSizes.xs(buttonBar);
+            AppFontSizes.base(buttonBar);
         }
 
         var modalBox = new ModalBox(pane, content) {

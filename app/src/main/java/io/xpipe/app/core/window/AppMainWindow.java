@@ -10,6 +10,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviourDialog;
 import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.util.LicenseProvider;
+import io.xpipe.app.util.NodeCallback;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
@@ -97,6 +98,9 @@ public class AppMainWindow {
                             return stage.isFocused() ? 1.0 : 0.8;
                         },
                         stage.focusedProperty()));
+        if (AppProperties.get().isDebugPlatformThreadAccess()) {
+            NodeCallback.watchPlatformThreadChanges(content);
+        }
         var scene = new Scene(content, -1, -1, false);
         content.prefWidthProperty().bind(scene.widthProperty());
         content.prefHeightProperty().bind(scene.heightProperty());

@@ -84,32 +84,6 @@ public class AppWindowHelper {
         });
     }
 
-    public static Stage sideWindow(
-            String title, Function<Stage, Comp<?>> contentFunc, boolean bindSize, ObservableValue<Boolean> loading) {
-        var stage = AppWindowBounds.centerStage();
-        ModifiedStage.prepareStage(stage);
-        if (AppMainWindow.getInstance() != null) {
-            stage.initOwner(AppMainWindow.getInstance().getStage());
-        }
-        stage.setTitle(title);
-
-        addIcons(stage);
-        setupContent(stage, contentFunc, bindSize, loading);
-        setupStylesheets(stage.getScene());
-        AppWindowHelper.setupClickShield(stage);
-        AppWindowBounds.fixInvalidStagePosition(stage);
-        AppWindowHelper.addFontSize(stage);
-
-        if (AppPrefs.get() != null && AppPrefs.get().enforceWindowModality().get()) {
-            stage.initModality(Modality.WINDOW_MODAL);
-        }
-
-        stage.setOnShown(e -> {
-            AppTheme.initThemeHandlers(stage);
-        });
-        return stage;
-    }
-
     public static void setContent(Alert alert, String s) {
         alert.getDialogPane().setMinWidth(505);
         alert.getDialogPane().setPrefWidth(505);
@@ -266,53 +240,5 @@ public class AppWindowHelper {
                 event.consume();
             }
         });
-    }
-
-    public static void setupContent(
-            Stage stage, Function<Stage, Comp<?>> contentFunc, boolean bindSize, ObservableValue<Boolean> loading) {
-        var baseComp = contentFunc.apply(stage);
-        var content = loading != null ? LoadingOverlayComp.noProgress(baseComp, loading) : baseComp;
-        var contentR = content.createRegion();
-        var scene = new Scene(bindSize ? new Pane(contentR) : contentR, -1, -1, false);
-        scene.setFill(Color.TRANSPARENT);
-        stage.setScene(scene);
-        contentR.requestFocus();
-        if (bindSize) {
-            bindSize(stage, contentR);
-            stage.setResizable(false);
-        }
-
-        scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {
-                stage.close();
-                event.consume();
-            }
-        });
-    }
-
-    private static void bindSize(Stage stage, Region r) {
-        if (r.getPrefWidth() == Region.USE_COMPUTED_SIZE) {
-            r.widthProperty().addListener((c, o, n) -> {
-                stage.sizeToScene();
-            });
-        } else {
-            stage.setWidth(r.getPrefWidth());
-            r.prefWidthProperty().addListener((c, o, n) -> {
-                stage.sizeToScene();
-            });
-        }
-
-        if (r.getPrefHeight() == Region.USE_COMPUTED_SIZE) {
-            r.heightProperty().addListener((c, o, n) -> {
-                stage.sizeToScene();
-            });
-        } else {
-            stage.setHeight(r.getPrefHeight());
-            r.prefHeightProperty().addListener((c, o, n) -> {
-                stage.sizeToScene();
-            });
-        }
-
-        stage.sizeToScene();
     }
 }

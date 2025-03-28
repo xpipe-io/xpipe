@@ -65,7 +65,7 @@ public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<
         onFinish.accept(stores);
     }
 
-    public void finishWithoutChoice() {
+    public void closeFileSystem() {
         synchronized (BrowserFileChooserSessionModel.this) {
             var open = selectedEntry.getValue();
             if (open != null) {
