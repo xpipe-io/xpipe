@@ -166,8 +166,7 @@ public class StoreCategoryComp extends SimpleComp {
                 .getList()
                 .sorted(Comparator.comparing(storeCategoryWrapper ->
                         storeCategoryWrapper.nameProperty().getValue().toLowerCase(Locale.ROOT)));
-        var children =
-                new ListBoxViewComp<>(l, l, storeCategoryWrapper -> new StoreCategoryComp(storeCategoryWrapper), false);
+        var children = new ListBoxViewComp<>(l, l, storeCategoryWrapper -> new StoreCategoryComp(storeCategoryWrapper), false);
         children.styleClass("children");
         children.minHeight(0);
         children.setVisibilityControl(true);

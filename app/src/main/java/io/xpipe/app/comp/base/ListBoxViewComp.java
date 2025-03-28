@@ -175,7 +175,7 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
                 c.boundsInParentProperty().addListener((change, oldBounds,newBounds) -> {
                     dirty.set(true);
                 });
-                // Don't listen to root node changes, that seemingly can cause exceptions
+                // Don't listen to root node changes, we don't need that
             } while ((c = c.getParent()) != null && c.getParent() != null);
 
             if (newValue != null) {
@@ -226,6 +226,10 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
     }
 
     private void updateVisibilities(ScrollPane scroll, VBox vbox) {
+        if (!Platform.isFxApplicationThread()) {
+            throw new IllegalStateException("Not in FxApplication thread");
+        }
+
         if (!visibilityControl) {
             return;
         }
@@ -251,6 +255,10 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             Map<T, Region> cache,
             boolean refreshVisibilities) {
         Runnable update = () -> {
+            if (!Platform.isFxApplicationThread()) {
+                throw new IllegalStateException("Not in FxApplication thread");
+            }
+
             synchronized (cache) {
                 var set = new HashSet<T>();
                 // These lists might diverge on updates, so add both
