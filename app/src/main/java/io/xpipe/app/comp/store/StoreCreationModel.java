@@ -61,19 +61,23 @@ public class StoreCreationModel {
     StringProperty name;
     DataStoreEntry existingEntry;
     boolean staticDisplay;
+    StoreCreationConsumer consumer;
 
     public StoreCreationModel(
             Property<DataStoreProvider> provider,
             ObjectProperty<DataStore> store, Predicate<DataStoreProvider> filter,
             String initialName,
             DataStoreEntry existingEntry,
-            boolean staticDisplay) {
+            boolean staticDisplay,
+            StoreCreationConsumer consumer
+    ) {
         this.provider = provider;
         this.store = store;
         this.filter = filter;
         this.name = new SimpleStringProperty(initialName != null && !initialName.isEmpty() ? initialName : null);
         this.existingEntry = existingEntry;
         this.staticDisplay = staticDisplay;
+        this.consumer = consumer;
         this.store.addListener((c, o, n) -> {
             changedSinceError.setValue(true);
         });
@@ -192,10 +196,6 @@ public class StoreCreationModel {
         });
     }
 
-    ObservableValue<Boolean> busy() {
-        return busy;
-    }
-
     void finish() {
         if (finished.get()) {
             return;
@@ -207,7 +207,7 @@ public class StoreCreationModel {
 
         // We didn't change anything
         if (existingEntry != null && existingEntry.getStore().equals(store.getValue())) {
-            commit();
+            commit(false);
             return;
         }
 
@@ -232,7 +232,7 @@ public class StoreCreationModel {
             try (var ignored = new BooleanScope(busy).start()) {
                 DataStorage.get().addStoreEntryInProgress(entry.getValue());
                 entry.getValue().validateOrThrow();
-                commit();
+                commit(true);
             } catch (Throwable ex) {
                 if (ex instanceof ValidationException) {
                     ErrorEvent.expected(ex);
@@ -263,11 +263,13 @@ public class StoreCreationModel {
         return disable;
     }
 
-    void commit() {
+    void commit(boolean validated) {
         if (finished.get()) {
             return;
         }
+
         finished.setValue(true);
+        consumer.consume(entry.getValue(), validated);
     }
 
     public String storeTypeNameKey() {

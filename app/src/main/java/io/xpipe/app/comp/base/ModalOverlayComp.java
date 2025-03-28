@@ -169,9 +169,9 @@ public class ModalOverlayComp extends SimpleComp {
     private void showModalBox(ModalPane modal, ModalOverlay overlay) {
         var modalBox = toBox(modal, overlay);
         modalBox.setOpacity(0.01);
-        modal.setPersistent(overlay.isPersistent());
+        modal.setPersistent(overlay.isRequireCloseButtonForClose());
         modal.show(modalBox);
-        if (overlay.isPersistent() || overlay.getTitleKey() == null) {
+        if (!overlay.isHasCloseButton() || overlay.getTitleKey() == null) {
             var closeButton = modalBox.lookup(".close-button");
             if (closeButton != null) {
                 closeButton.setVisible(false);

@@ -42,11 +42,16 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class StoreCreationComp extends SimpleComp {
+public class StoreCreationComp extends ModalOverlayContentComp {
 
     private final StoreCreationModel model;
 
     public StoreCreationComp(StoreCreationModel model) {this.model = model;}
+
+    @Override
+    protected ObservableValue<Boolean> busy() {
+        return model.getBusy();
+    }
 
     private Region createStoreProperties(Comp<?> comp, Validator propVal) {
         var nameKey = model.storeTypeNameKey();

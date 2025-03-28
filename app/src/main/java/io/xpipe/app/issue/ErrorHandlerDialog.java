@@ -1,5 +1,6 @@
 package io.xpipe.app.issue;
 
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.mode.OperationMode;
@@ -59,12 +60,15 @@ public class ErrorHandlerDialog {
                     detailsModal.show();
                 }, false, false));
             }
-            errorModal.addButton(new ModalButton("report", () -> {
-                if (UserReportComp.show(event)) {
-                    comp.getTakenAction().setValue(ErrorAction.ignore());
-                    errorModal.close();
-                }
-            }, false, false));
+            if (event.isReportable()) {
+                errorModal.addButton(new ModalButton("report", () -> {
+                    if (UserReportComp.show(event)) {
+                        comp.getTakenAction().setValue(ErrorAction.ignore());
+                        errorModal.close();
+                    }
+                }, false, false));
+                errorModal.addButtonBarComp(Comp.hspacer());
+            }
             errorModal.addButton(ModalButton.ok());
             modal.set(errorModal);
             AppDialog.showAndWait(modal.get());

@@ -26,7 +26,7 @@ public class ModalOverlay {
     }
 
     public static ModalOverlay of(String titleKey, Comp<?> content, LabelGraphic graphic) {
-        return new ModalOverlay(titleKey, content, graphic, new ArrayList<>(), false, null);
+        return new ModalOverlay(titleKey, content, graphic, new ArrayList<>(), true, false, null);
     }
 
     public ModalOverlay withDefaultButtons(Runnable action) {
@@ -47,7 +47,12 @@ public class ModalOverlay {
     List<Object> buttons;
 
     @NonFinal
-    boolean persistent;
+    @Setter
+    boolean hasCloseButton;
+
+    @NonFinal
+    @Setter
+    boolean requireCloseButtonForClose;
 
     @NonFinal
     @Setter
@@ -69,7 +74,8 @@ public class ModalOverlay {
     }
 
     public void persist() {
-        persistent = true;
+        this.hasCloseButton = false;
+        this.requireCloseButtonForClose = true;
     }
 
     public void show() {
