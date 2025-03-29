@@ -57,7 +57,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         }
 
         {
-            var b = new IconButtonComp("mdi2u-update", () -> UpdateAvailableDialog.showIfNeeded());
+            var b = new IconButtonComp("mdi2u-update", () -> UpdateAvailableDialog.showAndWaitIfNeeded());
             b
                     .tooltipKey("updateAvailableTooltip")
                     .accessibleTextKey("updateAvailableTooltip");

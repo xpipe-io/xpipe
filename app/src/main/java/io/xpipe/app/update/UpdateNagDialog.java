@@ -13,7 +13,7 @@ import java.time.Instant;
 
 public class UpdateNagDialog {
 
-    public static void showIfNeeded() {
+    public static void showAndWaitIfNeeded() {
         UpdateHandler uh = AppDistributionType.get().getUpdateHandler();
         if (uh.getPerformedUpdate() != null || uh.getPreparedUpdate().getValue() != null) {
             AppCache.clear("lastUpdateNag");
@@ -45,7 +45,7 @@ public class UpdateNagDialog {
                 },
                 true,
                 true));
-        AppDialog.show(modal);
+        AppDialog.showAndWait(modal);
         AppCache.update("lastUpdateNag", Instant.now());
     }
 }

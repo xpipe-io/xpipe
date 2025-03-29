@@ -34,7 +34,7 @@ public class UpdateCheckComp extends SimpleComp {
     private void showAlert() {
         ThreadHelper.runFailableAsync(() -> {
             AppDistributionType.get().getUpdateHandler().refreshUpdateCheckSilent(false, false);
-            UpdateAvailableDialog.showIfNeeded();
+            UpdateAvailableDialog.showAndWaitIfNeeded();
         });
     }
 

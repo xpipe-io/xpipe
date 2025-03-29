@@ -71,9 +71,9 @@ public class BaseMode extends OperationMode {
         // You can still update manually in the about tab
         if (AppPrefs.get().automaticallyUpdate().get()
                 || AppPrefs.get().checkForSecurityUpdates().get()) {
-            UpdateAvailableDialog.showIfNeeded();
+            UpdateAvailableDialog.showAndWaitIfNeeded();
         } else {
-            UpdateNagDialog.showIfNeeded();
+            UpdateNagDialog.showAndWaitIfNeeded();
         }
 
         var imagesLoaded = new CountDownLatch(1);
