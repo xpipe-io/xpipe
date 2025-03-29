@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.List;
+
 @SuppressWarnings("ClassCanBeRecord")
 @Value
 @Builder
@@ -13,8 +15,13 @@ import lombok.extern.jackson.Jacksonized;
 public class BeaconServerErrorResponse {
 
     Throwable error;
+    String documentationLink;
 
     public void throwError() throws BeaconServerException {
-        throw new BeaconServerException(error.getMessage(), error);
+        var message = error.getMessage();
+        if (documentationLink != null) {
+            message = message + "\n\nFor more information, see: " + documentationLink;
+        }
+        throw new BeaconServerException(message, error);
     }
 }

@@ -17,6 +17,17 @@ public class ShellView {
         return shellControl.getShellDialect();
     }
 
+    public FilePath writeTempTextFileDeterministic(String fileName, String text) throws Exception {
+        var hash = Math.abs(text.hashCode());
+        var f = FilePath.of(fileName);
+        var target = FilePath.of(f.getBaseName().toString() + "-" + hash + f.getExtension());
+        if (fileExists(target)) {
+            return target;
+        }
+        writeTextFile(target, text);
+        return target;
+    }
+
     public byte[] readRawFile(FilePath path) throws Exception {
         var s = getDialect().getFileReadCommand(shellControl, path.toString()).readRawBytesOrThrow();
         return s;

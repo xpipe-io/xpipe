@@ -98,6 +98,7 @@ public class ErrorHandlerComp extends SimpleComp {
         var top = createTop();
         var content = new VBox(top);
         var header = new Label(AppI18n.get("possibleActions"));
+        header.setPadding(new Insets(0, 0, 2, 3));
         AppFontSizes.xl(header);
         var actionBox = new VBox();
         actionBox.getStyleClass().add("actions");

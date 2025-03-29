@@ -200,7 +200,7 @@ public class ModalOverlayComp extends SimpleComp {
                 }
             }
             content.getChildren().add(buttonBar);
-            AppFontSizes.base(buttonBar);
+            AppFontSizes.sm(buttonBar);
         }
 
         var modalBox = new ModalBox(pane, content) {

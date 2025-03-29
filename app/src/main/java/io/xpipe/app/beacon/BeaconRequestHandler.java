@@ -111,8 +111,9 @@ public class BeaconRequestHandler<T> implements HttpHandler {
             return;
         } catch (BeaconServerException serverException) {
             var cause = serverException.getCause() != null ? serverException.getCause() : serverException;
-            ErrorEvent.fromThrowable(cause).omit().handle();
-            writeError(exchange, new BeaconServerErrorResponse(cause), 500);
+            var event = ErrorEvent.fromThrowable(cause).omit().handle();
+            var link = event.getDocumentationLink() != null ? event.getDocumentationLink().getLink() : null;
+            writeError(exchange, new BeaconServerErrorResponse(cause, link), 500);
             return;
         } catch (IOException ex) {
             // Handle serialization errors as normal exceptions and other IO exceptions as assuming that the connection
@@ -132,8 +133,9 @@ public class BeaconRequestHandler<T> implements HttpHandler {
             }
             return;
         } catch (Throwable other) {
-            ErrorEvent.fromThrowable(other).omit().expected().handle();
-            writeError(exchange, new BeaconServerErrorResponse(other), 500);
+            var event = ErrorEvent.fromThrowable(other).omit().expected().handle();
+            var link = event.getDocumentationLink() != null ? event.getDocumentationLink().getLink() : null;
+            writeError(exchange, new BeaconServerErrorResponse(other, link), 500);
             return;
         }
 
@@ -160,8 +162,9 @@ public class BeaconRequestHandler<T> implements HttpHandler {
                 ErrorEvent.fromThrowable(ioException).omit().expected().handle();
             }
         } catch (Throwable other) {
-            ErrorEvent.fromThrowable(other).handle();
-            writeError(exchange, new BeaconServerErrorResponse(other), 500);
+            var event = ErrorEvent.fromThrowable(other).handle();
+            var link = event.getDocumentationLink() != null ? event.getDocumentationLink().getLink() : null;
+            writeError(exchange, new BeaconServerErrorResponse(other, link), 500);
         }
     }
 

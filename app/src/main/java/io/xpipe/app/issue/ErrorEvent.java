@@ -162,8 +162,20 @@ public class ErrorEvent {
             return omit().expected();
         }
 
-        public void handle() {
-            build().handle();
+        public ErrorEvent handle() {
+            var event = build();
+            event.handle();
+            return event;
+        }
+
+        public void expectedIfContains(String... s) {
+            var contains = throwable != null && throwable.getMessage() != null
+                    && Arrays.stream(s).map(String::toLowerCase).anyMatch(string -> throwable.getMessage()
+                    .toLowerCase(Locale.ROOT)
+                    .endsWith(string));
+            if (contains) {
+                expected();
+            }
         }
     }
 }
