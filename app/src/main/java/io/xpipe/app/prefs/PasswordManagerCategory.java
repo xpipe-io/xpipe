@@ -44,7 +44,7 @@ public class PasswordManagerCategory extends AppPrefsCategory {
             }
 
             Platform.runLater(() -> {
-               testPasswordManagerResult.set(AppI18n.get("querying") + " ...");
+               testPasswordManagerResult.set(AppI18n.get("querying"));
             });
 
             try {
