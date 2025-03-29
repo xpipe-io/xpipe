@@ -67,11 +67,6 @@ public class AppInstaller {
 
         public abstract void installLocal(Path file) throws Exception;
 
-        public boolean isCorrectAsset(String name) {
-            return name.endsWith(getExtension())
-                    && name.contains(AppProperties.get().getArch());
-        }
-
         public abstract String getExtension();
 
         @JsonTypeName("msi")
@@ -135,7 +130,6 @@ public class AppInstaller {
                         logFile,
                         args,
                         exec,
-                        exec,
                         AppProperties.get().getDataDir());
             }
 
@@ -160,7 +154,6 @@ public class AppInstaller {
                         file,
                         logFile,
                         startProcessProperty,
-                        exec,
                         exec,
                         AppProperties.get().getDataDir());
             }

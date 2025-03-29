@@ -50,12 +50,11 @@ public class AppWindowsShutdown {
     public static final int WM_QUERYENDSESSION = 0x11;
     public static final long ENDSESSION_CRITICAL = 0x40000000L;
 
+    @Setter
     @RequiredArgsConstructor
     public static final class WinShutdownHookProc implements WinHookProc {
 
-        @Setter
         private WinUser.HHOOK hhook;
-        @Setter
         private WinDef.HWND hwnd;
 
         @Override

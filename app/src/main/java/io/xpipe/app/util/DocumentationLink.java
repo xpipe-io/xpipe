@@ -6,6 +6,7 @@ public enum DocumentationLink {
 
     INDEX(""),
     TTY("troubleshoot/tty"),
+    WINDOWS_SSH("troubleshoot/windows-ssh"),
     MACOS_SETUP("guide/installation#macos"),
     SSH_AGENT("troubleshoot/ssh-agent-socket"),
     DOUBLE_PROMPT("troubleshoot/two-step-connections"),

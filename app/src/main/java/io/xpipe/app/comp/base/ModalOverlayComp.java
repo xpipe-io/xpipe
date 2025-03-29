@@ -173,7 +173,7 @@ public class ModalOverlayComp extends SimpleComp {
                 r.requestFocus();
             }
         });
-        content.setSpacing(25);
+        content.setSpacing(20);
         content.setPadding(new Insets(13, 27, 20, 27));
 
         if (newValue.getTitleKey() != null) {
