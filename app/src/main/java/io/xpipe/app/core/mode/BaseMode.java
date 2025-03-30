@@ -105,26 +105,17 @@ public class BaseMode extends OperationMode {
                     DataStorage.init();
                     storageLoaded.countDown();
                     StoreViewState.init();
-                    AppMainWindow.loadingText("loadingUserInterface");
+                    TrackEvent.info("Connection storage initialization thread completed");
+                },
+                () -> {
                     AppLayoutModel.init();
                     PlatformInit.init(true);
-                    PlatformThread.runLaterIfNeededBlocking(() -> {
-                        AppGreetingsDialog.showIfNeeded();
-                    });
                     imagesLoaded.await();
                     browserLoaded.await();
                     iconsLoaded.await();
-                    TrackEvent.info("Waiting for startup dialogs to close");
-                    AppDialog.waitForAllDialogsClose();
-                    PlatformThread.runLaterIfNeededBlocking(() -> {
-                        try {
-                            AppMainWindow.initContent();
-                        } catch (Throwable t) {
-                            ErrorEvent.fromThrowable(t).term().handle();
-                        }
-                    });
-                    UpdateChangelogAlert.showIfNeeded();
-                    TrackEvent.info("Connection storage initialization thread completed");
+                    AppMainWindow.loadingText("loadingUserInterface");
+                    AppMainWindow.initContent();
+                    TrackEvent.info("Window content initialization thread completed");
                 },
                 () -> {
                     AppFileWatcher.init();
@@ -138,7 +129,6 @@ public class BaseMode extends OperationMode {
                     PlatformInit.init(true);
                     AppImages.init();
                     imagesLoaded.countDown();
-                    storageLoaded.await();
                     SystemIconManager.init();
                     iconsLoaded.countDown();
                     TrackEvent.info("Platform initialization thread completed");
@@ -152,6 +142,12 @@ public class BaseMode extends OperationMode {
                     browserLoaded.countDown();
                     TrackEvent.info("Browser initialization thread completed");
                 });
+
+        AppGreetingsDialog.showAndWaitIfNeeded();
+        TrackEvent.info("Waiting for startup dialogs to close");
+        AppDialog.waitForAllDialogsClose();
+        UpdateChangelogAlert.showIfNeeded();
+
         ActionProvider.initProviders();
         DataStoreProviders.init();
 

@@ -144,11 +144,17 @@ public class AppMainWindow {
     }
 
     public static synchronized void initContent() {
-        TrackEvent.info("Window content node creation started");
-        var content = new AppLayoutComp();
-        var s = content.createStructure();
-        TrackEvent.info("Window content node structure created");
-        loadedContent.setValue(s);
+        PlatformThread.runLaterIfNeededBlocking(() -> {
+            try {
+                TrackEvent.info("Window content node creation started");
+                var content = new AppLayoutComp();
+                var s = content.createStructure();
+                TrackEvent.info("Window content node structure created");
+                loadedContent.setValue(s);
+            } catch (Throwable t) {
+                ErrorEvent.fromThrowable(t).term().handle();
+            }
+        });
     }
 
     public void show() {

@@ -1,6 +1,8 @@
 package io.xpipe.app.storage;
 
+import com.vladsch.flexmark.util.misc.FileUtil;
 import io.xpipe.app.comp.store.StoreSortMode;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.ext.NameableStore;
 import io.xpipe.app.issue.ErrorEvent;
@@ -18,7 +20,9 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import org.apache.commons.io.FileUtils;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -40,6 +44,11 @@ public abstract class DataStorage {
     public static final UUID ALL_IDENTITIES_CATEGORY_UUID = UUID.fromString("23a5565d-b343-4ab2-abf4-48a5d12dda22");
     public static final UUID LOCAL_IDENTITIES_CATEGORY_UUID = UUID.fromString("e784de4e-abea-4cb8-a839-fc557cd23097");
     public static final UUID SYNCED_IDENTITIES_CATEGORY_UUID = UUID.fromString("69aa5040-28dc-451e-b4ff-1192ce5e1e3c");
+
+    public static Path getStorageDirectory() {
+        var dir = AppProperties.get().getDataDir().resolve("storage");
+        return dir;
+    }
 
     private static final String PERSIST_PROP = "io.xpipe.storage.persist";
 
@@ -70,8 +79,7 @@ public abstract class DataStorage {
     private final Map<DataStore, DataStoreEntry> storeEntryMapCache = new HashMap<>();
 
     public DataStorage() {
-        var prefsDir = AppPrefs.get().storageDirectory().getValue();
-        this.dir = !Files.exists(prefsDir) || !Files.isDirectory(prefsDir) ? AppPrefs.DEFAULT_STORAGE_DIR : prefsDir;
+        this.dir = getStorageDirectory();
         this.storeEntries = new ConcurrentHashMap<>();
         this.storeEntriesSet = storeEntries.keySet();
         this.storeCategories = new CopyOnWriteArrayList<>();
@@ -251,10 +259,6 @@ public abstract class DataStorage {
 
     public Path getDataDir() {
         return dir.resolve("data");
-    }
-
-    public Path getIconsDir() {
-        return dir.resolve("icons");
     }
 
     protected Path getCategoriesDir() {

@@ -176,8 +176,6 @@ public class AppPrefs {
             mapLocal(new SimpleBooleanProperty(false), "lockVaultOnHibernation", Boolean.class, false);
     final BooleanProperty openConnectionSearchWindowOnConnectionCreation = mapLocal(
             new SimpleBooleanProperty(true), "openConnectionSearchWindowOnConnectionCreation", Boolean.class, false);
-    final ObjectProperty<Path> storageDirectory =
-            mapLocal(new SimpleObjectProperty<>(DEFAULT_STORAGE_DIR), "storageDirectory", Path.class, true);
     final ObjectProperty<String> downloadsDirectory =
             mapLocal(new SimpleObjectProperty<>(), "downloadsDirectory", String.class, false);
     final BooleanProperty confirmAllDeletions =
@@ -310,8 +308,7 @@ public class AppPrefs {
         PrefsProvider.getAll().forEach(prov -> prov.addPrefs(INSTANCE.extensionHandler));
         INSTANCE.loadLocal();
         INSTANCE.adjustLocalValues();
-        INSTANCE.vaultStorageHandler = new AppPrefsStorageHandler(
-                INSTANCE.storageDirectory().getValue().resolve("preferences.json"));
+        INSTANCE.vaultStorageHandler = new AppPrefsStorageHandler(DataStorage.getStorageDirectory().resolve("preferences.json"));
     }
 
     public static void initSharedRemote() {
@@ -487,10 +484,6 @@ public class AppPrefs {
         return customRdpClientCommand;
     }
 
-    public ObservableValue<Path> storageDirectory() {
-        return storageDirectory;
-    }
-
     public ObservableValue<String> downloadsDirectory() {
         return downloadsDirectory;
     }
@@ -577,18 +570,6 @@ public class AppPrefs {
     }
 
     private void adjustLocalValues() {
-        // You can set the directory to empty in the settings
-        if (storageDirectory.get() == null || storageDirectory.get().toString().isBlank()) {
-            storageDirectory.setValue(DEFAULT_STORAGE_DIR);
-        }
-
-        try {
-            FileUtils.forceMkdir(storageDirectory.getValue().toFile());
-        } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).expected().build().handle();
-            storageDirectory.setValue(DEFAULT_STORAGE_DIR);
-        }
-
         if (AppProperties.get().isInitialLaunch()) {
             var f = PlatformState.determineDefaultScalingFactor();
             uiScale.setValue(f.isPresent() ? f.getAsInt() : null);

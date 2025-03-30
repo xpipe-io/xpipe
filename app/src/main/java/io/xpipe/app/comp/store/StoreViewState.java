@@ -54,6 +54,9 @@ public class StoreViewState {
             new DerivedObservableList<>(FXCollections.observableArrayList(), true);
 
     @Getter
+    private boolean initialized = false;
+
+    @Getter
     private final DerivedObservableList<StoreEntryWrapper> effectiveBatchModeSelection =
             batchModeSelection.filtered(storeEntryWrapper -> {
                 if (!storeEntryWrapper.getValidity().getValue().isUsable()) {
@@ -86,6 +89,7 @@ public class StoreViewState {
         INSTANCE.updateContent();
         INSTANCE.initFilterListener();
         INSTANCE.initBatchListener();
+        INSTANCE.initialized = true;
     }
 
     public static void reset() {

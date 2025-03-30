@@ -100,24 +100,24 @@ public class SecretRetrievalStrategyHelper {
         if (allowNone) {
             map.put(AppI18n.observable("app.none"), new OptionsBuilder());
         }
+        map.put(AppI18n.observable("app.prompt"), new OptionsBuilder());
         map.put(AppI18n.observable("app.password"), inPlace(inPlace));
         map.put(AppI18n.observable("app.passwordManager"), passwordManager(passwordManager));
         map.put(AppI18n.observable("app.customCommand"), customCommand(customCommand));
-        map.put(AppI18n.observable("app.prompt"), new OptionsBuilder());
 
         int offset = allowNone ? 0 : -1;
         var selected = new SimpleIntegerProperty(
                 strat instanceof SecretRetrievalStrategy.None
                         ? offset
-                        : strat instanceof SecretRetrievalStrategy.InPlace
-                                ? offset + 1
-                                : strat instanceof SecretRetrievalStrategy.PasswordManager
-                                        ? offset + 2
-                                        : strat instanceof SecretRetrievalStrategy.CustomCommand
-                                                ? offset + 3
-                                                : strat instanceof SecretRetrievalStrategy.Prompt
-                                                        ? offset + 4
-                                                        : strat == null ? -1 : 0);
+                        : strat instanceof SecretRetrievalStrategy.Prompt ?
+                            offset + 1
+                            : strat instanceof SecretRetrievalStrategy.InPlace
+                                    ? offset + 2
+                                    : strat instanceof SecretRetrievalStrategy.PasswordManager
+                                            ? offset + 3
+                                            : strat instanceof SecretRetrievalStrategy.CustomCommand
+                                                    ? offset + 4
+                                                            : strat == null ? -1 : 0);
         return new OptionsBuilder()
                 .choice(selected, map)
                 .bindChoice(
@@ -125,10 +125,10 @@ public class SecretRetrievalStrategyHelper {
                             return switch (selected.get() - offset) {
                                 case 0 -> new SimpleObjectProperty<>(
                                         allowNone ? new SecretRetrievalStrategy.None() : null);
-                                case 1 -> inPlace;
-                                case 2 -> passwordManager;
-                                case 3 -> customCommand;
-                                case 4 -> new SimpleObjectProperty<>(new SecretRetrievalStrategy.Prompt());
+                                case 1 -> new SimpleObjectProperty<>(new SecretRetrievalStrategy.Prompt());
+                                case 2 -> inPlace;
+                                case 3 -> passwordManager;
+                                case 4 -> customCommand;
                                 default -> new SimpleObjectProperty<>();
                             };
                         },
