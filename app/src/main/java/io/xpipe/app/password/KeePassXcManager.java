@@ -57,7 +57,8 @@ public class KeePassXcManager implements PasswordManager {
                             var s = k.getKey().getSecretValue();
                             return s.substring(0, 6) + "*".repeat(s.length() - 6);
                         }))
-                        .buildComp())
+                        .buildComp()
+                        .maxWidth(600))
                 .hide(prop.isNull())
                 .addProperty(prop)
                 .bind(

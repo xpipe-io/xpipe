@@ -85,7 +85,8 @@ public class OptionsChoiceBuilder {
             properties.add(new SimpleObjectProperty<>());
         }
         for (int i = 0; i < sub.size(); i++) {
-            properties.add(new SimpleObjectProperty<>(selectedIndex == i ? s.getValue() : null));
+            var compatible = sub.get(i).isInstance(s.getValue());
+            properties.add(new SimpleObjectProperty<>(compatible ? s.getValue() : null));
         }
 
         property.addListener((obs, oldValue, newValue) -> {

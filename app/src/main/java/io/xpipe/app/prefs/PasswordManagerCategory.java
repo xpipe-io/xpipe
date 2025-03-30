@@ -44,24 +44,17 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                 testPasswordManagerResult.set(AppI18n.get("querying"));
             });
 
-            try {
-                var r = prefs.passwordManager.getValue().retrievePassword(key);
-                Platform.runLater(() -> {
-                    testPasswordManagerResult.set(AppI18n.get("retrievedPassword", r));
-                });
-                GlobalTimer.delay(
-                        () -> {
-                            Platform.runLater(() -> {
-                                testPasswordManagerResult.set(null);
-                            });
-                        },
-                        Duration.ofSeconds(5));
-            } catch (Exception e) {
-                Platform.runLater(() -> {
-                    testPasswordManagerResult.set(null);
-                });
-                throw e;
-            }
+            var r = prefs.passwordManager.getValue().retrievePassword(key);
+            Platform.runLater(() -> {
+                testPasswordManagerResult.set(r != null ? AppI18n.get("retrievedPassword", r) : null);
+            });
+            GlobalTimer.delay(
+                    () -> {
+                        Platform.runLater(() -> {
+                            testPasswordManagerResult.set(null);
+                        });
+                    },
+                    Duration.ofSeconds(5));
         });
     }
 
