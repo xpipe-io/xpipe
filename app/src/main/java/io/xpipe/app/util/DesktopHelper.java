@@ -2,7 +2,6 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
@@ -17,7 +16,7 @@ import java.nio.file.Path;
 public class DesktopHelper {
 
     private static final String[] browsers = {
-            "xdg-open", "google-chrome", "firefox", "opera", "konqueror", "mozilla", "gnome-open", "open"
+        "xdg-open", "google-chrome", "firefox", "opera", "konqueror", "mozilla", "gnome-open", "open"
     };
 
     public static void openUrl(String uri) {
@@ -33,10 +32,10 @@ public class DesktopHelper {
                 for (String b : browsers) {
                     if (browser == null
                             && Runtime.getRuntime()
-                            .exec(new String[] {"which", b})
-                            .getInputStream()
-                            .read()
-                            != -1) {
+                                            .exec(new String[] {"which", b})
+                                            .getInputStream()
+                                            .read()
+                                    != -1) {
                         Runtime.getRuntime().exec(new String[] {browser = b, uri});
                     }
                 }
@@ -140,7 +139,8 @@ public class DesktopHelper {
 
         ThreadHelper.runAsync(() -> {
             var xdg = OsType.getLocal() == OsType.LINUX;
-            if (Desktop.getDesktop().isSupported(Desktop.Action.OPEN) && AppDistributionType.get() != AppDistributionType.WEBTOP) {
+            if (Desktop.getDesktop().isSupported(Desktop.Action.OPEN)
+                    && AppDistributionType.get() != AppDistributionType.WEBTOP) {
                 try {
                     Desktop.getDesktop().open(file.toFile());
                     return;

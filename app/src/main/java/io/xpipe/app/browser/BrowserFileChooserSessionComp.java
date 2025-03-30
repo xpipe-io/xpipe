@@ -45,12 +45,14 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
         model.setOnFinish(fileStores -> {
             file.accept(fileStores.size() > 0 ? fileStores.getFirst() : null);
         });
-        var comp = new BrowserFileChooserSessionComp(model)
-                .styleClass("browser")
-                .styleClass("chooser");
+        var comp =
+                new BrowserFileChooserSessionComp(model).styleClass("browser").styleClass("chooser");
         var selection = new SimpleStringProperty();
         model.getFileSelection().addListener((ListChangeListener<? super BrowserEntry>) c -> {
-            selection.set(c.getList().size() > 0 ? c.getList().getFirst().getRawFileEntry().getPath().toString() : null);
+            selection.set(
+                    c.getList().size() > 0
+                            ? c.getList().getFirst().getRawFileEntry().getPath().toString()
+                            : null);
         });
         var selectionField = new TextFieldComp(selection);
         selectionField.apply(struc -> {

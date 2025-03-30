@@ -281,6 +281,11 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             return Optional.ofNullable(cps);
         }
 
+        if (path == null) {
+            currentPath.set(null);
+            return Optional.empty();
+        }
+
         // Fix common issues with paths
         var adjustedPath = BrowserFileSystemHelper.adjustPath(this, path);
         if (!Objects.equals(path, adjustedPath)) {

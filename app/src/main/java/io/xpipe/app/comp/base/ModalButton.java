@@ -1,11 +1,8 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.mode.OperationMode;
 
-import io.xpipe.app.util.LabelGraphic;
 import javafx.beans.property.Property;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Button;
 
 import lombok.Value;

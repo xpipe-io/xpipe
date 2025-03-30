@@ -1,14 +1,12 @@
 package io.xpipe.ext.system.incus;
 
 import io.xpipe.app.ext.ContainerStoreState;
-import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.CommandViewBase;
 import io.xpipe.core.process.*;
 
-import io.xpipe.core.store.StatefulDataStore;
 import lombok.NonNull;
 
 import java.util.*;
@@ -150,7 +148,8 @@ public class IncusCommandView extends CommandViewBase {
                 .elevated(requiresElevation());
     }
 
-    private ShellOpenFunction createOpenFunction(String containerName, String user, boolean terminal, Supplier<Boolean> busybox) {
+    private ShellOpenFunction createOpenFunction(
+            String containerName, String user, boolean terminal, Supplier<Boolean> busybox) {
         return new ShellOpenFunction() {
             @Override
             public CommandBuilder prepareWithoutInitCommand() {
@@ -168,13 +167,14 @@ public class IncusCommandView extends CommandViewBase {
                     b.addQuoted(user);
                 }
                 return b.add(sc -> {
-                    var suType = busybox.get();
-                    if (suType) {
-                        return "-c";
-                    } else {
-                        return "--session-command";
-                    }
-                }).addLiteral(command);
+                            var suType = busybox.get();
+                            if (suType) {
+                                return "-c";
+                            } else {
+                                return "--session-command";
+                            }
+                        })
+                        .addLiteral(command);
             }
         };
     }

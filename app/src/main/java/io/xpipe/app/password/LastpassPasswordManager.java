@@ -1,7 +1,8 @@
 package io.xpipe.app.password;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.process.ShellScript;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("lastpass")
 public class LastpassPasswordManager extends PasswordManagerFixedCommand {

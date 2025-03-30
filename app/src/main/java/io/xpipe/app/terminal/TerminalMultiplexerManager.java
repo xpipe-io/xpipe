@@ -19,8 +19,9 @@ public class TerminalMultiplexerManager {
             return true;
         }
 
-        var hasTerminal = TerminalView.get().getSessions().stream().anyMatch(shellSession ->
-                shellSession.getTerminal().isRunning() && connectionHubRequests.contains(shellSession.getRequest()));
+        var hasTerminal = TerminalView.get().getSessions().stream()
+                .anyMatch(shellSession -> shellSession.getTerminal().isRunning()
+                        && connectionHubRequests.contains(shellSession.getRequest()));
         connectionHubRequests.add(requestUuid);
         return !hasTerminal;
     }

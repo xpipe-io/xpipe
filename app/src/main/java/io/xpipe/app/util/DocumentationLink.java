@@ -1,9 +1,6 @@
 package io.xpipe.app.util;
 
-import lombok.Value;
-
 public enum DocumentationLink {
-
     INDEX(""),
     TTY("troubleshoot/tty"),
     WINDOWS_SSH("troubleshoot/windows-ssh"),
@@ -19,10 +16,11 @@ public enum DocumentationLink {
     KEEPASSXC("guide/keepassxc"),
     SSH("guide/ssh");
 
-
     private final String page;
 
-    DocumentationLink(String page) {this.page = page;}
+    DocumentationLink(String page) {
+        this.page = page;
+    }
 
     public void open() {
         Hyperlinks.open("https://docs.xpipe.io/" + page);

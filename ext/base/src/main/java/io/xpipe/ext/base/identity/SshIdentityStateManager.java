@@ -4,7 +4,6 @@ import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
@@ -149,7 +148,9 @@ public class SshIdentityStateManager {
             if (sc.getLocalSystemAccess().supportsExecutableEnvironment()) {
                 var socketEnvVariable = System.getenv("SSH_AUTH_SOCK");
                 if (socketEnvVariable != null) {
-                    sc.command(sc.getShellDialect().getSetEnvironmentVariableCommand("SSH_AUTH_SOCK", socketEnvVariable)).execute();
+                    sc.command(sc.getShellDialect()
+                                    .getSetEnvironmentVariableCommand("SSH_AUTH_SOCK", socketEnvVariable))
+                            .execute();
                 }
             }
         }
@@ -157,16 +158,12 @@ public class SshIdentityStateManager {
         try (var c = sc.command("ssh-add -l").start()) {
             var r = c.readStdoutAndStderr();
             if (c.getExitCode() != 0) {
-                var posixMessage = sc.getOsType() != OsType.WINDOWS
-                        ? " and the SSH_AUTH_SOCK variable."
-                        : "";
-                var ex =
-                        new IllegalStateException("Unable to list agent identities via command ssh-add -l:\n" + r[0]
-                                + "\n"
-                                + r[1]
-                                + "\nPlease check your SSH agent configuration%s.".formatted(posixMessage));
-                var eventBuilder = ErrorEvent.fromThrowable(ex)
-                        .expected();
+                var posixMessage = sc.getOsType() != OsType.WINDOWS ? " and the SSH_AUTH_SOCK variable." : "";
+                var ex = new IllegalStateException("Unable to list agent identities via command ssh-add -l:\n" + r[0]
+                        + "\n"
+                        + r[1]
+                        + "\nPlease check your SSH agent configuration%s.".formatted(posixMessage));
+                var eventBuilder = ErrorEvent.fromThrowable(ex).expected();
                 if (OsType.getLocal() != OsType.WINDOWS) {
                     eventBuilder.documentationLink(DocumentationLink.SSH_AGENT);
                 }

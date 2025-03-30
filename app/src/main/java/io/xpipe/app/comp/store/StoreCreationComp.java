@@ -1,52 +1,28 @@
 package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.*;
-import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.window.AppWindowHelper;
-import io.xpipe.app.ext.DataStoreCreationCategory;
-import io.xpipe.app.ext.DataStoreProvider;
-import io.xpipe.app.ext.DataStoreProviders;
-import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
-import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.ValidatableStore;
-import io.xpipe.core.util.ValidationException;
 
-import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
-import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
 import net.synedra.validatorfx.GraphicDecorationStackPane;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
-import java.util.UUID;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 public class StoreCreationComp extends ModalOverlayContentComp {
 
     private final StoreCreationModel model;
 
-    public StoreCreationComp(StoreCreationModel model) {this.model = model;}
+    public StoreCreationComp(StoreCreationModel model) {
+        this.model = model;
+    }
 
     @Override
     protected ObservableValue<Boolean> busy() {
@@ -101,8 +77,10 @@ public class StoreCreationComp extends ModalOverlayContentComp {
 
                 layout.setCenter(sp);
 
-                model.getValidator().setValue(new ChainedValidator(List.of(
-                        d != null && d.getValidator() != null ? d.getValidator() : new SimpleValidator(), propVal)));
+                model.getValidator()
+                        .setValue(new ChainedValidator(List.of(
+                                d != null && d.getValidator() != null ? d.getValidator() : new SimpleValidator(),
+                                propVal)));
             } else {
                 layout.setCenter(null);
                 model.getValidator().setValue(new SimpleValidator());

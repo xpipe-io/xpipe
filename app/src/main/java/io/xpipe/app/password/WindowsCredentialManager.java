@@ -1,10 +1,9 @@
 package io.xpipe.app.password;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.app.util.OptionsBuilder;
-import javafx.beans.property.Property;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Value;
 
 @JsonTypeName("windowsCredentialManager")
@@ -23,12 +22,13 @@ public class WindowsCredentialManager implements PasswordManager {
         try {
             if (!loaded) {
                 loaded = true;
-                var cmd = """
+                var cmd =
+                        """
                           $code = @"
                           using System.Text;
                           using System;
                           using System.Runtime.InteropServices;
-                          
+
                           namespace CredManager {
                             [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
                             public struct CredentialMem
@@ -46,16 +46,16 @@ public class WindowsCredentialManager implements PasswordManager {
                               public string targetAlias;
                               public string userName;
                             }
-                          
+
                             public class Credential {
                               [DllImport("advapi32.dll", EntryPoint = "CredReadW", CharSet = CharSet.Unicode, SetLastError = true)]
                               private static extern bool CredRead(string target, int type, int reservedFlag, out IntPtr credentialPtr);
-                          
+
                               public static string GetUserPassword(string target)
                               {
                                 CredentialMem credMem;
                                 IntPtr credPtr;
-                          
+
                                 if (CredRead(target, 1, 0, out credPtr))
                                 {
                                   credMem = Marshal.PtrToStructure<CredentialMem>(credPtr);

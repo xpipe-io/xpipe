@@ -13,6 +13,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -36,11 +37,15 @@ public class StoreCreationDialog {
                     if (e.getStore().equals(newE.getStore())) {
                         e.setName(newE.getName());
                     } else {
-                        var madeValid = !e.getValidity().isUsable() && newE.getValidity().isUsable();
+                        var madeValid = !e.getValidity().isUsable()
+                                && newE.getValidity().isUsable();
                         DataStorage.get().updateEntry(e, newE);
                         if (madeValid) {
                             StoreViewState.get().triggerStoreListUpdate();
-                            if (e.getProvider().shouldShowScan() && AppPrefs.get().openConnectionSearchWindowOnConnectionCreation().get()) {
+                            if (e.getProvider().shouldShowScan()
+                                    && AppPrefs.get()
+                                            .openConnectionSearchWindowOnConnectionCreation()
+                                            .get()) {
                                 ScanDialog.showAsync(e);
                             }
                         }
@@ -49,13 +54,7 @@ public class StoreCreationDialog {
                 c.accept(e);
             });
         };
-        show(
-                e.getName(),
-                e.getProvider(),
-                e.getStore(),
-                v -> true, consumer,
-                true,
-                e);
+        show(e.getName(), e.getProvider(), e.getStore(), v -> true, consumer, true, e);
     }
 
     public static void showCreation(DataStoreProvider selected, DataStoreCreationCategory category) {
@@ -72,15 +71,23 @@ public class StoreCreationDialog {
             try {
                 var returned = DataStorage.get().addStoreEntryIfNotPresent(e);
                 listener.accept(returned);
-                if (validated && e.getProvider().shouldShowScan() && AppPrefs.get().openConnectionSearchWindowOnConnectionCreation().get()) {
+                if (validated
+                        && e.getProvider().shouldShowScan()
+                        && AppPrefs.get()
+                                .openConnectionSearchWindowOnConnectionCreation()
+                                .get()) {
                     ScanDialog.showAsync(e);
                 }
 
                 if (selectCategory) {
                     // Select new category if needed
-                    var cat = DataStorage.get().getStoreCategoryIfPresent(e.getCategoryUuid()).orElseThrow();
+                    var cat = DataStorage.get()
+                            .getStoreCategoryIfPresent(e.getCategoryUuid())
+                            .orElseThrow();
                     PlatformThread.runLaterIfNeeded(() -> {
-                        StoreViewState.get().getActiveCategory().setValue(StoreViewState.get().getCategoryWrapper(cat));
+                        StoreViewState.get()
+                                .getActiveCategory()
+                                .setValue(StoreViewState.get().getCategoryWrapper(cat));
                     });
                 }
             } catch (Exception ex) {
@@ -92,7 +99,8 @@ public class StoreCreationDialog {
                 prov,
                 base,
                 dataStoreProvider -> (category != null && category.equals(dataStoreProvider.getCreationCategory()))
-                        || dataStoreProvider.equals(prov), consumer,
+                        || dataStoreProvider.equals(prov),
+                consumer,
                 false,
                 null);
     }
@@ -127,36 +135,57 @@ public class StoreCreationDialog {
         var nameKey = model.storeTypeNameKey() + "Add";
         var modal = ModalOverlay.of(nameKey, comp);
         var provider = model.getProvider().getValue();
-        var graphic = provider != null && provider.getDisplayIconFileName(model.getStore().get()) != null?
-                new LabelGraphic.ImageGraphic(provider.getDisplayIconFileName(model.getStore().get()), 20) :
-                new LabelGraphic.IconGraphic("mdi2b-beaker-plus-outline");
+        var graphic = provider != null
+                        && provider.getDisplayIconFileName(model.getStore().get()) != null
+                ? new LabelGraphic.ImageGraphic(
+                        provider.getDisplayIconFileName(model.getStore().get()), 20)
+                : new LabelGraphic.IconGraphic("mdi2b-beaker-plus-outline");
         modal.hideable(AppI18n.observable(model.storeTypeNameKey() + "Add"), graphic, () -> {
             modal.show();
         });
         modal.setRequireCloseButtonForClose(true);
-        modal.addButton(new ModalButton("docs", () -> {
-            model.showDocs();
-        }, false, false).augment(button -> {
-            button.visibleProperty().bind(Bindings.not(model.canShowDocs()));
-        }));
-        modal.addButton(new ModalButton("connect", () -> {
-            model.connect();
-        }, false, false).augment(button -> {
-            button.visibleProperty().bind(Bindings.not(model.canConnect()));
-        }));
-        modal.addButton(new ModalButton("skip", () -> {
-            if (showInvalidConfirmAlert()) {
-                model.commit(false);
-                modal.close();
-            } else {
-                model.finish();
-            }
-        }, false, false)).augment(button -> {
-            button.visibleProperty().bind(model.getSkippable());
-        });
-        modal.addButton(new ModalButton("finish", () -> {
-            model.finish();
-        }, false, true));
+        modal.addButton(new ModalButton(
+                        "docs",
+                        () -> {
+                            model.showDocs();
+                        },
+                        false,
+                        false)
+                .augment(button -> {
+                    button.visibleProperty().bind(Bindings.not(model.canShowDocs()));
+                }));
+        modal.addButton(new ModalButton(
+                        "connect",
+                        () -> {
+                            model.connect();
+                        },
+                        false,
+                        false)
+                .augment(button -> {
+                    button.visibleProperty().bind(Bindings.not(model.canConnect()));
+                }));
+        modal.addButton(new ModalButton(
+                        "skip",
+                        () -> {
+                            if (showInvalidConfirmAlert()) {
+                                model.commit(false);
+                                modal.close();
+                            } else {
+                                model.finish();
+                            }
+                        },
+                        false,
+                        false))
+                .augment(button -> {
+                    button.visibleProperty().bind(model.getSkippable());
+                });
+        modal.addButton(new ModalButton(
+                "finish",
+                () -> {
+                    model.finish();
+                },
+                false,
+                true));
         model.getFinished().addListener((obs, oldValue, newValue) -> {
             modal.close();
         });

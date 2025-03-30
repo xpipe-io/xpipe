@@ -6,6 +6,7 @@ import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.util.LabelGraphic;
 
 import javafx.beans.value.ObservableValue;
+
 import lombok.*;
 import lombok.experimental.NonFinal;
 

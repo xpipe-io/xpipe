@@ -1,6 +1,5 @@
 package io.xpipe.ext.base.script;
 
-import io.xpipe.app.comp.store.StoreCreationComp;
 import io.xpipe.app.comp.store.StoreCreationDialog;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStorage;

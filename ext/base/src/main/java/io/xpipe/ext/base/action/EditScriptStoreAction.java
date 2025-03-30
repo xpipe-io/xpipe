@@ -1,6 +1,5 @@
 package io.xpipe.ext.base.action;
 
-import io.xpipe.app.comp.store.StoreCreationComp;
 import io.xpipe.app.comp.store.StoreCreationDialog;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;

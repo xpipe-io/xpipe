@@ -39,29 +39,35 @@ public class GlobalTimer {
     }
 
     public static void delay(Runnable r, Duration delay) {
-        TIMER.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                r.run();
-            }
-        }, delay.toMillis());
+        TIMER.schedule(
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        r.run();
+                    }
+                },
+                delay.toMillis());
     }
 
     public static void delayAsync(Runnable r, Duration delay) {
-        TIMER.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                ThreadHelper.runAsync(r);
-            }
-        }, delay.toMillis());
+        TIMER.schedule(
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        ThreadHelper.runAsync(r);
+                    }
+                },
+                delay.toMillis());
     }
 
     public static void delayFailableAsync(FailableRunnable<Throwable> r, Duration delay) {
-        TIMER.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                ThreadHelper.runFailableAsync(r);
-            }
-        }, delay.toMillis());
+        TIMER.schedule(
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        ThreadHelper.runFailableAsync(r);
+                    }
+                },
+                delay.toMillis());
     }
 }

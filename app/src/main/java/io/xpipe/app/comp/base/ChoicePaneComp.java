@@ -14,10 +14,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 import java.util.function.Function;

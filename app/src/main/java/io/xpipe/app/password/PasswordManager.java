@@ -1,9 +1,9 @@
 package io.xpipe.app.password;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.ValidationException;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import java.util.ArrayList;
 import java.util.List;

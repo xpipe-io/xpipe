@@ -1,6 +1,7 @@
 package io.xpipe.app.issue;
 
 import io.xpipe.app.util.DocumentationLink;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -169,10 +170,12 @@ public class ErrorEvent {
         }
 
         public void expectedIfContains(String... s) {
-            var contains = throwable != null && throwable.getMessage() != null
-                    && Arrays.stream(s).map(String::toLowerCase).anyMatch(string -> throwable.getMessage()
-                    .toLowerCase(Locale.ROOT)
-                    .endsWith(string));
+            var contains = throwable != null
+                    && throwable.getMessage() != null
+                    && Arrays.stream(s).map(String::toLowerCase).anyMatch(string -> throwable
+                            .getMessage()
+                            .toLowerCase(Locale.ROOT)
+                            .endsWith(string));
             if (contains) {
                 expected();
             }

@@ -204,11 +204,13 @@ public class BrowserFileSystemTabComp extends SimpleComp {
                 });
 
         var home = new BrowserOverviewComp(model).styleClass("browser-overview");
-        var stack = new MultiContentComp(Map.of(
-                home,
-                model.getCurrentPath().isNull(),
-                fileList,
-                model.getCurrentPath().isNull().not()), false);
+        var stack = new MultiContentComp(
+                Map.of(
+                        home,
+                        model.getCurrentPath().isNull(),
+                        fileList,
+                        model.getCurrentPath().isNull().not()),
+                false);
         var r = stack.styleClass("browser-content-container").createRegion();
         r.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {

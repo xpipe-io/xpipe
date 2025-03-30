@@ -59,7 +59,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     //    };
 
     static ExternalTerminalType determineFallbackTerminalToOpen(ExternalTerminalType type) {
-        if (type != XSHELL && type != MOBAXTERM && type != SECURECRT && type != TERMIUS && !(type instanceof WaveTerminalType)) {
+        if (type != XSHELL
+                && type != MOBAXTERM
+                && type != SECURECRT
+                && type != TERMIUS
+                && !(type instanceof WaveTerminalType)) {
             return type;
         }
 

@@ -4,7 +4,6 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FilePath;
 
 import org.apache.commons.io.FileUtils;
@@ -13,8 +12,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
-import java.util.Arrays;
-import java.util.stream.Stream;
 
 public class ShellTemp {
 

@@ -1,10 +1,8 @@
 package io.xpipe.app.issue;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.*;
-import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.resources.AppResources;
 
 import javafx.beans.property.*;
@@ -13,7 +11,6 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.stage.Stage;
 
 import atlantafx.base.controls.Popover;
 import atlantafx.base.controls.Spacer;
@@ -39,10 +36,14 @@ public class UserReportComp extends ModalOverlayContentComp {
         var sent = new SimpleBooleanProperty();
         modal.addButtonBarComp(privacyPolicy());
         modal.addButtonBarComp(Comp.hspacer());
-        modal.addButton(new ModalButton("sendReport", () -> {
-            comp.send();
-            sent.set(true);
-            }, true, true));
+        modal.addButton(new ModalButton(
+                "sendReport",
+                () -> {
+                    comp.send();
+                    sent.set(true);
+                },
+                true,
+                true));
         modal.showAndWait();
         return sent.get();
     }

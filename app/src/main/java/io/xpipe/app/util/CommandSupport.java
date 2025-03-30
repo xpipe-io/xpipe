@@ -24,14 +24,11 @@ public class CommandSupport {
                 processControl.getShellDialect().getWhichCommand(executable));
     }
 
-    public static void isInPathOrThrow(
-            ShellControl processControl, String executable)
-            throws Exception {
+    public static void isInPathOrThrow(ShellControl processControl, String executable) throws Exception {
         isInPathOrThrow(processControl, executable, null);
     }
 
-    public static void isInPathOrThrow(
-            ShellControl processControl, String executable, String displayName)
+    public static void isInPathOrThrow(ShellControl processControl, String executable, String displayName)
             throws Exception {
         var source = processControl.getSourceStoreId();
         if (source.isPresent()) {
@@ -49,8 +46,8 @@ public class CommandSupport {
             throws Exception {
         if (!isInPath(processControl, executable)) {
             var prefix = displayName != null ? displayName + " executable " + executable : executable + " executable";
-            throw ErrorEvent.expected(new IOException(prefix + " not found in PATH"
-                    + (connection != null ? " on system " + connection.getName() : "")));
+            throw ErrorEvent.expected(new IOException(
+                    prefix + " not found in PATH" + (connection != null ? " on system " + connection.getName() : "")));
         }
     }
 

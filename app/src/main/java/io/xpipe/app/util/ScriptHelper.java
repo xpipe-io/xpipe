@@ -63,16 +63,20 @@ public class ScriptHelper {
 
         if (type != parent.getShellDialect()) {
             try (var sub = parent.subShell(type).start()) {
-                var content = sub.getShellDialect().prepareScriptContent(
-                        sub.getShellDialect().getAskpass().prepareStderrPassthroughContent(sub, requestId, prefix));
+                var content = sub.getShellDialect()
+                        .prepareScriptContent(sub.getShellDialect()
+                                .getAskpass()
+                                .prepareStderrPassthroughContent(sub, requestId, prefix));
                 var fileName = "xpipe-" + getScriptHash(content) + "." + type.getScriptFileEnding();
                 var temp = parent.getSystemTemporaryDirectory();
                 var file = temp.join(fileName);
                 return createExecScriptRaw(sub, file, content);
             }
         } else {
-            var content = parent.getShellDialect().prepareScriptContent(
-                    parent.getShellDialect().getAskpass().prepareStderrPassthroughContent(parent, requestId, prefix));
+            var content = parent.getShellDialect()
+                    .prepareScriptContent(parent.getShellDialect()
+                            .getAskpass()
+                            .prepareStderrPassthroughContent(parent, requestId, prefix));
             var fileName = "xpipe-" + getScriptHash(content) + "." + type.getScriptFileEnding();
             var temp = parent.getSystemTemporaryDirectory();
             var file = temp.join(fileName);

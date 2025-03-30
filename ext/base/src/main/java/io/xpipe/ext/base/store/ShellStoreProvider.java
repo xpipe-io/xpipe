@@ -11,8 +11,8 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.ShellStoreFormat;
-
 import io.xpipe.ext.base.script.ScriptStoreSetup;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ObservableValue;
 

@@ -112,7 +112,8 @@ public interface StoreSortMode {
         private StoreSection getRepresentative(StoreSection s) {
             if (StoreViewState.get().getEntriesListUpdateObservable().get() != entriesListOberservableIndex) {
                 cachedRepresentatives.clear();
-                entriesListOberservableIndex = StoreViewState.get().getEntriesListUpdateObservable().get();
+                entriesListOberservableIndex =
+                        StoreViewState.get().getEntriesListUpdateObservable().get();
             }
 
             if (cachedRepresentatives.containsKey(s)) {

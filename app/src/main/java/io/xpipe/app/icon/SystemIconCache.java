@@ -2,12 +2,12 @@ package io.xpipe.app.icon;
 
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.TrackEvent;
 
 import com.github.weisj.jsvg.SVGDocument;
 import com.github.weisj.jsvg.SVGRenderingHints;
 import com.github.weisj.jsvg.attributes.ViewBox;
 import com.github.weisj.jsvg.parser.SVGLoader;
-import io.xpipe.app.issue.TrackEvent;
 import lombok.Getter;
 
 import java.awt.*;
@@ -65,7 +65,8 @@ public class SystemIconCache {
 
                     var scheme = rasterizeSizes(icon.getFile(), target, icon.getName(), dark);
                     if (scheme == ImageColorScheme.TRANSPARENT) {
-                        var message = "Failed to rasterize icon icon " + icon.getFile().getFileName().toString() + ": Rasterized image is transparent";
+                        var message = "Failed to rasterize icon icon "
+                                + icon.getFile().getFileName().toString() + ": Rasterized image is transparent";
                         ErrorEvent.fromMessage(message).omit().expected().handle();
                         continue;
                     }

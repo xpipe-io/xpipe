@@ -1,16 +1,16 @@
 package io.xpipe.app.password;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -50,19 +50,21 @@ public class KeePassXcManager implements PasswordManager {
                 .hide(prop.isNotNull())
                 .nameAndDescription("keePassXcAssociated")
                 .addComp(new OptionsBuilder()
-                .name("identifier")
-                .addStaticString(prop.map(k -> k.getId()))
-                .name("key")
-                .addStaticString(prop.map(k -> {
-                    var s = k.getKey().getSecretValue();
-                    return s.substring(0, 6) + "*".repeat(s.length() - 6);
-                })).buildComp()
-                )
+                        .name("identifier")
+                        .addStaticString(prop.map(k -> k.getId()))
+                        .name("key")
+                        .addStaticString(prop.map(k -> {
+                            var s = k.getKey().getSecretValue();
+                            return s.substring(0, 6) + "*".repeat(s.length() - 6);
+                        }))
+                        .buildComp())
                 .hide(prop.isNull())
                 .addProperty(prop)
-                .bind(() -> {
-                    return new KeePassXcManager(prop.getValue());
-                }, p);
+                .bind(
+                        () -> {
+                            return new KeePassXcManager(prop.getValue());
+                        },
+                        p);
     }
 
     private static KeePassXcAssociationKey associate() throws IOException {
@@ -110,7 +112,8 @@ public class KeePassXcManager implements PasswordManager {
             c.connect();
             c.exchangeKeys();
             var pref = AppPrefs.get().passwordManager();
-            KeePassXcAssociationKey cached = pref.getValue() instanceof KeePassXcManager kpm ? kpm.getAssociationKey() : null;
+            KeePassXcAssociationKey cached =
+                    pref.getValue() instanceof KeePassXcManager kpm ? kpm.getAssociationKey() : null;
             if (cached != null) {
                 c.useExistingAssociationKey(cached);
                 try {
@@ -124,8 +127,14 @@ public class KeePassXcManager implements PasswordManager {
             if (cached == null) {
                 c.associate();
                 c.testAssociation();
-                if (pref.getValue() instanceof KeePassXcManager kpm && !c.getAssociationKey().equals(kpm.getAssociationKey())) {
-                    AppPrefs.get().setFromExternal(AppPrefs.get().passwordManager(), kpm.toBuilder().associationKey(c.getAssociationKey()).build());
+                if (pref.getValue() instanceof KeePassXcManager kpm
+                        && !c.getAssociationKey().equals(kpm.getAssociationKey())) {
+                    AppPrefs.get()
+                            .setFromExternal(
+                                    AppPrefs.get().passwordManager(),
+                                    kpm.toBuilder()
+                                            .associationKey(c.getAssociationKey())
+                                            .build());
                 }
             }
             client = c;
@@ -148,7 +157,7 @@ public class KeePassXcManager implements PasswordManager {
         return switch (OsType.getLocal()) {
             case OsType.Linux linux -> {
                 var paths = List.of(Path.of("/usr/bin/keepassxc-proxy"), Path.of("/usr/local/bin/keepassxc-proxy"));
-                yield  paths.stream().filter(path -> Files.exists(path)).findFirst();
+                yield paths.stream().filter(path -> Files.exists(path)).findFirst();
             }
             case OsType.MacOs macOs -> {
                 var paths = List.of(Path.of("/Applications/KeePassXC.app/Contents/MacOS/keepassxc-proxy"));
@@ -166,7 +175,9 @@ public class KeePassXcManager implements PasswordManager {
                                 .readStringValueIfPresent(
                                         foundKey.get().getHkey(), foundKey.get().getKey(), "InstallLocation");
                         if (installKey.isPresent()) {
-                            yield installKey.map(p -> p + "\\keepassxc-proxy.exe").map(Path::of);
+                            yield installKey
+                                    .map(p -> p + "\\keepassxc-proxy.exe")
+                                    .map(Path::of);
                         }
                     }
                 } catch (Exception e) {

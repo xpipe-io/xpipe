@@ -20,8 +20,6 @@ import java.io.File;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
 
 @Getter
 public class BrowserFileListCompEntry {

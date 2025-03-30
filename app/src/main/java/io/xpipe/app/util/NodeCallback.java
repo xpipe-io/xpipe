@@ -39,9 +39,9 @@ public class NodeCallback {
             c.managedProperty().addListener((observable, oldValue, newValue) -> {
                 checkPlatformThread();
             });
-           c.opacityProperty().addListener((observable, oldValue, newValue) -> {
-               checkPlatformThread();
-           });
+            c.opacityProperty().addListener((observable, oldValue, newValue) -> {
+                checkPlatformThread();
+            });
         });
     }
 

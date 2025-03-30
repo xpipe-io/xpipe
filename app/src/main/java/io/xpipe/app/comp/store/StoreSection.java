@@ -119,8 +119,16 @@ public class StoreSection {
                 },
                 category,
                 updateObservable);
-        var cached = topLevel.mapped(storeEntryWrapper ->
-                create(List.of(), storeEntryWrapper, 1, all, entryFilter, filterString, category, visibilityObservable, updateObservable));
+        var cached = topLevel.mapped(storeEntryWrapper -> create(
+                List.of(),
+                storeEntryWrapper,
+                1,
+                all,
+                entryFilter,
+                filterString,
+                category,
+                visibilityObservable,
+                updateObservable));
         var ordered = sorted(cached, category, updateObservable);
         var shown = ordered.filtered(
                 section -> {
@@ -179,8 +187,8 @@ public class StoreSection {
                 updateObservable);
         var l = new ArrayList<>(parents);
         l.add(e);
-        var cached = allChildren.mapped(
-                c -> create(l, c, depth + 1, all, entryFilter, filterString, category, visibilityObservable, updateObservable));
+        var cached = allChildren.mapped(c -> create(
+                l, c, depth + 1, all, entryFilter, filterString, category, visibilityObservable, updateObservable));
         var ordered = sorted(cached, category, updateObservable);
         var filtered = ordered.filtered(
                 section -> {
@@ -191,11 +199,16 @@ public class StoreSection {
                         return false;
                     }
 
-                    var hasFilter = filterString != null && filterString.getValue() != null && filterString.getValue().length() > 0;
+                    var hasFilter = filterString != null
+                            && filterString.getValue() != null
+                            && filterString.getValue().length() > 0;
                     if (!hasFilter) {
                         var showProvider = true;
                         try {
-                            showProvider = section.getWrapper().getEntry().getProvider().shouldShow(section.getWrapper());
+                            showProvider = section.getWrapper()
+                                    .getEntry()
+                                    .getProvider()
+                                    .shouldShow(section.getWrapper());
                         } catch (Exception ignored) {
                         }
                         if (!showProvider) {

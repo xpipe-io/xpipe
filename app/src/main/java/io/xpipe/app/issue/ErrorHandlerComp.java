@@ -3,11 +3,9 @@ package io.xpipe.app.issue;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.LicenseRequiredException;
 
 import javafx.beans.property.Property;
@@ -21,8 +19,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import lombok.Getter;
-
-import java.util.List;
 
 import static atlantafx.base.theme.Styles.ACCENT;
 import static atlantafx.base.theme.Styles.BUTTON_OUTLINED;

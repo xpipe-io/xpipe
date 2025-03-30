@@ -203,8 +203,9 @@ public class SshLocalBridge {
     private static FilePath getSshd(ShellControl sc) throws Exception {
         var exec = CommandSupport.findProgram(sc, "sshd");
         if (exec.isEmpty()) {
-            throw ErrorEvent.expected(new IllegalStateException(
-                    "No sshd executable found in PATH. The SSH terminal bridge for SSH clients requires a local ssh server to be installed"));
+            throw ErrorEvent.expected(
+                    new IllegalStateException(
+                            "No sshd executable found in PATH. The SSH terminal bridge for SSH clients requires a local ssh server to be installed"));
         }
         return exec.get();
     }

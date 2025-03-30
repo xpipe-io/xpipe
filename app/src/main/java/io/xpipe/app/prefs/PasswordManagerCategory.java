@@ -3,12 +3,9 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.HorizontalComp;
-import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.TextFieldComp;
-import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.password.PasswordManager;
 import io.xpipe.app.util.*;
 
@@ -44,7 +41,7 @@ public class PasswordManagerCategory extends AppPrefsCategory {
             }
 
             Platform.runLater(() -> {
-               testPasswordManagerResult.set(AppI18n.get("querying"));
+                testPasswordManagerResult.set(AppI18n.get("querying"));
             });
 
             try {
@@ -52,11 +49,13 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                 Platform.runLater(() -> {
                     testPasswordManagerResult.set(AppI18n.get("retrievedPassword", r));
                 });
-                GlobalTimer.delay(() -> {
-                    Platform.runLater(() -> {
-                        testPasswordManagerResult.set(null);
-                    });
-                }, Duration.ofSeconds(5));
+                GlobalTimer.delay(
+                        () -> {
+                            Platform.runLater(() -> {
+                                testPasswordManagerResult.set(null);
+                            });
+                        },
+                        Duration.ofSeconds(5));
             } catch (Exception e) {
                 Platform.runLater(() -> {
                     testPasswordManagerResult.set(null);
@@ -77,31 +76,42 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                 .subclasses(PasswordManager.getClasses())
                 .allowNull(true)
                 .transformer(entryComboBox -> {
-                    var docsLinkButton =
-                            new ButtonComp(AppI18n.observable("docs"), new FontIcon("mdi2h-help-circle-outline"), () -> {
+                    var docsLinkButton = new ButtonComp(
+                            AppI18n.observable("docs"), new FontIcon("mdi2h-help-circle-outline"), () -> {
                                 var l = prefs.passwordManager.getValue().getDocsLink();
                                 if (l != null) {
                                     Hyperlinks.open(l);
                                 }
                             });
                     docsLinkButton.minWidth(Region.USE_PREF_SIZE);
-                    docsLinkButton.disable(Bindings.createBooleanBinding(() -> {
-                        return prefs.passwordManager.getValue().getDocsLink() == null;
-                    }, prefs.passwordManager));
+                    docsLinkButton.disable(Bindings.createBooleanBinding(
+                            () -> {
+                                return prefs.passwordManager.getValue().getDocsLink() == null;
+                            },
+                            prefs.passwordManager));
 
                     var hbox = new HBox(entryComboBox, docsLinkButton.createRegion());
                     HBox.setHgrow(entryComboBox, Priority.ALWAYS);
                     hbox.setSpacing(10);
                     hbox.setMaxWidth(getCompWidth());
                     return hbox;
-        }).build();
+                })
+                .build();
         var choice = choiceBuilder.build().buildComp();
 
         var testInput = new HorizontalComp(List.<Comp<?>>of(
                 new TextFieldComp(testPasswordManagerValue)
-                        .apply(struc -> struc.get().promptTextProperty().bind(Bindings.createStringBinding(() -> {
-                            return prefs.passwordManager.getValue() != null ? prefs.passwordManager.getValue().getKeyPlaceholder() : "?";
-                        }, prefs.passwordManager)))
+                        .apply(struc -> struc.get()
+                                .promptTextProperty()
+                                .bind(Bindings.createStringBinding(
+                                        () -> {
+                                            return prefs.passwordManager.getValue() != null
+                                                    ? prefs.passwordManager
+                                                            .getValue()
+                                                            .getKeyPlaceholder()
+                                                    : "?";
+                                        },
+                                        prefs.passwordManager)))
                         .styleClass(Styles.LEFT_PILL)
                         .hgrow()
                         .apply(struc -> struc.get().setOnKeyPressed(event -> {
@@ -111,8 +121,9 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                             }
                         })),
                 new ButtonComp(null, new FontIcon("mdi2p-play"), () -> {
-                    testPasswordManager(testPasswordManagerValue.get(), testPasswordManagerResult);
-                }).styleClass(Styles.RIGHT_PILL)));
+                            testPasswordManager(testPasswordManagerValue.get(), testPasswordManagerResult);
+                        })
+                        .styleClass(Styles.RIGHT_PILL)));
         testInput.apply(struc -> {
             struc.get().setFillHeight(true);
             var first = ((Region) struc.get().getChildren().get(0));
@@ -138,8 +149,7 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                         .addComp(choice)
                         .nameAndDescription("passwordManagerCommandTest")
                         .addComp(testPasswordManager)
-                        .hide(BindingsHelper.map(prefs.passwordManager, p -> p == null))
-                )
+                        .hide(BindingsHelper.map(prefs.passwordManager, p -> p == null)))
                 .buildComp();
     }
 }

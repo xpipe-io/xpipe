@@ -112,7 +112,9 @@ public class BeaconRequestHandler<T> implements HttpHandler {
         } catch (BeaconServerException serverException) {
             var cause = serverException.getCause() != null ? serverException.getCause() : serverException;
             var event = ErrorEvent.fromThrowable(cause).omit().handle();
-            var link = event.getDocumentationLink() != null ? event.getDocumentationLink().getLink() : null;
+            var link = event.getDocumentationLink() != null
+                    ? event.getDocumentationLink().getLink()
+                    : null;
             writeError(exchange, new BeaconServerErrorResponse(cause, link), 500);
             return;
         } catch (IOException ex) {
@@ -134,7 +136,9 @@ public class BeaconRequestHandler<T> implements HttpHandler {
             return;
         } catch (Throwable other) {
             var event = ErrorEvent.fromThrowable(other).omit().expected().handle();
-            var link = event.getDocumentationLink() != null ? event.getDocumentationLink().getLink() : null;
+            var link = event.getDocumentationLink() != null
+                    ? event.getDocumentationLink().getLink()
+                    : null;
             writeError(exchange, new BeaconServerErrorResponse(other, link), 500);
             return;
         }
@@ -163,7 +167,9 @@ public class BeaconRequestHandler<T> implements HttpHandler {
             }
         } catch (Throwable other) {
             var event = ErrorEvent.fromThrowable(other).handle();
-            var link = event.getDocumentationLink() != null ? event.getDocumentationLink().getLink() : null;
+            var link = event.getDocumentationLink() != null
+                    ? event.getDocumentationLink().getLink()
+                    : null;
             writeError(exchange, new BeaconServerErrorResponse(other, link), 500);
         }
     }

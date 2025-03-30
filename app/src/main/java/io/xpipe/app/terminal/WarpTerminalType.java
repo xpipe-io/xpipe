@@ -1,6 +1,5 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellDialects;
@@ -25,8 +24,12 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
         @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             try (var sc = LocalShell.getShell().start()) {
-                var command = configuration.getScriptDialect().getSetEnvironmentVariableCommand("PSModulePath", "") + "\n" +
-                        configuration.getScriptDialect().runScriptCommand(sc, configuration.getScriptFile().toString());
+                var command = configuration.getScriptDialect().getSetEnvironmentVariableCommand("PSModulePath", "")
+                        + "\n"
+                        + configuration
+                                .getScriptDialect()
+                                .runScriptCommand(
+                                        sc, configuration.getScriptFile().toString());
                 var script = ScriptHelper.createExecScript(configuration.getScriptDialect(), sc, command);
                 if (!configuration.isPreferTabs()) {
                     DesktopHelper.openUrl("warp://action/new_window?path=" + script);
@@ -53,7 +56,6 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
             return TerminalOpenFormat.TABBED;
         }
     }
-
 
     class Linux implements WarpTerminalType {
 

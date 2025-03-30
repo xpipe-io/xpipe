@@ -125,13 +125,17 @@ public class TerminalLauncher {
                         && AppPrefs.get().clearTerminalOnInit().get()
                         && !AppPrefs.get().developerPrintInitFiles().get(),
                 cc instanceof ShellControl ? type.additionalInitCommands() : TerminalInitFunction.none());
-        var promptRestart = AppPrefs.get().terminalPromptForRestart().getValue() && AppPrefs.get().terminalMultiplexer().getValue() == null;
-        var config = TerminalLaunchConfiguration.create(request, entry, cleanTitle, adjustedTitle, preferTabs, promptRestart);
+        var promptRestart = AppPrefs.get().terminalPromptForRestart().getValue()
+                && AppPrefs.get().terminalMultiplexer().getValue() == null;
+        var config = TerminalLaunchConfiguration.create(
+                request, entry, cleanTitle, adjustedTitle, preferTabs, promptRestart);
         var latch = TerminalLauncherManager.submitAsync(request, cc, terminalConfig, directory);
         try {
             if (!checkMultiplexerLaunch(cc, request, config)) {
-                if (preferTabs && TerminalMultiplexerManager.getEffectiveMultiplexer().isPresent()) {
-                    config = config.withPreferTabs(false).withCleanTitle("XPipe").withColoredTitle("XPipe");
+                if (preferTabs
+                        && TerminalMultiplexerManager.getEffectiveMultiplexer().isPresent()) {
+                    config =
+                            config.withPreferTabs(false).withCleanTitle("XPipe").withColoredTitle("XPipe");
                 }
                 type.launch(config);
             }
@@ -145,7 +149,8 @@ public class TerminalLauncher {
         }
     }
 
-    private static boolean checkMultiplexerLaunch(ProcessControl processControl, UUID request, TerminalLaunchConfiguration config) throws Exception {
+    private static boolean checkMultiplexerLaunch(
+            ProcessControl processControl, UUID request, TerminalLaunchConfiguration config) throws Exception {
         if (!config.isPreferTabs()) {
             return false;
         }
@@ -163,8 +168,12 @@ public class TerminalLauncher {
             if (control.isPresent()) {
                 var type = AppPrefs.get().terminalType().getValue();
                 var title = type.useColoredTitle() ? config.getColoredTitle() : config.getCleanTitle();
-                var openCommand = processControl.prepareTerminalOpen(TerminalInitScriptConfig.ofName(title), WorkingDirectoryFunction.none());
-                var fullCommand = multiplexer.get().launchScriptExternal(control.get(), openCommand, TerminalInitScriptConfig.ofName(title)).toString();
+                var openCommand = processControl.prepareTerminalOpen(
+                        TerminalInitScriptConfig.ofName(title), WorkingDirectoryFunction.none());
+                var fullCommand = multiplexer
+                        .get()
+                        .launchScriptExternal(control.get(), openCommand, TerminalInitScriptConfig.ofName(title))
+                        .toString();
                 control.get().command(fullCommand).execute();
                 return true;
             }
@@ -172,20 +181,29 @@ public class TerminalLauncher {
         return false;
     }
 
-    public static String createLaunchCommand(ProcessControl processControl, TerminalInitScriptConfig config, WorkingDirectoryFunction wd) throws Exception {
+    public static String createLaunchCommand(
+            ProcessControl processControl, TerminalInitScriptConfig config, WorkingDirectoryFunction wd)
+            throws Exception {
         var initScript = AppPrefs.get().terminalInitScript().getValue();
         var initialCommand = initScript != null ? initScript.toString() : "";
         var openCommand = processControl.prepareTerminalOpen(config, wd);
         var proxy = TerminalProxyManager.getProxy();
         var multiplexer = TerminalMultiplexerManager.getEffectiveMultiplexer();
-        var fullCommand = initialCommand + "\n" + (multiplexer.isPresent() ?
-                multiplexer.get().launchScriptSession(proxy.isPresent() ? proxy.get() : LocalShell.getShell(), openCommand, config).toString() : openCommand);
+        var fullCommand = initialCommand + "\n"
+                + (multiplexer.isPresent()
+                        ? multiplexer
+                                .get()
+                                .launchScriptSession(
+                                        proxy.isPresent() ? proxy.get() : LocalShell.getShell(), openCommand, config)
+                                .toString()
+                        : openCommand);
         if (proxy.isPresent()) {
             var proxyOpenCommand = fullCommand;
-            var proxyLaunchCommand = proxy.get().prepareIntermediateTerminalOpen(
-                    TerminalInitFunction.fixed(proxyOpenCommand),
-                    TerminalInitScriptConfig.ofName("XPipe"),
-                    WorkingDirectoryFunction.none());
+            var proxyLaunchCommand = proxy.get()
+                    .prepareIntermediateTerminalOpen(
+                            TerminalInitFunction.fixed(proxyOpenCommand),
+                            TerminalInitScriptConfig.ofName("XPipe"),
+                            WorkingDirectoryFunction.none());
             // Restart for the next time
             proxy.get().start();
             return proxyLaunchCommand;

@@ -5,12 +5,9 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.TerminalInitFunction;
-import io.xpipe.core.process.TerminalInitScriptConfig;
-import io.xpipe.core.process.WorkingDirectoryFunction;
 import io.xpipe.core.store.DataStore;
+
 import lombok.Value;
 
 import java.util.List;
@@ -41,7 +38,12 @@ public class TerminalProxyManager {
             return false;
         }
 
-        if (!parent.get().equals(DataStorage.get().local()) && !DataStorage.get().local().equals(DataStorage.get().getDefaultDisplayParent(parent.get()).orElse(null))) {
+        if (!parent.get().equals(DataStorage.get().local())
+                && !DataStorage.get()
+                        .local()
+                        .equals(DataStorage.get()
+                                .getDefaultDisplayParent(parent.get())
+                                .orElse(null))) {
             return false;
         }
 
@@ -51,9 +53,9 @@ public class TerminalProxyManager {
 
     public static Optional<ShellControl> getProxy() {
         var uuid = AppPrefs.get().terminalProxy().getValue();
-        var hasCustomTerminalShell = uuid != null &&
-                !DataStorage.get().local().getUuid().equals(uuid);
-         if (!hasCustomTerminalShell) {
+        var hasCustomTerminalShell =
+                uuid != null && !DataStorage.get().local().getUuid().equals(uuid);
+        if (!hasCustomTerminalShell) {
             return Optional.empty();
         }
 

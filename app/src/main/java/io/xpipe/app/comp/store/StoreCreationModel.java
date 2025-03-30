@@ -1,47 +1,26 @@
 package io.xpipe.app.comp.store;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.augment.GrowAugment;
-import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.DialogComp;
-import io.xpipe.app.comp.base.ModalOverlay;
-import io.xpipe.app.comp.base.ModalOverlayComp;
-import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.window.AppWindowHelper;
-import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProvider;
-import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.ValidatableStore;
 import io.xpipe.core.util.ValidationException;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
-import javafx.geometry.Insets;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
-import net.synedra.validatorfx.GraphicDecorationStackPane;
-import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -65,12 +44,12 @@ public class StoreCreationModel {
 
     public StoreCreationModel(
             Property<DataStoreProvider> provider,
-            ObjectProperty<DataStore> store, Predicate<DataStoreProvider> filter,
+            ObjectProperty<DataStore> store,
+            Predicate<DataStoreProvider> filter,
             String initialName,
             DataStoreEntry existingEntry,
             boolean staticDisplay,
-            StoreCreationConsumer consumer
-    ) {
+            StoreCreationConsumer consumer) {
         this.provider = provider;
         this.store = store;
         this.filter = filter;
@@ -182,8 +161,7 @@ public class StoreCreationModel {
                 .not()
                 .or(Bindings.createBooleanBinding(
                         () -> {
-                            return store.getValue() == null
-                                    || !store.getValue().isComplete();
+                            return store.getValue() == null || !store.getValue().isComplete();
                         },
                         store));
     }
@@ -275,12 +253,12 @@ public class StoreCreationModel {
     public String storeTypeNameKey() {
         var p = provider.getValue();
         var nameKey = p == null
-                || p.getCreationCategory() == null
-                || p.getCreationCategory().getCategory().equals(DataStorage.ALL_CONNECTIONS_CATEGORY_UUID)
+                        || p.getCreationCategory() == null
+                        || p.getCreationCategory().getCategory().equals(DataStorage.ALL_CONNECTIONS_CATEGORY_UUID)
                 ? "connection"
                 : p.getCreationCategory().getCategory().equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID)
-                ? "script"
-                : "identity";
+                        ? "script"
+                        : "identity";
         return nameKey;
     }
 }

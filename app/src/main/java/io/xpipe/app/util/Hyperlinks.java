@@ -1,10 +1,5 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.process.OsType;
-
-import java.io.File;
-
 public class Hyperlinks {
 
     public static final String DOCS = "https://docs.xpipe.io";

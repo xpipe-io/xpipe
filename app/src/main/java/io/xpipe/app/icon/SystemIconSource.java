@@ -6,7 +6,6 @@ import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.ProcessOutputException;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.ValidationException;
@@ -92,10 +91,12 @@ public interface SystemIconSource {
 
         @Override
         public void refresh() throws Exception {
-            try (var sc = ProcessControlProvider.get().createLocalProcessControl(true).start()) {
+            try (var sc =
+                    ProcessControlProvider.get().createLocalProcessControl(true).start()) {
                 var present = sc.view().findProgram("git").isPresent();
                 if (!present) {
-                    var msg = "Git command-line tools are not available in the PATH but are required to use icons from a git repository. For more details, see https://git-scm.com/downloads.";
+                    var msg =
+                            "Git command-line tools are not available in the PATH but are required to use icons from a git repository. For more details, see https://git-scm.com/downloads.";
                     ErrorEvent.fromMessage(msg).expected().handle();
                     return;
                 }

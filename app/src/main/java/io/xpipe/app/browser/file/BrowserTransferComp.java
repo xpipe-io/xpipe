@@ -65,14 +65,10 @@ public class BrowserTransferComp extends SimpleComp {
                         return Bindings.createStringBinding(
                                 () -> {
                                     var p = sourceItem.get().getProgress().getValue();
-                                    var hideProgress = sourceItem
-                                            .get()
-                                            .downloadFinished()
-                                            .get();
+                                    var hideProgress =
+                                            sourceItem.get().downloadFinished().get();
                                     var share = p != null ? (p.getTransferred() * 100 / p.getTotal()) : 0;
-                                    var progressSuffix = hideProgress
-                                            ? ""
-                                            : " " + share + "%";
+                                    var progressSuffix = hideProgress ? "" : " " + share + "%";
                                     return entry.getFileName() + progressSuffix;
                                 },
                                 sourceItem.get().getProgress());

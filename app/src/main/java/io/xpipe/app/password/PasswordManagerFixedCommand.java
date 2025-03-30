@@ -1,8 +1,9 @@
 package io.xpipe.app.password;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.core.process.ShellScript;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("passwordManagerFixedCommand")
 public abstract class PasswordManagerFixedCommand implements PasswordManager {

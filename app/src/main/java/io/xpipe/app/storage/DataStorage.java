@@ -1,13 +1,11 @@
 package io.xpipe.app.storage;
 
-import com.vladsch.flexmark.util.misc.FileUtil;
 import io.xpipe.app.comp.store.StoreSortMode;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.ext.NameableStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
@@ -20,10 +18,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.commons.io.FileUtils;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.*;

@@ -17,8 +17,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
-import javax.print.Doc;
-
 public class AskpassAlert {
 
     public static SecretQueryResult queryRaw(String prompt, InPlaceSecretValue secretValue) {

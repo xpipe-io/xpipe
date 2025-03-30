@@ -109,11 +109,13 @@ public class SecretManager {
     public static synchronized void cache(SecretReference ref, SecretValue value, Duration duration) {
         secrets.put(ref, value);
         if (duration != null && duration.isPositive()) {
-            GlobalTimer.delay(() -> {
-                synchronized (SecretManager.class) {
-                    secrets.remove(ref);
-                }
-            }, duration);
+            GlobalTimer.delay(
+                    () -> {
+                        synchronized (SecretManager.class) {
+                            secrets.remove(ref);
+                        }
+                    },
+                    duration);
         }
     }
 

@@ -54,7 +54,8 @@ public class BrowserFileSystemSavedState {
 
     public BrowserFileSystemSavedState() {
         lastDirectory = null;
-        recentDirectories = FXCollections.synchronizedObservableList(FXCollections.observableList(new ArrayList<>(STORED)));
+        recentDirectories =
+                FXCollections.synchronizedObservableList(FXCollections.observableList(new ArrayList<>(STORED)));
     }
 
     static BrowserFileSystemSavedState loadForStore(BrowserFileSystemTabModel model) {
@@ -100,7 +101,8 @@ public class BrowserFileSystemSavedState {
                                 }
                             });
                         }
-                    }, Duration.ofMillis(10000));
+                    },
+                    Duration.ofMillis(10000));
         } else {
             updateRecent(dir);
             save();
@@ -164,7 +166,8 @@ public class BrowserFileSystemSavedState {
                     .map(recentEntry -> new RecentEntry(recentEntry.directory.toDirectory(), recentEntry.time))
                     .filter(distinctBy(recentEntry -> recentEntry.getDirectory()))
                     .collect(Collectors.toCollection(ArrayList::new));
-            return new BrowserFileSystemSavedState(null, FXCollections.synchronizedObservableList(FXCollections.observableList(cleaned)));
+            return new BrowserFileSystemSavedState(
+                    null, FXCollections.synchronizedObservableList(FXCollections.observableList(cleaned)));
         }
     }
 

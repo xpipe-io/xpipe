@@ -1,6 +1,5 @@
 package io.xpipe.ext.base.script;
 
-import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -11,7 +10,6 @@ import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellTerminalInitCommand;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FilePath;
-import lombok.Value;
 
 import java.util.*;
 

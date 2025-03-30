@@ -1,16 +1,16 @@
 package io.xpipe.app.core;
 
-import com.sun.jna.*;
-import com.sun.jna.platform.win32.User32;
-import com.sun.jna.platform.win32.WinDef;
-import com.sun.jna.platform.win32.WinUser;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
+
+import com.sun.jna.*;
+import com.sun.jna.platform.win32.User32;
+import com.sun.jna.platform.win32.WinDef;
+import com.sun.jna.platform.win32.WinUser;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.util.List;
 
@@ -46,7 +46,7 @@ public class AppWindowsShutdown {
         WinDef.LRESULT callback(int nCode, WinDef.WPARAM wParam, CWPSSTRUCT hookProcStruct);
     }
 
-    public static final int WM_ENDSESSION      = 0x16;
+    public static final int WM_ENDSESSION = 0x16;
     public static final int WM_QUERYENDSESSION = 0x11;
     public static final long ENDSESSION_CRITICAL = 0x40000000L;
 
@@ -81,7 +81,8 @@ public class AppWindowsShutdown {
                     return new WinDef.LRESULT(0);
                 }
             }
-            return User32.INSTANCE.CallNextHookEx(hhook, nCode, wParam, new WinDef.LPARAM(Pointer.nativeValue(hookProcStruct.getPointer())));
+            return User32.INSTANCE.CallNextHookEx(
+                    hhook, nCode, wParam, new WinDef.LPARAM(Pointer.nativeValue(hookProcStruct.getPointer())));
         }
     }
 }

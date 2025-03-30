@@ -1,6 +1,5 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.core.AppWindowsShutdown;
 import io.xpipe.app.core.check.AppSystemFontCheck;
 import io.xpipe.app.core.window.ModifiedStage;
 import io.xpipe.app.issue.ErrorEvent;
@@ -213,7 +212,8 @@ public enum PlatformState {
 
     @SneakyThrows
     private static void disableToolkitShutdownHook() {
-        var tkClass = Class.forName(ModuleLayer.boot().findModule("javafx.graphics").orElseThrow(), "com.sun.javafx.tk.Toolkit");
+        var tkClass = Class.forName(
+                ModuleLayer.boot().findModule("javafx.graphics").orElseThrow(), "com.sun.javafx.tk.Toolkit");
         var getToolkitMethod = tkClass.getDeclaredMethod("getToolkit");
         getToolkitMethod.setAccessible(true);
         var tk = getToolkitMethod.invoke(null);

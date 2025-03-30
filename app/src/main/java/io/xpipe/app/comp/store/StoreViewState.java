@@ -27,12 +27,12 @@ public class StoreViewState {
     private final StringProperty filter = new SimpleStringProperty();
 
     @Getter
-    private final DerivedObservableList<StoreEntryWrapper> allEntries =
-            new DerivedObservableList<>(FXCollections.synchronizedObservableList(FXCollections.observableArrayList()), true);
+    private final DerivedObservableList<StoreEntryWrapper> allEntries = new DerivedObservableList<>(
+            FXCollections.synchronizedObservableList(FXCollections.observableArrayList()), true);
 
     @Getter
-    private final DerivedObservableList<StoreCategoryWrapper> categories =
-            new DerivedObservableList<>(FXCollections.synchronizedObservableList(FXCollections.observableArrayList()), true);
+    private final DerivedObservableList<StoreCategoryWrapper> categories = new DerivedObservableList<>(
+            FXCollections.synchronizedObservableList(FXCollections.observableArrayList()), true);
 
     @Getter
     private final IntegerProperty entriesListVisibilityObservable = new SimpleIntegerProperty();
@@ -154,7 +154,12 @@ public class StoreViewState {
     private void initSections() {
         try {
             currentTopLevelSection = StoreSection.createTopLevel(
-                    allEntries, storeEntryWrapper -> true, filter, activeCategory, entriesListVisibilityObservable, entriesListUpdateObservable);
+                    allEntries,
+                    storeEntryWrapper -> true,
+                    filter,
+                    activeCategory,
+                    entriesListVisibilityObservable,
+                    entriesListUpdateObservable);
         } catch (Exception exception) {
             currentTopLevelSection = new StoreSection(
                     null,

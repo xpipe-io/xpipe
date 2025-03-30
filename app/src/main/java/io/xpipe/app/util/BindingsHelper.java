@@ -7,10 +7,8 @@ import javafx.beans.value.ObservableValue;
 import lombok.Value;
 
 import java.lang.ref.WeakReference;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 @SuppressWarnings("InfiniteLoopStatement")

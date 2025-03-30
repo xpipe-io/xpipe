@@ -4,7 +4,6 @@ import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.PlatformThread;
 
-import javafx.application.Platform;
 import javafx.stage.Stage;
 
 public class GuiMode extends PlatformMode {

@@ -6,8 +6,6 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
-import io.xpipe.app.util.SecretManager;
-import io.xpipe.app.util.SecretQueryProgress;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.BeaconServerException;
 import io.xpipe.core.process.*;
@@ -122,7 +120,9 @@ public class TerminalLauncherManager {
                 // It seems like that some terminals might enter a restart loop to try to start an older process again
                 // This would spam XPipe continuously with launch requests if we returned an error here
                 // Therefore, we just return a new local shell session
-                TrackEvent.withTrace("Unknown launch request").tag("request", request.toString()).handle();
+                TrackEvent.withTrace("Unknown launch request")
+                        .tag("request", request.toString())
+                        .handle();
                 try (var sc = LocalShell.getShell().start()) {
                     var defaultShell = ProcessControlProvider.get().getEffectiveLocalDialect();
                     var shellExec = defaultShell.getExecutableName();

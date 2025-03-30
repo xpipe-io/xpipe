@@ -17,7 +17,6 @@ import javafx.collections.FXCollections;
 import javafx.scene.control.TextField;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -33,7 +32,9 @@ public class IconsCategory extends AppPrefsCategory {
     protected Comp<?> create() {
         return new OptionsBuilder()
                 .addTitle("customIcons")
-                .sub(new OptionsBuilder().nameAndDescription("iconSources").addComp(createOverview().maxWidth(getCompWidth())))
+                .sub(new OptionsBuilder()
+                        .nameAndDescription("iconSources")
+                        .addComp(createOverview().maxWidth(getCompWidth())))
                 .buildComp();
     }
 
@@ -114,7 +115,8 @@ public class IconsCategory extends AppPrefsCategory {
 
                         var path = dir.get().asLocalPath();
                         if (Files.isRegularFile(path)) {
-                            throw new IllegalArgumentException("A custom icon directory requires to be a directory of .svg files, not a single file");
+                            throw new IllegalArgumentException(
+                                    "A custom icon directory requires to be a directory of .svg files, not a single file");
                         }
 
                         var source = SystemIconSource.Directory.builder()

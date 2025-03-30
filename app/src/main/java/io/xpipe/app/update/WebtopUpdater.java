@@ -2,7 +2,6 @@ package io.xpipe.app.update;
 
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.Hyperlinks;
 
 import java.util.List;
 

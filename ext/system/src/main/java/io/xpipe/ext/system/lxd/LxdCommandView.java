@@ -160,7 +160,8 @@ public class LxdCommandView extends CommandViewBase {
                 .elevated(requiresElevation());
     }
 
-    private ShellOpenFunction createOpenFunction(String containerName, String user, boolean terminal, Supplier<Boolean> busybox) {
+    private ShellOpenFunction createOpenFunction(
+            String containerName, String user, boolean terminal, Supplier<Boolean> busybox) {
         return new ShellOpenFunction() {
             @Override
             public CommandBuilder prepareWithoutInitCommand() {
@@ -178,13 +179,14 @@ public class LxdCommandView extends CommandViewBase {
                     b.addQuoted(user);
                 }
                 return b.add(sc -> {
-                    var suType = busybox.get();
-                    if (suType) {
-                        return "-c";
-                    } else {
-                        return "--session-command";
-                    }
-                }).addLiteral(command);
+                            var suType = busybox.get();
+                            if (suType) {
+                                return "-c";
+                            } else {
+                                return "--session-command";
+                            }
+                        })
+                        .addLiteral(command);
             }
         };
     }

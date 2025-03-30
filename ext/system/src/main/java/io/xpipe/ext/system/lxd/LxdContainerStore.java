@@ -78,7 +78,8 @@ public class LxdContainerStore
                 var user = identity != null ? identity.unwrap().getUsername() : null;
                 var base = new LxdCommandView(parent).exec(containerName, user, () -> {
                     var state = getState();
-                    var alpine = state.getOsName() != null && state.getOsName().toLowerCase().contains("alpine");
+                    var alpine = state.getOsName() != null
+                            && state.getOsName().toLowerCase().contains("alpine");
                     return alpine;
                 });
                 if (identity != null && identity.unwrap().getPassword() != null) {

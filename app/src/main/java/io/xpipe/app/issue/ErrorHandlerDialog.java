@@ -54,19 +54,28 @@ public class ErrorHandlerDialog {
                 return graphic;
             }));
             if (event.getThrowable() != null && event.isReportable()) {
-                errorModal.addButton(new ModalButton("stackTrace", () -> {
-                    var content = new ErrorDetailsComp(event).prefWidth(600).prefHeight(750);
-                    var detailsModal = ModalOverlay.of("errorDetails", content);
-                    detailsModal.show();
-                }, false, false));
+                errorModal.addButton(new ModalButton(
+                        "stackTrace",
+                        () -> {
+                            var content =
+                                    new ErrorDetailsComp(event).prefWidth(600).prefHeight(750);
+                            var detailsModal = ModalOverlay.of("errorDetails", content);
+                            detailsModal.show();
+                        },
+                        false,
+                        false));
             }
             if (event.isReportable()) {
-                errorModal.addButton(new ModalButton("report", () -> {
-                    if (UserReportComp.show(event)) {
-                        comp.getTakenAction().setValue(ErrorAction.ignore());
-                        errorModal.close();
-                    }
-                }, false, false));
+                errorModal.addButton(new ModalButton(
+                        "report",
+                        () -> {
+                            if (UserReportComp.show(event)) {
+                                comp.getTakenAction().setValue(ErrorAction.ignore());
+                                errorModal.close();
+                            }
+                        },
+                        false,
+                        false));
                 errorModal.addButtonBarComp(Comp.hspacer());
             }
             errorModal.addButton(ModalButton.ok());

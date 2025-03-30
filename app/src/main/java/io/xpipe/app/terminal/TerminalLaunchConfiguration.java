@@ -42,7 +42,12 @@ public class TerminalLaunchConfiguration {
             DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").withZone(ZoneId.systemDefault());
 
     public static TerminalLaunchConfiguration create(
-            UUID request, DataStoreEntry entry, String cleanTitle, String adjustedTitle, boolean preferTabs, boolean promptRestart)
+            UUID request,
+            DataStoreEntry entry,
+            String cleanTitle,
+            String adjustedTitle,
+            boolean preferTabs,
+            boolean promptRestart)
             throws Exception {
         var color = entry != null ? DataStorage.get().getEffectiveColor(entry) : null;
         var d = ProcessControlProvider.get().getEffectiveLocalDialect();

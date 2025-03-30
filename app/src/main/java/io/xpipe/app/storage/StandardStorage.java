@@ -9,7 +9,6 @@ import io.xpipe.app.util.EncryptionKey;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 
-import com.fasterxml.jackson.core.JacksonException;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 

@@ -5,7 +5,6 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -56,7 +55,8 @@ public class SyncCategory extends AppPrefsCategory {
         var helpButton = new ButtonComp(AppI18n.observable("help"), new FontIcon("mdi2h-help-circle-outline"), () -> {
             DocumentationLink.SYNC.open();
         });
-        var remoteRow = new HorizontalComp(List.of(remoteRepo, helpButton)).spacing(10).maxWidth(getCompWidth());
+        var remoteRow =
+                new HorizontalComp(List.of(remoteRepo, helpButton)).spacing(10).maxWidth(getCompWidth());
         remoteRow.apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
 
         var builder = new OptionsBuilder();

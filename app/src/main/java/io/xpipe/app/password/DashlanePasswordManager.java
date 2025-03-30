@@ -1,8 +1,8 @@
 package io.xpipe.app.password;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellScript;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("dashlane")
 public class DashlanePasswordManager extends PasswordManagerFixedCommand {

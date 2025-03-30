@@ -1,16 +1,16 @@
 package io.xpipe.app.util;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.ChoicePaneComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.terminal.ZellijTerminalMultiplexer;
-import javafx.beans.property.ObjectProperty;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Region;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 
 import java.util.ArrayList;
@@ -38,7 +38,8 @@ public class OptionsChoiceBuilder {
             if (r != null) {
                 return (OptionsBuilder) r;
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         try {
             var bm = c.getDeclaredMethod("builder");
@@ -49,7 +50,8 @@ public class OptionsChoiceBuilder {
             var defValue = c.cast(m.invoke(b));
             var def = new OptionsBuilder().bind(() -> defValue, property);
             return def;
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
         try {
             var defConstructor = c.getDeclaredConstructor();
@@ -69,9 +71,13 @@ public class OptionsChoiceBuilder {
     public <T> OptionsBuilder build() {
         Property<T> s = (Property<T>) property;
         var sub = subclasses;
-        var selectedIndex = s.getValue() == null ? (allowNull ? 0 : -1) : sub.stream().filter(c -> c.equals(s.getValue().getClass()))
-                .findFirst().map(c -> sub.indexOf(c) + (allowNull ? 1 : 0))
-                .orElse(-1);
+        var selectedIndex = s.getValue() == null
+                ? (allowNull ? 0 : -1)
+                : sub.stream()
+                        .filter(c -> c.equals(s.getValue().getClass()))
+                        .findFirst()
+                        .map(c -> sub.indexOf(c) + (allowNull ? 1 : 0))
+                        .orElse(-1);
         var selected = new SimpleIntegerProperty(selectedIndex);
 
         var properties = new ArrayList<Property<Object>>();
@@ -100,7 +106,9 @@ public class OptionsChoiceBuilder {
             map.put(AppI18n.observable("none"), new OptionsBuilder());
         }
         for (int i = 0; i < sub.size(); i++) {
-            map.put(AppI18n.observable(createIdForClass(sub.get(i))), createOptionsForClass(sub.get(i), properties.get(i + (allowNull ? 1 : 0))));
+            map.put(
+                    AppI18n.observable(createIdForClass(sub.get(i))),
+                    createOptionsForClass(sub.get(i), properties.get(i + (allowNull ? 1 : 0))));
         }
 
         return new OptionsBuilder()
@@ -116,5 +124,4 @@ public class OptionsChoiceBuilder {
                         },
                         s);
     }
-
 }

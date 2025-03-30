@@ -1,6 +1,5 @@
 package io.xpipe.app.comp.base;
 
-import atlantafx.base.controls.Spacer;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppFontSizes;
@@ -16,9 +15,7 @@ import javafx.beans.property.Property;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -48,8 +45,7 @@ public class ModalOverlayComp extends SimpleComp {
         var bgRegion = background.createRegion();
         var modal = new ModalPane();
         modal.setInTransitionFactory(
-                OsType.getLocal() == OsType.LINUX ? null : node -> Animations.fadeIn(node, Duration.millis(150))
-        );
+                OsType.getLocal() == OsType.LINUX ? null : node -> Animations.fadeIn(node, Duration.millis(150)));
         modal.setOutTransitionFactory(
                 OsType.getLocal() == OsType.LINUX ? null : node -> Animations.fadeOut(node, Duration.millis(50)));
         modal.focusedProperty().addListener((observable, oldValue, newValue) -> {

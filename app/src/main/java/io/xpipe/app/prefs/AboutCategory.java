@@ -49,7 +49,7 @@ public class AboutCategory extends AppPrefsCategory {
                         null)
                 .addComp(
                         new TileButtonComp("privacy", "privacyDescription", "mdomz-privacy_tip", e -> {
-                            DocumentationLink.PRIVACY.open();
+                                    DocumentationLink.PRIVACY.open();
                                     e.consume();
                                 })
                                 .grow(true, false),
@@ -65,7 +65,7 @@ public class AboutCategory extends AppPrefsCategory {
                                 .grow(true, false))
                 .addComp(
                         new TileButtonComp("eula", "eulaDescription", "mdi2c-card-text-outline", e -> {
-                                   DocumentationLink.EULA.open();
+                                    DocumentationLink.EULA.open();
                                     e.consume();
                                 })
                                 .grow(true, false),

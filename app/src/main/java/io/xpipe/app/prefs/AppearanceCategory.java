@@ -40,7 +40,8 @@ public class AppearanceCategory extends AppPrefsCategory {
                         .pref(prefs.theme)
                         .addComp(
                                 ChoiceComp.ofTranslatable(prefs.theme, AppTheme.Theme.ALL, false)
-                                        .styleClass("theme-switcher").minWidth(getCompWidth() / 2),
+                                        .styleClass("theme-switcher")
+                                        .minWidth(getCompWidth() / 2),
                                 prefs.theme)
                         .pref(prefs.performanceMode)
                         .addToggle(prefs.performanceMode)
@@ -56,12 +57,13 @@ public class AppearanceCategory extends AppPrefsCategory {
                         .pref(prefs.windowOpacity)
                         .addComp(
                                 Comp.of(() -> {
-                                    var s = new Slider(0.3, 1.0, prefs.windowOpacity.get());
-                                    s.getStyleClass().add(Styles.SMALL);
-                                    prefs.windowOpacity.bind(s.valueProperty());
-                                    s.setSkin(new ProgressSliderSkin(s));
-                                    return s;
-                                }).maxWidth(getCompWidth()),
+                                            var s = new Slider(0.3, 1.0, prefs.windowOpacity.get());
+                                            s.getStyleClass().add(Styles.SMALL);
+                                            prefs.windowOpacity.bind(s.valueProperty());
+                                            s.setSkin(new ProgressSliderSkin(s));
+                                            return s;
+                                        })
+                                        .maxWidth(getCompWidth()),
                                 prefs.windowOpacity)
                         .pref(prefs.saveWindowLocation)
                         .addToggle(prefs.saveWindowLocation)

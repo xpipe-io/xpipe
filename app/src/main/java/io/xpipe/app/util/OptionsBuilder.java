@@ -56,12 +56,14 @@ public class OptionsBuilder {
         return new ChainedValidator(allValidators);
     }
 
-
     public OptionsBuilder choice(IntegerProperty selectedIndex, Map<ObservableValue<String>, OptionsBuilder> options) {
         return choice(selectedIndex, options, null);
     }
 
-    public OptionsBuilder choice(IntegerProperty selectedIndex, Map<ObservableValue<String>, OptionsBuilder> options, Function<ComboBox<ChoicePaneComp.Entry>, Region> transformer) {
+    public OptionsBuilder choice(
+            IntegerProperty selectedIndex,
+            Map<ObservableValue<String>, OptionsBuilder> options,
+            Function<ComboBox<ChoicePaneComp.Entry>, Region> transformer) {
         var list = options.entrySet().stream()
                 .map(e -> new ChoicePaneComp.Entry(
                         e.getKey(), e.getValue() != null ? e.getValue().buildComp() : Comp.empty()))

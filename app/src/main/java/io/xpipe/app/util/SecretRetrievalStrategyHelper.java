@@ -49,10 +49,19 @@ public class SecretRetrievalStrategyHelper {
                 new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getKey() : null);
         var content = new HorizontalComp(List.of(
                         new TextFieldComp(keyProperty)
-                                .apply(struc -> struc.get().promptTextProperty().bind(
-                                        Bindings.createStringBinding(() -> {
-                                                    return prefs.passwordManager().getValue() != null ? prefs.passwordManager().getValue().getKeyPlaceholder() : "?";
-                                                }, prefs.passwordManager())))
+                                .apply(struc -> struc.get()
+                                        .promptTextProperty()
+                                        .bind(Bindings.createStringBinding(
+                                                () -> {
+                                                    return prefs.passwordManager()
+                                                                            .getValue()
+                                                                    != null
+                                                            ? prefs.passwordManager()
+                                                                    .getValue()
+                                                                    .getKeyPlaceholder()
+                                                            : "?";
+                                                },
+                                                prefs.passwordManager())))
                                 .hgrow(),
                         new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
                                     AppPrefs.get().selectCategory("passwordManager");
@@ -109,15 +118,15 @@ public class SecretRetrievalStrategyHelper {
         var selected = new SimpleIntegerProperty(
                 strat instanceof SecretRetrievalStrategy.None
                         ? offset
-                        : strat instanceof SecretRetrievalStrategy.Prompt ?
-                            offset + 1
-                            : strat instanceof SecretRetrievalStrategy.InPlace
-                                    ? offset + 2
-                                    : strat instanceof SecretRetrievalStrategy.PasswordManager
-                                            ? offset + 3
-                                            : strat instanceof SecretRetrievalStrategy.CustomCommand
-                                                    ? offset + 4
-                                                            : strat == null ? -1 : 0);
+                        : strat instanceof SecretRetrievalStrategy.Prompt
+                                ? offset + 1
+                                : strat instanceof SecretRetrievalStrategy.InPlace
+                                        ? offset + 2
+                                        : strat instanceof SecretRetrievalStrategy.PasswordManager
+                                                ? offset + 3
+                                                : strat instanceof SecretRetrievalStrategy.CustomCommand
+                                                        ? offset + 4
+                                                        : strat == null ? -1 : 0);
         return new OptionsBuilder()
                 .choice(selected, map)
                 .bindChoice(

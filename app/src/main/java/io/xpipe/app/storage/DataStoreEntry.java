@@ -1,6 +1,5 @@
 package io.xpipe.app.storage;
 
-import com.fasterxml.jackson.core.JacksonException;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.ext.NameableStore;
@@ -11,6 +10,7 @@ import io.xpipe.core.store.*;
 import io.xpipe.core.util.JacksonMapper;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

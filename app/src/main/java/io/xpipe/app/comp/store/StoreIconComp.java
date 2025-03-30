@@ -3,8 +3,8 @@ package io.xpipe.app.comp.store;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.TooltipAugment;
-
 import io.xpipe.app.storage.DataStoreEntry;
+
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
 import javafx.scene.input.MouseButton;

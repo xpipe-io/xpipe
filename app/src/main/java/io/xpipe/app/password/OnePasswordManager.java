@@ -1,9 +1,8 @@
 package io.xpipe.app.password;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.process.ShellScript;
-import javafx.beans.property.Property;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("onePassword")
 public class OnePasswordManager extends PasswordManagerFixedCommand {

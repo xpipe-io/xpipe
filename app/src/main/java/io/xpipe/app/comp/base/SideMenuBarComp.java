@@ -20,6 +20,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+
 import lombok.AllArgsConstructor;
 
 import java.util.List;
@@ -58,9 +59,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
 
         {
             var b = new IconButtonComp("mdi2u-update", () -> UpdateAvailableDialog.showAndWaitIfNeeded());
-            b
-                    .tooltipKey("updateAvailableTooltip")
-                    .accessibleTextKey("updateAvailableTooltip");
+            b.tooltipKey("updateAvailableTooltip").accessibleTextKey("updateAvailableTooltip");
             var stack = createStyle(null, b);
             stack.hide(PlatformThread.sync(Bindings.createBooleanBinding(
                     () -> {
@@ -142,8 +141,8 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                 Platform.getPreferences().accentColorProperty());
 
         var indicator = Comp.empty().styleClass("indicator");
-        var stack = new StackComp(List.of(indicator, b))
-                .apply(struc -> struc.get().setAlignment(Pos.CENTER_RIGHT));
+        var stack =
+                new StackComp(List.of(indicator, b)).apply(struc -> struc.get().setAlignment(Pos.CENTER_RIGHT));
         stack.apply(struc -> {
             var indicatorRegion = (Region) struc.get().getChildren().getFirst();
             indicatorRegion.setMaxWidth(7);

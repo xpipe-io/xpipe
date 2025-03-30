@@ -172,10 +172,15 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                 throw ErrorEvent.expected(new IllegalStateException("No custom editor command specified"));
             }
 
-            var format = customCommand.toLowerCase(Locale.ROOT).contains("$file") ? customCommand : customCommand + " $FILE";
-            var command = CommandBuilder.of().add(ExternalApplicationHelper.replaceVariableArgument(format, "FILE", file.toString()));
+            var format =
+                    customCommand.toLowerCase(Locale.ROOT).contains("$file") ? customCommand : customCommand + " $FILE";
+            var command = CommandBuilder.of()
+                    .add(ExternalApplicationHelper.replaceVariableArgument(format, "FILE", file.toString()));
             if (AppPrefs.get().customEditorCommandInTerminal().get()) {
-                TerminalLauncher.openDirect(file.toString(), sc -> command.buildFull(sc), AppPrefs.get().terminalType.get());
+                TerminalLauncher.openDirect(
+                        file.toString(),
+                        sc -> command.buildFull(sc),
+                        AppPrefs.get().terminalType.get());
             } else {
                 ExternalApplicationHelper.startAsync(command);
             }

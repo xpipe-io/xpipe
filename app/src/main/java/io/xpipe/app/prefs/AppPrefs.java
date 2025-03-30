@@ -5,16 +5,12 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
-import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.icon.SystemIconSource;
-import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.password.PasswordManager;
 import io.xpipe.app.password.PasswordManagerCommand;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalMultiplexer;
-import io.xpipe.app.terminal.ZellijTerminalMultiplexer;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.ShellScript;
@@ -34,7 +30,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
-import org.apache.commons.io.FileUtils;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -105,37 +100,24 @@ public class AppPrefs {
             mapVaultShared(new SimpleBooleanProperty(false), "dontCachePasswords", Boolean.class, false);
     public final BooleanProperty denyTempScriptCreation =
             mapVaultShared(new SimpleBooleanProperty(false), "denyTempScriptCreation", Boolean.class, false);
-    final Property<PasswordManager> passwordManager = mapLocal(
-            new SimpleObjectProperty<>(),
-            "passwordManager",
-            PasswordManager.class,
-            false);
-    final Property<ShellScript> terminalInitScript = mapLocal(
-            new SimpleObjectProperty<>(null),
-            "terminalInitScript",
-            ShellScript.class,
-            false);
-    final Property<UUID> terminalProxy = mapLocal(
-            new SimpleObjectProperty<>(),
-            "terminalProxy",
-            UUID.class,
-            false);
-    final Property<TerminalMultiplexer> terminalMultiplexer = mapLocal(
-            new SimpleObjectProperty<>(null),
-            "terminalMultiplexer",
-            TerminalMultiplexer.class,
-            false);
-    final Property<Boolean> terminalPromptForRestart = mapLocal(
-            new SimpleBooleanProperty(true),
-            "terminalPromptForRestart",
-            Boolean.class,
-            false);
+    final Property<PasswordManager> passwordManager =
+            mapLocal(new SimpleObjectProperty<>(), "passwordManager", PasswordManager.class, false);
+    final Property<ShellScript> terminalInitScript =
+            mapLocal(new SimpleObjectProperty<>(null), "terminalInitScript", ShellScript.class, false);
+    final Property<UUID> terminalProxy = mapLocal(new SimpleObjectProperty<>(), "terminalProxy", UUID.class, false);
+    final Property<TerminalMultiplexer> terminalMultiplexer =
+            mapLocal(new SimpleObjectProperty<>(null), "terminalMultiplexer", TerminalMultiplexer.class, false);
+    final Property<Boolean> terminalPromptForRestart =
+            mapLocal(new SimpleBooleanProperty(true), "terminalPromptForRestart", Boolean.class, false);
+
     public ObservableValue<UUID> terminalProxy() {
         return terminalProxy;
     }
+
     public ObservableValue<Boolean> terminalPromptForRestart() {
         return terminalPromptForRestart;
     }
+
     public final StringProperty passwordManagerCommand =
             mapLocal(new SimpleStringProperty(null), "passwordManagerCommand", String.class, false);
     final ObjectProperty<StartupBehaviour> startupBehaviour = mapLocal(
@@ -308,7 +290,8 @@ public class AppPrefs {
         PrefsProvider.getAll().forEach(prov -> prov.addPrefs(INSTANCE.extensionHandler));
         INSTANCE.loadLocal();
         INSTANCE.adjustLocalValues();
-        INSTANCE.vaultStorageHandler = new AppPrefsStorageHandler(DataStorage.getStorageDirectory().resolve("preferences.json"));
+        INSTANCE.vaultStorageHandler =
+                new AppPrefsStorageHandler(DataStorage.getStorageDirectory().resolve("preferences.json"));
     }
 
     public static void initSharedRemote() {
@@ -577,7 +560,9 @@ public class AppPrefs {
 
         // Migrate legacy password manager
         if (passwordManagerCommand.get() != null && passwordManager.getValue() == null) {
-            passwordManager.setValue(PasswordManagerCommand.builder().script(new ShellScript(passwordManagerCommand.get())).build());
+            passwordManager.setValue(PasswordManagerCommand.builder()
+                    .script(new ShellScript(passwordManagerCommand.get()))
+                    .build());
         }
     }
 

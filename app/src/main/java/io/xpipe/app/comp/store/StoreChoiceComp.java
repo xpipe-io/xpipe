@@ -231,7 +231,8 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                             return;
                         }
 
-                        selected.setValue(mode == Mode.PROXY ? DataStorage.get().local().ref() : null);
+                        selected.setValue(
+                                mode == Mode.PROXY ? DataStorage.get().local().ref() : null);
                         event.consume();
                     });
                 })
