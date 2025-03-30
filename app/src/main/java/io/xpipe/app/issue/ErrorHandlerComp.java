@@ -8,6 +8,8 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.util.LicenseRequiredException;
 
+import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
@@ -19,6 +21,8 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import lombok.Getter;
+
+import java.util.concurrent.CountDownLatch;
 
 import static atlantafx.base.theme.Styles.ACCENT;
 import static atlantafx.base.theme.Styles.BUTTON_OUTLINED;
@@ -47,16 +51,19 @@ public class ErrorHandlerComp extends SimpleComp {
     }
 
     private Region createActionComp(ErrorAction a) {
-        var r = createActionButtonGraphic(a.getName(), a.getDescription());
-        var b = new ButtonComp(null, r, () -> {
+        var graphic = createActionButtonGraphic(a.getName(), a.getDescription());
+        var b = new ButtonComp(null, graphic, () -> {
             takenAction.setValue(a);
-            try {
-                if (a.handle(event)) {
+            ThreadHelper.runAsync(() -> {
+                try {
+                    var r = a.handle(event);
+                    if (r) {
+                        closeDialogAction.run();
+                    }
+                } catch (Exception ignored) {
                     closeDialogAction.run();
                 }
-            } catch (Exception ignored) {
-                closeDialogAction.run();
-            }
+            });
         });
         b.apply(GrowAugment.create(true, false));
         return b.createRegion();

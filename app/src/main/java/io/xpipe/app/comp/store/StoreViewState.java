@@ -47,7 +47,7 @@ public class StoreViewState {
     private final Property<StoreSortMode> sortMode = new SimpleObjectProperty<>();
 
     @Getter
-    private final BooleanProperty batchMode = new SimpleBooleanProperty(true);
+    private final BooleanProperty batchMode = new SimpleBooleanProperty(false);
 
     @Getter
     private final DerivedObservableList<StoreEntryWrapper> batchModeSelection =

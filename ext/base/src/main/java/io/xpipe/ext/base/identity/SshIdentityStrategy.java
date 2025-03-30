@@ -10,6 +10,7 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileNames;
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.ValidationException;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -21,6 +22,7 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({

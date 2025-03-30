@@ -70,7 +70,7 @@ public class StoreCategoryComp extends SimpleComp {
                 () -> {
                     var exp = category.getExpanded().get()
                             && category.getChildren().getList().size() > 0;
-                    return new LabelGraphic.IconGraphic(exp ? "mdi2m-menu-down-outline" : "mdi2m-menu-right-outline");
+                    return new LabelGraphic.IconGraphic(exp ? "mdal-keyboard_arrow_down" : "mdal-keyboard_arrow_right");
                 },
                 category.getExpanded(),
                 category.getChildren().getList());

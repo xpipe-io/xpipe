@@ -83,7 +83,7 @@ public class LxdContainerStoreProvider implements ShellStoreProvider {
         var c = (ContainerStoreState) section.getWrapper().getPersistentState().getValue();
         var missing = c.getShellMissing() != null && c.getShellMissing() ? "No shell available" : null;
         return ShellStoreFormat.shellStore(
-                section, (ContainerStoreState s) -> new String[] {missing, s.getContainerState()});
+                section, (ContainerStoreState s) -> new String[] {missing, DataStoreFormatter.capitalize(s.getContainerState())});
     }
 
     @Override
