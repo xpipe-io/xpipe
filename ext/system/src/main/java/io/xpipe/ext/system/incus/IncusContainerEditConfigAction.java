@@ -6,6 +6,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.TerminalLauncher;
 
+import io.xpipe.app.util.LabelGraphic;
 import javafx.beans.value.ObservableValue;
 
 import lombok.Value;
@@ -32,8 +33,8 @@ public class IncusContainerEditConfigAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<IncusContainerStore> store) {
-                return "mdi2f-file-document-edit";
+            public LabelGraphic getIcon(DataStoreEntryRef<IncusContainerStore> store) {
+                return new LabelGraphic.IconGraphic("mdi2f-file-document-edit");
             }
 
             @Override

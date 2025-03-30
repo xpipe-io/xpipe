@@ -8,6 +8,7 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.TerminalLauncher;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.process.ShellTtyState;
 import io.xpipe.core.process.SystemState;
 import io.xpipe.ext.base.script.ScriptHierarchy;
@@ -61,8 +62,8 @@ public class RunScriptActionMenu implements ActionProvider {
                 }
 
                 @Override
-                public String getIcon(DataStoreEntryRef<ShellStore> store) {
-                    return "mdi2d-desktop-mac";
+                public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+                    return new LabelGraphic.IconGraphic("mdi2d-desktop-mac");
                 }
 
                 @Override
@@ -140,8 +141,8 @@ public class RunScriptActionMenu implements ActionProvider {
                 }
 
                 @Override
-                public String getIcon(DataStoreEntryRef<ShellStore> store) {
-                    return "mdi2f-flip-to-back";
+                public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+                    return new LabelGraphic.IconGraphic("mdi2f-flip-to-back");
                 }
 
                 @Override
@@ -207,8 +208,8 @@ public class RunScriptActionMenu implements ActionProvider {
                 }
 
                 @Override
-                public String getIcon(DataStoreEntryRef<ShellStore> store) {
-                    return "mdi2p-play-box-multiple-outline";
+                public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+                    return new LabelGraphic.ImageGraphic(hierarchy.getBase().get().getEffectiveIconFile(), 16);
                 }
 
                 @Override
@@ -242,8 +243,8 @@ public class RunScriptActionMenu implements ActionProvider {
                 }
 
                 @Override
-                public String getIcon(DataStoreEntryRef<ShellStore> store) {
-                    return "mdi2p-play-box-multiple-outline";
+                public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+                    return new LabelGraphic.IconGraphic("mdi2p-play-box-multiple-outline");
                 }
 
                 @Override
@@ -318,8 +319,8 @@ public class RunScriptActionMenu implements ActionProvider {
                 }
 
                 @Override
-                public String getIcon(DataStoreEntryRef<ShellStore> store) {
-                    return "mdi2i-image-filter-none";
+                public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+                    return new LabelGraphic.IconGraphic("mdi2i-image-filter-none");
                 }
 
                 @Override
@@ -389,8 +390,8 @@ public class RunScriptActionMenu implements ActionProvider {
                 }
 
                 @Override
-                public String getIcon(DataStoreEntryRef<ShellStore> store) {
-                    return "mdi2i-image-filter-none";
+                public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+                    return new LabelGraphic.IconGraphic("mdi2i-image-filter-none");
                 }
 
                 @Override
@@ -426,8 +427,8 @@ public class RunScriptActionMenu implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<ShellStore> store) {
-                return "mdi2p-play-box-multiple-outline";
+            public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+                return new LabelGraphic.IconGraphic("mdi2p-play-box-multiple-outline");
             }
 
             @Override

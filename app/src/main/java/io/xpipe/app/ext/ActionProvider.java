@@ -4,6 +4,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.FailableConsumer;
 import io.xpipe.core.util.ModuleLayerLoader;
@@ -119,7 +120,7 @@ public interface ActionProvider {
 
         ObservableValue<String> getName(DataStoreEntryRef<T> store);
 
-        String getIcon(DataStoreEntryRef<T> store);
+        LabelGraphic getIcon(DataStoreEntryRef<T> store);
 
         Class<?> getApplicableClass();
 
@@ -176,8 +177,8 @@ public interface ActionProvider {
                 }
 
                 @Override
-                public String getIcon(DataStoreEntryRef<T> store) {
-                    return icon;
+                public LabelGraphic getIcon(DataStoreEntryRef<T> store) {
+                    return new LabelGraphic.IconGraphic(icon);
                 }
 
                 @Override

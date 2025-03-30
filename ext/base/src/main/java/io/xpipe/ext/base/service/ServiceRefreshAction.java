@@ -5,6 +5,7 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
+import io.xpipe.app.util.LabelGraphic;
 import javafx.beans.value.ObservableValue;
 
 import lombok.Value;
@@ -36,8 +37,8 @@ public class ServiceRefreshAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<FixedServiceCreatorStore> store) {
-                return "mdi2w-web";
+            public LabelGraphic getIcon(DataStoreEntryRef<FixedServiceCreatorStore> store) {
+                return new LabelGraphic.IconGraphic("mdi2w-web");
             }
 
             @Override

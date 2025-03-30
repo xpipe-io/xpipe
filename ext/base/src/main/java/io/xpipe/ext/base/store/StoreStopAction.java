@@ -4,6 +4,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
+import io.xpipe.app.util.LabelGraphic;
 import javafx.beans.value.ObservableValue;
 
 import lombok.Value;
@@ -30,8 +31,8 @@ public class StoreStopAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<StoppableStore> store) {
-                return "mdi2s-stop";
+            public LabelGraphic getIcon(DataStoreEntryRef<StoppableStore> store) {
+                return new LabelGraphic.IconGraphic("mdi2s-stop");
             }
 
             @Override

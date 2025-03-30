@@ -8,6 +8,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.EncryptedValue;
 
+import io.xpipe.app.util.LabelGraphic;
 import javafx.beans.value.ObservableValue;
 
 import lombok.Value;
@@ -33,8 +34,8 @@ public class LocalIdentityConvertAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<LocalIdentityStore> store) {
-                return "mdi2g-git";
+            public LabelGraphic getIcon(DataStoreEntryRef<LocalIdentityStore> store) {
+                return new LabelGraphic.IconGraphic("mdi2g-git");
             }
 
             @Override

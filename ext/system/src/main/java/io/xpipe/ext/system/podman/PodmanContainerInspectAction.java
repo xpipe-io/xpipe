@@ -6,6 +6,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.FileOpener;
 
+import io.xpipe.app.util.LabelGraphic;
 import javafx.beans.value.ObservableValue;
 
 import lombok.Value;
@@ -32,8 +33,8 @@ public class PodmanContainerInspectAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<PodmanContainerStore> store) {
-                return "mdi2i-information-outline";
+            public LabelGraphic getIcon(DataStoreEntryRef<PodmanContainerStore> store) {
+                return new LabelGraphic.IconGraphic("mdi2i-information-outline");
             }
         };
     }

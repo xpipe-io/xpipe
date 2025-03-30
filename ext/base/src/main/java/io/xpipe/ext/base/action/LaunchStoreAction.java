@@ -3,6 +3,7 @@ package io.xpipe.ext.base.action;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.store.DataStore;
 
 import javafx.beans.value.ObservableValue;
@@ -45,8 +46,8 @@ public class LaunchStoreAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<DataStore> store) {
-                return "mdi2p-play";
+            public LabelGraphic getIcon(DataStoreEntryRef<DataStore> store) {
+                return new LabelGraphic.IconGraphic("mdi2p-play");
             }
         };
     }

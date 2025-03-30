@@ -6,6 +6,7 @@ import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.process.CommandControl;
 import io.xpipe.core.process.ElevationFunction;
 import io.xpipe.core.process.ShellControl;
@@ -51,9 +52,9 @@ public class SampleStoreAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<ShellStore> store) {
+            public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
                 // The ikonli icon of the button.
-                return "mdi2c-code-greater-than";
+                return new LabelGraphic.IconGraphic("mdi2c-code-greater-than");
             }
         };
     }

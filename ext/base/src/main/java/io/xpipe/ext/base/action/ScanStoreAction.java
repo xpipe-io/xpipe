@@ -5,6 +5,7 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ScanDialog;
 import io.xpipe.app.util.ScanDialogAction;
 import io.xpipe.core.process.ShellTtyState;
@@ -58,8 +59,8 @@ public class ScanStoreAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<ShellStore> store) {
-                return "mdi2l-layers-plus";
+            public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+                return new LabelGraphic.IconGraphic("mdi2l-layers-plus");
             }
         };
     }

@@ -4,6 +4,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
+import io.xpipe.app.util.LabelGraphic;
 import javafx.beans.value.ObservableValue;
 
 import lombok.Value;
@@ -30,8 +31,8 @@ public class StorePauseAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<PauseableStore> store) {
-                return "mdi2p-pause";
+            public LabelGraphic getIcon(DataStoreEntryRef<PauseableStore> store) {
+                return new LabelGraphic.IconGraphic("mdi2p-pause");
             }
 
             @Override

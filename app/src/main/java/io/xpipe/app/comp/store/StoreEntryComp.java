@@ -438,8 +438,8 @@ public abstract class StoreEntryComp extends SimpleComp {
         var name = cs.getName(getWrapper().getEntry().ref());
         var icon = cs.getIcon(getWrapper().getEntry().ref());
         var item = (leaf != null && leaf.canLinkTo()) || branch != null
-                ? new Menu(null, new FontIcon(icon))
-                : new MenuItem(null, new FontIcon(icon));
+                ? new Menu(null, icon.createGraphicNode())
+                : new MenuItem(null, icon.createGraphicNode());
 
         var proRequired = p.getProFeatureId() != null
                 && !LicenseProvider.get().getFeature(p.getProFeatureId()).isSupported();
