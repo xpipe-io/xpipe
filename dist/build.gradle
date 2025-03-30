@@ -47,7 +47,7 @@ task createDiscordChangelog(type: DefaultTask) {
     doLast {
         def template = file("$projectDir/misc/discord.md").text
         def argument = incrementalChangelogFile.exists() ? incrementalChangelogFile.text : changelogFile.text
-        def text = template.formatted(productName, version, argument, kebapProductName)
+        def text = template.formatted(productName, versionString, argument, productName, kebapProductName)
         def dir = layout.buildDirectory.dir("dist/release").get()
         mkdir(dir)
         def target = dir.file("discord-changelog.md").asFile
