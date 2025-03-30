@@ -36,7 +36,9 @@ task createGithubChangelog(type: DefaultTask) {
         def template = file("$projectDir/misc/github.md").text
         def argument = incrementalChangelogFile.exists() ? incrementalChangelogFile.text : changelogFile.text
         def text = template.formatted(argument)
-        def target = file(layout.buildDirectory.dir("dist/release/github-changelog.md"))
+        def dir = layout.buildDirectory.dir("dist/release").get()
+        mkdir(dir)
+        def target = dir.file("github-changelog.md").asFile
         target.text = text
     }
 }
@@ -46,7 +48,9 @@ task createDiscordChangelog(type: DefaultTask) {
         def template = file("$projectDir/misc/discord.md").text
         def argument = incrementalChangelogFile.exists() ? incrementalChangelogFile.text : changelogFile.text
         def text = template.formatted(productName, version, argument, kebapProductName)
-        def target = file(layout.buildDirectory.dir("dist/release/discord-changelog.md"))
+        def dir = layout.buildDirectory.dir("dist/release").get()
+        mkdir(dir)
+        def target = dir.file("discord-changelog.md").asFile
         target.text = text
     }
 }
