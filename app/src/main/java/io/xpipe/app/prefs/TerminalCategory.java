@@ -165,17 +165,16 @@ public class TerminalCategory extends AppPrefsCategory {
         ref.addListener((observable, oldValue, newValue) -> {
             prefs.terminalProxy.setValue(newValue != null ? newValue.get().getUuid() : null);
         });
+        var proxyChoice = new DelayedInitComp(Comp.of(() -> {
+            var comp = new StoreChoiceComp<>(StoreChoiceComp.Mode.PROXY, null, ref, ShellStore.class,
+                    r -> TerminalProxyManager.canUseAsProxy(r), StoreViewState.get().getAllConnectionsCategory());
+            return comp.createRegion();
+        }), () -> StoreViewState.get() != null && StoreViewState.get().isInitialized());
+        proxyChoice.maxWidth(getCompWidth());
         return new OptionsBuilder()
                 .nameAndDescription("terminalEnvironment")
                 .addComp(
-                        new StoreChoiceComp<>(
-                                        StoreChoiceComp.Mode.PROXY,
-                                        null,
-                                        ref,
-                                        ShellStore.class,
-                                        r -> TerminalProxyManager.canUseAsProxy(r),
-                                        StoreViewState.get().getAllConnectionsCategory())
-                                .maxWidth(getCompWidth()),
+                        proxyChoice,
                         ref)
                 .hide(OsType.getLocal() != OsType.WINDOWS);
     }

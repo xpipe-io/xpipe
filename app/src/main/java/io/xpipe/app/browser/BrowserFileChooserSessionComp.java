@@ -8,6 +8,7 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
+import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.ext.ShellStore;
@@ -19,6 +20,7 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FileSystemStore;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.scene.layout.Region;
@@ -101,14 +103,16 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
             });
         };
 
-        var bookmarkTopBar = new BrowserConnectionListFilterComp();
+        var category = new SimpleObjectProperty<>(StoreViewState.get().getActiveCategory().getValue());
+        var filter = new SimpleStringProperty();
+        var bookmarkTopBar = new BrowserConnectionListFilterComp(category, filter);
         var bookmarksList = new BrowserConnectionListComp(
                 BindingsHelper.map(
                         model.getSelectedEntry(), v -> v != null ? v.getEntry().get() : null),
                 applicable,
                 action,
-                bookmarkTopBar.getCategory(),
-                bookmarkTopBar.getFilter());
+                category,
+                filter);
         var bookmarksContainer = new StackComp(List.of(bookmarksList)).styleClass("bookmarks-container");
         bookmarksContainer
                 .apply(struc -> {
