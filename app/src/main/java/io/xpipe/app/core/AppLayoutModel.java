@@ -9,6 +9,7 @@ import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.LicenseProvider;
 
+import io.xpipe.app.util.PlatformThread;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -66,19 +67,27 @@ public class AppLayoutModel {
     }
 
     public void selectBrowser() {
-        selected.setValue(entries.get(1));
+        PlatformThread.runLaterIfNeeded(() -> {
+            selected.setValue(entries.get(1));
+        });
     }
 
     public void selectSettings() {
-        selected.setValue(entries.get(2));
+        PlatformThread.runLaterIfNeeded(() -> {
+            selected.setValue(entries.get(2));
+        });
     }
 
     public void selectLicense() {
-        selected.setValue(entries.get(3));
+        PlatformThread.runLaterIfNeeded(() -> {
+            selected.setValue(entries.get(3));
+        });
     }
 
     public void selectConnections() {
-        selected.setValue(entries.getFirst());
+        PlatformThread.runLaterIfNeeded(() -> {
+            selected.setValue(entries.getFirst());
+        });
     }
 
     private List<Entry> createEntryList() {

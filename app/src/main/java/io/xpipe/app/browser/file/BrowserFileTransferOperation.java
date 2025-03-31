@@ -350,7 +350,7 @@ public class BrowserFileTransferOperation {
             }
 
             outputStream = target.getFileSystem().openOutput(targetFile, fileSize);
-            transferFile(sourceFile, inputStream, outputStream, transferred, totalSize, start);
+            transferFile(sourceFile, inputStream, outputStream, transferred, totalSize, start, fileSize);
             inputStream.transferTo(OutputStream.nullOutputStream());
         } catch (Exception ex) {
             // Mark progress as finished to reset any progress display
@@ -409,7 +409,8 @@ public class BrowserFileTransferOperation {
             OutputStream outputStream,
             AtomicLong transferred,
             AtomicLong total,
-            Instant start)
+            Instant start,
+            long expectedFileSize)
             throws Exception {
         // Initialize progress immediately prior to reading anything
         updateProgress(new BrowserTransferProgress(sourceFile.getName(), transferred.get(), total.get(), start));
@@ -418,6 +419,7 @@ public class BrowserFileTransferOperation {
         var exception = new AtomicReference<Exception>();
         var thread = ThreadHelper.createPlatformThread("transfer", true, () -> {
             try {
+                long readCount = 0;
                 var bs = (int) Math.min(DEFAULT_BUFFER_SIZE, sourceFile.getSize());
                 byte[] buffer = new byte[bs];
                 int read;
@@ -434,11 +436,17 @@ public class BrowserFileTransferOperation {
 
                     outputStream.write(buffer, 0, read);
                     transferred.addAndGet(read);
-                    updateProgress(
-                            new BrowserTransferProgress(sourceFile.getName(), transferred.get(), total.get(), start));
+                    readCount += read;
+                    updateProgress(new BrowserTransferProgress(sourceFile.getName(), transferred.get(), total.get(), start));
+                }
+
+                var incomplete = readCount < expectedFileSize;
+                if (incomplete) {
+                    throw new IOException("Source file " + sourceFile.getPath() + " input did end prematurely");
                 }
             } catch (Exception ex) {
                 exception.set(ex);
+                killStreams.set(true);
             }
         });
 

@@ -196,6 +196,13 @@ public interface SshIdentityStrategy {
                                         + " is in non-standard PuTTY Private Key format (.ppk), which is not supported by OpenSSH. Please export/convert it to a standard format like .pem via PuTTY"));
             }
 
+            if (resolved.endsWith(".pub")) {
+                throw ErrorEvent.expected(
+                        new IllegalArgumentException(
+                                "Identity file " + resolved
+                                        + " is marked to be a public key file, SSH authentication requires the private key"));
+            }
+
             if ((parent.getOsType().equals(OsType.LINUX) || parent.getOsType().equals(OsType.MACOS))) {
                 // Try to preserve the same permission set
                 parent.command(CommandBuilder.of()

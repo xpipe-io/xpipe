@@ -217,7 +217,7 @@ public class CommandBuilder {
     }
 
     public CommandBuilder addFile(FilePath s) {
-        return addFile(s.toString());
+        return addFile(s != null ? s.toString() : null);
     }
 
     public CommandBuilder addLiteral(String s) {

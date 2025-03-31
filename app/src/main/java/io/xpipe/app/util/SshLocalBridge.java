@@ -16,7 +16,9 @@ import lombok.Setter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Getter
 public class SshLocalBridge {
@@ -40,8 +42,12 @@ public class SshLocalBridge {
         this.user = user;
     }
 
-    private String getName() {
+    public String getName() {
         return AppProperties.get().isStaging() ? "xpipe_ptb_bridge" : "xpipe_bridge";
+    }
+
+    public String getHost() {
+        return "127.0.0.1";
     }
 
     public Path getPubHostKey() {
@@ -150,7 +156,8 @@ public class SshLocalBridge {
                                     INSTANCE.getPubIdentityKey());
             Files.writeString(config, content);
 
-            // INSTANCE.updateConfig();
+            // Write to local SSH client config
+            INSTANCE.updateConfig();
 
             var exec = getSshd(sc);
             var launchCommand = CommandBuilder.of()
@@ -178,25 +185,42 @@ public class SshLocalBridge {
     }
 
     private void updateConfig() throws IOException {
+        var hostEntry = """
+                       Host %s
+                           HostName localhost
+                           User "%s"
+                           Port %s
+                           IdentityFile "%s"
+                       """
+                .formatted(getName(), user, port, getIdentityKey());
+
         var file = Path.of(System.getProperty("user.home"), ".ssh", "config");
         if (!Files.exists(file)) {
+            Files.writeString(file, hostEntry);
             return;
         }
 
-        var content = Files.readString(file);
-        if (content.contains(getName())) {
-            return;
-        }
-
-        var updated = content + "\n\n"
-                + """
+        var content = Files.readString(file).lines().collect(Collectors.joining("\n")) + "\n";
+        var pattern = Pattern.compile("""
                                        Host %s
-                                           HostName localhost
-                                           User "%s"
-                                           Port %s
-                                           IdentityFile "%s"
-                                       """
-                        .formatted(getName(), port, user, getIdentityKey());
+                                        {4}HostName localhost
+                                        {4}User "(.+)"
+                                        {4}Port (\\d+)
+                                        {4}IdentityFile "(.+)"
+                                       """.formatted(getName()));
+        var matcher = pattern.matcher(content);
+        if (matcher.find()) {
+            var replaced = matcher.replaceFirst(Matcher.quoteReplacement(hostEntry));
+            Files.writeString(file, replaced);
+            return;
+        }
+
+        // Probably an invalid entry that did not match
+        if (content.contains("Host " + getName())) {
+            return;
+        }
+
+        var updated = content + "\n" + hostEntry + "\n";
         Files.writeString(file, updated);
     }
 

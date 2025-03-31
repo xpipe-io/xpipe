@@ -111,7 +111,7 @@ public class SecretRetrievalStrategyHelper {
         }
         map.put(AppI18n.observable("app.prompt"), new OptionsBuilder());
         map.put(AppI18n.observable("app.password"), inPlace(inPlace));
-        map.put(AppI18n.observable("app.passwordManager"), passwordManager(passwordManager));
+        map.put(AppI18n.observable("app.externalPasswordManager"), passwordManager(passwordManager));
         map.put(AppI18n.observable("app.customCommand"), customCommand(customCommand));
 
         int offset = allowNone ? 0 : -1;
