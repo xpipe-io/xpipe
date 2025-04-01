@@ -6,9 +6,7 @@ import java.util.Optional;
 
 public interface ShellTerminalInitCommand {
 
-    default Optional<String> terminalContent(ShellControl shellControl) throws Exception {
-        throw new UnsupportedOperationException();
-    }
+    Optional<String> terminalContent(ShellControl shellControl) throws Exception;
 
     boolean canPotentiallyRunInDialect(ShellDialect dialect);
 }

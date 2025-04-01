@@ -11,6 +11,8 @@ import io.xpipe.app.password.PasswordManagerCommand;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalMultiplexer;
+import io.xpipe.app.terminal.TerminalPrompt;
+import io.xpipe.app.terminal.TerminalPromptManager;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.ShellScript;
@@ -109,6 +111,12 @@ public class AppPrefs {
             mapLocal(new SimpleObjectProperty<>(null), "terminalMultiplexer", TerminalMultiplexer.class, false);
     final Property<Boolean> terminalPromptForRestart =
             mapLocal(new SimpleBooleanProperty(true), "terminalPromptForRestart", Boolean.class, false);
+    final Property<TerminalPrompt> terminalPrompt =
+            mapLocal(new SimpleObjectProperty<>(null), "terminalPrompt", TerminalPrompt.class, false);
+
+    public ObservableValue<TerminalPrompt> terminalPrompt() {
+        return terminalPrompt;
+    }
 
     public ObservableValue<UUID> terminalProxy() {
         return terminalProxy;
@@ -268,6 +276,7 @@ public class AppPrefs {
                         new VaultCategory(),
                         new SyncCategory(),
                         new TerminalCategory(),
+                        new TerminalPromptCategory(),
                         new LoggingCategory(),
                         new EditorCategory(),
                         new RdpCategory(),

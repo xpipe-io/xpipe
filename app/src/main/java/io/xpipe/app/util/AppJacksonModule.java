@@ -5,6 +5,7 @@ import io.xpipe.app.password.PasswordManager;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalMultiplexer;
+import io.xpipe.app.terminal.TerminalPrompt;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.JacksonMapper;
 
@@ -45,6 +46,7 @@ public class AppJacksonModule extends SimpleModule {
 
         context.registerSubtypes(PasswordManager.getClasses());
         context.registerSubtypes(TerminalMultiplexer.getClasses());
+        context.registerSubtypes(TerminalPrompt.getClasses());
 
         context.addSerializers(_serializers);
         context.addDeserializers(_deserializers);

@@ -1,11 +1,11 @@
 package io.xpipe.app.terminal;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.xpipe.app.util.ShellTemp;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellScript;
+import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellTerminalInitCommand;
-import io.xpipe.core.process.TerminalInitScriptConfig;
-import io.xpipe.core.util.ValidationException;
+import io.xpipe.core.store.FilePath;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,17 +15,34 @@ public interface TerminalPrompt {
 
     static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();
-        l.add(TmuxTerminalMultiplexer.class);
-        l.add(ZellijTerminalMultiplexer.class);
-        l.add(ScreenTerminalMultiplexer.class);
+        l.add(StarshipTerminalPrompt.class);
         return l;
     }
 
-    default void checkComplete() throws ValidationException {}
-
     String getDocsLink();
 
-    void checkSupported(ShellControl sc) throws Exception;
+    default FilePath getConfigurationDirectory(ShellControl sc) throws Exception {
+        return ShellTemp.createUserSpecificTempDataDirectory(sc, "prompt");
+    }
 
-    ShellTerminalInitCommand setup(ShellControl shellControl) throws Exception;
+    default FilePath getBinaryDirectory(ShellControl sc) throws Exception {
+        return ShellTemp.createUserSpecificTempDataDirectory(sc, "bin");
+    }
+
+    default void installIfNeeded(ShellControl sc) throws Exception {
+        if (checkIfInstalled(sc)) {
+            checkCanInstall(sc);
+            install(sc);
+        }
+    }
+
+    void checkCanInstall(ShellControl sc) throws Exception;
+
+    boolean checkIfInstalled(ShellControl sc) throws Exception;
+
+    void install(ShellControl sc) throws Exception;
+
+    ShellTerminalInitCommand terminalCommand(ShellControl shellControl) throws Exception;
+
+    List<ShellDialect> getSupportedDialects();
 }
