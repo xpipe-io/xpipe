@@ -31,6 +31,10 @@ public class BrowserFileOpener {
         }
 
         var info = (FileInfo.Unix) file.getInfo();
+        if (info.getPermissions() == null) {
+            return fileSystem.openOutput(file.getPath(), totalBytes);
+        }
+
         var zero = Integer.valueOf(0);
         var otherWrite = info.getPermissions().charAt(7) == 'w';
         var requiresRoot = zero.equals(info.getUid()) && zero.equals(info.getGid()) && !otherWrite;

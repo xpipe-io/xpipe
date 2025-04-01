@@ -41,6 +41,10 @@ public final class BrowserFileSystemHistory {
     }
 
     public void updateCurrent(FilePath s) {
+        if (s == null) {
+            return;
+        }
+
         var lastString = getCurrent();
         if (cursor.get() != -1 && Objects.equals(lastString, s)) {
             return;

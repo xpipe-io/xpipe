@@ -45,7 +45,6 @@ public final class BrowserFileListComp extends SimpleComp {
 
     private final BrowserFileListModel fileList;
     private final StringProperty typedSelection = new SimpleStringProperty("");
-    private final DoubleProperty ownerWidth = new SimpleDoubleProperty();
 
     public BrowserFileListComp(BrowserFileListModel fileList) {
         this.fileList = fileList;
@@ -178,6 +177,10 @@ public final class BrowserFileListComp extends SimpleComp {
     private String formatOwner(BrowserEntry param) {
         FileInfo.Unix unix = param.getRawFileEntry().resolved().getInfo() instanceof FileInfo.Unix u ? u : null;
         if (unix == null) {
+            return null;
+        }
+
+        if (unix.getUid() == null && unix.getGid() == null && unix.getUser() == null && unix.getGroup() == null) {
             return null;
         }
 
@@ -485,12 +488,16 @@ public final class BrowserFileListComp extends SimpleComp {
                     mtimeCol.setVisible(true);
                 }
 
-                ownerWidth.set(fileList.getAll().getValue().stream()
+                var hasOwner = fileList.getAll().getValue().stream()
                         .map(browserEntry -> formatOwner(browserEntry))
-                        .map(s -> s != null ? s.length() * 9 : 0)
-                        .max(Comparator.naturalOrder())
-                        .orElse(150));
-                ownerCol.setPrefWidth(ownerWidth.get());
+                        .filter(s -> s != null)
+                        .count() > 0;
+                if (hasOwner) {
+                    ownerCol.setPrefWidth(fileList.getAll().getValue().stream().map(browserEntry -> formatOwner(browserEntry)).map(
+                            s -> s != null ? s.length() * 9 : 0).max(Comparator.naturalOrder()).orElse(150));
+                } else {
+                    ownerCol.setPrefWidth(0);
+                }
 
                 if (fileList.getFileSystemModel().getFileSystem() != null) {
                     var shell = fileList.getFileSystemModel()
@@ -503,7 +510,9 @@ public final class BrowserFileListComp extends SimpleComp {
                     } else {
                         modeCol.setVisible(true);
                         if (table.getWidth() > 1000) {
-                            ownerCol.setVisible(true);
+                            ownerCol.setVisible(hasOwner);
+                        } else if (!hasOwner) {
+                            ownerCol.setVisible(false);
                         }
                     }
                 }
