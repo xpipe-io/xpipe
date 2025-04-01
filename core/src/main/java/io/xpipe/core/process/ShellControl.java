@@ -190,6 +190,8 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl withInitSnippet(ShellTerminalInitCommand snippet);
 
+    Optional<ShellControl> getActiveReplacementBackgroundSession() throws Exception;
+
     default ShellControl subShell(@NonNull ShellDialect type) {
         var o = new ShellOpenFunction() {
 

@@ -344,6 +344,11 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
+    public Optional<ShellControl> getActiveReplacementBackgroundSession() throws Exception {
+        return parent.getActiveReplacementBackgroundSession();
+    }
+
+    @Override
     public ShellControl subShell() {
         return parent.subShell();
     }

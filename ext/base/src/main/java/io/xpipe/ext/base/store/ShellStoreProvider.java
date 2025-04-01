@@ -25,7 +25,7 @@ public interface ShellStoreProvider extends DataStoreProvider {
             public void execute() throws Exception {
                 var replacement = ProcessControlProvider.get().replace(entry.ref());
                 ShellStore store = replacement.getStore().asNeeded();
-                var control = ScriptStoreSetup.controlWithDefaultScripts(store.tempControl());
+                var control = ScriptStoreSetup.controlWithDefaultScripts(store.standaloneControl());
                 TerminalLauncher.open(
                         replacement.get(),
                         DataStorage.get().getStoreEntryDisplayName(replacement.get()),
