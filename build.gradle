@@ -124,7 +124,7 @@ project.ext {
     website = 'https://xpipe.io'
     sourceWebsite = isStage ? 'https://github.com/xpipe-io/xpipe-ptb' : 'https://github.com/xpipe-io/xpipe'
     authors = 'Christopher Schnick'
-    javafxVersion = '24-ea+5'
+    devJavafxVersion = '25-ea+10'
     platformName = getPlatformName()
     jvmRunArgs = [
             "--add-opens", "java.base/java.lang=io.xpipe.app",
@@ -165,8 +165,12 @@ project.ext {
         signingPassword = ''
     }
     deeplApiKey = findProperty('DEEPL_API_KEY')
-    customJavaFxPath = null
+
+    // Define a custom JavaFX SDK location
+    // customJavaFxPath = null
+
     bundleCds = ci && fullVersion
+
     windowsSchemaCanonicalVersion = getWindowsSchemaCanonicalVersion()
 }
 
