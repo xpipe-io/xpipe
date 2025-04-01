@@ -48,12 +48,12 @@ public class ScriptStoreSetup {
 
                     @Override
                     public boolean canPotentiallyRunInDialect(ShellDialect dialect) {
-                        return s.getStore().getMinimumDialect().isCompatibleTo(dialect);
+                        return s.getStore().isCompatible(dialect);
                     }
                 });
             });
             if (!bringFlattened.isEmpty()) {
-                pc.withInitSnippet(new ShellTerminalInitCommand.Terminal() {
+                pc.withInitSnippet(new ShellTerminalInitCommand() {
 
                     String dir;
 
@@ -94,7 +94,7 @@ public class ScriptStoreSetup {
 
         var applicable = refs.stream()
                 .filter(simpleScriptStore ->
-                        simpleScriptStore.getStore().getMinimumDialect().isCompatibleTo(proc.getShellDialect()))
+                        simpleScriptStore.getStore().isCompatible(proc.getShellDialect()))
                 .toList();
         if (applicable.isEmpty()) {
             return null;

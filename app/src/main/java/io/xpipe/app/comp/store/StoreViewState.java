@@ -19,6 +19,7 @@ import javafx.collections.ListChangeListener;
 import lombok.Getter;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 public class StoreViewState {
@@ -27,12 +28,10 @@ public class StoreViewState {
     private final StringProperty filter = new SimpleStringProperty();
 
     @Getter
-    private final DerivedObservableList<StoreEntryWrapper> allEntries = new DerivedObservableList<>(
-            FXCollections.synchronizedObservableList(FXCollections.observableArrayList()), true);
+    private final DerivedObservableList<StoreEntryWrapper> allEntries = new DerivedObservableList<>(FXCollections.observableList(new CopyOnWriteArrayList<>()), true);
 
     @Getter
-    private final DerivedObservableList<StoreCategoryWrapper> categories = new DerivedObservableList<>(
-            FXCollections.synchronizedObservableList(FXCollections.observableArrayList()), true);
+    private final DerivedObservableList<StoreCategoryWrapper> categories = new DerivedObservableList<>(FXCollections.observableList(new CopyOnWriteArrayList<>()), true);
 
     @Getter
     private final IntegerProperty entriesListVisibilityObservable = new SimpleIntegerProperty();

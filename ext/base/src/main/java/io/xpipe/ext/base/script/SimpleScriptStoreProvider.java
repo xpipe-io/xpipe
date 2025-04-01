@@ -32,6 +32,11 @@ import java.util.stream.Stream;
 public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, DataStoreProvider {
 
     @Override
+    public boolean showProviderChoice() {
+        return false;
+    }
+
+    @Override
     public String getHelpLink() {
         return DocumentationLink.SCRIPTING.getLink();
     }
@@ -93,7 +98,7 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                                 .orElseThrow(),
                         "io.xpipe.ext.proc.ShellDialectChoiceComp")
                 .getDeclaredConstructor(List.class, Property.class, boolean.class)
-                .newInstance(availableDialects, dialect, false);
+                .newInstance(availableDialects, dialect, true);
 
         var vals = List.of(0, 1, 2, 3);
         var selectedStart = new ArrayList<Integer>();
@@ -141,7 +146,6 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                 .description("minimumShellDialectDescription")
                 .longDescription("base:scriptCompatibility")
                 .addComp(choice, dialect)
-                .nonNull()
                 .name("scriptContents")
                 .description("scriptContentsDescription")
                 .longDescription("base:script")
@@ -211,7 +215,7 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
         var runnable = st.isRunnableScript() ? AppI18n.get("hub") : null;
         var type = st.getMinimumDialect() != null
                 ? st.getMinimumDialect().getDisplayName() + " " + AppI18n.get("script")
-                : null;
+                : AppI18n.get("genericScript");
         var suffix = String.join(
                 " / ",
                 Stream.of(init, shell, file, runnable).filter(s -> s != null).toList());

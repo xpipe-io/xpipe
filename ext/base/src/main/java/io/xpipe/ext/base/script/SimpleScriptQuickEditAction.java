@@ -49,7 +49,7 @@ public class SimpleScriptQuickEditAction implements ActionProvider {
 
             var script = ref.getStore();
             var dialect = script.getMinimumDialect();
-            var ext = dialect.getScriptFileEnding();
+            var ext = dialect != null ? dialect.getScriptFileEnding() : "sh";
             var name = OsType.getLocal().makeFileSystemCompatible(ref.get().getName());
             FileOpener.openString(name + "." + ext, this, script.getCommands(), (s) -> {
                 ref.get().setStoreInternal(script.toBuilder().commands(s).build(), true);

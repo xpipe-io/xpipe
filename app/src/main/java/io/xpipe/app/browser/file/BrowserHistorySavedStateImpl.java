@@ -17,6 +17,7 @@ import lombok.SneakyThrows;
 import lombok.Value;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Value
 @JsonDeserialize(using = BrowserHistorySavedStateImpl.Deserializer.class)
@@ -26,7 +27,7 @@ public class BrowserHistorySavedStateImpl implements BrowserHistorySavedState {
     ObservableList<Entry> lastSystems;
 
     public BrowserHistorySavedStateImpl(List<Entry> lastSystems) {
-        this.lastSystems = FXCollections.synchronizedObservableList(FXCollections.observableArrayList(lastSystems));
+        this.lastSystems = FXCollections.observableList(new CopyOnWriteArrayList<>(lastSystems));
     }
 
     private static BrowserHistorySavedStateImpl INSTANCE;

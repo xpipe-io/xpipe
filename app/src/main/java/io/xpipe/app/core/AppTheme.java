@@ -184,8 +184,10 @@ public class AppTheme {
             return;
         }
 
-        var nowDark = isDarkMode();
-        AppCache.update("lastDarkTheme", nowDark);
+        PlatformThread.runLaterIfNeededBlocking(() -> {
+            var nowDark = isDarkMode();
+            AppCache.update("lastDarkTheme", nowDark);
+        });
     }
 
     private static void setDefault() {

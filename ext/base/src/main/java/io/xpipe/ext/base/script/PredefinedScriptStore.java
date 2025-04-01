@@ -80,6 +80,37 @@ public enum PredefinedScriptStore {
             .minimumDialect(ShellDialects.SH)
             .commands(file(("diff.sh")))
             .fileScript(true)
+            .build()),
+    GIT_CONFIG("Git Config", () -> SimpleScriptStore.builder()
+            .group(PredefinedScriptGroup.MANAGEMENT.getEntry())
+            .minimumDialect(null)
+            .commands(file(("git_config.sh")))
+            .runnableScript(true)
+            .build()),
+    OHMYPOSH_CMD("Oh My Posh cmd", () -> SimpleScriptStore.builder()
+            .group(PredefinedScriptGroup.OHMYPOSH.getEntry())
+            .minimumDialect(ShellDialects.CMD)
+            .script(CLINK_SETUP.getEntry())
+            .commands(file(("ohmyposh.bat")))
+            .initScript(true)
+            .build()),
+    OHMYPOSH_BASH("Oh My Posh bash", () -> SimpleScriptStore.builder()
+            .group(PredefinedScriptGroup.OHMYPOSH.getEntry())
+            .minimumDialect(ShellDialects.BASH)
+            .commands(file(("ohmyposh.sh")))
+            .initScript(true)
+            .build()),
+    OHMYPOSH_ZSH("Oh My Posh zsh", () -> SimpleScriptStore.builder()
+            .group(PredefinedScriptGroup.OHMYPOSH.getEntry())
+            .minimumDialect(ShellDialects.ZSH)
+            .commands(file(("ohmyposh.sh")))
+            .initScript(true)
+            .build()),
+    OHMYPOSH_POWERSHELL("Oh My Posh Powershell", () -> SimpleScriptStore.builder()
+            .group(PredefinedScriptGroup.OHMYPOSH.getEntry())
+            .minimumDialect(ShellDialects.POWERSHELL)
+            .commands(file(("ohmyposh.ps1")))
+            .initScript(true)
             .build());
 
     private final String name;

@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -54,8 +55,7 @@ public class BrowserFileSystemSavedState {
 
     public BrowserFileSystemSavedState() {
         lastDirectory = null;
-        recentDirectories =
-                FXCollections.synchronizedObservableList(FXCollections.observableList(new ArrayList<>(STORED)));
+        recentDirectories = FXCollections.observableList(new CopyOnWriteArrayList<>());
     }
 
     static BrowserFileSystemSavedState loadForStore(BrowserFileSystemTabModel model) {
@@ -165,9 +165,9 @@ public class BrowserFileSystemSavedState {
             var cleaned = recentDirectories.stream()
                     .map(recentEntry -> new RecentEntry(recentEntry.directory.toDirectory(), recentEntry.time))
                     .filter(distinctBy(recentEntry -> recentEntry.getDirectory()))
-                    .collect(Collectors.toCollection(ArrayList::new));
+                    .collect(Collectors.toCollection(CopyOnWriteArrayList::new));
             return new BrowserFileSystemSavedState(
-                    null, FXCollections.synchronizedObservableList(FXCollections.observableList(cleaned)));
+                    null, FXCollections.observableList(cleaned));
         }
     }
 

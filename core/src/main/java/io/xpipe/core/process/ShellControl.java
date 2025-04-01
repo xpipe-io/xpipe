@@ -67,7 +67,7 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl withSourceStore(DataStore store);
 
-    List<ShellTerminalInitCommand> getInitCommands();
+    List<ShellTerminalInitCommand> getTerminalInitCommands();
 
     ParentSystemAccess getParentSystemAccess();
 

@@ -42,11 +42,11 @@ public class SimpleScriptStore extends ScriptStore implements SelfReferentialSto
 
     public boolean isCompatible(ShellControl shellControl) {
         var targetType = shellControl.getOriginalShellDialect();
-        return minimumDialect.isCompatibleTo(targetType);
+        return minimumDialect == null || minimumDialect.isCompatibleTo(targetType);
     }
 
     public boolean isCompatible(ShellDialect dialect) {
-        return minimumDialect.isCompatibleTo(dialect);
+        return minimumDialect == null || minimumDialect.isCompatibleTo(dialect);
     }
 
     private String assembleScript(ShellControl shellControl) {
@@ -83,7 +83,6 @@ public class SimpleScriptStore extends ScriptStore implements SelfReferentialSto
     public void checkComplete() throws Throwable {
         Validators.nonNull(group);
         super.checkComplete();
-        Validators.nonNull(minimumDialect);
         if (!initScript && !shellScript && !fileScript && !runnableScript) {
             throw new ValidationException(AppI18n.get("app.valueMustNotBeEmpty"));
         }
