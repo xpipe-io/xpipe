@@ -40,6 +40,17 @@ public class OptionsChoiceBuilder {
             }
         } catch (Exception ignored) {
         }
+        return new OptionsBuilder();
+    }
+
+    private static Object createDefaultInstanceForClass(Class<?> c) {
+        try {
+            var cd = c.getDeclaredMethod("createDefault");
+            cd.setAccessible(true);
+            var defValue = cd.invoke(null);
+            return defValue;
+        } catch (Exception e) {
+        }
 
         try {
             var bm = c.getDeclaredMethod("builder");
@@ -48,17 +59,16 @@ public class OptionsChoiceBuilder {
             var m = b.getClass().getDeclaredMethod("build");
             m.setAccessible(true);
             var defValue = c.cast(m.invoke(b));
-            var def = new OptionsBuilder().bind(() -> defValue, property);
-            return def;
+            return defValue;
         } catch (Exception e) {
         }
 
         try {
             var defConstructor = c.getDeclaredConstructor();
             var defValue = defConstructor.newInstance();
-            return new OptionsBuilder().bind(() -> defValue, property);
+            return defValue;
         } catch (Exception e) {
-            return new OptionsBuilder();
+            return null;
         }
     }
 
@@ -86,7 +96,7 @@ public class OptionsChoiceBuilder {
         }
         for (int i = 0; i < sub.size(); i++) {
             var compatible = sub.get(i).isInstance(s.getValue());
-            properties.add(new SimpleObjectProperty<>(compatible ? s.getValue() : null));
+            properties.add(new SimpleObjectProperty<>(compatible ? s.getValue() : createDefaultInstanceForClass(sub.get(i))));
         }
 
         property.addListener((obs, oldValue, newValue) -> {

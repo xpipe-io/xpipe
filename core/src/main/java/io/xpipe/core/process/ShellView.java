@@ -68,6 +68,24 @@ public class ShellView {
                 .executeAndCheck();
     }
 
+    public void deleteDirectory(FilePath path) throws Exception {
+        getDialect()
+                .deleteFileOrDirectory(shellControl, path.toString())
+                .execute();
+    }
+
+    public void deleteFile(FilePath path) throws Exception {
+        getDialect()
+                        .getFileDeleteCommand(shellControl, path.toString())
+                .execute();
+    }
+
+    public void deleteFileIfPossible(FilePath path) throws Exception {
+        getDialect()
+                .getFileDeleteCommand(shellControl, path.toString())
+                .executeAndCheck();
+    }
+
     public void mkdir(FilePath path) throws Exception {
         shellControl.command(getDialect()
                 .getMkdirsCommand(path.toString()))

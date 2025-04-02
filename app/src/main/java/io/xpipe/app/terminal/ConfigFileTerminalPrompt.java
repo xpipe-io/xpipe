@@ -19,12 +19,12 @@ import java.util.function.Function;
 @SuperBuilder
 public abstract class ConfigFileTerminalPrompt implements TerminalPrompt {
 
-    protected static <T extends ConfigFileTerminalPrompt> OptionsBuilder createOptions(Property<T> p, String extension, Function<String, T> creator) {
+    protected static <T extends ConfigFileTerminalPrompt> OptionsBuilder createOptions(Property<T> p, Function<String, T> creator) {
         var prop = new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().configuration : null);
         return new OptionsBuilder()
                 .nameAndDescription("terminalPromptConfig")
                 .addComp(new IntegratedTextAreaComp(prop, false, p.getValue() != null ? p.getValue().getId() : "config",
-                        new SimpleStringProperty(extension)).prefHeight(400), prop)
+                        new SimpleStringProperty(p.getValue() != null ? p.getValue().getConfigFileExtension() : null)).prefHeight(400), prop)
                 .bind(
                         () -> {
                             return creator.apply(prop.getValue());
@@ -34,9 +34,9 @@ public abstract class ConfigFileTerminalPrompt implements TerminalPrompt {
 
     protected String configuration;
 
-    protected abstract FilePath prepareCustomConfigFile(ShellControl sc) throws Exception;
-
-    protected abstract FilePath getDefaultConfigFile(ShellControl sc) throws Exception;
+    protected void prepareCustomConfigFile(ShellControl sc, FilePath file) throws Exception {
+        sc.view().writeTextFile(file, configuration);
+    }
 
     @Override
     public ShellTerminalInitCommand terminalCommand() throws Exception {
@@ -47,11 +47,12 @@ public abstract class ConfigFileTerminalPrompt implements TerminalPrompt {
                     return Optional.empty();
                 }
 
-                FilePath configFile;
+                FilePath configFile = getTargetConfigFile(shellControl);
                 if (configuration == null || configuration.isBlank()) {
-                    configFile = getDefaultConfigFile(shellControl);
+                    shellControl.view().deleteFileIfPossible(configFile);
+                    configFile = null;
                 } else {
-                    configFile = prepareCustomConfigFile(shellControl);
+                    prepareCustomConfigFile(shellControl, configFile);
                     shellControl.view().writeTextFile(configFile, configuration);
                 }
 
@@ -65,6 +66,13 @@ public abstract class ConfigFileTerminalPrompt implements TerminalPrompt {
             }
         };
     }
+
+    protected FilePath getTargetConfigFile(ShellControl shellControl) throws Exception {
+        FilePath configFile = getConfigurationDirectory(shellControl).join(getId() + "." + getConfigFileExtension());
+        return configFile;
+    }
+
+    protected abstract String getConfigFileExtension();
 
     protected abstract ShellScript setupTerminalCommand(ShellControl shellControl, FilePath config) throws Exception;
 }

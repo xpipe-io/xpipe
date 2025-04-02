@@ -12,6 +12,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
+import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,21 +20,114 @@ import java.util.List;
 @SuperBuilder
 @ToString
 @Jacksonized
-@JsonTypeName("starship")
+@JsonTypeName("ohmyposh")
 public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
 
     public static OptionsBuilder createOptions(Property<OhMyPoshTerminalPrompt> p) {
-        return createOptions(p, "toml", s -> OhMyPoshTerminalPrompt.builder().configuration(s).build());
+        return createOptions(p,  s -> OhMyPoshTerminalPrompt.builder().configuration(s).build());
+    }
+
+    public static OhMyPoshTerminalPrompt createDefault() {
+        return OhMyPoshTerminalPrompt.builder().configuration(
+                """
+{
+  "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
+  "blocks": [
+    {
+      "segments": [
+        {
+          "foreground": "#007ACC",
+          "template": " {{ .CurrentDate | date .Format }} ",
+          "properties": {
+            "time_format": "15:04:05"
+          },
+          "style": "plain",
+          "type": "time"
+        }
+      ],
+      "type": "rprompt"
+    },
+    {
+      "alignment": "left",
+      "newline": true,
+      "segments": [
+        {
+          "background": "#ffb300",
+          "foreground": "#ffffff",
+          "leading_diamond": "",
+          "template": " {{ .UserName }} ",
+          "style": "diamond",
+          "trailing_diamond": "",
+          "type": "session"
+        },
+        {
+          "background": "#61AFEF",
+          "foreground": "#ffffff",
+          "powerline_symbol": "",
+          "template": " {{ .Path }} ",
+          "properties": {
+            "style": "folder"
+          },
+          "exclude_folders": [
+            "/super/secret/project"
+          ],
+          "style": "powerline",
+          "type": "path"
+        },
+        {
+          "background": "#2e9599",
+          "background_templates": [
+            "{{ if or (.Working.Changed) (.Staging.Changed) }}#f36943{{ end }}",
+            "{{ if and (gt .Ahead 0) (gt .Behind 0) }}#a8216b{{ end }}",
+            "{{ if gt .Ahead 0 }}#35b5ff{{ end }}",
+            "{{ if gt .Behind 0 }}#f89cfa{{ end }}"
+          ],
+          "foreground": "#193549",
+          "foreground_templates": [
+            "{{ if and (gt .Ahead 0) (gt .Behind 0) }}#ffffff{{ end }}"
+          ],
+          "powerline_symbol": "",
+          "template": " {{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{ end }} ",
+          "properties": {
+            "branch_template": "{{ trunc 25 .Branch }}",
+            "fetch_status": true
+          },
+          "style": "powerline",
+          "type": "git"
+        },
+        {
+          "background": "#00897b",
+          "background_templates": [
+            "{{ if gt .Code 0 }}#e91e63{{ end }}"
+          ],
+          "foreground": "#ffffff",
+          "template": "<parentBackground></>  ",
+          "properties": {
+            "always_enabled": true
+          },
+          "style": "diamond",
+          "trailing_diamond": "",
+          "type": "status"
+        }
+      ],
+      "type": "prompt"
+    }
+  ],
+  "final_space": true,
+  "version": 3
+}
+                """
+        ).build();
     }
 
     @Override
     public String getDocsLink() {
-        return "https://starship.rs/guide/";
+        return "https://ohmyposh.dev/docs";
     }
 
     @Override
     public String getId() {
-        return "starship";
+        return "oh-my-posh";
     }
 
     @Override
@@ -49,12 +143,12 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
             return false;
         }
 
-        if (sc.view().findProgram("starship").isPresent()) {
+        if (sc.view().findProgram("oh-my-posh").isPresent()) {
             return true;
         }
 
         var extension = OsType.getLocal() == OsType.WINDOWS ? ".exe" : "";
-        return sc.view().fileExists(getBinaryDirectory(sc).join("starship" + extension));
+        return sc.view().fileExists(getBinaryDirectory(sc).join("oh-my-posh" + extension));
     }
 
     @Override
@@ -63,7 +157,7 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
             ClinkHelper.install(sc);
             var configDir = getConfigurationDirectory(sc);
             sc.view().mkdir(configDir);
-            sc.view().writeTextFile(configDir.join("starship.lua"), "load(io.popen('starship init cmd'):read(\"*a\"))()");
+            sc.view().writeTextFile(configDir.join("oh-my-posh.lua"), "load(io.popen('oh-my-posh init cmd'):read(\"*a\"))()");
         }
 
         var dir = getBinaryDirectory(sc);
@@ -73,39 +167,34 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
                     "JanDeDobbeleer/oh-my-posh",
                     "posh-windows-amd64.exe",
                     s -> s.equals("posh-windows-amd64.exe"));
-            sc.view().transferLocalFile(file, dir.join("starship.exe"));
+            sc.view().transferLocalFile(file, dir.join("oh-my-posh.exe"));
         } else {
-            sc.command("curl -sS https://starship.rs/install.sh | sh /dev/stdin -y --bin-dir \"" + dir + "\" > /dev/null").execute();
+            var configDir = getConfigurationDirectory(sc);
+            sc.command("curl -s https://ohmyposh.dev/install.sh | bash -s -- -d \"" + dir + "\" -t \"" + configDir + "\"").execute();
         }
     }
 
     @Override
-    public FilePath prepareCustomConfigFile(ShellControl sc) throws Exception {
-        var file = getConfigurationDirectory(sc).join("starship.toml");
-        sc.view().writeTextFile(file, configuration);
-        return file;
-    }
-
-    @Override
-    public FilePath getDefaultConfigFile(ShellControl sc) throws Exception {
-        return sc.view().userHome().join(".config").join("starship.toml");
+    protected String getConfigFileExtension() {
+        return "json";
     }
 
     @Override
     protected ShellScript setupTerminalCommand(ShellControl shellControl, FilePath config) throws Exception {
         var lines = new ArrayList<String>();
-        if (shellControl.getShellDialect() == ShellDialects.CMD) {
-            lines.add(shellControl.getShellDialect().addToPathVariableCommand(List.of(ClinkHelper.getTargetDir(shellControl).toString()), false));
+        var dialect = shellControl.getOriginalShellDialect();
+        if (dialect == ShellDialects.CMD) {
+            lines.add(dialect.addToPathVariableCommand(List.of(ClinkHelper.getTargetDir(shellControl).toString()), false));
         }
-        lines.add(shellControl.getShellDialect().getSetEnvironmentVariableCommand("STARSHIP_CONFIG", config.toString()));
-        if (shellControl.getShellDialect() == ShellDialects.CMD) {
+        var configArg = config != null ? " --config \"" + config + "\"" : "";
+        if (dialect == ShellDialects.CMD) {
             lines.add("clink inject --quiet --profile \"" + getConfigurationDirectory(shellControl) + "\"");
         } else if (ShellDialects.isPowershell(shellControl)) {
-            lines.add("Invoke-Expression (&starship init powershell)");
-        } else if (shellControl.getShellDialect() == ShellDialects.FISH) {
-            lines.add("starship init fish | source");
+            lines.add("& ([ScriptBlock]::Create((oh-my-posh init $(oh-my-posh get shell) --print" + configArg + ") -join \"`n\"))");
+        } else if (dialect == ShellDialects.FISH) {
+            lines.add("oh-my-posh init fish" + configArg + " | source");
         } else {
-            lines.add("eval \"$(starship init " + shellControl.getShellDialect().getId() + ")\"");
+            lines.add("eval \"$(oh-my-posh init " + dialect.getId() + configArg + ")\"");
         }
         return ShellScript.lines(lines);
     }

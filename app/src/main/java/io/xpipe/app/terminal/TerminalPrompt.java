@@ -17,6 +17,8 @@ public interface TerminalPrompt {
     static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();
         l.add(StarshipTerminalPrompt.class);
+        l.add(OhMyPoshTerminalPrompt.class);
+        l.add(OhMyZshTerminalPrompt.class);
         return l;
     }
 

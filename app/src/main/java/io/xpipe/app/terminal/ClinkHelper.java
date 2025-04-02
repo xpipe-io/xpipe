@@ -19,9 +19,6 @@ import java.nio.file.Path;
 
 public class ClinkHelper {
 
-    private static String downloadUrl = null;
-    private static Path downloadFile = null;
-
     public static FilePath getTargetDir(ShellControl sc) throws Exception {
         var targetDir = ShellTemp.createUserSpecificTempDataDirectory(sc, null).join("bin", "clink");
         return targetDir;
@@ -42,16 +39,13 @@ public class ClinkHelper {
         var temp = GithubReleaseDownloader.getDownloadTempFile("chrisant996/clink", "clink.zip", name -> name.endsWith(".zip") && !name.endsWith("symbols.zip"));
         try (var fs = FileSystems.newFileSystem(temp)) {
             var exeFile = fs.getPath("clink_x64.exe");
-            var exeBytes = Files.readAllBytes(exeFile);
-            sc.view().writeStreamFile(targetDir.join("clink_x64.exe"), new ByteArrayInputStream(exeBytes), exeBytes.length);
+            sc.view().transferLocalFile(exeFile, targetDir.join("clink_x64.exe"));
 
             var batFile = fs.getPath("clink.bat");
-            var batBytes = Files.readAllBytes(batFile);
-            sc.view().writeStreamFile(targetDir.join("clink.bat"), new ByteArrayInputStream(batBytes), batBytes.length);
+            sc.view().transferLocalFile(batFile, targetDir.join("clink.bat"));
 
             var dllFile = fs.getPath("clink_dll_x64.dll");
-            var dllBytes = Files.readAllBytes(dllFile);
-            sc.view().writeStreamFile(targetDir.join("clink_dll_x64.dll"), new ByteArrayInputStream(dllBytes), dllBytes.length);
+            sc.view().transferLocalFile(dllFile, targetDir.join("clink_dll_x64.dll"));
         }
     }
 }
