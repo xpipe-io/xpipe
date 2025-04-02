@@ -2,6 +2,7 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.AppVersion;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -18,6 +19,10 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerminalType {
@@ -70,8 +75,12 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
     }
 
     default void checkProfile() throws IOException {
+        // Update old configs
+        var before = LocalDate.of(2025, 4, 2).atStartOfDay(ZoneId.systemDefault()).toInstant();
+        var outdated = AppCache.getModifiedTime("wtProfileSet").map(instant -> instant.isBefore(before)).orElse(false);
+
         var profileSet = AppCache.getBoolean("wtProfileSet", false);
-        if (profileSet) {
+        if (profileSet && !outdated) {
             return;
         }
 
@@ -97,6 +106,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         newProfile.put("name", "XPipe");
         newProfile.put("closeOnExit", "always");
         newProfile.put("suppressApplicationTitle", true);
+        newProfile.put("elevate", false);
         if (!AppProperties.get().isDevelopmentEnvironment()) {
             var dir = XPipeInstallation.getLocalDefaultInstallationIcon();
             newProfile.put("icon", dir.toString());

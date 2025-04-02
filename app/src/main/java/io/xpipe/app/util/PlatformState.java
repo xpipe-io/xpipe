@@ -124,9 +124,10 @@ public enum PlatformState {
             }
         }
 
-        if (SystemUtils.IS_OS_WINDOWS && ModifiedStage.mergeFrame()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             // This is primarily intended to fix Windows unified stage transparency issues
             // (https://bugs.openjdk.org/browse/JDK-8329382)
+            // But apparently it can also occur without a custom stage on Windows
             System.setProperty("prism.forceUploadingPainter", "true");
         }
 
