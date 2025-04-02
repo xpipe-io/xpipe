@@ -1,13 +1,10 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
-import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.password.KeePassXcAssociationKey;
-import io.xpipe.app.password.KeePassXcManager;
 import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.ShellDialect;
+import io.xpipe.core.process.ShellScript;
 import io.xpipe.core.process.ShellTerminalInitCommand;
 import io.xpipe.core.store.FilePath;
 import javafx.beans.property.Property;
@@ -15,6 +12,8 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 @SuperBuilder
@@ -23,8 +22,9 @@ public abstract class ConfigFileTerminalPrompt implements TerminalPrompt {
     protected static <T extends ConfigFileTerminalPrompt> OptionsBuilder createOptions(Property<T> p, String extension, Function<String, T> creator) {
         var prop = new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().configuration : null);
         return new OptionsBuilder()
-                .nameAndDescription("configuration")
-                .addComp(new IntegratedTextAreaComp(prop, false, "config", new SimpleStringProperty(extension)), prop)
+                .nameAndDescription("terminalPromptConfig")
+                .addComp(new IntegratedTextAreaComp(prop, false, p.getValue() != null ? p.getValue().getId() : "config",
+                        new SimpleStringProperty(extension)).prefHeight(400), prop)
                 .bind(
                         () -> {
                             return creator.apply(prop.getValue());
@@ -39,15 +39,32 @@ public abstract class ConfigFileTerminalPrompt implements TerminalPrompt {
     protected abstract FilePath getDefaultConfigFile(ShellControl sc) throws Exception;
 
     @Override
-    public ShellTerminalInitCommand terminalCommand(ShellControl sc) throws Exception {
-        FilePath configFile;
-        if (configuration == null || configuration.isBlank()) {
-            configFile = getDefaultConfigFile(sc);
-        } else {
-            configFile = prepareCustomConfigFile(sc);
-        }
-        return terminalCommand(sc, configFile);
+    public ShellTerminalInitCommand terminalCommand() throws Exception {
+        return new ShellTerminalInitCommand() {
+            @Override
+            public Optional<String> terminalContent(ShellControl shellControl) throws Exception {
+                if (!installIfNeeded(shellControl)) {
+                    return Optional.empty();
+                }
+
+                FilePath configFile;
+                if (configuration == null || configuration.isBlank()) {
+                    configFile = getDefaultConfigFile(shellControl);
+                } else {
+                    configFile = prepareCustomConfigFile(shellControl);
+                    shellControl.view().writeTextFile(configFile, configuration);
+                }
+
+                var s = shellControl.getShellDialect().addToPathVariableCommand(List.of(getBinaryDirectory(shellControl).toString()), false);
+                return Optional.of(s + "\n" + setupTerminalCommand(shellControl, configFile).toString());
+            }
+
+            @Override
+            public boolean canPotentiallyRunInDialect(ShellDialect dialect) {
+                return getSupportedDialects().contains(dialect);
+            }
+        };
     }
 
-    protected abstract ShellTerminalInitCommand terminalCommand(ShellControl shellControl, FilePath config) throws Exception;
+    protected abstract ShellScript setupTerminalCommand(ShellControl shellControl, FilePath config) throws Exception;
 }

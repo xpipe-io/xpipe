@@ -12,8 +12,6 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,10 +20,10 @@ import java.util.List;
 @ToString
 @Jacksonized
 @JsonTypeName("starship")
-public class StarshipTerminalPrompt extends ConfigFileTerminalPrompt {
+public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
 
-    public static OptionsBuilder createOptions(Property<StarshipTerminalPrompt> p) {
-        return createOptions(p, "toml", s -> StarshipTerminalPrompt.builder().configuration(s).build());
+    public static OptionsBuilder createOptions(Property<OhMyPoshTerminalPrompt> p) {
+        return createOptions(p, "toml", s -> OhMyPoshTerminalPrompt.builder().configuration(s).build());
     }
 
     @Override
@@ -71,13 +69,11 @@ public class StarshipTerminalPrompt extends ConfigFileTerminalPrompt {
         var dir = getBinaryDirectory(sc);
         sc.view().mkdir(dir);
         if (sc.getOsType() == OsType.WINDOWS) {
-            var file = GithubReleaseDownloader.getDownloadTempFile("starship/starship",
-                    "starship-x86_64-pc-windows-msvc.zip",
-                    s -> s.equals("starship-x86_64-pc-windows-msvc.zip"));
-            try (var fs = FileSystems.newFileSystem(file)) {
-                var exeFile = fs.getPath("starship.exe");
-                sc.view().transferLocalFile(exeFile, dir.join("starship.exe"));
-            }
+            var file = GithubReleaseDownloader.getDownloadTempFile(
+                    "JanDeDobbeleer/oh-my-posh",
+                    "posh-windows-amd64.exe",
+                    s -> s.equals("posh-windows-amd64.exe"));
+            sc.view().transferLocalFile(file, dir.join("starship.exe"));
         } else {
             sc.command("curl -sS https://starship.rs/install.sh | sh /dev/stdin -y --bin-dir \"" + dir + "\" > /dev/null").execute();
         }

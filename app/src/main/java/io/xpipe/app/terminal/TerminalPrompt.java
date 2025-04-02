@@ -1,6 +1,7 @@
 package io.xpipe.app.terminal;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ShellTemp;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialect;
@@ -22,18 +23,31 @@ public interface TerminalPrompt {
     String getDocsLink();
 
     default FilePath getConfigurationDirectory(ShellControl sc) throws Exception {
-        return ShellTemp.createUserSpecificTempDataDirectory(sc, "prompt");
+        var d = ShellTemp.createUserSpecificTempDataDirectory(sc, "prompt").join(getId());
+        sc.view().mkdir(d);
+        return d;
     }
 
     default FilePath getBinaryDirectory(ShellControl sc) throws Exception {
-        return ShellTemp.createUserSpecificTempDataDirectory(sc, "bin");
+        var d = ShellTemp.createUserSpecificTempDataDirectory(sc, "bin").join(getId());
+        sc.view().mkdir(d);
+        return d;
     }
 
-    default void installIfNeeded(ShellControl sc) throws Exception {
-        if (checkIfInstalled(sc)) {
-            checkCanInstall(sc);
-            install(sc);
+    String getId();
+
+    default boolean installIfNeeded(ShellControl sc) throws Exception {
+        if (!checkIfInstalled(sc)) {
+            try {
+                checkCanInstall(sc);
+                install(sc);
+            } catch (Exception e) {
+                ErrorEvent.fromThrowable(e).omit().handle();
+                return false;
+            }
+            return true;
         }
+        return true;
     }
 
     void checkCanInstall(ShellControl sc) throws Exception;
@@ -42,7 +56,7 @@ public interface TerminalPrompt {
 
     void install(ShellControl sc) throws Exception;
 
-    ShellTerminalInitCommand terminalCommand(ShellControl shellControl) throws Exception;
+    ShellTerminalInitCommand terminalCommand() throws Exception;
 
     List<ShellDialect> getSupportedDialects();
 }

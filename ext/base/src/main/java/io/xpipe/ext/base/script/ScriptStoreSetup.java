@@ -15,16 +15,16 @@ import java.util.*;
 
 public class ScriptStoreSetup {
 
-    public static ShellControl controlWithDefaultScripts(ShellControl pc) {
-        return controlWithScripts(pc, getEnabledScripts());
+    public static void controlWithDefaultScripts(ShellControl pc) {
+        controlWithScripts(pc, getEnabledScripts());
     }
 
-    public static ShellControl controlWithScripts(
+    public static void controlWithScripts(
             ShellControl pc, List<DataStoreEntryRef<ScriptStore>> enabledScripts) {
         try {
             // Don't copy scripts if we don't want to modify the file system
             if (!pc.getEffectiveSecurityPolicy().permitTempScriptCreation()) {
-                return pc;
+                return;
             }
 
             var initFlattened = flatten(enabledScripts).stream()
@@ -36,7 +36,7 @@ public class ScriptStoreSetup {
 
             // Optimize if we have nothing to do
             if (initFlattened.isEmpty() && bringFlattened.isEmpty()) {
-                return pc;
+                return;
             }
 
             initFlattened.forEach(s -> {
@@ -77,7 +77,6 @@ public class ScriptStoreSetup {
                     }
                 });
             }
-            return pc;
         } catch (StackOverflowError t) {
             throw ErrorEvent.expected(
                     new RuntimeException("Unable to set up scripts. Is there a circular script dependency?", t));

@@ -18,12 +18,12 @@ public abstract class SimpleFilterInputStream extends FilterInputStream {
     @Override
     public int read(byte @NonNull [] b, int off, int len) throws IOException {
         for (int i = off; i < off + len; i++) {
-            var r = (byte) read();
+            var r = read();
             if (r == -1) {
                 return i - off == 0 ? -1 : i - off;
             }
 
-            b[i] = r;
+            b[i] = (byte) r;
         }
         return len;
     }

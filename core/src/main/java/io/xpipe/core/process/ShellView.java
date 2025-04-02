@@ -3,6 +3,8 @@ package io.xpipe.core.process;
 import io.xpipe.core.store.FilePath;
 
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
 
 public class ShellView {
@@ -66,6 +68,12 @@ public class ShellView {
                 .executeAndCheck();
     }
 
+    public void mkdir(FilePath path) throws Exception {
+        shellControl.command(getDialect()
+                .getMkdirsCommand(path.toString()))
+                .execute();
+    }
+
     public boolean directoryExists(FilePath path) throws Exception {
         return getDialect().directoryExists(shellControl, path.toString()).executeAndCheck();
     }
@@ -102,6 +110,12 @@ public class ShellView {
                 .command(shellControl.getShellDialect().getWhichCommand(name))
                 .readStdoutIfPossible();
         return out.flatMap(s -> s.lines().findFirst()).map(String::trim).map(s -> FilePath.of(s));
+    }
+
+    public void transferLocalFile(Path localPath, FilePath target) throws Exception {
+        try (var in = Files.newInputStream(localPath)) {
+            writeStreamFile(target, in, in.available());
+        }
     }
 
     public boolean isInPath(String executable) throws Exception {

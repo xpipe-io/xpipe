@@ -12,14 +12,8 @@ public class TerminalPromptManager {
             return;
         }
 
-        var d = p.getSupportedDialects();
-        if (!d.contains(sc.getShellDialect())) {
-            return;
-        }
-
         try {
-            p.installIfNeeded(sc);
-            sc.withInitSnippet(p.terminalCommand(sc));
+            sc.withInitSnippet(p.terminalCommand());
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).handle();
         }

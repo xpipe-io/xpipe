@@ -49,7 +49,7 @@ public class ShellTemp {
             proc.command("chmod 777 " + proc.getShellDialect().fileArgument(base))
                     .executeAndCheck();
             var user = proc.getShellDialect().printUsernameCommand(proc).readStdoutOrThrow();
-            base = temp.join(user);
+            base = base.join(user);
         } else {
             var temp = proc.getSystemTemporaryDirectory();
             base = temp.join("xpipe");
