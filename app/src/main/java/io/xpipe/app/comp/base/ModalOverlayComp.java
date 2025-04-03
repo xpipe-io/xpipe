@@ -1,5 +1,6 @@
 package io.xpipe.app.comp.base;
 
+import atlantafx.base.controls.Spacer;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppFontSizes;
@@ -14,6 +15,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -164,13 +166,13 @@ public class ModalOverlayComp extends SimpleComp {
         Region r = newValue.getContent().createRegion();
 
         var content = new VBox(r);
+        content.getStyleClass().add("content");
         content.focusedProperty().addListener((o, old, n) -> {
             if (n) {
                 r.requestFocus();
             }
         });
         content.setSpacing(20);
-        content.setPadding(new Insets(13, 27, 20, 27));
 
         if (newValue.getTitleKey() != null) {
             var l = new Label(
@@ -217,11 +219,11 @@ public class ModalOverlayComp extends SimpleComp {
             overlayContent.setValue(null);
             event.consume();
         });
-        r.maxHeightProperty().bind(pane.heightProperty().subtract(200));
+        content.maxHeightProperty().bind(pane.heightProperty().subtract(40));
+        modalBox.minHeightProperty().bind(content.heightProperty());
 
         content.prefWidthProperty().bind(modalBox.widthProperty());
         modalBox.setMinWidth(100);
-        modalBox.setMinHeight(100);
         modalBox.prefWidthProperty().bind(modalBoxWidth(pane, r));
         modalBox.maxWidthProperty().bind(modalBox.prefWidthProperty());
         modalBox.setMaxHeight(Region.USE_PREF_SIZE);

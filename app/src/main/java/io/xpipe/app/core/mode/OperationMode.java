@@ -102,6 +102,7 @@ public abstract class OperationMode {
             AppMainWindow.loadingText("initializingApp");
             GlobalTimer.init();
             AppProperties.init(args);
+            NodeCallback.init();
             AppLogs.init();
             AppTempCheck.check();
             AppDebugModeCheck.printIfNeeded();

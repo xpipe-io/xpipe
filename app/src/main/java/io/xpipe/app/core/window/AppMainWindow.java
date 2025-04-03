@@ -98,9 +98,6 @@ public class AppMainWindow {
                             return stage.isFocused() ? 1.0 : 0.8;
                         },
                         stage.focusedProperty()));
-        if (AppProperties.get().isDebugPlatformThreadAccess()) {
-            NodeCallback.watchPlatformThreadChanges(content);
-        }
         var scene = new Scene(content, -1, -1, false);
         content.prefWidthProperty().bind(scene.widthProperty());
         content.prefHeightProperty().bind(scene.heightProperty());

@@ -7,9 +7,6 @@ import lombok.Setter;
 
 @Getter
 public enum PredefinedScriptGroup {
-    CLINK("Clink", null, false),
-    STARSHIP("Starship", "Sets up and enables the starship shell prompt", true),
-    OHMYPOSH("Oh My Posh", "Sets up and enables the oh-my-posh shell prompt", true),
     MANAGEMENT("Management", "Some commonly used management scripts", true),
     FILES("Files", "Scripts for files", true);
 

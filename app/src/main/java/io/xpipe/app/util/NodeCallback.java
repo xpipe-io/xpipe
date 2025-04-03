@@ -1,30 +1,48 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.core.AppProperties;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.stage.Window;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class NodeCallback {
 
-    public static void watchGraph(Node node, Consumer<Node> callback) {
-        if (node instanceof Parent p) {
-            for (Node c : p.getChildrenUnmodifiable()) {
-                watchGraph(c, callback);
-            }
-            p.getChildrenUnmodifiable().addListener((ListChangeListener<? super Node>) change -> {
-                for (Node c : change.getList()) {
-                    watchGraph(c, callback);
-                }
-            });
+    private static final Set<Window> windows = new HashSet<>();
+    private static final Set<Node> nodes = new HashSet<>();
+
+    public static void init() {
+        if (!AppProperties.get().isDebugPlatformThreadAccess()) {
+            return;
         }
-        callback.accept(node);
+
+        Window.getWindows().addListener((ListChangeListener<? super Window>) change -> {
+            for (Window window : change.getList()) {
+                if (!windows.add(window)) {
+                    continue;
+                }
+
+                window.sceneProperty().subscribe(scene -> {
+                    var root = scene != null ? scene.getRoot() : null;
+                    if (root != null) {
+                        watchPlatformThreadChanges(root);
+                    }
+                });
+            }
+        });
     }
 
-    public static void watchPlatformThreadChanges(Node node) {
+    private static void watchPlatformThreadChanges(Node node) {
         watchGraph(node, c -> {
+            if (!nodes.add(c)) {
+                return;
+            }
+
             if (c instanceof Parent p) {
                 p.getChildrenUnmodifiable().addListener((ListChangeListener<? super Node>) change -> {
                     checkPlatformThread();
@@ -43,6 +61,20 @@ public class NodeCallback {
                 checkPlatformThread();
             });
         });
+    }
+
+    private static void watchGraph(Node node, Consumer<Node> callback) {
+        if (node instanceof Parent p) {
+            for (Node c : p.getChildrenUnmodifiable()) {
+                watchGraph(c, callback);
+            }
+            p.getChildrenUnmodifiable().addListener((ListChangeListener<? super Node>) change -> {
+                for (Node c : change.getList()) {
+                    watchGraph(c, callback);
+                }
+            });
+        }
+        callback.accept(node);
     }
 
     private static void checkPlatformThread() {

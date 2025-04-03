@@ -104,9 +104,6 @@ public enum PlatformState {
         // Check if we have no fonts and set properties to load bundled ones
         AppSystemFontCheck.init();
 
-        // We use our own shutdown hook
-        disableToolkitShutdownHook();
-
         if (AppPrefs.get() != null) {
             var s = AppPrefs.get().uiScale().getValue();
             if (s != null) {
@@ -161,6 +158,9 @@ public enum PlatformState {
                 return;
             }
         }
+
+        // We use our own shutdown hook
+        disableToolkitShutdownHook();
 
         try {
             // This can fail if the found system fonts can somehow not be loaded
