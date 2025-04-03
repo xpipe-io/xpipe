@@ -13,7 +13,22 @@ public enum DocumentationLink {
     WEBTOP_UPDATE("guide/webtop#updating"),
     SYNC("guide/sync"),
     SCRIPTING("guide/scripting"),
+    SCRIPTING_COMPATIBILITY("guide/scripting#shell-compatibility"),
+    SCRIPTING_EDITING("guide/scripting#editing"),
+    SCRIPTING_TYPES("guide/scripting#init-scripts"),
+    SCRIPTING_DEPENDENCIES("guide/scripting#dependencies"),
+    SCRIPTING_GROUPS("guide/scripting#groups"),
     KEEPASSXC("guide/keepassxc"),
+    KUBERNETES("guide/kubernetes"),
+    DOCKER("guide/docker"),
+    PROXMOX("guide/proxmox"),
+    TAILSCALE("guide/tailscale"),
+    TELEPORT("guide/teleport"),
+    LXC("guide/lxc"),
+    PODMAN("guide/podman"),
+    KVM("guide/kvm"),
+    VMWARE("guide/vmware"),
+    VNC("guide/vnc"),
     SSH("guide/ssh");
 
     private final String page;

@@ -7,7 +7,8 @@ import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.TextFieldComp;
-import io.xpipe.app.comp.base.TooltipAugment;
+import io.xpipe.app.comp.base.TooltipHelper;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ContextMenuHelper;
 import io.xpipe.app.util.PlatformThread;
@@ -65,8 +66,7 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
         historyButton.getStyleClass().add(Styles.RIGHT_PILL);
         new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, null, this::createContextMenu)
                 .augment(new SimpleCompStructure<>(historyButton));
-        new TooltipAugment<>("history", new KeyCodeCombination(KeyCode.H, KeyCombination.ALT_DOWN))
-                .augment(historyButton);
+        Tooltip.install(historyButton, TooltipHelper.create(AppI18n.observable("history"), new KeyCodeCombination(KeyCode.H, KeyCombination.ALT_DOWN)));
 
         var breadcrumbs = new BrowserBreadcrumbBar(model);
 

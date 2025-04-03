@@ -8,6 +8,7 @@ import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.store.FilePath;
@@ -16,6 +17,7 @@ import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuButton;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -51,8 +53,7 @@ public class BrowserFileSystemTabComp extends SimpleComp {
         var root = new VBox();
         var overview = new Button(null, new FontIcon("mdi2m-monitor"));
         overview.setOnAction(e -> model.cdAsync((FilePath) null));
-        new TooltipAugment<>("overview", new KeyCodeCombination(KeyCode.HOME, KeyCombination.ALT_DOWN))
-                .augment(overview);
+        Tooltip.install(overview, TooltipHelper.create(AppI18n.observable("overview"), new KeyCodeCombination(KeyCode.HOME, KeyCombination.ALT_DOWN)));
         overview.disableProperty().bind(model.getInOverview());
         overview.setAccessibleText("System overview");
         InputHelper.onKeyCombination(

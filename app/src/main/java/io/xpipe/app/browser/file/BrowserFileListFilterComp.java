@@ -3,7 +3,8 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.base.TextFieldComp;
-import io.xpipe.app.comp.base.TooltipAugment;
+import io.xpipe.app.comp.base.TooltipHelper;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.InputHelper;
 
 import javafx.beans.property.Property;
@@ -11,6 +12,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -45,8 +47,7 @@ public class BrowserFileListFilterComp extends Comp<BrowserFileListFilterComp.St
             button.fire();
             keyEvent.consume();
         });
-        new TooltipAugment<>("app.search", new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN))
-                .augment(button);
+        Tooltip.install(button, TooltipHelper.create(AppI18n.observable("app.search"), new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN)));
         text.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue && filterString.getValue() == null) {
                 if (button.isFocused()) {

@@ -113,16 +113,10 @@ public class UserReportComp extends ModalOverlayContentComp {
                 attachments);
         reportSection.setSpacing(5);
         reportSection.getStyleClass().add("report");
-
         reportSection.getChildren().addAll(new Spacer(8, Orientation.VERTICAL), emailHeader, email);
-
-        var layout = new BorderPane();
-        layout.setCenter(reportSection);
-        layout.getStyleClass().add("error-report");
-        layout.getStyleClass().add("background");
-        layout.setPrefWidth(600);
-        layout.setPrefHeight(550);
-        return layout;
+        reportSection.setPrefWidth(600);
+        reportSection.setPrefHeight(550);
+        return reportSection;
     }
 
     private void send() {

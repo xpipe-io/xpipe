@@ -58,6 +58,8 @@ public interface CommandControl extends ProcessControl {
 
     void setExitTimeout(Duration duration);
 
+    void setStartTimeout(Duration duration);
+
     boolean waitFor();
 
     CommandControl withCustomCharset(Charset charset);

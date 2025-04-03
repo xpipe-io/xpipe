@@ -377,9 +377,15 @@ public class OptionsBuilder {
         return this;
     }
 
+    public OptionsBuilder longDescription(DocumentationLink link) {
+        finishCurrent();
+        longDescription = link.getLink();
+        return this;
+    }
+
     public OptionsBuilder longDescription(String descriptionKey) {
         finishCurrent();
-        longDescription = AppI18n.get().getMarkdownDocumentation(descriptionKey);
+        longDescription = descriptionKey.startsWith("http") ? descriptionKey : AppI18n.get().getMarkdownDocumentation(descriptionKey);
         return this;
     }
 

@@ -8,7 +8,6 @@ import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
-import io.xpipe.app.comp.base.TooltipAugment;
 import io.xpipe.app.core.*;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.prefs.AppPrefs;
@@ -263,7 +262,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                     }));
         }
         button.accessibleText(cs.getName(getWrapper().getEntry().ref()).getValue());
-        button.apply(new TooltipAugment<>(cs.getName(getWrapper().getEntry().ref()), null));
+        button.tooltip(cs.getName(getWrapper().getEntry().ref()));
         return button;
     }
 

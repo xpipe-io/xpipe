@@ -1,34 +1,23 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.augment.Augment;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Window;
 
-public class TooltipAugment<S extends CompStructure<?>> implements Augment<S> {
+public class TooltipHelper {
 
-    private final ObservableValue<String> text;
-    private final KeyCombination shortcut;
-
-    public TooltipAugment(ObservableValue<String> text, KeyCombination shortcut) {
-        this.text = text;
-        this.shortcut = shortcut;
+    public static Tooltip create(String text) {
+        return create(new SimpleStringProperty(text), null);
     }
 
-    public TooltipAugment(String key, KeyCombination shortcut) {
-        this.text = AppI18n.observable(key);
-        this.shortcut = shortcut;
-    }
-
-    @Override
-    public void augment(S struc) {
+    public static Tooltip create(ObservableValue<String> text, KeyCombination shortcut) {
         var tt = new FixedTooltip();
         if (shortcut != null) {
             var s = AppI18n.observable("shortcut");
@@ -46,7 +35,7 @@ public class TooltipAugment<S extends CompStructure<?>> implements Augment<S> {
         tt.setWrapText(true);
         tt.setMaxWidth(400);
         tt.getStyleClass().add("fancy-tooltip");
-        Tooltip.install(struc.get(), tt);
+        return tt;
     }
 
     private static class FixedTooltip extends Tooltip {

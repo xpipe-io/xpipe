@@ -351,6 +351,7 @@ public class BrowserFileTransferOperation {
 
             outputStream = target.getFileSystem().openOutput(targetFile, fileSize);
             transferFile(sourceFile, inputStream, outputStream, transferred, totalSize, start, fileSize);
+            outputStream.flush();
             inputStream.transferTo(OutputStream.nullOutputStream());
         } catch (Exception ex) {
             // Mark progress as finished to reset any progress display
