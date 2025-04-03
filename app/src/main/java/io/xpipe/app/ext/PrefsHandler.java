@@ -8,5 +8,5 @@ import com.fasterxml.jackson.databind.JavaType;
 
 public interface PrefsHandler {
 
-    <T> void addSetting(String id, JavaType t, Property<T> property, Comp<?> comp, boolean requiresRestart);
+    <T> void addSetting(String id, JavaType t, Property<T> property, Comp<?> comp, boolean requiresRestart, boolean log);
 }

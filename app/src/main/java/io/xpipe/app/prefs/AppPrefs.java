@@ -102,17 +102,33 @@ public class AppPrefs {
             mapVaultShared(new SimpleBooleanProperty(false), "dontCachePasswords", Boolean.class, false);
     public final BooleanProperty denyTempScriptCreation =
             mapVaultShared(new SimpleBooleanProperty(false), "denyTempScriptCreation", Boolean.class, false);
-    final Property<PasswordManager> passwordManager =
-            mapLocal(new SimpleObjectProperty<>(), "passwordManager", PasswordManager.class, false);
-    final Property<ShellScript> terminalInitScript =
-            mapLocal(new SimpleObjectProperty<>(null), "terminalInitScript", ShellScript.class, false);
+    final Property<PasswordManager> passwordManager = map(Mapping.builder()
+            .property(new SimpleObjectProperty<>())
+            .key("passwordManager")
+            .valueClass(PasswordManager.class)
+            .log(false)
+            .build());
+    final Property<ShellScript> terminalInitScript = map(Mapping.builder()
+            .property(new SimpleObjectProperty<>(null))
+            .key("terminalInitScript")
+            .valueClass(ShellScript.class)
+            .log(false)
+            .build());
     final Property<UUID> terminalProxy = mapLocal(new SimpleObjectProperty<>(), "terminalProxy", UUID.class, false);
-    final Property<TerminalMultiplexer> terminalMultiplexer =
-            mapLocal(new SimpleObjectProperty<>(null), "terminalMultiplexer", TerminalMultiplexer.class, false);
+    final Property<TerminalMultiplexer> terminalMultiplexer = map(Mapping.builder()
+            .property(new SimpleObjectProperty<>(null))
+            .key("terminalMultiplexer")
+            .valueClass(TerminalMultiplexer.class)
+            .log(false)
+            .build());
     final Property<Boolean> terminalPromptForRestart =
             mapLocal(new SimpleBooleanProperty(true), "terminalPromptForRestart", Boolean.class, false);
-    final Property<TerminalPrompt> terminalPrompt =
-            mapLocal(new SimpleObjectProperty<>(null), "terminalPrompt", TerminalPrompt.class, false);
+    final Property<TerminalPrompt> terminalPrompt = map(Mapping.builder()
+            .property(new SimpleObjectProperty<>(null))
+            .key("terminalPrompt")
+            .valueClass(TerminalPrompt.class)
+            .log(false)
+            .build());
 
     public ObservableValue<TerminalPrompt> terminalPrompt() {
         return terminalPrompt;
@@ -515,11 +531,11 @@ public class AppPrefs {
     }
 
     private <T> T mapLocal(Property<?> o, String name, Class<?> clazz, boolean requiresRestart) {
-        return map(new Mapping(name, o, clazz, false, requiresRestart));
+        return map(new Mapping(name, o, clazz, false, requiresRestart, true));
     }
 
     private <T> T mapVaultShared(Property<?> o, String name, Class<?> clazz, boolean requiresRestart) {
-        return map(new Mapping(name, o, clazz, true, requiresRestart));
+        return map(new Mapping(name, o, clazz, true, requiresRestart, true));
     }
 
     public <T> void setFromExternal(ObservableValue<T> prop, T newValue) {
@@ -596,7 +612,7 @@ public class AppPrefs {
     private <T> T loadValue(AppPrefsStorageHandler handler, Mapping value) {
         T def = (T) value.getProperty().getValue();
         Property<T> property = (Property<T>) value.getProperty();
-        var val = handler.loadObject(value.getKey(), value.getValueType(), def);
+        var val = handler.loadObject(value.getKey(), value.getValueType(), def, value.isLog());
         property.setValue(val);
         return val;
     }
@@ -644,24 +660,27 @@ public class AppPrefs {
         boolean vaultSpecific;
         boolean requiresRestart;
         String licenseFeatureId;
+        boolean log;
 
         public Mapping(
-                String key, Property<?> property, Class<?> valueType, boolean vaultSpecific, boolean requiresRestart) {
+                String key, Property<?> property, Class<?> valueType, boolean vaultSpecific, boolean requiresRestart, boolean log) {
             this.key = key;
             this.property = property;
             this.valueType = SimpleType.constructUnsafe(valueType);
             this.vaultSpecific = vaultSpecific;
             this.requiresRestart = requiresRestart;
+            this.log = log;
             this.licenseFeatureId = null;
         }
 
         public Mapping(
-                String key, Property<?> property, JavaType valueType, boolean vaultSpecific, boolean requiresRestart) {
+                String key, Property<?> property, JavaType valueType, boolean vaultSpecific, boolean requiresRestart, boolean log) {
             this.key = key;
             this.property = property;
             this.valueType = valueType;
             this.vaultSpecific = vaultSpecific;
             this.requiresRestart = requiresRestart;
+            this.log = log;
             this.licenseFeatureId = null;
         }
 
@@ -678,8 +697,8 @@ public class AppPrefs {
     private class PrefsHandlerImpl implements PrefsHandler {
 
         @Override
-        public <T> void addSetting(String id, JavaType t, Property<T> property, Comp<?> comp, boolean requiresRestart) {
-            var m = new Mapping(id, property, t, false, requiresRestart);
+        public <T> void addSetting(String id, JavaType t, Property<T> property, Comp<?> comp, boolean requiresRestart, boolean log) {
+            var m = new Mapping(id, property, t, false, requiresRestart, log);
             customEntries.put(m, comp);
             mapping.add(m);
         }

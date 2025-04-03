@@ -262,9 +262,11 @@ public class AppTheme {
                 String name,
                 atlantafx.base.theme.Theme theme,
                 AppFontSizes sizes,
+                Color baseColor,
+                Color borderColor,
                 Supplier<Color> contextMenuColor,
                 int skipLines) {
-            super(id, cssId, theme, sizes, contextMenuColor);
+            super(id, cssId, theme, sizes, baseColor, borderColor, contextMenuColor);
             this.name = name;
             this.skipLines = skipLines;
         }
@@ -306,6 +308,8 @@ public class AppTheme {
                 "primer",
                 new PrimerLight(),
                 AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10, AppFontSizes.BASE_11),
+                Color.WHITE,
+                Color.web("#24292f"),
                 () -> ColorHelper.withOpacity(
                         Platform.getPreferences().getAccentColor().darker().desaturate(), 0.3));
         public static final Theme PRIMER_DARK = new Theme(
@@ -313,6 +317,8 @@ public class AppTheme {
                 "primer",
                 new PrimerDark(),
                 AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10, AppFontSizes.BASE_11),
+                Color.web("#0d1117"),
+                Color.web("#c9d1d9"),
                 () -> ColorHelper.withOpacity(
                         Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2));
         public static final Theme NORD_LIGHT = new Theme(
@@ -320,6 +326,8 @@ public class AppTheme {
                 "nord",
                 new NordLight(),
                 AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10, AppFontSizes.BASE_11),
+                Color.web("#dadadc"),
+                Color.web("#2E3440"),
                 () -> ColorHelper.withOpacity(
                         Platform.getPreferences().getAccentColor().darker().desaturate(), 0.3));
         public static final Theme NORD_DARK = new Theme(
@@ -327,6 +335,8 @@ public class AppTheme {
                 "nord",
                 new NordDark(),
                 AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10, AppFontSizes.BASE_11),
+                Color.web("#2d3137"),
+                Color.web("#24292f"),
                 () -> ColorHelper.withOpacity(
                         Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2));
         public static final Theme CUPERTINO_LIGHT = new Theme(
@@ -334,6 +344,8 @@ public class AppTheme {
                 "cupertino",
                 new CupertinoLight(),
                 AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10, AppFontSizes.BASE_11),
+                Color.WHITE,
+                Color.BLACK,
                 () -> ColorHelper.withOpacity(
                         Platform.getPreferences().getAccentColor().darker().desaturate(), 0.3));
         public static final Theme CUPERTINO_DARK = new Theme(
@@ -341,6 +353,8 @@ public class AppTheme {
                 "cupertino",
                 new CupertinoDark(),
                 AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10, AppFontSizes.BASE_11),
+                Color.BLACK,
+                Color.WHITE,
                 () -> ColorHelper.withOpacity(
                         Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2));
         public static final Theme DRACULA = new Theme(
@@ -348,6 +362,8 @@ public class AppTheme {
                 "dracula",
                 new Dracula(),
                 AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10, AppFontSizes.BASE_11),
+                Color.web("#383f49"),
+                Color.web("#9580ff"),
                 () -> ColorHelper.withOpacity(
                         Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2));
         public static final Theme MOCHA = new DerivedTheme(
@@ -356,6 +372,8 @@ public class AppTheme {
                 "Mocha",
                 new PrimerDark(),
                 AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10, AppFontSizes.BASE_11),
+                Color.web("#2E2E4EFF"),
+                Color.web("#CDD6F4FF"),
                 () -> ColorHelper.withOpacity(
                         Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2),
                 91);
@@ -367,9 +385,11 @@ public class AppTheme {
                 "Custom",
                 new PrimerDark(),
                 AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
+                Color.web("#0d1117"),
+                Color.web("#24292f"),
                 () -> ColorHelper.withOpacity(
                         Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2),
-                115);
+                91);
 
         // Also include your custom theme here
         public static final List<Theme> ALL = List.of(
@@ -383,6 +403,12 @@ public class AppTheme {
 
         @Getter
         protected final AppFontSizes fontSizes;
+
+        @Getter
+        protected final Color baseColor;
+
+        @Getter
+        protected final Color borderColor;
 
         @Getter
         protected final Supplier<Color> contextMenuColor;

@@ -28,10 +28,15 @@ public class NodeCallback {
                 }
 
                 window.sceneProperty().subscribe(scene -> {
-                    var root = scene != null ? scene.getRoot() : null;
-                    if (root != null) {
-                        watchPlatformThreadChanges(root);
+                    if (scene == null) {
+                        return;
                     }
+
+                    scene.rootProperty().subscribe(root -> {
+                        if (root != null) {
+                            watchPlatformThreadChanges(root);
+                        }
+                    });
                 });
             }
         });

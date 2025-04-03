@@ -187,7 +187,7 @@ public abstract class UpdateHandler {
 
             // Show available update in PTB more aggressively
             if (AppProperties.get().isStaging() && preparedUpdate.getValue() != null && !OperationMode.isInStartup()) {
-                UpdateAvailableDialog.showAndWaitIfNeeded();
+                UpdateAvailableDialog.showIfNeeded(false);
             }
         } catch (Throwable t) {
             ErrorEvent.fromThrowable(t).handle();
