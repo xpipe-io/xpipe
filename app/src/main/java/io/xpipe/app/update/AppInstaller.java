@@ -97,9 +97,10 @@ public class AppInstaller {
                             toRun = "start \"XPipe Updater\" /min cmd /c \"" + ScriptHelper.createExecScript(ShellDialects.CMD, sc, command)
                                     + "\"";
                         } else {
-                            toRun =
+                            toRun = sc.getShellDialect() == ShellDialects.POWERSHELL ?
                                     "Start-Process -WindowStyle Minimized -FilePath powershell -ArgumentList  \"-ExecutionPolicy\", \"Bypass\", \"-File\", \"`\""
-                                            + ScriptHelper.createExecScript(ShellDialects.POWERSHELL, sc, command) + "`\"\"";
+                                            + ScriptHelper.createExecScript(ShellDialects.POWERSHELL, sc, command) + "`\"\"" :
+                                    "start \"XPipe Updater\" /min powershell -ExecutionPolicy Bypass -File \"" + ScriptHelper.createExecScript(ShellDialects.POWERSHELL, sc, command) + "\"";
                         }
                         sc.command(toRun).execute();
                     }
