@@ -70,9 +70,9 @@ public final class BrowserFileListComp extends SimpleComp {
         filenameCol.setReorderable(false);
         filenameCol.setResizable(false);
 
-        var sizeCol = new TableColumn<BrowserEntry, Number>();
+        var sizeCol = new TableColumn<BrowserEntry, String>();
         sizeCol.textProperty().bind(AppI18n.observable("size"));
-        sizeCol.setCellValueFactory(param -> new SimpleLongProperty(
+        sizeCol.setCellValueFactory(param -> new ReadOnlyStringWrapper(
                 param.getValue().getRawFileEntry().resolved().getSize()));
         sizeCol.setCellFactory(col -> new FileSizeCell());
         sizeCol.setResizable(false);
@@ -579,19 +579,24 @@ public final class BrowserFileListComp extends SimpleComp {
         }
     }
 
-    private static class FileSizeCell extends TableCell<BrowserEntry, Number> {
+    private static class FileSizeCell extends TableCell<BrowserEntry, String> {
 
         @Override
-        protected void updateItem(Number fileSize, boolean empty) {
+        protected void updateItem(String fileSize, boolean empty) {
             super.updateItem(fileSize, empty);
             if (empty || getTableRow() == null || getTableRow().getItem() == null) {
                 setText(null);
             } else {
                 var path = getTableRow().getItem();
                 if (path.getRawFileEntry().resolved().getKind() == FileKind.DIRECTORY) {
-                    setText("");
-                } else {
-                    setText(byteCount(fileSize.longValue()));
+                    setText(null);
+                } else if (fileSize != null) {
+                    try {
+                        var l = Long.parseLong(fileSize);
+                        setText(byteCount(l));
+                    } catch (NumberFormatException e) {
+                        setText(fileSize);
+                    }
                 }
             }
         }

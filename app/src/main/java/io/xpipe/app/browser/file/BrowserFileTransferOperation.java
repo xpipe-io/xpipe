@@ -267,11 +267,12 @@ public class BrowserFileTransferOperation {
                     return;
                 }
 
-                var rel = baseRelative.relativize(fileEntry.getPath()).toUnix().toString();
+                var rel = fileEntry.getPath().relativize(baseRelative).toUnix().toString();
                 flatFiles.put(fileEntry, rel);
                 if (fileEntry.getKind() == FileKind.FILE) {
                     // This one is up-to-date and does not need to be recalculated
-                    totalSize.addAndGet(fileEntry.getSize());
+                    // If we don't have a size, it doesn't matter that much as the total size is only for display
+                    totalSize.addAndGet(fileEntry.getFileSizeLong().orElse(0));
                 }
             }
         } else {
@@ -282,8 +283,8 @@ public class BrowserFileTransferOperation {
             }
 
             flatFiles.put(source, source.getPath().getFileName());
-            // Recalculate as it could have been changed meanwhile
-            totalSize.addAndGet(source.getFileSystem().getFileSize(source.getPath()));
+            // If we don't have a size, it doesn't matter that much as the total size is only for display
+            totalSize.addAndGet(source.getFileSizeLong().orElse(0));
         }
 
         var start = Instant.now();
@@ -421,7 +422,7 @@ public class BrowserFileTransferOperation {
         var thread = ThreadHelper.createPlatformThread("transfer", true, () -> {
             try {
                 long readCount = 0;
-                var bs = (int) Math.min(DEFAULT_BUFFER_SIZE, sourceFile.getSize());
+                var bs = (int) Math.min(DEFAULT_BUFFER_SIZE, expectedFileSize);
                 byte[] buffer = new byte[bs];
                 int read;
                 while ((read = inputStream.read(buffer, 0, bs)) > 0) {

@@ -127,7 +127,7 @@ public class BrowserFileSystemHelper {
                 fileSystem,
                 file,
                 Instant.now(),
-                fileSystem.getFileSize(file),
+                "" + fileSystem.getFileSize(file),
                 null,
                 fileSystem.directoryExists(file) ? FileKind.DIRECTORY : FileKind.FILE);
     }

@@ -198,7 +198,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             return null;
         }
 
-        return new FileEntry(fileSystem, parent, null, 0, null, FileKind.DIRECTORY);
+        return new FileEntry(fileSystem, parent, null, null, null, FileKind.DIRECTORY);
     }
 
     public FileEntry getCurrentDirectory() {
@@ -210,7 +210,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             return null;
         }
 
-        return new FileEntry(fileSystem, currentPath.get(), null, 0, null, FileKind.DIRECTORY);
+        return new FileEntry(fileSystem, currentPath.get(), null, null, null, FileKind.DIRECTORY);
     }
 
     public void cdAsync(FilePath path) {

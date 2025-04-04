@@ -88,7 +88,7 @@ public class BrowserStatusBarComp extends SimpleComp {
             } else {
                 var expected = p.expectedTimeRemaining();
                 var show = p.elapsedTime().compareTo(Duration.of(200, ChronoUnit.MILLIS)) > 0
-                        && (p.getTotal() > 50_000_000 || expected.toMillis() > 5000);
+                        && (!p.hasKnownTotalSize() || p.getTotal() > 50_000_000 || expected.toMillis() > 5000);
                 var time = show ? HumanReadableFormat.duration(p.expectedTimeRemaining()) : "";
                 return time;
             }
@@ -106,6 +106,10 @@ public class BrowserStatusBarComp extends SimpleComp {
                 return null;
             } else {
                 var transferred = HumanReadableFormat.progressByteCount(p.getTransferred());
+                if (!p.hasKnownTotalSize()) {
+                    return transferred;
+                }
+
                 var all = HumanReadableFormat.byteCount(p.getTotal());
                 return transferred + " / " + all;
             }

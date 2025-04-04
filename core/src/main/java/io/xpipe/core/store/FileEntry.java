@@ -6,13 +6,14 @@ import lombok.Value;
 import lombok.experimental.NonFinal;
 
 import java.time.Instant;
+import java.util.OptionalLong;
 
 @Value
 @NonFinal
 public class FileEntry {
     FileSystem fileSystem;
     Instant date;
-    long size;
+    String size;
 
     FileInfo info;
 
@@ -28,7 +29,7 @@ public class FileEntry {
             FileSystem fileSystem,
             @NonNull FilePath path,
             Instant date,
-            long size,
+            String size,
             FileInfo info,
             @NonNull FileKind kind) {
         this.fileSystem = fileSystem;
@@ -40,7 +41,20 @@ public class FileEntry {
     }
 
     public static FileEntry ofDirectory(FileSystem fileSystem, FilePath path) {
-        return new FileEntry(fileSystem, path, Instant.now(), 0, null, FileKind.DIRECTORY);
+        return new FileEntry(fileSystem, path, Instant.now(), null, null, FileKind.DIRECTORY);
+    }
+
+    public OptionalLong getFileSizeLong() {
+        if (size == null) {
+            return OptionalLong.empty();
+        }
+
+        try {
+            var l = Long.parseLong(size);
+            return OptionalLong.of(l);
+        } catch (NumberFormatException e) {
+            return OptionalLong.empty();
+        }
     }
 
     public FileEntry resolved() {

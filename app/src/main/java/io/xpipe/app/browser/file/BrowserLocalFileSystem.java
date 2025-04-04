@@ -36,7 +36,7 @@ public class BrowserLocalFileSystem {
                 localFileSystem.open(),
                 FilePath.of(file),
                 Files.getLastModifiedTime(file).toInstant(),
-                Files.size(file),
+                "" + Files.size(file),
                 null,
                 Files.isDirectory(file) ? FileKind.DIRECTORY : FileKind.FILE);
     }
