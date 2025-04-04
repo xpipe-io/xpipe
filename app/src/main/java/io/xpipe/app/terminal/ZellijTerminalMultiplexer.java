@@ -30,7 +30,7 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
         return ShellScript.lines(
                 "zellij attach --create-background xpipe",
                 "zellij -s xpipe action new-tab --name \"" + escape(config.getDisplayName(), false, true) + "\"",
-                "zellij -s xpipe action write-chars -- " + escape(command, true, true),
+                "zellij -s xpipe action write-chars -- " + escape(command, true, true) + "\\;exit",
                 "zellij -s xpipe action write 10");
     }
 
@@ -40,7 +40,7 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
         return ShellScript.lines(
                 "zellij delete-session -f xpipe",
                 "zellij attach --create-background xpipe",
-                "zellij -s xpipe run --name \"" + escape(config.getDisplayName(), false, true) + "\" -- "
+                "zellij -s xpipe run -c --name \"" + escape(config.getDisplayName(), false, true) + "\" -- "
                         + escape(command, false, false),
                 "zellij attach xpipe");
     }

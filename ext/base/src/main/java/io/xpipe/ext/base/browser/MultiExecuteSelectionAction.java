@@ -9,6 +9,7 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.CommandDialog;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ProcessOutputException;
 import io.xpipe.core.process.ShellControl;
@@ -82,48 +83,7 @@ public abstract class MultiExecuteSelectionAction implements BrowserBranchAction
                                     }
 
                                     var cmd = pc.command(c);
-                                    String out;
-                                    try {
-                                        out = cmd.readStdoutOrThrow();
-                                        if (out.isEmpty()) {
-                                            out = "<empty>";
-                                        }
-
-                                        if (out.length() > 10000) {
-                                            var counter = new AtomicInteger();
-                                            var start = out.lines()
-                                                    .filter(s -> {
-                                                        counter.incrementAndGet();
-                                                        return true;
-                                                    })
-                                                    .limit(100)
-                                                    .collect(Collectors.joining("\n"));
-                                            var notShownLines = counter.get() - 100;
-                                            if (notShownLines > 0) {
-                                                out = start + "\n\n... " + notShownLines + " more lines";
-                                            } else {
-                                                out = start;
-                                            }
-                                        }
-
-                                    } catch (ProcessOutputException e) {
-                                        out = e.getMessage();
-                                    }
-
-                                    String finalOut = out;
-                                    var modal = ModalOverlay.of(
-                                            "commandOutput",
-                                            Comp.of(() -> {
-                                                        var text = new TextArea(finalOut);
-                                                        text.setWrapText(true);
-                                                        text.setEditable(false);
-                                                        text.setPrefRowCount(Math.max(8, (int)
-                                                                finalOut.lines().count()));
-                                                        var sp = new StackPane(text);
-                                                        return sp;
-                                                    })
-                                                    .prefWidth(650));
-                                    modal.show();
+                                    CommandDialog.runAsyncAndShow(cmd);
                                 },
                                 true);
                     }
@@ -131,7 +91,7 @@ public abstract class MultiExecuteSelectionAction implements BrowserBranchAction
                     @Override
                     public ObservableValue<String> getName(
                             BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                        return AppI18n.observable("runCommand");
+                        return AppI18n.observable("runInFileBrowser");
                     }
                 },
                 new BrowserLeafAction() {

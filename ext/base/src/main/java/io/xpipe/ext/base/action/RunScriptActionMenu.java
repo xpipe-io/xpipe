@@ -8,6 +8,7 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.TerminalLauncher;
+import io.xpipe.app.util.CommandDialog;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.process.ShellTtyState;
 import io.xpipe.core.process.SystemState;
@@ -63,7 +64,7 @@ public class RunScriptActionMenu implements ActionProvider {
 
                 @Override
                 public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
-                    return new LabelGraphic.IconGraphic("mdi2d-desktop-mac");
+                    return new LabelGraphic.IconGraphic("mdi2c-code-greater-than");
                 }
 
                 @Override
@@ -87,7 +88,7 @@ public class RunScriptActionMenu implements ActionProvider {
 
                 @Override
                 public String getIcon() {
-                    return "mdi2d-desktop-mac";
+                    return "mdi2c-code-greater-than";
                 }
 
                 @Override
@@ -103,6 +104,78 @@ public class RunScriptActionMenu implements ActionProvider {
                 @Override
                 public List<? extends ActionProvider> getChildren(List<DataStoreEntryRef<ShellStore>> batch) {
                     return List.of();
+                }
+            };
+        }
+    }
+
+
+    @Value
+    private static class HubRunActionProvider implements ActionProvider {
+
+        ScriptHierarchy hierarchy;
+
+        @Value
+        private class Action implements ActionProvider.Action {
+
+            DataStoreEntryRef<ShellStore> shellStore;
+
+            @Override
+            public void execute() throws Exception {
+                var sc = shellStore.getStore().getOrStartSession();
+                var script = hierarchy.getLeafBase().getStore().assembleScriptChain(sc);
+                var cmd = sc.command(script);
+                CommandDialog.runAsyncAndShow(cmd);
+            }
+        }
+
+        @Override
+        public LeafDataStoreCallSite<?> getLeafDataStoreCallSite() {
+            return new LeafDataStoreCallSite<ShellStore>() {
+                @Override
+                public Action createAction(DataStoreEntryRef<ShellStore> store) {
+                    return new Action(store);
+                }
+
+                @Override
+                public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
+                    return AppI18n.observable("runInConnectionHub");
+                }
+
+                @Override
+                public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+                    return new LabelGraphic.IconGraphic("mdi2d-desktop-mac");
+                }
+
+                @Override
+                public Class<?> getApplicableClass() {
+                    return ShellStore.class;
+                }
+            };
+        }
+
+        @Override
+        public BatchDataStoreCallSite<ShellStore> getBatchDataStoreCallSite() {
+            return new BatchDataStoreCallSite<ShellStore>() {
+
+                @Override
+                public ObservableValue<String> getName() {
+                    return AppI18n.observable("runInConnectionHub");
+                }
+
+                @Override
+                public String getIcon() {
+                    return "mdi2d-desktop-mac";
+                }
+
+                @Override
+                public Class<?> getApplicableClass() {
+                    return ShellStore.class;
+                }
+
+                @Override
+                public ActionProvider.Action createAction(DataStoreEntryRef<ShellStore> store) {
+                    return new Action(store);
                 }
             };
         }
@@ -215,7 +288,7 @@ public class RunScriptActionMenu implements ActionProvider {
                 @Override
                 public List<? extends ActionProvider> getChildren(DataStoreEntryRef<ShellStore> store) {
                     return List.of(
-                            new TerminalRunActionProvider(hierarchy), new BackgroundRunActionProvider(hierarchy));
+                            new TerminalRunActionProvider(hierarchy), new HubRunActionProvider(hierarchy), new BackgroundRunActionProvider(hierarchy));
                 }
             };
         }
@@ -284,7 +357,7 @@ public class RunScriptActionMenu implements ActionProvider {
                 public List<? extends ActionProvider> getChildren(List<DataStoreEntryRef<ShellStore>> batch) {
                     if (hierarchy.isLeaf()) {
                         return List.of(
-                                new TerminalRunActionProvider(hierarchy), new BackgroundRunActionProvider(hierarchy));
+                                new TerminalRunActionProvider(hierarchy), new HubRunActionProvider(hierarchy), new BackgroundRunActionProvider(hierarchy));
                     }
 
                     return hierarchy.getChildren().stream()

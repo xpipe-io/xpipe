@@ -1,6 +1,7 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.util.CommandSupport;
+import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellScript;
 import io.xpipe.core.process.TerminalInitScriptConfig;
@@ -27,16 +28,20 @@ public class ScreenTerminalMultiplexer implements TerminalMultiplexer {
     @Override
     public ShellScript launchScriptExternal(ShellControl control, String command, TerminalInitScriptConfig config)
             throws Exception {
+        // Screen has a limit of 100 chars for commands
+        var effectiveCommand = command.length() > 90 ? ScriptHelper.createExecScript(control, command).toString() : command;
         return ShellScript.lines("screen -S xpipe -X screen -t \"" + escape(config.getDisplayName(), true) + "\" "
-                + escape(command, false));
+                + escape(effectiveCommand, false));
     }
 
     @Override
     public ShellScript launchScriptSession(ShellControl control, String command, TerminalInitScriptConfig config)
             throws Exception {
+        // Screen has a limit of 100 chars for commands
+        var effectiveCommand = command.length() > 90 ? ScriptHelper.createExecScript(control, command).toString() : command;
         return ShellScript.lines(
                 "for scr in $(screen -ls | grep xpipe | awk '{print $1}'); do screen -S $scr -X quit; done",
-                "screen -S xpipe -t \"" + escape(config.getDisplayName(), true) + "\" " + escape(command, false));
+                "screen -S xpipe -t \"" + escape(config.getDisplayName(), true) + "\" " + escape(effectiveCommand, false));
     }
 
     private String escape(String s, boolean quotes) {
