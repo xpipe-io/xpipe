@@ -12,7 +12,7 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.resources.AppResources;
-import io.xpipe.app.storage.DataColor;
+import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
@@ -340,7 +340,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                 event.consume();
             });
             color.getItems().add(none);
-            Arrays.stream(DataColor.values()).forEach(dataStoreColor -> {
+            Arrays.stream(DataStoreColor.values()).forEach(dataStoreColor -> {
                 MenuItem m = new MenuItem();
                 m.textProperty().bind(AppI18n.observable(dataStoreColor.getId()));
                 m.setOnAction(event -> {

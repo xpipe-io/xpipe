@@ -83,6 +83,10 @@ public class ModalOverlay {
         AppDialog.show(this, false);
     }
 
+    public void hide() {
+        AppDialog.hide(this);
+    }
+
     public boolean isShowing() {
         return AppDialog.getModalOverlays().contains(this);
     }

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 @Getter
-public enum DataColor {
+public enum DataStoreColor {
     @JsonProperty("red")
     RED("red", "\uD83D\uDD34", Color.DARKRED),
 
@@ -27,7 +27,7 @@ public enum DataColor {
     private final String emoji;
     private final Color terminalColor;
 
-    DataColor(String id, String emoji, Color terminalColor) {
+    DataStoreColor(String id, String emoji, Color terminalColor) {
         this.id = id;
         this.emoji = emoji;
         this.terminalColor = terminalColor;
@@ -43,9 +43,9 @@ public enum DataColor {
         return "#" + (format(value.getRed()) + format(value.getGreen()) + format(value.getBlue())).toUpperCase();
     }
 
-    public static void applyStyleClasses(DataColor color, Node node) {
+    public static void applyStyleClasses(DataStoreColor color, Node node) {
         var newList = new ArrayList<>(node.getStyleClass());
-        newList.removeIf(s -> Arrays.stream(DataColor.values())
+        newList.removeIf(s -> Arrays.stream(DataStoreColor.values())
                 .anyMatch(dataStoreColor -> dataStoreColor.getId().equals(s)));
         newList.remove("gray");
         if (color != null) {

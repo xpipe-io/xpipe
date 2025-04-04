@@ -4,7 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
-import io.xpipe.app.storage.DataColor;
+import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.LabelGraphic;
 
@@ -65,7 +65,7 @@ public abstract class StoreSectionBaseComp extends Comp<CompStructure<VBox>> {
             if (section.getDepth() == 1) {
                 section.getWrapper().getColor().subscribe(val -> {
                     var newList = new ArrayList<>(vbox.getStyleClass());
-                    newList.removeIf(s -> Arrays.stream(DataColor.values())
+                    newList.removeIf(s -> Arrays.stream(DataStoreColor.values())
                             .anyMatch(dataStoreColor -> dataStoreColor.getId().equals(s)));
                     newList.remove("gray");
                     newList.add("color-box");

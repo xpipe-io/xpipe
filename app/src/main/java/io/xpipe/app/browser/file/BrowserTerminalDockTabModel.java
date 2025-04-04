@@ -9,7 +9,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataColor;
+import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.terminal.TerminalDockComp;
 import io.xpipe.app.terminal.TerminalDockModel;
 import io.xpipe.app.terminal.TerminalView;
@@ -176,7 +176,7 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
     }
 
     @Override
-    public DataColor getColor() {
+    public DataStoreColor getColor() {
         return null;
     }
 }

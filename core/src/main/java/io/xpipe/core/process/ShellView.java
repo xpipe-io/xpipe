@@ -147,9 +147,22 @@ public class ShellView {
         cmd.executeAndCheck();
     }
 
-    public String environmentVariable(String name) throws Exception {
+    public String getEnvironmentVariable(String name) throws Exception {
         return shellControl
                 .command(shellControl.getShellDialect().getPrintEnvironmentVariableCommand(name))
                 .readStdoutOrThrow();
+    }
+
+    public void setEnvironmentVariable(String name, String value) throws Exception {
+        shellControl
+                .command(shellControl.getShellDialect().getSetEnvironmentVariableCommand(name, value))
+                .execute();
+    }
+
+    public void setSensitiveEnvironmentVariable(String name, String value) throws Exception {
+        var command = shellControl.command(shellControl.getShellDialect().getSetEnvironmentVariableCommand(name, value));
+        command.setSensitive();
+        command
+                .execute();
     }
 }

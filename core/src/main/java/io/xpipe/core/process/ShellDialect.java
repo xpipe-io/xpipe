@@ -4,7 +4,6 @@ import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.util.NewLine;
-import io.xpipe.core.util.SecretValue;
 import io.xpipe.core.util.StreamCharset;
 
 import java.nio.charset.Charset;
@@ -111,8 +110,6 @@ public interface ShellDialect {
     ShellDialectAskpass getAskpass();
 
     String getSetEnvironmentVariableCommand(String variable, String value);
-
-    String setSecretEnvironmentVariableCommand(ShellControl sc, String variable, SecretValue value) throws Exception;
 
     String getEchoCommand(String s, boolean toErrorStream);
 

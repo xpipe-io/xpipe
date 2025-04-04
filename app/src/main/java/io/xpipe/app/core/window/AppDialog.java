@@ -56,6 +56,12 @@ public class AppDialog {
         show(o, false);
     }
 
+    public static void hide(ModalOverlay o) {
+        PlatformThread.runLaterIfNeeded(() -> {
+           modalOverlays.remove(o);
+        });
+    }
+
     public static void showAndWait(ModalOverlay o) {
         show(o, true);
     }

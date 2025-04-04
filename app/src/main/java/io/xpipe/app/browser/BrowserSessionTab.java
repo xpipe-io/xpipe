@@ -1,7 +1,7 @@
 package io.xpipe.app.browser;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.storage.DataColor;
+import io.xpipe.app.storage.DataStoreColor;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -34,7 +34,7 @@ public abstract class BrowserSessionTab {
 
     public abstract String getIcon();
 
-    public abstract DataColor getColor();
+    public abstract DataStoreColor getColor();
 
     public boolean isCloseable() {
         return true;

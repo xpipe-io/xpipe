@@ -3,6 +3,7 @@ package io.xpipe.app.comp.store;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProvider;
@@ -142,6 +143,16 @@ public class StoreCreationDialog {
                 : new LabelGraphic.IconGraphic("mdi2b-beaker-plus-outline");
         modal.hideable(AppI18n.observable(model.storeTypeNameKey() + "Add"), graphic, () -> {
             modal.show();
+        });
+        AppLayoutModel.get().getSelected().addListener((observable, oldValue, newValue) -> {
+            if (model.getFinished().get() || !modal.isShowing()) {
+                return;
+            }
+
+            modal.hide();
+            AppLayoutModel.get().getQueueEntries().add(new AppLayoutModel.QueueEntry(AppI18n.observable(model.storeTypeNameKey() + "Add"), graphic, () -> {
+                modal.show();
+            }));
         });
         modal.setRequireCloseButtonForClose(true);
         modal.addButton(new ModalButton(

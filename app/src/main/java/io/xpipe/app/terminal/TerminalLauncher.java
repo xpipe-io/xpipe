@@ -71,6 +71,26 @@ public class TerminalLauncher {
     }
 
     public static void openDirect(
+            String title, CommandBuilder command)
+            throws Exception {
+        openDirect(title, sc -> command.buildFull(sc), AppPrefs.get().terminalType().getValue());
+    }
+
+    public static void openDirect(
+            String title,
+            ShellScript command)
+            throws Exception {
+        openDirect(title, sc -> command.toString(), AppPrefs.get().terminalType().getValue());
+    }
+
+    public static void openDirect(
+            String title,
+            FailableFunction<ShellControl, ShellScript, Exception> command)
+            throws Exception {
+        openDirect(title, sc -> command.apply(sc).toString(), AppPrefs.get().terminalType().getValue());
+    }
+
+    public static void openDirect(
             String title, FailableFunction<ShellControl, String, Exception> command, ExternalTerminalType type)
             throws Exception {
         try (var sc = LocalShell.getShell().start()) {

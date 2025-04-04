@@ -883,7 +883,7 @@ public abstract class DataStorage {
         return false;
     }
 
-    public DataColor getEffectiveColor(DataStoreEntry entry) {
+    public DataStoreColor getEffectiveColor(DataStoreEntry entry) {
         var cat = getStoreCategoryIfPresent(entry.getCategoryUuid()).orElseThrow();
         var root = getRootForEntry(entry, cat);
         if (root.getColor() != null) {

@@ -13,6 +13,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
@@ -51,6 +52,12 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
             var source = Path.of(f.getFile().toAbsoluteFilePath(null).toString());
             var target = Path.of("keys", f.getFile().toAbsoluteFilePath(null).getFileName());
             DataStorageSyncHandler.getInstance().addDataFile(source, target, newValue);
+
+            var pub = Path.of(source + ".pub");
+            var pubTarget = Path.of("keys", f.getFile().toAbsoluteFilePath(null).getFileName() + ".pub");
+            if (Files.exists(pub)) {
+                DataStorageSyncHandler.getInstance().addDataFile(pub, pubTarget, newValue);
+            }
         });
 
         return new OptionsBuilder()

@@ -4,7 +4,7 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataColor;
+import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.LicenseProvider;
@@ -29,7 +29,7 @@ import java.util.UUID;
 @Value
 @With
 public class TerminalLaunchConfiguration {
-    DataColor color;
+    DataStoreColor color;
     String coloredTitle;
     String cleanTitle;
     boolean preferTabs;

@@ -8,7 +8,6 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.util.LicenseRequiredException;
 
-import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -21,8 +20,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import lombok.Getter;
-
-import java.util.concurrent.CountDownLatch;
 
 import static atlantafx.base.theme.Styles.ACCENT;
 import static atlantafx.base.theme.Styles.BUTTON_OUTLINED;
@@ -134,8 +131,8 @@ public class ErrorHandlerComp extends SimpleComp {
             actionBox.getChildren().add(ac);
         }
 
-        if (event.getDocumentationLink() != null) {
-            actionBox.getChildren().add(createActionComp(ErrorAction.openDocumentation(event.getDocumentationLink())));
+        if (event.getLink() != null) {
+            actionBox.getChildren().add(createActionComp(ErrorAction.openDocumentation(event.getLink())));
         }
 
         if (actionBox.getChildren().size() > 0) {

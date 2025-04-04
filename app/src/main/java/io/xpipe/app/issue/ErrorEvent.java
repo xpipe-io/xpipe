@@ -42,7 +42,7 @@ public class ErrorEvent {
     @Singular
     private List<Path> attachments;
 
-    private DocumentationLink documentationLink;
+    private String link;
 
     private String email;
     private String userReport;
@@ -146,6 +146,10 @@ public class ErrorEvent {
     }
 
     public static class ErrorEventBuilder {
+
+        public ErrorEventBuilder documentationLink(DocumentationLink documentationLink) {
+            return link(documentationLink.getLink());
+        }
 
         public ErrorEventBuilder term() {
             return terminal(true);

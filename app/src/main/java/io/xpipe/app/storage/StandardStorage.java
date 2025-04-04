@@ -221,15 +221,13 @@ public class StandardStorage extends DataStorage {
             var e = DataStoreEntry.createNew(
                     LOCAL_ID, DataStorage.DEFAULT_CATEGORY_UUID, "Local Machine", new LocalStore());
             e.setDirectory(getStoresDir().resolve(LOCAL_ID.toString()));
-            e.setConfiguration(
-                    StorageElement.Configuration.builder().deletable(false).build());
             storeEntries.put(e, e);
             e.validate();
         }
 
         var local = DataStorage.get().getStoreEntry(LOCAL_ID);
         if (storeEntriesSet.stream().noneMatch(entry -> entry.getColor() != null)) {
-            local.setColor(DataColor.BLUE);
+            local.setColor(DataStoreColor.BLUE);
         }
 
         // Reload stores, this time with all entry refs present

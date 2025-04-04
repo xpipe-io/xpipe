@@ -2,10 +2,11 @@ package io.xpipe.app.issue;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.DocumentationLink;
+import io.xpipe.app.util.Hyperlinks;
 
 public interface ErrorAction {
 
-    static ErrorAction openDocumentation(DocumentationLink link) {
+    static ErrorAction openDocumentation(String link) {
         return new ErrorAction() {
             @Override
             public String getName() {
@@ -19,7 +20,7 @@ public interface ErrorAction {
 
             @Override
             public boolean handle(ErrorEvent event) {
-                link.open();
+                Hyperlinks.open(link);
                 return false;
             }
         };

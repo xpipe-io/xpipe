@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 public enum DocumentationLink {
+
     INDEX(""),
     TTY("troubleshoot/tty"),
     WINDOWS_SSH("troubleshoot/windows-ssh"),
