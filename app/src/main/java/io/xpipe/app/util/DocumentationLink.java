@@ -30,12 +30,8 @@ public enum DocumentationLink {
     VMWARE("guide/vmware"),
     VNC("guide/vnc"),
     SSH("guide/ssh"),
-    BITWARDEN("guide/password-manager#bitwarden"),
-    ONE_PASSWORD("guide/password-manager#1password"),
     KEEPASSXC("guide/password-manager#keepassxc"),
-    DASHLANE("guide/password-manager#dashlane"),
-    LASTPASS("guide/password-manager#lastpass"),
-    KEEPER("guide/password-manager#keeper");
+    PASSWORD_MANAGER("guide/password-manager"),;
 
     private final String page;
 

@@ -3,16 +3,12 @@ package io.xpipe.app.password;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.terminal.TerminalLauncher;
-import io.xpipe.app.util.AskpassAlert;
 import io.xpipe.app.util.CommandSupport;
-import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellScript;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-
-import java.util.regex.Pattern;
 
 @JsonTypeName("dashlane")
 public class DashlanePasswordManager implements PasswordManager {
@@ -55,11 +51,6 @@ public class DashlanePasswordManager implements PasswordManager {
             ErrorEvent.fromThrowable(ex).handle();
             return null;
         }
-    }
-
-    @Override
-    public String getDocsLink() {
-        return DocumentationLink.DASHLANE.getLink();
     }
 
     @Override

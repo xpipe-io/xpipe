@@ -190,11 +190,6 @@ public class KeePassXcManager implements PasswordManager {
     }
 
     @Override
-    public String getDocsLink() {
-        return DocumentationLink.KEEPASSXC.getLink();
-    }
-
-    @Override
     public String retrievePassword(String key) {
         try {
             return KeePassXcManager.receive(key);

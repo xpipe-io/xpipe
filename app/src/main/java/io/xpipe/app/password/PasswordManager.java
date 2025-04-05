@@ -24,16 +24,11 @@ public interface PasswordManager {
         if (OsType.getLocal() == OsType.WINDOWS) {
             l.add(WindowsCredentialManager.class);
         }
-        if (OsType.getLocal() == OsType.MACOS) {
-            l.add(MacOsKeychainPasswordManager.class);
-        }
         l.add(PasswordManagerCommand.class);
         return l;
     }
 
     default void checkComplete() throws ValidationException {}
-
-    String getDocsLink();
 
     String retrievePassword(String key);
 

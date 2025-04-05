@@ -13,11 +13,6 @@ public class WindowsCredentialManager implements PasswordManager {
     private static boolean loaded = false;
 
     @Override
-    public String getDocsLink() {
-        return "https://support.microsoft.com/en-us/windows/accessing-credential-manager-1b5c916a-6a16-889f-8581-fc16e8165ac0";
-    }
-
-    @Override
     public synchronized String retrievePassword(String key) {
         try {
             if (!loaded) {
@@ -85,6 +80,6 @@ public class WindowsCredentialManager implements PasswordManager {
 
     @Override
     public String getKeyPlaceholder() {
-        return "<credential name>";
+        return "Credential name";
     }
 }

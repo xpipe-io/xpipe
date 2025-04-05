@@ -10,7 +10,6 @@ import io.xpipe.core.process.ShellScript;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 @JsonTypeName("bitwarden")
@@ -72,11 +71,6 @@ public class BitwardenPasswordManager implements PasswordManager {
             ErrorEvent.fromThrowable(ex).handle();
             return null;
         }
-    }
-
-    @Override
-    public String getDocsLink() {
-        return "https://bitwarden.com/help/cli/#download-and-install";
     }
 
     @Override

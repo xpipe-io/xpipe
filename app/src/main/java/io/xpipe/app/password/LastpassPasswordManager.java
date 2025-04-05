@@ -8,8 +8,6 @@ import io.xpipe.core.process.*;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
-import java.util.UUID;
-
 @JsonTypeName("lastpass")
 public class LastpassPasswordManager implements PasswordManager {
 
@@ -52,11 +50,6 @@ public class LastpassPasswordManager implements PasswordManager {
             ErrorEvent.fromThrowable(ex).handle();
             return null;
         }
-    }
-
-    @Override
-    public String getDocsLink() {
-        return DocumentationLink.LASTPASS.getLink();
     }
 
     @Override

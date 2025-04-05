@@ -4,7 +4,6 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.CommandSupport;
-import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.SecretManager;
 import io.xpipe.app.util.SecretRetrievalStrategy;
 import io.xpipe.core.process.*;
@@ -63,11 +62,6 @@ public class KeeperPasswordManager implements PasswordManager {
             ErrorEvent.fromThrowable(ex).handle();
             return null;
         }
-    }
-
-    @Override
-    public String getDocsLink() {
-        return DocumentationLink.KEEPER.getLink();
     }
 
     @Override

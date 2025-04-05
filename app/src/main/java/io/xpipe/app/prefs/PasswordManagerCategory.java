@@ -71,17 +71,9 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                 .transformer(entryComboBox -> {
                     var docsLinkButton = new ButtonComp(
                             AppI18n.observable("docs"), new FontIcon("mdi2h-help-circle-outline"), () -> {
-                                var l = prefs.passwordManager.getValue().getDocsLink();
-                                if (l != null) {
-                                    Hyperlinks.open(l);
-                                }
+                                Hyperlinks.open(DocumentationLink.PASSWORD_MANAGER.getLink());
                             });
                     docsLinkButton.minWidth(Region.USE_PREF_SIZE);
-                    docsLinkButton.disable(Bindings.createBooleanBinding(
-                            () -> {
-                                return prefs.passwordManager.getValue().getDocsLink() == null;
-                            },
-                            prefs.passwordManager));
 
                     var hbox = new HBox(entryComboBox, docsLinkButton.createRegion());
                     HBox.setHgrow(entryComboBox, Priority.ALWAYS);

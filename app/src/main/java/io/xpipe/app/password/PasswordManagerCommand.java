@@ -104,11 +104,6 @@ public class PasswordManagerCommand implements PasswordManager {
     ShellScript script;
 
     @Override
-    public String getDocsLink() {
-        return null;
-    }
-
-    @Override
     public String retrievePassword(String key) {
         var cmd = ExternalApplicationHelper.replaceVariableArgument(script.getValue(), "KEY", key);
         return retrieveWithCommand(cmd);
