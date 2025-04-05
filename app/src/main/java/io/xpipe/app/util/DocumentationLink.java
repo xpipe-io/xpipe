@@ -19,7 +19,6 @@ public enum DocumentationLink {
     SCRIPTING_TYPES("guide/scripting#init-scripts"),
     SCRIPTING_DEPENDENCIES("guide/scripting#dependencies"),
     SCRIPTING_GROUPS("guide/scripting#groups"),
-    KEEPASSXC("guide/keepassxc"),
     KUBERNETES("guide/kubernetes"),
     DOCKER("guide/docker"),
     PROXMOX("guide/proxmox"),
@@ -30,7 +29,13 @@ public enum DocumentationLink {
     KVM("guide/kvm"),
     VMWARE("guide/vmware"),
     VNC("guide/vnc"),
-    SSH("guide/ssh");
+    SSH("guide/ssh"),
+    BITWARDEN("guide/password-manager#bitwarden"),
+    ONE_PASSWORD("guide/password-manager#1password"),
+    KEEPASSXC("guide/password-manager#keepassxc"),
+    DASHLANE("guide/password-manager#dashlane"),
+    LASTPASS("guide/password-manager#lastpass"),
+    KEEPER("guide/password-manager#keeper");
 
     private final String page;
 

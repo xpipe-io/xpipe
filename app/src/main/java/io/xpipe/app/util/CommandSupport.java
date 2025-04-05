@@ -61,9 +61,10 @@ public class CommandSupport {
     }
 
     public static boolean isInLocalPath(String executable) throws Exception {
-        var cmd = OsType.getLocal() == OsType.WINDOWS ? "where" : "which";
-        var r = LocalExec.readStdoutIfPossible(cmd, executable);
-        return r.isPresent();
+        try (var sc = LocalShell.getShell().start()) {
+            var r = sc.command(sc.getShellDialect().getWhichCommand(executable)).executeAndCheck();
+            return r;
+        }
     }
 
     public static void isInLocalPathOrThrow(String displayName, String executable) throws Exception {

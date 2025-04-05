@@ -16,7 +16,6 @@ import java.util.regex.Pattern;
 @JsonTypeName("bitwarden")
 public class BitwardenPasswordManager implements PasswordManager {
 
-    private static final UUID MASTER_PASSWORD_ID = UUID.randomUUID();
     private static ShellControl SHELL;
 
     private static synchronized ShellControl getOrStartShell() throws Exception {
@@ -30,13 +29,14 @@ public class BitwardenPasswordManager implements PasswordManager {
     @Override
     public synchronized String retrievePassword(String key) {
         try {
-            CommandSupport.isInLocalPathOrThrow("BitwardenCLI", "bw");
+            CommandSupport.isInLocalPathOrThrow("Bitwarden CLI", "bw");
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).link("https://bitwarden.com/help/cli/#download-and-install").handle();
             return null;
         }
 
-        try (var sc = getOrStartShell().start()) {
+        try {
+            var sc = getOrStartShell();
             var command = sc.command(CommandBuilder.of().add("bw", "get", "item", "xpipe-test", "--nointeraction"));
             var r = command.readStdoutAndStderr();
             if (r[1].contains("You are not logged in")) {
@@ -49,12 +49,12 @@ public class BitwardenPasswordManager implements PasswordManager {
             }
 
             if (r[1].contains("Vault is locked")) {
-                var pw = SecretManager.retrieve(new SecretRetrievalStrategy.Prompt(), "Unlock vault with your Bitwarden master password", MASTER_PASSWORD_ID, 0, true);
-                if (pw == null) {
+                var pw = AskpassAlert.queryRaw("Unlock vault with your Bitwarden master password", null);
+                if (pw.getSecret() == null) {
                     return null;
                 }
                 var cmd = sc.command(CommandBuilder.of().add("bw", "unlock", "--passwordenv", "BW_PASSWORD")
-                        .fixedEnvironment("BW_PASSWORD", pw.getSecretValue()));
+                        .fixedEnvironment("BW_PASSWORD", pw.getSecret().getSecretValue()));
                 cmd.setSensitive();
                 var out = cmd.readStdoutOrThrow();
                 var matcher = Pattern.compile("export BW_SESSION=\"(.+)\"").matcher(out);

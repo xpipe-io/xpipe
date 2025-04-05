@@ -1,6 +1,7 @@
 package io.xpipe.app.password;
 
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.JacksonMapper;
@@ -151,7 +152,10 @@ public class KeePassXcProxyClient {
             ThreadHelper.sleep(50);
         }
 
-        throw new IllegalStateException("Key exchanged timed out");
+        var ex = new IllegalStateException(
+                "KeePassXC client did not respond. Is the browser integration enabled for your KeePassXC database?");
+        ErrorEvent.preconfigure(ErrorEvent.fromThrowable(ex).expected().documentationLink(DocumentationLink.KEEPASSXC));
+        throw ex;
     }
 
     /**

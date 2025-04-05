@@ -17,7 +17,9 @@ public interface PasswordManager {
         l.add(KeePassXcManager.class);
         l.add(BitwardenPasswordManager.class);
         l.add(DashlanePasswordManager.class);
-        l.add(LastpassPasswordManager.class);
+        if (OsType.getLocal() != OsType.WINDOWS) {
+            l.add(LastpassPasswordManager.class);
+        }
         l.add(KeeperPasswordManager.class);
         if (OsType.getLocal() == OsType.WINDOWS) {
             l.add(WindowsCredentialManager.class);
