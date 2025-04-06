@@ -4,165 +4,94 @@ import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.DocumentationLink;
+import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FilePath;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SshIdentityStateManager {
 
-    private static final Map<UUID, RunningAgent> lastUsed = new HashMap<>();
+    private static RunningAgent runningAgent;
 
-    private static UUID getId(ShellControl sc) {
-        return sc.getSourceStoreId().orElse(UUID.randomUUID());
-    }
-
-    private static void handleWindowsGpgAgentStop(ShellControl sc) throws Exception {
-        var out = sc.executeSimpleStringCommand("TASKLIST /FI \"IMAGENAME eq gpg-agent.exe\"");
-        if (!out.contains("gpg-agent.exe")) {
-            return;
-        }
-
-        // Kill agent, necessary if it has the wrong configuration
-        // This sometimes takes a long time if the agent is not running. Why?
-        sc.executeSimpleCommand(CommandBuilder.of().add("gpg-connect-agent", "killagent", "/bye"));
-    }
-
-    private static void handleWindowsSshAgentStop(ShellControl sc) throws Exception {
-        var out = sc.executeSimpleStringCommand("TASKLIST /FI \"IMAGENAME eq ssh-agent.exe\"");
-        if (!out.contains("ssh-agent.exe")) {
-            return;
-        }
-
-        var msg =
-                "The Windows ssh-agent is running. This will cause it to interfere with the gpg-agent. You have to manually stop the running ssh-agent service";
-
-        if (!sc.isLocal()) {
-            var admin = sc.executeSimpleBooleanCommand("net.exe session");
-            if (!admin) {
-                // We can't stop the service on remote systems in this case
-                throw ErrorEvent.expected(new IllegalStateException(msg));
-            } else {
-                sc.executeSimpleCommand(CommandBuilder.of().add("sc", "stop", "ssh-agent"));
-            }
-        }
-
-        var r = new AtomicBoolean();
-        var event = ErrorEvent.fromMessage(msg).expected();
-        var shutdown = new ErrorAction() {
-            @Override
-            public String getName() {
-                return "Attempt to shut down ssh-agent service";
+    private static void stopWindowsAgents(boolean openssh, boolean gpg, boolean external) throws Exception {
+        try (var sc = LocalShell.getShell().start()) {
+            var pipeExists = sc.view().fileExists(FilePath.of("\\\\.\\pipe\\openssh-ssh-agent"));
+            if (!pipeExists) {
+                return;
             }
 
-            @Override
-            public String getDescription() {
-                return "Stop the service as an administrator";
+            var gpgList = sc.executeSimpleStringCommand("TASKLIST /FI \"IMAGENAME eq gpg-agent.exe\"");
+            var gpgRunning = gpgList.contains("gpg-agent.exe");
+
+            var opensshList = sc.executeSimpleStringCommand("TASKLIST /FI \"IMAGENAME eq ssh-agent.exe\"");
+            var opensshRunning = opensshList.contains("ssh-agent.exe");
+
+            if (external && !gpgRunning && !opensshRunning) {
+                throw ErrorEvent.expected(new IllegalStateException("An external password manager agent is running, but XPipe requested to use another SSH agent. You have to disable the password manager agent first."));
             }
 
-            @Override
-            public boolean handle(ErrorEvent event) {
-                r.set(true);
-                return true;
+            if (gpg && gpgRunning) {
+                // This sometimes takes a long time if the agent is not running. Why?
+                sc.executeSimpleCommand(CommandBuilder.of().add("gpg-connect-agent", "killagent", "/bye"));
             }
-        };
-        event.customAction(shutdown).handle();
 
-        if (r.get()) {
-            if (sc.getShellDialect().equals(ShellDialects.CMD)) {
-                sc.writeLine(
-                        "powershell -Command \"start-process cmd -ArgumentList ^\"/c^\", ^\"sc^\", ^\"stop^\", ^\"ssh-agent^\" -Verb runAs\"");
-            } else {
-                sc.writeLine(
-                        "powershell -Command \"start-process cmd -ArgumentList `\"/c`\", `\"sc`\", `\"stop`\", `\"ssh-agent`\" -Verb runAs\"");
-            }
-        }
-    }
+            if (openssh && opensshRunning) {
+                var msg =
+                        "The Windows OpenSSH agent is running. This will cause it to interfere with other agents. You have to manually stop the running ssh-agent service to allow other agents to work";
+                var r = new AtomicBoolean();
+                var event = ErrorEvent.fromMessage(msg).expected();
+                var shutdown = new ErrorAction() {
+                    @Override
+                    public String getName() {
+                        return "Shut down ssh-agent service";
+                    }
 
-    public static synchronized void prepareGpgAgent(ShellControl sc) throws Exception {
-        if (lastUsed.get(getId(sc)) == RunningAgent.GPG_AGENT) {
-            return;
-        }
+                    @Override
+                    public String getDescription() {
+                        return "Stop the agent service as an administrator";
+                    }
 
-        CommandSupport.isInPathOrThrow(sc, "gpg-connect-agent", "GPG connect agent executable", null);
+                    @Override
+                    public boolean handle(ErrorEvent event) {
+                        r.set(true);
+                        return true;
+                    }
+                };
+                event.customAction(shutdown).handle();
 
-        String dir;
-        if (sc.getOsType() == OsType.WINDOWS) {
-            // Always assume that ssh agent is running
-            handleWindowsSshAgentStop(sc);
-            dir = FileNames.join(
-                    sc.command(sc.getShellDialect().getPrintEnvironmentVariableCommand("APPDATA"))
-                            .readStdoutOrThrow(),
-                    "gnupg");
-        } else {
-            dir = FileNames.join(sc.getOsType().getUserHomeDirectory(sc), ".gnupg");
-        }
-
-        sc.command(sc.getShellDialect().getMkdirsCommand(dir)).execute();
-        var confFile = FileNames.join(dir, "gpg-agent.conf");
-        var content = sc.getShellDialect().createFileExistsCommand(sc, confFile).executeAndCheck()
-                ? sc.getShellDialect().getFileReadCommand(sc, confFile).readStdoutOrThrow()
-                : "";
-
-        if (sc.getOsType() == OsType.WINDOWS) {
-            if (!content.contains("enable-win32-openssh-support")) {
-                content += "\nenable-win32-openssh-support\n";
-                sc.view().writeTextFile(FilePath.of(confFile), content);
-                // reloadagent does not work correctly, so kill it
-                handleWindowsGpgAgentStop(sc);
-            }
-            sc.executeSimpleCommand(CommandBuilder.of().add("gpg-connect-agent", "/bye"));
-        } else {
-            if (!content.contains("enable-ssh-support")) {
-                content += "\nenable-ssh-support\n";
-                sc.view().writeTextFile(FilePath.of(confFile), content);
-                sc.executeSimpleCommand(CommandBuilder.of().add("gpg-connect-agent", "reloadagent", "/bye"));
-            } else {
-                sc.executeSimpleCommand(CommandBuilder.of().add("gpg-connect-agent", "/bye"));
-            }
-        }
-
-        lastUsed.put(getId(sc), RunningAgent.GPG_AGENT);
-    }
-
-    public static synchronized void prepareSshAgent(ShellControl sc) throws Exception {
-        if (lastUsed.get(getId(sc)) == RunningAgent.SSH_AGENT) {
-            return;
-        }
-
-        if (sc.getOsType() == OsType.WINDOWS) {
-            handleWindowsGpgAgentStop(sc);
-            CommandSupport.isInPathOrThrow(sc, "ssh-agent", "SSH Agent", null);
-            sc.executeSimpleBooleanCommand("ssh-agent start");
-        } else if (OsType.getLocal() == OsType.LINUX) {
-            // Use desktop session agent socket
-            // This is useful when people have misconfigured their init files to always source ssh-agent -s
-            // even if it is already set
-            if (sc.getLocalSystemAccess().supportsExecutableEnvironment()) {
-                var socketEnvVariable = System.getenv("SSH_AUTH_SOCK");
-                if (socketEnvVariable != null) {
-                    sc.command(sc.getShellDialect()
-                                    .getSetEnvironmentVariableCommand("SSH_AUTH_SOCK", socketEnvVariable))
-                            .execute();
+                if (r.get()) {
+                    if (sc.getShellDialect().equals(ShellDialects.CMD)) {
+                        sc.command(
+                                "powershell -Command \"Start-Process cmd -Wait -ArgumentList ^\"/c^\", ^\"sc^\", ^\"stop^\", ^\"ssh-agent^\" -Verb runAs\"").executeAndCheck();
+                    } else {
+                        sc.command(
+                                "powershell -Command \"Start-Process cmd -Wait -ArgumentList `\"/c`\", `\"sc`\", `\"stop`\", `\"ssh-agent`\" -Verb runAs\"").executeAndCheck();
+                    }
                 }
             }
         }
+    }
 
-        try (var c = sc.command("ssh-add -l").start()) {
+    private static void checkLocalAgentIdentities(String socketEvn) throws Exception {
+        try (var sc = LocalShell.getShell().start()) {
+            checkAgentIdentities(sc, socketEvn);
+        }
+    }
+
+    public static synchronized void checkAgentIdentities(ShellControl sc, String authSock) throws Exception {
+        try (var c = sc.command(CommandBuilder.of().add("ssh-add", "-l").fixedEnvironment("SSH_AUTH_SOCK", authSock)).start()) {
             var r = c.readStdoutAndStderr();
             if (c.getExitCode() != 0) {
                 var posixMessage = sc.getOsType() != OsType.WINDOWS ? " and the SSH_AUTH_SOCK variable." : "";
-                var ex = new IllegalStateException("Unable to list agent identities via command ssh-add -l:\n" + r[0]
-                        + "\n"
-                        + r[1]
-                        + "\nPlease check your SSH agent configuration%s.".formatted(posixMessage));
+                var ex = new IllegalStateException("Unable to list agent identities via command ssh-add -l:\n" +
+                        r[0] +
+                        "\n" +
+                        r[1] +
+                        "\nPlease check your SSH agent configuration%s.".formatted(posixMessage));
                 var eventBuilder = ErrorEvent.fromThrowable(ex).expected();
                 if (OsType.getLocal() != OsType.WINDOWS) {
                     eventBuilder.documentationLink(DocumentationLink.SSH_AGENT);
@@ -171,12 +100,116 @@ public class SshIdentityStateManager {
                 throw ex;
             }
         }
+    }
 
-        lastUsed.put(getId(sc), RunningAgent.SSH_AGENT);
+    public static synchronized void prepareLocalExternalAgent() throws Exception {
+        if (runningAgent == RunningAgent.EXTERNAL_AGENT) {
+            return;
+        }
+
+        if (OsType.getLocal() == OsType.WINDOWS) {
+            stopWindowsAgents(true, true, false);
+
+            try (var sc = LocalShell.getLocalPowershell().start()) {
+                var pipeExists = sc.view().fileExists(FilePath.of("\\\\.\\pipe\\openssh-ssh-agent"));
+                if (!pipeExists) {
+                    // No agent is running
+                    throw ErrorEvent.expected(new IllegalStateException(
+                            "An external password manager agent is set for this connection, but no external SSH agent is running. Make sure that the agent is started in your password manager"));
+                }
+            }
+        }
+
+        checkLocalAgentIdentities(null);
+
+        runningAgent = RunningAgent.EXTERNAL_AGENT;
+    }
+
+    public static synchronized void prepareRemoteGpgAgent(ShellControl sc) throws Exception {
+        if (sc.getOsType() == OsType.WINDOWS) {
+            checkAgentIdentities(sc, null);
+        } else {
+            var socketEnv = sc.command("gpgconf --list-dirs agent-ssh-socket").readStdoutOrThrow();
+            checkLocalAgentIdentities(socketEnv);
+        }
+    }
+
+    public static synchronized void prepareLocalGpgAgent() throws Exception {
+        if (runningAgent == RunningAgent.GPG_AGENT) {
+            return;
+        }
+
+        try (var sc = LocalShell.getShell().start()) {
+            CommandSupport.isInPathOrThrow(sc, "gpg-connect-agent", "GPG connect agent executable", null);
+
+            FilePath dir;
+            if (sc.getOsType() == OsType.WINDOWS) {
+                stopWindowsAgents(true, false, true);
+                var appdata = FilePath.of(sc.view().getEnvironmentVariable("APPDATA")).join("gnupg");
+                dir = appdata;
+            } else {
+                dir = sc.view().userHome().join(".gnupg");
+            }
+
+            sc.view().mkdir(dir);
+            var confFile = dir.join("gpg-agent.conf");
+            var content = sc.view().fileExists(confFile) ? sc.view().readTextFile(confFile) : "";
+
+            if (sc.getOsType() == OsType.WINDOWS) {
+                if (!content.contains("enable-win32-openssh-support")) {
+                    content += "\nenable-win32-openssh-support\n";
+                    sc.view().writeTextFile(confFile, content);
+                    // reloadagent does not work correctly, so kill it
+                    stopWindowsAgents(false, true, false);
+                }
+                sc.command(CommandBuilder.of().add("gpg-connect-agent", "/bye")).execute();
+                checkLocalAgentIdentities(null);
+            } else {
+                if (!content.contains("enable-ssh-support")) {
+                    content += "\nenable-ssh-support\n";
+                    sc.view().writeTextFile(confFile, content);
+                    sc.executeSimpleCommand(CommandBuilder.of().add("gpg-connect-agent", "reloadagent", "/bye"));
+                } else {
+                    sc.executeSimpleCommand(CommandBuilder.of().add("gpg-connect-agent", "/bye"));
+                }
+                var socketEnv = sc.command("gpgconf --list-dirs agent-ssh-socket").readStdoutOrThrow();
+                checkLocalAgentIdentities(socketEnv);
+            }
+        }
+
+        runningAgent = RunningAgent.GPG_AGENT;
+    }
+
+    public static synchronized void prepareRemoteOpenSshAgent(ShellControl sc) throws Exception {
+        if (sc.getOsType() == OsType.WINDOWS) {
+            checkAgentIdentities(sc, null);
+        } else {
+            var socketEnvVariable = System.getenv("SSH_AUTH_SOCK");
+            checkLocalAgentIdentities(socketEnvVariable);
+        }
+    }
+
+    public static synchronized void prepareLocalOpenSshAgent(ShellControl sc) throws Exception {
+        if (runningAgent == RunningAgent.SSH_AGENT) {
+            return;
+        }
+
+        if (sc.getOsType() == OsType.WINDOWS) {
+            CommandSupport.isInPathOrThrow(sc, "ssh-agent", "SSH Agent", null);
+            stopWindowsAgents(false, true, true);
+            sc.executeSimpleBooleanCommand("ssh-agent start");
+            checkLocalAgentIdentities(null);
+        } else {
+            var socketEnvVariable = System.getenv("SSH_AUTH_SOCK");
+            checkLocalAgentIdentities(socketEnvVariable);
+        }
+
+        runningAgent = RunningAgent.SSH_AGENT;
     }
 
     private enum RunningAgent {
         SSH_AGENT,
-        GPG_AGENT
+        GPG_AGENT,
+        EXTERNAL_AGENT
     }
 }

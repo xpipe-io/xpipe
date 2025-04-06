@@ -15,23 +15,14 @@ Eğer bunu karıştırırsanız, ssh size sadece şifreli hata mesajları verece
 Kimliklerinizin SSH-Agent'ta depolanması durumunda, ssh yürütülebilir dosyası, agent başlatıldığında bunları kullanabilir.
 XPipe, henüz çalışmıyorsa aracı sürecini otomatik olarak başlatacaktır.
 
+### Parola yöneticisi aracı
+
+SSH aracı işlevine sahip bir parola yöneticisi kullanıyorsanız, burada kullanmayı seçebilirsiniz. XPipe bunun başka bir aracı yapılandırmasıyla çakışmadığını doğrulayacaktır. Ancak XPipe bu aracıyı kendi başına başlatamaz, çalıştığından emin olmanız gerekir.
+
 ### GPG Agent
 
 Kimlikleriniz örneğin bir akıllı kartta saklanıyorsa, bunları SSH istemcisine `gpg-agent` aracılığıyla sağlamayı seçebilirsiniz.
 Bu seçenek, henüz etkinleştirilmemişse aracının SSH desteğini otomatik olarak etkinleştirecek ve GPG aracı arka plan programını doğru ayarlarla yeniden başlatacaktır.
-
-### Yubikey PIV
-
-Kimlikleriniz Yubikey'in PIV akıllı kart işlevi ile saklanıyorsa, şunları geri alabilirsiniz
-yubico PIV Aracı ile birlikte gelen Yubico'nun YKCS11 kütüphanesi ile.
-
-Bu özelliği kullanabilmek için güncel bir OpenSSH yapısına ihtiyacınız olduğunu unutmayın.
-
-### Özel PKCS#11 kütüphanesi
-
-Bu, OpenSSH istemcisine kimlik doğrulamasını gerçekleştirecek olan belirtilen paylaşılan kütüphane dosyasını yüklemesi talimatını verecektir.
-
-Bu özelliği kullanabilmek için güncel bir OpenSSH yapısına ihtiyacınız olduğunu unutmayın.
 
 ### Pageant (Windows)
 
@@ -45,6 +36,19 @@ Eğer çalışıyorsa, XPipe uygun adlandırılmış boruyu
 
 Kimliklerinizin pageant aracısında saklanması durumunda, aracı başlatılırsa ssh yürütülebilir dosyası bunları kullanabilir.
 XPipe, henüz çalışmıyorsa aracı sürecini otomatik olarak başlatacaktır.
+
+### Yubikey PIV
+
+Kimlikleriniz Yubikey'in PIV akıllı kart işlevi ile saklanıyorsa, şunları geri alabilirsiniz
+yubico PIV Aracı ile birlikte gelen Yubico'nun YKCS11 kütüphanesi ile.
+
+Bu özelliği kullanabilmek için güncel bir OpenSSH yapısına ihtiyacınız olduğunu unutmayın.
+
+### Özel PKCS#11 kütüphanesi
+
+Bu, OpenSSH istemcisine kimlik doğrulamasını gerçekleştirecek olan belirtilen paylaşılan kütüphane dosyasını yüklemesi talimatını verecektir.
+
+Bu özelliği kullanabilmek için güncel bir OpenSSH yapısına ihtiyacınız olduğunu unutmayın.
 
 ### Diğer dış kaynak
 

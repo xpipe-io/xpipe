@@ -10,7 +10,6 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileNames;
-import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.ValidationException;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -22,13 +21,13 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.io.IOException;
-import java.nio.file.Path;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = SshIdentityStrategy.None.class),
     @JsonSubTypes.Type(value = SshIdentityStrategy.File.class),
     @JsonSubTypes.Type(value = SshIdentityStrategy.SshAgent.class),
+    @JsonSubTypes.Type(value = SshIdentityStrategy.PasswordManagerAgent.class),
     @JsonSubTypes.Type(value = SshIdentityStrategy.Pageant.class),
     @JsonSubTypes.Type(value = SshIdentityStrategy.GpgAgent.class),
     @JsonSubTypes.Type(value = SshIdentityStrategy.YubikeyPiv.class),
@@ -70,11 +69,28 @@ public interface SshIdentityStrategy {
 
         @Override
         public void prepareParent(ShellControl parent) throws Exception {
-            SshIdentityStateManager.prepareSshAgent(parent);
+            if (parent.isLocal()) {
+                SshIdentityStateManager.prepareLocalOpenSshAgent(parent);
+            } else {
+                SshIdentityStateManager.prepareRemoteOpenSshAgent(parent);
+            }
         }
 
         @Override
         public void buildCommand(CommandBuilder builder) {
+            // Use desktop session agent socket
+            // This is useful when people have misconfigured their init files to always source ssh-agent -s
+            // even if it is already set
+            builder.environment("SSH_AUTH_SOCK", sc -> {
+                if (!sc.isLocal() || sc.getOsType() == OsType.WINDOWS) {
+                    return null;
+                }
+
+                var socketEnvVariable = System.getenv("SSH_AUTH_SOCK");
+                return socketEnvVariable;
+            });
+
+            builder.add("-oIdentitiesOnly=no");
             if (forwardAgent) {
                 builder.add(1, "-A");
             }
@@ -109,6 +125,7 @@ public interface SshIdentityStrategy {
 
         @Override
         public void buildCommand(CommandBuilder builder) {
+            builder.add("-oIdentitiesOnly=no");
             builder.environment("SSH_AUTH_SOCK", parent -> {
                 if (parent.getOsType().equals(OsType.WINDOWS)) {
                     return getPageantWindowsPipe(parent);
@@ -146,6 +163,66 @@ public interface SshIdentityStrategy {
 
             var file = "\\\\.\\pipe\\" + name;
             return file;
+        }
+    }
+
+    @JsonTypeName("passwordManagerAgent")
+    @Value
+    @Jacksonized
+    @Builder
+    class PasswordManagerAgent implements SshIdentityStrategy {
+
+        boolean forwardAgent;
+
+        @Override
+        public void prepareParent(ShellControl parent) throws Exception {
+            if (parent.isLocal()) {
+                SshIdentityStateManager.prepareLocalExternalAgent();
+            } else {
+                SshIdentityStateManager.checkAgentIdentities(parent, null);
+            }
+        }
+
+        @Override
+        public void buildCommand(CommandBuilder builder) {
+            builder.add("-oIdentitiesOnly=no");
+            if (forwardAgent) {
+                builder.add(1, "-A");
+            }
+        }
+    }
+    @Value
+    @Jacksonized
+    @Builder
+    @JsonTypeName("gpgAgent")
+    class GpgAgent implements SshIdentityStrategy {
+
+        boolean forwardAgent;
+
+        @Override
+        public void prepareParent(ShellControl parent) throws Exception {
+            parent.requireLicensedFeature("gpgAgent");
+            if (parent.isLocal()) {
+                SshIdentityStateManager.prepareLocalGpgAgent();
+            } else {
+                SshIdentityStateManager.prepareRemoteGpgAgent(parent);
+            }
+        }
+
+        @Override
+        public void buildCommand(CommandBuilder builder) {
+            builder.add("-oIdentitiesOnly=no");
+            builder.environment("SSH_AUTH_SOCK", sc -> {
+                if (sc.getOsType() == OsType.WINDOWS) {
+                    return null;
+                }
+
+                var r = sc.executeSimpleStringCommand("gpgconf --list-dirs agent-ssh-socket");
+                return r;
+            });
+            if (forwardAgent) {
+                builder.add(1, "-A");
+            }
         }
     }
 
@@ -244,36 +321,6 @@ public interface SshIdentityStrategy {
         @Override
         public SecretRetrievalStrategy getAskpassStrategy() {
             return password;
-        }
-    }
-
-    @Value
-    @Jacksonized
-    @Builder
-    @JsonTypeName("gpgAgent")
-    class GpgAgent implements SshIdentityStrategy {
-
-        boolean forwardAgent;
-
-        @Override
-        public void prepareParent(ShellControl parent) throws Exception {
-            parent.requireLicensedFeature("gpgAgent");
-            SshIdentityStateManager.prepareGpgAgent(parent);
-        }
-
-        @Override
-        public void buildCommand(CommandBuilder builder) {
-            builder.environment("SSH_AUTH_SOCK", sc -> {
-                if (sc.getOsType() == OsType.WINDOWS) {
-                    return null;
-                }
-
-                var r = sc.executeSimpleStringCommand("gpgconf --list-dirs agent-ssh-socket");
-                return r;
-            });
-            if (forwardAgent) {
-                builder.add(1, "-A");
-            }
         }
     }
 

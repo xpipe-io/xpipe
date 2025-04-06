@@ -200,6 +200,9 @@ public class AppJacksonModule extends SimpleModule {
                     return null;
                 }
                 value = JacksonMapper.getDefault().readValue(new CharArrayReader(s), type);
+                if (value == null) {
+                    return null;
+                }
             }
             var perUser = useCurrentSecretKey;
             return perUser

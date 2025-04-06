@@ -15,10 +15,27 @@ Si tu confonds les deux, ssh ne te donnera que des messages d'erreur énigmatiqu
 Si tes identités sont stockées dans l'agent SSH, l'exécutable ssh peut les utiliser si l'agent est démarré.
 XPipe démarrera automatiquement le processus de l'agent s'il n'est pas encore en cours d'exécution.
 
+### Agent de gestion des mots de passe
+
+Si tu utilises un gestionnaire de mots de passe avec une fonctionnalité d'agent SSH, tu peux choisir de l'utiliser ici. XPipe vérifiera qu'il n'y a pas de conflit avec une autre configuration d'agent. XPipe ne peut cependant pas démarrer cet agent de lui-même, tu dois t'assurer qu'il est en cours d'exécution.
+
 ### Agent GPG
 
-Si tes identités sont stockées par exemple sur une carte à puce, tu peux choisir de les fournir au client SSH via l'`gpg-agent`.
+Si tes identités sont stockées par exemple sur une carte à puce, tu peux choisir de les fournir au client SSH via l'agent `gpg-agent`.
 Cette option activera automatiquement la prise en charge SSH de l'agent si elle n'est pas encore activée et redémarrera le démon de l'agent GPG avec les bons paramètres.
+
+### Pageant (Windows)
+
+Si tu utilises pageant sous Windows, XPipe vérifiera d'abord si pageant est en cours d'exécution.
+En raison de la nature de pageant, il est de ta responsabilité de le faire fonctionner
+tu dois en effet spécifier manuellement toutes les clés que tu souhaites ajouter à chaque fois.
+S'il fonctionne, XPipe passera le bon tuyau nommé via
+`-oIdentityAgent=...` à ssh, tu n'as pas besoin d'inclure de fichiers de configuration personnalisés.
+
+### Pageant (Linux & macOS)
+
+Dans le cas où tes identités sont stockées dans l'agent pageant, l'exécutable ssh peut les utiliser si l'agent est démarré.
+XPipe démarrera automatiquement le processus de l'agent s'il n'est pas encore en cours d'exécution.
 
 ### Yubikey PIV
 
@@ -32,19 +49,6 @@ Note que tu as besoin d'une version à jour d'OpenSSH pour utiliser cette foncti
 Ceci demandera au client OpenSSH de charger le fichier de bibliothèque partagée spécifié, qui gérera l'authentification.
 
 Note que tu as besoin d'une version à jour d'OpenSSH pour utiliser cette fonction.
-
-### Pageant (Windows)
-
-Si tu utilises pageant sous Windows, XPipe vérifiera d'abord si pageant est en cours d'exécution.
-En raison de la nature de pageant, il est de ta responsabilité de le faire fonctionner
-tu dois en effet spécifier manuellement toutes les clés que tu souhaites ajouter à chaque fois.
-Si c'est le cas, XPipe passera le bon tuyau nommé via
-`-oIdentityAgent=...` à ssh, tu n'as pas besoin d'inclure de fichiers de configuration personnalisés.
-
-### Pageant (Linux & macOS)
-
-Dans le cas où tes identités sont stockées dans l'agent pageant, l'exécutable ssh peut les utiliser si l'agent est démarré.
-XPipe démarrera automatiquement le processus de l'agent s'il n'est pas encore en cours d'exécution.
 
 ### Autre source externe
 
