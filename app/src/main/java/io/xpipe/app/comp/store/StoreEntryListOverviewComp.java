@@ -14,6 +14,7 @@ import io.xpipe.core.process.OsType;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -134,17 +135,11 @@ public class StoreEntryListOverviewComp extends SimpleComp {
         var b = new IconButtonComp("mdi2l-layers", () -> {
             batchMode.setValue(!batchMode.getValue());
         });
+        b.styleClass("batch-mode-button");
         b.apply(struc -> {
-            struc.get()
-                    .opacityProperty()
-                    .bind(Bindings.createDoubleBinding(
-                            () -> {
-                                if (batchMode.getValue()) {
-                                    return 1.0;
-                                }
-                                return 0.4;
-                            },
-                            batchMode));
+            batchMode.subscribe(a -> {
+                struc.get().pseudoClassStateChanged(PseudoClass.getPseudoClass("active"), a);
+            });
             struc.get().getStyleClass().remove(Styles.FLAT);
         });
         return b;
