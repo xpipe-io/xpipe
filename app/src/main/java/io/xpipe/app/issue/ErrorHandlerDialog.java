@@ -78,7 +78,11 @@ public class ErrorHandlerDialog {
                         false));
                 errorModal.addButtonBarComp(Comp.hspacer());
             }
-            errorModal.addButton(ModalButton.ok());
+            var hasCustomActions = event.getCustomActions().size() > 0 || event.getLink() != null;
+            var hideOk = event.isRequiresCustomAction() && hasCustomActions;
+            if (!hideOk) {
+                errorModal.addButton(ModalButton.ok());
+            }
             modal.set(errorModal);
             AppDialog.showAndWait(modal.get());
             if (comp.getTakenAction().getValue() == null) {

@@ -1,6 +1,7 @@
 package io.xpipe.app.core.mode;
 
 import io.xpipe.app.beacon.AppBeaconServer;
+import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppDebugModeCheck;
 import io.xpipe.app.core.check.AppTempCheck;
@@ -8,6 +9,7 @@ import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviour;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.FailableRunnable;
@@ -173,6 +175,18 @@ public abstract class OperationMode {
             // Linux runners don't support graphics
             if (OsType.getLocal() != OsType.LINUX) {
                 OperationMode.switchToSyncOrThrow(OperationMode.GUI);
+                ThreadHelper.sleep(5000);
+                BrowserFullSessionModel.DEFAULT.openFileSystemSync(
+                        DataStorage.get().local().ref(),
+                        m -> m.getFileSystem().getShell().orElseThrow().view().userHome(),
+                        null,
+                        true);
+                AppLayoutModel.get().selectSettings();
+                ThreadHelper.sleep(1000);
+                AppLayoutModel.get().selectLicense();
+                ThreadHelper.sleep(1000);
+                AppLayoutModel.get().selectBrowser();
+                ThreadHelper.sleep(5000);
             }
             OperationMode.shutdown(false);
             return;

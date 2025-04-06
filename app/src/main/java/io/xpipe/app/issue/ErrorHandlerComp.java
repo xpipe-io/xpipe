@@ -135,6 +135,11 @@ public class ErrorHandlerComp extends SimpleComp {
             actionBox.getChildren().add(createActionComp(ErrorAction.openDocumentation(event.getLink())));
         }
 
+        var hasCustomActions = event.getCustomActions().size() > 0 || event.getLink() != null;
+        if (hasCustomActions && !event.isRequiresCustomAction()) {
+            actionBox.getChildren().add(createActionComp(ErrorAction.ignore()));
+        }
+
         if (actionBox.getChildren().size() > 0) {
             actionBox.getChildren().addFirst(header);
             content.getChildren().add(new Separator(Orientation.HORIZONTAL));
