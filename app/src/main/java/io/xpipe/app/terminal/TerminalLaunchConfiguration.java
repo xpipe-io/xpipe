@@ -17,8 +17,8 @@ import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FilePath;
 
-import lombok.Value;
-import lombok.With;
+import lombok.*;
+import lombok.experimental.NonFinal;
 
 import java.nio.file.Files;
 import java.time.Instant;
@@ -27,16 +27,18 @@ import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @Value
-@With
+@RequiredArgsConstructor
+@AllArgsConstructor
 public class TerminalLaunchConfiguration {
     DataStoreColor color;
     String coloredTitle;
     String cleanTitle;
     boolean preferTabs;
-
-    FilePath scriptFile;
-
+    String scriptContent;
     ShellDialect scriptDialect;
+
+    @NonFinal
+    FilePath scriptFile = null;
 
     private static final DateTimeFormatter DATE_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").withZone(ZoneId.systemDefault());
@@ -52,11 +54,10 @@ public class TerminalLaunchConfiguration {
         var color = entry != null ? DataStorage.get().getEffectiveColor(entry) : null;
         var d = ProcessControlProvider.get().getEffectiveLocalDialect();
         var launcherScript = d.terminalLauncherScript(request, adjustedTitle, promptRestart);
-        var preparationScript = ScriptHelper.createLocalExecScript(launcherScript);
 
         if (!AppPrefs.get().enableTerminalLogging().get()) {
             var config = new TerminalLaunchConfiguration(
-                    entry != null ? color : null, adjustedTitle, cleanTitle, preferTabs, preparationScript, d);
+                    entry != null ? color : null, adjustedTitle, cleanTitle, preferTabs, launcherScript, d);
             return config;
         }
 
@@ -86,15 +87,14 @@ public class TerminalLaunchConfiguration {
                                 .formatted(
                                         logFile.getFileName().toString(),
                                         logFile,
-                                        preparationScript,
+                                        launcherScript,
                                         logFile.getFileName().toString());
-                var ps = ScriptHelper.createExecScript(ShellDialects.POWERSHELL, sc, content);
                 var config = new TerminalLaunchConfiguration(
                         entry != null ? color : null,
                         adjustedTitle,
                         cleanTitle,
                         preferTabs,
-                        ps,
+                        content,
                         ShellDialects.POWERSHELL);
                 return config;
             } else {
@@ -114,23 +114,34 @@ public class TerminalLaunchConfiguration {
                        script -e -q "%s" "%s"
                        echo "Transcript stopped, output file is sessions/%s"
                        """
-                                .formatted(logFile.getFileName(), logFile, preparationScript, logFile.getFileName())
+                                .formatted(logFile.getFileName(), logFile, launcherScript, logFile.getFileName())
                         : """
                        echo "Transcript started, output file is sessions/%s"
                        script --quiet --command "%s" "%s"
                        echo "Transcript stopped, output file is sessions/%s"
                        """
-                                .formatted(logFile.getFileName(), preparationScript, logFile, logFile.getFileName());
-                var ps = ScriptHelper.createExecScript(sc.getShellDialect(), sc, content);
+                                .formatted(logFile.getFileName(), launcherScript, logFile, logFile.getFileName());
                 var config = new TerminalLaunchConfiguration(
-                        entry != null ? color : null, adjustedTitle, cleanTitle, preferTabs, ps, sc.getShellDialect());
+                        entry != null ? color : null, adjustedTitle, cleanTitle, preferTabs, content, sc.getShellDialect());
                 return config;
             }
         }
     }
 
-    public CommandBuilder getDialectLaunchCommand() {
-        var open = scriptDialect.getOpenScriptCommand(scriptFile.toString());
+    public TerminalLaunchConfiguration withScript(ShellDialect d, String content) {
+        return new TerminalLaunchConfiguration(color, coloredTitle, cleanTitle, preferTabs, content, d);
+    }
+
+    @SneakyThrows
+    public synchronized FilePath getScriptFile() {
+        if (scriptFile == null) {
+            scriptFile = ScriptHelper.createExecScript(scriptDialect, LocalShell.getShell(), scriptContent);
+        }
+        return scriptFile;
+    }
+
+    public synchronized CommandBuilder getDialectLaunchCommand() {
+        var open = scriptDialect.getOpenScriptCommand(getScriptFile().toString());
         return open;
     }
 }

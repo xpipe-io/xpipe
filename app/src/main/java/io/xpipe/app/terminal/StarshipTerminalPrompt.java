@@ -80,7 +80,7 @@ disabled = true
             return true;
         }
 
-        var extension = OsType.getLocal() == OsType.WINDOWS ? ".exe" : "";
+        var extension = sc.getOsType() == OsType.WINDOWS ? ".exe" : "";
         return sc.view().fileExists(getBinaryDirectory(sc).join("starship" + extension));
     }
 

@@ -6,7 +6,7 @@ import java.util.*;
 
 public class TerminalMultiplexerManager {
 
-    private static final Set<UUID> connectionHubRequests = new HashSet<>();
+    private static final Map<UUID, TerminalMultiplexer> connectionHubRequests = new HashMap<>();
 
     public static Optional<TerminalMultiplexer> getEffectiveMultiplexer() {
         var multiplexer = AppPrefs.get().terminalMultiplexer().getValue();
@@ -14,15 +14,16 @@ public class TerminalMultiplexerManager {
     }
 
     public static boolean requiresNewTerminalSession(UUID requestUuid) {
-        if (getEffectiveMultiplexer().isEmpty()) {
-            connectionHubRequests.add(requestUuid);
+        var mult = getEffectiveMultiplexer();
+        if (mult.isEmpty()) {
+            connectionHubRequests.put(requestUuid, null);
             return true;
         }
 
         var hasTerminal = TerminalView.get().getSessions().stream()
                 .anyMatch(shellSession -> shellSession.getTerminal().isRunning()
-                        && connectionHubRequests.contains(shellSession.getRequest()));
-        connectionHubRequests.add(requestUuid);
+                        && mult.get() == connectionHubRequests.get(shellSession.getRequest()));
+        connectionHubRequests.put(requestUuid, mult.get());
         return !hasTerminal;
     }
 }

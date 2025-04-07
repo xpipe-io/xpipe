@@ -149,14 +149,7 @@ public class TerminalView {
             return Optional.empty();
         }
 
-        // Adjust for terminal logging script setup
         var off = trackableTerminalType.getProcessHierarchyOffset();
-        if (AppPrefs.get().enableTerminalLogging().get() && OsType.getLocal() != OsType.WINDOWS) {
-            off += 2;
-        } else if (AppPrefs.get().enableTerminalLogging().get() && OsType.getLocal() == OsType.WINDOWS) {
-            off += ShellDialects.isPowershell(ProcessControlProvider.get().getEffectiveLocalDialect()) ? 0 : 1;
-        }
-
         var current = Optional.of(shell);
         for (int i = 0; i < 1 + off; i++) {
             current = current.flatMap(processHandle -> processHandle.parent());

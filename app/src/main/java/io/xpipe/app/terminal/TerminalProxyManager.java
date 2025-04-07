@@ -48,7 +48,7 @@ public class TerminalProxyManager {
         }
 
         var id = ref.get().getProvider().getId();
-        return List.of("cygwin", "wsl").contains(id);
+        return id.equals("wsl");
     }
 
     public static Optional<ShellControl> getProxy() {

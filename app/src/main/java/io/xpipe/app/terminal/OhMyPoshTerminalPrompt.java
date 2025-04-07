@@ -147,7 +147,7 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
             return true;
         }
 
-        var extension = OsType.getLocal() == OsType.WINDOWS ? ".exe" : "";
+        var extension = sc.getOsType() == OsType.WINDOWS ? ".exe" : "";
         return sc.view().fileExists(getBinaryDirectory(sc).join("oh-my-posh" + extension));
     }
 

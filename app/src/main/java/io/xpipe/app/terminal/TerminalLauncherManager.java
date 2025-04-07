@@ -85,10 +85,10 @@ public class TerminalLauncherManager {
             throw new BeaconClientException("Unable to find terminal child process " + pid);
         }
         var shell = byPid.get().parent().orElseThrow();
-        if (req.getPid() != -1 && shell.pid() != req.getPid()) {
+        if (req.getShellPid() != -1 && shell.pid() != req.getShellPid()) {
             throw new BeaconClientException("Wrong launch context");
         }
-        req.setPid(shell.pid());
+        req.setShellPid(shell.pid());
     }
 
     public static void waitExchange(UUID request) throws BeaconClientException, BeaconServerException {

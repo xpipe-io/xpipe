@@ -24,7 +24,7 @@ public class TerminalLaunchRequest {
 
     @Setter
     @NonFinal
-    long pid;
+    long shellPid;
 
     @Setter
     @NonFinal
@@ -94,8 +94,8 @@ public class TerminalLaunchRequest {
         };
 
         try {
-            var command = TerminalLauncher.createLaunchCommand(processControl, config, wd);
-            var file = ScriptHelper.createLocalExecScript(command);
+            var openCommand = processControl.prepareTerminalOpen(config, wd);
+            var file = ScriptHelper.createLocalExecScript(openCommand);
             setResult(new TerminalLaunchResult.ResultSuccess(file.asLocalPath()));
         } catch (Exception e) {
             setResult(new TerminalLaunchResult.ResultFailure(e));
