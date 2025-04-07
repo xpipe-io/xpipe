@@ -96,8 +96,10 @@ public class BaseMode extends OperationMode {
                 },
                 () -> {
                     shellLoaded.await();
-                    AppMainWindow.loadingText("loadingGit");
                     DataStorageSyncHandler.getInstance().init();
+                    if (DataStorageSyncHandler.getInstance().supportsSync()) {
+                        AppMainWindow.loadingText("loadingGit");
+                    }
                     DataStorageSyncHandler.getInstance().retrieveSyncedData();
                     AppMainWindow.loadingText("loadingSettings");
                     AppPrefs.initSharedRemote();
