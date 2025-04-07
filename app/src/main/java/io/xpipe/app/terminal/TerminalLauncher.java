@@ -288,7 +288,6 @@ public class TerminalLauncher {
         }
     }
 
-
     private static Optional<TerminalLaunchConfiguration> launchProxy(UUID request, TerminalInitScriptConfig initScriptConfig, TerminalLaunchConfiguration launchConfiguration) throws Exception {
         var proxyControl = TerminalProxyManager.getProxy();
         if (proxyControl.isEmpty()) {

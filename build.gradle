@@ -127,10 +127,23 @@ project.ext {
     devJavafxVersion = '25-ea+10'
     platformName = getPlatformName()
     jvmRunArgs = [
+            "-Dio.xpipe.app.arch=$rootProject.arch",
+            "-Dfile.encoding=UTF-8",
+            "-Dvisualvm.display.name=XPipe",
+            "-Djavafx.preloader=io.xpipe.app.core.AppPreloader",
+            "-Djdk.virtualThreadScheduler.parallelism=8"
+    ]
+
+    // Disable JDK24 warnings
+    jvmRunArgs += [
             "--enable-native-access=com.sun.jna",
             "--enable-native-access=javafx.graphics",
             "--enable-native-access=javafx.web",
             "--sun-misc-unsafe-memory-access=allow",
+    ]
+
+    // Module access fixes
+    jvmRunArgs += [
             "--add-opens", "java.base/java.io=io.xpipe.ext.proc",
             "--add-opens", "org.apache.commons.io/org.apache.commons.io.input=io.xpipe.ext.proc",
             "--add-opens", "net.synedra.validatorfx/net.synedra.validatorfx=io.xpipe.app",
@@ -140,12 +153,7 @@ project.ext {
             "--add-opens", "javafx.graphics/com.sun.glass.ui=io.xpipe.app",
             "--add-opens", "javafx.graphics/javafx.stage=io.xpipe.app",
             "--add-opens", "javafx.graphics/com.sun.javafx.tk=io.xpipe.app",
-            "--add-opens", "javafx.graphics/com.sun.javafx.tk.quantum=io.xpipe.app",
-            "-Dio.xpipe.app.arch=$rootProject.arch",
-            "-Dfile.encoding=UTF-8",
-            "-Dvisualvm.display.name=XPipe",
-            "-Djavafx.preloader=io.xpipe.app.core.AppPreloader",
-            "-Djdk.virtualThreadScheduler.parallelism=8"
+            "--add-opens", "javafx.graphics/com.sun.javafx.tk.quantum=io.xpipe.app"
     ]
 
     // Use project liliput
@@ -154,9 +162,11 @@ project.ext {
     // GC config
     jvmRunArgs += ['-XX:+UseG1GC', '-Xms300m', '-Xmx4G', '-XX:GCTimeRatio=9', '-XX:+UseStringDeduplication'];
 
-    if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+    // Fix platform theme detection on macOS
+    if (os.isMacOsX()) {
         jvmRunArgs += ["-Dapple.awt.application.appearance=system"]
     }
+
     useBundledJavaFx = fullVersion
     useBundledJna = fullVersion
     announce = System.getenv('SKIP_ANNOUNCEMENT') == null || !Boolean.parseBoolean(System.getenv('SKIP_ANNOUNCEMENT'))
