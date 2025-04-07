@@ -191,8 +191,13 @@
     -fx-border-color: -color-border-default;
 }
 
-.browser .chooser-selection {
-    -fx-background-color: -color-bg-default;
+.browser.chooser {
+    -fx-padding: -11 -3 -10 -3;
+}
+
+.chooser-selection {
+    -fx-background-color: -color-bg-subtle;
+    -fx-background-radius: 2;
 }
 
 .browser .singular {

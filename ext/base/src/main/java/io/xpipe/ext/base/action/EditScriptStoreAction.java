@@ -1,10 +1,11 @@
 package io.xpipe.ext.base.action;
 
-import io.xpipe.app.comp.store.StoreCreationComp;
+import io.xpipe.app.comp.store.StoreCreationDialog;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.ext.base.script.SimpleScriptStore;
 
 import javafx.beans.value.ObservableValue;
@@ -43,8 +44,8 @@ public class EditScriptStoreAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<SimpleScriptStore> store) {
-                return "mdal-edit";
+            public LabelGraphic getIcon(DataStoreEntryRef<SimpleScriptStore> store) {
+                return new LabelGraphic.IconGraphic("mdal-edit");
             }
 
             @Override
@@ -61,7 +62,7 @@ public class EditScriptStoreAction implements ActionProvider {
 
         @Override
         public void execute() {
-            StoreCreationComp.showEdit(store);
+            StoreCreationDialog.showEdit(store);
         }
     }
 }

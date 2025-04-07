@@ -40,6 +40,7 @@ open module io.xpipe.app {
     exports io.xpipe.app.resources;
     exports io.xpipe.app.comp;
     exports io.xpipe.app.icon;
+    exports io.xpipe.app.password;
 
     requires com.sun.jna;
     requires com.sun.jna.platform;
@@ -55,7 +56,6 @@ open module io.xpipe.app {
     requires io.xpipe.modulefs;
     requires io.xpipe.core;
     requires static lombok;
-    requires java.desktop;
     requires org.apache.commons.io;
     requires org.apache.commons.lang3;
     requires javafx.base;
@@ -68,13 +68,11 @@ open module io.xpipe.app {
     requires org.kordamp.ikonli.material;
     requires io.sentry;
     requires io.xpipe.beacon;
-    requires org.kohsuke.github;
     requires info.picocli;
     requires java.instrument;
     requires java.management;
     requires jdk.management;
     requires jdk.management.agent;
-    requires net.steppschuh.markdowngenerator;
     requires com.shinyhut.vernacular;
     requires org.kordamp.ikonli.core;
     requires jdk.httpserver;
@@ -93,6 +91,7 @@ open module io.xpipe.app {
     requires jdk.jdwp.agent;
     requires java.net.http;
     requires org.bouncycastle.provider;
+    requires org.jetbrains.annotations;
 
     uses TerminalLauncher;
     uses io.xpipe.app.ext.ActionProvider;

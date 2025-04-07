@@ -34,7 +34,7 @@ public class UpdateCheckComp extends SimpleComp {
     private void showAlert() {
         ThreadHelper.runFailableAsync(() -> {
             AppDistributionType.get().getUpdateHandler().refreshUpdateCheckSilent(false, false);
-            UpdateAvailableDialog.showIfNeeded();
+            UpdateAvailableDialog.showIfNeeded(false);
         });
     }
 
@@ -54,9 +54,10 @@ public class UpdateCheckComp extends SimpleComp {
                     }
 
                     if (updateReady.getValue()) {
-                        var prefix = !AppDistributionType.get().getUpdateHandler().supportsDirectInstallation()
-                                ? AppI18n.get("updateReadyPortable")
-                                : AppI18n.get("updateReady");
+                        var prefix =
+                                !AppDistributionType.get().getUpdateHandler().supportsDirectInstallation()
+                                        ? AppI18n.get("updateReadyPortable")
+                                        : AppI18n.get("updateReady");
                         var version = "Version "
                                 + AppDistributionType.get()
                                         .getUpdateHandler()

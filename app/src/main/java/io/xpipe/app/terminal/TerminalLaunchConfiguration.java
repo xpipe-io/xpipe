@@ -4,7 +4,7 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataColor;
+import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.LicenseProvider;
@@ -27,13 +27,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @Value
+@With
 public class TerminalLaunchConfiguration {
-    DataColor color;
+    DataStoreColor color;
     String coloredTitle;
     String cleanTitle;
     boolean preferTabs;
 
-    @With
     FilePath scriptFile;
 
     ShellDialect scriptDialect;
@@ -42,11 +42,16 @@ public class TerminalLaunchConfiguration {
             DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").withZone(ZoneId.systemDefault());
 
     public static TerminalLaunchConfiguration create(
-            UUID request, DataStoreEntry entry, String cleanTitle, String adjustedTitle, boolean preferTabs)
+            UUID request,
+            DataStoreEntry entry,
+            String cleanTitle,
+            String adjustedTitle,
+            boolean preferTabs,
+            boolean promptRestart)
             throws Exception {
         var color = entry != null ? DataStorage.get().getEffectiveColor(entry) : null;
         var d = ProcessControlProvider.get().getEffectiveLocalDialect();
-        var launcherScript = d.terminalLauncherScript(request, adjustedTitle);
+        var launcherScript = d.terminalLauncherScript(request, adjustedTitle, promptRestart);
         var preparationScript = ScriptHelper.createLocalExecScript(launcherScript);
 
         if (!AppPrefs.get().enableTerminalLogging().get()) {
@@ -63,7 +68,7 @@ public class TerminalLaunchConfiguration {
 
         var logDir = AppProperties.get().getDataDir().resolve("sessions");
         Files.createDirectories(logDir);
-        var logFile = logDir.resolve(new FilePath(DataStorage.get().getStoreEntryDisplayName(entry) + " ("
+        var logFile = logDir.resolve(FilePath.of(DataStorage.get().getStoreEntryDisplayName(entry) + " ("
                         + DATE_FORMATTER.format(Instant.now()) + ").log")
                 .fileSystemCompatible(OsType.getLocal())
                 .toString()

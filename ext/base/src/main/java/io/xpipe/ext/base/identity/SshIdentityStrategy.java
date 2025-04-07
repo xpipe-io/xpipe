@@ -27,6 +27,7 @@ import java.io.IOException;
     @JsonSubTypes.Type(value = SshIdentityStrategy.None.class),
     @JsonSubTypes.Type(value = SshIdentityStrategy.File.class),
     @JsonSubTypes.Type(value = SshIdentityStrategy.SshAgent.class),
+    @JsonSubTypes.Type(value = SshIdentityStrategy.PasswordManagerAgent.class),
     @JsonSubTypes.Type(value = SshIdentityStrategy.Pageant.class),
     @JsonSubTypes.Type(value = SshIdentityStrategy.GpgAgent.class),
     @JsonSubTypes.Type(value = SshIdentityStrategy.YubikeyPiv.class),
@@ -68,11 +69,28 @@ public interface SshIdentityStrategy {
 
         @Override
         public void prepareParent(ShellControl parent) throws Exception {
-            SshIdentityStateManager.prepareSshAgent(parent);
+            if (parent.isLocal()) {
+                SshIdentityStateManager.prepareLocalOpenSshAgent(parent);
+            } else {
+                SshIdentityStateManager.prepareRemoteOpenSshAgent(parent);
+            }
         }
 
         @Override
         public void buildCommand(CommandBuilder builder) {
+            // Use desktop session agent socket
+            // This is useful when people have misconfigured their init files to always source ssh-agent -s
+            // even if it is already set
+            builder.environment("SSH_AUTH_SOCK", sc -> {
+                if (!sc.isLocal() || sc.getOsType() == OsType.WINDOWS) {
+                    return null;
+                }
+
+                var socketEnvVariable = System.getenv("SSH_AUTH_SOCK");
+                return socketEnvVariable;
+            });
+
+            builder.add("-oIdentitiesOnly=no");
             if (forwardAgent) {
                 builder.add(1, "-A");
             }
@@ -107,6 +125,7 @@ public interface SshIdentityStrategy {
 
         @Override
         public void buildCommand(CommandBuilder builder) {
+            builder.add("-oIdentitiesOnly=no");
             builder.environment("SSH_AUTH_SOCK", parent -> {
                 if (parent.getOsType().equals(OsType.WINDOWS)) {
                     return getPageantWindowsPipe(parent);
@@ -147,6 +166,66 @@ public interface SshIdentityStrategy {
         }
     }
 
+    @JsonTypeName("passwordManagerAgent")
+    @Value
+    @Jacksonized
+    @Builder
+    class PasswordManagerAgent implements SshIdentityStrategy {
+
+        boolean forwardAgent;
+
+        @Override
+        public void prepareParent(ShellControl parent) throws Exception {
+            if (parent.isLocal()) {
+                SshIdentityStateManager.prepareLocalExternalAgent();
+            } else {
+                SshIdentityStateManager.checkAgentIdentities(parent, null);
+            }
+        }
+
+        @Override
+        public void buildCommand(CommandBuilder builder) {
+            builder.add("-oIdentitiesOnly=no");
+            if (forwardAgent) {
+                builder.add(1, "-A");
+            }
+        }
+    }
+    @Value
+    @Jacksonized
+    @Builder
+    @JsonTypeName("gpgAgent")
+    class GpgAgent implements SshIdentityStrategy {
+
+        boolean forwardAgent;
+
+        @Override
+        public void prepareParent(ShellControl parent) throws Exception {
+            parent.requireLicensedFeature("gpgAgent");
+            if (parent.isLocal()) {
+                SshIdentityStateManager.prepareLocalGpgAgent();
+            } else {
+                SshIdentityStateManager.prepareRemoteGpgAgent(parent);
+            }
+        }
+
+        @Override
+        public void buildCommand(CommandBuilder builder) {
+            builder.add("-oIdentitiesOnly=no");
+            builder.environment("SSH_AUTH_SOCK", sc -> {
+                if (sc.getOsType() == OsType.WINDOWS) {
+                    return null;
+                }
+
+                var r = sc.executeSimpleStringCommand("gpgconf --list-dirs agent-ssh-socket");
+                return r;
+            });
+            if (forwardAgent) {
+                builder.add(1, "-A");
+            }
+        }
+    }
+
     @Value
     @Jacksonized
     @Builder
@@ -170,11 +249,12 @@ public interface SshIdentityStrategy {
 
             var s = file.toAbsoluteFilePath(parent);
             // The ~ is supported on all platforms, so manually replace it here for Windows
-            if (s.contains("~")) {
-                s = s.replace("~", parent.getOsType().getUserHomeDirectory(parent));
+            if (s.startsWith("~")) {
+                s = s.resolveTildeHome(parent.getOsType().getUserHomeDirectory(parent));
             }
-            var resolved =
-                    parent.getShellDialect().evaluateExpression(parent, s).readStdoutOrThrow();
+            var resolved = parent.getShellDialect()
+                    .evaluateExpression(parent, s.toString())
+                    .readStdoutOrThrow();
             if (!parent.getShellDialect()
                     .createFileExistsCommand(parent, resolved)
                     .executeAndCheck()) {
@@ -193,10 +273,23 @@ public interface SshIdentityStrategy {
                                         + " is in non-standard PuTTY Private Key format (.ppk), which is not supported by OpenSSH. Please export/convert it to a standard format like .pem via PuTTY"));
             }
 
+            if (resolved.endsWith(".pub")) {
+                throw ErrorEvent.expected(
+                        new IllegalArgumentException(
+                                "Identity file " + resolved
+                                        + " is marked to be a public key file, SSH authentication requires the private key"));
+            }
+
             if ((parent.getOsType().equals(OsType.LINUX) || parent.getOsType().equals(OsType.MACOS))) {
                 // Try to preserve the same permission set
-                parent.command(CommandBuilder.of().add("test", "-w").addFile(resolved).add("&&", "chmod", "600")
-                        .addFile(resolved).add("||", "chmod", "400").addFile(resolved)).executeAndCheck();
+                parent.command(CommandBuilder.of()
+                                .add("test", "-w")
+                                .addFile(resolved)
+                                .add("&&", "chmod", "600")
+                                .addFile(resolved)
+                                .add("||", "chmod", "400")
+                                .addFile(resolved))
+                        .executeAndCheck();
             }
         }
 
@@ -214,11 +307,12 @@ public interface SshIdentityStrategy {
 
                         var s = file.toAbsoluteFilePath(sc);
                         // The ~ is supported on all platforms, so manually replace it here for Windows
-                        if (s.contains("~")) {
-                            s = s.replace("~", sc.getOsType().getUserHomeDirectory(sc));
+                        if (s.startsWith("~")) {
+                            s = s.resolveTildeHome(sc.getOsType().getUserHomeDirectory(sc));
                         }
-                        var resolved =
-                                sc.getShellDialect().evaluateExpression(sc, s).readStdoutOrThrow();
+                        var resolved = sc.getShellDialect()
+                                .evaluateExpression(sc, s.toString())
+                                .readStdoutOrThrow();
                         return sc.getShellDialect().fileArgument(resolved);
                     })
                     .add("-oIdentitiesOnly=yes");
@@ -227,36 +321,6 @@ public interface SshIdentityStrategy {
         @Override
         public SecretRetrievalStrategy getAskpassStrategy() {
             return password;
-        }
-    }
-
-    @Value
-    @Jacksonized
-    @Builder
-    @JsonTypeName("gpgAgent")
-    class GpgAgent implements SshIdentityStrategy {
-
-        boolean forwardAgent;
-
-        @Override
-        public void prepareParent(ShellControl parent) throws Exception {
-            parent.requireLicensedFeature("gpgAgent");
-            SshIdentityStateManager.prepareGpgAgent(parent);
-        }
-
-        @Override
-        public void buildCommand(CommandBuilder builder) {
-            builder.environment("SSH_AUTH_SOCK", sc -> {
-                if (sc.getOsType() == OsType.WINDOWS) {
-                    return null;
-                }
-
-                var r = sc.executeSimpleStringCommand("gpgconf --list-dirs agent-ssh-socket");
-                return r;
-            });
-            if (forwardAgent) {
-                builder.add(1, "-A");
-            }
         }
     }
 

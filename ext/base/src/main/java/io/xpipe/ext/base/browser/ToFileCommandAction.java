@@ -5,6 +5,7 @@ import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.util.FileOpener;
+import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
 
 import java.util.List;
@@ -23,5 +24,5 @@ public abstract class ToFileCommandAction implements BrowserLeafAction, BrowserA
         }
     }
 
-    protected abstract String createCommand(BrowserFileSystemTabModel model, BrowserEntry entry);
+    protected abstract CommandBuilder createCommand(BrowserFileSystemTabModel model, BrowserEntry entry);
 }

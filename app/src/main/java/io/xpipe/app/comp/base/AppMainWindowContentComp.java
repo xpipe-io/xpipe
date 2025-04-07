@@ -35,7 +35,7 @@ public class AppMainWindowContentComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var overlay = AppDialog.getModalOverlay();
+        var overlay = AppDialog.getModalOverlays();
         var loaded = AppMainWindow.getLoadedContent();
         var bg = Comp.of(() -> {
             var loadingIcon = new ImageView();
@@ -106,6 +106,14 @@ public class AppMainWindowContentComp extends SimpleComp {
                             .toList();
                     childWindows.forEach(window -> {
                         ((Stage) window).close();
+                    });
+                }
+            });
+
+            loaded.addListener((observable, oldValue, newValue) -> {
+                if (newValue != null) {
+                    Platform.runLater(() -> {
+                        stage.requestFocus();
                     });
                 }
             });

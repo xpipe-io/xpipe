@@ -4,6 +4,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.FailableConsumer;
 import io.xpipe.core.util.ModuleLayerLoader;
@@ -52,6 +53,10 @@ public interface ActionProvider {
     }
 
     default BranchDataStoreCallSite<?> getBranchDataStoreCallSite() {
+        return null;
+    }
+
+    default BatchDataStoreCallSite<?> getBatchDataStoreCallSite() {
         return null;
     }
 
@@ -115,7 +120,7 @@ public interface ActionProvider {
 
         ObservableValue<String> getName(DataStoreEntryRef<T> store);
 
-        String getIcon(DataStoreEntryRef<T> store);
+        LabelGraphic getIcon(DataStoreEntryRef<T> store);
 
         Class<?> getApplicableClass();
 
@@ -172,8 +177,8 @@ public interface ActionProvider {
                 }
 
                 @Override
-                public String getIcon(DataStoreEntryRef<T> store) {
-                    return icon;
+                public LabelGraphic getIcon(DataStoreEntryRef<T> store) {
+                    return new LabelGraphic.IconGraphic(icon);
                 }
 
                 @Override
@@ -191,6 +196,44 @@ public interface ActionProvider {
 
         default boolean requiresValidStore() {
             return true;
+        }
+    }
+
+    interface BatchDataStoreCallSite<T extends DataStore> {
+
+        ObservableValue<String> getName();
+
+        String getIcon();
+
+        Class<?> getApplicableClass();
+
+        default boolean isApplicable(DataStoreEntryRef<T> o) {
+            return true;
+        }
+
+        default Action createAction(List<DataStoreEntryRef<T>> stores) {
+            var individual = stores.stream()
+                    .map(ref -> {
+                        return createAction(ref);
+                    })
+                    .filter(action -> action != null)
+                    .toList();
+            return new Action() {
+                @Override
+                public void execute() throws Exception {
+                    for (Action action : individual) {
+                        action.execute();
+                    }
+                }
+            };
+        }
+
+        default Action createAction(DataStoreEntryRef<T> store) {
+            return null;
+        }
+
+        default List<? extends ActionProvider> getChildren(List<DataStoreEntryRef<T>> batch) {
+            return List.of();
         }
     }
 

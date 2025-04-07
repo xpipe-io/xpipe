@@ -7,6 +7,7 @@ import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.icon.SystemIconSource;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.*;
+import io.xpipe.core.store.FilePath;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -16,7 +17,6 @@ import javafx.collections.FXCollections;
 import javafx.scene.control.TextField;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -30,10 +30,11 @@ public class IconsCategory extends AppPrefsCategory {
 
     @Override
     protected Comp<?> create() {
-        var prefs = AppPrefs.get();
         return new OptionsBuilder()
                 .addTitle("customIcons")
-                .sub(new OptionsBuilder().nameAndDescription("iconSources").addComp(createOverview()))
+                .sub(new OptionsBuilder()
+                        .nameAndDescription("iconSources")
+                        .addComp(createOverview().maxWidth(getCompWidth())))
                 .buildComp();
     }
 
@@ -97,7 +98,7 @@ public class IconsCategory extends AppPrefsCategory {
 
         var addDirectoryButton = new TileButtonComp(
                 "addDirectoryIconSource", "addDirectoryIconSourceDescription", "mdi2f-folder-plus", e -> {
-                    var dir = new SimpleStringProperty();
+                    var dir = new SimpleObjectProperty<FilePath>();
                     var modal = ModalOverlay.of(
                             "iconDirectory",
                             new ContextualFileReferenceChoiceComp(
@@ -108,13 +109,14 @@ public class IconsCategory extends AppPrefsCategory {
                                             List.of())
                                     .prefWidth(350));
                     modal.withDefaultButtons(() -> {
-                        if (dir.get() == null || dir.get().isBlank()) {
+                        if (dir.get() == null) {
                             return;
                         }
 
-                        var path = Path.of(dir.get());
+                        var path = dir.get().asLocalPath();
                         if (Files.isRegularFile(path)) {
-                            throw new IllegalArgumentException("A custom icon directory requires to be a directory of .svg files, not a single file");
+                            throw new IllegalArgumentException(
+                                    "A custom icon directory requires to be a directory of .svg files, not a single file");
                         }
 
                         var source = SystemIconSource.Directory.builder()
@@ -137,9 +139,9 @@ public class IconsCategory extends AppPrefsCategory {
         var vbox = new VerticalComp(List.of(
                 Comp.vspacer(10),
                 box,
-                Comp.separator(),
+                Comp.hseparator(),
                 refreshButton,
-                Comp.separator(),
+                Comp.hseparator(),
                 addDirectoryButton,
                 addGitButton));
         vbox.spacing(10);

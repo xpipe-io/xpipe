@@ -209,10 +209,6 @@ public class AppExtensionManager {
                         return Optional.empty();
                     }
 
-                    ext.get().getModule().getPackages().forEach(pkg -> {
-                        ModuleHelper.exportAndOpen(pkg, ext.get().getModule());
-                    });
-
                     TrackEvent.withInfo("Loaded extension module")
                             .tag("name", ext.get().getName())
                             .tag("dir", dir.toString())

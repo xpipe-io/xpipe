@@ -3,13 +3,12 @@ package io.xpipe.app.issue;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.LicenseRequiredException;
 
+import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
@@ -21,8 +20,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import lombok.Getter;
-
-import java.util.List;
 
 import static atlantafx.base.theme.Styles.ACCENT;
 import static atlantafx.base.theme.Styles.BUTTON_OUTLINED;
@@ -51,35 +48,22 @@ public class ErrorHandlerComp extends SimpleComp {
     }
 
     private Region createActionComp(ErrorAction a) {
-        var r = createActionButtonGraphic(a.getName(), a.getDescription());
-        var b = new ButtonComp(null, r, () -> {
+        var graphic = createActionButtonGraphic(a.getName(), a.getDescription());
+        var b = new ButtonComp(null, graphic, () -> {
             takenAction.setValue(a);
-            try {
-                if (a.handle(event)) {
+            ThreadHelper.runAsync(() -> {
+                try {
+                    var r = a.handle(event);
+                    if (r) {
+                        closeDialogAction.run();
+                    }
+                } catch (Exception ignored) {
                     closeDialogAction.run();
                 }
-            } catch (Exception ignored) {
-                closeDialogAction.run();
-            }
+            });
         });
         b.apply(GrowAugment.create(true, false));
         return b.createRegion();
-    }
-
-    private Region createDetails() {
-        var content = new ErrorDetailsComp(event).prefWidth(600).prefHeight(750);
-        var modal = ModalOverlay.of("errorDetails", content);
-        var button = new ButtonComp(
-                null,
-                new SimpleObjectProperty<>(new LabelGraphic.NodeGraphic(() -> {
-                    return createActionButtonGraphic(AppI18n.get("showDetails"), AppI18n.get("showDetailsDescription"));
-                })),
-                () -> {
-                    modal.show();
-                });
-        var r = button.grow(true, false).createRegion();
-        r.getStyleClass().add("details");
-        return r;
     }
 
     private Region createTop() {
@@ -112,10 +96,11 @@ public class ErrorHandlerComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var top = createTop();
-        var content = new VBox(top, new Separator(Orientation.HORIZONTAL));
+        var content = new VBox(top);
         var header = new Label(AppI18n.get("possibleActions"));
+        header.setPadding(new Insets(0, 0, 2, 3));
         AppFontSizes.xl(header);
-        var actionBox = new VBox(header);
+        var actionBox = new VBox();
         actionBox.getStyleClass().add("actions");
         actionBox.setFillWidth(true);
 
@@ -137,7 +122,6 @@ public class ErrorHandlerComp extends SimpleComp {
                     return true;
                 }
             });
-            event.setDisableDefaultActions(true);
         }
 
         var custom = event.getCustomActions();
@@ -147,21 +131,17 @@ public class ErrorHandlerComp extends SimpleComp {
             actionBox.getChildren().add(ac);
         }
 
-        if (!event.isDisableDefaultActions()) {
-            for (var action :
-                    List.of(ErrorAction.automaticallyReport(), ErrorAction.reportOnGithub(), ErrorAction.ignore())) {
-                var ac = createActionComp(action);
-                actionBox.getChildren().add(ac);
-            }
-        } else if (event.getCustomActions().isEmpty()) {
-            for (var action : List.of(ErrorAction.ignore())) {
-                var ac = createActionComp(action);
-                actionBox.getChildren().add(ac);
-            }
+        if (event.getLink() != null) {
+            actionBox.getChildren().add(createActionComp(ErrorAction.openDocumentation(event.getLink())));
         }
-        actionBox.getChildren().get(1).getStyleClass().addAll(BUTTON_OUTLINED, ACCENT);
 
-        content.getChildren().addAll(actionBox);
+        if (actionBox.getChildren().size() > 0) {
+            actionBox.getChildren().addFirst(header);
+            content.getChildren().add(new Separator(Orientation.HORIZONTAL));
+            actionBox.getChildren().get(1).getStyleClass().addAll(BUTTON_OUTLINED);
+            content.getChildren().addAll(actionBox);
+        }
+
         content.getStyleClass().add("top");
         content.setFillWidth(true);
         content.setMinHeight(Region.USE_PREF_SIZE);
@@ -169,13 +149,6 @@ public class ErrorHandlerComp extends SimpleComp {
         var layout = new VBox();
         layout.getChildren().add(content);
         layout.getStyleClass().add("error-handler-comp");
-
-        if (event.getThrowable() != null) {
-            content.getChildren().add(new Separator(Orientation.HORIZONTAL));
-            var details = createDetails();
-            layout.getChildren().add(details);
-            layout.prefHeightProperty().bind(content.heightProperty().add(65).add(details.prefHeightProperty()));
-        }
 
         return layout;
     }

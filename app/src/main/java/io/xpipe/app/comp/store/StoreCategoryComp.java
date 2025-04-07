@@ -7,14 +7,14 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataColor;
+import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.util.ClipboardHelper;
 import io.xpipe.app.util.ContextMenuHelper;
 import io.xpipe.app.util.LabelGraphic;
-
 import io.xpipe.core.process.OsType;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -70,7 +70,7 @@ public class StoreCategoryComp extends SimpleComp {
                 () -> {
                     var exp = category.getExpanded().get()
                             && category.getChildren().getList().size() > 0;
-                    return new LabelGraphic.IconGraphic(exp ? "mdi2m-menu-down-outline" : "mdi2m-menu-right-outline");
+                    return new LabelGraphic.IconGraphic(exp ? "mdal-keyboard_arrow_down" : "mdal-keyboard_arrow_right");
                 },
                 category.getExpanded(),
                 category.getChildren().getList());
@@ -187,7 +187,7 @@ public class StoreCategoryComp extends SimpleComp {
             });
 
             category.getColor().subscribe((c) -> {
-                DataColor.applyStyleClasses(c, struc.get());
+                DataStoreColor.applyStyleClasses(c, struc.get());
             });
         });
 
@@ -222,7 +222,7 @@ public class StoreCategoryComp extends SimpleComp {
             event.consume();
         });
         color.getItems().add(none);
-        Arrays.stream(DataColor.values()).forEach(dataStoreColor -> {
+        Arrays.stream(DataStoreColor.values()).forEach(dataStoreColor -> {
             MenuItem m = new MenuItem();
             m.textProperty().bind(AppI18n.observable(dataStoreColor.getId()));
             m.setOnAction(event -> {

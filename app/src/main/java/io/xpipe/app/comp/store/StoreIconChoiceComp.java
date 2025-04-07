@@ -11,7 +11,6 @@ import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
 
-import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -109,20 +108,20 @@ public class StoreIconChoiceComp extends SimpleComp {
 
     private void updateData(TableView<List<SystemIcon>> table, String filterString) {
         var available = icons.stream()
-                .filter(systemIcon -> AppImages.hasNormalImage("icons/" + systemIcon.getSource().getId() + "/" + systemIcon.getId() + "-40.png"))
+                .filter(systemIcon -> AppImages.hasNormalImage(
+                        "icons/" + systemIcon.getSource().getId() + "/" + systemIcon.getId() + "-40.png"))
                 .sorted(Comparator.comparing(systemIcon -> systemIcon.getId()))
                 .toList();
         table.getPlaceholder().setVisible(available.size() == 0);
         var filtered = available;
         if (filterString != null && !filterString.isBlank() && filterString.length() >= 2) {
-            filtered = available.stream().filter(icon -> containsString(icon.getId(), filterString)).toList();
+            filtered = available.stream()
+                    .filter(icon -> containsString(icon.getId(), filterString))
+                    .toList();
         }
         var data = partitionList(filtered, columns);
         table.getItems().setAll(data);
-
-        var selectMatch = filtered.size() == 1 || filtered.stream().anyMatch(systemIcon -> systemIcon.getId().equals(filterString));
-        // Table updates seem to not always be instant, sometimes the column is not there yet
-        if (selectMatch && table.getColumns().size() > 0) {
+        if (filtered.size() == 1) {
             table.getSelectionModel().select(0, table.getColumns().getFirst());
             selected.setValue(filtered.getFirst());
         } else {

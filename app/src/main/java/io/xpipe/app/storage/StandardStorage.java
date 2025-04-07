@@ -9,7 +9,6 @@ import io.xpipe.app.util.EncryptionKey;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 
-import com.fasterxml.jackson.core.JacksonException;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 
@@ -161,16 +160,6 @@ public class StandardStorage extends DataStorage {
                         }
 
                         storeEntries.put(entry.get(), entry.get());
-                    } catch (JacksonException ex) {
-                        // Data corruption and schema changes are expected
-
-                        // We only keep invalid entries in developer mode as there's no point in keeping them in
-                        // production.
-                        if (AppPrefs.get().isDevelopmentEnvironment()) {
-                            directoriesToKeep.add(path);
-                        }
-
-                        ErrorEvent.fromThrowable(ex).expected().omit().build().handle();
                     } catch (IOException ex) {
                         // IO exceptions are not expected
                         exception.set(new IOException("Unable to load data from " + path + ". Is it corrupted?", ex));
@@ -232,15 +221,13 @@ public class StandardStorage extends DataStorage {
             var e = DataStoreEntry.createNew(
                     LOCAL_ID, DataStorage.DEFAULT_CATEGORY_UUID, "Local Machine", new LocalStore());
             e.setDirectory(getStoresDir().resolve(LOCAL_ID.toString()));
-            e.setConfiguration(
-                    StorageElement.Configuration.builder().deletable(false).build());
             storeEntries.put(e, e);
             e.validate();
         }
 
         var local = DataStorage.get().getStoreEntry(LOCAL_ID);
         if (storeEntriesSet.stream().noneMatch(entry -> entry.getColor() != null)) {
-            local.setColor(DataColor.BLUE);
+            local.setColor(DataStoreColor.BLUE);
         }
 
         // Reload stores, this time with all entry refs present

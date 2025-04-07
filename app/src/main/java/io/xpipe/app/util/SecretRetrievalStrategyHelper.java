@@ -8,6 +8,7 @@ import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -43,11 +44,24 @@ public class SecretRetrievalStrategyHelper {
     }
 
     private static OptionsBuilder passwordManager(Property<SecretRetrievalStrategy.PasswordManager> p) {
+        var prefs = AppPrefs.get();
         var keyProperty =
                 new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getKey() : null);
         var content = new HorizontalComp(List.of(
                         new TextFieldComp(keyProperty)
-                                .apply(struc -> struc.get().setPromptText("$KEY"))
+                                .apply(struc -> struc.get()
+                                        .promptTextProperty()
+                                        .bind(Bindings.createStringBinding(
+                                                () -> {
+                                                    return prefs.passwordManager()
+                                                                            .getValue()
+                                                                    != null
+                                                            ? prefs.passwordManager()
+                                                                    .getValue()
+                                                                    .getKeyPlaceholder()
+                                                            : "?";
+                                                },
+                                                prefs.passwordManager())))
                                 .hgrow(),
                         new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
                                     AppPrefs.get().selectCategory("passwordManager");
@@ -95,22 +109,22 @@ public class SecretRetrievalStrategyHelper {
         if (allowNone) {
             map.put(AppI18n.observable("app.none"), new OptionsBuilder());
         }
-        map.put(AppI18n.observable("app.password"), inPlace(inPlace));
-        map.put(AppI18n.observable("app.passwordManager"), passwordManager(passwordManager));
-        map.put(AppI18n.observable("app.customCommand"), customCommand(customCommand));
         map.put(AppI18n.observable("app.prompt"), new OptionsBuilder());
+        map.put(AppI18n.observable("app.password"), inPlace(inPlace));
+        map.put(AppI18n.observable("app.externalPasswordManager"), passwordManager(passwordManager));
+        map.put(AppI18n.observable("app.customCommand"), customCommand(customCommand));
 
         int offset = allowNone ? 0 : -1;
         var selected = new SimpleIntegerProperty(
                 strat instanceof SecretRetrievalStrategy.None
                         ? offset
-                        : strat instanceof SecretRetrievalStrategy.InPlace
+                        : strat instanceof SecretRetrievalStrategy.Prompt
                                 ? offset + 1
-                                : strat instanceof SecretRetrievalStrategy.PasswordManager
+                                : strat instanceof SecretRetrievalStrategy.InPlace
                                         ? offset + 2
-                                        : strat instanceof SecretRetrievalStrategy.CustomCommand
+                                        : strat instanceof SecretRetrievalStrategy.PasswordManager
                                                 ? offset + 3
-                                                : strat instanceof SecretRetrievalStrategy.Prompt
+                                                : strat instanceof SecretRetrievalStrategy.CustomCommand
                                                         ? offset + 4
                                                         : strat == null ? -1 : 0);
         return new OptionsBuilder()
@@ -120,10 +134,10 @@ public class SecretRetrievalStrategyHelper {
                             return switch (selected.get() - offset) {
                                 case 0 -> new SimpleObjectProperty<>(
                                         allowNone ? new SecretRetrievalStrategy.None() : null);
-                                case 1 -> inPlace;
-                                case 2 -> passwordManager;
-                                case 3 -> customCommand;
-                                case 4 -> new SimpleObjectProperty<>(new SecretRetrievalStrategy.Prompt());
+                                case 1 -> new SimpleObjectProperty<>(new SecretRetrievalStrategy.Prompt());
+                                case 2 -> inPlace;
+                                case 3 -> passwordManager;
+                                case 4 -> customCommand;
                                 default -> new SimpleObjectProperty<>();
                             };
                         },

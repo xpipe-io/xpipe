@@ -8,19 +8,93 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.process.*;
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.FailableFunction;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class TerminalLauncher {
+
+    public static FilePath constructTerminalInitFile(
+            ShellDialect t,
+            ShellControl processControl,
+            WorkingDirectoryFunction workingDirectory,
+            List<String> preInit,
+            List<String> postInit,
+            TerminalInitScriptConfig config,
+            boolean exit)
+            throws Exception {
+        String nl = t.getNewLine().getNewLineString();
+        var content = "";
+
+        var clear = t.clearDisplayCommand();
+        if (clear != null && config.isClearScreen()) {
+            content += clear + nl;
+        }
+
+        // Normalize line endings
+        content += nl + preInit.stream().flatMap(s -> s.lines()).collect(Collectors.joining(nl)) + nl;
+
+        // We just apply the profile files always, as we can't be sure that they definitely have been applied.
+        // Especially if we launch something that is not the system default shell
+        var applyCommand = t.applyInitFileCommand(processControl);
+        if (applyCommand != null) {
+            content += nl + applyCommand + nl;
+        }
+
+        if (config.getDisplayName() != null) {
+            content += nl + t.changeTitleCommand(config.getDisplayName()) + nl;
+        }
+
+        if (workingDirectory != null && workingDirectory.isSpecified()) {
+            var wd = workingDirectory.apply(processControl);
+            if (wd != null) {
+                content += t.getCdCommand(wd.toString()) + nl;
+            }
+        }
+
+        // Normalize line endings
+        content += nl + postInit.stream().flatMap(s -> s.lines()).collect(Collectors.joining(nl)) + nl;
+
+        if (exit) {
+            content += nl + t.getPassthroughExitCommand();
+        }
+
+        content = t.prepareScriptContent(content);
+
+        var hash = ScriptHelper.getScriptHash(content);
+        var file = t.getInitFileName(processControl, hash);
+        return ScriptHelper.createExecScriptRaw(processControl, file, content);
+    }
+
+    public static void openDirect(
+            String title, CommandBuilder command)
+            throws Exception {
+        openDirect(title, sc -> command.buildFull(sc), AppPrefs.get().terminalType().getValue());
+    }
+
+    public static void openDirect(
+            String title,
+            ShellScript command)
+            throws Exception {
+        openDirect(title, sc -> command.toString(), AppPrefs.get().terminalType().getValue());
+    }
+
+    public static void openDirect(
+            String title,
+            FailableFunction<ShellControl, ShellScript, Exception> command)
+            throws Exception {
+        openDirect(title, sc -> command.apply(sc).toString(), AppPrefs.get().terminalType().getValue());
+    }
 
     public static void openDirect(
             String title, FailableFunction<ShellControl, String, Exception> command, ExternalTerminalType type)
             throws Exception {
         try (var sc = LocalShell.getShell().start()) {
-            var script = ScriptHelper.constructTerminalInitFile(
+            var script = constructTerminalInitFile(
                     sc.getShellDialect(),
                     sc,
                     WorkingDirectoryFunction.none(),
@@ -46,12 +120,13 @@ public class TerminalLauncher {
         open(null, title, null, cc, request, true);
     }
 
-    public static void open(DataStoreEntry entry, String title, String directory, ProcessControl cc) throws Exception {
+    public static void open(DataStoreEntry entry, String title, FilePath directory, ProcessControl cc)
+            throws Exception {
         open(entry, title, directory, cc, UUID.randomUUID(), true);
     }
 
     public static void open(
-            DataStoreEntry entry, String title, String directory, ProcessControl cc, UUID request, boolean preferTabs)
+            DataStoreEntry entry, String title, FilePath directory, ProcessControl cc, UUID request, boolean preferTabs)
             throws Exception {
         var type = AppPrefs.get().terminalType().getValue();
         if (type == null) {
@@ -70,10 +145,20 @@ public class TerminalLauncher {
                         && AppPrefs.get().clearTerminalOnInit().get()
                         && !AppPrefs.get().developerPrintInitFiles().get(),
                 cc instanceof ShellControl ? type.additionalInitCommands() : TerminalInitFunction.none());
-        var config = TerminalLaunchConfiguration.create(request, entry, cleanTitle, adjustedTitle, preferTabs);
+        var promptRestart = AppPrefs.get().terminalPromptForRestart().getValue()
+                && AppPrefs.get().terminalMultiplexer().getValue() == null;
+        var config = TerminalLaunchConfiguration.create(
+                request, entry, cleanTitle, adjustedTitle, preferTabs, promptRestart);
         var latch = TerminalLauncherManager.submitAsync(request, cc, terminalConfig, directory);
         try {
-            type.launch(config);
+            if (!checkMultiplexerLaunch(cc, request, config)) {
+                if (preferTabs
+                        && TerminalMultiplexerManager.getEffectiveMultiplexer().isPresent()) {
+                    config =
+                            config.withPreferTabs(false).withCleanTitle("XPipe").withColoredTitle("XPipe");
+                }
+                type.launch(config);
+            }
             latch.await();
         } catch (Exception ex) {
             var modMsg = ex.getMessage() != null && ex.getMessage().contains("Unable to find application named")
@@ -81,6 +166,69 @@ public class TerminalLauncher {
                     : ex.getMessage();
             throw ErrorEvent.expected(new IOException(
                     "Unable to launch terminal " + type.toTranslatedString().getValue() + ": " + modMsg, ex));
+        }
+    }
+
+    private static boolean checkMultiplexerLaunch(
+            ProcessControl processControl, UUID request, TerminalLaunchConfiguration config) throws Exception {
+        if (!config.isPreferTabs()) {
+            return false;
+        }
+
+        var multiplexer = TerminalMultiplexerManager.getEffectiveMultiplexer();
+        if (multiplexer.isEmpty()) {
+            return false;
+        }
+
+        // Throw if not supported
+        multiplexer.get().checkSupported(TerminalProxyManager.getProxy().orElse(LocalShell.getShell()));
+
+        if (!TerminalMultiplexerManager.requiresNewTerminalSession(request)) {
+            var control = TerminalProxyManager.getProxy();
+            if (control.isPresent()) {
+                var type = AppPrefs.get().terminalType().getValue();
+                var title = type.useColoredTitle() ? config.getColoredTitle() : config.getCleanTitle();
+                var openCommand = processControl.prepareTerminalOpen(
+                        TerminalInitScriptConfig.ofName(title), WorkingDirectoryFunction.none());
+                var fullCommand = multiplexer
+                        .get()
+                        .launchScriptExternal(control.get(), openCommand, TerminalInitScriptConfig.ofName(title))
+                        .toString();
+                control.get().command(fullCommand).execute();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static String createLaunchCommand(
+            ProcessControl processControl, TerminalInitScriptConfig config, WorkingDirectoryFunction wd)
+            throws Exception {
+        var initScript = AppPrefs.get().terminalInitScript().getValue();
+        var initialCommand = initScript != null ? initScript.toString() : "";
+        var openCommand = processControl.prepareTerminalOpen(config, wd);
+        var proxy = TerminalProxyManager.getProxy();
+        var multiplexer = TerminalMultiplexerManager.getEffectiveMultiplexer();
+        var fullCommand = initialCommand + "\n"
+                + (multiplexer.isPresent()
+                        ? multiplexer
+                                .get()
+                                .launchScriptSession(
+                                        proxy.isPresent() ? proxy.get() : LocalShell.getShell(), openCommand, config)
+                                .toString()
+                        : openCommand);
+        if (proxy.isPresent()) {
+            var proxyOpenCommand = fullCommand;
+            var proxyLaunchCommand = proxy.get()
+                    .prepareIntermediateTerminalOpen(
+                            TerminalInitFunction.fixed(proxyOpenCommand),
+                            TerminalInitScriptConfig.ofName("XPipe"),
+                            WorkingDirectoryFunction.none());
+            // Restart for the next time
+            proxy.get().start();
+            return proxyLaunchCommand;
+        } else {
+            return fullCommand;
         }
     }
 }

@@ -81,6 +81,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                             "mdmz-text_snippet",
                                             e -> {
                                                 AppLogs.get().flush();
+                                                ThreadHelper.sleep(100);
                                                 FileOpener.openInTextEditor(AppLogs.get()
                                                         .getSessionLogsDirectory()
                                                         .resolve("xpipe.log")

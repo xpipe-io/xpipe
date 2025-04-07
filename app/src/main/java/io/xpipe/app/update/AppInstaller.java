@@ -11,6 +11,7 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.util.FailableRunnable;
@@ -67,11 +68,6 @@ public class AppInstaller {
 
         public abstract void installLocal(Path file) throws Exception;
 
-        public boolean isCorrectAsset(String name) {
-            return name.endsWith(getExtension())
-                    && name.contains(AppProperties.get().getArch());
-        }
-
         public abstract String getExtension();
 
         @JsonTypeName("msi")
@@ -89,30 +85,31 @@ public class AppInstaller {
                 var logFile = FileNames.join(
                         logsDir, "installer_" + file.getFileName().toString() + ".log");
                 var systemWide = isSystemWide();
-                var command = LocalShell.getShell().getShellDialect().equals(ShellDialects.CMD)
-                        ? getCmdCommand(file.toString(), logFile, restartExec, systemWide)
+                var cmdScript = ProcessControlProvider.get().getEffectiveLocalDialect().equals(ShellDialects.CMD) && !systemWide;
+                var command = cmdScript
+                        ? getCmdCommand(file.toString(), logFile, restartExec)
                         : getPowershellCommand(file.toString(), logFile, restartExec, systemWide);
-                String toRun;
-                if (ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.CMD) {
-                    toRun = systemWide
-                            ? "powershell -Command Start-Process -Verb runAs -WindowStyle Minimized -FilePath cmd -ArgumentList  \"/c\", '\""
-                                    + ScriptHelper.createLocalExecScript(command) + "\"'"
-                            : "start \"XPipe Updater\" /min cmd /c \"" + ScriptHelper.createLocalExecScript(command)
-                                    + "\"";
-                } else {
-                    toRun =
-                            "Start-Process -WindowStyle Minimized -FilePath powershell -ArgumentList  \"-ExecutionPolicy\", \"Bypass\", \"-File\", \"`\""
-                                    + ScriptHelper.createLocalExecScript(command) + "`\"\""
-                                    + (systemWide ? " -Verb runAs" : "");
-                }
+
                 runAndClose(() -> {
-                    LocalShell.getShell().executeSimpleCommand(toRun);
+                    try (var sc = LocalShell.getShell().start()) {
+                        String toRun;
+                        if (cmdScript) {
+                            toRun = "start \"XPipe Updater\" /min cmd /c \"" + ScriptHelper.createExecScript(ShellDialects.CMD, sc, command)
+                                    + "\"";
+                        } else {
+                            toRun = sc.getShellDialect() == ShellDialects.POWERSHELL ?
+                                    "Start-Process -WindowStyle Minimized -FilePath powershell -ArgumentList  \"-ExecutionPolicy\", \"Bypass\", \"-File\", \"`\""
+                                            + ScriptHelper.createExecScript(ShellDialects.POWERSHELL, sc, command) + "`\"\"" :
+                                    "start \"XPipe Updater\" /min powershell -ExecutionPolicy Bypass -File \"" + ScriptHelper.createExecScript(ShellDialects.POWERSHELL, sc, command) + "\"";
+                        }
+                        sc.command(toRun).execute();
+                    }
                 });
             }
 
             @Override
             public String getExtension() {
-                return ".msi";
+                return "msi";
             }
 
             private boolean isSystemWide() {
@@ -120,8 +117,8 @@ public class AppInstaller {
                         XPipeInstallation.getCurrentInstallationBasePath().resolve("system"));
             }
 
-            private String getCmdCommand(String file, String logFile, String exec, boolean systemWide) {
-                var args = "MSIFASTINSTALL=7 DISABLEROLLBACK=1" + (systemWide ? " ALLUSERS=1" : "");
+            private String getCmdCommand(String file, String logFile, String exec) {
+                var args = "MSIFASTINSTALL=7 DISABLEROLLBACK=1";
                 return String.format(
                         """
                         echo Installing %s ...
@@ -129,26 +126,42 @@ public class AppInstaller {
                         echo + msiexec /i "%s" /lv "%s" /qb %s
                         start "" /wait msiexec /i "%s" /lv "%s" /qb %s
                         echo Starting XPipe ...
-                        echo + "%s"
-                        start "" "%s"
+                        start "" "%s" "-Dio.xpipe.app.dataDir=%s"
                         """,
-                        file, file, logFile, args, file, logFile, args, exec, exec);
+                        file,
+                        file,
+                        logFile,
+                        args,
+                        file,
+                        logFile,
+                        args,
+                        exec,
+                        AppProperties.get().getDataDir());
             }
 
             private String getPowershellCommand(String file, String logFile, String exec, boolean systemWide) {
                 var property = "MSIFASTINSTALL=7 DISABLEROLLBACK=1" + (systemWide ? " ALLUSERS=1" : "");
                 var startProcessProperty = ", MSIFASTINSTALL=7, DISABLEROLLBACK=1" + (systemWide ? ", ALLUSERS=1" : "");
+                var runas = systemWide ? "-Verb runAs" : "";
                 return String.format(
                         """
                         echo Installing %s ...
                         cd "$env:HOMEDRIVE\\$env:HOMEPATH"
                         echo '+ msiexec /i "%s" /lv "%s" /qb%s'
-                        Start-Process msiexec -Wait -ArgumentList "/i", "`"%s`"", "/lv", "`"%s`"", "/qb"%s
+                        Start-Process %s -FilePath msiexec -Wait -ArgumentList "/i", "`"%s`"", "/lv", "`"%s`"", "/qb"%s
                         echo 'Starting XPipe ...'
-                        echo '+ "%s"'
-                        Start-Process -FilePath "%s"
+                        & "%s" "-Dio.xpipe.app.dataDir=%s"
                         """,
-                        file, file, logFile, property, file, logFile, startProcessProperty, exec, exec);
+                        file,
+                        file,
+                        logFile,
+                        property,
+                        runas,
+                        file,
+                        logFile,
+                        startProcessProperty,
+                        exec,
+                        AppProperties.get().getDataDir());
             }
         }
 
@@ -171,13 +184,13 @@ public class AppInstaller {
                                                  echo "Installing downloaded .deb installer ..."
                                                  echo "+ sudo apt install \\"%s\\""
                                                  DEBIAN_FRONTEND=noninteractive sudo apt-get install -qy "%s" || return 1
-                                                 %s open || return 1
+                                                 %s open -d "%s" || return 1
                                              }
 
                                              cd ~
                                              runinstaller || echo "Update failed ..." && read key
                                              """,
-                        file, file, name);
+                        file, file, name, AppProperties.get().getDataDir());
 
                 runAndClose(() -> {
                     // We can't use the SSH bridge
@@ -189,7 +202,7 @@ public class AppInstaller {
 
             @Override
             public String getExtension() {
-                return ".deb";
+                return "deb";
             }
         }
 
@@ -212,13 +225,13 @@ public class AppInstaller {
                                                  echo "Installing downloaded .rpm installer ..."
                                                  echo "+ sudo rpm -U -v --force \\"%s\\""
                                                  sudo rpm -U -v --force "%s" || return 1
-                                                 %s open || return 1
+                                                 %s open -d "%s" || return 1
                                              }
 
                                              cd ~
                                              runinstaller || read -rsp "Update failed ..."$'\\n' -n 1 key
                                              """,
-                        file, file, name);
+                        file, file, name, AppProperties.get().getDataDir());
 
                 runAndClose(() -> {
                     // We can't use the SSH bridge
@@ -230,7 +243,7 @@ public class AppInstaller {
 
             @Override
             public String getExtension() {
-                return ".rpm";
+                return "rpm";
             }
         }
 
@@ -253,13 +266,13 @@ public class AppInstaller {
                                                echo "Installing downloaded .pkg installer ..."
                                                echo "+ sudo installer -verboseR -pkg \\"%s\\" -target /"
                                                sudo installer -verboseR -pkg "%s" -target / || return 1
-                                               %s open || return 1
+                                               %s open -d "%s" || return 1
                                            }
 
                                            cd ~
                                            runinstaller || echo "Update failed ..." && read -rs -k 1 key
                                            """,
-                        file, file, name);
+                        file, file, name, AppProperties.get().getDataDir());
 
                 runAndClose(() -> {
                     // We can't use the SSH bridge
@@ -271,7 +284,7 @@ public class AppInstaller {
 
             @Override
             public String getExtension() {
-                return ".pkg";
+                return "pkg";
             }
         }
     }

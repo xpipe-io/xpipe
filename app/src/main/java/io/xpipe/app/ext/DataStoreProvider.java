@@ -2,18 +2,15 @@ package io.xpipe.app.ext;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.comp.store.StoreEntryComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.comp.store.StoreSectionComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.store.DataStore;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -25,6 +22,10 @@ import java.util.List;
 import java.util.UUID;
 
 public interface DataStoreProvider {
+
+    default String getHelpLink() {
+        return null;
+    }
 
     default boolean canMoveCategories() {
         return true;
@@ -107,32 +108,6 @@ public interface DataStoreProvider {
 
     default boolean canConnectDuringCreation() {
         return false;
-    }
-
-    default Comp<?> createInsightsComp(ObservableValue<DataStore> store) {
-        var content = Bindings.createStringBinding(
-                () -> {
-                    if (store.getValue() == null
-                            || !store.getValue().isComplete()
-                            || !getStoreClasses().contains(store.getValue().getClass())) {
-                        return null;
-                    }
-
-                    try {
-                        return "## Insights\n\n" + createInsightsMarkdown(store.getValue());
-                    } catch (Exception ex) {
-                        ErrorEvent.fromThrowable(ex).handle();
-                        return "?";
-                    }
-                },
-                store);
-        return new MarkdownComp(content, s -> s, true)
-                .apply(struc -> struc.get().setPrefWidth(450))
-                .apply(struc -> struc.get().setPrefHeight(250));
-    }
-
-    default String createInsightsMarkdown(DataStore store) {
-        return null;
     }
 
     default DataStoreCreationCategory getCreationCategory() {

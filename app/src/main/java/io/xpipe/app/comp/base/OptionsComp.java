@@ -4,20 +4,24 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppFontSizes;
+import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.*;
 
 import atlantafx.base.controls.Popover;
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
+import javafx.util.Duration;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -26,9 +30,9 @@ import java.util.List;
 @Getter
 public class OptionsComp extends Comp<CompStructure<Pane>> {
 
-    private final List<OptionsComp.Entry> entries;
+    private final List<Entry> entries;
 
-    public OptionsComp(List<OptionsComp.Entry> entries) {
+    public OptionsComp(List<Entry> entries) {
         this.entries = entries;
     }
 
@@ -84,15 +88,19 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                         description.managedProperty().bind(PlatformThread.sync(compRegion.managedProperty()));
                     }
 
-                    if (entry.longDescriptionSource() != null) {
-                        var markDown = new MarkdownComp(entry.longDescriptionSource(), s -> s, true)
-                                .apply(struc -> struc.get().setMaxWidth(500))
-                                .apply(struc -> struc.get().setMaxHeight(400));
-                        var popover = new Popover(markDown.createRegion());
-                        popover.setCloseButtonEnabled(false);
-                        popover.setHeaderAlwaysVisible(false);
-                        popover.setDetachable(true);
-                        AppFontSizes.xs(popover.getContentNode());
+                    if (entry.longDescription() != null) {
+                        Popover popover;
+                        if (!entry.longDescription().startsWith("http")) {
+                            var markDown = new MarkdownComp(entry.longDescription(), s -> s, true).apply(struc -> struc.get().setMaxWidth(500)).apply(
+                                    struc -> struc.get().setMaxHeight(400));
+                            popover = new Popover(markDown.createRegion());
+                            popover.setCloseButtonEnabled(false);
+                            popover.setHeaderAlwaysVisible(false);
+                            popover.setDetachable(true);
+                            AppFontSizes.xs(popover.getContentNode());
+                        } else {
+                            popover = null;
+                        }
 
                         var extendedDescription = new Button("... ?");
                         extendedDescription.setMinWidth(Region.USE_PREF_SIZE);
@@ -102,9 +110,19 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                         extendedDescription.setAccessibleText("Help");
                         AppFontSizes.xl(extendedDescription);
                         extendedDescription.setOnAction(e -> {
-                            popover.show(extendedDescription);
+                            if (entry.longDescription().startsWith("http")) {
+                                Hyperlinks.open(entry.longDescription());
+                            } else if (popover != null) {
+                                popover.show(extendedDescription);
+                            }
                             e.consume();
                         });
+
+                        if (entry.longDescription().startsWith("http")) {
+                            var tt = TooltipHelper.create(new SimpleStringProperty(entry.longDescription()), null);
+                            tt.setShowDelay(Duration.millis(1));
+                            Tooltip.install(extendedDescription, tt);
+                        }
 
                         var descriptionBox =
                                 new HBox(description, new Spacer(Orientation.HORIZONTAL), extendedDescription);
@@ -196,7 +214,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
     public record Entry(
             String key,
             ObservableValue<String> description,
-            String longDescriptionSource,
+            String longDescription,
             ObservableValue<String> name,
             Comp<?> comp) {}
 }

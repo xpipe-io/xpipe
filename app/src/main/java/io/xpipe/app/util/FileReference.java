@@ -3,6 +3,7 @@ package io.xpipe.app.util;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.FileSystemStore;
 
 import lombok.Value;
@@ -20,18 +21,18 @@ import java.nio.file.Path;
 public class FileReference {
 
     DataStoreEntryRef<? extends FileSystemStore> fileSystem;
-    String path;
+    FilePath path;
 
-    public FileReference(DataStoreEntryRef<? extends FileSystemStore> fileSystem, String path) {
+    public FileReference(DataStoreEntryRef<? extends FileSystemStore> fileSystem, FilePath path) {
         this.fileSystem = fileSystem;
         this.path = path;
     }
 
     public static FileReference local(Path p) {
-        return new FileReference(DataStorage.get().local().ref(), p.toString());
+        return new FileReference(DataStorage.get().local().ref(), FilePath.of(p.toString()));
     }
 
-    public static FileReference local(String p) {
+    public static FileReference local(FilePath p) {
         return new FileReference(DataStorage.get().local().ref(), p);
     }
 

@@ -2,7 +2,7 @@ package io.xpipe.app.browser.action;
 
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
-import io.xpipe.app.comp.base.TooltipAugment;
+import io.xpipe.app.comp.base.TooltipHelper;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.LicenseProvider;
@@ -10,6 +10,7 @@ import io.xpipe.app.util.ThreadHelper;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
 
@@ -38,7 +39,7 @@ public interface BrowserLeafAction extends BrowserAction {
             event.consume();
         });
         var name = getName(model, selected);
-        new TooltipAugment<>(name, getShortcut()).augment(b);
+        Tooltip.install(b, TooltipHelper.create(name, getShortcut()));
         var graphic = getIcon(model, selected);
         if (graphic != null) {
             b.setGraphic(graphic);

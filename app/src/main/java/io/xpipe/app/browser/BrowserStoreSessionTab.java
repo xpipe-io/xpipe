@@ -1,7 +1,7 @@
 package io.xpipe.app.browser;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.storage.DataColor;
+import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.DataStore;
@@ -42,7 +42,7 @@ public abstract class BrowserStoreSessionTab<T extends DataStore> extends Browse
     }
 
     @Override
-    public DataColor getColor() {
+    public DataStoreColor getColor() {
         return DataStorage.get().getEffectiveColor(entry.get());
     }
 }

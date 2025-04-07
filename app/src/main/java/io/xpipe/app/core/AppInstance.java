@@ -11,7 +11,6 @@ import io.xpipe.beacon.BeaconServer;
 import io.xpipe.beacon.api.DaemonFocusExchange;
 import io.xpipe.beacon.api.DaemonOpenExchange;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeInstallation;
 
 import java.awt.*;

@@ -4,13 +4,12 @@ import io.xpipe.app.browser.BrowserAbstractSessionModel;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.BrowserSessionTab;
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.AppMainWindowContentComp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataColor;
+import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.terminal.TerminalDockComp;
 import io.xpipe.app.terminal.TerminalDockModel;
 import io.xpipe.app.terminal.TerminalView;
@@ -138,7 +137,7 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
                 dockModel.toggleView(aBoolean);
             });
         });
-        AppDialog.getModalOverlay().addListener((ListChangeListener<? super ModalOverlay>) c -> {
+        AppDialog.getModalOverlays().addListener((ListChangeListener<? super ModalOverlay>) c -> {
             if (c.getList().size() > 0) {
                 dockModel.toggleView(false);
             } else {
@@ -177,7 +176,7 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
     }
 
     @Override
-    public DataColor getColor() {
+    public DataStoreColor getColor() {
         return null;
     }
 }

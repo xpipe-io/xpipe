@@ -110,6 +110,7 @@ public class StoreSection {
             Predicate<StoreEntryWrapper> entryFilter,
             ObservableValue<String> filterString,
             ObservableValue<StoreCategoryWrapper> category,
+            ObservableIntegerValue visibilityObservable,
             ObservableIntegerValue updateObservable) {
         var topLevel = all.filtered(
                 section -> {
@@ -118,8 +119,16 @@ public class StoreSection {
                 },
                 category,
                 updateObservable);
-        var cached = topLevel.mapped(storeEntryWrapper ->
-                create(List.of(), storeEntryWrapper, 1, all, entryFilter, filterString, category, updateObservable));
+        var cached = topLevel.mapped(storeEntryWrapper -> create(
+                List.of(),
+                storeEntryWrapper,
+                1,
+                all,
+                entryFilter,
+                filterString,
+                category,
+                visibilityObservable,
+                updateObservable));
         var ordered = sorted(cached, category, updateObservable);
         var shown = ordered.filtered(
                 section -> {
@@ -146,6 +155,7 @@ public class StoreSection {
             Predicate<StoreEntryWrapper> entryFilter,
             ObservableValue<String> filterString,
             ObservableValue<StoreCategoryWrapper> category,
+            ObservableIntegerValue visibilityObservable,
             ObservableIntegerValue updateObservable) {
         if (e.getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
             return new StoreSection(
@@ -169,43 +179,66 @@ public class StoreSection {
                         return false;
                     }
 
-                    var showProvider = true;
-                    try {
-                        showProvider = other.getEntry().getProvider().shouldShow(other);
-                    } catch (Exception ignored) {
-                    }
-                    return showProvider;
+                    return true;
                 },
                 e.getPersistentState(),
                 e.getCache(),
+                visibilityObservable,
                 updateObservable);
         var l = new ArrayList<>(parents);
         l.add(e);
-        var cached = allChildren.mapped(
-                c -> create(l, c, depth + 1, all, entryFilter, filterString, category, updateObservable));
+        var cached = allChildren.mapped(c -> create(
+                l, c, depth + 1, all, entryFilter, filterString, category, visibilityObservable, updateObservable));
         var ordered = sorted(cached, category, updateObservable);
         var filtered = ordered.filtered(
                 section -> {
-                    // matches filter
-                    return (filterString == null
-                                    || section.matchesFilter(filterString.getValue())
-                                    || l.stream().anyMatch(p -> p.matchesFilter(filterString.getValue())))
-                            &&
-                            // matches selector
-                            section.anyMatches(entryFilter)
-                            &&
-                            // matches category
-                            // Prevent updates for children on category switching by checking depth
-                            (showInCategory(category.getValue(), section.getWrapper()) || depth > 0)
-                            &&
-                            // not root
-                            // If this entry is already shown as root due to a different category than parent, don't
-                            // show it
-                            // again here
-                            !DataStorage.get()
-                                    .isRootEntry(
-                                            section.getWrapper().getEntry(),
-                                            category.getValue().getCategory());
+                    var matchesFilter = filterString == null
+                            || section.matchesFilter(filterString.getValue())
+                            || l.stream().anyMatch(p -> p.matchesFilter(filterString.getValue()));
+                    if (!matchesFilter) {
+                        return false;
+                    }
+
+                    var hasFilter = filterString != null
+                            && filterString.getValue() != null
+                            && filterString.getValue().length() > 0;
+                    if (!hasFilter) {
+                        var showProvider = true;
+                        try {
+                            showProvider = section.getWrapper()
+                                    .getEntry()
+                                    .getProvider()
+                                    .shouldShow(section.getWrapper());
+                        } catch (Exception ignored) {
+                        }
+                        if (!showProvider) {
+                            return false;
+                        }
+                    }
+
+                    var matchesSelector = section.anyMatches(entryFilter);
+                    if (!matchesSelector) {
+                        return false;
+                    }
+
+                    // Prevent updates for children on category switching by checking depth
+                    var showCategory = showInCategory(category.getValue(), section.getWrapper()) || depth > 0;
+                    if (!showCategory) {
+                        return false;
+                    }
+
+                    // If this entry is already shown as root due to a different category than parent, don't
+                    // show it
+                    // again here
+                    var notRoot = !DataStorage.get()
+                            .isRootEntry(
+                                    section.getWrapper().getEntry(),
+                                    category.getValue().getCategory());
+                    if (!notRoot) {
+                        return false;
+                    }
+
+                    return true;
                 },
                 category,
                 filterString,

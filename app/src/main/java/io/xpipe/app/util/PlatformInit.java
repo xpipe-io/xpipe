@@ -78,8 +78,10 @@ public class PlatformInit {
             PlatformState.initPlatformOrThrow();
             AppGpuCheck.check();
             AppFont.init();
-            AppStyle.init();
-            AppTheme.init();
+            PlatformThread.runLaterIfNeededBlocking(() -> {
+                AppStyle.init();
+                AppTheme.init();
+            });
             AppI18n.init();
             AppDesktopIntegration.init();
 

@@ -3,6 +3,7 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.OptionsBuilder;
@@ -28,7 +29,7 @@ public class HttpApiCategory extends AppPrefsCategory {
                                     "http://localhost:" + AppBeaconServer.get().getPort());
                         }))
                         .pref(prefs.apiKey)
-                        .addString(prefs.apiKey)
+                        .addComp(new TextFieldComp(prefs.apiKey).maxWidth(getCompWidth()), prefs.apiKey)
                         .pref(prefs.disableApiAuthentication)
                         .addToggle(prefs.disableApiAuthentication))
                 .buildComp();

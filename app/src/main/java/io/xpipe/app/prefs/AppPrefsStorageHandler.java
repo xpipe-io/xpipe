@@ -95,7 +95,7 @@ public class AppPrefsStorageHandler {
 
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    public <T> T loadObject(String id, JavaType type, T defaultObject) {
+    public <T> T loadObject(String id, JavaType type, T defaultObject, boolean log) {
         var tree = getContent(id);
         if (tree == null) {
             TrackEvent.withDebug("Preferences value not found")
@@ -114,29 +114,31 @@ public class AppPrefsStorageHandler {
                         .filter(t -> ((PrefsChoiceValue) t).getId().equalsIgnoreCase(in))
                         .findAny();
                 if (found.isEmpty()) {
-                    TrackEvent.withWarn("Invalid prefs value found")
-                            .tag("key", id)
-                            .tag("value", in)
-                            .handle();
+                    if (log) {
+                        TrackEvent.withWarn("Invalid prefs value found").tag("key", id).tag("value", in).handle();
+                    }
                     return defaultObject;
                 }
 
                 var supported = getSupported(cast);
                 if (!supported.contains(found.get())) {
-                    TrackEvent.withWarn("Unsupported prefs value found")
-                            .tag("key", id)
-                            .tag("value", in)
-                            .handle();
+                    if (log) {
+                        TrackEvent.withWarn("Unsupported prefs value found").tag("key", id).tag("value", in).handle();
+                    }
                     return defaultObject;
                 }
 
-                TrackEvent.debug("Loading preferences value for key " + id + " from value " + found.get());
+                if (log) {
+                    TrackEvent.debug("Loading preferences value for key " + id + " from value " + found.get());
+                }
                 return found.get();
             }
         }
 
         try {
-            TrackEvent.debug("Loading preferences value for key " + id + " from value " + tree);
+            if (log) {
+                TrackEvent.debug("Loading preferences value for key " + id + " from value " + tree);
+            }
             T value = JacksonMapper.getDefault().treeToValue(tree, type);
             if (value instanceof List<?> l) {
                 var mod = l.stream().filter(v -> v != null).collect(Collectors.toCollection(ArrayList::new));

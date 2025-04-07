@@ -35,22 +35,6 @@ public class LxdContainerStoreProvider implements ShellStoreProvider {
         return false;
     }
 
-    public String createInsightsMarkdown(DataStore store) {
-        var lxd = (LxdContainerStore) store;
-        return String.format(
-                """
-                    XPipe will execute:
-                    ```
-                    %s
-                    ```
-                    in a host shell of `%s` to open a shell into the container.
-                    """,
-                new LxdCommandView(null)
-                        .execCommand(lxd.getContainerName(), true)
-                        .buildSimple(),
-                lxd.getCmd().getStore().getHost().get().getName());
-    }
-
     @Override
     public DataStoreEntry getDisplayParent(DataStoreEntry store) {
         LxdContainerStore s = store.getStore().asNeeded();
@@ -96,8 +80,10 @@ public class LxdContainerStoreProvider implements ShellStoreProvider {
 
     @Override
     public ObservableValue<String> informationString(StoreSection section) {
+        var c = (ContainerStoreState) section.getWrapper().getPersistentState().getValue();
+        var missing = c.getShellMissing() != null && c.getShellMissing() ? "No shell available" : null;
         return ShellStoreFormat.shellStore(
-                section, (ContainerStoreState s) -> DataStoreFormatter.capitalize(s.getContainerState()));
+                section, (ContainerStoreState s) -> new String[] {missing, DataStoreFormatter.capitalize(s.getContainerState())});
     }
 
     @Override

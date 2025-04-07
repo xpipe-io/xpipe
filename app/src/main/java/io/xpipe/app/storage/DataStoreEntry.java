@@ -2,6 +2,7 @@ package io.xpipe.app.storage;
 
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
+import io.xpipe.app.ext.NameableStore;
 import io.xpipe.app.ext.UserScopeStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ThreadHelper;
@@ -9,6 +10,7 @@ import io.xpipe.core.store.*;
 import io.xpipe.core.util.JacksonMapper;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,9 +42,6 @@ public class DataStoreEntry extends StorageElement {
     @Getter
     @NonFinal
     DataStore store;
-
-    @NonFinal
-    Configuration configuration;
 
     AtomicInteger busyCounter = new AtomicInteger();
 
@@ -86,10 +85,9 @@ public class DataStoreEntry extends StorageElement {
             DataStorageNode storeNode,
             boolean dirty,
             Validity validity,
-            Configuration configuration,
             JsonNode storePersistentState,
             boolean expanded,
-            DataColor color,
+            DataStoreColor color,
             String notes,
             Order explicitOrder,
             String icon) {
@@ -98,7 +96,6 @@ public class DataStoreEntry extends StorageElement {
         this.store = store;
         this.storeNode = storeNode;
         this.validity = validity;
-        this.configuration = configuration;
         this.explicitOrder = explicitOrder;
         this.provider = store != null ? DataStoreProviders.byStore(store) : null;
         this.storePersistentStateNode = storePersistentState;
@@ -123,7 +120,6 @@ public class DataStoreEntry extends StorageElement {
         this.icon = icon;
         this.storeNode = DataStorageNode.fail();
         this.validity = Validity.INCOMPLETE;
-        this.configuration = Configuration.defaultConfiguration();
         this.expanded = false;
         this.provider = null;
         this.storePersistentStateNode = null;
@@ -140,6 +136,11 @@ public class DataStoreEntry extends StorageElement {
                 store,
                 null,
                 null);
+    }
+
+    public static DataStoreEntry createNew(@NonNull NameableStore store) {
+        return createNew(
+                UUID.randomUUID(), DataStorage.get().getSelectedCategory().getUuid(), store.getName(), store);
     }
 
     public static DataStoreEntry createNew(@NonNull String name, @NonNull DataStore store) {
@@ -166,7 +167,6 @@ public class DataStoreEntry extends StorageElement {
                 storeNode,
                 true,
                 validity,
-                Configuration.defaultConfiguration(),
                 null,
                 false,
                 null,
@@ -214,7 +214,7 @@ public class DataStoreEntry extends StorageElement {
         var color = Optional.ofNullable(json.get("color"))
                 .map(node -> {
                     try {
-                        return mapper.treeToValue(node, DataColor.class);
+                        return mapper.treeToValue(node, DataStoreColor.class);
                     } catch (JsonProcessingException e) {
                         return null;
                     }
@@ -247,15 +247,6 @@ public class DataStoreEntry extends StorageElement {
                     }
                 })
                 .orElse(null);
-        var configuration = Optional.ofNullable(json.get("configuration"))
-                .map(node -> {
-                    try {
-                        return mapper.treeToValue(node, Configuration.class);
-                    } catch (JsonProcessingException e) {
-                        return Configuration.defaultConfiguration();
-                    }
-                })
-                .orElse(Configuration.defaultConfiguration());
         var expanded = Optional.ofNullable(stateJson.get("expanded"))
                 .map(jsonNode -> jsonNode.booleanValue())
                 .orElse(true);
@@ -264,7 +255,7 @@ public class DataStoreEntry extends StorageElement {
             color = Optional.ofNullable(stateJson.get("color"))
                     .map(node -> {
                         try {
-                            return mapper.treeToValue(node, DataColor.class);
+                            return mapper.treeToValue(node, DataStoreColor.class);
                         } catch (JsonProcessingException e) {
                             return null;
                         }
@@ -285,8 +276,15 @@ public class DataStoreEntry extends StorageElement {
             notes = null;
         }
 
-        var fileNode = mapper.readTree(storeFile.toFile());
-        var node = DataStorageNode.readPossiblyEncryptedNode(fileNode);
+        DataStorageNode node = null;
+        try {
+            var fileNode = mapper.readTree(storeFile.toFile());
+            node = DataStorageNode.readPossiblyEncryptedNode(fileNode);
+        } catch (JacksonException ex) {
+            ErrorEvent.fromThrowable(ex).omit().expected().handle();
+            node = DataStorageNode.fail();
+        }
+
         var store = node.parseStore();
         return Optional.of(new DataStoreEntry(
                 dir,
@@ -299,7 +297,6 @@ public class DataStoreEntry extends StorageElement {
                 node,
                 false,
                 store == null ? Validity.LOAD_FAILED : Validity.INCOMPLETE,
-                configuration,
                 persistentState,
                 expanded,
                 color,
@@ -411,11 +408,6 @@ public class DataStoreEntry extends StorageElement {
         }
     }
 
-    public void setConfiguration(Configuration configuration) {
-        this.configuration = configuration;
-        notifyUpdate(false, true);
-    }
-
     public void setCategoryUuid(UUID categoryUuid) {
         var changed = !Objects.equals(this.categoryUuid, categoryUuid);
         this.categoryUuid = categoryUuid;
@@ -450,7 +442,6 @@ public class DataStoreEntry extends StorageElement {
         obj.put("categoryUuid", categoryUuid.toString());
         obj.set("color", mapper.valueToTree(color));
         obj.set("icon", mapper.valueToTree(icon));
-        obj.set("configuration", mapper.valueToTree(configuration));
 
         ObjectNode stateObj = JsonNodeFactory.instance.objectNode();
         stateObj.put("lastUsed", lastUsed.toString());
@@ -481,7 +472,7 @@ public class DataStoreEntry extends StorageElement {
             var notesNode = JsonNodeFactory.instance.objectNode();
             notesNode.put("markdown", notes);
             var storageNode = DataStorageNode.encryptNodeIfNeeded(new DataStorageNode(
-                    notesNode, storeNode.isPerUser(), storeNode.isAvailableForUser(), storeNode.isEncrypted()));
+                    notesNode, storeNode.isPerUser(), storeNode.isReadableForUser(), storeNode.isEncrypted()));
             var string = mapper.writeValueAsString(storageNode);
             Files.writeString(encryptedNotesFile, string);
         } else if (notes != null) {

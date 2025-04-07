@@ -10,7 +10,6 @@ import io.xpipe.core.process.ElevationFunction;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileInfo;
-import io.xpipe.core.store.FileNames;
 
 import java.io.FilterOutputStream;
 import java.io.IOException;
@@ -32,6 +31,10 @@ public class BrowserFileOpener {
         }
 
         var info = (FileInfo.Unix) file.getInfo();
+        if (info.getPermissions() == null) {
+            return fileSystem.openOutput(file.getPath(), totalBytes);
+        }
+
         var zero = Integer.valueOf(0);
         var otherWrite = info.getPermissions().charAt(7) == 'w';
         var requiresRoot = zero.equals(info.getUid()) && zero.equals(info.getGid()) && !otherWrite;
@@ -72,7 +75,7 @@ public class BrowserFileOpener {
         var key = calculateKey(entry);
         FileBridge.get()
                 .openIO(
-                        FileNames.getFileName(file),
+                        file.getFileName(),
                         key,
                         new BooleanScope(model.getBusy()).exclusive(),
                         () -> {
@@ -93,7 +96,7 @@ public class BrowserFileOpener {
         var key = calculateKey(entry);
         FileBridge.get()
                 .openIO(
-                        FileNames.getFileName(file),
+                        file.getFileName(),
                         key,
                         new BooleanScope(model.getBusy()).exclusive(),
                         () -> {
@@ -119,7 +122,7 @@ public class BrowserFileOpener {
         var key = calculateKey(entry);
         FileBridge.get()
                 .openIO(
-                        FileNames.getFileName(file),
+                        file.getFileName(),
                         key,
                         new BooleanScope(model.getBusy()).exclusive(),
                         () -> {

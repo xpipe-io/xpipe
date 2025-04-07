@@ -11,10 +11,7 @@ import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.EnabledParentStoreProvider;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.DataStoreFormatter;
-import io.xpipe.app.util.MarkdownBuilder;
-import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.Validator;
+import io.xpipe.app.util.*;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.DataStore;
@@ -30,10 +27,19 @@ import lombok.SneakyThrows;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, DataStoreProvider {
+
+    @Override
+    public boolean showProviderChoice() {
+        return false;
+    }
+
+    @Override
+    public String getHelpLink() {
+        return DocumentationLink.SCRIPTING.getLink();
+    }
 
     @Override
     public boolean canMoveCategories() {
@@ -53,29 +59,6 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
     @Override
     public Comp<?> stateDisplay(StoreEntryWrapper w) {
         return new SystemStateComp(new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
-    }
-
-    public String createInsightsMarkdown(DataStore store) {
-        var s = (SimpleScriptStore) store;
-
-        var builder = MarkdownBuilder.of()
-                .addParagraph("XPipe will run the script in ")
-                .addCode(s.getMinimumDialect() != null ? s.getMinimumDialect().getDisplayName() : "default")
-                .add(" shells");
-
-        if (s.getEffectiveScripts() != null && !s.getEffectiveScripts().isEmpty()) {
-            builder.add(" with the following scripts prior")
-                    .addCodeBlock(s.getEffectiveScripts().stream()
-                            .map(scriptStoreDataStoreEntryRef ->
-                                    scriptStoreDataStoreEntryRef.get().getName())
-                            .collect(Collectors.joining("\n")));
-        }
-
-        if (s.getCommands() != null) {
-            builder.add(" with command contents").addCodeBlock(s.getCommands());
-        }
-
-        return builder.build();
     }
 
     @Override
@@ -115,7 +98,7 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                                 .orElseThrow(),
                         "io.xpipe.ext.proc.ShellDialectChoiceComp")
                 .getDeclaredConstructor(List.class, Property.class, boolean.class)
-                .newInstance(availableDialects, dialect, false);
+                .newInstance(availableDialects, dialect, true);
 
         var vals = List.of(0, 1, 2, 3);
         var selectedStart = new ArrayList<Integer>();
@@ -161,12 +144,11 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
         return new OptionsBuilder()
                 .name("minimumShellDialect")
                 .description("minimumShellDialectDescription")
-                .longDescription("base:scriptCompatibility")
+                .longDescription(DocumentationLink.SCRIPTING_COMPATIBILITY)
                 .addComp(choice, dialect)
-                .nonNull()
                 .name("scriptContents")
                 .description("scriptContentsDescription")
-                .longDescription("base:script")
+                .longDescription(DocumentationLink.SCRIPTING_EDITING)
                 .addComp(
                         new IntegratedTextAreaComp(commandProp, false, "commands", Bindings.createStringBinding(() -> {
                             return dialect.getValue() != null
@@ -175,13 +157,13 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                         })),
                         commandProp)
                 .nameAndDescription("executionType")
-                .longDescription("base:executionType")
+                .longDescription(DocumentationLink.SCRIPTING_TYPES)
                 .addComp(selectorComp, selectedExecTypes)
                 .check(validator ->
                         Validator.nonEmpty(validator, AppI18n.observable("executionType"), selectedExecTypes))
                 .name("snippets")
                 .description("snippetsDescription")
-                .longDescription("base:scriptDependencies")
+                .longDescription(DocumentationLink.SCRIPTING_DEPENDENCIES)
                 .addComp(
                         new StoreListChoiceComp<>(
                                 others,
@@ -191,6 +173,7 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                         others)
                 .name("scriptGroup")
                 .description("scriptGroupDescription")
+                .longDescription(DocumentationLink.SCRIPTING_GROUPS)
                 .addComp(
                         new StoreChoiceComp<>(
                                 StoreChoiceComp.Mode.OTHER,
@@ -233,7 +216,7 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
         var runnable = st.isRunnableScript() ? AppI18n.get("hub") : null;
         var type = st.getMinimumDialect() != null
                 ? st.getMinimumDialect().getDisplayName() + " " + AppI18n.get("script")
-                : null;
+                : AppI18n.get("genericScript");
         var suffix = String.join(
                 " / ",
                 Stream.of(init, shell, file, runnable).filter(s -> s != null).toList());

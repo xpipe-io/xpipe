@@ -1,13 +1,9 @@
 package io.xpipe.ext.system.incus;
 
-import io.xpipe.app.ext.ContainerStoreState;
-import io.xpipe.app.ext.ShellControlFunction;
-import io.xpipe.app.ext.ShellControlParentStoreFunction;
-import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.store.FixedChildStore;
 import io.xpipe.core.store.StatefulDataStore;
 import io.xpipe.ext.base.identity.IdentityValue;
@@ -37,7 +33,8 @@ public class IncusContainerStore
                 StatefulDataStore<ContainerStoreState>,
                 StartableStore,
                 StoppableStore,
-                PauseableStore {
+                PauseableStore,
+                NameableStore {
 
     DataStoreEntryRef<IncusInstallStore> install;
     String containerName;
@@ -78,7 +75,8 @@ public class IncusContainerStore
                 var user = identity != null ? identity.unwrap().getUsername() : null;
                 var sc = new IncusCommandView(parent).exec(containerName, user, () -> {
                     var state = getState();
-                    var alpine = state.getOsName() != null && state.getOsName().toLowerCase().contains("alpine");
+                    var alpine = state.getOsName() != null
+                            && state.getOsName().toLowerCase().contains("alpine");
                     return alpine;
                 });
                 sc.withSourceStore(IncusContainerStore.this);
@@ -137,5 +135,10 @@ public class IncusContainerStore
         var view = new IncusCommandView(sc);
         view.pause(containerName);
         refreshContainerState(sc);
+    }
+
+    @Override
+    public String getName() {
+        return containerName;
     }
 }

@@ -66,7 +66,7 @@ public class VaultCategory extends AppPrefsCategory {
                                 uh.getActiveUser() != null
                                         ? "userManagementDescription"
                                         : "userManagementDescriptionEmpty")
-                        .addComp(uh.createOverview())
+                        .addComp(uh.createOverview().maxWidth(getCompWidth()))
                         .nameAndDescription("teamVaults")
                         .addComp(Comp.empty())
                         .licenseRequirement("team")

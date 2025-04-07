@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class BrowserAlerts {
 
-    public static FileConflictChoice showFileConflictAlert(String file, boolean multiple) {
+    public static FileConflictChoice showFileConflictAlert(FilePath file, boolean multiple) {
         var map = new LinkedHashMap<ButtonType, FileConflictChoice>();
         map.put(new ButtonType(AppI18n.get("cancel"), ButtonBar.ButtonData.CANCEL_CLOSE), FileConflictChoice.CANCEL);
         if (multiple) {
@@ -96,7 +96,7 @@ public class BrowserAlerts {
         var names = namesHeader + "\n"
                 + source.stream()
                         .limit(10)
-                        .map(entry -> "- " + new FilePath(entry.getPath()).getFileName())
+                        .map(entry -> "- " + entry.getPath().getFileName())
                         .collect(Collectors.joining("\n"));
         if (source.size() > 10) {
             names += "\n+ " + (source.size() - 10) + " ...";

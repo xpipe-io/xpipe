@@ -5,6 +5,7 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.TerminalLauncher;
 
+import io.xpipe.app.util.LabelGraphic;
 import javafx.beans.value.ObservableValue;
 
 public class PodmanContainerAttachAction implements ActionProvider {
@@ -34,8 +35,8 @@ public class PodmanContainerAttachAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<PodmanContainerStore> store) {
-                return "mdi2a-attachment";
+            public LabelGraphic getIcon(DataStoreEntryRef<PodmanContainerStore> store) {
+                return new LabelGraphic.IconGraphic("mdi2a-attachment");
             }
         };
     }

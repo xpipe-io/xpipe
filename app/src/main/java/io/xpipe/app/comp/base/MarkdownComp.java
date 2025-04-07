@@ -53,7 +53,7 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
 
     private Path getHtmlFile(String markdown) {
         if (TEMP == null) {
-            TEMP = ShellTemp.getLocalTempDataDirectory("wv");
+            TEMP = ShellTemp.getLocalTempDataDirectory("webview");
         }
 
         if (markdown == null) {

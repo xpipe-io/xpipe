@@ -8,12 +8,11 @@ import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
-import io.xpipe.app.comp.base.TooltipAugment;
 import io.xpipe.app.core.*;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.resources.AppResources;
-import io.xpipe.app.storage.DataColor;
+import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
@@ -88,6 +87,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         var r = createContent();
         var buttonBar = r.lookup(".button-bar");
         var iconChooser = r.lookup(".icon");
+        var batchMode = r.lookup(".batch-mode-selector");
 
         var button = new Button();
         button.setGraphic(r);
@@ -105,6 +105,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         });
         button.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             var notOnButton = NodeHelper.isParent(iconChooser, event.getTarget())
+                    || NodeHelper.isParent(batchMode, event.getTarget())
                     || NodeHelper.isParent(buttonBar, event.getTarget());
             if (AppPrefs.get().requireDoubleClickForConnections().get() && !notOnButton) {
                 if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() != 2) {
@@ -118,6 +119,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         });
         button.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
             var notOnButton = NodeHelper.isParent(iconChooser, event.getTarget())
+                    || NodeHelper.isParent(batchMode, event.getTarget())
                     || NodeHelper.isParent(buttonBar, event.getTarget());
             if (AppPrefs.get().requireDoubleClickForConnections().get() && !notOnButton) {
                 if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() != 2) {
@@ -260,7 +262,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                     }));
         }
         button.accessibleText(cs.getName(getWrapper().getEntry().ref()).getValue());
-        button.apply(new TooltipAugment<>(cs.getName(getWrapper().getEntry().ref()), null));
+        button.tooltip(cs.getName(getWrapper().getEntry().ref()));
         return button;
     }
 
@@ -274,6 +276,12 @@ public abstract class StoreEntryComp extends SimpleComp {
                 () -> StoreEntryComp.this.createContextMenu()));
         settingsButton.tooltipKey("more");
         return settingsButton;
+    }
+
+    protected Comp<?> createBatchSelection() {
+        var c = new StoreEntryBatchSelectComp(section);
+        c.hide(StoreViewState.get().getBatchMode().not());
+        return c;
     }
 
     protected ContextMenu createContextMenu() {
@@ -332,7 +340,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                 event.consume();
             });
             color.getItems().add(none);
-            Arrays.stream(DataColor.values()).forEach(dataStoreColor -> {
+            Arrays.stream(DataStoreColor.values()).forEach(dataStoreColor -> {
                 MenuItem m = new MenuItem();
                 m.textProperty().bind(AppI18n.observable(dataStoreColor.getId()));
                 m.setOnAction(event -> {
@@ -429,8 +437,8 @@ public abstract class StoreEntryComp extends SimpleComp {
         var name = cs.getName(getWrapper().getEntry().ref());
         var icon = cs.getIcon(getWrapper().getEntry().ref());
         var item = (leaf != null && leaf.canLinkTo()) || branch != null
-                ? new Menu(null, new FontIcon(icon))
-                : new MenuItem(null, new FontIcon(icon));
+                ? new Menu(null, icon.createGraphicNode())
+                : new MenuItem(null, icon.createGraphicNode());
 
         var proRequired = p.getProFeatureId() != null
                 && !LicenseProvider.get().getFeature(p.getProFeatureId()).isSupported();

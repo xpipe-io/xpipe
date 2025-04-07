@@ -1,11 +1,8 @@
 package io.xpipe.app.storage;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.Value;
 import lombok.experimental.NonFinal;
-import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
@@ -43,7 +40,7 @@ public abstract class StorageElement {
     @Getter
     protected boolean expanded;
 
-    protected @NonFinal @Getter DataColor color;
+    protected @NonFinal @Getter DataStoreColor color;
 
     public StorageElement(
             Path directory,
@@ -51,7 +48,7 @@ public abstract class StorageElement {
             String name,
             Instant lastUsed,
             Instant lastModified,
-            DataColor color,
+            DataStoreColor color,
             boolean expanded,
             boolean dirty) {
         this.directory = directory;
@@ -98,7 +95,7 @@ public abstract class StorageElement {
         FileUtils.deleteDirectory(directory.toFile());
     }
 
-    public void setColor(DataColor newColor) {
+    public void setColor(DataStoreColor newColor) {
         var changed = !Objects.equals(color, newColor);
         this.color = newColor;
         if (changed) {
@@ -145,16 +142,5 @@ public abstract class StorageElement {
 
     public interface Listener {
         void onUpdate();
-    }
-
-    @Builder
-    @Jacksonized
-    @Value
-    public static class Configuration {
-        boolean deletable;
-
-        public static Configuration defaultConfiguration() {
-            return new Configuration(true);
-        }
     }
 }

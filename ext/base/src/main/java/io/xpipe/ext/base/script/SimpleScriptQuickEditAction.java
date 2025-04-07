@@ -1,6 +1,6 @@
 package io.xpipe.ext.base.script;
 
-import io.xpipe.app.comp.store.StoreCreationComp;
+import io.xpipe.app.comp.store.StoreCreationDialog;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -43,13 +43,13 @@ public class SimpleScriptQuickEditAction implements ActionProvider {
                                     .getName()
                                     .equals(ref.get().getName()));
             if (predefined) {
-                StoreCreationComp.showEdit(ref.get());
+                StoreCreationDialog.showEdit(ref.get());
                 return;
             }
 
             var script = ref.getStore();
             var dialect = script.getMinimumDialect();
-            var ext = dialect.getScriptFileEnding();
+            var ext = dialect != null ? dialect.getScriptFileEnding() : "sh";
             var name = OsType.getLocal().makeFileSystemCompatible(ref.get().getName());
             FileOpener.openString(name + "." + ext, this, script.getCommands(), (s) -> {
                 ref.get().setStoreInternal(script.toBuilder().commands(s).build(), true);

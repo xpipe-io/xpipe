@@ -3,6 +3,7 @@ package io.xpipe.ext.system.incus;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.ext.base.store.StorePauseAction;
 import io.xpipe.ext.base.store.StoreRestartAction;
 import io.xpipe.ext.base.store.StoreStartAction;
@@ -34,8 +35,8 @@ public class IncusContainerActionMenu implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<IncusContainerStore> store) {
-                return "mdi2p-package-variant-closed";
+            public LabelGraphic getIcon(DataStoreEntryRef<IncusContainerStore> store) {
+                return new LabelGraphic.IconGraphic("mdi2p-package-variant-closed");
             }
 
             @Override

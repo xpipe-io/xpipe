@@ -7,14 +7,11 @@ import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.util.DerivedObservableList;
-import io.xpipe.app.util.PlatformState;
-import io.xpipe.app.util.PlatformThread;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
@@ -172,10 +169,10 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
 
             Node c = vbox;
             do {
-                c.boundsInParentProperty().addListener((change, oldBounds,newBounds) -> {
+                c.boundsInParentProperty().addListener((change, oldBounds, newBounds) -> {
                     dirty.set(true);
                 });
-                // Don't listen to root node changes, that seemingly can cause exceptions
+                // Don't listen to root node changes, we don't need that
             } while ((c = c.getParent()) != null && c.getParent() != null);
 
             if (newValue != null) {
@@ -226,6 +223,10 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
     }
 
     private void updateVisibilities(ScrollPane scroll, VBox vbox) {
+        if (!Platform.isFxApplicationThread()) {
+            throw new IllegalStateException("Not in FxApplication thread");
+        }
+
         if (!visibilityControl) {
             return;
         }
@@ -251,6 +252,10 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             Map<T, Region> cache,
             boolean refreshVisibilities) {
         Runnable update = () -> {
+            if (!Platform.isFxApplicationThread()) {
+                throw new IllegalStateException("Not in FxApplication thread");
+            }
+
             synchronized (cache) {
                 var set = new HashSet<T>();
                 // These lists might diverge on updates, so add both
@@ -269,22 +274,25 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             synchronized (shown) {
                 shownCopy = new ArrayList<>(shown);
             }
-            List<Region> newShown = shownCopy.stream().map(v -> {
-                if (!cache.containsKey(v)) {
-                    var comp = compFunction.apply(v);
-                    if (comp != null) {
-                        var r = comp.createRegion();
-                        if (visibilityControl) {
-                            r.setVisible(false);
+            List<Region> newShown = shownCopy.stream()
+                    .map(v -> {
+                        if (!cache.containsKey(v)) {
+                            var comp = compFunction.apply(v);
+                            if (comp != null) {
+                                var r = comp.createRegion();
+                                if (visibilityControl) {
+                                    r.setVisible(false);
+                                }
+                                cache.put(v, r);
+                            } else {
+                                cache.put(v, null);
+                            }
                         }
-                        cache.put(v, r);
-                    } else {
-                        cache.put(v, null);
-                    }
-                }
 
-                return cache.get(v);
-            }).filter(region -> region != null).toList();
+                        return cache.get(v);
+                    })
+                    .filter(region -> region != null)
+                    .toList();
 
             if (listView.getChildren().equals(newShown)) {
                 return;

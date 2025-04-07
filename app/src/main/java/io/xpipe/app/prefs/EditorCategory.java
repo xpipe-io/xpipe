@@ -52,8 +52,7 @@ public class EditorCategory extends AppPrefsCategory {
                         .addComp(terminalTest)
                         .nameAndDescription("customEditorCommandInTerminal")
                         .addToggle(prefs.customEditorCommandInTerminal)
-                        .hide(prefs.externalEditor.isNotEqualTo(ExternalEditorType.CUSTOM))
-                )
+                        .hide(prefs.externalEditor.isNotEqualTo(ExternalEditorType.CUSTOM)))
                 .buildComp();
     }
 }

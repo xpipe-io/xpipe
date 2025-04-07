@@ -11,6 +11,8 @@ import org.apache.commons.io.FileUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public class AppCache {
@@ -105,6 +107,24 @@ public class AppCache {
                     .omitted(true)
                     .build()
                     .handle();
+        }
+    }
+
+    public static Optional<Instant> getModifiedTime(String key) {
+        var path = getPath(key);
+        if (Files.exists(path)) {
+            try {
+                var t = Files.getLastModifiedTime(path);
+                return Optional.of(t.toInstant());
+            } catch (Exception e) {
+                ErrorEvent.fromThrowable("Could not get modified date for " + key, e)
+                        .omitted(true)
+                        .build()
+                        .handle();
+                return Optional.empty();
+            }
+        } else {
+            return Optional.empty();
         }
     }
 }

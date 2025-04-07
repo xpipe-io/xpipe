@@ -5,6 +5,7 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
+import io.xpipe.app.util.LabelGraphic;
 import javafx.beans.value.ObservableValue;
 
 import lombok.Value;
@@ -36,13 +37,44 @@ public class ServiceRefreshAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<FixedServiceCreatorStore> store) {
-                return "mdi2w-web";
+            public LabelGraphic getIcon(DataStoreEntryRef<FixedServiceCreatorStore> store) {
+                return new LabelGraphic.IconGraphic("mdi2w-web");
             }
 
             @Override
             public boolean isApplicable(DataStoreEntryRef<FixedServiceCreatorStore> o) {
                 return o.getStore().allowManualServicesRefresh();
+            }
+        };
+    }
+
+    @Override
+    public BatchDataStoreCallSite<?> getBatchDataStoreCallSite() {
+        return new BatchDataStoreCallSite<FixedServiceCreatorStore>() {
+
+            @Override
+            public boolean isApplicable(DataStoreEntryRef<FixedServiceCreatorStore> o) {
+                return o.getStore().allowManualServicesRefresh();
+            }
+
+            @Override
+            public ObservableValue<String> getName() {
+                return AppI18n.observable("refreshServices");
+            }
+
+            @Override
+            public String getIcon() {
+                return "mdi2w-web";
+            }
+
+            @Override
+            public Class<?> getApplicableClass() {
+                return FixedServiceCreatorStore.class;
+            }
+
+            @Override
+            public ActionProvider.Action createAction(DataStoreEntryRef<FixedServiceCreatorStore> store) {
+                return new Action(store);
             }
         };
     }

@@ -6,6 +6,7 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.DataStore;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
@@ -67,7 +68,7 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleComp {
                 selected.setValue(null);
             }
         });
-        var vbox = new VerticalComp(List.of(list, Comp.vspacer(5), add))
+        var vbox = new VerticalComp(List.of(list, Comp.vspacer(5).hide(Bindings.isEmpty(selectedList)), add))
                 .apply(struc -> struc.get().setFillWidth(true));
         return vbox.styleClass("data-store-list-choice-comp").createRegion();
     }

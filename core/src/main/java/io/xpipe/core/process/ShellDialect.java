@@ -4,7 +4,6 @@ import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.util.NewLine;
-import io.xpipe.core.util.SecretValue;
 import io.xpipe.core.util.StreamCharset;
 
 import java.nio.charset.Charset;
@@ -26,7 +25,7 @@ public interface ShellDialect {
         return null;
     }
 
-    String terminalLauncherScript(UUID request, String name);
+    String terminalLauncherScript(UUID request, String name, boolean promptRestart);
 
     String getExecutableName();
 
@@ -42,7 +41,7 @@ public interface ShellDialect {
 
     CommandControl prepareUserTempDirectory(ShellControl shellControl, String directory);
 
-    String initFileName(ShellControl sc) throws Exception;
+    FilePath getInitFileName(ShellControl sc, int hash) throws Exception;
 
     CommandControl directoryExists(ShellControl shellControl, String directory);
 
@@ -112,8 +111,6 @@ public interface ShellDialect {
 
     String getSetEnvironmentVariableCommand(String variable, String value);
 
-    String setSecretEnvironmentVariableCommand(ShellControl sc, String variable, SecretValue value) throws Exception;
-
     String getEchoCommand(String s, boolean toErrorStream);
 
     String getPrintVariableCommand(String name);
@@ -138,7 +135,7 @@ public interface ShellDialect {
 
     String runScriptCommand(ShellControl parent, String file);
 
-    String sourceScriptCommand(ShellControl parent, String file);
+    String sourceScriptCommand(String file);
 
     String executeCommandWithShell(String cmd);
 

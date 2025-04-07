@@ -10,6 +10,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviourDialog;
 import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.util.LicenseProvider;
+import io.xpipe.app.util.NodeCallback;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
@@ -55,6 +56,8 @@ public class AppMainWindow {
 
     @Getter
     private static final Property<String> loadingText = new SimpleObjectProperty<>();
+
+    private boolean shown = false;
 
     private AppMainWindow(Stage stage) {
         this.stage = stage;
@@ -138,18 +141,27 @@ public class AppMainWindow {
     }
 
     public static synchronized void initContent() {
-        TrackEvent.info("Window content node creation started");
-        var content = new AppLayoutComp();
-        var s = content.createStructure();
-        TrackEvent.info("Window content node structure created");
-        loadedContent.setValue(s);
+        PlatformThread.runLaterIfNeededBlocking(() -> {
+            try {
+                TrackEvent.info("Window content node creation started");
+                var content = new AppLayoutComp();
+                var s = content.createStructure();
+                TrackEvent.info("Window content node structure created");
+                loadedContent.setValue(s);
+            } catch (Throwable t) {
+                ErrorEvent.fromThrowable(t).term().handle();
+            }
+        });
     }
 
     public void show() {
         stage.show();
-        if (OsType.getLocal() == OsType.WINDOWS) {
-            NativeWinWindowControl.MAIN_WINDOW = new NativeWinWindowControl(stage);
+        if (OsType.getLocal() == OsType.WINDOWS && !shown) {
+            var ctrl = new NativeWinWindowControl(stage);
+            NativeWinWindowControl.MAIN_WINDOW = ctrl;
+            AppWindowsShutdown.registerHook(ctrl.getWindowHandle());
         }
+        shown = true;
     }
 
     public void focus() {
@@ -308,7 +320,7 @@ public class AppMainWindow {
             }
 
             // Close dialogs
-            AppDialog.getModalOverlay().clear();
+            AppDialog.getModalOverlays().clear();
 
             // Close other windows
             Stage.getWindows().stream().filter(w -> !w.equals(stage)).toList().forEach(w -> w.fireEvent(e));

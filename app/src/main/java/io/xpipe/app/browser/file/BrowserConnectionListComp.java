@@ -70,6 +70,7 @@ public final class BrowserConnectionListComp extends SimpleComp {
                         this::filter,
                         filter,
                         category,
+                        StoreViewState.get().getEntriesListVisibilityObservable(),
                         StoreViewState.get().getEntriesListUpdateObservable()),
                 augment,
                 selectedAction -> {

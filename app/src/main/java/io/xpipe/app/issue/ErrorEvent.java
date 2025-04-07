@@ -1,5 +1,7 @@
 package io.xpipe.app.issue;
 
+import io.xpipe.app.util.DocumentationLink;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,9 +25,6 @@ public class ErrorEvent {
     @Builder.Default
     private final boolean reportable = true;
 
-    @Setter
-    private boolean disableDefaultActions;
-
     private final Throwable throwable;
 
     @Singular
@@ -42,6 +41,8 @@ public class ErrorEvent {
 
     @Singular
     private List<Path> attachments;
+
+    private String link;
 
     private String email;
     private String userReport;
@@ -146,6 +147,10 @@ public class ErrorEvent {
 
     public static class ErrorEventBuilder {
 
+        public ErrorEventBuilder documentationLink(DocumentationLink documentationLink) {
+            return link(documentationLink.getLink());
+        }
+
         public ErrorEventBuilder term() {
             return terminal(true);
         }
@@ -162,12 +167,22 @@ public class ErrorEvent {
             return omit().expected();
         }
 
-        public ErrorEventBuilder noDefaultActions() {
-            return disableDefaultActions(true);
+        public ErrorEvent handle() {
+            var event = build();
+            event.handle();
+            return event;
         }
 
-        public void handle() {
-            build().handle();
+        public void expectedIfContains(String... s) {
+            var contains = throwable != null
+                    && throwable.getMessage() != null
+                    && Arrays.stream(s).map(String::toLowerCase).anyMatch(string -> throwable
+                            .getMessage()
+                            .toLowerCase(Locale.ROOT)
+                            .endsWith(string));
+            if (contains) {
+                expected();
+            }
         }
     }
 }

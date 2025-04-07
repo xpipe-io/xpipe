@@ -25,9 +25,15 @@ public class JacksonMapper {
     private static boolean init = false;
 
     static {
-        ObjectMapper objectMapper = BASE;
+        configureBase(BASE);
+        INSTANCE = BASE.copy();
+    }
+
+    @SuppressWarnings("deprecation")
+    private static void configureBase(ObjectMapper objectMapper) {
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         objectMapper.enable(JsonParser.Feature.ALLOW_COMMENTS);
+        objectMapper.enable(JsonParser.Feature.ALLOW_TRAILING_COMMA);
         objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         objectMapper.disable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE);
@@ -40,8 +46,6 @@ public class JacksonMapper {
                 .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
                 .withCreatorVisibility(JsonAutoDetect.Visibility.NONE)
                 .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE));
-
-        INSTANCE = BASE.copy();
     }
 
     public static <T> T parse(String s, Class<T> c) throws JsonProcessingException {

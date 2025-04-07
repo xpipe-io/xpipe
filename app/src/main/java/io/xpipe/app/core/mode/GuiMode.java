@@ -4,6 +4,7 @@ import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.PlatformThread;
 
+import javafx.application.Platform;
 import javafx.stage.Stage;
 
 public class GuiMode extends PlatformMode {
@@ -15,7 +16,7 @@ public class GuiMode extends PlatformMode {
 
     @Override
     public void onSwitchFrom() {
-        PlatformThread.runLaterIfNeededBlocking(() -> {
+        Platform.runLater(() -> {
             TrackEvent.info("Closing windows");
             Stage.getWindows().stream().toList().forEach(w -> {
                 w.hide();

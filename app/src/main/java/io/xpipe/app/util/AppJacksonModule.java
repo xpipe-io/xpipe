@@ -1,8 +1,11 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.ext.LocalStore;
+import io.xpipe.app.password.PasswordManager;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.terminal.ExternalTerminalType;
+import io.xpipe.app.terminal.TerminalMultiplexer;
+import io.xpipe.app.terminal.TerminalPrompt;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.JacksonMapper;
 
@@ -40,6 +43,10 @@ public class AppJacksonModule extends SimpleModule {
         addDeserializer(EncryptedValue.CurrentKey.class, new EncryptedValueDeserializer<>());
         addSerializer(EncryptedValue.VaultKey.class, new EncryptedValueSerializer());
         addDeserializer(EncryptedValue.VaultKey.class, new EncryptedValueDeserializer<>());
+
+        context.registerSubtypes(PasswordManager.getClasses());
+        context.registerSubtypes(TerminalMultiplexer.getClasses());
+        context.registerSubtypes(TerminalPrompt.getClasses());
 
         context.addSerializers(_serializers);
         context.addDeserializers(_deserializers);
@@ -193,6 +200,9 @@ public class AppJacksonModule extends SimpleModule {
                     return null;
                 }
                 value = JacksonMapper.getDefault().readValue(new CharArrayReader(s), type);
+                if (value == null) {
+                    return null;
+                }
             }
             var perUser = useCurrentSecretKey;
             return perUser
@@ -238,7 +248,7 @@ public class AppJacksonModule extends SimpleModule {
             var e = DataStorage.get()
                     .getStoreEntryIfPresent(id)
                     .filter(dataStoreEntry -> dataStoreEntry.getValidity() != DataStoreEntry.Validity.LOAD_FAILED
-                            || !dataStoreEntry.getStoreNode().isAvailableForUser())
+                            || !dataStoreEntry.getStoreNode().isReadableForUser())
                     .orElse(null);
             if (e == null) {
                 return null;

@@ -28,6 +28,26 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
         return new StubShellControl(getSession().getShellControl());
     }
 
+    default boolean checkSessionAlive() {
+        var session = getSession();
+        if (session == null || !session.isRunning()) {
+            return false;
+        }
+
+        try {
+            session.getShellControl().command(" echo xpipetest").execute();
+            return true;
+        } catch (Exception e) {
+            ErrorEvent.fromThrowable(e).expected().omit().handle();
+            try {
+                stopSessionIfNeeded();
+            } catch (Exception se) {
+                ErrorEvent.fromThrowable(se).expected().omit().handle();
+            }
+            return false;
+        }
+    }
+
     @Override
     default ShellSession newSession() throws Exception {
         var func = shellFunction();

@@ -40,7 +40,7 @@ public sealed interface FileInfo permits FileInfo.Windows, FileInfo.Unix {
 
         @Override
         public boolean possiblyExecutable() {
-            return permissions.contains("x");
+            return permissions == null || permissions.contains("x");
         }
     }
 }

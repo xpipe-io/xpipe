@@ -1,23 +1,8 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.process.OsType;
-
-import java.io.File;
-
 public class Hyperlinks {
 
     public static final String DOCS = "https://docs.xpipe.io";
-    public static final String DOCS_DOUBLE_PROMPT = "https://docs.xpipe.io/troubleshoot/two-step-connections";
-    public static final String DOCS_AGENT_SETUP = "https://docs.xpipe.io/troubleshoot/ssh-agent-socket";
-    public static final String DOCS_TTY = "https://docs.xpipe.io/troubleshoot/tty";
-    public static final String DOCS_LICENSE_ACTIVATION = "https://docs.xpipe.io/troubleshoot/license-activation";
-    public static final String DOCS_PRIVACY = "https://docs.xpipe.io/legal/privacy-policy";
-    public static final String DOCS_EULA = "https://docs.xpipe.io/legal/end-user-license-agreement";
-    public static final String DOCS_SECURITY = "https://docs.xpipe.io/reference/security";
-    public static final String DOCS_WEBTOP_UPDATE = "https://docs.xpipe.io/guide/webtop#updating";
-    public static final String DOCS_SYNC = "https://docs.xpipe.io/guide/sync";
-
     public static final String GITHUB = "https://github.com/xpipe-io/xpipe";
     public static final String GITHUB_PTB = "https://github.com/xpipe-io/xpipe-ptb";
     public static final String GITHUB_LATEST = "https://github.com/xpipe-io/xpipe/releases/latest";

@@ -100,6 +100,7 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                             applicable,
                             filterText,
                             selectedCategory,
+                            StoreViewState.get().getEntriesListVisibilityObservable(),
                             StoreViewState.get().getEntriesListUpdateObservable()),
                     (s, comp) -> {
                         if (!applicable.test(s.getWrapper())) {
@@ -230,7 +231,8 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                             return;
                         }
 
-                        selected.setValue(mode == Mode.PROXY ? DataStorage.get().local().ref() : null);
+                        selected.setValue(
+                                mode == Mode.PROXY ? DataStorage.get().local().ref() : null);
                         event.consume();
                     });
                 })

@@ -7,6 +7,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.FixedHierarchyStore;
 
+import io.xpipe.app.util.LabelGraphic;
 import javafx.beans.value.ObservableValue;
 
 import lombok.Value;
@@ -38,8 +39,8 @@ public class RefreshChildrenStoreAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<FixedHierarchyStore> store) {
-                return "mdi2r-refresh";
+            public LabelGraphic getIcon(DataStoreEntryRef<FixedHierarchyStore> store) {
+                return new LabelGraphic.IconGraphic("mdi2r-refresh");
             }
         };
     }

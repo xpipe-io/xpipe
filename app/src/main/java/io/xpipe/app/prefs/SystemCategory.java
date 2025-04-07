@@ -22,13 +22,13 @@ public class SystemCategory extends AppPrefsCategory {
                                         prefs.startupBehaviour,
                                         PrefsChoiceValue.getSupported(StartupBehaviour.class),
                                         false)
-                                .minWidth(300))
+                                .minWidth(getCompWidth() / 2))
                         .pref(prefs.closeBehaviour)
                         .addComp(ChoiceComp.ofTranslatable(
                                         prefs.closeBehaviour,
                                         PrefsChoiceValue.getSupported(CloseBehaviour.class),
                                         false)
-                                .minWidth(300)))
+                                .minWidth(getCompWidth() / 2)))
                 .addTitle("advanced")
                 .sub(new OptionsBuilder().pref(prefs.developerMode).addToggle(prefs.developerMode))
                 .addTitle("updates")

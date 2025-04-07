@@ -4,7 +4,6 @@ import io.xpipe.app.core.check.AppSystemFontCheck;
 import io.xpipe.app.core.window.ModifiedStage;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 
 import javafx.application.Platform;
@@ -12,6 +11,7 @@ import javafx.scene.text.Font;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.SystemUtils;
 
 import java.awt.*;
@@ -121,9 +121,10 @@ public enum PlatformState {
             }
         }
 
-        if (SystemUtils.IS_OS_WINDOWS && ModifiedStage.mergeFrame()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             // This is primarily intended to fix Windows unified stage transparency issues
             // (https://bugs.openjdk.org/browse/JDK-8329382)
+            // But apparently it can also occur without a custom stage on Windows
             System.setProperty("prism.forceUploadingPainter", "true");
         }
 
@@ -158,6 +159,9 @@ public enum PlatformState {
             }
         }
 
+        // We use our own shutdown hook
+        disableToolkitShutdownHook();
+
         try {
             // This can fail if the found system fonts can somehow not be loaded
             Font.getDefault();
@@ -174,7 +178,8 @@ public enum PlatformState {
             return OptionalInt.empty();
         }
 
-        var factor = LocalExec.readStdoutIfPossible("gsettings", "get", "org.gnome.desktop.interface", "scaling-factor");
+        var factor =
+                LocalExec.readStdoutIfPossible("gsettings", "get", "org.gnome.desktop.interface", "scaling-factor");
         if (factor.isEmpty()) {
             return OptionalInt.empty();
         }
@@ -184,7 +189,8 @@ public enum PlatformState {
             return OptionalInt.empty();
         }
 
-        var textFactor = LocalExec.readStdoutIfPossible("gsettings", "get", "org.gnome.desktop.interface", "text-scaling-factor");
+        var textFactor = LocalExec.readStdoutIfPossible(
+                "gsettings", "get", "org.gnome.desktop.interface", "text-scaling-factor");
         if (textFactor.isEmpty()) {
             return OptionalInt.empty();
         }
@@ -203,5 +209,18 @@ public enum PlatformState {
         } else {
             return OptionalInt.empty();
         }
+    }
+
+    @SneakyThrows
+    private static void disableToolkitShutdownHook() {
+        var tkClass = Class.forName(
+                ModuleLayer.boot().findModule("javafx.graphics").orElseThrow(), "com.sun.javafx.tk.Toolkit");
+        var getToolkitMethod = tkClass.getDeclaredMethod("getToolkit");
+        getToolkitMethod.setAccessible(true);
+        var tk = getToolkitMethod.invoke(null);
+        var shutdownHookField = tk.getClass().getDeclaredField("shutdownHook");
+        shutdownHookField.setAccessible(true);
+        var thread = (Thread) shutdownHookField.get(tk);
+        Runtime.getRuntime().removeShutdownHook(thread);
     }
 }

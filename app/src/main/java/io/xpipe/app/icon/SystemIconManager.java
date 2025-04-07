@@ -23,7 +23,7 @@ public class SystemIconManager {
         var prefs = AppPrefs.get().getIconSources().getValue();
         var all = new ArrayList<SystemIconSource>();
         all.add(SystemIconSource.Directory.builder()
-                .path(DataStorage.get().getIconsDir())
+                .path(DataStorage.getStorageDirectory().resolve("icons"))
                 .id("custom")
                 .build());
         all.add(SystemIconSource.GitRepository.builder()

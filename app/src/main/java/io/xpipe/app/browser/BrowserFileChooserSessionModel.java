@@ -7,7 +7,7 @@ import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.FileReference;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.FileNames;
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.FileSystemStore;
 import io.xpipe.core.util.FailableFunction;
 
@@ -65,7 +65,7 @@ public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<
         onFinish.accept(stores);
     }
 
-    public void finishWithoutChoice() {
+    public void closeFileSystem() {
         synchronized (BrowserFileChooserSessionModel.this) {
             var open = selectedEntry.getValue();
             if (open != null) {
@@ -78,7 +78,7 @@ public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<
 
     public void openFileSystemAsync(
             DataStoreEntryRef<? extends FileSystemStore> store,
-            FailableFunction<BrowserFileSystemTabModel, String, Exception> path,
+            FailableFunction<BrowserFileSystemTabModel, FilePath, Exception> path,
             BooleanProperty externalBusy) {
         if (store == null) {
             return;
@@ -96,7 +96,7 @@ public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<
                     sessionEntries.add(model);
                 }
                 if (path != null) {
-                    model.initWithGivenDirectory(FileNames.toDirectory(path.apply(model)));
+                    model.initWithGivenDirectory(path.apply(model).toDirectory());
                 } else {
                     model.initWithDefaultDirectory();
                 }

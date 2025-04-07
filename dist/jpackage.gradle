@@ -13,7 +13,8 @@ def releaseArguments = distJvmArgs + [
         "-Dio.xpipe.app.staging=$rootProject.isStage",
         '-Dio.xpipe.app.sentryUrl=https://fd5f67ff10764b7e8a704bec9558c8fe@o1084459.ingest.sentry.io/6094279',
         '-Djna.nosys=false',
-        '-Djna.nounpack=true'
+        '-Djna.nounpack=true',
+        '-Xlog:cds'
 ]
 
 if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {

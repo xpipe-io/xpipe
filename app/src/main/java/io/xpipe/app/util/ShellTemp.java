@@ -4,7 +4,6 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FilePath;
 
 import org.apache.commons.io.FileUtils;
@@ -13,8 +12,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
-import java.util.Arrays;
-import java.util.stream.Stream;
 
 public class ShellTemp {
 
@@ -52,7 +49,7 @@ public class ShellTemp {
             proc.command("chmod 777 " + proc.getShellDialect().fileArgument(base))
                     .executeAndCheck();
             var user = proc.getShellDialect().printUsernameCommand(proc).readStdoutOrThrow();
-            base = temp.join(user);
+            base = base.join(user);
         } else {
             var temp = proc.getSystemTemporaryDirectory();
             base = temp.join("xpipe");
@@ -96,14 +93,11 @@ public class ShellTemp {
                 .formatted(d.fileArgument(dir), d.fileArgument(dir), d.fileArgument(dir)));
     }
 
-    public static String getSubDirectory(ShellControl proc, String... sub) throws Exception {
+    public static FilePath getSubDirectory(ShellControl proc, String... sub) throws Exception {
         var base = proc.getSystemTemporaryDirectory();
-        var arr = Stream.concat(Stream.of(base.toString()), Arrays.stream(sub)).toArray(String[]::new);
-        var dir = FileNames.join(arr);
-
+        var dir = base.join(sub);
         // We assume that this directory does not exist yet and therefore don't perform any checks
-        proc.getShellDialect().prepareUserTempDirectory(proc, dir).execute();
-
+        proc.getShellDialect().prepareUserTempDirectory(proc, dir.toString()).execute();
         return dir;
     }
 }

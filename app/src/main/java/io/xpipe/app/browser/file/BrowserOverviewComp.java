@@ -18,7 +18,10 @@ import javafx.scene.layout.VBox;
 
 import lombok.SneakyThrows;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class BrowserOverviewComp extends SimpleComp {
 
@@ -38,16 +41,13 @@ public class BrowserOverviewComp extends SimpleComp {
 
         ShellControl sc = model.getFileSystem().getShell().orElseThrow();
 
-        var commonPlatform = FXCollections.<FileEntry>synchronizedObservableList(FXCollections.observableArrayList());
+        var commonPlatform = FXCollections.<FileEntry>observableList(new CopyOnWriteArrayList<>());
         ThreadHelper.runFailableAsync(() -> {
             var common = sc.getOsType().determineInterestingPaths(sc).stream()
-                    .filter(s -> !s.isBlank())
                     .map(s -> FileEntry.ofDirectory(model.getFileSystem(), s))
                     .filter(entry -> {
                         try {
-                            return sc.getShellDialect()
-                                    .directoryExists(sc, entry.getPath())
-                                    .executeAndCheck();
+                            return model.getFileSystem().directoryExists(entry.getPath());
                         } catch (Exception e) {
                             ErrorEvent.fromThrowable(e).handle();
                             return false;

@@ -48,8 +48,6 @@ public class ImpersistentStorage extends DataStorage {
 
         var e = DataStoreEntry.createNew(
                 LOCAL_ID, DataStorage.DEFAULT_CATEGORY_UUID, "Local Machine", new LocalStore());
-        e.setConfiguration(
-                StorageElement.Configuration.builder().deletable(false).build());
         storeEntries.put(e, e);
         e.validate();
     }

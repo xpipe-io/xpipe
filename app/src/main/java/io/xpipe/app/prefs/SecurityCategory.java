@@ -30,7 +30,9 @@ public class SecurityCategory extends AppPrefsCategory {
                         .pref(prefs.dontAutomaticallyStartVmSshServer)
                         .addToggle(prefs.dontAutomaticallyStartVmSshServer)
                         .pref(prefs.disableTerminalRemotePasswordPreparation)
-                        .addToggle(prefs.disableTerminalRemotePasswordPreparation));
+                        .addToggle(prefs.disableTerminalRemotePasswordPreparation)
+                        .pref(prefs.disableApiHttpsTlsCheck)
+                        .addToggle(prefs.disableApiHttpsTlsCheck));
         return builder.buildComp();
     }
 }

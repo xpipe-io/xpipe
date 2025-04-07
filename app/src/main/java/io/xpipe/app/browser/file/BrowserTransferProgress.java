@@ -22,6 +22,10 @@ public class BrowserTransferProgress {
         return transferred >= total;
     }
 
+    public boolean hasKnownTotalSize() {
+        return total > 0;
+    }
+
     public Duration elapsedTime() {
         var now = Instant.now();
         var elapsed = Duration.between(start, now);

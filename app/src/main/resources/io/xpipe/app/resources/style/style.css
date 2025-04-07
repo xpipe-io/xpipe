@@ -112,6 +112,27 @@
     -fx-background-color: transparent;
 }
 
+.store-creator .store-creator-options {
+    -fx-padding: -5 4 0 5;
+}
+
+.icon-button-comp.batch-mode-button {
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-focus-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-width: 1;
+    -fx-border-color: -color-fg-subtle;
+}
+
+.batch-mode-button .ikonli-font-icon {
+    -fx-icon-color: -color-fg-default;
+}
+
+.batch-mode-button:active .ikonli-font-icon {
+    -fx-icon-color: -color-accent-emphasis;
+}
+
 .root:pretty:light .store-active-comp .dot {
     -fx-fill: radial-gradient(radius 180%, rgb(30, 180, 30, 0.6), rgb(20, 120, 20, 0.65), rgb(37, 200, 37, 0.6));
 }

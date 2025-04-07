@@ -29,8 +29,10 @@ public class IntegratedTextAreaComp extends Comp<IntegratedTextAreaComp.Structur
 
     public static IntegratedTextAreaComp script(
             ObservableValue<DataStoreEntryRef<ShellStore>> host, Property<ShellScript> value) {
-        var string = new SimpleStringProperty(
-                value.getValue() != null ? value.getValue().getValue() : null);
+        var string = new SimpleStringProperty();
+        value.subscribe(shellScript -> {
+            string.set(shellScript != null ? shellScript.getValue() : null);
+        });
         string.addListener((observable, oldValue, newValue) -> {
             value.setValue(newValue != null ? new ShellScript(newValue) : null);
         });

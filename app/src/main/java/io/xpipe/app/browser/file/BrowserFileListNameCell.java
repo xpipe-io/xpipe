@@ -82,6 +82,10 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
                             }
 
                             var item = getTableRow().getItem();
+                            if (item == null) {
+                                return false;
+                            }
+
                             var notDir = item.getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY;
                             var isParentLink = item.getRawFileEntry()
                                     .equals(fileList.getFileSystemModel().getCurrentParentDirectory());

@@ -13,8 +13,8 @@ compileJava {
 }
 
 dependencies {
-    api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.18.2"
-    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: "2.18.2"
+    api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.18.3"
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: "2.18.3"
 }
 
 version = rootProject.versionString

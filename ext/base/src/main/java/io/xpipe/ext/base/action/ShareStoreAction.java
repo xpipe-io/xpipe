@@ -6,6 +6,7 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ClipboardHelper;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.InPlaceSecretValue;
 
@@ -40,8 +41,8 @@ public class ShareStoreAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<DataStore> store) {
-                return "mdi2c-clipboard-list-outline";
+            public LabelGraphic getIcon(DataStoreEntryRef<DataStore> store) {
+                return new LabelGraphic.IconGraphic("mdi2c-clipboard-list-outline");
             }
         };
     }

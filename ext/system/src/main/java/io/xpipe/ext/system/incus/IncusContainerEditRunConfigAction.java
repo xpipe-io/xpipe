@@ -8,6 +8,7 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.store.FilePath;
 
 import javafx.beans.value.ObservableValue;
@@ -36,8 +37,8 @@ public class IncusContainerEditRunConfigAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<IncusContainerStore> store) {
-                return "mdi2m-movie-edit";
+            public LabelGraphic getIcon(DataStoreEntryRef<IncusContainerStore> store) {
+                return new LabelGraphic.IconGraphic("mdi2m-movie-edit");
             }
 
             @Override
@@ -57,9 +58,9 @@ public class IncusContainerEditRunConfigAction implements ActionProvider {
             var d = (IncusContainerStore) store.getStore();
             var elevatedRef = ProcessControlProvider.get()
                     .elevated(d.getInstall().getStore().getHost().get().ref());
-            var file = new FilePath("/run/incus/" + d.getContainerName() + "/lxc.conf");
-            var model = BrowserFullSessionModel.DEFAULT.openFileSystemSync(
-                    elevatedRef, m -> file.getParent().toString(), null, true);
+            var file = FilePath.of("/run/incus/" + d.getContainerName() + "/lxc.conf");
+            var model =
+                    BrowserFullSessionModel.DEFAULT.openFileSystemSync(elevatedRef, m -> file.getParent(), null, true);
             var found = model.findFile(file.toString());
             if (found.isEmpty()) {
                 return;

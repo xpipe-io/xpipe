@@ -48,7 +48,7 @@ public abstract class BaseCompressAction implements BrowserAction, BrowserBranch
 
             var pf = sc.command(sc.getShellDialect().getPrintEnvironmentVariableCommand("ProgramFiles"))
                     .readStdoutOrThrow();
-            var loc = new FilePath(pf).join("7-Zip", "7z.exe").toWindows();
+            var loc = FilePath.of(pf).join("7-Zip", "7z.exe").toWindows();
             if (model.getFileSystem().fileExists(loc)) {
                 model.getCache().getMultiPurposeCache().put("7zExecutable", loc);
             }
@@ -76,9 +76,12 @@ public abstract class BaseCompressAction implements BrowserAction, BrowserBranch
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         var ext = List.of("zip", "tar", "tar.gz", "tgz", "7z", "rar", "xar");
-        if (entries.stream().anyMatch(browserEntry -> ext.stream()
-                .anyMatch(s ->
-                        browserEntry.getRawFileEntry().getPath().toLowerCase().endsWith("." + s)))) {
+        if (entries.stream().anyMatch(browserEntry -> ext.stream().anyMatch(s -> browserEntry
+                .getRawFileEntry()
+                .getPath()
+                .toString()
+                .toLowerCase()
+                .endsWith("." + s)))) {
             return false;
         }
 
@@ -150,14 +153,14 @@ public abstract class BaseCompressAction implements BrowserAction, BrowserBranch
 
         @Override
         protected void create(String fileName, BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-            var base = new FilePath(model.getCurrentDirectory().getPath());
+            var base = model.getCurrentDirectory().getPath();
             var target = base.join(fileName);
             var command = CommandBuilder.of()
                     .add("Compress-Archive", "-Force", "-DestinationPath")
                     .addFile(target)
                     .add("-Path");
             for (int i = 0; i < entries.size(); i++) {
-                var rel = new FilePath(entries.get(i).getRawFileEntry().getPath()).relativize(base);
+                var rel = entries.get(i).getRawFileEntry().getPath().relativize(base);
                 if (directory) {
                     command.addQuoted(rel.toDirectory().toWindows() + "*");
                 } else {
@@ -172,14 +175,10 @@ public abstract class BaseCompressAction implements BrowserAction, BrowserBranch
                     () -> {
                         var sc = model.getFileSystem().getShell().orElseThrow();
                         if (ShellDialects.isPowershell(sc)) {
-                            sc.command(command)
-                                    .withWorkingDirectory(base.toString())
-                                    .execute();
+                            sc.command(command).withWorkingDirectory(base).execute();
                         } else {
                             try (var sub = sc.subShell(ShellDialects.POWERSHELL)) {
-                                sub.command(command)
-                                        .withWorkingDirectory(base.toString())
-                                        .execute();
+                                sub.command(command).withWorkingDirectory(base).execute();
                             }
                         }
                     },
@@ -201,13 +200,11 @@ public abstract class BaseCompressAction implements BrowserAction, BrowserBranch
 
         @Override
         protected void create(String fileName, BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-            var base = new FilePath(model.getCurrentDirectory().getPath());
+            var base = model.getCurrentDirectory().getPath();
             var target = base.join(fileName);
             var command = CommandBuilder.of().add("zip", "-r", "-");
             for (BrowserEntry entry : entries) {
-                var rel = new FilePath(entry.getRawFileEntry().getPath())
-                        .relativize(base)
-                        .toUnix();
+                var rel = entry.getRawFileEntry().getPath().relativize(base).toUnix();
                 if (directory) {
                     command.add(".");
                 } else {
@@ -251,7 +248,7 @@ public abstract class BaseCompressAction implements BrowserAction, BrowserBranch
 
         @Override
         protected void create(String fileName, BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-            var base = new FilePath(model.getCurrentDirectory().getPath());
+            var base = model.getCurrentDirectory().getPath();
             var target = base.join(fileName);
             var command = CommandBuilder.of()
                     .addFile(model.getCache()
@@ -262,7 +259,7 @@ public abstract class BaseCompressAction implements BrowserAction, BrowserBranch
                     .add("-r")
                     .addFile(target);
             for (BrowserEntry entry : entries) {
-                var rel = new FilePath(entry.getRawFileEntry().getPath()).relativize(base);
+                var rel = entry.getRawFileEntry().getPath().relativize(base);
                 if (directory) {
                     command.addQuoted(".\\" + rel.toDirectory().toWindows() + "*");
                 } else {
@@ -304,10 +301,10 @@ public abstract class BaseCompressAction implements BrowserAction, BrowserBranch
                     .addIf(gz, "-z")
                     .add("-f")
                     .addFile(fileName);
-            var base = new FilePath(model.getCurrentDirectory().getPath());
+            var base = model.getCurrentDirectory().getPath();
 
             if (directory) {
-                var dir = new FilePath(entries.getFirst().getRawFileEntry().getPath());
+                var dir = entries.getFirst().getRawFileEntry().getPath();
                 // Fix for bsd find, remove /
                 var command = CommandBuilder.of()
                         .add("find")
@@ -320,7 +317,7 @@ public abstract class BaseCompressAction implements BrowserAction, BrowserBranch
             } else {
                 var command = CommandBuilder.of().add(tar);
                 for (BrowserEntry entry : entries) {
-                    var rel = new FilePath(entry.getRawFileEntry().getPath()).relativize(base);
+                    var rel = entry.getRawFileEntry().getPath().relativize(base);
                     command.addFile(rel);
                 }
                 model.runCommandAsync(command, true);

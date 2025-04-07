@@ -1,10 +1,11 @@
 package io.xpipe.app.comp.store;
 
 import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataColor;
+import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -42,7 +43,7 @@ public class StoreEntryWrapper {
     private final BooleanProperty expanded = new SimpleBooleanProperty();
     private final Property<Object> persistentState = new SimpleObjectProperty<>();
     private final Property<Map<String, Object>> cache = new SimpleObjectProperty<>(Map.of());
-    private final Property<DataColor> color = new SimpleObjectProperty<>();
+    private final Property<DataStoreColor> color = new SimpleObjectProperty<>();
     private final Property<StoreCategoryWrapper> category = new SimpleObjectProperty<>();
     private final Property<String> summary = new SimpleObjectProperty<>();
     private final Property<StoreNotes> notes;
@@ -120,7 +121,7 @@ public class StoreEntryWrapper {
     }
 
     public void editDialog() {
-        StoreCreationComp.showEdit(entry);
+        StoreCreationDialog.showEdit(entry);
     }
 
     public void delete() {
@@ -201,7 +202,7 @@ public class StoreEntryWrapper {
         customIcon.setValue(entry.getIcon());
         iconFile.setValue(entry.getEffectiveIconFile());
         busy.setValue(entry.getBusyCounter().get() != 0);
-        deletable.setValue(entry.getConfiguration().isDeletable());
+        deletable.setValue(!(entry.getStore() instanceof LocalStore));
         sessionActive.setValue(entry.getStore() instanceof SingletonSessionStore<?> ss
                 && entry.getStore() instanceof ShellStore
                 && ss.isSessionRunning());

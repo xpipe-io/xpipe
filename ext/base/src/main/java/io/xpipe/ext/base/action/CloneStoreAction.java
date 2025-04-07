@@ -5,6 +5,7 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.store.DataStore;
 
 import javafx.beans.value.ObservableValue;
@@ -45,8 +46,8 @@ public class CloneStoreAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<DataStore> store) {
-                return "mdi2c-content-copy";
+            public LabelGraphic getIcon(DataStoreEntryRef<DataStore> store) {
+                return new LabelGraphic.IconGraphic("mdi2c-content-copy");
             }
         };
     }

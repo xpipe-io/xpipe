@@ -9,7 +9,7 @@ import io.xpipe.app.issue.TrackEvent;
 
 public class UpdateAvailableDialog {
 
-    public static void showIfNeeded() {
+    public static void showIfNeeded(boolean wait) {
         UpdateHandler uh = AppDistributionType.get().getUpdateHandler();
         if (uh.getPreparedUpdate().getValue() == null) {
             return;
@@ -34,6 +34,11 @@ public class UpdateAvailableDialog {
         for (var action : uh.createActions()) {
             modal.addButton(action);
         }
-        AppDialog.show(modal);
+
+        if (wait) {
+            modal.showAndWait();
+        } else {
+            modal.show();
+        }
     }
 }

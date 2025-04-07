@@ -2,7 +2,7 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataColor;
+import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.util.DerivedObservableList;
@@ -35,7 +35,7 @@ public class StoreCategoryWrapper {
     private final IntegerProperty shownContainedEntriesCount = new SimpleIntegerProperty();
     private final IntegerProperty allContainedEntriesCount = new SimpleIntegerProperty();
     private final BooleanProperty expanded = new SimpleBooleanProperty();
-    private final Property<DataColor> color = new SimpleObjectProperty<>();
+    private final Property<DataStoreColor> color = new SimpleObjectProperty<>();
     private final BooleanProperty largeCategoryOptimizations = new SimpleBooleanProperty();
     private StoreCategoryWrapper cachedParent;
 

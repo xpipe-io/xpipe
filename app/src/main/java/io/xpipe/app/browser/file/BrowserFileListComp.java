@@ -8,7 +8,6 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileInfo;
 import io.xpipe.core.store.FileKind;
-import io.xpipe.core.store.FileNames;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -46,7 +45,6 @@ public final class BrowserFileListComp extends SimpleComp {
 
     private final BrowserFileListModel fileList;
     private final StringProperty typedSelection = new SimpleStringProperty("");
-    private final DoubleProperty ownerWidth = new SimpleDoubleProperty();
 
     public BrowserFileListComp(BrowserFileListModel fileList) {
         this.fileList = fileList;
@@ -63,8 +61,7 @@ public final class BrowserFileListComp extends SimpleComp {
         filenameCol.textProperty().bind(AppI18n.observable("name"));
         filenameCol.setCellValueFactory(param -> new SimpleStringProperty(
                 param.getValue() != null
-                        ? FileNames.getFileName(
-                                param.getValue().getRawFileEntry().getPath())
+                        ? param.getValue().getRawFileEntry().getPath().getFileName()
                         : null));
         filenameCol.setComparator(Comparator.comparing(String::toLowerCase));
         filenameCol.setSortType(ASCENDING);
@@ -73,9 +70,9 @@ public final class BrowserFileListComp extends SimpleComp {
         filenameCol.setReorderable(false);
         filenameCol.setResizable(false);
 
-        var sizeCol = new TableColumn<BrowserEntry, Number>();
+        var sizeCol = new TableColumn<BrowserEntry, String>();
         sizeCol.textProperty().bind(AppI18n.observable("size"));
-        sizeCol.setCellValueFactory(param -> new SimpleLongProperty(
+        sizeCol.setCellValueFactory(param -> new ReadOnlyStringWrapper(
                 param.getValue().getRawFileEntry().resolved().getSize()));
         sizeCol.setCellFactory(col -> new FileSizeCell());
         sizeCol.setResizable(false);
@@ -180,6 +177,10 @@ public final class BrowserFileListComp extends SimpleComp {
     private String formatOwner(BrowserEntry param) {
         FileInfo.Unix unix = param.getRawFileEntry().resolved().getInfo() instanceof FileInfo.Unix u ? u : null;
         if (unix == null) {
+            return null;
+        }
+
+        if (unix.getUid() == null && unix.getGid() == null && unix.getUser() == null && unix.getGroup() == null) {
             return null;
         }
 
@@ -487,12 +488,16 @@ public final class BrowserFileListComp extends SimpleComp {
                     mtimeCol.setVisible(true);
                 }
 
-                ownerWidth.set(fileList.getAll().getValue().stream()
+                var hasOwner = fileList.getAll().getValue().stream()
                         .map(browserEntry -> formatOwner(browserEntry))
-                        .map(s -> s != null ? s.length() * 9 : 0)
-                        .max(Comparator.naturalOrder())
-                        .orElse(150));
-                ownerCol.setPrefWidth(ownerWidth.get());
+                        .filter(s -> s != null)
+                        .count() > 0;
+                if (hasOwner) {
+                    ownerCol.setPrefWidth(fileList.getAll().getValue().stream().map(browserEntry -> formatOwner(browserEntry)).map(
+                            s -> s != null ? s.length() * 9 : 0).max(Comparator.naturalOrder()).orElse(150));
+                } else {
+                    ownerCol.setPrefWidth(0);
+                }
 
                 if (fileList.getFileSystemModel().getFileSystem() != null) {
                     var shell = fileList.getFileSystemModel()
@@ -505,7 +510,9 @@ public final class BrowserFileListComp extends SimpleComp {
                     } else {
                         modeCol.setVisible(true);
                         if (table.getWidth() > 1000) {
-                            ownerCol.setVisible(true);
+                            ownerCol.setVisible(hasOwner);
+                        } else if (!hasOwner) {
+                            ownerCol.setVisible(false);
                         }
                     }
                 }
@@ -572,19 +579,24 @@ public final class BrowserFileListComp extends SimpleComp {
         }
     }
 
-    private static class FileSizeCell extends TableCell<BrowserEntry, Number> {
+    private static class FileSizeCell extends TableCell<BrowserEntry, String> {
 
         @Override
-        protected void updateItem(Number fileSize, boolean empty) {
+        protected void updateItem(String fileSize, boolean empty) {
             super.updateItem(fileSize, empty);
             if (empty || getTableRow() == null || getTableRow().getItem() == null) {
                 setText(null);
             } else {
                 var path = getTableRow().getItem();
                 if (path.getRawFileEntry().resolved().getKind() == FileKind.DIRECTORY) {
-                    setText("");
-                } else {
-                    setText(byteCount(fileSize.longValue()));
+                    setText(null);
+                } else if (fileSize != null) {
+                    try {
+                        var l = Long.parseLong(fileSize);
+                        setText(byteCount(l));
+                    } catch (NumberFormatException e) {
+                        setText(fileSize);
+                    }
                 }
             }
         }

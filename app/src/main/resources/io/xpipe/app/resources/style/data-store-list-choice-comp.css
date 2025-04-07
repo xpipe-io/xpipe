@@ -1,12 +1,3 @@
-.data-store-list-choice-comp {
-    -fx-border-width: 1px;
-    -fx-background-color: -color-bg-default;
-    -fx-border-color: -color-border-default;
-    -fx-padding: 0.6em;
-    -fx-border-radius: 4px;
-    -fx-background-radius: 4px;
-}
-
 .data-store-list-choice-comp .entry {
     -fx-border-width: 1px;
     -fx-background-color: -color-bg-default;

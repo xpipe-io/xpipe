@@ -57,6 +57,8 @@ public class AppProperties {
 
     boolean aotTrainMode;
 
+    boolean debugPlatformThreadAccess;
+
     AppArguments arguments;
 
     XPipeDaemonMode explicitMode;
@@ -103,6 +105,9 @@ public class AppProperties {
                 .map(Boolean::parseBoolean)
                 .orElse(true);
         debugThreads = Optional.ofNullable(System.getProperty("io.xpipe.app.debugThreads"))
+                .map(Boolean::parseBoolean)
+                .orElse(false);
+        debugPlatformThreadAccess = Optional.ofNullable(System.getProperty("io.xpipe.app.debugPlatformThreadAccess"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
         defaultDataDir = Path.of(System.getProperty("user.home"), isStaging() ? ".xpipe-ptb" : ".xpipe");

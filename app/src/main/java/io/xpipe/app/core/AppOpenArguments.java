@@ -6,6 +6,7 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.core.store.FilePath;
 
 import lombok.Value;
 
@@ -133,7 +134,7 @@ public class AppOpenArguments {
             var dir = Files.isDirectory(file) ? file : file.getParent();
             AppLayoutModel.get().selectBrowser();
             BrowserFullSessionModel.DEFAULT.openFileSystemAsync(
-                    DataStorage.get().local().ref(), model -> dir.toString(), null);
+                    DataStorage.get().local().ref(), model -> FilePath.of(dir.toString()), null);
         }
     }
 }

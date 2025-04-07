@@ -1,10 +1,11 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.comp.store.StoreSortMode;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.LocalStore;
+import io.xpipe.app.ext.NameableStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
@@ -18,7 +19,6 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.SneakyThrows;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.*;
@@ -39,6 +39,11 @@ public abstract class DataStorage {
     public static final UUID ALL_IDENTITIES_CATEGORY_UUID = UUID.fromString("23a5565d-b343-4ab2-abf4-48a5d12dda22");
     public static final UUID LOCAL_IDENTITIES_CATEGORY_UUID = UUID.fromString("e784de4e-abea-4cb8-a839-fc557cd23097");
     public static final UUID SYNCED_IDENTITIES_CATEGORY_UUID = UUID.fromString("69aa5040-28dc-451e-b4ff-1192ce5e1e3c");
+
+    public static Path getStorageDirectory() {
+        var dir = AppProperties.get().getDataDir().resolve("storage");
+        return dir;
+    }
 
     private static final String PERSIST_PROP = "io.xpipe.storage.persist";
 
@@ -69,8 +74,7 @@ public abstract class DataStorage {
     private final Map<DataStore, DataStoreEntry> storeEntryMapCache = new HashMap<>();
 
     public DataStorage() {
-        var prefsDir = AppPrefs.get().storageDirectory().getValue();
-        this.dir = !Files.exists(prefsDir) || !Files.isDirectory(prefsDir) ? AppPrefs.DEFAULT_STORAGE_DIR : prefsDir;
+        this.dir = getStorageDirectory();
         this.storeEntries = new ConcurrentHashMap<>();
         this.storeEntriesSet = storeEntries.keySet();
         this.storeCategories = new CopyOnWriteArrayList<>();
@@ -250,10 +254,6 @@ public abstract class DataStorage {
 
     public Path getDataDir() {
         return dir.resolve("data");
-    }
-
-    public Path getIconsDir() {
-        return dir.resolve("icons");
     }
 
     protected Path getCategoriesDir() {
@@ -528,12 +528,17 @@ public abstract class DataStorage {
             if (!storeClassMatch) {
                 return true;
             }
+
             DataStore merged = ((FixedChildStore) pair.getKey().getStore())
                     .merge(pair.getValue().getStore().asNeeded());
             var mergedStoreChanged = pair.getKey().getStore() != merged;
 
-            if (pair.getKey().getStorePersistentState() == null || pair.getValue().get().getStorePersistentState() == null) {
-                return !mergedStoreChanged;
+            var nameChanged =
+                    shouldUpdateChildrenStoreName(pair.getKey(), pair.getValue().get());
+
+            if (pair.getKey().getStorePersistentState() == null
+                    || pair.getValue().get().getStorePersistentState() == null) {
+                return !mergedStoreChanged && !nameChanged;
             }
 
             var stateClassMatch = pair.getKey()
@@ -547,7 +552,7 @@ public abstract class DataStorage {
             var stateChange = !pair.getKey()
                     .getStorePersistentState()
                     .equals(pair.getValue().get().getStorePersistentState());
-            return !mergedStoreChanged && !stateChange;
+            return !mergedStoreChanged && !stateChange && !nameChanged;
         });
 
         if (toRemove.isEmpty() && toAdd.isEmpty() && toUpdate.isEmpty()) {
@@ -569,6 +574,12 @@ public abstract class DataStorage {
         }
         addStoreEntriesIfNotPresent(toAdd.stream().map(DataStoreEntryRef::get).toArray(DataStoreEntry[]::new));
         toUpdate.forEach(pair -> {
+            if (shouldUpdateChildrenStoreName(pair.getKey(), pair.getValue().get())) {
+                pair.getKey()
+                        .setName(getNameableStoreName(pair.getValue().get())
+                                .orElse(pair.getKey().getName()));
+            }
+
             DataStore merged = ((FixedChildStore) pair.getKey().getStore())
                     .merge(pair.getValue().getStore().asNeeded());
             if (merged != pair.getKey().getStore()) {
@@ -586,6 +597,36 @@ public abstract class DataStorage {
         toUpdate.forEach(dataStoreEntryRef ->
                 dataStoreEntryRef.getKey().getProvider().onParentRefresh(dataStoreEntryRef.getKey()));
         return !newChildren.isEmpty();
+    }
+
+    private boolean shouldUpdateChildrenStoreName(DataStoreEntry o, DataStoreEntry n) {
+        var oldName = getNameableStoreName(o);
+        if (oldName.isEmpty()) {
+            return false;
+        }
+
+        var isCustom = !o.getName().equals(oldName.get());
+        if (isCustom) {
+            return false;
+        }
+
+        var newName = getNameableStoreName(n);
+        if (newName.isEmpty()) {
+            return false;
+        }
+        return !o.getName().equals(newName.get());
+    }
+
+    private Optional<String> getNameableStoreName(DataStoreEntry o) {
+        if (!(o.getStore() instanceof NameableStore nameable)) {
+            return Optional.empty();
+        }
+
+        try {
+            return Optional.ofNullable(nameable.getName());
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     private OptionalInt getFixedChildId(DataStoreEntry entry) {
@@ -842,7 +883,7 @@ public abstract class DataStorage {
         return false;
     }
 
-    public DataColor getEffectiveColor(DataStoreEntry entry) {
+    public DataStoreColor getEffectiveColor(DataStoreEntry entry) {
         var cat = getStoreCategoryIfPresent(entry.getCategoryUuid()).orElseThrow();
         var root = getRootForEntry(entry, cat);
         if (root.getColor() != null) {

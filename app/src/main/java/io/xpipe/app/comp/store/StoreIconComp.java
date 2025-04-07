@@ -2,12 +2,13 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
-import io.xpipe.app.comp.base.TooltipAugment;
+import io.xpipe.app.comp.base.TooltipHelper;
+import io.xpipe.app.storage.DataStoreEntry;
 
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.control.Tooltip;
+import javafx.scene.input.*;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
@@ -26,7 +27,7 @@ public class StoreIconComp extends SimpleComp {
         var imageComp = PrettyImageHelper.ofFixedSize(wrapper.getIconFile(), w, h);
         var storeIcon = imageComp.createRegion();
         if (wrapper.getValidity().getValue().isUsable()) {
-            new TooltipAugment<>(wrapper.getEntry().getProvider().displayName(), null).augment(storeIcon);
+            Tooltip.install(storeIcon, TooltipHelper.create(wrapper.getEntry().getProvider().displayName(), null));
         }
 
         var background = new Region();
@@ -54,6 +55,10 @@ public class StoreIconComp extends SimpleComp {
 
         stack.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
+                if (wrapper.getValidity().getValue() == DataStoreEntry.Validity.LOAD_FAILED) {
+                    return;
+                }
+
                 StoreIconChoiceDialog.show(wrapper.getEntry());
                 event.consume();
             }

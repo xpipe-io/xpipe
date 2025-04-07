@@ -5,7 +5,6 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.store.FileKind;
-import io.xpipe.core.store.FileNames;
 
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
@@ -18,8 +17,7 @@ public class FollowLinkAction implements BrowserLeafAction {
 
     @Override
     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        var target = FileNames.getParent(
-                entries.getFirst().getRawFileEntry().resolved().getPath());
+        var target = entries.getFirst().getRawFileEntry().resolved().getPath().getParent();
         model.cdAsync(target);
     }
 

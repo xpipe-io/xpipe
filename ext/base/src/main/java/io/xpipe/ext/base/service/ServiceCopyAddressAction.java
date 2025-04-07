@@ -5,6 +5,7 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ClipboardHelper;
 
+import io.xpipe.app.util.LabelGraphic;
 import javafx.beans.value.ObservableValue;
 
 import lombok.Value;
@@ -41,8 +42,8 @@ public class ServiceCopyAddressAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<AbstractServiceStore> store) {
-                return "mdi2c-content-copy";
+            public LabelGraphic getIcon(DataStoreEntryRef<AbstractServiceStore> store) {
+                return new LabelGraphic.IconGraphic("mdi2c-content-copy");
             }
         };
     }

@@ -5,13 +5,17 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ScanDialog;
+import io.xpipe.app.util.ScanDialogAction;
 import io.xpipe.core.process.ShellTtyState;
 import io.xpipe.core.process.SystemState;
 
 import javafx.beans.value.ObservableValue;
 
 import lombok.Value;
+
+import java.util.List;
 
 public class ScanStoreAction implements ActionProvider {
 
@@ -55,8 +59,36 @@ public class ScanStoreAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<ShellStore> store) {
+            public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+                return new LabelGraphic.IconGraphic("mdi2l-layers-plus");
+            }
+        };
+    }
+
+    @Override
+    public BatchDataStoreCallSite<?> getBatchDataStoreCallSite() {
+        return new BatchDataStoreCallSite<ShellStore>() {
+
+            @Override
+            public ObservableValue<String> getName() {
+                return AppI18n.observable("addConnections");
+            }
+
+            @Override
+            public String getIcon() {
                 return "mdi2l-layers-plus";
+            }
+
+            @Override
+            public Class<?> getApplicableClass() {
+                return ShellStore.class;
+            }
+
+            @Override
+            public ActionProvider.Action createAction(List<DataStoreEntryRef<ShellStore>> stores) {
+                return () -> {
+                    ScanDialog.showMulti(stores, ScanDialogAction.shellScanAction());
+                };
             }
         };
     }
@@ -69,7 +101,7 @@ public class ScanStoreAction implements ActionProvider {
         @Override
         public void execute() {
             if (entry == null || entry.getStore() instanceof ShellStore) {
-                ScanDialog.showForShellStore(entry);
+                ScanDialog.showAsync(entry);
             }
         }
     }

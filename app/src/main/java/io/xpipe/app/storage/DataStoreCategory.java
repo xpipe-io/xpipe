@@ -39,7 +39,7 @@ public class DataStoreCategory extends StorageElement {
             String name,
             Instant lastUsed,
             Instant lastModified,
-            DataColor color,
+            DataStoreColor color,
             boolean dirty,
             UUID parentCategory,
             StoreSortMode sortMode,
@@ -102,7 +102,7 @@ public class DataStoreCategory extends StorageElement {
         var color = Optional.ofNullable(json.get("color"))
                 .map(node -> {
                     try {
-                        return mapper.treeToValue(node, DataColor.class);
+                        return mapper.treeToValue(node, DataStoreColor.class);
                     } catch (JsonProcessingException e) {
                         return null;
                     }

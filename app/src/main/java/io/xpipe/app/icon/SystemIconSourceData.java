@@ -35,11 +35,12 @@ public class SystemIconSourceData {
                     .filter(path -> Files.isRegularFile(path))
                     .filter(path -> path.toString().endsWith(".svg"))
                     .map(path -> {
-                var name = FilenameUtils.getBaseName(path.getFileName().toString());
-                var cleanedName = name.replaceFirst("-light$", "").replaceFirst("-dark$", "");
-                var cleanedPath = path.getParent().resolve(cleanedName + ".svg");
-                return cleanedPath;
-            }).toList();
+                        var name = FilenameUtils.getBaseName(path.getFileName().toString());
+                        var cleanedName = name.replaceFirst("-light$", "").replaceFirst("-dark$", "");
+                        var cleanedPath = path.getParent().resolve(cleanedName + ".svg");
+                        return cleanedPath;
+                    })
+                    .toList();
             for (var file : flatFiles) {
                 var name = FilenameUtils.getBaseName(file.getFileName().toString());
                 var displayName = name.toLowerCase(Locale.ROOT);
@@ -51,33 +52,40 @@ public class SystemIconSourceData {
                 var hasLightModeVariant = Files.exists(lightModeFile);
 
                 if (hasBaseVariant && hasDarkModeVariant) {
-                    sourceFiles.add(new SystemIconSourceFile(source, displayName, baseFile, SystemIconSourceFile.ColorSchemeData.DEFAULT));
-                    sourceFiles.add(new SystemIconSourceFile(source, displayName, darkModeFile, SystemIconSourceFile.ColorSchemeData.DARK));
+                    sourceFiles.add(new SystemIconSourceFile(
+                            source, displayName, baseFile, SystemIconSourceFile.ColorSchemeData.DEFAULT));
+                    sourceFiles.add(new SystemIconSourceFile(
+                            source, displayName, darkModeFile, SystemIconSourceFile.ColorSchemeData.DARK));
                     continue;
                 }
 
                 if (hasBaseVariant && hasLightModeVariant) {
-                    sourceFiles.add(new SystemIconSourceFile(source, displayName, baseFile, SystemIconSourceFile.ColorSchemeData.DARK));
-                    sourceFiles.add(new SystemIconSourceFile(source, displayName, lightModeFile, SystemIconSourceFile.ColorSchemeData.DEFAULT));
+                    sourceFiles.add(new SystemIconSourceFile(
+                            source, displayName, baseFile, SystemIconSourceFile.ColorSchemeData.DARK));
+                    sourceFiles.add(new SystemIconSourceFile(
+                            source, displayName, lightModeFile, SystemIconSourceFile.ColorSchemeData.DEFAULT));
                     continue;
                 }
 
                 if (!hasBaseVariant) {
                     if (hasLightModeVariant) {
-                        sourceFiles.add(new SystemIconSourceFile(source, displayName, lightModeFile, SystemIconSourceFile.ColorSchemeData.DEFAULT));
+                        sourceFiles.add(new SystemIconSourceFile(
+                                source, displayName, lightModeFile, SystemIconSourceFile.ColorSchemeData.DEFAULT));
                         if (hasDarkModeVariant) {
-                            sourceFiles.add(new SystemIconSourceFile(source, displayName, darkModeFile, SystemIconSourceFile.ColorSchemeData.DARK));
+                            sourceFiles.add(new SystemIconSourceFile(
+                                    source, displayName, darkModeFile, SystemIconSourceFile.ColorSchemeData.DARK));
                         }
                     } else {
                         if (hasDarkModeVariant) {
-                            sourceFiles.add(
-                                    new SystemIconSourceFile(source, displayName, darkModeFile, SystemIconSourceFile.ColorSchemeData.DEFAULT));
+                            sourceFiles.add(new SystemIconSourceFile(
+                                    source, displayName, darkModeFile, SystemIconSourceFile.ColorSchemeData.DEFAULT));
                         }
                     }
                     continue;
                 }
 
-                sourceFiles.add(new SystemIconSourceFile(source, displayName, baseFile, SystemIconSourceFile.ColorSchemeData.DEFAULT));
+                sourceFiles.add(new SystemIconSourceFile(
+                        source, displayName, baseFile, SystemIconSourceFile.ColorSchemeData.DEFAULT));
             }
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).handle();
