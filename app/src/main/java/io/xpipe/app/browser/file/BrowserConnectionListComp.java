@@ -83,7 +83,8 @@ public final class BrowserConnectionListComp extends SimpleComp {
                             busyEntries.remove(selectedAction);
                         }
                     });
-                });
+                },
+                false);
 
         var r = section.vgrow().createRegion();
         r.getStyleClass().add("bookmark-list");

@@ -21,16 +21,20 @@ public class StoreSectionMiniComp extends StoreSectionBaseComp {
     private final BooleanProperty expanded;
     private final BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment;
     private final Consumer<StoreSection> action;
+    private final boolean forceInitialExpand;
 
     public StoreSectionMiniComp(
             StoreSection section,
             BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment,
-            Consumer<StoreSection> action) {
+            Consumer<StoreSection> action,
+            boolean forceInitialExpand
+    ) {
         super(section);
         this.augment = augment;
         this.action = action;
+        this.forceInitialExpand = forceInitialExpand;
         this.expanded = new SimpleBooleanProperty(section.getWrapper() == null
-                || section.getWrapper().getExpanded().getValue());
+                || section.getWrapper().getExpanded().getValue() || forceInitialExpand);
     }
 
     @Override
@@ -71,7 +75,7 @@ public class StoreSectionMiniComp extends StoreSectionBaseComp {
         }
 
         var content =
-                createChildrenList(c -> new StoreSectionMiniComp(c, this.augment, this.action), Bindings.not(expanded));
+                createChildrenList(c -> new StoreSectionMiniComp(c, this.augment, this.action, this.forceInitialExpand), Bindings.not(expanded));
         list.add(content);
 
         var full = new VerticalComp(list);

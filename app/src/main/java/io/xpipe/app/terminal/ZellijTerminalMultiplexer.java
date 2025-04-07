@@ -16,7 +16,7 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
 
     @Override
     public String getDocsLink() {
-        return "https://zellij.dev/documentation/creating-a-layout.html#default-tab-template";
+        return "https://zellij.dev/";
     }
 
     @Override

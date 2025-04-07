@@ -94,6 +94,10 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                         && e.getValidity().isUsable()
                         && (applicableCheck == null || applicableCheck.test(e.ref()));
             };
+
+            var applicableCount = StoreViewState.get().getAllEntries().getList().stream().filter(applicable).count();
+            var initialExpanded = applicableCount < 20;
+
             var section = new StoreSectionMiniComp(
                     StoreSection.createTopLevel(
                             StoreViewState.get().getAllEntries(),
@@ -112,7 +116,8 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                             this.selected.setValue(sec.getWrapper().getEntry().ref());
                             popover.hide();
                         }
-                    });
+                    },
+                    initialExpanded);
             var category = new DataStoreCategoryChoiceComp(
                             initialCategory != null ? initialCategory.getRoot() : null,
                             StoreViewState.get().getActiveCategory(),
