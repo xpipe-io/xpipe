@@ -127,9 +127,12 @@ project.ext {
     devJavafxVersion = '25-ea+10'
     platformName = getPlatformName()
     jvmRunArgs = [
-            "--add-opens", "java.base/java.lang=io.xpipe.app",
-            "--add-opens", "java.base/java.lang=io.xpipe.core",
-            "--add-opens", "java.desktop/java.awt=io.xpipe.app",
+            "--enable-native-access=com.sun.jna",
+            "--enable-native-access=javafx.graphics",
+            "--enable-native-access=javafx.web",
+            "--sun-misc-unsafe-memory-access=allow",
+            "--add-opens", "java.base/java.io=io.xpipe.ext.proc",
+            "--add-opens", "org.apache.commons.io/org.apache.commons.io.input=io.xpipe.ext.proc",
             "--add-opens", "net.synedra.validatorfx/net.synedra.validatorfx=io.xpipe.app",
             "--add-opens", "java.base/java.nio.file=io.xpipe.app",
             "--add-exports", "javafx.graphics/com.sun.javafx.tk=io.xpipe.app",
@@ -144,6 +147,9 @@ project.ext {
             "-Djavafx.preloader=io.xpipe.app.core.AppPreloader",
             "-Djdk.virtualThreadScheduler.parallelism=8"
     ]
+
+    // Use project liliput
+    jvmRunArgs += ['-XX:+UnlockExperimentalVMOptions', '-XX:+UseCompactObjectHeaders']
 
     // GC config
     jvmRunArgs += ['-XX:+UseG1GC', '-Xms300m', '-Xmx4G', '-XX:GCTimeRatio=9', '-XX:+UseStringDeduplication'];

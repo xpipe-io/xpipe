@@ -32,8 +32,8 @@ If you are on Linux or macOS, you can easily accomplish that by running
 ```bash
 curl -s "https://get.sdkman.io" | bash
 . "$HOME/.sdkman/bin/sdkman-init.sh"
-sdk install java 22.0.2-graalce
-sdk default java 22.0.2-graalce
+sdk install java 24-graalce
+sdk default java 24-graalce
 ```
 .
 On Windows, you have to manually install a JDK, e.g. from [Adoptium](https://adoptium.net/temurin/releases/?version=21).
@@ -65,7 +65,7 @@ many IDEs still have problems building this project properly.
 
 For example, you can't build this project in eclipse or vscode as it will complain about missing modules.
 The tested and recommended IDE is IntelliJ.
-When setting up the project in IntelliJ, make sure that the correct JDK (Java 22)
+When setting up the project in IntelliJ, make sure that the correct JDK (Java 24)
 is selected both for the project and for gradle itself.
 
 ## Contributing guide

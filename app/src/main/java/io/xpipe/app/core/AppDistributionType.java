@@ -9,7 +9,6 @@ import io.xpipe.app.update.WebtopUpdater;
 import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.Translatable;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.XPipeInstallation;
 
 import javafx.beans.value.ObservableValue;
@@ -54,7 +53,7 @@ public enum AppDistributionType implements Translatable {
             return;
         }
 
-        if (!ModuleHelper.isImage()) {
+        if (!AppProperties.get().isImage()) {
             type = DEVELOPMENT;
             return;
         }

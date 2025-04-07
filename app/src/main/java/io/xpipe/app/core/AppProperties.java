@@ -4,7 +4,6 @@ import io.xpipe.app.core.check.AppUserDirectoryCheck;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.XPipeDaemonMode;
 
 import lombok.Getter;
@@ -84,7 +83,12 @@ public class AppProperties {
         }
         var referenceDir = Files.exists(appDir) ? appDir : Path.of(System.getProperty("user.dir"));
 
-        image = ModuleHelper.isImage();
+        image = AppProperties.class
+                .getProtectionDomain()
+                .getCodeSource()
+                .getLocation()
+                .getProtocol()
+                .equals("jrt");
         arguments = AppArguments.init(args);
         fullVersion = Optional.ofNullable(System.getProperty("io.xpipe.app.fullVersion"))
                 .map(Boolean::parseBoolean)

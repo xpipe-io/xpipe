@@ -1,13 +1,13 @@
 package io.xpipe.app.core.check;
 
 import io.xpipe.app.core.AppLogs;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.util.ModuleHelper;
 
 public class AppDebugModeCheck {
 
     public static void printIfNeeded() {
-        if (!ModuleHelper.isImage() || !AppLogs.get().getLogLevel().equals("trace")) {
+        if (!AppProperties.get().isImage() || !AppLogs.get().getLogLevel().equals("trace")) {
             return;
         }
 

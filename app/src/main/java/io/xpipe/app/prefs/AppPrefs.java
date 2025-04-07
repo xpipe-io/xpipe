@@ -16,7 +16,6 @@ import io.xpipe.app.terminal.TerminalPromptManager;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.ShellScript;
-import io.xpipe.core.util.ModuleHelper;
 
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
@@ -345,7 +344,7 @@ public class AppPrefs {
     }
 
     public boolean isDevelopmentEnvironment() {
-        return developerMode().getValue() && !ModuleHelper.isImage();
+        return developerMode().getValue() && !AppProperties.get().isImage();
     }
 
     public ObservableValue<PasswordManager> passwordManager() {

@@ -6,7 +6,6 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.resources.AppResources;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.ModuleLayerLoader;
 import io.xpipe.core.util.XPipeInstallation;
 
@@ -208,10 +207,6 @@ public class AppExtensionManager {
                             .anyMatch(extension -> extension.getName().equals(ext.get().name))) {
                         return Optional.empty();
                     }
-
-                    ext.get().getModule().getPackages().forEach(pkg -> {
-                        ModuleHelper.exportAndOpen(pkg, ext.get().getModule());
-                    });
 
                     TrackEvent.withInfo("Loaded extension module")
                             .tag("name", ext.get().getName())
