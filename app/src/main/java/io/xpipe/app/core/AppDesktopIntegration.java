@@ -60,11 +60,7 @@ public class AppDesktopIntegration {
                     AppOpenArguments.handle(List.of(e.getURI().toString()));
                 });
 
-                // Do it this way to prevent IDE inspections from complaining
-                var c = Class.forName(
-                        ModuleLayer.boot().findModule("java.desktop").orElseThrow(), "com.apple.eawt.Application");
-                var m = c.getDeclaredMethod("addAppEventListener", SystemEventListener.class);
-                m.invoke(c.getMethod("getApplication").invoke(null), new AppReopenedListener() {
+                Desktop.getDesktop().addAppEventListener(new AppReopenedListener() {
                     @Override
                     public void appReopened(AppReopenedEvent e) {
                         OperationMode.switchToAsync(OperationMode.GUI);
