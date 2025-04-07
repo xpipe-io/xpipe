@@ -55,6 +55,15 @@ public class XPipeInstallation {
         return "\"" + command + "\"" + modeOption + suffix;
     }
 
+    private static boolean isImage() {
+        return XPipeInstallation.class
+                .getProtectionDomain()
+                .getCodeSource()
+                .getLocation()
+                .getProtocol()
+                .equals("jrt");
+    }
+
     @SneakyThrows
     public static Path getCurrentInstallationBasePath() {
         var command = ProcessHandle.current().info().command();
@@ -78,7 +87,7 @@ public class XPipeInstallation {
         if (name.endsWith("java") || name.endsWith("java.exe")) {
             // If we are not an image, we are probably running in a development environment where we want to use the
             // working directory
-            var isImage = ModuleHelper.isImage();
+            var isImage = isImage();
             if (!isImage) {
                 return Path.of(System.getProperty("user.dir"));
             }
@@ -164,7 +173,7 @@ public class XPipeInstallation {
     }
 
     public static String getLocalDefaultCliExecutable() {
-        Path path = ModuleHelper.isImage()
+        Path path = isImage()
                 ? getCurrentInstallationBasePath()
                 : Path.of(getLocalDefaultInstallationBasePath());
         return path.resolve(getRelativeCliExecutablePath(OsType.getLocal())).toString();
@@ -174,7 +183,7 @@ public class XPipeInstallation {
         Path path = getCurrentInstallationBasePath();
 
         // Check for development environment
-        if (!ModuleHelper.isImage()) {
+        if (!isImage()) {
             if (OsType.getLocal().equals(OsType.WINDOWS)) {
                 return path.resolve("dist").resolve("logo").resolve("logo.ico");
             } else if (OsType.getLocal().equals(OsType.LINUX)) {
@@ -218,7 +227,7 @@ public class XPipeInstallation {
     }
 
     public static Path getLangPath() {
-        if (!ModuleHelper.isImage()) {
+        if (!isImage()) {
             return getCurrentInstallationBasePath().resolve("lang");
         }
 
@@ -234,7 +243,7 @@ public class XPipeInstallation {
     }
 
     public static Path getBundledFontsPath() {
-        if (!ModuleHelper.isImage()) {
+        if (!isImage()) {
             return Path.of("dist", "fonts");
         }
 

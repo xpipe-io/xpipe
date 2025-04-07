@@ -6,7 +6,6 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.resources.AppResources;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.ModuleLayerLoader;
 import io.xpipe.core.util.XPipeInstallation;
 
