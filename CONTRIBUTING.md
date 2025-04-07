@@ -32,8 +32,8 @@ If you are on Linux or macOS, you can easily accomplish that by running
 ```bash
 curl -s "https://get.sdkman.io" | bash
 . "$HOME/.sdkman/bin/sdkman-init.sh"
-sdk install java 22.0.2-graalce
-sdk default java 22.0.2-graalce
+sdk install java 24-graalce
+sdk default java 24-graalce
 ```
 .
 On Windows, you have to manually install a JDK, e.g. from [Adoptium](https://adoptium.net/temurin/releases/?version=21).
