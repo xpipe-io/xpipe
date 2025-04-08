@@ -207,9 +207,9 @@ public class TerminalLauncher {
         }
     }
 
-    private static String getTerminalRegisterCommand(UUID request) {
+    private static String getTerminalRegisterCommand(UUID request) throws Exception {
         var exec = XPipeInstallation.getLocalDefaultCliExecutable();
-        return "\"" + exec + "\" terminal-register --request " + request;
+        return CommandBuilder.of().addFile(exec).add("terminal-register", "--request", request.toString()).buildFull(LocalShell.getShell());
     }
 
     private static boolean launchMultiplexerTabInExistingTerminal(UUID request, TerminalInitScriptConfig initScriptConfig, TerminalLaunchConfiguration launchConfiguration) throws Exception {

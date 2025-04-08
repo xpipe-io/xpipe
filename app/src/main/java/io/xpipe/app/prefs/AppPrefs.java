@@ -296,6 +296,7 @@ public class AppPrefs {
                         new LoggingCategory(),
                         new EditorCategory(),
                         new RdpCategory(),
+                        new SshCategory(),
                         new ConnectionsCategory(),
                         new FileBrowserCategory(),
                         new IconsCategory(),

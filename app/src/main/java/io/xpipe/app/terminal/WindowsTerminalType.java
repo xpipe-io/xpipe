@@ -84,6 +84,10 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
             return;
         }
 
+        if (outdated) {
+            AppCache.clear("wtProfileSet");
+        }
+
         if (!Files.exists(getConfigFile())) {
             return;
         }

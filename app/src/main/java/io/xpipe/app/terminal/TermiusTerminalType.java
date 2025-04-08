@@ -6,10 +6,7 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.app.util.LocalShell;
-import io.xpipe.app.util.SshLocalBridge;
-import io.xpipe.app.util.WindowsRegistry;
+import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
 
 import java.io.IOException;
