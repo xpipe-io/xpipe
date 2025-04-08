@@ -62,7 +62,12 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     public Comp<?> stateDisplay(StoreEntryWrapper w) {
         return new SystemStateComp(Bindings.createObjectBinding(
                 () -> {
+                    if (!w.getEntry().getValidity().isUsable()) {
+                        return SystemStateComp.State.OTHER;
+                    }
+
                     AbstractServiceStore s = w.getEntry().getStore().asNeeded();
+
                     if (!s.requiresTunnel()) {
                         return SystemStateComp.State.SUCCESS;
                     }

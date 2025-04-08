@@ -136,7 +136,7 @@ public class ErrorHandlerComp extends SimpleComp {
         }
 
         var hasCustomActions = event.getCustomActions().size() > 0 || event.getLink() != null;
-        if (hasCustomActions && !event.isRequiresCustomAction()) {
+        if (hasCustomActions) {
             actionBox.getChildren().add(createActionComp(ErrorAction.ignore()));
         }
 

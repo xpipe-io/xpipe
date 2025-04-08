@@ -36,6 +36,7 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
 
     private final ObservableList<T> shown;
     private final ObservableList<T> all;
+
     private final Function<T, Comp<?>> compFunction;
     private final boolean scrollBar;
 
@@ -256,18 +257,16 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
                 throw new IllegalStateException("Not in FxApplication thread");
             }
 
-            synchronized (cache) {
-                var set = new HashSet<T>();
-                // These lists might diverge on updates, so add both
-                synchronized (shown) {
-                    set.addAll(shown);
-                }
-                synchronized (all) {
-                    set.addAll(all);
-                }
-                // Clear cache of unused values
-                cache.keySet().removeIf(t -> !set.contains(t));
+            var set = new HashSet<T>();
+            // These lists might diverge on updates, so add both
+            synchronized (shown) {
+                set.addAll(shown);
             }
+            synchronized (all) {
+                set.addAll(all);
+            }
+            // Clear cache of unused values
+            cache.keySet().retainAll(set);
 
             // Use copy to prevent concurrent modifications and to not synchronize to long
             List<T> shownCopy;

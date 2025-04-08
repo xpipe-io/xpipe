@@ -120,13 +120,6 @@ public class StoreEntryListOverviewComp extends SimpleComp {
         StoreCreationMenu.addButtons(menu);
         menu.setOpacity(0.85);
         menu.setMinWidth(Region.USE_PREF_SIZE);
-
-        if (OsType.getLocal().equals(OsType.MACOS)) {
-            menu.setPadding(new Insets(-2, 0, -2, 0));
-        } else {
-            menu.setPadding(new Insets(-5, -2, -5, -2));
-        }
-
         return menu;
     }
 

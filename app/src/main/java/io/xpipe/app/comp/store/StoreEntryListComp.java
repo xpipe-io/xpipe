@@ -21,16 +21,9 @@ import java.util.List;
 public class StoreEntryListComp extends SimpleComp {
 
     private Comp<?> createList() {
-        var content = new ListBoxViewComp<>(
-                StoreViewState.get()
-                        .getCurrentTopLevelSection()
-                        .getShownChildren()
-                        .getList(),
-                StoreViewState.get()
-                        .getCurrentTopLevelSection()
-                        .getAllChildren()
-                        .getList(),
-                (StoreSection e) -> {
+        var shown = StoreViewState.get().getCurrentTopLevelSection().getShownChildren().getList();
+        var all = StoreViewState.get().getCurrentTopLevelSection().getAllChildren().getList();
+        var content = new ListBoxViewComp<>(shown, all, (StoreSection e) -> {
                     var custom = StoreSection.customSection(e).hgrow();
                     return custom;
                 },

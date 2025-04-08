@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.SneakyThrows;
 import lombok.Value;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -27,7 +28,7 @@ public class BrowserHistorySavedStateImpl implements BrowserHistorySavedState {
     ObservableList<Entry> lastSystems;
 
     public BrowserHistorySavedStateImpl(List<Entry> lastSystems) {
-        this.lastSystems = FXCollections.observableList(new CopyOnWriteArrayList<>(lastSystems));
+        this.lastSystems = FXCollections.synchronizedObservableList(FXCollections.observableArrayList(lastSystems));
     }
 
     private static BrowserHistorySavedStateImpl INSTANCE;
@@ -41,13 +42,18 @@ public class BrowserHistorySavedStateImpl implements BrowserHistorySavedState {
 
     private static BrowserHistorySavedStateImpl load() {
         return AppCache.getNonNull("browser-state", BrowserHistorySavedStateImpl.class, () -> {
-            return new BrowserHistorySavedStateImpl(FXCollections.observableArrayList());
+            return new BrowserHistorySavedStateImpl(FXCollections.synchronizedObservableList(FXCollections.observableArrayList()));
         });
     }
 
     @Override
     public synchronized void add(BrowserHistorySavedState.Entry entry) {
-        lastSystems.removeIf(s -> s.getUuid().equals(entry.getUuid()));
+        var copy = new ArrayList<>(lastSystems);
+        for (Entry e : copy) {
+            if (e.getUuid().equals(entry.getUuid())) {
+                lastSystems.remove(e);
+            }
+        }
         lastSystems.addFirst(entry);
         if (lastSystems.size() > 15) {
             lastSystems.removeLast();

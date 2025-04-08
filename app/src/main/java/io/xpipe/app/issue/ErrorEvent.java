@@ -47,7 +47,6 @@ public class ErrorEvent {
     private String email;
     private String userReport;
     private boolean unhandled;
-    private boolean requiresCustomAction;
 
     public static ErrorEventBuilder fromThrowable(Throwable t) {
         if (EVENT_BASES.containsKey(t)) {
@@ -166,10 +165,6 @@ public class ErrorEvent {
 
         public ErrorEventBuilder discard() {
             return omit().expected();
-        }
-
-        public ErrorEventBuilder requireCustomAction() {
-            return requiresCustomAction(true);
         }
 
         public ErrorEvent handle() {

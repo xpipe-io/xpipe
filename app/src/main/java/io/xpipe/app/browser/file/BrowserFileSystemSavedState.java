@@ -55,7 +55,7 @@ public class BrowserFileSystemSavedState {
 
     public BrowserFileSystemSavedState() {
         lastDirectory = null;
-        recentDirectories = FXCollections.observableList(new CopyOnWriteArrayList<>());
+        recentDirectories = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
     }
 
     static BrowserFileSystemSavedState loadForStore(BrowserFileSystemTabModel model) {
@@ -112,8 +112,12 @@ public class BrowserFileSystemSavedState {
     private synchronized void updateRecent(FilePath dir) {
         var without = dir.removeTrailingSlash();
         var with = dir.toDirectory();
-        recentDirectories.removeIf(recentEntry ->
-                Objects.equals(recentEntry.directory, without) || Objects.equals(recentEntry.directory, with));
+        var copy = new ArrayList<>(recentDirectories);
+        for (RecentEntry recentEntry : copy) {
+            if (Objects.equals(recentEntry.directory, without) || Objects.equals(recentEntry.directory, with)) {
+                recentDirectories.remove(recentEntry);
+            }
+        }
 
         var o = new RecentEntry(with, Instant.now());
         if (recentDirectories.size() < STORED) {

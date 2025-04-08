@@ -37,9 +37,7 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleComp {
     @Override
     protected Region createSimple() {
         var list = new ListBoxViewComp<>(
-                        selectedList,
-                        selectedList,
-                        t -> {
+                selectedList, selectedList, t -> {
                             if (t == null) {
                                 return null;
                             }

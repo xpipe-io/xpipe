@@ -73,9 +73,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
         vbox.apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
 
         var listBox = new ListBoxViewComp<>(
-                        list,
-                        list,
-                        e -> {
+                        list, list, e -> {
                             var disable = new SimpleBooleanProperty();
                             var entryButton = entryButton(e, disable);
                             var dirButton = dirButton(e, disable);

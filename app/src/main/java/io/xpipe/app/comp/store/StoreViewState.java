@@ -28,10 +28,12 @@ public class StoreViewState {
     private final StringProperty filter = new SimpleStringProperty();
 
     @Getter
-    private final DerivedObservableList<StoreEntryWrapper> allEntries = new DerivedObservableList<>(FXCollections.observableList(new CopyOnWriteArrayList<>()), true);
+    private final DerivedObservableList<StoreEntryWrapper> allEntries = new DerivedObservableList<>(
+            FXCollections.synchronizedObservableList(FXCollections.observableArrayList()), true);
 
     @Getter
-    private final DerivedObservableList<StoreCategoryWrapper> categories = new DerivedObservableList<>(FXCollections.observableList(new CopyOnWriteArrayList<>()), true);
+    private final DerivedObservableList<StoreCategoryWrapper> categories = new DerivedObservableList<>(
+            FXCollections.synchronizedObservableList(FXCollections.observableArrayList()), true);
 
     @Getter
     private final IntegerProperty entriesListVisibilityObservable = new SimpleIntegerProperty();
@@ -50,7 +52,7 @@ public class StoreViewState {
 
     @Getter
     private final DerivedObservableList<StoreEntryWrapper> batchModeSelection =
-            new DerivedObservableList<>(FXCollections.observableArrayList(), true);
+            new DerivedObservableList<>(FXCollections.synchronizedObservableList(FXCollections.observableArrayList()), true);
 
     @Getter
     private boolean initialized = false;
@@ -187,9 +189,7 @@ public class StoreViewState {
 
     private void initBatchListener() {
         allEntries.getList().addListener((ListChangeListener<? super StoreEntryWrapper>) c -> {
-            batchModeSelection.getList().removeIf(storeEntryWrapper -> {
-                return allEntries.getList().contains(storeEntryWrapper);
-            });
+            batchModeSelection.getList().retainAll(c.getList());
         });
     }
 

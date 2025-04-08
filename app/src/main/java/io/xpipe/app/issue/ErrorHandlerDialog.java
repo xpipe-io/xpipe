@@ -79,7 +79,7 @@ public class ErrorHandlerDialog {
                 errorModal.addButtonBarComp(Comp.hspacer());
             }
             var hasCustomActions = event.getCustomActions().size() > 0 || event.getLink() != null;
-            var hideOk = event.isRequiresCustomAction() && hasCustomActions;
+            var hideOk = hasCustomActions;
             if (!hideOk) {
                 errorModal.addButton(ModalButton.ok());
             }
