@@ -44,14 +44,14 @@
 }
 
 .root:macos .store-header-bar .menu-button {
-    -fx-padding: -2 0 -2 0;
+    -fx-padding: -3 0 -3 0;
 }
 
 .store-header-bar .menu-button {
     -fx-padding: -5 -2 -5 -2;
 }
 
-.root.primer:macos .store-header-bar .menu-button {
+.root.primer:macos .store-header-bar .menu-button, .root.nord:macos .store-header-bar .menu-button, .root.dracula:macos .store-header-bar .menu-button, .root.mocha:macos .store-header-bar .menu-button {
     -fx-padding: -5 -2 -5 -2;
 }
 
