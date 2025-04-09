@@ -3,7 +3,6 @@ package io.xpipe.app.util;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.FailableSupplier;
@@ -69,11 +68,15 @@ public class CommandSupport {
 
     public static void isInLocalPathOrThrow(String displayName, String executable) throws Exception {
         var present = isInLocalPath(executable);
-        var prefix = displayName != null ? displayName + " executable \"" + executable + "\"" : "\"" + executable + "\" executable";
+        var prefix = displayName != null
+                ? displayName + " executable \"" + executable + "\""
+                : "\"" + executable + "\" executable";
         if (present) {
             return;
         }
-        throw ErrorEvent.expected(new IOException(
-                prefix + " not found in PATH. Install the executable, add it to the PATH, and refresh the environment by restarting XPipe to fix this."));
+        throw ErrorEvent.expected(
+                new IOException(
+                        prefix
+                                + " not found in PATH. Install the executable, add it to the PATH, and refresh the environment by restarting XPipe to fix this."));
     }
 }

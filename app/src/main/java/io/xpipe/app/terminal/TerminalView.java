@@ -1,12 +1,10 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.window.NativeWinWindowControl;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellDialects;
 
 import lombok.Getter;
 import lombok.Value;

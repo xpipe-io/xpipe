@@ -2,8 +2,8 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.TooltipHelper;
-
 import io.xpipe.app.core.AppI18n;
+
 import javafx.geometry.Pos;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.*;

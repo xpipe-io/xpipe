@@ -47,7 +47,11 @@ public class BrowserFileListFilterComp extends Comp<BrowserFileListFilterComp.St
             button.fire();
             keyEvent.consume();
         });
-        Tooltip.install(button, TooltipHelper.create(AppI18n.observable("app.search"), new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN)));
+        Tooltip.install(
+                button,
+                TooltipHelper.create(
+                        AppI18n.observable("app.search"),
+                        new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN)));
         text.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue && filterString.getValue() == null) {
                 if (button.isFocused()) {

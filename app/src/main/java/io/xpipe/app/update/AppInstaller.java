@@ -11,7 +11,6 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.util.FailableRunnable;
@@ -85,7 +84,9 @@ public class AppInstaller {
                 var logFile = FileNames.join(
                         logsDir, "installer_" + file.getFileName().toString() + ".log");
                 var systemWide = isSystemWide();
-                var cmdScript = ProcessControlProvider.get().getEffectiveLocalDialect().equals(ShellDialects.CMD) && !systemWide;
+                var cmdScript =
+                        ProcessControlProvider.get().getEffectiveLocalDialect().equals(ShellDialects.CMD)
+                                && !systemWide;
                 var command = cmdScript
                         ? getCmdCommand(file.toString(), logFile, restartExec)
                         : getPowershellCommand(file.toString(), logFile, restartExec, systemWide);
@@ -94,13 +95,16 @@ public class AppInstaller {
                     try (var sc = LocalShell.getShell().start()) {
                         String toRun;
                         if (cmdScript) {
-                            toRun = "start \"XPipe Updater\" /min cmd /c \"" + ScriptHelper.createExecScript(ShellDialects.CMD, sc, command)
-                                    + "\"";
+                            toRun = "start \"XPipe Updater\" /min cmd /c \""
+                                    + ScriptHelper.createExecScript(ShellDialects.CMD, sc, command) + "\"";
                         } else {
-                            toRun = sc.getShellDialect() == ShellDialects.POWERSHELL ?
-                                    "Start-Process -WindowStyle Minimized -FilePath powershell -ArgumentList  \"-ExecutionPolicy\", \"Bypass\", \"-File\", \"`\""
-                                            + ScriptHelper.createExecScript(ShellDialects.POWERSHELL, sc, command) + "`\"\"" :
-                                    "start \"XPipe Updater\" /min powershell -ExecutionPolicy Bypass -File \"" + ScriptHelper.createExecScript(ShellDialects.POWERSHELL, sc, command) + "\"";
+                            toRun = sc.getShellDialect() == ShellDialects.POWERSHELL
+                                    ? "Start-Process -WindowStyle Minimized -FilePath powershell -ArgumentList  \"-ExecutionPolicy\", \"Bypass\", \"-File\", \"`\""
+                                            + ScriptHelper.createExecScript(ShellDialects.POWERSHELL, sc, command)
+                                            + "`\"\""
+                                    : "start \"XPipe Updater\" /min powershell -ExecutionPolicy Bypass -File \""
+                                            + ScriptHelper.createExecScript(ShellDialects.POWERSHELL, sc, command)
+                                            + "\"";
                         }
                         sc.command(toRun).execute();
                     }

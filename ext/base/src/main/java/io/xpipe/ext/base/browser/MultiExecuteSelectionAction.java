@@ -4,8 +4,6 @@ import io.xpipe.app.browser.action.BrowserBranchAction;
 import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -15,13 +13,9 @@ import io.xpipe.core.process.ProcessOutputException;
 import io.xpipe.core.process.ShellControl;
 
 import javafx.beans.value.ObservableValue;
-import javafx.scene.control.TextArea;
-import javafx.scene.layout.StackPane;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 public abstract class MultiExecuteSelectionAction implements BrowserBranchAction {
 

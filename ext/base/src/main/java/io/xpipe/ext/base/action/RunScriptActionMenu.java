@@ -109,7 +109,6 @@ public class RunScriptActionMenu implements ActionProvider {
         }
     }
 
-
     @Value
     private static class HubRunActionProvider implements ActionProvider {
 
@@ -282,13 +281,16 @@ public class RunScriptActionMenu implements ActionProvider {
 
                 @Override
                 public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
-                    return new LabelGraphic.ImageGraphic(hierarchy.getBase().get().getEffectiveIconFile(), 16);
+                    return new LabelGraphic.ImageGraphic(
+                            hierarchy.getBase().get().getEffectiveIconFile(), 16);
                 }
 
                 @Override
                 public List<? extends ActionProvider> getChildren(DataStoreEntryRef<ShellStore> store) {
                     return List.of(
-                            new TerminalRunActionProvider(hierarchy), new HubRunActionProvider(hierarchy), new BackgroundRunActionProvider(hierarchy));
+                            new TerminalRunActionProvider(hierarchy),
+                            new HubRunActionProvider(hierarchy),
+                            new BackgroundRunActionProvider(hierarchy));
                 }
             };
         }
@@ -357,7 +359,9 @@ public class RunScriptActionMenu implements ActionProvider {
                 public List<? extends ActionProvider> getChildren(List<DataStoreEntryRef<ShellStore>> batch) {
                     if (hierarchy.isLeaf()) {
                         return List.of(
-                                new TerminalRunActionProvider(hierarchy), new HubRunActionProvider(hierarchy), new BackgroundRunActionProvider(hierarchy));
+                                new TerminalRunActionProvider(hierarchy),
+                                new HubRunActionProvider(hierarchy),
+                                new BackgroundRunActionProvider(hierarchy));
                     }
 
                     return hierarchy.getChildren().stream()

@@ -385,7 +385,9 @@ public class OptionsBuilder {
 
     public OptionsBuilder longDescription(String descriptionKey) {
         finishCurrent();
-        longDescription = descriptionKey.startsWith("http") ? descriptionKey : AppI18n.get().getMarkdownDocumentation(descriptionKey);
+        longDescription = descriptionKey.startsWith("http")
+                ? descriptionKey
+                : AppI18n.get().getMarkdownDocumentation(descriptionKey);
         return this;
     }
 

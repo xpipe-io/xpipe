@@ -86,24 +86,24 @@ public class TerminalLauncher {
         return content;
     }
 
-    public static void openDirect(
-            String title, CommandBuilder command)
-            throws Exception {
-        openDirect(title, sc -> command.buildFull(sc), AppPrefs.get().terminalType().getValue());
+    public static void openDirect(String title, CommandBuilder command) throws Exception {
+        openDirect(
+                title,
+                sc -> command.buildFull(sc),
+                AppPrefs.get().terminalType().getValue());
     }
 
-    public static void openDirect(
-            String title,
-            ShellScript command)
-            throws Exception {
-        openDirect(title, sc -> command.toString(), AppPrefs.get().terminalType().getValue());
+    public static void openDirect(String title, ShellScript command) throws Exception {
+        openDirect(
+                title, sc -> command.toString(), AppPrefs.get().terminalType().getValue());
     }
 
-    public static void openDirect(
-            String title,
-            FailableFunction<ShellControl, ShellScript, Exception> command)
+    public static void openDirect(String title, FailableFunction<ShellControl, ShellScript, Exception> command)
             throws Exception {
-        openDirect(title, sc -> command.apply(sc).toString(), AppPrefs.get().terminalType().getValue());
+        openDirect(
+                title,
+                sc -> command.apply(sc).toString(),
+                AppPrefs.get().terminalType().getValue());
     }
 
     public static void openDirect(
@@ -194,7 +194,8 @@ public class TerminalLauncher {
         launch(type, config, latch);
     }
 
-    private static void launch(ExternalTerminalType type, TerminalLaunchConfiguration config, CountDownLatch latch) throws Exception {
+    private static void launch(ExternalTerminalType type, TerminalLaunchConfiguration config, CountDownLatch latch)
+            throws Exception {
         try {
             type.launch(config);
             latch.await();
@@ -209,10 +210,15 @@ public class TerminalLauncher {
 
     private static String getTerminalRegisterCommand(UUID request) throws Exception {
         var exec = XPipeInstallation.getLocalDefaultCliExecutable();
-        return CommandBuilder.of().addFile(exec).add("terminal-register", "--request", request.toString()).buildFull(LocalShell.getShell());
+        return CommandBuilder.of()
+                .addFile(exec)
+                .add("terminal-register", "--request", request.toString())
+                .buildFull(LocalShell.getShell());
     }
 
-    private static boolean launchMultiplexerTabInExistingTerminal(UUID request, TerminalInitScriptConfig initScriptConfig, TerminalLaunchConfiguration launchConfiguration) throws Exception {
+    private static boolean launchMultiplexerTabInExistingTerminal(
+            UUID request, TerminalInitScriptConfig initScriptConfig, TerminalLaunchConfiguration launchConfiguration)
+            throws Exception {
         var multiplexer = TerminalMultiplexerManager.getEffectiveMultiplexer();
         if (multiplexer.isEmpty()) {
             return false;
@@ -239,7 +245,9 @@ public class TerminalLauncher {
         return true;
     }
 
-    private static Optional<TerminalLaunchConfiguration> launchMultiplexerTabInNewTerminal(UUID request, TerminalInitScriptConfig initScriptConfig, TerminalLaunchConfiguration launchConfiguration) throws Exception {
+    private static Optional<TerminalLaunchConfiguration> launchMultiplexerTabInNewTerminal(
+            UUID request, TerminalInitScriptConfig initScriptConfig, TerminalLaunchConfiguration launchConfiguration)
+            throws Exception {
         var multiplexer = TerminalMultiplexerManager.getEffectiveMultiplexer();
         if (multiplexer.isEmpty()) {
             return Optional.empty();
@@ -262,7 +270,8 @@ public class TerminalLauncher {
                     .get()
                     .launchScriptSession(proxyControl.get(), fullCommand, initScriptConfig)
                     .toString();
-            var proxyLaunchCommand = proxyControl.get()
+            var proxyLaunchCommand = proxyControl
+                    .get()
                     .prepareIntermediateTerminalOpen(
                             TerminalInitFunction.fixed(proxyMultiplexerCommand),
                             TerminalInitScriptConfig.ofName("XPipe"),
@@ -270,8 +279,13 @@ public class TerminalLauncher {
             // Restart for the next time
             proxyControl.get().start();
             var fullLocalCommand = getTerminalRegisterCommand(request) + "\n" + proxyLaunchCommand;
-            return Optional.of(new TerminalLaunchConfiguration(null, "XPipe", "XPipe", false, fullLocalCommand, ProcessControlProvider.get()
-                    .getEffectiveLocalDialect()));
+            return Optional.of(new TerminalLaunchConfiguration(
+                    null,
+                    "XPipe",
+                    "XPipe",
+                    false,
+                    fullLocalCommand,
+                    ProcessControlProvider.get().getEffectiveLocalDialect()));
         } else {
             var multiplexerCommand = multiplexer
                     .get()
@@ -283,12 +297,19 @@ public class TerminalLauncher {
                             TerminalInitScriptConfig.ofName("XPipe"),
                             WorkingDirectoryFunction.none());
             var fullLocalCommand = getTerminalRegisterCommand(request) + "\n" + launchCommand;
-            return Optional.of(new TerminalLaunchConfiguration(null, "XPipe", "XPipe", false, fullLocalCommand, ProcessControlProvider.get()
-                    .getEffectiveLocalDialect()));
+            return Optional.of(new TerminalLaunchConfiguration(
+                    null,
+                    "XPipe",
+                    "XPipe",
+                    false,
+                    fullLocalCommand,
+                    ProcessControlProvider.get().getEffectiveLocalDialect()));
         }
     }
 
-    private static Optional<TerminalLaunchConfiguration> launchProxy(UUID request, TerminalInitScriptConfig initScriptConfig, TerminalLaunchConfiguration launchConfiguration) throws Exception {
+    private static Optional<TerminalLaunchConfiguration> launchProxy(
+            UUID request, TerminalInitScriptConfig initScriptConfig, TerminalLaunchConfiguration launchConfiguration)
+            throws Exception {
         var proxyControl = TerminalProxyManager.getProxy();
         if (proxyControl.isEmpty()) {
             return Optional.empty();
@@ -298,7 +319,8 @@ public class TerminalLauncher {
         var initialCommand = initScript != null ? initScript + "\n" : "";
         var openCommand = launchConfiguration.getDialectLaunchCommand().buildSimple();
         var fullCommand = initialCommand + openCommand;
-        var launchCommand = proxyControl.get()
+        var launchCommand = proxyControl
+                .get()
                 .prepareIntermediateTerminalOpen(
                         TerminalInitFunction.fixed(fullCommand),
                         TerminalInitScriptConfig.ofName("XPipe"),
@@ -306,6 +328,7 @@ public class TerminalLauncher {
         // Restart for the next time
         proxyControl.get().start();
         var fullLocalCommand = getTerminalRegisterCommand(request) + "\n" + launchCommand;
-        return Optional.ofNullable(launchConfiguration.withScript(ProcessControlProvider.get().getEffectiveLocalDialect(), fullLocalCommand));
+        return Optional.ofNullable(launchConfiguration.withScript(
+                ProcessControlProvider.get().getEffectiveLocalDialect(), fullLocalCommand));
     }
 }

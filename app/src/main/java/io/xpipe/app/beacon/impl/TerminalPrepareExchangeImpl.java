@@ -1,8 +1,6 @@
 package io.xpipe.app.beacon.impl;
 
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.terminal.TerminalLauncherManager;
-import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.TerminalPrepareExchange;
 

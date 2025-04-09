@@ -71,7 +71,6 @@ public interface PasswordManagerCommandTemplate extends PrefsChoiceValue {
         }
     };
 
-    List<PasswordManagerCommandTemplate> ALL = Stream.of(
-                    ONEPASSWORD, BITWARDEN, DASHLANE, LASTPASS, KEEPER)
-            .toList();
+    List<PasswordManagerCommandTemplate> ALL =
+            Stream.of(ONEPASSWORD, BITWARDEN, DASHLANE, LASTPASS, KEEPER).toList();
 }

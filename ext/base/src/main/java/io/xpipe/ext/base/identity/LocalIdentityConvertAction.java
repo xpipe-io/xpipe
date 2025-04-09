@@ -7,8 +7,8 @@ import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.EncryptedValue;
-
 import io.xpipe.app.util.LabelGraphic;
+
 import javafx.beans.value.ObservableValue;
 
 import lombok.Value;

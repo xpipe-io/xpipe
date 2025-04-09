@@ -8,7 +8,6 @@ import io.xpipe.core.process.OsType;
 
 import java.awt.*;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.URL;
 import javax.imageio.ImageIO;
 

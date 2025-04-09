@@ -26,25 +26,30 @@ public class LastpassPasswordManager implements PasswordManager {
         try {
             CommandSupport.isInLocalPathOrThrow("LastPass CLI", "lpass");
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).link("https://github.com/LastPass/lastpass-cli").handle();
+            ErrorEvent.fromThrowable(e)
+                    .link("https://github.com/LastPass/lastpass-cli")
+                    .handle();
             return null;
         }
 
         try {
             var sc = getOrStartShell();
-            var loggedIn = sc.command(CommandBuilder.of().add("lpass", "status")).executeAndCheck();
+            var loggedIn =
+                    sc.command(CommandBuilder.of().add("lpass", "status")).executeAndCheck();
             if (!loggedIn) {
                 var email = AsktextAlert.query("Enter LastPass account email address to log in");
                 var script = ShellScript.lines(
                         sc.getShellDialect().getEchoCommand("Log in into your LastPass account from the CLI:", false),
-                        "lpass login --trust \"" + email + "\""
-                );
+                        "lpass login --trust \"" + email + "\"");
                 TerminalLauncher.openDirect("LastPass login", script);
                 return null;
             }
 
-            var out = sc.command(
-                    CommandBuilder.of().add("lpass", "show").add("--fixed-strings", "--password").addLiteral(key)).readStdoutOrThrow();
+            var out = sc.command(CommandBuilder.of()
+                            .add("lpass", "show")
+                            .add("--fixed-strings", "--password")
+                            .addLiteral(key))
+                    .readStdoutOrThrow();
             return out;
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();

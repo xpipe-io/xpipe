@@ -150,9 +150,12 @@ public class StoreCreationDialog {
             }
 
             modal.hide();
-            AppLayoutModel.get().getQueueEntries().add(new AppLayoutModel.QueueEntry(AppI18n.observable(model.storeTypeNameKey() + "Add"), graphic, () -> {
-                modal.show();
-            }));
+            AppLayoutModel.get()
+                    .getQueueEntries()
+                    .add(new AppLayoutModel.QueueEntry(
+                            AppI18n.observable(model.storeTypeNameKey() + "Add"), graphic, () -> {
+                                modal.show();
+                            }));
         });
         modal.setRequireCloseButtonForClose(true);
         modal.addButton(new ModalButton(

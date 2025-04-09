@@ -17,11 +17,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.*;
+import javafx.util.Duration;
 
 import atlantafx.base.controls.Popover;
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
-import javafx.util.Duration;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -91,8 +91,9 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                     if (entry.longDescription() != null) {
                         Popover popover;
                         if (!entry.longDescription().startsWith("http")) {
-                            var markDown = new MarkdownComp(entry.longDescription(), s -> s, true).apply(struc -> struc.get().setMaxWidth(500)).apply(
-                                    struc -> struc.get().setMaxHeight(400));
+                            var markDown = new MarkdownComp(entry.longDescription(), s -> s, true)
+                                    .apply(struc -> struc.get().setMaxWidth(500))
+                                    .apply(struc -> struc.get().setMaxHeight(400));
                             popover = new Popover(markDown.createRegion());
                             popover.setCloseButtonEnabled(false);
                             popover.setHeaderAlwaysVisible(false);

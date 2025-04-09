@@ -4,8 +4,8 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.LicenseRequiredException;
@@ -122,7 +122,12 @@ public class TerminalLaunchConfiguration {
                        """
                                 .formatted(logFile.getFileName(), launcherScript, logFile, logFile.getFileName());
                 var config = new TerminalLaunchConfiguration(
-                        entry != null ? color : null, adjustedTitle, cleanTitle, preferTabs, content, sc.getShellDialect());
+                        entry != null ? color : null,
+                        adjustedTitle,
+                        cleanTitle,
+                        preferTabs,
+                        content,
+                        sc.getShellDialect());
                 return config;
             }
         }

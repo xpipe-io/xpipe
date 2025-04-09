@@ -18,10 +18,7 @@ import javafx.scene.layout.VBox;
 
 import lombok.SneakyThrows;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class BrowserOverviewComp extends SimpleComp {
 

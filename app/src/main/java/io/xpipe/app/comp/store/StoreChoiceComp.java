@@ -95,7 +95,9 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                         && (applicableCheck == null || applicableCheck.test(e.ref()));
             };
 
-            var applicableCount = StoreViewState.get().getAllEntries().getList().stream().filter(applicable).count();
+            var applicableCount = StoreViewState.get().getAllEntries().getList().stream()
+                    .filter(applicable)
+                    .count();
             var initialExpanded = applicableCount < 20;
 
             var section = new StoreSectionMiniComp(

@@ -439,7 +439,8 @@ public class BrowserFileTransferOperation {
                     outputStream.write(buffer, 0, read);
                     transferred.addAndGet(read);
                     readCount += read;
-                    updateProgress(new BrowserTransferProgress(sourceFile.getName(), transferred.get(), total.get(), start));
+                    updateProgress(
+                            new BrowserTransferProgress(sourceFile.getName(), transferred.get(), total.get(), start));
                 }
 
                 var incomplete = readCount < expectedFileSize;

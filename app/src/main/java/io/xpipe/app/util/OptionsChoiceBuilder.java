@@ -96,7 +96,8 @@ public class OptionsChoiceBuilder {
         }
         for (int i = 0; i < sub.size(); i++) {
             var compatible = sub.get(i).isInstance(s.getValue());
-            properties.add(new SimpleObjectProperty<>(compatible ? s.getValue() : createDefaultInstanceForClass(sub.get(i))));
+            properties.add(
+                    new SimpleObjectProperty<>(compatible ? s.getValue() : createDefaultInstanceForClass(sub.get(i))));
         }
 
         property.addListener((obs, oldValue, newValue) -> {

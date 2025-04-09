@@ -4,8 +4,10 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.core.process.CommandControl;
 import io.xpipe.core.process.ProcessOutputException;
+
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.StackPane;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -57,8 +59,8 @@ public class CommandDialog {
                             var text = new TextArea(finalOut);
                             text.setWrapText(true);
                             text.setEditable(false);
-                            text.setPrefRowCount(Math.max(8, (int)
-                                    finalOut.lines().count()));
+                            text.setPrefRowCount(
+                                    Math.max(8, (int) finalOut.lines().count()));
                             var sp = new StackPane(text);
                             return sp;
                         })

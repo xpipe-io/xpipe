@@ -12,16 +12,15 @@ import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.process.OsType;
 
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.Slider;
-
-import atlantafx.base.controls.ProgressSliderSkin;
-import atlantafx.base.theme.Styles;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+
+import atlantafx.base.controls.ProgressSliderSkin;
+import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.Arrays;
@@ -44,9 +43,7 @@ public class AppearanceCategory extends AppPrefsCategory {
                         .pref(prefs.language)
                         .addComp(languageChoice(), prefs.language)
                         .pref(prefs.theme)
-                        .addComp(
-                                themeChoice(),
-                                prefs.theme)
+                        .addComp(themeChoice(), prefs.theme)
                         .pref(prefs.performanceMode)
                         .addToggle(prefs.performanceMode)
                         .pref(prefs.uiScale)
@@ -102,9 +99,9 @@ public class AppearanceCategory extends AppPrefsCategory {
                 }
             };
             struc.get().setButtonCell(cell.get());
-           struc.get().setCellFactory(themeListView -> {
-               return cell.get();
-           });
+            struc.get().setCellFactory(themeListView -> {
+                return cell.get();
+            });
         });
         c.minWidth(getCompWidth() / 2);
         return c;

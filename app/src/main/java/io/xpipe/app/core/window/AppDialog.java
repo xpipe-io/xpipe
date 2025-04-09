@@ -58,7 +58,7 @@ public class AppDialog {
 
     public static void hide(ModalOverlay o) {
         PlatformThread.runLaterIfNeeded(() -> {
-           modalOverlays.remove(o);
+            modalOverlays.remove(o);
         });
     }
 

@@ -12,7 +12,6 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalMultiplexer;
 import io.xpipe.app.terminal.TerminalPrompt;
-import io.xpipe.app.terminal.TerminalPromptManager;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.ShellScript;
@@ -663,7 +662,12 @@ public class AppPrefs {
         boolean log;
 
         public Mapping(
-                String key, Property<?> property, Class<?> valueType, boolean vaultSpecific, boolean requiresRestart, boolean log) {
+                String key,
+                Property<?> property,
+                Class<?> valueType,
+                boolean vaultSpecific,
+                boolean requiresRestart,
+                boolean log) {
             this.key = key;
             this.property = property;
             this.valueType = SimpleType.constructUnsafe(valueType);
@@ -674,7 +678,12 @@ public class AppPrefs {
         }
 
         public Mapping(
-                String key, Property<?> property, JavaType valueType, boolean vaultSpecific, boolean requiresRestart, boolean log) {
+                String key,
+                Property<?> property,
+                JavaType valueType,
+                boolean vaultSpecific,
+                boolean requiresRestart,
+                boolean log) {
             this.key = key;
             this.property = property;
             this.valueType = valueType;
@@ -697,7 +706,8 @@ public class AppPrefs {
     private class PrefsHandlerImpl implements PrefsHandler {
 
         @Override
-        public <T> void addSetting(String id, JavaType t, Property<T> property, Comp<?> comp, boolean requiresRestart, boolean log) {
+        public <T> void addSetting(
+                String id, JavaType t, Property<T> property, Comp<?> comp, boolean requiresRestart, boolean log) {
             var m = new Mapping(id, property, t, false, requiresRestart, log);
             customEntries.put(m, comp);
             mapping.add(m);

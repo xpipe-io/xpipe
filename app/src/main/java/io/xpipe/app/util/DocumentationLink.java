@@ -1,7 +1,6 @@
 package io.xpipe.app.util;
 
 public enum DocumentationLink {
-
     INDEX(""),
     TTY("troubleshoot/tty"),
     WINDOWS_SSH("troubleshoot/windows-ssh"),
@@ -31,7 +30,8 @@ public enum DocumentationLink {
     VNC("guide/vnc"),
     SSH("guide/ssh"),
     KEEPASSXC("guide/password-manager#keepassxc"),
-    PASSWORD_MANAGER("guide/password-manager"),;
+    PASSWORD_MANAGER("guide/password-manager"),
+    ;
 
     private final String page;
 

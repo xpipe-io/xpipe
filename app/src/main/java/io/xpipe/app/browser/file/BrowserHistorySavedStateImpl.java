@@ -18,7 +18,6 @@ import lombok.Value;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @Value
 @JsonDeserialize(using = BrowserHistorySavedStateImpl.Deserializer.class)
@@ -42,7 +41,8 @@ public class BrowserHistorySavedStateImpl implements BrowserHistorySavedState {
 
     private static BrowserHistorySavedStateImpl load() {
         return AppCache.getNonNull("browser-state", BrowserHistorySavedStateImpl.class, () -> {
-            return new BrowserHistorySavedStateImpl(FXCollections.synchronizedObservableList(FXCollections.observableArrayList()));
+            return new BrowserHistorySavedStateImpl(
+                    FXCollections.synchronizedObservableList(FXCollections.observableArrayList()));
         });
     }
 

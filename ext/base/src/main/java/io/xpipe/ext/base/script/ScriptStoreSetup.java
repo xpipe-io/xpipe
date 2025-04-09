@@ -19,8 +19,7 @@ public class ScriptStoreSetup {
         controlWithScripts(pc, getEnabledScripts());
     }
 
-    public static void controlWithScripts(
-            ShellControl pc, List<DataStoreEntryRef<ScriptStore>> enabledScripts) {
+    public static void controlWithScripts(ShellControl pc, List<DataStoreEntryRef<ScriptStore>> enabledScripts) {
         try {
             // Don't copy scripts if we don't want to modify the file system
             if (!pc.getEffectiveSecurityPolicy().permitTempScriptCreation()) {
@@ -92,8 +91,7 @@ public class ScriptStoreSetup {
         }
 
         var applicable = refs.stream()
-                .filter(simpleScriptStore ->
-                        simpleScriptStore.getStore().isCompatible(proc.getShellDialect()))
+                .filter(simpleScriptStore -> simpleScriptStore.getStore().isCompatible(proc.getShellDialect()))
                 .toList();
         if (applicable.isEmpty()) {
             return null;

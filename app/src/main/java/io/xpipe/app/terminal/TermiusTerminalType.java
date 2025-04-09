@@ -76,7 +76,8 @@ public class TermiusTerminalType implements ExternalTerminalType {
         var port = b.getPort();
         var user = URLEncoder.encode(b.getUser(), StandardCharsets.UTF_8);
         var name = b.getName();
-        Hyperlinks.open("termius://app/host-sharing#label=" + name + "&ip=" + host + "&port=" + port + "&username=" + user + "&os=undefined");
+        Hyperlinks.open("termius://app/host-sharing#label=" + name + "&ip=" + host + "&port=" + port + "&username="
+                + user + "&os=undefined");
     }
 
     private boolean showInfo() throws IOException {

@@ -39,13 +39,15 @@ public class DashlanePasswordManager implements PasswordManager {
             if (r.isEmpty() || r.get().isEmpty()) {
                 var script = ShellScript.lines(
                         sc.getShellDialect().getEchoCommand("Log in into your Dashlane account from the CLI:", false),
-                        "dcli accounts whoami"
-                );
+                        "dcli accounts whoami");
                 TerminalLauncher.openDirect("Dashlane login", script);
                 return null;
             }
 
-            var out = sc.command(CommandBuilder.of().add("dcli", "password", "--output", "console").addLiteral(key)).readStdoutOrThrow();
+            var out = sc.command(CommandBuilder.of()
+                            .add("dcli", "password", "--output", "console")
+                            .addLiteral(key))
+                    .readStdoutOrThrow();
             return out;
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();

@@ -51,7 +51,9 @@ public class StoreCreationComp extends ModalOverlayContentComp {
         var layout = new BorderPane();
         layout.getStyleClass().add("store-creator");
         var providerChoice = new StoreProviderChoiceComp(model.getFilter(), model.getProvider());
-        var provider = model.getProvider().getValue() != null ? model.getProvider().getValue() : providerChoice.getProviders().getFirst();
+        var provider = model.getProvider().getValue() != null
+                ? model.getProvider().getValue()
+                : providerChoice.getProviders().getFirst();
         var showProviders = (!model.isStaticDisplay() && provider.showProviderChoice())
                 || (model.isStaticDisplay() && provider.showProviderChoice());
         if (model.isStaticDisplay()) {

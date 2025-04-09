@@ -69,27 +69,19 @@ public class ShellView {
     }
 
     public void deleteDirectory(FilePath path) throws Exception {
-        getDialect()
-                .deleteFileOrDirectory(shellControl, path.toString())
-                .execute();
+        getDialect().deleteFileOrDirectory(shellControl, path.toString()).execute();
     }
 
     public void deleteFile(FilePath path) throws Exception {
-        getDialect()
-                        .getFileDeleteCommand(shellControl, path.toString())
-                .execute();
+        getDialect().getFileDeleteCommand(shellControl, path.toString()).execute();
     }
 
     public void deleteFileIfPossible(FilePath path) throws Exception {
-        getDialect()
-                .getFileDeleteCommand(shellControl, path.toString())
-                .executeAndCheck();
+        getDialect().getFileDeleteCommand(shellControl, path.toString()).executeAndCheck();
     }
 
     public void mkdir(FilePath path) throws Exception {
-        shellControl.command(getDialect()
-                .getMkdirsCommand(path.toString()))
-                .execute();
+        shellControl.command(getDialect().getMkdirsCommand(path.toString())).execute();
     }
 
     public boolean directoryExists(FilePath path) throws Exception {
@@ -160,9 +152,9 @@ public class ShellView {
     }
 
     public void setSensitiveEnvironmentVariable(String name, String value) throws Exception {
-        var command = shellControl.command(shellControl.getShellDialect().getSetEnvironmentVariableCommand(name, value));
+        var command =
+                shellControl.command(shellControl.getShellDialect().getSetEnvironmentVariableCommand(name, value));
         command.setSensitive();
-        command
-                .execute();
+        command.execute();
     }
 }

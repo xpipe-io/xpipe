@@ -29,7 +29,9 @@ public class ScreenTerminalMultiplexer implements TerminalMultiplexer {
     public ShellScript launchScriptExternal(ShellControl control, String command, TerminalInitScriptConfig config)
             throws Exception {
         // Screen has a limit of 100 chars for commands
-        var effectiveCommand = command.length() > 90 ? ScriptHelper.createExecScript(control, command).toString() : command;
+        var effectiveCommand = command.length() > 90
+                ? ScriptHelper.createExecScript(control, command).toString()
+                : command;
         return ShellScript.lines("screen -S xpipe -X screen -t \"" + escape(config.getDisplayName(), true) + "\" "
                 + escape(effectiveCommand, false));
     }
@@ -38,10 +40,13 @@ public class ScreenTerminalMultiplexer implements TerminalMultiplexer {
     public ShellScript launchScriptSession(ShellControl control, String command, TerminalInitScriptConfig config)
             throws Exception {
         // Screen has a limit of 100 chars for commands
-        var effectiveCommand = command.length() > 90 ? ScriptHelper.createExecScript(control, command).toString() : command;
+        var effectiveCommand = command.length() > 90
+                ? ScriptHelper.createExecScript(control, command).toString()
+                : command;
         return ShellScript.lines(
                 "for scr in $(screen -ls | grep xpipe | awk '{print $1}'); do screen -S $scr -X quit; done",
-                "screen -S xpipe -t \"" + escape(config.getDisplayName(), true) + "\" " + escape(effectiveCommand, false));
+                "screen -S xpipe -t \"" + escape(config.getDisplayName(), true) + "\" "
+                        + escape(effectiveCommand, false));
     }
 
     private String escape(String s, boolean quotes) {

@@ -27,7 +27,9 @@ public class StoreIconComp extends SimpleComp {
         var imageComp = PrettyImageHelper.ofFixedSize(wrapper.getIconFile(), w, h);
         var storeIcon = imageComp.createRegion();
         if (wrapper.getValidity().getValue().isUsable()) {
-            Tooltip.install(storeIcon, TooltipHelper.create(wrapper.getEntry().getProvider().displayName(), null));
+            Tooltip.install(
+                    storeIcon,
+                    TooltipHelper.create(wrapper.getEntry().getProvider().displayName(), null));
         }
 
         var background = new Region();

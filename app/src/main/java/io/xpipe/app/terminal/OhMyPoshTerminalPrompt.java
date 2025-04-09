@@ -1,18 +1,19 @@
 package io.xpipe.app.terminal;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.GithubReleaseDownloader;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.FilePath;
+
 import javafx.beans.property.Property;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,12 +25,14 @@ import java.util.List;
 public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
 
     public static OptionsBuilder createOptions(Property<OhMyPoshTerminalPrompt> p) {
-        return createOptions(p,  s -> OhMyPoshTerminalPrompt.builder().configuration(s).build());
+        return createOptions(
+                p, s -> OhMyPoshTerminalPrompt.builder().configuration(s).build());
     }
 
     public static OhMyPoshTerminalPrompt createDefault() {
-        return OhMyPoshTerminalPrompt.builder().configuration(
-                """
+        return OhMyPoshTerminalPrompt.builder()
+                .configuration(
+                        """
 {
   "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
   "blocks": [
@@ -116,8 +119,8 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
   "final_space": true,
   "version": 3
 }
-                """
-        ).build();
+                """)
+                .build();
     }
 
     @Override
@@ -157,20 +160,22 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
             ClinkHelper.install(sc);
             var configDir = getConfigurationDirectory(sc);
             sc.view().mkdir(configDir);
-            sc.view().writeTextFile(configDir.join("oh-my-posh.lua"), "load(io.popen('oh-my-posh init cmd'):read(\"*a\"))()");
+            sc.view()
+                    .writeTextFile(
+                            configDir.join("oh-my-posh.lua"), "load(io.popen('oh-my-posh init cmd'):read(\"*a\"))()");
         }
 
         var dir = getBinaryDirectory(sc);
         sc.view().mkdir(dir);
         if (sc.getOsType() == OsType.WINDOWS) {
             var file = GithubReleaseDownloader.getDownloadTempFile(
-                    "JanDeDobbeleer/oh-my-posh",
-                    "posh-windows-amd64.exe",
-                    s -> s.equals("posh-windows-amd64.exe"));
+                    "JanDeDobbeleer/oh-my-posh", "posh-windows-amd64.exe", s -> s.equals("posh-windows-amd64.exe"));
             sc.view().transferLocalFile(file, dir.join("oh-my-posh.exe"));
         } else {
             var configDir = getConfigurationDirectory(sc);
-            sc.command("curl -s https://ohmyposh.dev/install.sh | bash -s -- -d \"" + dir + "\" -t \"" + configDir + "\"").execute();
+            sc.command("curl -s https://ohmyposh.dev/install.sh | bash -s -- -d \"" + dir + "\" -t \"" + configDir
+                            + "\"")
+                    .execute();
         }
     }
 
@@ -184,13 +189,15 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
         var lines = new ArrayList<String>();
         var dialect = shellControl.getOriginalShellDialect();
         if (dialect == ShellDialects.CMD) {
-            lines.add(dialect.addToPathVariableCommand(List.of(ClinkHelper.getTargetDir(shellControl).toString()), false));
+            lines.add(dialect.addToPathVariableCommand(
+                    List.of(ClinkHelper.getTargetDir(shellControl).toString()), false));
         }
         var configArg = config != null ? " --config \"" + config + "\"" : "";
         if (dialect == ShellDialects.CMD) {
             lines.add("clink inject --quiet --profile \"" + getConfigurationDirectory(shellControl) + "\"");
         } else if (ShellDialects.isPowershell(shellControl)) {
-            lines.add("& ([ScriptBlock]::Create((oh-my-posh init $(oh-my-posh get shell) --print" + configArg + ") -join \"`n\"))");
+            lines.add("& ([ScriptBlock]::Create((oh-my-posh init $(oh-my-posh get shell) --print" + configArg
+                    + ") -join \"`n\"))");
         } else if (dialect == ShellDialects.FISH) {
             lines.add("oh-my-posh init fish" + configArg + " | source");
         } else {
@@ -201,6 +208,12 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
 
     @Override
     public List<ShellDialect> getSupportedDialects() {
-        return List.of(ShellDialects.BASH, ShellDialects.ZSH, ShellDialects.FISH, ShellDialects.CMD, ShellDialects.POWERSHELL, ShellDialects.POWERSHELL_CORE);
+        return List.of(
+                ShellDialects.BASH,
+                ShellDialects.ZSH,
+                ShellDialects.FISH,
+                ShellDialects.CMD,
+                ShellDialects.POWERSHELL,
+                ShellDialects.POWERSHELL_CORE);
     }
 }

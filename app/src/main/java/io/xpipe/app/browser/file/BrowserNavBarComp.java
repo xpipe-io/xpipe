@@ -66,7 +66,10 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
         historyButton.getStyleClass().add(Styles.RIGHT_PILL);
         new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, null, this::createContextMenu)
                 .augment(new SimpleCompStructure<>(historyButton));
-        Tooltip.install(historyButton, TooltipHelper.create(AppI18n.observable("history"), new KeyCodeCombination(KeyCode.H, KeyCombination.ALT_DOWN)));
+        Tooltip.install(
+                historyButton,
+                TooltipHelper.create(
+                        AppI18n.observable("history"), new KeyCodeCombination(KeyCode.H, KeyCombination.ALT_DOWN)));
 
         var breadcrumbs = new BrowserBreadcrumbBar(model);
 

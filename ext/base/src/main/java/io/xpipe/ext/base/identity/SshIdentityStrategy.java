@@ -188,6 +188,7 @@ public interface SshIdentityStrategy {
             }
         }
     }
+
     @Value
     @Jacksonized
     @Builder
@@ -271,10 +272,8 @@ public interface SshIdentityStrategy {
             }
 
             if (resolved.endsWith(".pub")) {
-                throw ErrorEvent.expected(
-                        new IllegalArgumentException(
-                                "Identity file " + resolved
-                                        + " is marked to be a public key file, SSH authentication requires the private key"));
+                throw ErrorEvent.expected(new IllegalArgumentException("Identity file " + resolved
+                        + " is marked to be a public key file, SSH authentication requires the private key"));
             }
 
             if ((parent.getOsType().equals(OsType.LINUX) || parent.getOsType().equals(OsType.MACOS))) {

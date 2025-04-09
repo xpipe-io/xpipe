@@ -27,7 +27,9 @@ public class KeeperPasswordManager implements PasswordManager {
     }
 
     private String getExecutable(ShellControl sc) {
-        return sc.getShellDialect() == ShellDialects.CMD ? "@keeper" : (OsType.getLocal() == OsType.WINDOWS ? "keeper-commander" : "keeper");
+        return sc.getShellDialect() == ShellDialects.CMD
+                ? "@keeper"
+                : (OsType.getLocal() == OsType.WINDOWS ? "keeper-commander" : "keeper");
     }
 
     @Override
@@ -35,7 +37,9 @@ public class KeeperPasswordManager implements PasswordManager {
         try {
             CommandSupport.isInLocalPathOrThrow("Keeper Commander CLI", "keeper");
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).link("https://docs.keeper.io/en/keeperpam/commander-cli/commander-installation-setup").handle();
+            ErrorEvent.fromThrowable(e)
+                    .link("https://docs.keeper.io/en/keeperpam/commander-cli/commander-installation-setup")
+                    .handle();
             return null;
         }
 
@@ -45,18 +49,27 @@ public class KeeperPasswordManager implements PasswordManager {
             if (!sc.view().fileExists(file)) {
                 var script = ShellScript.lines(
                         sc.getShellDialect().getEchoCommand("Log in into your Keeper account from the CLI:", false),
-                        getExecutable(sc) + " login"
-                );
+                        getExecutable(sc) + " login");
                 TerminalLauncher.openDirect("Keeper login", script);
                 return null;
             }
 
-            var r = SecretManager.retrieve(new SecretRetrievalStrategy.Prompt(), "Enter your Keeper master password to unlock", KEEPER_PASSWORD_ID, 0, true);
+            var r = SecretManager.retrieve(
+                    new SecretRetrievalStrategy.Prompt(),
+                    "Enter your Keeper master password to unlock",
+                    KEEPER_PASSWORD_ID,
+                    0,
+                    true);
             if (r == null) {
                 return null;
             }
 
-            var out = sc.command(CommandBuilder.of().add(getExecutable(sc), "get").addLiteral(key).add("--format", "password", "--unmask", "--password").addLiteral(r.getSecretValue())).readStdoutOrThrow();
+            var out = sc.command(CommandBuilder.of()
+                            .add(getExecutable(sc), "get")
+                            .addLiteral(key)
+                            .add("--format", "password", "--unmask", "--password")
+                            .addLiteral(r.getSecretValue()))
+                    .readStdoutOrThrow();
             return out;
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();

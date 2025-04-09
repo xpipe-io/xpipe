@@ -23,7 +23,12 @@ public class OnePasswordManager implements PasswordManager {
     @Override
     public String retrievePassword(String key) {
         try {
-            var r = getOrStartShell().command(CommandBuilder.of().add("op", "read").addLiteral(key).add("--force")).readStdoutOrThrow();
+            var r = getOrStartShell()
+                    .command(CommandBuilder.of()
+                            .add("op", "read")
+                            .addLiteral(key)
+                            .add("--force"))
+                    .readStdoutOrThrow();
             return r;
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).handle();

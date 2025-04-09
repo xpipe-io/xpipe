@@ -31,7 +31,9 @@ public class SshIdentityStateManager {
             var opensshRunning = opensshList.contains("ssh-agent.exe");
 
             if (external && !gpgRunning && !opensshRunning) {
-                throw ErrorEvent.expected(new IllegalStateException("An external password manager agent is running, but XPipe requested to use another SSH agent. You have to disable the password manager agent first."));
+                throw ErrorEvent.expected(
+                        new IllegalStateException(
+                                "An external password manager agent is running, but XPipe requested to use another SSH agent. You have to disable the password manager agent first."));
             }
 
             if (gpg && gpgRunning) {
@@ -66,10 +68,12 @@ public class SshIdentityStateManager {
                 if (r.get()) {
                     if (sc.getShellDialect().equals(ShellDialects.CMD)) {
                         sc.command(
-                                "powershell -Command \"Start-Process cmd -Wait -ArgumentList ^\"/c^\", ^\"sc^\", ^\"stop^\", ^\"ssh-agent^\" -Verb runAs\"").executeAndCheck();
+                                        "powershell -Command \"Start-Process cmd -Wait -ArgumentList ^\"/c^\", ^\"sc^\", ^\"stop^\", ^\"ssh-agent^\" -Verb runAs\"")
+                                .executeAndCheck();
                     } else {
                         sc.command(
-                                "powershell -Command \"Start-Process cmd -Wait -ArgumentList `\"/c`\", `\"sc`\", `\"stop`\", `\"ssh-agent`\" -Verb runAs\"").executeAndCheck();
+                                        "powershell -Command \"Start-Process cmd -Wait -ArgumentList `\"/c`\", `\"sc`\", `\"stop`\", `\"ssh-agent`\" -Verb runAs\"")
+                                .executeAndCheck();
                     }
                 }
             }
@@ -83,15 +87,15 @@ public class SshIdentityStateManager {
     }
 
     public static synchronized void checkAgentIdentities(ShellControl sc, String authSock) throws Exception {
-        try (var c = sc.command(CommandBuilder.of().add("ssh-add", "-l").fixedEnvironment("SSH_AUTH_SOCK", authSock)).start()) {
+        try (var c = sc.command(CommandBuilder.of().add("ssh-add", "-l").fixedEnvironment("SSH_AUTH_SOCK", authSock))
+                .start()) {
             var r = c.readStdoutAndStderr();
             if (c.getExitCode() != 0) {
                 var posixMessage = sc.getOsType() != OsType.WINDOWS ? " and the SSH_AUTH_SOCK variable." : "";
-                var ex = new IllegalStateException("Unable to list agent identities via command ssh-add -l:\n" +
-                        r[0] +
-                        "\n" +
-                        r[1] +
-                        "\nPlease check your SSH agent configuration%s.".formatted(posixMessage));
+                var ex = new IllegalStateException("Unable to list agent identities via command ssh-add -l:\n" + r[0]
+                        + "\n"
+                        + r[1]
+                        + "\nPlease check your SSH agent configuration%s.".formatted(posixMessage));
                 var eventBuilder = ErrorEvent.fromThrowable(ex).expected();
                 if (OsType.getLocal() != OsType.WINDOWS) {
                     eventBuilder.documentationLink(DocumentationLink.SSH_AGENT);
@@ -114,8 +118,9 @@ public class SshIdentityStateManager {
                 var pipeExists = sc.view().fileExists(FilePath.of("\\\\.\\pipe\\openssh-ssh-agent"));
                 if (!pipeExists) {
                     // No agent is running
-                    throw ErrorEvent.expected(new IllegalStateException(
-                            "An external password manager agent is set for this connection, but no external SSH agent is running. Make sure that the agent is started in your password manager"));
+                    throw ErrorEvent.expected(
+                            new IllegalStateException(
+                                    "An external password manager agent is set for this connection, but no external SSH agent is running. Make sure that the agent is started in your password manager"));
                 }
             }
         }
@@ -145,7 +150,8 @@ public class SshIdentityStateManager {
             FilePath dir;
             if (sc.getOsType() == OsType.WINDOWS) {
                 stopWindowsAgents(true, false, true);
-                var appdata = FilePath.of(sc.view().getEnvironmentVariable("APPDATA")).join("gnupg");
+                var appdata =
+                        FilePath.of(sc.view().getEnvironmentVariable("APPDATA")).join("gnupg");
                 dir = appdata;
             } else {
                 dir = sc.view().userHome().join(".gnupg");
@@ -172,7 +178,8 @@ public class SshIdentityStateManager {
                 } else {
                     sc.executeSimpleCommand(CommandBuilder.of().add("gpg-connect-agent", "/bye"));
                 }
-                var socketEnv = sc.command("gpgconf --list-dirs agent-ssh-socket").readStdoutOrThrow();
+                var socketEnv =
+                        sc.command("gpgconf --list-dirs agent-ssh-socket").readStdoutOrThrow();
                 checkLocalAgentIdentities(socketEnv);
             }
         }

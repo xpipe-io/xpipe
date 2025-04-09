@@ -9,8 +9,6 @@ import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.util.DataStoreCategoryChoiceComp;
 
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.theme.Styles;

@@ -88,7 +88,8 @@ public class SshIdentityStrategyHelper {
                         p);
     }
 
-    private static OptionsBuilder passwordManagerAgent(Property<SshIdentityStrategy.PasswordManagerAgent> p, boolean allowForward) {
+    private static OptionsBuilder passwordManagerAgent(
+            Property<SshIdentityStrategy.PasswordManagerAgent> p, boolean allowForward) {
         if (!allowForward) {
             return new OptionsBuilder()
                     .bind(
@@ -98,7 +99,8 @@ public class SshIdentityStrategyHelper {
                             p);
         }
 
-        var forward = new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
+        var forward =
+                new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
         return new OptionsBuilder()
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)
@@ -207,7 +209,8 @@ public class SshIdentityStrategyHelper {
                 new SimpleObjectProperty<>(strat instanceof SshIdentityStrategy.CustomPkcs11Library f ? f : null);
         var agent = new SimpleObjectProperty<>(strat instanceof SshIdentityStrategy.SshAgent a ? a : null);
         var pageant = new SimpleObjectProperty<>(strat instanceof SshIdentityStrategy.Pageant a ? a : null);
-        var passwordManagerAgent = new SimpleObjectProperty<>(strat instanceof SshIdentityStrategy.PasswordManagerAgent a ? a : null);
+        var passwordManagerAgent =
+                new SimpleObjectProperty<>(strat instanceof SshIdentityStrategy.PasswordManagerAgent a ? a : null);
         var gpgAgent = new SimpleObjectProperty<>(strat instanceof SshIdentityStrategy.GpgAgent a ? a : null);
         var otherExternal = new SimpleObjectProperty<>(strat instanceof SshIdentityStrategy.OtherExternal a ? a : null);
 
@@ -233,22 +236,23 @@ public class SshIdentityStrategyHelper {
                                         ? 2
                                         : strat instanceof SshIdentityStrategy.PasswordManagerAgent
                                                 ? 3
-                        : strat instanceof SshIdentityStrategy.Pageant ?
-                        4
-                                                : strat instanceof SshIdentityStrategy.GpgAgent
-                                                        ? 5
-                                                        : strat instanceof SshIdentityStrategy.YubikeyPiv
-                                                                ? 6
-                                                                : strat
-                                                                                instanceof
-                                                                                SshIdentityStrategy.CustomPkcs11Library
-                                                                        ? 7
+                                                : strat instanceof SshIdentityStrategy.Pageant
+                                                        ? 4
+                                                        : strat instanceof SshIdentityStrategy.GpgAgent
+                                                                ? 5
+                                                                : strat instanceof SshIdentityStrategy.YubikeyPiv
+                                                                        ? 6
                                                                         : strat
                                                                                         instanceof
                                                                                         SshIdentityStrategy
-                                                                                                .OtherExternal
-                                                                                ? 8
-                                                                                : strat == null ? -1 : 0);
+                                                                                                .CustomPkcs11Library
+                                                                                ? 7
+                                                                                : strat
+                                                                                                instanceof
+                                                                                                SshIdentityStrategy
+                                                                                                        .OtherExternal
+                                                                                        ? 8
+                                                                                        : strat == null ? -1 : 0);
         return new OptionsBuilder()
                 .longDescription("base:sshKey")
                 .choice(identityMethodSelected, map)

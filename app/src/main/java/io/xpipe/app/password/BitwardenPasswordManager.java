@@ -30,7 +30,9 @@ public class BitwardenPasswordManager implements PasswordManager {
         try {
             CommandSupport.isInLocalPathOrThrow("Bitwarden CLI", "bw");
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).link("https://bitwarden.com/help/cli/#download-and-install").handle();
+            ErrorEvent.fromThrowable(e)
+                    .link("https://bitwarden.com/help/cli/#download-and-install")
+                    .handle();
             return null;
         }
 
@@ -41,8 +43,7 @@ public class BitwardenPasswordManager implements PasswordManager {
             if (r[1].contains("You are not logged in")) {
                 var script = ShellScript.lines(
                         sc.getShellDialect().getEchoCommand("Log in into your Bitwarden account from the CLI:", false),
-                        "bw login"
-                );
+                        "bw login");
                 TerminalLauncher.openDirect("Bitwarden login", script);
                 return null;
             }
@@ -52,7 +53,8 @@ public class BitwardenPasswordManager implements PasswordManager {
                 if (pw.getSecret() == null) {
                     return null;
                 }
-                var cmd = sc.command(CommandBuilder.of().add("bw", "unlock", "--passwordenv", "BW_PASSWORD")
+                var cmd = sc.command(CommandBuilder.of()
+                        .add("bw", "unlock", "--passwordenv", "BW_PASSWORD")
                         .fixedEnvironment("BW_PASSWORD", pw.getSecret().getSecretValue()));
                 cmd.setSensitive();
                 var out = cmd.readStdoutOrThrow();
@@ -65,7 +67,10 @@ public class BitwardenPasswordManager implements PasswordManager {
                 }
             }
 
-            var b = CommandBuilder.of().add("bw", "get", "password").addLiteral(key).add("--nointeraction", "--raw");
+            var b = CommandBuilder.of()
+                    .add("bw", "get", "password")
+                    .addLiteral(key)
+                    .add("--nointeraction", "--raw");
             return sc.command(b).readStdoutOrThrow();
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();

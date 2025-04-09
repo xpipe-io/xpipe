@@ -7,9 +7,11 @@ import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellScript;
 import io.xpipe.core.process.ShellTerminalInitCommand;
 import io.xpipe.core.store.FilePath;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
@@ -19,12 +21,22 @@ import java.util.function.Function;
 @SuperBuilder
 public abstract class ConfigFileTerminalPrompt implements TerminalPrompt {
 
-    protected static <T extends ConfigFileTerminalPrompt> OptionsBuilder createOptions(Property<T> p, Function<String, T> creator) {
+    protected static <T extends ConfigFileTerminalPrompt> OptionsBuilder createOptions(
+            Property<T> p, Function<String, T> creator) {
         var prop = new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().configuration : null);
         return new OptionsBuilder()
                 .nameAndDescription("terminalPromptConfig")
-                .addComp(new IntegratedTextAreaComp(prop, false, p.getValue() != null ? p.getValue().getId() : "config",
-                        new SimpleStringProperty(p.getValue() != null ? p.getValue().getConfigFileExtension() : null)).prefHeight(400), prop)
+                .addComp(
+                        new IntegratedTextAreaComp(
+                                        prop,
+                                        false,
+                                        p.getValue() != null ? p.getValue().getId() : "config",
+                                        new SimpleStringProperty(
+                                                p.getValue() != null
+                                                        ? p.getValue().getConfigFileExtension()
+                                                        : null))
+                                .prefHeight(400),
+                        prop)
                 .bind(
                         () -> {
                             return creator.apply(prop.getValue());
@@ -56,8 +68,12 @@ public abstract class ConfigFileTerminalPrompt implements TerminalPrompt {
                     shellControl.view().writeTextFile(configFile, configuration);
                 }
 
-                var s = shellControl.getShellDialect().addToPathVariableCommand(List.of(getBinaryDirectory(shellControl).toString()), false);
-                return Optional.of(s + "\n" + setupTerminalCommand(shellControl, configFile).toString());
+                var s = shellControl
+                        .getShellDialect()
+                        .addToPathVariableCommand(
+                                List.of(getBinaryDirectory(shellControl).toString()), false);
+                return Optional.of(s + "\n"
+                        + setupTerminalCommand(shellControl, configFile).toString());
             }
 
             @Override

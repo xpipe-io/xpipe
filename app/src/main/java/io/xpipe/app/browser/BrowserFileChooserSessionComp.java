@@ -103,7 +103,8 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
             });
         };
 
-        var category = new SimpleObjectProperty<>(StoreViewState.get().getActiveCategory().getValue());
+        var category = new SimpleObjectProperty<>(
+                StoreViewState.get().getActiveCategory().getValue());
         var filter = new SimpleStringProperty();
         var bookmarkTopBar = new BrowserConnectionListFilterComp(category, filter);
         var bookmarksList = new BrowserConnectionListComp(

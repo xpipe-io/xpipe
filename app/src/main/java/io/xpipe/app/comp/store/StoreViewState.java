@@ -19,7 +19,6 @@ import javafx.collections.ListChangeListener;
 import lombok.Getter;
 
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 public class StoreViewState {
@@ -51,8 +50,8 @@ public class StoreViewState {
     private final BooleanProperty batchMode = new SimpleBooleanProperty(false);
 
     @Getter
-    private final DerivedObservableList<StoreEntryWrapper> batchModeSelection =
-            new DerivedObservableList<>(FXCollections.synchronizedObservableList(FXCollections.observableArrayList()), true);
+    private final DerivedObservableList<StoreEntryWrapper> batchModeSelection = new DerivedObservableList<>(
+            FXCollections.synchronizedObservableList(FXCollections.observableArrayList()), true);
 
     @Getter
     private boolean initialized = false;

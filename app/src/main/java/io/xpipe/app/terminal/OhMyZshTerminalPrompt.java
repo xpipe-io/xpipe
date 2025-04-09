@@ -1,19 +1,18 @@
 package io.xpipe.app.terminal;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.util.CommandSupport;
-import io.xpipe.app.util.GithubReleaseDownloader;
 import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.ShellTemp;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.FilePath;
+
 import javafx.beans.property.Property;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -24,12 +23,14 @@ import java.util.List;
 public class OhMyZshTerminalPrompt extends ConfigFileTerminalPrompt {
 
     public static OptionsBuilder createOptions(Property<OhMyZshTerminalPrompt> p) {
-        return createOptions(p,  s -> OhMyZshTerminalPrompt.builder().configuration(s).build());
+        return createOptions(
+                p, s -> OhMyZshTerminalPrompt.builder().configuration(s).build());
     }
 
     public static OhMyZshTerminalPrompt createDefault() {
-        return OhMyZshTerminalPrompt.builder().configuration(
-                 """
+        return OhMyZshTerminalPrompt.builder()
+                .configuration(
+                        """
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time Oh My Zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
@@ -97,8 +98,8 @@ ZSH_THEME="robbyrussell"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git)
-                 """
-        ).build();
+                 """)
+                .build();
     }
 
     @Override
@@ -113,7 +114,8 @@ plugins=(git)
 
     @Override
     protected FilePath getTargetConfigFile(ShellControl shellControl) throws Exception {
-        FilePath configFile = getConfigurationDirectory(shellControl).join(getId() + "-custom." + getConfigFileExtension());
+        FilePath configFile =
+                getConfigurationDirectory(shellControl).join(getId() + "-custom." + getConfigFileExtension());
         return configFile;
     }
 
@@ -132,7 +134,10 @@ plugins=(git)
     public void install(ShellControl sc) throws Exception {
         var configDir = getConfigurationDirectory(sc);
         sc.view().deleteDirectory(configDir);
-        sc.command("KEEP_ZSHRC=yes ZSH=\"" + configDir + "\" sh -c \"$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)\" \"\" --unattended").execute();
+        sc.command(
+                        "KEEP_ZSHRC=yes ZSH=\"" + configDir
+                                + "\" sh -c \"$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)\" \"\" --unattended")
+                .execute();
     }
 
     @Override
@@ -143,9 +148,12 @@ plugins=(git)
     @Override
     protected ShellScript setupTerminalCommand(ShellControl shellControl, FilePath config) throws Exception {
         var script = config != null ? shellControl.view().readTextFile(config) : "";
-        var fixed = script != null ? script.replaceAll("source \\$ZSH/oh-my-zsh.sh", "")
-                .replaceAll("export ZSH=\"\\$HOME/.oh-my-zsh\"", "") : null;
-        return ShellScript.lines("export ZSH=\"" + getConfigurationDirectory(shellControl) + "\"", fixed, "source $ZSH/oh-my-zsh.sh");
+        var fixed = script != null
+                ? script.replaceAll("source \\$ZSH/oh-my-zsh.sh", "")
+                        .replaceAll("export ZSH=\"\\$HOME/.oh-my-zsh\"", "")
+                : null;
+        return ShellScript.lines(
+                "export ZSH=\"" + getConfigurationDirectory(shellControl) + "\"", fixed, "source $ZSH/oh-my-zsh.sh");
     }
 
     @Override

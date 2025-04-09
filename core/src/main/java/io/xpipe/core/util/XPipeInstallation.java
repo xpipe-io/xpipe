@@ -173,9 +173,7 @@ public class XPipeInstallation {
     }
 
     public static String getLocalDefaultCliExecutable() {
-        Path path = isImage()
-                ? getCurrentInstallationBasePath()
-                : Path.of(getLocalDefaultInstallationBasePath());
+        Path path = isImage() ? getCurrentInstallationBasePath() : Path.of(getLocalDefaultInstallationBasePath());
         return path.resolve(getRelativeCliExecutablePath(OsType.getLocal())).toString();
     }
 

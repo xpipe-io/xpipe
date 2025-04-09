@@ -11,7 +11,6 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.terminal.TerminalPromptManager;
-import io.xpipe.app.terminal.TerminalProxyManager;
 import io.xpipe.app.util.ShellStoreFormat;
 import io.xpipe.ext.base.script.ScriptStoreSetup;
 

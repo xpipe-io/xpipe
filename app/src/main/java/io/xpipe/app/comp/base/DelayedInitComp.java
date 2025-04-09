@@ -2,11 +2,12 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.util.GlobalTimer;
+
 import javafx.application.Platform;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+
 import lombok.AllArgsConstructor;
 
 import java.time.Duration;
@@ -34,5 +35,4 @@ public class DelayedInitComp extends SimpleComp {
         });
         return stack;
     }
-
 }

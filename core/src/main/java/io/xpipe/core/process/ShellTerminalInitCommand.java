@@ -1,7 +1,5 @@
 package io.xpipe.core.process;
 
-import lombok.NonNull;
-
 import java.util.Optional;
 
 public interface ShellTerminalInitCommand {

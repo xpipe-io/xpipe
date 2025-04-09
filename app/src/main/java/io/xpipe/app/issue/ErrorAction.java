@@ -1,7 +1,6 @@
 package io.xpipe.app.issue;
 
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.Hyperlinks;
 
 public interface ErrorAction {

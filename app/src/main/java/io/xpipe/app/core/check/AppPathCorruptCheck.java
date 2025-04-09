@@ -1,6 +1,5 @@
 package io.xpipe.app.core.check;
 
-import io.xpipe.app.core.AppCache;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.LocalExec;
 import io.xpipe.core.process.OsType;

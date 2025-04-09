@@ -115,7 +115,10 @@ public class AppPrefsStorageHandler {
                         .findAny();
                 if (found.isEmpty()) {
                     if (log) {
-                        TrackEvent.withWarn("Invalid prefs value found").tag("key", id).tag("value", in).handle();
+                        TrackEvent.withWarn("Invalid prefs value found")
+                                .tag("key", id)
+                                .tag("value", in)
+                                .handle();
                     }
                     return defaultObject;
                 }
@@ -123,7 +126,10 @@ public class AppPrefsStorageHandler {
                 var supported = getSupported(cast);
                 if (!supported.contains(found.get())) {
                     if (log) {
-                        TrackEvent.withWarn("Unsupported prefs value found").tag("key", id).tag("value", in).handle();
+                        TrackEvent.withWarn("Unsupported prefs value found")
+                                .tag("key", id)
+                                .tag("value", in)
+                                .handle();
                     }
                     return defaultObject;
                 }

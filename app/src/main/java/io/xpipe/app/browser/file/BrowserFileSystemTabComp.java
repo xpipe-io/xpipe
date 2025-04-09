@@ -53,7 +53,10 @@ public class BrowserFileSystemTabComp extends SimpleComp {
         var root = new VBox();
         var overview = new Button(null, new FontIcon("mdi2m-monitor"));
         overview.setOnAction(e -> model.cdAsync((FilePath) null));
-        Tooltip.install(overview, TooltipHelper.create(AppI18n.observable("overview"), new KeyCodeCombination(KeyCode.HOME, KeyCombination.ALT_DOWN)));
+        Tooltip.install(
+                overview,
+                TooltipHelper.create(
+                        AppI18n.observable("overview"), new KeyCodeCombination(KeyCode.HOME, KeyCombination.ALT_DOWN)));
         overview.disableProperty().bind(model.getInOverview());
         overview.setAccessibleText("System overview");
         InputHelper.onKeyCombination(

@@ -1,19 +1,20 @@
 package io.xpipe.app.terminal;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.GithubReleaseDownloader;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.FilePath;
+
 import javafx.beans.property.Property;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,12 +26,14 @@ import java.util.List;
 public class StarshipTerminalPrompt extends ConfigFileTerminalPrompt {
 
     public static OptionsBuilder createOptions(Property<StarshipTerminalPrompt> p) {
-        return createOptions(p, s -> StarshipTerminalPrompt.builder().configuration(s).build());
+        return createOptions(
+                p, s -> StarshipTerminalPrompt.builder().configuration(s).build());
     }
 
     public static StarshipTerminalPrompt createDefault() {
-        return StarshipTerminalPrompt.builder().configuration(
-                """
+        return StarshipTerminalPrompt.builder()
+                .configuration(
+                        """
 # Get editor completions based on the config schema
 "$schema" = 'https://starship.rs/config-schema.json'
 
@@ -44,8 +47,8 @@ success_symbol = '[➜](bold green)' # The 'success_symbol' segment is being set
 # Disable the package module, hiding it from the prompt completely
 [package]
 disabled = true
-                """
-        ).build();
+                """)
+                .build();
     }
 
     @Override
@@ -90,13 +93,16 @@ disabled = true
             ClinkHelper.install(sc);
             var configDir = getConfigurationDirectory(sc);
             sc.view().mkdir(configDir);
-            sc.view().writeTextFile(configDir.join("starship.lua"), "load(io.popen('starship init cmd'):read(\"*a\"))()");
+            sc.view()
+                    .writeTextFile(
+                            configDir.join("starship.lua"), "load(io.popen('starship init cmd'):read(\"*a\"))()");
         }
 
         var dir = getBinaryDirectory(sc);
         sc.view().mkdir(dir);
         if (sc.getOsType() == OsType.WINDOWS) {
-            var file = GithubReleaseDownloader.getDownloadTempFile("starship/starship",
+            var file = GithubReleaseDownloader.getDownloadTempFile(
+                    "starship/starship",
                     "starship-x86_64-pc-windows-msvc.zip",
                     s -> s.equals("starship-x86_64-pc-windows-msvc.zip"));
             try (var fs = FileSystems.newFileSystem(file)) {
@@ -104,7 +110,8 @@ disabled = true
                 sc.view().transferLocalFile(exeFile, dir.join("starship.exe"));
             }
         } else {
-            sc.command("curl -sS https://starship.rs/install.sh | sh /dev/stdin -y --bin-dir \"" + dir + "\"").execute();
+            sc.command("curl -sS https://starship.rs/install.sh | sh /dev/stdin -y --bin-dir \"" + dir + "\"")
+                    .execute();
         }
     }
 
@@ -113,7 +120,8 @@ disabled = true
         var lines = new ArrayList<String>();
         var dialect = shellControl.getOriginalShellDialect();
         if (dialect == ShellDialects.CMD) {
-            lines.add(dialect.addToPathVariableCommand(List.of(ClinkHelper.getTargetDir(shellControl).toString()), false));
+            lines.add(dialect.addToPathVariableCommand(
+                    List.of(ClinkHelper.getTargetDir(shellControl).toString()), false));
         }
         if (config != null) {
             lines.add(dialect.getSetEnvironmentVariableCommand("STARSHIP_CONFIG", config.toString()));
@@ -132,6 +140,12 @@ disabled = true
 
     @Override
     public List<ShellDialect> getSupportedDialects() {
-        return List.of(ShellDialects.BASH, ShellDialects.ZSH, ShellDialects.FISH, ShellDialects.CMD, ShellDialects.POWERSHELL, ShellDialects.POWERSHELL_CORE);
+        return List.of(
+                ShellDialects.BASH,
+                ShellDialects.ZSH,
+                ShellDialects.FISH,
+                ShellDialects.CMD,
+                ShellDialects.POWERSHELL,
+                ShellDialects.POWERSHELL_CORE);
     }
 }

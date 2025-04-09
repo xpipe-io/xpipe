@@ -28,8 +28,9 @@ public class DerivedObservableList<T> {
 
     private <V> DerivedObservableList<V> createNewDerived() {
         var name = list.getClass().getSimpleName();
-        var l = name.toLowerCase().contains("synchronized") ?
-                FXCollections.<V>synchronizedObservableList(FXCollections.observableArrayList()) : FXCollections.<V>observableArrayList();
+        var l = name.toLowerCase().contains("synchronized")
+                ? FXCollections.<V>synchronizedObservableList(FXCollections.observableArrayList())
+                : FXCollections.<V>observableArrayList();
         BindingsHelper.preserve(l, list);
         return new DerivedObservableList<>(l, unique);
     }

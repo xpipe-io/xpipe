@@ -1,12 +1,13 @@
 package io.xpipe.app.terminal;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ShellTemp;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellTerminalInitCommand;
 import io.xpipe.core.store.FilePath;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import java.util.ArrayList;
 import java.util.List;

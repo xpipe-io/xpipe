@@ -170,8 +170,7 @@ public class BrowserFileSystemSavedState {
                     .map(recentEntry -> new RecentEntry(recentEntry.directory.toDirectory(), recentEntry.time))
                     .filter(distinctBy(recentEntry -> recentEntry.getDirectory()))
                     .collect(Collectors.toCollection(CopyOnWriteArrayList::new));
-            return new BrowserFileSystemSavedState(
-                    null, FXCollections.observableList(cleaned));
+            return new BrowserFileSystemSavedState(null, FXCollections.observableList(cleaned));
         }
     }
 

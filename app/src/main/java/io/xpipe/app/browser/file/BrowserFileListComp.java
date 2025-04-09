@@ -489,12 +489,16 @@ public final class BrowserFileListComp extends SimpleComp {
                 }
 
                 var hasOwner = fileList.getAll().getValue().stream()
-                        .map(browserEntry -> formatOwner(browserEntry))
-                        .filter(s -> s != null)
-                        .count() > 0;
+                                .map(browserEntry -> formatOwner(browserEntry))
+                                .filter(s -> s != null)
+                                .count()
+                        > 0;
                 if (hasOwner) {
-                    ownerCol.setPrefWidth(fileList.getAll().getValue().stream().map(browserEntry -> formatOwner(browserEntry)).map(
-                            s -> s != null ? s.length() * 9 : 0).max(Comparator.naturalOrder()).orElse(150));
+                    ownerCol.setPrefWidth(fileList.getAll().getValue().stream()
+                            .map(browserEntry -> formatOwner(browserEntry))
+                            .map(s -> s != null ? s.length() * 9 : 0)
+                            .max(Comparator.naturalOrder())
+                            .orElse(150));
                 } else {
                     ownerCol.setPrefWidth(0);
                 }

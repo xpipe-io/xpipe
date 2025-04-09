@@ -52,7 +52,9 @@ public class BrowserFileSelectionListComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var c = new ListBoxViewComp<>(
-                list, list, entry -> {
+                        list,
+                        list,
+                        entry -> {
                             return Comp.of(() -> {
                                 var image = PrettyImageHelper.ofFixedSizeSquare(entry.getIcon(), 24)
                                         .createRegion();

@@ -99,7 +99,9 @@ public abstract class StoreSectionBaseComp extends Comp<CompStructure<VBox>> {
     protected ListBoxViewComp<StoreSection> createChildrenList(
             Function<StoreSection, Comp<?>> function, ObservableBooleanValue hide) {
         var content = new ListBoxViewComp<>(
-                section.getShownChildren().getList(), section.getAllChildren().getList(), (StoreSection e) -> {
+                section.getShownChildren().getList(),
+                section.getAllChildren().getList(),
+                (StoreSection e) -> {
                     return function.apply(e).grow(true, false);
                 },
                 section.getWrapper() == null);
