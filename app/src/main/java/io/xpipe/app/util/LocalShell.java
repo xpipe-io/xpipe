@@ -6,6 +6,7 @@ import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 public class LocalShell {
 
@@ -55,7 +56,8 @@ public class LocalShell {
         return local != null;
     }
 
-    public static ShellControl getShell() throws Exception {
+    @SneakyThrows
+    public static ShellControl getShell() {
         if (local == null) {
             throw new IllegalStateException("Local shell not initialized yet");
         }

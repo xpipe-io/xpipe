@@ -5,10 +5,7 @@ import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.SecretRetrievalStrategy;
 import io.xpipe.app.util.Validators;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellDialects;
+import io.xpipe.core.process.*;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.util.ValidationException;
 
@@ -330,6 +327,19 @@ public interface SshIdentityStrategy {
     @JsonTypeName("yubikeyPiv")
     @AllArgsConstructor
     class YubikeyPiv implements SshIdentityStrategy {
+
+        public static String getDefaultSharedLibrary() {
+            var file =
+                    switch (OsType.getLocal()) {
+                        case OsType.Linux linux -> "/usr/local/lib/libykcs11.so";
+                        case OsType.MacOs macOs -> "/usr/local/lib/libykcs11.dylib";
+                        case OsType.Windows windows -> {
+                            var x64 = "C:\\Program Files\\Yubico\\Yubico PIV Tool\\bin\\libykcs11.dll";
+                            yield x64;
+                        }
+                    };
+            return file;
+        }
 
         private String getFile(ShellControl parent) throws Exception {
             var file =
