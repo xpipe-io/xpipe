@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Value
-public class ShellStoreFormat {
+public class StoreStateFormat {
 
     public static ObservableValue<String> shellEnvironment(StoreSection section, boolean includeOsName) {
         return Bindings.createStringBinding(
@@ -28,7 +28,7 @@ public class ShellStoreFormat {
                     var def = Boolean.TRUE.equals(s.getSetDefault()) ? AppI18n.get("default") : null;
                     var name = DataStoreFormatter.join(
                             (includeOsName ? formattedOsName(s.getOsName()) : null), s.getShellName());
-                    return new ShellStoreFormat(null, name, def).format();
+                    return new StoreStateFormat(null, name, def).format();
                 },
                 AppI18n.activeLanguage(),
                 section.getWrapper().getPersistentState());
@@ -43,7 +43,7 @@ public class ShellStoreFormat {
             if (s.getShellDialect() != null
                     && !s.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
                 if (s.getOsName() != null) {
-                    return new ShellStoreFormat(
+                    return new StoreStateFormat(
                                     LicenseProvider.get().checkOsName(s.getOsName()),
                                     formattedOsName(s.getOsName()),
                                     info)
@@ -51,10 +51,10 @@ public class ShellStoreFormat {
                 }
 
                 if (s.getShellDialect().equals(ShellDialects.NO_INTERACTION)) {
-                    return new ShellStoreFormat(null, null, info).format();
+                    return new StoreStateFormat(null, null, info).format();
                 }
 
-                return new ShellStoreFormat(
+                return new StoreStateFormat(
                                 LicenseProvider.get()
                                         .getFeature(s.getShellDialect().getLicenseFeatureId()),
                                 s.getShellDialect().getDisplayName(),
@@ -66,7 +66,7 @@ public class ShellStoreFormat {
                             Stream.of(s.getTtyState() != null && s.getTtyState() != ShellTtyState.NONE ? "TTY" : null),
                             info != null ? Arrays.stream(info) : Stream.of())
                     .toArray(String[]::new);
-            return new ShellStoreFormat(
+            return new StoreStateFormat(
                             LicenseProvider.get().checkOsName(s.getOsName()), formattedOsName(s.getOsName()), joined)
                     .format();
         });
@@ -76,7 +76,7 @@ public class ShellStoreFormat {
     String name;
     String[] states;
 
-    public ShellStoreFormat(LicensedFeature licensedFeature, String name, String... states) {
+    public StoreStateFormat(LicensedFeature licensedFeature, String name, String... states) {
         this.licensedFeature = licensedFeature;
         this.name = name;
         this.states = states;

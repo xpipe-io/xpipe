@@ -82,18 +82,20 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
 
         var queueButtons = new VBox();
         queueEntries.addListener((ListChangeListener<? super AppLayoutModel.QueueEntry>) c -> {
-            queueButtons.getChildren().clear();
-            for (int i = c.getList().size() - 1; i >= 0; i--) {
-                var item = c.getList().get(i);
-                var b = new IconButtonComp(item.getIcon(), () -> {
-                    item.getAction().run();
-                    queueEntries.remove(item);
-                });
-                b.tooltip(item.getName());
-                b.accessibleText(item.getName());
-                var stack = createStyle(null, b);
-                queueButtons.getChildren().add(stack.createRegion());
-            }
+            PlatformThread.runLaterIfNeeded(() -> {
+                queueButtons.getChildren().clear();
+                for (int i = c.getList().size() - 1; i >= 0; i--) {
+                    var item = c.getList().get(i);
+                    var b = new IconButtonComp(item.getIcon(), () -> {
+                        item.getAction().run();
+                        queueEntries.remove(item);
+                    });
+                    b.tooltip(item.getName());
+                    b.accessibleText(item.getName());
+                    var stack = createStyle(null, b);
+                    queueButtons.getChildren().add(stack.createRegion());
+                }
+            });
         });
         vbox.getChildren().add(queueButtons);
 

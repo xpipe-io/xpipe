@@ -46,7 +46,7 @@ public class ErrorHandlerDialog {
             var comp = new ErrorHandlerComp(event, () -> {
                 AppDialog.closeDialog(modal.get());
             });
-            comp.prefWidth(500);
+            comp.prefWidth(event.getThrowable() != null ? 600 : 500);
             var headerId = event.isTerminal() ? "terminalErrorOccured" : "errorOccured";
             var errorModal = ModalOverlay.of(headerId, comp, new LabelGraphic.NodeGraphic(() -> {
                 var graphic = new FontIcon("mdomz-warning");
@@ -58,7 +58,7 @@ public class ErrorHandlerDialog {
                         "stackTrace",
                         () -> {
                             var content =
-                                    new ErrorDetailsComp(event).prefWidth(600).prefHeight(750);
+                                    new ErrorDetailsComp(event).prefWidth(650).prefHeight(750);
                             var detailsModal = ModalOverlay.of("errorDetails", content);
                             detailsModal.show();
                         },

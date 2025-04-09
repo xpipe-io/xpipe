@@ -10,7 +10,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.ShellStoreFormat;
+import io.xpipe.app.util.StoreStateFormat;
 import io.xpipe.app.util.SimpleValidator;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.ext.base.service.FixedServiceGroupStore;
@@ -83,7 +83,7 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
     public ObservableValue<String> informationString(StoreSection section) {
         var c = (ContainerStoreState) section.getWrapper().getPersistentState().getValue();
         var missing = c.getShellMissing() != null && c.getShellMissing() ? "No shell available" : null;
-        return ShellStoreFormat.shellStore(
+        return StoreStateFormat.shellStore(
                 section, (ContainerStoreState s) -> new String[] {missing, s.getContainerState()});
     }
 

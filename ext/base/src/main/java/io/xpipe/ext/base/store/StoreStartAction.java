@@ -52,8 +52,8 @@ public class StoreStartAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon() {
-                return "mdi2p-play";
+            public LabelGraphic getIcon() {
+                return new LabelGraphic.IconGraphic("mdi2p-play");
             }
 
             @Override

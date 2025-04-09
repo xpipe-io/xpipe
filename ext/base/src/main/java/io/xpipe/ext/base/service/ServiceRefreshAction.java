@@ -63,8 +63,8 @@ public class ServiceRefreshAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon() {
-                return "mdi2w-web";
+            public LabelGraphic getIcon() {
+                return new LabelGraphic.IconGraphic("mdi2w-web");
             }
 
             @Override

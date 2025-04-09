@@ -58,8 +58,8 @@ public class StoreRestartAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon() {
-                return "mdi2r-restart";
+            public LabelGraphic getIcon() {
+                return new LabelGraphic.IconGraphic("mdi2r-restart");
             }
 
             @Override

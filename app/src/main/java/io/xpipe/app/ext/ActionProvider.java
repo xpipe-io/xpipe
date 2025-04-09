@@ -203,7 +203,7 @@ public interface ActionProvider {
 
         ObservableValue<String> getName();
 
-        String getIcon();
+        LabelGraphic getIcon();
 
         Class<?> getApplicableClass();
 

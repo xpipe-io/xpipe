@@ -57,7 +57,7 @@ class ScanSingleDialogComp extends ModalOverlayContentComp {
 
     @Override
     protected Region createSimple() {
-        var list = base.createContent();
+        var list = base.createComp();
         var b = new OptionsBuilder()
                 .name("scanAlertChoiceHeader")
                 .description("scanAlertChoiceHeaderDescription")

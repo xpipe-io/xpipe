@@ -52,8 +52,8 @@ public class StoreStopAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon() {
-                return "mdi2s-stop";
+            public LabelGraphic getIcon() {
+                return new LabelGraphic.IconGraphic("mdi2s-stop");
             }
 
             @Override

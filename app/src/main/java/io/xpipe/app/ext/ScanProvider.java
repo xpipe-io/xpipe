@@ -31,13 +31,11 @@ public abstract class ScanProvider {
     public class ScanOpportunity {
         String nameKey;
         boolean disabled;
-        boolean defaultSelected;
         String licenseFeatureId;
 
-        public ScanOpportunity(String nameKey, boolean disabled, boolean defaultSelected) {
+        public ScanOpportunity(String nameKey, boolean disabled) {
             this.nameKey = nameKey;
             this.disabled = disabled;
-            this.defaultSelected = defaultSelected;
             this.licenseFeatureId = null;
         }
 

@@ -75,8 +75,8 @@ public class ScanStoreAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon() {
-                return "mdi2l-layers-plus";
+            public LabelGraphic getIcon() {
+                return new LabelGraphic.IconGraphic("mdi2l-layers-plus");
             }
 
             @Override

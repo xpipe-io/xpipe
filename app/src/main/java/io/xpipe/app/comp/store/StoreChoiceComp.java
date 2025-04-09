@@ -35,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 @RequiredArgsConstructor
@@ -103,6 +104,7 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
             var section = new StoreSectionMiniComp(
                     StoreSection.createTopLevel(
                             StoreViewState.get().getAllEntries(),
+                            Set.of(),
                             applicable,
                             filterText,
                             selectedCategory,

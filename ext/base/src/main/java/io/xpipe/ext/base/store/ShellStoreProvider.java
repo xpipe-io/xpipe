@@ -11,7 +11,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.terminal.TerminalPromptManager;
-import io.xpipe.app.util.ShellStoreFormat;
+import io.xpipe.app.util.StoreStateFormat;
 import io.xpipe.ext.base.script.ScriptStoreSetup;
 
 import javafx.beans.property.BooleanProperty;
@@ -60,6 +60,6 @@ public interface ShellStoreProvider extends DataStoreProvider {
 
     @Override
     default ObservableValue<String> informationString(StoreSection section) {
-        return ShellStoreFormat.shellStore(section, state -> null);
+        return StoreStateFormat.shellStore(section, state -> null);
     }
 }

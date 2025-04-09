@@ -19,6 +19,7 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
@@ -107,6 +108,7 @@ public class StoreSection {
 
     public static StoreSection createTopLevel(
             DerivedObservableList<StoreEntryWrapper> all,
+            Set<StoreEntryWrapper> selected,
             Predicate<StoreEntryWrapper> entryFilter,
             ObservableValue<String> filterString,
             ObservableValue<StoreCategoryWrapper> category,
@@ -124,6 +126,7 @@ public class StoreSection {
                 storeEntryWrapper,
                 1,
                 all,
+                selected,
                 entryFilter,
                 filterString,
                 category,
@@ -152,6 +155,7 @@ public class StoreSection {
             StoreEntryWrapper e,
             int depth,
             DerivedObservableList<StoreEntryWrapper> all,
+            Set<StoreEntryWrapper> selected,
             Predicate<StoreEntryWrapper> entryFilter,
             ObservableValue<String> filterString,
             ObservableValue<StoreCategoryWrapper> category,
@@ -188,21 +192,23 @@ public class StoreSection {
         var l = new ArrayList<>(parents);
         l.add(e);
         var cached = allChildren.mapped(c -> create(
-                l, c, depth + 1, all, entryFilter, filterString, category, visibilityObservable, updateObservable));
+                l, c, depth + 1, all, selected, entryFilter, filterString, category, visibilityObservable, updateObservable));
         var ordered = sorted(cached, category, updateObservable);
         var filtered = ordered.filtered(
                 section -> {
+                    var isBatchSelected = selected.contains(section.getWrapper());
+
                     var matchesFilter = filterString == null
                             || section.matchesFilter(filterString.getValue())
                             || l.stream().anyMatch(p -> p.matchesFilter(filterString.getValue()));
-                    if (!matchesFilter) {
+                    if (!isBatchSelected && !matchesFilter) {
                         return false;
                     }
 
                     var hasFilter = filterString != null
                             && filterString.getValue() != null
                             && filterString.getValue().length() > 0;
-                    if (!hasFilter) {
+                    if (!isBatchSelected && !hasFilter) {
                         var showProvider = true;
                         try {
                             showProvider = section.getWrapper()
@@ -217,7 +223,7 @@ public class StoreSection {
                     }
 
                     var matchesSelector = section.anyMatches(entryFilter);
-                    if (!matchesSelector) {
+                    if (!isBatchSelected && !matchesSelector) {
                         return false;
                     }
 

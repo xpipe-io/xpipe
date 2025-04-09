@@ -9,7 +9,7 @@ import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.ShellStoreFormat;
+import io.xpipe.app.util.StoreStateFormat;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.ext.base.identity.IdentityChoice;
 import io.xpipe.ext.base.store.ShellStoreProvider;
@@ -82,7 +82,7 @@ public class LxdContainerStoreProvider implements ShellStoreProvider {
     public ObservableValue<String> informationString(StoreSection section) {
         var c = (ContainerStoreState) section.getWrapper().getPersistentState().getValue();
         var missing = c.getShellMissing() != null && c.getShellMissing() ? "No shell available" : null;
-        return ShellStoreFormat.shellStore(section, (ContainerStoreState s) ->
+        return StoreStateFormat.shellStore(section, (ContainerStoreState s) ->
                 new String[] {missing, DataStoreFormatter.capitalize(s.getContainerState())});
     }
 

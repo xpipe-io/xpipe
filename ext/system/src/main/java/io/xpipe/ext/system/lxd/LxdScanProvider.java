@@ -15,7 +15,7 @@ public class LxdScanProvider extends ScanProvider {
             return null;
         }
 
-        return new ScanOpportunity("system.lxdContainers", !new LxdCommandView(sc).isSupported(), true);
+        return new ScanOpportunity("system.lxdContainers", !new LxdCommandView(sc).isSupported());
     }
 
     @Override

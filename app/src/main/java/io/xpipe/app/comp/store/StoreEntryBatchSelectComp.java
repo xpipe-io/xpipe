@@ -39,8 +39,6 @@ public class StoreEntryBatchSelectComp extends SimpleComp {
         section.getShownChildren().getList().addListener((ListChangeListener<? super StoreSection>) c -> {
             if (cb.isSelected()) {
                 StoreViewState.get().selectBatchMode(section);
-            } else {
-                StoreViewState.get().unselectBatchMode(section);
             }
         });
 

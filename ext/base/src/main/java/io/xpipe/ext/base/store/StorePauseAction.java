@@ -52,8 +52,8 @@ public class StorePauseAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon() {
-                return "mdi2p-pause";
+            public LabelGraphic getIcon() {
+                return new LabelGraphic.IconGraphic("mdi2p-pause");
             }
 
             @Override

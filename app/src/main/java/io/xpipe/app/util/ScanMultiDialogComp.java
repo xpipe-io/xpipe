@@ -1,7 +1,10 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.comp.base.ModalOverlayContentComp;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
 import javafx.beans.property.BooleanProperty;
@@ -33,9 +36,11 @@ class ScanMultiDialogComp extends ModalOverlayContentComp {
     }
 
     void finish() {
-        ThreadHelper.runFailableAsync(() -> {
+        try {
             base.finish();
-        });
+        } catch (Exception e) {
+            ErrorEvent.fromThrowable(e).handle();
+        }
     }
 
     BooleanProperty getBusy() {
@@ -44,7 +49,7 @@ class ScanMultiDialogComp extends ModalOverlayContentComp {
 
     @Override
     protected Region createSimple() {
-        var list = base.createContent();
+        var list = base.createComp();
         var b = new OptionsBuilder()
                 .name("scanAlertHeader")
                 .description("scanAlertHeaderDescription")

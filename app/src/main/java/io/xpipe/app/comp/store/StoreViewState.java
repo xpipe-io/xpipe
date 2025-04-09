@@ -68,7 +68,7 @@ public class StoreViewState {
                 }
 
                 return true;
-            });
+            }, entriesListVisibilityObservable, entriesListUpdateObservable);
 
     @Getter
     private StoreSection currentTopLevelSection;
@@ -88,7 +88,7 @@ public class StoreViewState {
         INSTANCE.initSections();
         INSTANCE.updateContent();
         INSTANCE.initFilterListener();
-        INSTANCE.initBatchListener();
+        INSTANCE.initBatchListeners();
         INSTANCE.initialized = true;
     }
 
@@ -152,9 +152,17 @@ public class StoreViewState {
     }
 
     private void initSections() {
+        // Faster selection check with a hash set
+        var set = new HashSet<>(batchModeSelection.getList());
+        batchModeSelection.getList().addListener((ListChangeListener<? super StoreEntryWrapper>) c -> {
+            set.clear();
+            set.addAll(c.getList());
+        });
+
         try {
             currentTopLevelSection = StoreSection.createTopLevel(
                     allEntries,
+                    set,
                     storeEntryWrapper -> true,
                     filter,
                     activeCategory,
@@ -186,9 +194,13 @@ public class StoreViewState {
         });
     }
 
-    private void initBatchListener() {
+    private void initBatchListeners() {
         allEntries.getList().addListener((ListChangeListener<? super StoreEntryWrapper>) c -> {
             batchModeSelection.getList().retainAll(c.getList());
+        });
+
+        batchMode.addListener((observable, oldValue, newValue) -> {
+            batchModeSelection.getList().clear();
         });
     }
 

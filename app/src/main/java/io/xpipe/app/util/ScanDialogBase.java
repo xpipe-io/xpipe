@@ -71,6 +71,14 @@ public class ScanDialogBase {
                     // Previous scan operation could have exited the shell
                     var sc = entry.getStore().getOrStartSession();
 
+                    // Multi-selection compat check
+                    if (entries.size() > 1) {
+                        var supported = a.getProvider().create(entry.get(), sc);
+                        if (supported == null || supported.isDisabled()) {
+                            continue;
+                        }
+                    }
+
                     try {
                         a.getProvider().scan(entry.get(), sc);
                     } catch (Throwable ex) {
@@ -109,7 +117,7 @@ public class ScanDialogBase {
         });
     }
 
-    public Comp<?> createContent() {
+    public Comp<?> createComp() {
         StackPane stackPane = new StackPane();
         stackPane.getStyleClass().add("scan-list");
         VBox.setVgrow(stackPane, ALWAYS);

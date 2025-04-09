@@ -21,6 +21,22 @@ public class ContainerStoreState extends ShellStoreState {
     String containerState;
     Boolean shellMissing;
 
+    public boolean isExited() {
+        if (containerState == null) {
+            return false;
+        }
+
+        return containerState.toLowerCase().contains("exited");
+    }
+
+    public boolean isRunning() {
+        if (containerState == null) {
+            return false;
+        }
+
+        return containerState.toLowerCase().contains("running") || containerState.toLowerCase().contains("up");
+    }
+
     @Override
     public DataStoreState mergeCopy(DataStoreState newer) {
         var n = (ContainerStoreState) newer;
