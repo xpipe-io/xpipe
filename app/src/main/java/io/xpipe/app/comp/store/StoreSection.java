@@ -279,7 +279,7 @@ public class StoreSection {
 
     public boolean anyMatches(Predicate<StoreEntryWrapper> c) {
         return c == null
-                || c.test(wrapper)
+                || (wrapper != null && c.test(wrapper))
                 || allChildren.getList().stream().anyMatch(storeEntrySection -> storeEntrySection.anyMatches(c));
     }
 }

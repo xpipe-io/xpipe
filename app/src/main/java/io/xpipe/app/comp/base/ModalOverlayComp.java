@@ -11,7 +11,9 @@ import io.xpipe.core.process.OsType;
 import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -183,19 +185,35 @@ public class ModalOverlayComp extends SimpleComp {
         }
 
         if (newValue.getButtons().size() > 0) {
+            var max = new SimpleDoubleProperty();
             var buttonBar = new HBox();
             buttonBar.getStyleClass().add("button-bar");
             buttonBar.setSpacing(10);
             buttonBar.setAlignment(Pos.CENTER_RIGHT);
             for (var o : newValue.getButtons()) {
                 var node = o instanceof ModalButton mb ? toButton(mb) : ((Comp<?>) o).createRegion();
+                if (o instanceof ModalButton) {
+                    node.widthProperty().addListener((observable, oldValue, n) -> {
+                        var d = Math.min(Math.max(n.doubleValue(), 70.0), 200.0);
+                        if (d > max.get()) {
+                            max.set(d);
+                        }
+                    });
+                }
+                node.minWidthProperty().bind(max);
                 buttonBar.getChildren().add(node);
                 if (o instanceof ModalButton) {
                     node.prefHeightProperty().bind(buttonBar.heightProperty());
                 }
             }
             content.getChildren().add(buttonBar);
-            AppFontSizes.base(buttonBar);
+            AppFontSizes.apply(buttonBar, sizes -> {
+                if (sizes.getBase().equals("10.5")) {
+                    return sizes.getBase();
+                } else {
+                    return sizes.getSm();
+                }
+            });
         }
 
         var modalBox = new ModalBox(pane, content) {

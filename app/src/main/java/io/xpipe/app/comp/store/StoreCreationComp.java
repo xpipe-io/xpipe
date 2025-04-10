@@ -7,8 +7,10 @@ import io.xpipe.app.util.*;
 
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
@@ -76,7 +78,13 @@ public class StoreCreationComp extends ModalOverlayContentComp {
                 var sp = new ScrollPane(valSp);
                 sp.setFitToWidth(true);
 
-                layout.setCenter(sp);
+                var sep = new Separator();
+                sep.setPadding(new Insets(0, 0, 0, 0));
+
+                var vbox = new VBox(sp, sep);
+                VBox.setVgrow(sp, Priority.ALWAYS);
+
+                layout.setCenter(vbox);
 
                 model.getValidator()
                         .setValue(new ChainedValidator(List.of(
@@ -89,7 +97,7 @@ public class StoreCreationComp extends ModalOverlayContentComp {
         });
 
         var sep = new Separator();
-        sep.getStyleClass().add("spacer");
+        sep.setPadding(new Insets(10, 0, 0, 0));
         var top = new VBox(providerChoice.createRegion(), sep);
         top.getStyleClass().add("top");
         if (showProviders) {

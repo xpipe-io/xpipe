@@ -4,8 +4,10 @@ import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProviders;
+import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ScanDialog;
 
+import javafx.application.Platform;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
@@ -85,11 +87,16 @@ public class StoreCreationMenu {
                 return;
             }
 
-            StoreCreationDialog.showCreation(
-                    defaultProvider != null
-                            ? DataStoreProviders.byId(defaultProvider).orElseThrow()
-                            : null,
-                    category);
+            Platform.runLater(() -> {
+                StoreCreationDialog.showCreation(
+                        defaultProvider != null
+                                ? DataStoreProviders.byId(defaultProvider).orElseThrow()
+                                : null,
+                        category);
+            });
+
+            // Fix weird JavaFX NPE
+            menu.hide();
             event.consume();
         });
 

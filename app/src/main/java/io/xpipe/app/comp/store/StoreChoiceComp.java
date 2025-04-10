@@ -96,6 +96,11 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                         && (applicableCheck == null || applicableCheck.test(e.ref()));
             };
 
+            var applicableMatch = StoreViewState.get().getCurrentTopLevelSection().anyMatches(applicable);
+            if (!applicableMatch) {
+                selectedCategory.set(initialCategory);
+            }
+
             var applicableCount = StoreViewState.get().getAllEntries().getList().stream()
                     .filter(applicable)
                     .count();

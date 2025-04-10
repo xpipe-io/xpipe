@@ -123,7 +123,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                             .getAccentColor()
                             .desaturate()
                             .desaturate();
-                    return new Background(new BackgroundFill(c, new CornerRadii(8), new Insets(14, 1, 14, 2)));
+                    return new Background(new BackgroundFill(c, new CornerRadii(8), new Insets(16, 1, 14, 2)));
                 },
                 Platform.getPreferences().accentColorProperty());
         var hoverBorder = Bindings.createObjectBinding(
@@ -133,7 +133,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                             .darker()
                             .desaturate()
                             .desaturate();
-                    return new Background(new BackgroundFill(c, new CornerRadii(8), new Insets(14, 1, 14, 2)));
+                    return new Background(new BackgroundFill(c, new CornerRadii(8), new Insets(16, 1, 14, 2)));
                 },
                 Platform.getPreferences().accentColorProperty());
         var noneBorder = Bindings.createObjectBinding(
@@ -147,7 +147,9 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                 new StackComp(List.of(indicator, b)).apply(struc -> struc.get().setAlignment(Pos.CENTER_RIGHT));
         stack.apply(struc -> {
             var indicatorRegion = (Region) struc.get().getChildren().getFirst();
+            var buttonRegion = (Region) struc.get().getChildren().get(1);
             indicatorRegion.setMaxWidth(7);
+            indicatorRegion.prefHeightProperty().bind(buttonRegion.heightProperty());
             indicatorRegion
                     .backgroundProperty()
                     .bind(Bindings.createObjectBinding(
