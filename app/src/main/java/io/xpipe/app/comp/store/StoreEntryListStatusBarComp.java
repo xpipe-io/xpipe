@@ -74,7 +74,7 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
     }
 
     private ObservableList<Comp<?>> createActions(BooleanProperty busy) {
-        var l = new DerivedObservableList<ActionProvider>(FXCollections.observableArrayList(), true);
+        var l = DerivedObservableList.<ActionProvider>arrayList(true);
         StoreViewState.get().getEffectiveBatchModeSelection().getList().addListener((ListChangeListener<
                         ? super StoreEntryWrapper>)
                 c -> {

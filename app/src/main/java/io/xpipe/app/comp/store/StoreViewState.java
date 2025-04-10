@@ -27,12 +27,10 @@ public class StoreViewState {
     private final StringProperty filter = new SimpleStringProperty();
 
     @Getter
-    private final DerivedObservableList<StoreEntryWrapper> allEntries = new DerivedObservableList<>(
-            FXCollections.synchronizedObservableList(FXCollections.observableArrayList()), true);
+    private final DerivedObservableList<StoreEntryWrapper> allEntries = DerivedObservableList.synchronizedArrayList(true);
 
     @Getter
-    private final DerivedObservableList<StoreCategoryWrapper> categories = new DerivedObservableList<>(
-            FXCollections.synchronizedObservableList(FXCollections.observableArrayList()), true);
+    private final DerivedObservableList<StoreCategoryWrapper> categories = DerivedObservableList.synchronizedArrayList(true);
 
     @Getter
     private final IntegerProperty entriesListVisibilityObservable = new SimpleIntegerProperty();
@@ -50,8 +48,7 @@ public class StoreViewState {
     private final BooleanProperty batchMode = new SimpleBooleanProperty(false);
 
     @Getter
-    private final DerivedObservableList<StoreEntryWrapper> batchModeSelection = new DerivedObservableList<>(
-            FXCollections.synchronizedObservableList(FXCollections.observableArrayList()), true);
+    private final DerivedObservableList<StoreEntryWrapper> batchModeSelection = DerivedObservableList.synchronizedArrayList(true);
 
     @Getter
     private boolean initialized = false;
@@ -111,6 +108,7 @@ public class StoreViewState {
     }
 
     public void selectBatchMode(StoreSection section) {
+        System.out.println("Select " + section.getWrapper());
         var wrapper = section.getWrapper();
         if (wrapper != null && !batchModeSelection.getList().contains(wrapper)) {
             batchModeSelection.getList().add(wrapper);
@@ -171,8 +169,8 @@ public class StoreViewState {
         } catch (Exception exception) {
             currentTopLevelSection = new StoreSection(
                     null,
-                    new DerivedObservableList<>(FXCollections.observableArrayList(), true),
-                    new DerivedObservableList<>(FXCollections.observableArrayList(), true),
+                    DerivedObservableList.arrayList(true),
+                    DerivedObservableList.arrayList(true),
                     0);
             ErrorEvent.fromThrowable(exception).handle();
         }

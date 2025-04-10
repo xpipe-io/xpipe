@@ -525,6 +525,7 @@ public class DataStoreEntry extends StorageElement {
         }
         childrenCache = null;
         dirty = true;
+        notifyUpdate(false, updateTime);
     }
 
     public void reassignStoreNode() {

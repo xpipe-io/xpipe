@@ -14,25 +14,44 @@ import lombok.Getter;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 @Getter
 public class DerivedObservableList<T> {
 
+    public static <T> DerivedObservableList<T> synchronizedArrayList(boolean unique) {
+        var list = new ArrayList<T>();
+        return new DerivedObservableList<>(list, FXCollections.synchronizedObservableList(FXCollections.observableList(list)), unique);
+    }
+
+    public static <T> DerivedObservableList<T> arrayList(boolean unique) {
+        var list = new ArrayList<T>();
+        return new DerivedObservableList<>(list, FXCollections.observableList(list), unique);
+    }
+
+    public static <T> DerivedObservableList<T> wrap(ObservableList<T> list, boolean unique) {
+        return new DerivedObservableList<>(null, list, unique);
+    }
+
+    private final List<T> backingList;
     private final ObservableList<T> list;
     private final boolean unique;
 
-    public DerivedObservableList(ObservableList<T> list, boolean unique) {
+    public DerivedObservableList(List<T> backingList, ObservableList<T> list, boolean unique) {
+        this.backingList = backingList;
         this.list = list;
         this.unique = unique;
     }
 
     private <V> DerivedObservableList<V> createNewDerived() {
         var name = list.getClass().getSimpleName();
+        var backingList = new ArrayList<V>();
         var l = name.toLowerCase().contains("synchronized")
-                ? FXCollections.<V>synchronizedObservableList(FXCollections.observableArrayList())
-                : FXCollections.<V>observableArrayList();
-        BindingsHelper.preserve(l, list);
-        return new DerivedObservableList<>(l, unique);
+                ? FXCollections.synchronizedObservableList(FXCollections.observableList(backingList))
+                : FXCollections.observableList(backingList);
+        var derived = new DerivedObservableList<>(backingList, l, unique);
+        BindingsHelper.preserve(l, this);
+        return derived;
     }
 
     public void setContent(List<? extends T> newList) {
@@ -142,13 +161,21 @@ public class DerivedObservableList<T> {
         list.setAll(newList);
     }
 
+    private Stream<T> listStream() {
+        if (backingList != null) {
+            return backingList.stream();
+        }
+
+        return list.stream();
+    }
+
     public <V> DerivedObservableList<V> mapped(Function<T, V> map) {
         var cache = new HashMap<T, V>();
         var l1 = this.<V>createNewDerived();
         Runnable runnable = () -> {
             var listSet = new HashSet<>(list);
             cache.keySet().removeIf(t -> !listSet.contains(t));
-            l1.setContent(list.stream()
+            l1.setContent(listStream()
                     .map(v -> {
                         if (!cache.containsKey(v)) {
                             cache.put(v, map.apply(v));
@@ -192,9 +219,8 @@ public class DerivedObservableList<T> {
     public DerivedObservableList<T> filtered(ObservableValue<Predicate<T>> predicate) {
         var d = this.<T>createNewDerived();
         Runnable runnable = () -> {
-            d.setContent(
-                    predicate.getValue() != null
-                            ? list.stream().filter(predicate.getValue()).toList()
+            d.setContent(predicate.getValue() != null
+                            ? listStream().filter(predicate.getValue()).toList()
                             : list);
         };
         runnable.run();
@@ -223,7 +249,7 @@ public class DerivedObservableList<T> {
     public DerivedObservableList<T> sorted(ObservableValue<Comparator<T>> comp) {
         var d = this.<T>createNewDerived();
         Runnable runnable = () -> {
-            d.setContent(list.stream().sorted(comp.getValue()).toList());
+            d.setContent(listStream().sorted(comp.getValue()).toList());
         };
         runnable.run();
         list.addListener((ListChangeListener<? super T>) c -> {
@@ -231,21 +257,6 @@ public class DerivedObservableList<T> {
         });
         comp.addListener(observable -> {
             d.list.sort(comp.getValue());
-        });
-        return d;
-    }
-
-    public DerivedObservableList<T> blockUpdatesIf(ObservableBooleanValue block) {
-        var d = this.<T>createNewDerived();
-        Runnable runnable = () -> {
-            d.setContent(list);
-        };
-        runnable.run();
-        list.addListener((ListChangeListener<? super T>) c -> {
-            runnable.run();
-        });
-        block.addListener(observable -> {
-            runnable.run();
         });
         return d;
     }

@@ -40,7 +40,7 @@ public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<
                 return;
             }
 
-            var l = new DerivedObservableList<>(fileSelection, true);
+            var l = DerivedObservableList.wrap(fileSelection, true);
             l.bindContent(newValue.getFileList().getSelection());
         });
     }

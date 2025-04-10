@@ -14,7 +14,13 @@ public class ConnectionAddExchangeImpl extends ConnectionAddExchange {
     @Override
     public Object handle(HttpExchange exchange, Request msg) throws Throwable {
         var found = DataStorage.get().getStoreEntryIfPresent(msg.getData(), false);
+        if (found.isEmpty()) {
+            found = DataStorage.get().getStoreEntryIfPresent(msg.getName());
+        }
+
         if (found.isPresent()) {
+            var data = msg.getData();
+            found.get().setStoreInternal(data, true);
             return Response.builder().connection(found.get().getUuid()).build();
         }
 

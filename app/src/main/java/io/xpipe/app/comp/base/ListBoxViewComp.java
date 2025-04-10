@@ -305,7 +305,7 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
                 r.pseudoClassStateChanged(LAST, i == newShown.size() - 1);
             }
 
-            var d = new DerivedObservableList<>(listView.getChildren(), true);
+            var d = DerivedObservableList.wrap(listView.getChildren(), true);
             d.setContent(newShown);
             if (refreshVisibilities) {
                 updateVisibilities(scroll, listView);

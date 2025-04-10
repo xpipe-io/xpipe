@@ -58,8 +58,8 @@ public class StoreCategoryWrapper {
         this.lastAccess = new SimpleObjectProperty<>(category.getLastAccess());
         this.sortMode = new SimpleObjectProperty<>(category.getSortMode());
         this.sync = new SimpleObjectProperty<>(category.isSync());
-        this.children = new DerivedObservableList<>(FXCollections.observableArrayList(), true);
-        this.directContainedEntries = new DerivedObservableList<>(FXCollections.observableArrayList(), true);
+        this.children = DerivedObservableList.arrayList(true);
+        this.directContainedEntries = DerivedObservableList.arrayList(true);
         this.color.setValue(category.getColor());
         setupListeners();
     }

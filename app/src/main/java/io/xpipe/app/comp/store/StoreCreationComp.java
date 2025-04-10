@@ -9,6 +9,7 @@ import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
+import javafx.scene.control.skin.ScrollPaneSkin;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -76,10 +77,13 @@ public class StoreCreationComp extends ModalOverlayContentComp {
                 valSp.getChildren().add(propR);
 
                 var sp = new ScrollPane(valSp);
+                sp.setSkin(new ScrollPaneSkin(sp));
                 sp.setFitToWidth(true);
+                var vbar = (ScrollBar) sp.lookup(".scroll-bar:vertical");
 
                 var sep = new Separator();
                 sep.setPadding(new Insets(0, 0, 0, 0));
+                sep.visibleProperty().bind(vbar.visibleProperty());
 
                 var vbox = new VBox(sp, sep);
                 VBox.setVgrow(sp, Priority.ALWAYS);

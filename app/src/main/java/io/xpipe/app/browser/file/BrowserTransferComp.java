@@ -51,7 +51,7 @@ public class BrowserTransferComp extends SimpleComp {
                 .styleClass("gray")
                 .styleClass("download-background");
 
-        var binding = new DerivedObservableList<>(model.getItems(), true)
+        var binding = DerivedObservableList.wrap(model.getItems(), true)
                 .mapped(item -> item.getBrowserEntry())
                 .getList();
         var list = new BrowserFileSelectionListComp(binding, entry -> {

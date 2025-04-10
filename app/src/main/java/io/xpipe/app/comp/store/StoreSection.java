@@ -164,8 +164,8 @@ public class StoreSection {
         if (e.getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
             return new StoreSection(
                     e,
-                    new DerivedObservableList<>(FXCollections.observableArrayList(), true),
-                    new DerivedObservableList<>(FXCollections.observableArrayList(), true),
+                    DerivedObservableList.arrayList(true),
+                    DerivedObservableList.arrayList(true),
                     depth);
         }
 

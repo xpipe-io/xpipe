@@ -36,7 +36,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var state = BrowserHistorySavedStateImpl.get();
-        var list = new DerivedObservableList<>(state.getEntries(), true)
+        var list = DerivedObservableList.wrap(state.getEntries(), true)
                 .filtered(e -> {
                     if (DataStorage.get() == null) {
                         return false;

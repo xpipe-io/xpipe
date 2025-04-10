@@ -65,7 +65,7 @@ public class BrowserOverviewComp extends SimpleComp {
         var rootsOverview = new BrowserFileOverviewComp(model, FXCollections.observableArrayList(roots), false);
         var rootsPane = new SimpleTitledPaneComp(AppI18n.observable("roots"), rootsOverview, false);
 
-        var recent = new DerivedObservableList<>(model.getSavedState().getRecentDirectories(), true)
+        var recent = DerivedObservableList.wrap(model.getSavedState().getRecentDirectories(), true)
                 .mapped(s -> FileEntry.ofDirectory(model.getFileSystem(), s.getDirectory()))
                 .getList();
         var recentOverview = new BrowserFileOverviewComp(model, recent, true);

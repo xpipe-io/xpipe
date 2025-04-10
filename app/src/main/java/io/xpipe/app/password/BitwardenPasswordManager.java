@@ -54,17 +54,11 @@ public class BitwardenPasswordManager implements PasswordManager {
                     return null;
                 }
                 var cmd = sc.command(CommandBuilder.of()
-                        .add("bw", "unlock", "--passwordenv", "BW_PASSWORD")
+                        .add("bw", "unlock", "--raw", "--passwordenv", "BW_PASSWORD")
                         .fixedEnvironment("BW_PASSWORD", pw.getSecret().getSecretValue()));
                 cmd.setSensitive();
                 var out = cmd.readStdoutOrThrow();
-                var matcher = Pattern.compile("export BW_SESSION=\"(.+)\"").matcher(out);
-                if (matcher.find()) {
-                    var sessionKey = matcher.group(1);
-                    sc.view().setSensitiveEnvironmentVariable("BW_SESSION", sessionKey);
-                } else {
-                    return null;
-                }
+                sc.view().setSensitiveEnvironmentVariable("BW_SESSION", out);
             }
 
             var b = CommandBuilder.of()

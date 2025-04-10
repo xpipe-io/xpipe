@@ -200,7 +200,7 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     protected Region createButtonBar() {
-        var list = new DerivedObservableList<>(getWrapper().getActionProviders(), false);
+        var list = DerivedObservableList.wrap(getWrapper().getActionProviders(), false);
         var buttons = list.mapped(actionProvider -> {
                     var button = buildButton(actionProvider);
                     return button != null ? button.createRegion() : null;
