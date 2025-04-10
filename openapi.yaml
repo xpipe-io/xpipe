@@ -210,7 +210,7 @@ paths:
         Creates a new empty category in the vault.
         
         New categories always need a parent as it's not allowed to create root categories.
-      operationId: categoryAd
+      operationId: categoryAdd
       requestBody:
         required: true
         content:
