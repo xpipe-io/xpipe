@@ -3,6 +3,7 @@ package io.xpipe.app.browser;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
+import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BooleanScope;
@@ -217,8 +218,23 @@ public class BrowserSessionTabsComp extends SimpleComp {
                     headerArea
                             .paddingProperty()
                             .bind(Bindings.createObjectBinding(
-                                    () -> new Insets(2, 0, 4, -leftPadding.get() + 3), leftPadding));
-                    tabs.setPadding(new Insets(0, 0, 0, -5));
+                                    () -> {
+                                        var w = App.getApp().getStage().getWidth();
+                                        if (w >= 1000) {
+                                            return
+                                                    new Insets(2, 0, 4, -leftPadding.get() + 3);
+                                        } else {
+                                            return new Insets(2, 0, 4, -leftPadding.get() - 4);
+                                        }
+                                    }, App.getApp().getStage().widthProperty(), leftPadding));
+                    tabs.paddingProperty().bind(Bindings.createObjectBinding(() -> {
+                        var w = App.getApp().getStage().getWidth();
+                        if (w >= 1000) {
+                            return new Insets(0, 0, 0, -5);
+                        } else {
+                            return new Insets(0, 0, 0, 5);
+                        }
+                    }, App.getApp().getStage().widthProperty()));
                     headerHeight.bind(headerArea.heightProperty());
                 });
             }

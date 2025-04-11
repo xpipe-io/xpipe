@@ -9,6 +9,7 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.PlatformThread;
@@ -73,10 +74,13 @@ public class BrowserFullSessionComp extends SimpleComp {
         loadingStack.apply(struc -> struc.get().setPickOnBounds(false));
         var delayedStack = new DelayedInitComp(
                 left, () -> StoreViewState.get() != null && StoreViewState.get().isInitialized());
+        delayedStack.hide(AppMainWindow.getInstance().getStage().widthProperty().lessThan(1000));
         var splitPane = new LeftSplitPaneComp(delayedStack, loadingStack)
                 .withInitialWidth(AppLayoutModel.get().getSavedState().getBrowserConnectionsWidth())
                 .withOnDividerChange(d -> {
-                    AppLayoutModel.get().getSavedState().setBrowserConnectionsWidth(d);
+                    if (d > 0.0) {
+                        AppLayoutModel.get().getSavedState().setBrowserConnectionsWidth(d);
+                    }
                     leftSplit.set(d);
                 });
         splitPane.apply(struc -> {

@@ -47,7 +47,7 @@ public class PowerShellTerminalType extends ExternalTerminalType.SimplePathType 
             return CommandBuilder.of()
                     .add("-ExecutionPolicy", "Bypass")
                     .add("-File")
-                    .addFile(configuration.getScriptFile());
+                    .addQuoted(configuration.getScriptFile().toString());
         }
 
         return CommandBuilder.of()

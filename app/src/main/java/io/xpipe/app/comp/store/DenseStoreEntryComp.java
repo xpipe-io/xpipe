@@ -3,6 +3,7 @@ package io.xpipe.app.comp.store;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.util.Rect;
 import io.xpipe.core.process.OsType;
 
 import javafx.beans.binding.Bindings;
@@ -11,6 +12,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
+import javafx.scene.shape.Rectangle;
 
 public class DenseStoreEntryComp extends StoreEntryComp {
 
