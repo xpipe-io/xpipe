@@ -180,7 +180,7 @@ public class TerminalLauncher {
             }
         }
 
-        var proxyConfig = launchProxy(request, terminalConfig, config);
+        var proxyConfig = launchProxy(request, config);
         if (proxyConfig.isPresent()) {
             launch(type, proxyConfig.get(), latch);
             return;
@@ -224,24 +224,21 @@ public class TerminalLauncher {
             return false;
         }
 
+        var control = TerminalProxyManager.getProxy().orElse(LocalShell.getShell());
+
         // Throw if not supported
-        multiplexer.get().checkSupported(TerminalProxyManager.getProxy().orElse(LocalShell.getShell()));
+        multiplexer.get().checkSupported(control);
 
         if (TerminalMultiplexerManager.requiresNewTerminalSession(request)) {
             return false;
         }
 
-        var control = TerminalProxyManager.getProxy();
-        if (control.isEmpty()) {
-            return false;
-        }
-
-        var openCommand = launchConfiguration.getDialectLaunchCommand().buildFull(control.get());
+        var openCommand = launchConfiguration.getDialectLaunchCommand().buildFull(control);
         var multiplexerCommand = multiplexer
                 .get()
-                .launchScriptExternal(control.get(), openCommand, initScriptConfig)
+                .launchScriptExternal(control, openCommand, initScriptConfig)
                 .toString();
-        control.get().command(multiplexerCommand).execute();
+        control.command(multiplexerCommand).execute();
         return true;
     }
 
@@ -308,36 +305,27 @@ public class TerminalLauncher {
     }
 
     private static Optional<TerminalLaunchConfiguration> launchProxy(
-            UUID request, TerminalInitScriptConfig initScriptConfig, TerminalLaunchConfiguration launchConfiguration)
+            UUID request, TerminalLaunchConfiguration launchConfiguration)
             throws Exception {
+        var proxyControl = TerminalProxyManager.getProxy();
+        if (proxyControl.isEmpty()) {
+            return Optional.empty();
+        }
+
         var initScript = AppPrefs.get().terminalInitScript().getValue();
         var initialCommand = initScript != null ? initScript + "\n" : "";
         var openCommand = launchConfiguration.getDialectLaunchCommand().buildSimple();
         var fullCommand = initialCommand + openCommand;
-
-        var proxyControl = TerminalProxyManager.getProxy();
-        if (proxyControl.isPresent()) {
-            var launchCommand = proxyControl
-                    .get()
-                    .prepareIntermediateTerminalOpen(
-                            TerminalInitFunction.fixed(fullCommand),
-                            TerminalInitScriptConfig.ofName("XPipe"),
-                            WorkingDirectoryFunction.none());
-            // Restart for the next time
-            proxyControl.get().start();
-            var fullLocalCommand = getTerminalRegisterCommand(request) + "\n" + launchCommand;
-            return Optional.ofNullable(launchConfiguration.withScript(
-                    ProcessControlProvider.get().getEffectiveLocalDialect(), fullLocalCommand));
-
-        } else {
-            var launchCommand = LocalShell.getShell()
-                    .prepareIntermediateTerminalOpen(
-                            TerminalInitFunction.fixed(fullCommand),
-                            TerminalInitScriptConfig.ofName("XPipe"),
-                            WorkingDirectoryFunction.none());
-            var fullLocalCommand = getTerminalRegisterCommand(request) + "\n" + launchCommand;
-            return Optional.ofNullable(launchConfiguration.withScript(
-                    ProcessControlProvider.get().getEffectiveLocalDialect(), fullLocalCommand));
-        }
+        var launchCommand = proxyControl
+                .get()
+                .prepareIntermediateTerminalOpen(
+                        TerminalInitFunction.fixed(fullCommand),
+                        TerminalInitScriptConfig.ofName("XPipe"),
+                        WorkingDirectoryFunction.none());
+        // Restart for the next time
+        proxyControl.get().start();
+        var fullLocalCommand = getTerminalRegisterCommand(request) + "\n" + launchCommand;
+        return Optional.ofNullable(launchConfiguration.withScript(
+                ProcessControlProvider.get().getEffectiveLocalDialect(), fullLocalCommand));
     }
 }
