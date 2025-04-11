@@ -2,7 +2,9 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.SimpleComp;
 
+import io.xpipe.app.util.BooleanScope;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.CheckBox;
 import javafx.scene.input.MouseButton;
@@ -19,27 +21,36 @@ public class StoreEntryBatchSelectComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
+        var selfUpdate = new SimpleBooleanProperty(false);
         var cb = new CheckBox();
         cb.setAllowIndeterminate(true);
         cb.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-                StoreViewState.get().selectBatchMode(section);
-            } else {
-                StoreViewState.get().unselectBatchMode(section);
-            }
+            BooleanScope.executeExclusive(selfUpdate, () -> {
+                if (newValue) {
+                    StoreViewState.get().selectBatchMode(section);
+                } else {
+                    StoreViewState.get().unselectBatchMode(section);
+                }
+            });
         });
 
         StoreViewState.get().getBatchModeSelection().getList().addListener((ListChangeListener<
                         ? super StoreEntryWrapper>)
                 c -> {
+                    if (selfUpdate.get()) {
+                        return;
+                    }
+
                     Platform.runLater(() -> {
-                        update(cb);
+                        externalUpdate(cb);
                     });
                 });
         section.getShownChildren().getList().addListener((ListChangeListener<? super StoreSection>) c -> {
-            if (cb.isSelected()) {
-                StoreViewState.get().selectBatchMode(section);
-            }
+            BooleanScope.executeExclusive(selfUpdate, () -> {
+                if (cb.isSelected()) {
+                    StoreViewState.get().selectBatchMode(section);
+                }
+            });
         });
 
         cb.getStyleClass().add("batch-mode-selector");
@@ -52,7 +63,7 @@ public class StoreEntryBatchSelectComp extends SimpleComp {
         return cb;
     }
 
-    private void update(CheckBox checkBox) {
+    private void externalUpdate(CheckBox checkBox) {
         var isSelected = StoreViewState.get().isSectionSelected(section);
         checkBox.setSelected(isSelected);
         if (section.getShownChildren().getList().size() == 0) {
@@ -62,7 +73,7 @@ public class StoreEntryBatchSelectComp extends SimpleComp {
 
         var count = section.getShownChildren().getList().stream()
                 .filter(c ->
-                        StoreViewState.get().getBatchModeSelection().getList().contains(c.getWrapper()))
+                        StoreViewState.get().isBatchModeSelected(c.getWrapper()))
                 .count();
         checkBox.setIndeterminate(
                 count > 0 && count != section.getShownChildren().getList().size());

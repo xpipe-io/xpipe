@@ -50,6 +50,8 @@ public class StoreViewState {
     @Getter
     private final DerivedObservableList<StoreEntryWrapper> batchModeSelection = DerivedObservableList.synchronizedArrayList(true);
 
+    private final Set<StoreEntryWrapper> batchModeSelectionSet = new HashSet<>();
+
     @Getter
     private boolean initialized = false;
 
@@ -107,10 +109,13 @@ public class StoreViewState {
         return INSTANCE;
     }
 
+    public boolean isBatchModeSelected(StoreEntryWrapper entry) {
+        return batchModeSelectionSet.contains(entry);
+    }
+
     public void selectBatchMode(StoreSection section) {
-        System.out.println("Select " + section.getWrapper());
         var wrapper = section.getWrapper();
-        if (wrapper != null && !batchModeSelection.getList().contains(wrapper)) {
+        if (wrapper != null && !batchModeSelectionSet.contains(wrapper)) {
             batchModeSelection.getList().add(wrapper);
         }
         if (wrapper == null
@@ -134,11 +139,10 @@ public class StoreViewState {
 
     public boolean isSectionSelected(StoreSection section) {
         if (section.getWrapper() == null) {
-            var batchSet = new HashSet<>(batchModeSelection.getList());
             var childSet = section.getShownChildren().getList().stream()
                     .map(s -> s.getWrapper())
                     .toList();
-            return batchSet.containsAll(childSet);
+            return batchModeSelectionSet.containsAll(childSet);
         }
 
         return getBatchModeSelection().getList().contains(section.getWrapper());
@@ -150,17 +154,10 @@ public class StoreViewState {
     }
 
     private void initSections() {
-        // Faster selection check with a hash set
-        var set = new HashSet<>(batchModeSelection.getList());
-        batchModeSelection.getList().addListener((ListChangeListener<? super StoreEntryWrapper>) c -> {
-            set.clear();
-            set.addAll(c.getList());
-        });
-
         try {
             currentTopLevelSection = StoreSection.createTopLevel(
                     allEntries,
-                    set,
+                    batchModeSelectionSet,
                     storeEntryWrapper -> true,
                     filter,
                     activeCategory,
@@ -193,6 +190,21 @@ public class StoreViewState {
     }
 
     private void initBatchListeners() {
+        batchModeSelection.getList().addListener((ListChangeListener<? super StoreEntryWrapper>) c -> {
+            if (c.getList().isEmpty()) {
+                batchModeSelectionSet.clear();
+                return;
+            }
+
+            while (c.next()) {
+                if (c.wasAdded()) {
+                    batchModeSelectionSet.addAll(c.getAddedSubList());
+                } else if (c.wasRemoved()) {
+                    c.getRemoved().forEach(batchModeSelectionSet::remove);
+                }
+            }
+        });
+
         allEntries.getList().addListener((ListChangeListener<? super StoreEntryWrapper>) c -> {
             batchModeSelection.getList().retainAll(c.getList());
         });

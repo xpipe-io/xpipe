@@ -40,6 +40,12 @@ public enum PredefinedScriptStore {
             .minimumDialect(null)
             .commands(file(("git_config.sh")))
             .runnableScript(true)
+            .build()),
+    SYSTEM_HEALTH_STATUS("System health status", () -> SimpleScriptStore.builder()
+            .group(PredefinedScriptGroup.MANAGEMENT.getEntry())
+            .minimumDialect(ShellDialects.SH)
+            .commands(file(("system_health.sh")))
+            .initScript(true)
             .build());
 
     private final String name;
