@@ -310,25 +310,34 @@ public class TerminalLauncher {
     private static Optional<TerminalLaunchConfiguration> launchProxy(
             UUID request, TerminalInitScriptConfig initScriptConfig, TerminalLaunchConfiguration launchConfiguration)
             throws Exception {
-        var proxyControl = TerminalProxyManager.getProxy();
-        if (proxyControl.isEmpty()) {
-            return Optional.empty();
-        }
-
         var initScript = AppPrefs.get().terminalInitScript().getValue();
         var initialCommand = initScript != null ? initScript + "\n" : "";
         var openCommand = launchConfiguration.getDialectLaunchCommand().buildSimple();
         var fullCommand = initialCommand + openCommand;
-        var launchCommand = proxyControl
-                .get()
-                .prepareIntermediateTerminalOpen(
-                        TerminalInitFunction.fixed(fullCommand),
-                        TerminalInitScriptConfig.ofName("XPipe"),
-                        WorkingDirectoryFunction.none());
-        // Restart for the next time
-        proxyControl.get().start();
-        var fullLocalCommand = getTerminalRegisterCommand(request) + "\n" + launchCommand;
-        return Optional.ofNullable(launchConfiguration.withScript(
-                ProcessControlProvider.get().getEffectiveLocalDialect(), fullLocalCommand));
+
+        var proxyControl = TerminalProxyManager.getProxy();
+        if (proxyControl.isPresent()) {
+            var launchCommand = proxyControl
+                    .get()
+                    .prepareIntermediateTerminalOpen(
+                            TerminalInitFunction.fixed(fullCommand),
+                            TerminalInitScriptConfig.ofName("XPipe"),
+                            WorkingDirectoryFunction.none());
+            // Restart for the next time
+            proxyControl.get().start();
+            var fullLocalCommand = getTerminalRegisterCommand(request) + "\n" + launchCommand;
+            return Optional.ofNullable(launchConfiguration.withScript(
+                    ProcessControlProvider.get().getEffectiveLocalDialect(), fullLocalCommand));
+
+        } else {
+            var launchCommand = LocalShell.getShell()
+                    .prepareIntermediateTerminalOpen(
+                            TerminalInitFunction.fixed(fullCommand),
+                            TerminalInitScriptConfig.ofName("XPipe"),
+                            WorkingDirectoryFunction.none());
+            var fullLocalCommand = getTerminalRegisterCommand(request) + "\n" + launchCommand;
+            return Optional.ofNullable(launchConfiguration.withScript(
+                    ProcessControlProvider.get().getEffectiveLocalDialect(), fullLocalCommand));
+        }
     }
 }
