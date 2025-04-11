@@ -81,11 +81,15 @@ public class StoreCreationComp extends ModalOverlayContentComp {
                 sp.setFitToWidth(true);
                 var vbar = (ScrollBar) sp.lookup(".scroll-bar:vertical");
 
-                var sep = new Separator();
-                sep.setPadding(new Insets(0, 0, 0, 0));
-                sep.visibleProperty().bind(vbar.visibleProperty());
+                var topSep = new Separator();
+                topSep.setPadding(new Insets(10, 0, 0, 0));
+                topSep.visibleProperty().bind(vbar.visibleProperty());
 
-                var vbox = new VBox(sp, sep);
+                var bottomSep = new Separator();
+                bottomSep.setPadding(new Insets(0, 0, 0, 0));
+                bottomSep.visibleProperty().bind(vbar.visibleProperty());
+
+                var vbox = new VBox(topSep, sp, bottomSep);
                 VBox.setVgrow(sp, Priority.ALWAYS);
 
                 layout.setCenter(vbox);
@@ -100,12 +104,8 @@ public class StoreCreationComp extends ModalOverlayContentComp {
             }
         });
 
-        var sep = new Separator();
-        sep.setPadding(new Insets(10, 0, 0, 0));
-        var top = new VBox(providerChoice.createRegion(), sep);
-        top.getStyleClass().add("top");
         if (showProviders) {
-            layout.setTop(top);
+            layout.setTop(providerChoice.createRegion());
         }
         return layout;
     }
