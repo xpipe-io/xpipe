@@ -6,7 +6,9 @@ import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.update.UpdateAvailableDialog;
+import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.application.Platform;
@@ -73,6 +75,15 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
             vbox.getChildren().add(stack.createRegion());
         }
 
+        if (!AppProperties.get().isStaging()) {
+            var b = new IconButtonComp("mdi2t-test-tube", () -> Hyperlinks.open(Hyperlinks.GITHUB_PTB));
+            b.tooltipKey("ptbAvailableTooltip");
+            b.accessibleTextKey("ptbAvailableTooltip");
+            var stack = createStyle(null, b);
+            stack.hide(AppLayoutModel.get().getPtbAvailable().not());
+            vbox.getChildren().add(stack.createRegion());
+        }
+
         var filler = new Button();
         filler.setDisable(true);
         filler.setMaxHeight(3000);
@@ -98,6 +109,8 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
             });
         });
         vbox.getChildren().add(queueButtons);
+        vbox.setMinHeight(0);
+        vbox.setPrefHeight(0);
 
         return new SimpleCompStructure<>(vbox);
     }

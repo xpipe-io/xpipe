@@ -10,7 +10,9 @@ import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.PlatformThread;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -40,6 +42,8 @@ public class AppLayoutModel {
     private final Property<Entry> selected;
 
     private final ObservableList<QueueEntry> queueEntries;
+
+    private final BooleanProperty ptbAvailable = new SimpleBooleanProperty();
 
     public AppLayoutModel(SavedState savedState) {
         this.savedState = savedState;

@@ -1,11 +1,11 @@
 package io.xpipe.app.update;
 
 import io.xpipe.app.core.AppDistributionType;
+import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.util.HttpHelper;
-import io.xpipe.app.util.LicenseProvider;
+import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.JacksonMapper;
 
@@ -20,6 +20,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 
 public class AppDownloads {
 
@@ -92,6 +93,15 @@ public class AppDownloads {
 
         var json = JacksonMapper.getDefault().readTree(response.body());
         var ver = json.required("version").asText();
+        var ptbAvailable = json.get("ptbAvailable");
+        if (ptbAvailable != null) {
+            var b = ptbAvailable.asBoolean();
+            if (b) {
+                GlobalTimer.delay(() -> {
+                    AppLayoutModel.get().getPtbAvailable().set(true);
+                }, Duration.ofSeconds(20));
+            }
+        }
         return ver;
     }
 

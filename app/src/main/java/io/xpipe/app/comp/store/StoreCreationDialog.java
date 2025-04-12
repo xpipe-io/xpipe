@@ -47,7 +47,7 @@ public class StoreCreationDialog {
                                     && AppPrefs.get()
                                             .openConnectionSearchWindowOnConnectionCreation()
                                             .get()) {
-                                ScanDialog.showAsync(e);
+                                ScanDialog.showSingleAsync(e);
                             }
                         }
                     }
@@ -77,7 +77,7 @@ public class StoreCreationDialog {
                         && AppPrefs.get()
                                 .openConnectionSearchWindowOnConnectionCreation()
                                 .get()) {
-                    ScanDialog.showAsync(e);
+                    ScanDialog.showSingleAsync(e);
                 }
 
                 if (selectCategory) {

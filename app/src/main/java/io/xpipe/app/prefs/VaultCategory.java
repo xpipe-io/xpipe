@@ -56,7 +56,7 @@ public class VaultCategory extends AppPrefsCategory {
                         ? (uh.getActiveUser() != null && uh.getActiveUser().equals("legacy") ? "Legacy" : "Personal")
                         : "Team";
 
-        builder.addTitle("vaultUsers")
+        builder.addTitle("vault")
                 .sub(new OptionsBuilder()
                         .name("vaultTypeName" + vaultTypeKey)
                         .description("vaultTypeContent" + vaultTypeKey)
@@ -79,8 +79,7 @@ public class VaultCategory extends AppPrefsCategory {
                         .disable(!LicenseProvider.get().getFeature("team").isSupported())
                         .hide(new SimpleBooleanProperty(
                                 DataStorageSyncHandler.getInstance().supportsSync())));
-        builder.addTitle("vaultSecurity")
-                .sub(new OptionsBuilder()
+        builder.sub(new OptionsBuilder()
                         .pref(prefs.lockVaultOnHibernation)
                         .addToggle(prefs.lockVaultOnHibernation)
                         .pref(prefs.encryptAllVaultData)

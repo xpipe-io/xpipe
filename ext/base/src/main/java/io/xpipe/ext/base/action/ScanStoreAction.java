@@ -101,7 +101,7 @@ public class ScanStoreAction implements ActionProvider {
         @Override
         public void execute() {
             if (entry == null || entry.getStore() instanceof ShellStore) {
-                ScanDialog.showAsync(entry);
+                ScanDialog.showSingleAsync(entry);
             }
         }
     }

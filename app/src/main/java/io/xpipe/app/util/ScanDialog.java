@@ -14,26 +14,31 @@ import java.util.List;
 
 public class ScanDialog {
 
-    public static void showAsync(DataStoreEntry entry) {
+    public static void showSingleAsync(DataStoreEntry entry) {
         var showForCon = entry == null
                 || (entry.getStore() instanceof ShellStore
                         && (!(entry.getStorePersistentState() instanceof SystemState systemState)
                                 || systemState.getTtyState() == null
                                 || systemState.getTtyState() == ShellTtyState.NONE));
         if (showForCon) {
-            show(entry, ScanDialogAction.shellScanAction());
+            showSingle(entry, ScanDialogAction.shellScanAction());
         }
     }
 
-    private static void show(DataStoreEntry initialStore, ScanDialogAction action) {
+    private static void showSingle(DataStoreEntry initialStore, ScanDialogAction action) {
         var comp = new ScanSingleDialogComp(initialStore != null ? initialStore.ref() : null, action);
         var modal = ModalOverlay.of("scanAlertTitle", comp);
+        var queueEntry = new AppLayoutModel.QueueEntry(AppI18n.observable("scanConnections"), new LabelGraphic.IconGraphic("mdi2l-layers-plus"), () -> {});
         var button = new ModalButton(
                 "ok",
                 () -> {
-                    comp.finish();
+                    AppLayoutModel.get().getQueueEntries().add(queueEntry);
+                    ThreadHelper.runAsync(() -> {
+                        comp.finish();
+                        AppLayoutModel.get().getQueueEntries().remove(queueEntry);
+                    });
                 },
-                false,
+                true,
                 true);
         button.augment(r -> r.disableProperty().bind(PlatformThread.sync(comp.getBusy())));
         modal.addButton(button);
@@ -47,15 +52,13 @@ public class ScanDialog {
         var button = new ModalButton(
                 "ok",
                 () -> {
-                    modal.hide();
                     AppLayoutModel.get().getQueueEntries().add(queueEntry);
                     ThreadHelper.runAsync(() -> {
                         comp.finish();
-                        modal.hide();
                         AppLayoutModel.get().getQueueEntries().remove(queueEntry);
                     });
                 },
-                false,
+                true,
                 true);
         button.augment(r -> r.disableProperty().bind(PlatformThread.sync(comp.getBusy())));
         modal.addButton(button);
