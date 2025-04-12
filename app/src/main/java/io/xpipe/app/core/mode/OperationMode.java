@@ -263,7 +263,7 @@ public abstract class OperationMode {
         return ALL;
     }
 
-    public static void startNewInstance() throws Exception {
+    public static String getRestartCommand() {
         var loc = AppProperties.get().isDevelopmentEnvironment()
                 ? XPipeInstallation.getLocalDefaultInstallationBasePath()
                 : XPipeInstallation.getCurrentInstallationBasePath().toString();
@@ -275,7 +275,11 @@ public abstract class OperationMode {
                 "\"-Dio.xpipe.app.acceptEula=true\" \"-Dio.xpipe.app.dataDir=" + dataDir
                         + "\" \"-Dio.xpipe.app.restarted=true\"",
                 true);
-        LocalShell.getShell().executeSimpleCommand(exec);
+        return exec;
+    }
+
+    public static void startNewInstance() throws Exception {
+        LocalShell.getShell().executeSimpleCommand(getRestartCommand());
     }
 
     public static void restart() {

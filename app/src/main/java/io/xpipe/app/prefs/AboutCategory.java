@@ -31,13 +31,13 @@ public class AboutCategory extends AppPrefsCategory {
     @Override
     protected Comp<?> create() {
         var props = createProperties().padding(new Insets(0, 0, 0, 5));
-        var update = new UpdateCheckComp().grow(true, false).prefWidth(600);
-        return new VerticalComp(List.of(props, Comp.hspacer(8), update, Comp.hspacer(13), Comp.hseparator().padding(Insets.EMPTY)))
+        var update = new UpdateCheckComp().prefWidth(600);
+        return new VerticalComp(List.of(props, Comp.hspacer(8), update, Comp.hspacer(13), Comp.hseparator().padding(Insets.EMPTY).maxWidth(600)))
                 .apply(s -> s.get().setFillWidth(true))
                 .apply(struc -> struc.get().setSpacing(15))
                 .styleClass("information")
                 .styleClass("about-tab")
-                .apply(struc -> struc.get().setPrefWidth(600));
+                .apply(struc -> struc.get().maxWidth(600));
     }
 
     private Comp<?> createProperties() {

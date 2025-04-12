@@ -7,6 +7,7 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.process.ShellScript;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -179,8 +180,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             if (AppPrefs.get().customEditorCommandInTerminal().get()) {
                 TerminalLauncher.openDirect(
                         file.toString(),
-                        sc -> command.buildFull(sc),
-                        AppPrefs.get().terminalType.get());
+                        sc -> new ShellScript(command.buildFull(sc)));
             } else {
                 ExternalApplicationHelper.startAsync(command);
             }

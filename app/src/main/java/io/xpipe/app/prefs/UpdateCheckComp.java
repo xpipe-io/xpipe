@@ -106,7 +106,6 @@ public class UpdateCheckComp extends SimpleComp {
                     refresh();
                 })
                 .styleClass("update-button")
-                .grow(true, false)
                 .disable(checking)
                 .createRegion();
     }

@@ -82,7 +82,7 @@ public class ErrorHandlerComp extends SimpleComp {
         }
 
         var descriptionField = new TextArea(desc);
-        descriptionField.setPrefRowCount(Math.max(5, Math.min((int) desc.lines().count(), 14)));
+        descriptionField.setPrefRowCount(Math.max(5, Math.min((int) desc.lines().count() + 1, 14)));
         descriptionField.setWrapText(true);
         descriptionField.setEditable(false);
         descriptionField.setPadding(Insets.EMPTY);

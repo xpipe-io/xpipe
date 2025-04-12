@@ -17,6 +17,7 @@ import io.xpipe.app.util.FileOpener;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.process.ShellScript;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.util.XPipeInstallation;
 
@@ -58,13 +59,9 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                                 XPipeInstallation.getCurrentInstallationBasePath()
                                                         .toString(),
                                                 XPipeInstallation.getDaemonDebugScriptPath(OsType.getLocal()));
-                                        // We can't use the SSH bridge
-                                        var type = ExternalTerminalType.determineFallbackTerminalToOpen(
-                                                AppPrefs.get().terminalType().getValue());
-                                        TerminalLauncher.openDirect(
+                                        TerminalLauncher.openDirectFallback(
                                                 "XPipe Debug",
-                                                sc -> sc.getShellDialect().runScriptCommand(sc, script),
-                                                type);
+                                                sc -> new ShellScript(sc.getShellDialect().runScriptCommand(sc, script)));
                                     });
                                     e.consume();
                                 })

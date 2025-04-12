@@ -12,6 +12,7 @@ import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellDialects;
+import io.xpipe.core.process.ShellScript;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.core.util.XPipeInstallation;
@@ -74,11 +75,6 @@ public class AppInstaller {
 
             @Override
             public void installLocal(Path file) throws Exception {
-                var restartExec = (AppProperties.get().isDevelopmentEnvironment()
-                                ? Path.of(XPipeInstallation.getLocalDefaultInstallationBasePath())
-                                : XPipeInstallation.getCurrentInstallationBasePath())
-                        .resolve(XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()))
-                        .toString();
                 var logsDir =
                         AppLogs.get().getSessionLogsDirectory().getParent().toString();
                 var logFile = FileNames.join(
@@ -88,8 +84,8 @@ public class AppInstaller {
                         ProcessControlProvider.get().getEffectiveLocalDialect().equals(ShellDialects.CMD)
                                 && !systemWide;
                 var command = cmdScript
-                        ? getCmdCommand(file.toString(), logFile, restartExec)
-                        : getPowershellCommand(file.toString(), logFile, restartExec, systemWide);
+                        ? getCmdCommand(file.toString(), logFile)
+                        : getPowershellCommand(file.toString(), logFile, systemWide);
 
                 runAndClose(() -> {
                     try (var sc = LocalShell.getShell().start()) {
@@ -121,7 +117,7 @@ public class AppInstaller {
                         XPipeInstallation.getCurrentInstallationBasePath().resolve("system"));
             }
 
-            private String getCmdCommand(String file, String logFile, String exec) {
+            private String getCmdCommand(String file, String logFile) {
                 var args = "MSIFASTINSTALL=7 DISABLEROLLBACK=1";
                 return String.format(
                         """
@@ -129,8 +125,7 @@ public class AppInstaller {
                         cd /D "%%HOMEDRIVE%%%%HOMEPATH%%"
                         echo + msiexec /i "%s" /lv "%s" /qb %s
                         start "" /wait msiexec /i "%s" /lv "%s" /qb %s
-                        echo Starting XPipe ...
-                        start "" "%s" "-Dio.xpipe.app.dataDir=%s"
+                        %s
                         """,
                         file,
                         file,
@@ -139,11 +134,11 @@ public class AppInstaller {
                         file,
                         logFile,
                         args,
-                        exec,
-                        AppProperties.get().getDataDir());
+                        OperationMode.getRestartCommand()
+                );
             }
 
-            private String getPowershellCommand(String file, String logFile, String exec, boolean systemWide) {
+            private String getPowershellCommand(String file, String logFile, boolean systemWide) {
                 var property = "MSIFASTINSTALL=7 DISABLEROLLBACK=1" + (systemWide ? " ALLUSERS=1" : "");
                 var startProcessProperty = ", MSIFASTINSTALL=7, DISABLEROLLBACK=1" + (systemWide ? ", ALLUSERS=1" : "");
                 var runas = systemWide ? "-Verb runAs" : "";
@@ -153,8 +148,7 @@ public class AppInstaller {
                         cd "$env:HOMEDRIVE\\$env:HOMEPATH"
                         echo '+ msiexec /i "%s" /lv "%s" /qb%s'
                         Start-Process %s -FilePath msiexec -Wait -ArgumentList "/i", "`"%s`"", "/lv", "`"%s`"", "/qb"%s
-                        echo 'Starting XPipe ...'
-                        & "%s" "-Dio.xpipe.app.dataDir=%s"
+                        %s
                         """,
                         file,
                         file,
@@ -164,8 +158,8 @@ public class AppInstaller {
                         file,
                         logFile,
                         startProcessProperty,
-                        exec,
-                        AppProperties.get().getDataDir());
+                        OperationMode.getRestartCommand()
+                );
             }
         }
 
@@ -182,7 +176,7 @@ public class AppInstaller {
                 }
 
                 var name = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
-                var command = String.format(
+                var command = new ShellScript(String.format(
                         """
                                              runinstaller() {
                                                  echo "Installing downloaded .deb installer ..."
@@ -194,13 +188,9 @@ public class AppInstaller {
                                              cd ~
                                              runinstaller || echo "Update failed ..." && read key
                                              """,
-                        file, file, name, AppProperties.get().getDataDir());
-
+                        file, file, name, AppProperties.get().getDataDir()));
                 runAndClose(() -> {
-                    // We can't use the SSH bridge
-                    var type = ExternalTerminalType.determineFallbackTerminalToOpen(
-                            AppPrefs.get().terminalType().getValue());
-                    TerminalLauncher.openDirect("XPipe Updater", sc -> command, type);
+                    TerminalLauncher.openDirectFallback("XPipe Updater", sc -> command);
                 });
             }
 
@@ -222,26 +212,22 @@ public class AppInstaller {
                     return;
                 }
 
-                var name = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
-                var command = String.format(
+                var command = new ShellScript(String.format(
                         """
                                              runinstaller() {
                                                  echo "Installing downloaded .rpm installer ..."
                                                  echo "+ sudo rpm -U -v --force \\"%s\\""
                                                  sudo rpm -U -v --force "%s" || return 1
-                                                 %s open -d "%s" || return 1
+                                                 %s || return 1
                                              }
 
                                              cd ~
                                              runinstaller || read -rsp "Update failed ..."$'\\n' -n 1 key
                                              """,
-                        file, file, name, AppProperties.get().getDataDir());
+                        file, file, OperationMode.getRestartCommand()));
 
                 runAndClose(() -> {
-                    // We can't use the SSH bridge
-                    var type = ExternalTerminalType.determineFallbackTerminalToOpen(
-                            AppPrefs.get().terminalType().getValue());
-                    TerminalLauncher.openDirect("XPipe Updater", sc -> command, type);
+                    TerminalLauncher.openDirectFallback("XPipe Updater", sc -> command);
                 });
             }
 
@@ -263,26 +249,22 @@ public class AppInstaller {
                     return;
                 }
 
-                var name = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
-                var command = String.format(
+                var command = new ShellScript(String.format(
                         """
                                            runinstaller() {
                                                echo "Installing downloaded .pkg installer ..."
                                                echo "+ sudo installer -verboseR -pkg \\"%s\\" -target /"
                                                sudo installer -verboseR -pkg "%s" -target / || return 1
-                                               %s open -d "%s" || return 1
+                                               %s || return 1
                                            }
 
                                            cd ~
                                            runinstaller || echo "Update failed ..." && read -rs -k 1 key
                                            """,
-                        file, file, name, AppProperties.get().getDataDir());
+                        file, file, OperationMode.getRestartCommand()));
 
                 runAndClose(() -> {
-                    // We can't use the SSH bridge
-                    var type = ExternalTerminalType.determineFallbackTerminalToOpen(
-                            AppPrefs.get().terminalType().getValue());
-                    TerminalLauncher.openDirect("XPipe Updater", sc -> command, type);
+                    TerminalLauncher.openDirectFallback("XPipe Updater", sc -> command);
                 });
             }
 

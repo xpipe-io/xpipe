@@ -86,28 +86,32 @@ public class TerminalLauncher {
         return content;
     }
 
-    public static void openDirect(String title, CommandBuilder command) throws Exception {
-        openDirect(
-                title,
-                sc -> command.buildFull(sc),
-                AppPrefs.get().terminalType().getValue());
-    }
-
     public static void openDirect(String title, ShellScript command) throws Exception {
         openDirect(
-                title, sc -> command.toString(), AppPrefs.get().terminalType().getValue());
+                title, sc -> command, AppPrefs.get().terminalType().getValue());
+    }
+
+    public static void openDirectFallback(String title, FailableFunction<ShellControl, ShellScript, Exception> command)
+            throws Exception {
+        // We can't use the SSH bridge and other stuff
+        var type = ExternalTerminalType.determineFallbackTerminalToOpen(
+                AppPrefs.get().terminalType().getValue());
+        openDirect(
+                title,
+                command,
+                type);
     }
 
     public static void openDirect(String title, FailableFunction<ShellControl, ShellScript, Exception> command)
             throws Exception {
         openDirect(
                 title,
-                sc -> command.apply(sc).toString(),
+                command,
                 AppPrefs.get().terminalType().getValue());
     }
 
     public static void openDirect(
-            String title, FailableFunction<ShellControl, String, Exception> command, ExternalTerminalType type)
+            String title, FailableFunction<ShellControl, ShellScript, Exception> command, ExternalTerminalType type)
             throws Exception {
         try (var sc = LocalShell.getShell().start()) {
             var script = constructTerminalInitScript(
@@ -115,7 +119,7 @@ public class TerminalLauncher {
                     sc,
                     WorkingDirectoryFunction.none(),
                     List.of(),
-                    List.of(command.apply(sc)),
+                    List.of(command.apply(sc).toString()),
                     new TerminalInitScriptConfig(
                             title,
                             type.shouldClear()
