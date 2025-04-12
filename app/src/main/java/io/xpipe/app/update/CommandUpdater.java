@@ -9,6 +9,7 @@ import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;
+import io.xpipe.core.process.ShellScript;
 
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -16,11 +17,11 @@ import java.util.List;
 
 public class CommandUpdater extends PortableUpdater {
 
-    private final CommandBuilder command;
+    private final ShellScript script;
 
-    public CommandUpdater(CommandBuilder command) {
+    public CommandUpdater(ShellScript script) {
         super(true);
-        this.command = command;
+        this.script = script;
     }
 
     @Override
@@ -60,7 +61,7 @@ public class CommandUpdater extends PortableUpdater {
             var performedUpdate = new PerformedUpdate(p.getVersion(), p.getBody(), p.getVersion());
             AppCache.update("performedUpdate", performedUpdate);
             OperationMode.executeAfterShutdown(() -> {
-                TerminalLauncher.openDirect("Update", command);
+                TerminalLauncher.openDirect("XPipe Updater", script);
             });
         } catch (Throwable t) {
             ErrorEvent.fromThrowable(t).handle();

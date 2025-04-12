@@ -7,6 +7,7 @@ import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.Translatable;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.process.ShellScript;
 import io.xpipe.core.util.XPipeInstallation;
 
 import javafx.beans.value.ObservableValue;
@@ -24,17 +25,32 @@ public enum AppDistributionType implements Translatable {
     PORTABLE("portable", false, () -> new PortableUpdater(true)),
     NATIVE_INSTALLATION("install", true, () -> new GitHubUpdater(true)),
     HOMEBREW("homebrew", true, () -> {
-        return new CommandUpdater(CommandBuilder.of().add("brew", "upgrade", "--cask", AppProperties.get().isStaging() ? "xpipe-io/pbb/xpipe-ptb" : "xpipe-io/tap/xpipe"));
+        return new CommandUpdater(ShellScript.lines("brew upgrade --cask " + (AppProperties.get().isStaging() ? "xpipe-io/ptb/xpipe-ptb" : "xpipe-io/tap/xpipe")));
     }),
     APT_REPO("apt", true, () -> {
-        return new CommandUpdater(CommandBuilder.of().add("sudo", "apt", "update", "&&", "sudo", "apt", "install", AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe"));
+        return new CommandUpdater(ShellScript.lines(
+                "+ sudo apt update && sudo apt install " + (AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe"),
+                "sudo apt update",
+                "sudo apt install " + (AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe")
+        ));
     }),
     RPM_REPO("rpm", true, () -> {
-        return new CommandUpdater(CommandBuilder.of().add("sudo", "yum", "upgrade", AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe", "--refresh"));
+        return new CommandUpdater(ShellScript.lines(
+                "+ sudo yum upgrade " + (AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe") + " --refresh",
+                "sudo yum upgrade " + (AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe") + " --refresh"
+        ));
     }),
     WEBTOP("webtop", true, () -> new WebtopUpdater()),
     CHOCO("choco", true, () -> {
-        return new CommandUpdater(CommandBuilder.of().add("choco", "upgrade", AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe"));
+        var systemWide = Files.exists(XPipeInstallation.getCurrentInstallationBasePath().resolve("system"));
+        var pkg = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
+        if (systemWide) {
+            return new CommandUpdater(ShellScript.lines(
+                    "powershell -Command \"Start-Process -Verb runAs -FilePath choco -ArgumentList upgrade, " + pkg + "\""
+            ));
+        } else {
+            return new CommandUpdater(ShellScript.lines("choco upgrade " + pkg));
+        }
     });
 
     private static AppDistributionType type;
@@ -60,7 +76,7 @@ public enum AppDistributionType implements Translatable {
         }
 
         if (!AppProperties.get().isImage()) {
-            type = DEVELOPMENT;
+            type = CHOCO;
             return;
         }
 
