@@ -2,12 +2,10 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.update.GitHubUpdater;
-import io.xpipe.app.update.PortableUpdater;
-import io.xpipe.app.update.UpdateHandler;
-import io.xpipe.app.update.WebtopUpdater;
+import io.xpipe.app.update.*;
 import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.Translatable;
+import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.XPipeInstallation;
 
@@ -25,11 +23,19 @@ public enum AppDistributionType implements Translatable {
     DEVELOPMENT("development", true, () -> new GitHubUpdater(false)),
     PORTABLE("portable", false, () -> new PortableUpdater(true)),
     NATIVE_INSTALLATION("install", true, () -> new GitHubUpdater(true)),
-    HOMEBREW("homebrew", true, () -> new PortableUpdater(true)),
-    APT_REPO("apt", true, () -> new PortableUpdater(true)),
-    RPM_REPO("rpm", true, () -> new PortableUpdater(true)),
+    HOMEBREW("homebrew", true, () -> {
+        return new CommandUpdater(CommandBuilder.of().add("brew", "upgrade", "--cask", AppProperties.get().isStaging() ? "xpipe-io/pbb/xpipe-ptb" : "xpipe-io/tap/xpipe"));
+    }),
+    APT_REPO("apt", true, () -> {
+        return new CommandUpdater(CommandBuilder.of().add("sudo", "apt", "update", "&&", "sudo", "apt", "install", AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe"));
+    }),
+    RPM_REPO("rpm", true, () -> {
+        return new CommandUpdater(CommandBuilder.of().add("sudo", "yum", "upgrade", AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe", "--refresh"));
+    }),
     WEBTOP("webtop", true, () -> new WebtopUpdater()),
-    CHOCO("choco", true, () -> new PortableUpdater(true));
+    CHOCO("choco", true, () -> {
+        return new CommandUpdater(CommandBuilder.of().add("choco", "upgrade", AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe"));
+    });
 
     private static AppDistributionType type;
 
