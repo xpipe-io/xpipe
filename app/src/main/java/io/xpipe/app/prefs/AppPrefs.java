@@ -166,8 +166,6 @@ public class AppPrefs {
             .valueClass(Boolean.class)
             .licenseFeatureId("logging")
             .build());
-    final BooleanProperty enforceWindowModality =
-            mapLocal(new SimpleBooleanProperty(false), "enforceWindowModality", Boolean.class, false);
     final BooleanProperty checkForSecurityUpdates =
             mapLocal(new SimpleBooleanProperty(true), "checkForSecurityUpdates", Boolean.class, false);
     final BooleanProperty disableApiHttpsTlsCheck =
@@ -285,26 +283,27 @@ public class AppPrefs {
     private AppPrefs() {
         this.categories = Stream.of(
                         new AboutCategory(),
-                        new SystemCategory(),
                         new AppearanceCategory(),
                         new VaultCategory(),
                         new SyncCategory(),
                         new PasswordManagerCategory(),
                         new TerminalCategory(),
-                        new TerminalPromptCategory(),
                         new LoggingCategory(),
                         new EditorCategory(),
                         new RdpCategory(),
                         new SshCategory(),
-                        new ConnectionsCategory(),
+                        new ConnectionHubCategory(),
                         new FileBrowserCategory(),
                         new IconsCategory(),
+                        new SystemCategory(),
+                        new UpdatesCategory(),
                         new SecurityCategory(),
                         new HttpApiCategory(),
                         new WorkspacesCategory(),
+                        new DeveloperCategory(),
                         new TroubleshootCategory(),
-                        new DeveloperCategory())
-                .filter(appPrefsCategory -> appPrefsCategory.show())
+                        new LinksCategory()
+                )
                 .toList();
         this.selectedCategory = new SimpleObjectProperty<>(categories.getFirst());
     }
@@ -425,10 +424,6 @@ public class AppPrefs {
 
     public ObservableBooleanValue encryptAllVaultData() {
         return encryptAllVaultData;
-    }
-
-    public ObservableBooleanValue enforceWindowModality() {
-        return enforceWindowModality;
     }
 
     public ObservableBooleanValue condenseConnectionDisplay() {

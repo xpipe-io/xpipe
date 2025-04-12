@@ -11,10 +11,7 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.terminal.ExternalTerminalType;
-import io.xpipe.app.terminal.TerminalLauncher;
-import io.xpipe.app.terminal.TerminalMultiplexer;
-import io.xpipe.app.terminal.TerminalProxyManager;
+import io.xpipe.app.terminal.*;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
 
@@ -44,22 +41,6 @@ public class TerminalCategory extends AppPrefsCategory {
     @Override
     protected Comp<?> create() {
         var prefs = AppPrefs.get();
-        var terminalTest = new StackComp(
-                        List.of(new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
-                            ThreadHelper.runFailableAsync(() -> {
-                                var term = AppPrefs.get().terminalType().getValue();
-                                if (term != null) {
-                                    TerminalLauncher.open(
-                                            "Test",
-                                            ProcessControlProvider.get()
-                                                    .createLocalProcessControl(true)
-                                                    .command("echo Test"),
-                                            UUID.randomUUID());
-                                }
-                            });
-                        })))
-                .padding(new Insets(7, 0, 0, 0))
-                .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
         prefs.enableTerminalLogging.addListener((observable, oldValue, newValue) -> {
             var feature = LicenseProvider.get().getFeature("logging");
             if (newValue && !feature.isSupported()) {
@@ -76,14 +57,8 @@ public class TerminalCategory extends AppPrefsCategory {
         });
         return new OptionsBuilder()
                 .addTitle("terminalConfiguration")
-                .sub(new OptionsBuilder()
-                        .pref(prefs.terminalType)
-                        .addComp(terminalChoice(), prefs.terminalType)
-                        .pref(prefs.customTerminalCommand)
-                        .addComp(new TextFieldComp(prefs.customTerminalCommand, true)
-                                .apply(struc -> struc.get().setPromptText("myterminal -e $CMD"))
-                                .hide(prefs.terminalType.isNotEqualTo(ExternalTerminalType.CUSTOM)))
-                        .addComp(terminalTest))
+                .sub(terminalChoice())
+                .sub(terminalPrompt())
                 .sub(terminalProxy())
                 .sub(terminalMultiplexer())
                 .sub(terminalInitScript())
@@ -95,7 +70,7 @@ public class TerminalCategory extends AppPrefsCategory {
                 .buildComp();
     }
 
-    private Comp<?> terminalChoice() {
+    private OptionsBuilder terminalChoice() {
         var prefs = AppPrefs.get();
         var c = ChoiceComp.ofTranslatable(
                 prefs.terminalType, PrefsChoiceValue.getSupported(ExternalTerminalType.class), false);
@@ -150,7 +125,32 @@ public class TerminalCategory extends AppPrefsCategory {
             struc.get().setSpacing(10);
         });
         h.maxWidth(getCompWidth());
-        return h;
+
+        var terminalTest = new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
+            ThreadHelper.runFailableAsync(() -> {
+                var term = AppPrefs.get().terminalType().getValue();
+                if (term != null) {
+                    TerminalLauncher.open(
+                            "Test",
+                            ProcessControlProvider.get()
+                                    .createLocalProcessControl(true)
+                                    .command("echo Test"),
+                            UUID.randomUUID());
+                }
+            });
+        })
+                .padding(new Insets(6, 11, 6, 5))
+                .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
+
+        var builder = new OptionsBuilder()
+                .pref(prefs.terminalType)
+                .addComp(h, prefs.terminalType)
+                .pref(prefs.customTerminalCommand)
+                .addComp(new TextFieldComp(prefs.customTerminalCommand, true)
+                        .apply(struc -> struc.get().setPromptText("myterminal -e $CMD"))
+                        .hide(prefs.terminalType.isNotEqualTo(ExternalTerminalType.CUSTOM)))
+                .addComp(terminalTest);
+        return builder;
     }
 
     private OptionsBuilder terminalProxy() {
@@ -237,5 +237,39 @@ public class TerminalCategory extends AppPrefsCategory {
         var choice = choiceBuilder.build().buildComp();
         choice.maxWidth(getCompWidth());
         return new OptionsBuilder().nameAndDescription("terminalMultiplexer").addComp(choice);
+    }
+
+
+    private OptionsBuilder terminalPrompt() {
+        var prefs = AppPrefs.get();
+        var choiceBuilder = OptionsChoiceBuilder.builder()
+                .property(prefs.terminalPrompt)
+                .allowNull(true)
+                .subclasses(TerminalPrompt.getClasses())
+                .transformer(entryComboBox -> {
+                    var websiteLinkButton =
+                            new ButtonComp(AppI18n.observable("website"), new FontIcon("mdi2w-web"), () -> {
+                                var l = prefs.terminalPrompt().getValue().getDocsLink();
+                                if (l != null) {
+                                    Hyperlinks.open(l);
+                                }
+                            });
+                    websiteLinkButton.minWidth(Region.USE_PREF_SIZE);
+                    websiteLinkButton.disable(Bindings.createBooleanBinding(
+                            () -> {
+                                return prefs.terminalPrompt.getValue() == null
+                                        || prefs.terminalPrompt.getValue().getDocsLink() == null;
+                            },
+                            prefs.terminalPrompt));
+
+                    var hbox = new HBox(entryComboBox, websiteLinkButton.createRegion());
+                    HBox.setHgrow(entryComboBox, Priority.ALWAYS);
+                    hbox.setSpacing(10);
+                    return hbox;
+                })
+                .build();
+        var choice = choiceBuilder.build().buildComp();
+        choice.maxWidth(getCompWidth());
+        return new OptionsBuilder().nameAndDescription("terminalPrompt").addComp(choice, prefs.terminalPrompt);
     }
 }

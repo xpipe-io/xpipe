@@ -4,6 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ChoiceComp;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.util.OptionsBuilder;
+import io.xpipe.core.process.OsType;
 
 public class SystemCategory extends AppPrefsCategory {
 
@@ -15,7 +16,9 @@ public class SystemCategory extends AppPrefsCategory {
     public Comp<?> create() {
         var prefs = AppPrefs.get();
         var builder = new OptionsBuilder();
-        builder.addTitle("appBehaviour")
+        var localShellBuilder =
+                new OptionsBuilder().pref(prefs.useLocalFallbackShell).addToggle(prefs.useLocalFallbackShell);
+        builder.addTitle("system")
                 .sub(new OptionsBuilder()
                         .pref(prefs.startupBehaviour)
                         .addComp(ChoiceComp.ofTranslatable(
@@ -28,13 +31,9 @@ public class SystemCategory extends AppPrefsCategory {
                                         prefs.closeBehaviour,
                                         PrefsChoiceValue.getSupported(CloseBehaviour.class),
                                         false)
-                                .minWidth(getCompWidth() / 2)))
-                .addTitle("advanced")
-                .sub(new OptionsBuilder().pref(prefs.developerMode).addToggle(prefs.developerMode))
-                .addTitle("updates")
-                .sub(new OptionsBuilder()
-                        .pref(prefs.automaticallyCheckForUpdates)
-                        .addToggle(prefs.automaticallyCheckForUpdates));
+                                .minWidth(getCompWidth() / 2)));
+        builder.sub(localShellBuilder);
+        builder.sub(new OptionsBuilder().pref(prefs.developerMode).addToggle(prefs.developerMode));
         return builder.buildComp();
     }
 }

@@ -28,6 +28,11 @@ public class DeveloperCategory extends AppPrefsCategory {
     }
 
     @Override
+    protected boolean show() {
+        return AppPrefs.get().developerMode().getValue();
+    }
+
+    @Override
     protected Comp<?> create() {
         var prefs = AppPrefs.get();
         var localCommand = new SimpleStringProperty();

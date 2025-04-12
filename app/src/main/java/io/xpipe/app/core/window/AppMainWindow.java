@@ -308,10 +308,6 @@ public class AppMainWindow {
             windowActive.set(false);
         });
 
-        stage.setOnShown(event -> {
-            stage.requestFocus();
-        });
-
         stage.setOnCloseRequest(e -> {
             if (!OperationMode.isInStartup() && !OperationMode.isInShutdown() && !CloseBehaviourDialog.showIfNeeded()) {
                 e.consume();

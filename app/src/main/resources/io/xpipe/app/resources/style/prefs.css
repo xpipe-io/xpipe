@@ -1,7 +1,14 @@
+.prefs-box {
+    -fx-padding: 0 40 0 60;
+}
+
 .prefs-container .options-comp .name {
-    -fx-padding: 2em 0 0 0;
+    -fx-padding: 1.8em 0 0 0;
     -fx-font-weight: BOLD;
     -fx-font-size: 1.1em;
+}
+.prefs-container.options-comp > .options-comp {
+    -fx-padding: 0 0 0 1em;
 }
 
 .root:macos .prefs-container .options-comp .name {
@@ -24,22 +31,10 @@
     -fx-font-size: 1.0em;
 }
 
-.prefs-container > .title-header.first {
-    -fx-padding: 0 0 -0.5em 0;
-}
-
 .prefs-container > .title-header {
     -fx-padding: 2em 0 -0.5em 0;
     -fx-font-weight: BOLD;
     -fx-font-size: 1.5em;
-}
-
-.prefs-container.options-comp > .options-comp {
-    -fx-padding: 0 0 0 0;
-}
-
-.prefs-container.options-comp .name.first {
-    -fx-padding: 0;
 }
 
 .prefs {

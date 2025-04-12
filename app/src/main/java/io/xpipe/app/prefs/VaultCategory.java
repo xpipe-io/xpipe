@@ -85,12 +85,6 @@ public class VaultCategory extends AppPrefsCategory {
                         .addToggle(prefs.lockVaultOnHibernation)
                         .pref(prefs.encryptAllVaultData)
                         .addToggle(encryptVault));
-        builder.addTitle("vault")
-                .sub(new OptionsBuilder()
-                        .nameAndDescription("browseVault")
-                        .addComp(new ButtonComp(AppI18n.observable("browseVaultButton"), () -> {
-                            DesktopHelper.browsePathLocal(DataStorage.get().getStorageDir());
-                        })));
         return builder.buildComp();
     }
 }

@@ -26,7 +26,10 @@ public class AppPrefsSidebarComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var buttons = AppPrefs.get().getCategories().stream()
+        var effectiveCategories = AppPrefs.get().getCategories().stream()
+                .filter(appPrefsCategory -> appPrefsCategory.show())
+                .toList();
+        var buttons = effectiveCategories.stream()
                 .<Comp<?>>map(appPrefsCategory -> {
                     return new ButtonComp(AppI18n.observable(appPrefsCategory.getId()), () -> {
                                 AppPrefs.get().getSelectedCategory().setValue(appPrefsCategory);
@@ -55,7 +58,7 @@ public class AppPrefsSidebarComp extends SimpleComp {
         vbox.apply(struc -> {
             AppPrefs.get().getSelectedCategory().subscribe(val -> {
                 PlatformThread.runLaterIfNeeded(() -> {
-                    var index = val != null ? AppPrefs.get().getCategories().indexOf(val) : 0;
+                    var index = val != null ? effectiveCategories.indexOf(val) : 0;
                     if (index >= struc.get().getChildren().size()) {
                         return;
                     }

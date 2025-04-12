@@ -39,7 +39,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
     protected Comp<?> create() {
         OptionsBuilder b = new OptionsBuilder()
                 .addTitle("troubleshootingOptions")
-                .spacer(25)
+                .spacer(19)
                 .addComp(
                         new TileButtonComp("reportIssue", "reportIssueDescription", "mdal-bug_report", e -> {
                                     var event = ErrorEvent.fromMessage("User Report");
@@ -51,7 +51,6 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                 })
                                 .grow(true, false),
                         null)
-                .separator()
                 .addComp(
                         new TileButtonComp("launchDebugMode", "launchDebugModeDescription", "mdmz-refresh", e -> {
                                     OperationMode.executeAfterShutdown(() -> {
@@ -70,8 +69,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                     e.consume();
                                 })
                                 .grow(true, false),
-                        null)
-                .separator();
+                        null);
 
         if (AppLogs.get().isWriteToFile()) {
             b.addComp(
@@ -89,8 +87,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                                 e.consume();
                                             })
                                     .grow(true, false),
-                            null)
-                    .separator();
+                            null);
         }
 
         b.addComp(
@@ -105,7 +102,6 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                         })
                                 .grow(true, false),
                         null)
-                .separator()
                 .addComp(
                         new TileButtonComp(
                                         "clearUserData", "clearUserDataDescription", "mdi2t-trash-can-outline", e -> {
@@ -139,7 +135,6 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                         })
                                 .grow(true, false),
                         null)
-                .separator()
                 .addComp(
                         new TileButtonComp("clearCaches", "clearCachesDescription", "mdi2t-trash-can-outline", e -> {
                                     var modal = ModalOverlay.of(
@@ -153,7 +148,6 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                 })
                                 .grow(true, false),
                         null)
-                .separator()
                 .addComp(
                         new TileButtonComp("createHeapDump", "createHeapDumpDescription", "mdi2m-memory", e -> {
                                     heapDump();

@@ -1,57 +1,103 @@
 package io.xpipe.app.prefs;
 
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.base.VerticalComp;
+import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.PlatformThread;
 
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
+import lombok.val;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class AppPrefsComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var map = AppPrefs.get().getCategories().stream()
-                .collect(Collectors.toMap(appPrefsCategory -> appPrefsCategory, appPrefsCategory -> {
+        var categories = AppPrefs.get().getCategories().stream().filter(appPrefsCategory -> appPrefsCategory.show()).toList();
+        var list = categories.stream()
+                .<Comp<?>>map(appPrefsCategory -> {
                     var r = appPrefsCategory
                             .create()
-                            .maxWidth(800)
-                            .padding(new Insets(40, 40, 20, 60))
                             .styleClass("prefs-container")
-                            .createRegion();
-                    PlatformThread.runNestedLoopIteration();
+                            .styleClass(appPrefsCategory.getId());
                     return r;
-                }));
-        var pfxSp = new ScrollPane();
-        AppPrefs.get().getSelectedCategory().subscribe(val -> {
-            PlatformThread.runLaterIfNeeded(() -> {
-                pfxSp.setContent(map.get(val));
+                }).toList();
+        var box = new VerticalComp(list)
+                .maxWidth(850)
+                .styleClass("prefs-box")
+                .createStructure()
+                .get();
+        var scrollPane = new ScrollPane(box);
+
+        var externalUpdate = new SimpleBooleanProperty();
+
+        scrollPane.vvalueProperty().addListener((observable, oldValue, newValue) -> {
+           if (externalUpdate.get()) {
+               return;
+           }
+
+            BooleanScope.executeExclusive(externalUpdate, () -> {
+                var offset = newValue.doubleValue();
+                if (offset == 1.0) {
+                    AppPrefs.get().getSelectedCategory().setValue(categories.getLast());
+                    return;
+                }
+
+                for (int i = categories.size() - 1; i >= 0; i--) {
+                    var category = categories.get(i);
+                    var min = computeCategoryOffset(box, scrollPane, category);
+                    if (offset + (100.0 / box.getHeight()) > min) {
+                        AppPrefs.get().getSelectedCategory().setValue(category);
+                        return;
+                    }
+                }
             });
         });
-        AppPrefs.get().getSelectedCategory().addListener((observable, oldValue, newValue) -> {
-            pfxSp.setVvalue(0);
+
+        AppPrefs.get().getSelectedCategory().subscribe(val -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                if (externalUpdate.get()) {
+                    return;
+                }
+
+                BooleanScope.executeExclusive(externalUpdate, () -> {
+                    var off = computeCategoryOffset(box, scrollPane, val);
+                    scrollPane.setVvalue(off);
+                });
+            });
         });
-        pfxSp.setFitToWidth(true);
-        var pfxLimit = new StackPane(pfxSp);
-        pfxLimit.setAlignment(Pos.TOP_LEFT);
+        scrollPane.setFitToWidth(true);
+        HBox.setHgrow(scrollPane, Priority.ALWAYS);
 
         var sidebar = new AppPrefsSidebarComp().createRegion();
         sidebar.setMinWidth(260);
         sidebar.setPrefWidth(260);
         sidebar.setMaxWidth(260);
 
-        var split = new HBox(sidebar, pfxLimit);
+        var split = new HBox(sidebar, scrollPane);
         HBox.setMargin(sidebar, new Insets(4));
-        HBox.setHgrow(pfxLimit, Priority.ALWAYS);
         split.setFillHeight(true);
         split.getStyleClass().add("prefs");
         var stack = new StackPane(split);
         return stack;
+    }
+
+    private double computeCategoryOffset(VBox box, ScrollPane scrollPane, AppPrefsCategory val) {
+        var node = box.lookup("." + val.getId());
+        if (node != null && scrollPane.getHeight() > 0.0) {
+            var s = Math.min(box.getHeight(), node.getBoundsInParent().getMinY() > 0.0 ? node.getBoundsInParent().getMinY() + 20 : 0.0) / box.getHeight();
+            var off = (scrollPane.getHeight() * s * 1.05) / box.getHeight();
+            return s + off;
+        } else {
+            return 0;
+        }
     }
 }

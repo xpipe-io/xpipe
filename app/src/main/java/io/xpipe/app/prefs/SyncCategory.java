@@ -3,7 +3,9 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageSyncHandler;
+import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.ThreadHelper;
@@ -69,7 +71,11 @@ public class SyncCategory extends AppPrefsCategory {
                         .disable(prefs.enableGitStorage.not())
                         .addComp(testRow)
                         .disable(prefs.storageGitRemote.isNull().or(prefs.enableGitStorage.not()))
-                        .addComp(prefs.getCustomComp("gitVaultIdentityStrategy")));
+                        .addComp(prefs.getCustomComp("gitVaultIdentityStrategy"))
+                        .nameAndDescription("browseVault")
+                        .addComp(new ButtonComp(AppI18n.observable("browseVaultButton"), () -> {
+                            DesktopHelper.browsePathLocal(DataStorage.get().getStorageDir());
+                        })));
         return builder.buildComp();
     }
 }

@@ -2,13 +2,12 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.core.process.OsType;
 
-public class ConnectionsCategory extends AppPrefsCategory {
+public class ConnectionHubCategory extends AppPrefsCategory {
 
     @Override
     protected String getId() {
-        return "connections";
+        return "connectionHub";
     }
 
     @Override
@@ -23,20 +22,7 @@ public class ConnectionsCategory extends AppPrefsCategory {
                 .addToggle(prefs.openConnectionSearchWindowOnConnectionCreation)
                 .pref(prefs.requireDoubleClickForConnections)
                 .addToggle(prefs.requireDoubleClickForConnections);
-        var localShellBuilder =
-                new OptionsBuilder().pref(prefs.useLocalFallbackShell).addToggle(prefs.useLocalFallbackShell);
-        // Change order to prioritize fallback shell on macOS
-        var options = OsType.getLocal() == OsType.MACOS
-                ? new OptionsBuilder()
-                        .addTitle("localShell")
-                        .sub(localShellBuilder)
-                        .addTitle("connections")
-                        .sub(connectionsBuilder)
-                : new OptionsBuilder()
-                        .addTitle("connections")
-                        .sub(connectionsBuilder)
-                        .addTitle("localShell")
-                        .sub(localShellBuilder);
+        var options = new OptionsBuilder().addTitle("connectionHub").sub(connectionsBuilder);
         return options.buildComp();
     }
 }

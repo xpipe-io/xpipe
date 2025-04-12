@@ -31,7 +31,11 @@ public abstract class Comp<S extends CompStructure<?>> {
     private List<Augment<S>> augments;
 
     public static Comp<CompStructure<Region>> empty() {
-        return of(() -> new Region());
+        return of(() -> {
+            var r = new Region();
+            r.getStyleClass().add("empty");
+            return r;
+        });
     }
 
     public static Comp<CompStructure<Spacer>> hspacer(double size) {

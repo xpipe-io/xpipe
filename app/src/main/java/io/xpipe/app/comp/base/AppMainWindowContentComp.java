@@ -110,14 +110,6 @@ public class AppMainWindowContentComp extends SimpleComp {
                 }
             });
 
-            loaded.addListener((observable, oldValue, newValue) -> {
-                if (newValue != null) {
-                    Platform.runLater(() -> {
-                        stage.requestFocus();
-                    });
-                }
-            });
-
             return pane;
         });
         var modal = new ModalOverlayStackComp(bg, overlay);

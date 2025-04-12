@@ -23,56 +23,6 @@ import java.util.List;
 
 public class AboutCategory extends AppPrefsCategory {
 
-    private Comp<?> createLinks() {
-        return new OptionsBuilder()
-                .addComp(
-                        new TileButtonComp("discord", "discordDescription", "mdi2d-discord", e -> {
-                                    Hyperlinks.open(Hyperlinks.DISCORD);
-                                    e.consume();
-                                })
-                                .grow(true, false),
-                        null)
-                .addComp(
-                        new TileButtonComp(
-                                        "documentation", "documentationDescription", "mdi2b-book-open-variant", e -> {
-                                            Hyperlinks.open(Hyperlinks.DOCS);
-                                            e.consume();
-                                        })
-                                .grow(true, false),
-                        null)
-                .addComp(
-                        new TileButtonComp("tryPtb", "tryPtbDescription", "mdi2t-test-tube", e -> {
-                                    Hyperlinks.open(Hyperlinks.GITHUB_PTB);
-                                    e.consume();
-                                })
-                                .grow(true, false),
-                        null)
-                .addComp(
-                        new TileButtonComp("privacy", "privacyDescription", "mdomz-privacy_tip", e -> {
-                                    DocumentationLink.PRIVACY.open();
-                                    e.consume();
-                                })
-                                .grow(true, false),
-                        null)
-                .addComp(
-                        new TileButtonComp("thirdParty", "thirdPartyDescription", "mdi2o-open-source-initiative", e -> {
-                                    var comp = new ThirdPartyDependencyListComp()
-                                            .prefWidth(650)
-                                            .styleClass("open-source-notices");
-                                    var modal = ModalOverlay.of("openSourceNotices", comp);
-                                    modal.show();
-                                })
-                                .grow(true, false))
-                .addComp(
-                        new TileButtonComp("eula", "eulaDescription", "mdi2c-card-text-outline", e -> {
-                                    DocumentationLink.EULA.open();
-                                    e.consume();
-                                })
-                                .grow(true, false),
-                        null)
-                .buildComp();
-    }
-
     @Override
     protected String getId() {
         return "about";
@@ -82,7 +32,7 @@ public class AboutCategory extends AppPrefsCategory {
     protected Comp<?> create() {
         var props = createProperties().padding(new Insets(0, 0, 0, 5));
         var update = new UpdateCheckComp().grow(true, false);
-        return new VerticalComp(List.of(props, Comp.hseparator(), update, Comp.hseparator(), createLinks()))
+        return new VerticalComp(List.of(props, Comp.hspacer(8), update, Comp.hspacer(13), Comp.hseparator().padding(Insets.EMPTY)))
                 .apply(s -> s.get().setFillWidth(true))
                 .apply(struc -> struc.get().setSpacing(15))
                 .styleClass("information")
@@ -104,6 +54,7 @@ public class AboutCategory extends AppPrefsCategory {
         }
 
         var section = new OptionsBuilder()
+                .addComp(Comp.vspacer(40))
                 .addComp(title, null)
                 .addComp(Comp.vspacer(10))
                 .name("build")

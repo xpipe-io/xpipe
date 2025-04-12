@@ -53,7 +53,6 @@ public class AppearanceCategory extends AppPrefsCategory {
                         .addToggle(prefs.useSystemFont)
                         .pref(prefs.censorMode)
                         .addToggle(prefs.censorMode))
-                .addTitle("windowOptions")
                 .sub(new OptionsBuilder()
                         .pref(prefs.windowOpacity)
                         .addComp(
@@ -68,8 +67,7 @@ public class AppearanceCategory extends AppPrefsCategory {
                                 prefs.windowOpacity)
                         .pref(prefs.saveWindowLocation)
                         .addToggle(prefs.saveWindowLocation)
-                        .pref(prefs.enforceWindowModality)
-                        .addToggle(prefs.enforceWindowModality))
+                )
                 .buildComp();
     }
 
