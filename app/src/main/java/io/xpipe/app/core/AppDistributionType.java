@@ -76,7 +76,7 @@ public enum AppDistributionType implements Translatable {
         }
 
         if (!AppProperties.get().isImage()) {
-            type = CHOCO;
+            type = DEVELOPMENT;
             return;
         }
 
