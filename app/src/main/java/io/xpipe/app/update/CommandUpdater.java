@@ -2,6 +2,7 @@ package io.xpipe.app.update;
 
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.DocumentationLink;
@@ -58,7 +59,9 @@ public class CommandUpdater extends PortableUpdater {
             var p = preparedUpdate.getValue();
             var performedUpdate = new PerformedUpdate(p.getVersion(), p.getBody(), p.getVersion());
             AppCache.update("performedUpdate", performedUpdate);
-            TerminalLauncher.openDirect("Update", command);
+            OperationMode.executeAfterShutdown(() -> {
+                TerminalLauncher.openDirect("Update", command);
+            });
         } catch (Throwable t) {
             ErrorEvent.fromThrowable(t).handle();
             preparedUpdate.setValue(null);
