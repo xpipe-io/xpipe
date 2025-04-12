@@ -29,14 +29,14 @@ public enum AppDistributionType implements Translatable {
     }),
     APT_REPO("apt", true, () -> {
         return new CommandUpdater(ShellScript.lines(
-                "+ sudo apt update && sudo apt install " + (AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe"),
+                "echo \"+ sudo apt update && sudo apt install " + (AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe") + "\"",
                 "sudo apt update",
                 "sudo apt install " + (AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe")
         ));
     }),
     RPM_REPO("rpm", true, () -> {
         return new CommandUpdater(ShellScript.lines(
-                "+ sudo yum upgrade " + (AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe") + " --refresh",
+                "echo \"+ sudo yum upgrade " + (AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe") + " --refresh\"",
                 "sudo yum upgrade " + (AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe") + " --refresh"
         ));
     }),
