@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class TerminalView {
 
@@ -106,16 +107,21 @@ public class TerminalView {
 
         if (!terminalInstances.contains(tv.get())) {
             terminalInstances.add(tv.get());
-            listeners.forEach(listener -> listener.onTerminalOpened(tv.get()));
+            forListeners(listener -> listener.onTerminalOpened(tv.get()));
         }
 
         var session = new ShellSession(request, shell.get(), tv.get());
         sessions.add(session);
-        listeners.forEach(listener -> listener.onSessionOpened(session));
+        forListeners(listener -> listener.onSessionOpened(session));
 
         TrackEvent.withTrace("Terminal instance opened")
                 .tag("terminalPid", terminal.get().pid())
                 .handle();
+    }
+
+    private void forListeners(Consumer<Listener> consumer) {
+        var copy = new ArrayList<>(listeners);
+        copy.forEach(consumer);
     }
 
     private Optional<TerminalSession> createTerminalSession(ProcessHandle terminalProcess) {
@@ -179,7 +185,7 @@ public class TerminalView {
             var alive = session.shell.isAlive() && session.getTerminal().isRunning();
             if (!alive) {
                 sessions.remove(session);
-                listeners.forEach(listener -> listener.onSessionClosed(session));
+                forListeners(listener -> listener.onSessionClosed(session));
             }
         }
 
@@ -190,7 +196,7 @@ public class TerminalView {
                 TrackEvent.withTrace("Terminal session is dead")
                         .tag("pid", terminalInstance.getTerminalProcess().pid())
                         .handle();
-                listeners.forEach(listener -> listener.onTerminalClosed(terminalInstance));
+                forListeners(listener -> listener.onTerminalClosed(terminalInstance));
             }
         }
     }

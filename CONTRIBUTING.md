@@ -75,7 +75,7 @@ Especially when starting out, it might be a good idea to start with easy tasks f
 ### Interacting via the HTTP API
 
 You can create clients that communicate with the XPipe daemon via its HTTP API.
-To get started, see the [OpenAPI spec](/openapi.yaml).
+To get started, see the [OpenAPI spec](https://docs.xpipe.io/api).
 
 ### Implementing support for a new editor
 

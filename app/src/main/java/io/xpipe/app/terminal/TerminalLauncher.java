@@ -175,6 +175,7 @@ public class TerminalLauncher {
         if (preferTabs) {
             var multiplexerConfig = launchMultiplexerTabInNewTerminal(request, terminalConfig, config);
             if (multiplexerConfig.isPresent()) {
+                TerminalMultiplexerManager.registerMultiplexerLaunch(request);
                 launch(type, multiplexerConfig.get(), latch);
                 return;
             }

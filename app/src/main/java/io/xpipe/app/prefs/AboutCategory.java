@@ -31,7 +31,7 @@ public class AboutCategory extends AppPrefsCategory {
     @Override
     protected Comp<?> create() {
         var props = createProperties().padding(new Insets(0, 0, 0, 5));
-        var update = new UpdateCheckComp().grow(true, false);
+        var update = new UpdateCheckComp().grow(true, false).prefWidth(600);
         return new VerticalComp(List.of(props, Comp.hspacer(8), update, Comp.hspacer(13), Comp.hseparator().padding(Insets.EMPTY)))
                 .apply(s -> s.get().setFillWidth(true))
                 .apply(struc -> struc.get().setSpacing(15))

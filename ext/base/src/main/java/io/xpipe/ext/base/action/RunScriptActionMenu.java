@@ -102,11 +102,6 @@ public class RunScriptActionMenu implements ActionProvider {
                 public ActionProvider.Action createAction(DataStoreEntryRef<ShellStore> store) {
                     return new Action(store);
                 }
-
-                @Override
-                public List<? extends ActionProvider> getChildren(List<DataStoreEntryRef<ShellStore>> batch) {
-                    return List.of();
-                }
             };
         }
     }
