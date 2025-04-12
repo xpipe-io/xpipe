@@ -10,6 +10,7 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;
 
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CommandUpdater extends PortableUpdater {
@@ -28,7 +29,7 @@ public class CommandUpdater extends PortableUpdater {
 
     @Override
     public List<ModalButton> createActions() {
-        var l = super.createActions();
+        var l = new ArrayList<ModalButton>();
         l.add(new ModalButton("ignore", null, true, false));
         l.add(new ModalButton(
                 "checkOutUpdate",

@@ -221,7 +221,7 @@ public abstract class UpdateHandler {
         }
 
         var downloadFile = preparedUpdate.getValue().getFile();
-        if (!Files.exists(downloadFile)) {
+        if (downloadFile != null && !Files.exists(downloadFile)) {
             return;
         }
 
