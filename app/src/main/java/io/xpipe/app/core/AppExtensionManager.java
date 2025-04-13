@@ -81,7 +81,7 @@ public class AppExtensionManager {
         if (!AppProperties.get().isFullVersion()) {
             var localInstallation = XPipeInstallation.getLocalDefaultInstallationBasePath(
                     AppProperties.get().isStaging() || AppProperties.get().isLocatePtb());
-            Path p = Path.of(localInstallation);
+            Path p = localInstallation;
             if (!Files.exists(p)) {
                 throw new IllegalStateException(
                         "Required local XPipe installation was not found but is required for development. See https://github.com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
@@ -115,7 +115,7 @@ public class AppExtensionManager {
 
     private static String getLocalInstallVersion() throws Exception {
         var localInstallation = XPipeInstallation.getLocalDefaultInstallationBasePath();
-        var exec = Path.of(localInstallation, XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()));
+        var exec = localInstallation.resolve(XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()));
         var fc = new ProcessBuilder(exec.toString(), "version").redirectError(ProcessBuilder.Redirect.DISCARD);
         var proc = fc.start();
         var out = new String(proc.getInputStream().readAllBytes());
