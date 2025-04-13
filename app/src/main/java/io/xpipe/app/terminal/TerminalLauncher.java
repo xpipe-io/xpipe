@@ -87,8 +87,7 @@ public class TerminalLauncher {
     }
 
     public static void openDirect(String title, ShellScript command) throws Exception {
-        openDirect(
-                title, sc -> command, AppPrefs.get().terminalType().getValue());
+        openDirect(title, sc -> command, AppPrefs.get().terminalType().getValue());
     }
 
     public static void openDirectFallback(String title, FailableFunction<ShellControl, ShellScript, Exception> command)
@@ -96,18 +95,12 @@ public class TerminalLauncher {
         // We can't use the SSH bridge and other stuff
         var type = ExternalTerminalType.determineFallbackTerminalToOpen(
                 AppPrefs.get().terminalType().getValue());
-        openDirect(
-                title,
-                command,
-                type);
+        openDirect(title, command, type);
     }
 
     public static void openDirect(String title, FailableFunction<ShellControl, ShellScript, Exception> command)
             throws Exception {
-        openDirect(
-                title,
-                command,
-                AppPrefs.get().terminalType().getValue());
+        openDirect(title, command, AppPrefs.get().terminalType().getValue());
     }
 
     public static void openDirect(
@@ -310,8 +303,7 @@ public class TerminalLauncher {
     }
 
     private static Optional<TerminalLaunchConfiguration> launchProxy(
-            UUID request, TerminalLaunchConfiguration launchConfiguration)
-            throws Exception {
+            UUID request, TerminalLaunchConfiguration launchConfiguration) throws Exception {
         var proxyControl = TerminalProxyManager.getProxy();
         if (proxyControl.isEmpty()) {
             return Optional.empty();

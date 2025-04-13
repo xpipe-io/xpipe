@@ -1,8 +1,6 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.comp.base.ModalOverlayContentComp;
-import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStoreEntryRef;

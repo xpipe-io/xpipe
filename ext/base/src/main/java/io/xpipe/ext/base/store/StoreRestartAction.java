@@ -50,7 +50,7 @@ public class StoreRestartAction implements ActionProvider {
 
     @Override
     public BatchDataStoreCallSite<?> getBatchDataStoreCallSite() {
-        return new BatchDataStoreCallSite<DataStore>() {
+        return new BatchDataStoreCallSite<>() {
 
             @Override
             public ObservableValue<String> getName() {

@@ -109,7 +109,7 @@ public class SystemIconCache {
         }
     }
 
-    private static ImageColorScheme rasterizeSizes(Path path, Path dir, String name, boolean dark) throws IOException {
+    private static ImageColorScheme rasterizeSizes(Path path, Path dir, String name, boolean dark) {
         TrackEvent.trace("Rasterizing image " + path.getFileName().toString());
         try {
             ImageColorScheme c = null;

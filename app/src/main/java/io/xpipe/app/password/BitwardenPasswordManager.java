@@ -10,8 +10,6 @@ import io.xpipe.core.process.ShellScript;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
-import java.util.regex.Pattern;
-
 @JsonTypeName("bitwarden")
 public class BitwardenPasswordManager implements PasswordManager {
 

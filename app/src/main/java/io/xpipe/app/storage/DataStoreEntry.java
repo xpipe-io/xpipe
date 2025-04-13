@@ -276,7 +276,7 @@ public class DataStoreEntry extends StorageElement {
             notes = null;
         }
 
-        DataStorageNode node = null;
+        DataStorageNode node;
         try {
             var fileNode = mapper.readTree(storeFile.toFile());
             node = DataStorageNode.readPossiblyEncryptedNode(fileNode);

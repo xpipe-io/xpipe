@@ -43,7 +43,8 @@ public class StoreCreationDialog {
                         DataStorage.get().updateEntry(e, newE);
                         if (madeValid) {
                             StoreViewState.get().triggerStoreListUpdate();
-                            if (validated && e.getProvider().shouldShowScan()
+                            if (validated
+                                    && e.getProvider().shouldShowScan()
                                     && AppPrefs.get()
                                             .openConnectionSearchWindowOnConnectionCreation()
                                             .get()) {

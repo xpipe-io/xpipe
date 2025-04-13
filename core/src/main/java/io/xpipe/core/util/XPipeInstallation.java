@@ -35,7 +35,8 @@ public class XPipeInstallation {
         var suffix = (arguments != null ? " " + arguments : "");
         var modeOption = mode != null ? " -Dio.xpipe.app.mode=" + mode.getDisplayName() : "";
         if (OsType.getLocal().equals(OsType.LINUX)) {
-            return "nohup \"" + installationBase + "/bin/xpiped\"" + modeOption + suffix + "</dev/null >/dev/null 2>&1 & disown";
+            return "nohup \"" + installationBase + "/bin/xpiped\"" + modeOption + suffix
+                    + "</dev/null >/dev/null 2>&1 & disown";
         } else if (OsType.getLocal().equals(OsType.MACOS)) {
             if (restart) {
                 return "(sleep 1;open \"" + installationBase + "\" --args" + modeOption + suffix

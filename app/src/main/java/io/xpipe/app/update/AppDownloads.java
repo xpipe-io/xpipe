@@ -97,9 +97,11 @@ public class AppDownloads {
         if (ptbAvailable != null) {
             var b = ptbAvailable.asBoolean();
             if (b) {
-                GlobalTimer.delay(() -> {
-                    AppLayoutModel.get().getPtbAvailable().set(true);
-                }, Duration.ofSeconds(20));
+                GlobalTimer.delay(
+                        () -> {
+                            AppLayoutModel.get().getPtbAvailable().set(true);
+                        },
+                        Duration.ofSeconds(20));
             }
         }
         return ver;

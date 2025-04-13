@@ -26,7 +26,8 @@ public class AppRestart {
         } else {
             var exe = loc.resolve(XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()));
             if (ShellDialects.isPowershell(dialect)) {
-                var escapedList = arguments.stream().map(s -> s.replaceAll("\"", "`\"")).toList();
+                var escapedList =
+                        arguments.stream().map(s -> s.replaceAll("\"", "`\"")).toList();
                 var argumentList = String.join(" ", escapedList);
                 return "Start-Process -FilePath \"" + exe + "\" -ArgumentList \"" + argumentList + "\"";
             } else {
@@ -44,12 +45,12 @@ public class AppRestart {
         if (OsType.getLocal().equals(OsType.LINUX)) {
             return "nohup \"" + loc + "/bin/xpiped\"" + suffix + "</dev/null >/dev/null 2>&1 & disown";
         } else if (OsType.getLocal().equals(OsType.MACOS)) {
-            return "(sleep 1;open \"" + loc + "\" --args" + suffix
-                    + "</dev/null &>/dev/null) & disown";
+            return "(sleep 1;open \"" + loc + "\" --args" + suffix + "</dev/null &>/dev/null) & disown";
         } else {
             var exe = loc.resolve(XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()));
             if (ShellDialects.isPowershell(dialect)) {
-                var escapedList = arguments.stream().map(s -> s.replaceAll("\"", "`\"")).toList();
+                var escapedList =
+                        arguments.stream().map(s -> s.replaceAll("\"", "`\"")).toList();
                 var argumentList = String.join(" ", escapedList);
                 return "Start-Process -FilePath \"" + exe + "\" -ArgumentList \"" + argumentList + "\"";
             } else {

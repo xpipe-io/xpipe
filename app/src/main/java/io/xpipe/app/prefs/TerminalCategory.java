@@ -127,18 +127,18 @@ public class TerminalCategory extends AppPrefsCategory {
         h.maxWidth(getCompWidth());
 
         var terminalTest = new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
-            ThreadHelper.runFailableAsync(() -> {
-                var term = AppPrefs.get().terminalType().getValue();
-                if (term != null) {
-                    TerminalLauncher.open(
-                            "Test",
-                            ProcessControlProvider.get()
-                                    .createLocalProcessControl(true)
-                                    .command("echo Test"),
-                            UUID.randomUUID());
-                }
-            });
-        })
+                    ThreadHelper.runFailableAsync(() -> {
+                        var term = AppPrefs.get().terminalType().getValue();
+                        if (term != null) {
+                            TerminalLauncher.open(
+                                    "Test",
+                                    ProcessControlProvider.get()
+                                            .createLocalProcessControl(true)
+                                            .command("echo Test"),
+                                    UUID.randomUUID());
+                        }
+                    });
+                })
                 .padding(new Insets(6, 11, 6, 5))
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
 
@@ -238,7 +238,6 @@ public class TerminalCategory extends AppPrefsCategory {
         choice.maxWidth(getCompWidth());
         return new OptionsBuilder().nameAndDescription("terminalMultiplexer").addComp(choice);
     }
-
 
     private OptionsBuilder terminalPrompt() {
         var prefs = AppPrefs.get();

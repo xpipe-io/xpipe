@@ -6,7 +6,6 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppRestart;
-import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.css.PseudoClass;

@@ -6,10 +6,8 @@ import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.storage.DataStorageUserHandler;
-import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.OptionsBuilder;
 
@@ -80,10 +78,10 @@ public class VaultCategory extends AppPrefsCategory {
                         .hide(new SimpleBooleanProperty(
                                 DataStorageSyncHandler.getInstance().supportsSync())));
         builder.sub(new OptionsBuilder()
-                        .pref(prefs.lockVaultOnHibernation)
-                        .addToggle(prefs.lockVaultOnHibernation)
-                        .pref(prefs.encryptAllVaultData)
-                        .addToggle(encryptVault));
+                .pref(prefs.lockVaultOnHibernation)
+                .addToggle(prefs.lockVaultOnHibernation)
+                .pref(prefs.encryptAllVaultData)
+                .addToggle(encryptVault));
         return builder.buildComp();
     }
 }

@@ -221,20 +221,24 @@ public class BrowserSessionTabsComp extends SimpleComp {
                                     () -> {
                                         var w = App.getApp().getStage().getWidth();
                                         if (w >= 1000) {
-                                            return
-                                                    new Insets(2, 0, 4, -leftPadding.get() + 3);
+                                            return new Insets(2, 0, 4, -leftPadding.get() + 3);
                                         } else {
                                             return new Insets(2, 0, 4, -leftPadding.get() - 4);
                                         }
-                                    }, App.getApp().getStage().widthProperty(), leftPadding));
-                    tabs.paddingProperty().bind(Bindings.createObjectBinding(() -> {
-                        var w = App.getApp().getStage().getWidth();
-                        if (w >= 1000) {
-                            return new Insets(0, 0, 0, -5);
-                        } else {
-                            return new Insets(0, 0, 0, 5);
-                        }
-                    }, App.getApp().getStage().widthProperty()));
+                                    },
+                                    App.getApp().getStage().widthProperty(),
+                                    leftPadding));
+                    tabs.paddingProperty()
+                            .bind(Bindings.createObjectBinding(
+                                    () -> {
+                                        var w = App.getApp().getStage().getWidth();
+                                        if (w >= 1000) {
+                                            return new Insets(0, 0, 0, -5);
+                                        } else {
+                                            return new Insets(0, 0, 0, 5);
+                                        }
+                                    },
+                                    App.getApp().getStage().widthProperty()));
                     headerHeight.bind(headerArea.heightProperty());
                 });
             }

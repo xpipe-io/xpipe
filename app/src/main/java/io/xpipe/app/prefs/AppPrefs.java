@@ -209,6 +209,13 @@ public class AppPrefs {
 
     final BooleanProperty censorMode = mapLocal(new SimpleBooleanProperty(false), "censorMode", Boolean.class, false);
 
+    final BooleanProperty sshVerboseOutput =
+            mapLocal(new SimpleBooleanProperty(false), "sshVerboseOutput", Boolean.class, false);
+
+    public ObservableBooleanValue sshVerboseOutput() {
+        return sshVerboseOutput;
+    }
+
     public ObservableBooleanValue censorMode() {
         return censorMode;
     }
@@ -302,8 +309,7 @@ public class AppPrefs {
                         new WorkspacesCategory(),
                         new DeveloperCategory(),
                         new TroubleshootCategory(),
-                        new LinksCategory()
-                )
+                        new LinksCategory())
                 .toList();
         this.selectedCategory = new SimpleObjectProperty<>(categories.getFirst());
     }

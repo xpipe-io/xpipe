@@ -3,7 +3,6 @@ package io.xpipe.app.util;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -21,7 +20,8 @@ public class DerivedObservableList<T> {
 
     public static <T> DerivedObservableList<T> synchronizedArrayList(boolean unique) {
         var list = new ArrayList<T>();
-        return new DerivedObservableList<>(list, FXCollections.synchronizedObservableList(FXCollections.observableList(list)), unique);
+        return new DerivedObservableList<>(
+                list, FXCollections.synchronizedObservableList(FXCollections.observableList(list)), unique);
     }
 
     public static <T> DerivedObservableList<T> arrayList(boolean unique) {
@@ -219,7 +219,8 @@ public class DerivedObservableList<T> {
     public DerivedObservableList<T> filtered(ObservableValue<Predicate<T>> predicate) {
         var d = this.<T>createNewDerived();
         Runnable runnable = () -> {
-            d.setContent(predicate.getValue() != null
+            d.setContent(
+                    predicate.getValue() != null
                             ? listStream().filter(predicate.getValue()).toList()
                             : list);
         };

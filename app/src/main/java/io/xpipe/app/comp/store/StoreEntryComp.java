@@ -41,24 +41,26 @@ public abstract class StoreEntryComp extends SimpleComp {
 
     public static final PseudoClass FAILED = PseudoClass.getPseudoClass("failed");
     public static final PseudoClass INCOMPLETE = PseudoClass.getPseudoClass("incomplete");
-    public static final ObservableDoubleValue INFO_NO_CONTENT_WIDTH = Bindings.createDoubleBinding(() -> {
-        var w = App.getApp().getStage().getWidth();
-        if (w >= 1000) {
-            return (w / 2.1) - 100;
-        } else {
-            return (w / 1.7) - 50;
-        }
-
-    }, App.getApp().getStage().widthProperty());
-    public static final ObservableDoubleValue INFO_WITH_CONTENT_WIDTH = Bindings.createDoubleBinding(() -> {
-        var w = App.getApp().getStage().getWidth();
-        if (w >= 1000) {
-            return (w / 2.1) - 200;
-        } else {
-            return (w / 1.7) - 150;
-        }
-
-    }, App.getApp().getStage().widthProperty());
+    public static final ObservableDoubleValue INFO_NO_CONTENT_WIDTH = Bindings.createDoubleBinding(
+            () -> {
+                var w = App.getApp().getStage().getWidth();
+                if (w >= 1000) {
+                    return (w / 2.1) - 100;
+                } else {
+                    return (w / 1.7) - 50;
+                }
+            },
+            App.getApp().getStage().widthProperty());
+    public static final ObservableDoubleValue INFO_WITH_CONTENT_WIDTH = Bindings.createDoubleBinding(
+            () -> {
+                var w = App.getApp().getStage().getWidth();
+                if (w >= 1000) {
+                    return (w / 2.1) - 200;
+                } else {
+                    return (w / 1.7) - 150;
+                }
+            },
+            App.getApp().getStage().widthProperty());
     protected final StoreSection section;
     protected final Comp<?> content;
 

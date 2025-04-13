@@ -25,15 +25,13 @@ public class TmuxTerminalMultiplexer implements TerminalMultiplexer {
     }
 
     @Override
-    public ShellScript launchScriptExternal(ShellControl control, String command, TerminalInitScriptConfig config)
-            throws Exception {
+    public ShellScript launchScriptExternal(ShellControl control, String command, TerminalInitScriptConfig config) {
         return ShellScript.lines("tmux new-window -t xpipe -n \"" + escape(config.getDisplayName(), true) + "\" "
                 + escape(command, false));
     }
 
     @Override
-    public ShellScript launchScriptSession(ShellControl control, String command, TerminalInitScriptConfig config)
-            throws Exception {
+    public ShellScript launchScriptSession(ShellControl control, String command, TerminalInitScriptConfig config) {
         return ShellScript.lines(
                 "tmux kill-session -t xpipe",
                 "tmux new-session -d -s xpipe",

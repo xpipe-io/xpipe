@@ -12,7 +12,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableIntegerValue;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 
 import lombok.Getter;
 
@@ -163,10 +162,7 @@ public class StoreSection {
             ObservableIntegerValue updateObservable) {
         if (e.getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
             return new StoreSection(
-                    e,
-                    DerivedObservableList.arrayList(true),
-                    DerivedObservableList.arrayList(true),
-                    depth);
+                    e, DerivedObservableList.arrayList(true), DerivedObservableList.arrayList(true), depth);
         }
 
         var allChildren = all.filtered(
@@ -192,7 +188,16 @@ public class StoreSection {
         var l = new ArrayList<>(parents);
         l.add(e);
         var cached = allChildren.mapped(c -> create(
-                l, c, depth + 1, all, selected, entryFilter, filterString, category, visibilityObservable, updateObservable));
+                l,
+                c,
+                depth + 1,
+                all,
+                selected,
+                entryFilter,
+                filterString,
+                category,
+                visibilityObservable,
+                updateObservable));
         var ordered = sorted(cached, category, updateObservable);
         var filtered = ordered.filtered(
                 section -> {

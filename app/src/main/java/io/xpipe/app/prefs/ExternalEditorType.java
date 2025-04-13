@@ -178,9 +178,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             var command = CommandBuilder.of()
                     .add(ExternalApplicationHelper.replaceVariableArgument(format, "FILE", file.toString()));
             if (AppPrefs.get().customEditorCommandInTerminal().get()) {
-                TerminalLauncher.openDirect(
-                        file.toString(),
-                        sc -> new ShellScript(command.buildFull(sc)));
+                TerminalLauncher.openDirect(file.toString(), sc -> new ShellScript(command.buildFull(sc)));
             } else {
                 ExternalApplicationHelper.startAsync(command);
             }

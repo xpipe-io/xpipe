@@ -1,7 +1,6 @@
 package io.xpipe.app.update;
 
 import io.xpipe.app.core.AppLogs;
-import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppRestart;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.ProcessControlProvider;
@@ -65,7 +64,7 @@ public class AppInstaller {
             });
         }
 
-        public abstract void installLocal(Path file) throws Exception;
+        public abstract void installLocal(Path file);
 
         public abstract String getExtension();
 
@@ -73,7 +72,7 @@ public class AppInstaller {
         public static final class Msi extends InstallerAssetType {
 
             @Override
-            public void installLocal(Path file) throws Exception {
+            public void installLocal(Path file) {
                 var logsDir =
                         AppLogs.get().getSessionLogsDirectory().getParent().toString();
                 var logFile = FileNames.join(
@@ -133,8 +132,7 @@ public class AppInstaller {
                         file,
                         logFile,
                         args,
-                        AppRestart.getBackgroundRestartCommand(ShellDialects.CMD)
-                );
+                        AppRestart.getBackgroundRestartCommand(ShellDialects.CMD));
             }
 
             private String getPowershellCommand(String file, String logFile, boolean systemWide) {
@@ -157,8 +155,7 @@ public class AppInstaller {
                         file,
                         logFile,
                         startProcessProperty,
-                        AppRestart.getBackgroundRestartCommand(ShellDialects.POWERSHELL)
-                );
+                        AppRestart.getBackgroundRestartCommand(ShellDialects.POWERSHELL));
             }
         }
 
@@ -208,8 +205,7 @@ public class AppInstaller {
                                              cd ~
                                              runinstaller || read -rsp "Update failed ..."$'\\n' -n 1 key
                                              """,
-                        file, file,
-                        AppRestart.getTerminalRestartCommand()));
+                        file, file, AppRestart.getTerminalRestartCommand()));
 
                 runAndClose(() -> {
                     TerminalLauncher.openDirectFallback("XPipe Updater", sc -> command);
@@ -239,8 +235,7 @@ public class AppInstaller {
                                            cd ~
                                            runinstaller || echo "Update failed ..." && read -rs -k 1 key
                                            """,
-                        file, file,
-                        AppRestart.getTerminalRestartCommand()));
+                        file, file, AppRestart.getTerminalRestartCommand()));
 
                 runAndClose(() -> {
                     TerminalLauncher.openDirectFallback("XPipe Updater", sc -> command);

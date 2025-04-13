@@ -27,10 +27,12 @@ public class StoreViewState {
     private final StringProperty filter = new SimpleStringProperty();
 
     @Getter
-    private final DerivedObservableList<StoreEntryWrapper> allEntries = DerivedObservableList.synchronizedArrayList(true);
+    private final DerivedObservableList<StoreEntryWrapper> allEntries =
+            DerivedObservableList.synchronizedArrayList(true);
 
     @Getter
-    private final DerivedObservableList<StoreCategoryWrapper> categories = DerivedObservableList.synchronizedArrayList(true);
+    private final DerivedObservableList<StoreCategoryWrapper> categories =
+            DerivedObservableList.synchronizedArrayList(true);
 
     @Getter
     private final IntegerProperty entriesListVisibilityObservable = new SimpleIntegerProperty();
@@ -48,7 +50,8 @@ public class StoreViewState {
     private final BooleanProperty batchMode = new SimpleBooleanProperty(false);
 
     @Getter
-    private final DerivedObservableList<StoreEntryWrapper> batchModeSelection = DerivedObservableList.synchronizedArrayList(true);
+    private final DerivedObservableList<StoreEntryWrapper> batchModeSelection =
+            DerivedObservableList.synchronizedArrayList(true);
 
     private final Set<StoreEntryWrapper> batchModeSelectionSet = new HashSet<>();
 
@@ -56,8 +59,8 @@ public class StoreViewState {
     private boolean initialized = false;
 
     @Getter
-    private final DerivedObservableList<StoreEntryWrapper> effectiveBatchModeSelection =
-            batchModeSelection.filtered(storeEntryWrapper -> {
+    private final DerivedObservableList<StoreEntryWrapper> effectiveBatchModeSelection = batchModeSelection.filtered(
+            storeEntryWrapper -> {
                 if (!storeEntryWrapper.getValidity().getValue().isUsable()) {
                     return false;
                 }
@@ -67,7 +70,9 @@ public class StoreViewState {
                 }
 
                 return true;
-            }, entriesListVisibilityObservable, entriesListUpdateObservable);
+            },
+            entriesListVisibilityObservable,
+            entriesListUpdateObservable);
 
     @Getter
     private StoreSection currentTopLevelSection;
@@ -165,10 +170,7 @@ public class StoreViewState {
                     entriesListUpdateObservable);
         } catch (Exception exception) {
             currentTopLevelSection = new StoreSection(
-                    null,
-                    DerivedObservableList.arrayList(true),
-                    DerivedObservableList.arrayList(true),
-                    0);
+                    null, DerivedObservableList.arrayList(true), DerivedObservableList.arrayList(true), 0);
             ErrorEvent.fromThrowable(exception).handle();
         }
     }

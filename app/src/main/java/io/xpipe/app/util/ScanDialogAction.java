@@ -39,13 +39,18 @@ public interface ScanDialogAction {
                         ScanProvider.ScanOpportunity operation = scanProvider.create(entry, sc);
                         if (operation != null) {
                             if (!operation.isDisabled()) {
-                                selected.removeIf(o -> o.getProvider().equals(operation.getProvider()) && o.isDisabled());
+                                selected.removeIf(
+                                        o -> o.getProvider().equals(operation.getProvider()) && o.isDisabled());
                                 all.removeIf(o -> o.getProvider().equals(operation.getProvider()) && o.isDisabled());
                             }
-                            if (!operation.isDisabled() && selected.stream().noneMatch(o -> o.getProvider().equals(operation.getProvider()))) {
+                            if (!operation.isDisabled()
+                                    && selected.stream()
+                                            .noneMatch(o -> o.getProvider().equals(operation.getProvider()))) {
                                 selected.add(operation);
                             }
-                            if (!all.contains(operation) && all.stream().noneMatch(o -> o.getProvider().equals(operation.getProvider()))) {
+                            if (!all.contains(operation)
+                                    && all.stream()
+                                            .noneMatch(o -> o.getProvider().equals(operation.getProvider()))) {
                                 all.add(operation);
                             }
                         }

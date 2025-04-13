@@ -1,8 +1,8 @@
 package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.SimpleComp;
-
 import io.xpipe.app.util.BooleanScope;
+
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
@@ -72,8 +72,7 @@ public class StoreEntryBatchSelectComp extends SimpleComp {
         }
 
         var count = section.getShownChildren().getList().stream()
-                .filter(c ->
-                        StoreViewState.get().isBatchModeSelected(c.getWrapper()))
+                .filter(c -> StoreViewState.get().isBatchModeSelected(c.getWrapper()))
                 .count();
         checkBox.setIndeterminate(
                 count > 0 && count != section.getShownChildren().getList().size());

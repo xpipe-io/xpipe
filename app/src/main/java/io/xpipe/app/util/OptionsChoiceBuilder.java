@@ -94,10 +94,10 @@ public class OptionsChoiceBuilder {
         if (allowNull) {
             properties.add(new SimpleObjectProperty<>());
         }
-        for (int i = 0; i < sub.size(); i++) {
-            var compatible = sub.get(i).isInstance(s.getValue());
+        for (Class<?> aClass : sub) {
+            var compatible = aClass.isInstance(s.getValue());
             properties.add(
-                    new SimpleObjectProperty<>(compatible ? s.getValue() : createDefaultInstanceForClass(sub.get(i))));
+                    new SimpleObjectProperty<>(compatible ? s.getValue() : createDefaultInstanceForClass(aClass)));
         }
 
         property.addListener((obs, oldValue, newValue) -> {

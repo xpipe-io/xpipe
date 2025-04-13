@@ -34,7 +34,8 @@ public class ContainerStoreState extends ShellStoreState {
             return false;
         }
 
-        return containerState.toLowerCase().contains("running") || containerState.toLowerCase().contains("up");
+        return containerState.toLowerCase().contains("running")
+                || containerState.toLowerCase().contains("up");
     }
 
     @Override

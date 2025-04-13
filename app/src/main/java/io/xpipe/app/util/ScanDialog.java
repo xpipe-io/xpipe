@@ -28,7 +28,8 @@ public class ScanDialog {
     private static void showSingle(DataStoreEntry initialStore, ScanDialogAction action) {
         var comp = new ScanSingleDialogComp(initialStore != null ? initialStore.ref() : null, action);
         var modal = ModalOverlay.of("scanAlertTitle", comp);
-        var queueEntry = new AppLayoutModel.QueueEntry(AppI18n.observable("scanConnections"), new LabelGraphic.IconGraphic("mdi2l-layers-plus"), () -> {});
+        var queueEntry = new AppLayoutModel.QueueEntry(
+                AppI18n.observable("scanConnections"), new LabelGraphic.IconGraphic("mdi2l-layers-plus"), () -> {});
         var button = new ModalButton(
                 "ok",
                 () -> {
@@ -48,7 +49,8 @@ public class ScanDialog {
     public static void showMulti(List<DataStoreEntryRef<ShellStore>> entries, ScanDialogAction action) {
         var comp = new ScanMultiDialogComp(entries, action);
         var modal = ModalOverlay.of("scanAlertTitle", comp);
-        var queueEntry = new AppLayoutModel.QueueEntry(AppI18n.observable("scanConnections"), new LabelGraphic.IconGraphic("mdi2l-layers-plus"), () -> {});
+        var queueEntry = new AppLayoutModel.QueueEntry(
+                AppI18n.observable("scanConnections"), new LabelGraphic.IconGraphic("mdi2l-layers-plus"), () -> {});
         var button = new ModalButton(
                 "ok",
                 () -> {

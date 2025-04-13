@@ -2,14 +2,10 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.LabelComp;
-import io.xpipe.app.comp.base.ModalOverlay;
-import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.JfxHelper;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.process.OsType;
@@ -32,7 +28,12 @@ public class AboutCategory extends AppPrefsCategory {
     protected Comp<?> create() {
         var props = createProperties().padding(new Insets(0, 0, 0, 5));
         var update = new UpdateCheckComp().prefWidth(600);
-        return new VerticalComp(List.of(props, Comp.hspacer(8), update, Comp.hspacer(13), Comp.hseparator().padding(Insets.EMPTY).maxWidth(600)))
+        return new VerticalComp(List.of(
+                        props,
+                        Comp.hspacer(8),
+                        update,
+                        Comp.hspacer(13),
+                        Comp.hseparator().padding(Insets.EMPTY).maxWidth(600)))
                 .apply(s -> s.get().setFillWidth(true))
                 .apply(struc -> struc.get().setSpacing(15))
                 .styleClass("information")

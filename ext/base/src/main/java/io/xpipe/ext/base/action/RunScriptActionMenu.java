@@ -78,7 +78,7 @@ public class RunScriptActionMenu implements ActionProvider {
 
         @Override
         public BatchDataStoreCallSite<ShellStore> getBatchDataStoreCallSite() {
-            return new BatchDataStoreCallSite<ShellStore>() {
+            return new BatchDataStoreCallSite<>() {
 
                 @Override
                 public ObservableValue<String> getName() {
@@ -110,7 +110,6 @@ public class RunScriptActionMenu implements ActionProvider {
     private static class HubRunActionProvider implements ActionProvider {
 
         ScriptHierarchy hierarchy;
-
 
         @Override
         public LeafDataStoreCallSite<?> getLeafDataStoreCallSite() {
@@ -144,7 +143,7 @@ public class RunScriptActionMenu implements ActionProvider {
 
         @Override
         public BatchDataStoreCallSite<ShellStore> getBatchDataStoreCallSite() {
-            return new BatchDataStoreCallSite<ShellStore>() {
+            return new BatchDataStoreCallSite<>() {
 
                 @Override
                 public ObservableValue<String> getName() {
@@ -612,7 +611,10 @@ public class RunScriptActionMenu implements ActionProvider {
                     var compatible = batch.stream().allMatch(ref -> {
                         var state = ref.get().getStorePersistentState();
                         if (state instanceof SystemState systemState) {
-                            return scriptRef.getStore().getMinimumDialect().isCompatibleTo(systemState.getShellDialect());
+                            return scriptRef
+                                    .getStore()
+                                    .getMinimumDialect()
+                                    .isCompatibleTo(systemState.getShellDialect());
                         } else {
                             return false;
                         }

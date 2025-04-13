@@ -14,7 +14,6 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.core.util.XPipeDaemonMode;
-import io.xpipe.core.util.XPipeInstallation;
 
 import javafx.application.Platform;
 

@@ -4,7 +4,6 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ChoiceComp;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.core.process.OsType;
 
 public class SystemCategory extends AppPrefsCategory {
 
@@ -25,13 +24,13 @@ public class SystemCategory extends AppPrefsCategory {
                                         prefs.startupBehaviour,
                                         PrefsChoiceValue.getSupported(StartupBehaviour.class),
                                         false)
-                                .minWidth(getCompWidth() / 2))
+                                .minWidth(getCompWidth() / 2.0))
                         .pref(prefs.closeBehaviour)
                         .addComp(ChoiceComp.ofTranslatable(
                                         prefs.closeBehaviour,
                                         PrefsChoiceValue.getSupported(CloseBehaviour.class),
                                         false)
-                                .minWidth(getCompWidth() / 2)));
+                                .minWidth(getCompWidth() / 2.0)));
         builder.sub(localShellBuilder);
         builder.sub(new OptionsBuilder().pref(prefs.developerMode).addToggle(prefs.developerMode));
         return builder.buildComp();

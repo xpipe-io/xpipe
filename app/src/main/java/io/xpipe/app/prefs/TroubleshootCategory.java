@@ -10,7 +10,6 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.UserReportComp;
-import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.FileOpener;
@@ -61,7 +60,8 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                                 XPipeInstallation.getDaemonDebugScriptPath(OsType.getLocal()));
                                         TerminalLauncher.openDirectFallback(
                                                 "XPipe Debug",
-                                                sc -> new ShellScript(sc.getShellDialect().runScriptCommand(sc, script)));
+                                                sc -> new ShellScript(
+                                                        sc.getShellDialect().runScriptCommand(sc, script)));
                                     });
                                     e.consume();
                                 })
@@ -70,21 +70,18 @@ public class TroubleshootCategory extends AppPrefsCategory {
 
         if (AppLogs.get().isWriteToFile()) {
             b.addComp(
-                            new TileButtonComp(
-                                            "openCurrentLogFile",
-                                            "openCurrentLogFileDescription",
-                                            "mdmz-text_snippet",
-                                            e -> {
-                                                AppLogs.get().flush();
-                                                ThreadHelper.sleep(100);
-                                                FileOpener.openInTextEditor(AppLogs.get()
-                                                        .getSessionLogsDirectory()
-                                                        .resolve("xpipe.log")
-                                                        .toString());
-                                                e.consume();
-                                            })
-                                    .grow(true, false),
-                            null);
+                    new TileButtonComp(
+                                    "openCurrentLogFile", "openCurrentLogFileDescription", "mdmz-text_snippet", e -> {
+                                        AppLogs.get().flush();
+                                        ThreadHelper.sleep(100);
+                                        FileOpener.openInTextEditor(AppLogs.get()
+                                                .getSessionLogsDirectory()
+                                                .resolve("xpipe.log")
+                                                .toString());
+                                        e.consume();
+                                    })
+                            .grow(true, false),
+                    null);
         }
 
         b.addComp(

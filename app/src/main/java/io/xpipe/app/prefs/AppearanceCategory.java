@@ -66,8 +66,7 @@ public class AppearanceCategory extends AppPrefsCategory {
                                         .maxWidth(getCompWidth()),
                                 prefs.windowOpacity)
                         .pref(prefs.saveWindowLocation)
-                        .addToggle(prefs.saveWindowLocation)
-                )
+                        .addToggle(prefs.saveWindowLocation))
                 .buildComp();
     }
 
@@ -76,7 +75,7 @@ public class AppearanceCategory extends AppPrefsCategory {
         var c = ChoiceComp.ofTranslatable(prefs.theme, AppTheme.Theme.ALL, false)
                 .styleClass("theme-switcher");
         c.apply(struc -> {
-            Supplier<ListCell<AppTheme.Theme>> cell = () -> new ListCell<AppTheme.Theme>() {
+            Supplier<ListCell<AppTheme.Theme>> cell = () -> new ListCell<>() {
                 @Override
                 protected void updateItem(AppTheme.Theme theme, boolean empty) {
                     super.updateItem(theme, empty);
@@ -101,7 +100,7 @@ public class AppearanceCategory extends AppPrefsCategory {
                 return cell.get();
             });
         });
-        c.minWidth(getCompWidth() / 2);
+        c.minWidth(getCompWidth() / 2.0);
         return c;
     }
 

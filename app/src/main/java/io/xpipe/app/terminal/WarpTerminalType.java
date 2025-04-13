@@ -65,7 +65,7 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
         }
 
         @Override
-        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
+        public void launch(TerminalLaunchConfiguration configuration) {
             if (!configuration.isPreferTabs()) {
                 DesktopHelper.openUrl("warp://action/new_window?path=" + configuration.getScriptFile());
             } else {

@@ -5,13 +5,9 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.terminal.TerminalLauncher;
-import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.app.util.LocalShell;
-import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellScript;
 
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 

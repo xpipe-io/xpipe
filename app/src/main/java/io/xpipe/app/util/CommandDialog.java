@@ -10,7 +10,6 @@ import javafx.scene.layout.StackPane;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -31,7 +30,12 @@ public class CommandDialog {
                     out = ExceptionUtils.getStackTrace(t);
                 }
 
-                acc.append(e.getKey()).append(" (exit code ").append(e.getValue().getExitCode()).append("):\n").append(out).append("\n\n");
+                acc.append(e.getKey())
+                        .append(" (exit code ")
+                        .append(e.getValue().getExitCode())
+                        .append("):\n")
+                        .append(out)
+                        .append("\n\n");
             }
             show(acc.toString());
         });
@@ -59,8 +63,7 @@ public class CommandDialog {
                             var text = new TextArea(out);
                             text.setWrapText(true);
                             text.setEditable(false);
-                            text.setPrefRowCount(
-                                    Math.max(8, (int) out.lines().count()));
+                            text.setPrefRowCount(Math.max(8, (int) out.lines().count()));
                             var sp = new StackPane(text);
                             return sp;
                         })

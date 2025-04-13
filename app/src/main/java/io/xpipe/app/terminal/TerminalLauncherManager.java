@@ -91,7 +91,7 @@ public class TerminalLauncherManager {
         req.setShellPid(shell.pid());
     }
 
-    public static void waitExchange(UUID request) throws BeaconClientException, BeaconServerException {
+    public static void waitExchange(UUID request) throws BeaconServerException {
         TerminalLaunchRequest req;
         synchronized (entries) {
             req = entries.get(request);

@@ -489,10 +489,8 @@ public final class BrowserFileListComp extends SimpleComp {
                 }
 
                 var hasOwner = fileList.getAll().getValue().stream()
-                                .map(browserEntry -> formatOwner(browserEntry))
-                                .filter(s -> s != null)
-                                .count()
-                        > 0;
+                        .map(browserEntry -> formatOwner(browserEntry))
+                        .anyMatch(s -> s != null);
                 if (hasOwner) {
                     ownerCol.setPrefWidth(fileList.getAll().getValue().stream()
                             .map(browserEntry -> formatOwner(browserEntry))

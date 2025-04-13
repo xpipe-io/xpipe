@@ -14,7 +14,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -126,17 +125,17 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
             return Comp.empty();
         }
 
-        var childrenRefs = StoreViewState.get().getEffectiveBatchModeSelection()
+        var childrenRefs = StoreViewState.get()
+                .getEffectiveBatchModeSelection()
                 .mapped(storeEntryWrapper -> storeEntryWrapper.getEntry().<T>ref());
         var batchActions = s.getChildren(childrenRefs.getList());
-        var button = new ButtonComp(
-                s.getName(), new SimpleObjectProperty<>(s.getIcon()), () -> {
-                    if (batchActions.size() > 0) {
-                        return;
-                    }
+        var button = new ButtonComp(s.getName(), new SimpleObjectProperty<>(s.getIcon()), () -> {
+            if (batchActions.size() > 0) {
+                return;
+            }
 
-                    runActions(s, busy);
-                });
+            runActions(s, busy);
+        });
         if (batchActions.size() > 0) {
             button.apply(new ContextMenuAugment<>(
                     mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, keyEvent -> false, () -> {
@@ -152,7 +151,8 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends DataStore> MenuItem buildMenuItemForAction(List<DataStoreEntryRef<T>> batch, ActionProvider a, BooleanProperty busy) {
+    private <T extends DataStore> MenuItem buildMenuItemForAction(
+            List<DataStoreEntryRef<T>> batch, ActionProvider a, BooleanProperty busy) {
         ActionProvider.BatchDataStoreCallSite<T> s =
                 (ActionProvider.BatchDataStoreCallSite<T>) a.getBatchDataStoreCallSite();
         var name = s.getName();
