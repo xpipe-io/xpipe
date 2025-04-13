@@ -1,15 +1,12 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.update.*;
 import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.Translatable;
-import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.ShellScript;
 import io.xpipe.core.util.XPipeInstallation;
 
@@ -31,8 +28,7 @@ public enum AppDistributionType implements Translatable {
         var pkg = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
         return new CommandUpdater(ShellScript.lines(
                 "brew upgrade --cask xpipe-io/tap/" + pkg,
-                AppRestart.getRestartCommand(),
-                LocalShell.getDialect().getPauseCommand()
+                AppRestart.getTerminalRestartCommand()
         ));
     }),
     APT_REPO("apt", true, () -> {
@@ -41,8 +37,7 @@ public enum AppDistributionType implements Translatable {
                 "echo \"+ sudo apt update && sudo apt install -y " + pkg + "\"",
                 "sudo apt update",
                 "sudo apt install -y " + pkg,
-                AppRestart.getRestartCommand(),
-                LocalShell.getDialect().getPauseCommand()
+                AppRestart.getTerminalRestartCommand()
         ));
     }),
     RPM_REPO("rpm", true, () -> {
@@ -50,8 +45,7 @@ public enum AppDistributionType implements Translatable {
         return new CommandUpdater(ShellScript.lines(
                 "echo \"+ sudo yum upgrade " + pkg + " --refresh -y\"",
                 "sudo yum upgrade " + pkg + " --refresh -y",
-                AppRestart.getRestartCommand(),
-                LocalShell.getDialect().getPauseCommand()
+                AppRestart.getTerminalRestartCommand()
         ));
     }),
     WEBTOP("webtop", true, () -> new WebtopUpdater()),
@@ -61,14 +55,12 @@ public enum AppDistributionType implements Translatable {
         if (systemWide) {
             return new CommandUpdater(ShellScript.lines(
                     "powershell -Command \"Start-Process -Verb runAs -FilePath choco -ArgumentList upgrade, " + pkg + "\"",
-                    AppRestart.getRestartCommand(),
-                    LocalShell.getDialect().getPauseCommand()
+                    AppRestart.getTerminalRestartCommand()
             ));
         } else {
             return new CommandUpdater(ShellScript.lines(
                     "choco upgrade " + pkg,
-                    AppRestart.getRestartCommand(),
-                    LocalShell.getDialect().getPauseCommand()
+                    AppRestart.getTerminalRestartCommand()
             ));
         }
     });

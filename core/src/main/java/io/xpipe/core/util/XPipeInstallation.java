@@ -35,7 +35,7 @@ public class XPipeInstallation {
         var suffix = (arguments != null ? " " + arguments : "");
         var modeOption = mode != null ? " --mode " + mode.getDisplayName() : "";
         if (OsType.getLocal().equals(OsType.LINUX)) {
-            return "nohup \"" + installationBase + "/bin/xpiped\"" + modeOption + suffix + " & disown";
+            return "nohup \"" + installationBase + "/bin/xpiped\"" + modeOption + suffix + "</dev/null >/dev/null 2>&1 & disown";
         } else if (OsType.getLocal().equals(OsType.MACOS)) {
             if (restart) {
                 return "(sleep 1;open \"" + installationBase + "\" --args" + modeOption + suffix
@@ -141,7 +141,7 @@ public class XPipeInstallation {
         }
     }
 
-    public static String getLocalInstallationBasePathForCLI(String cliExecutable) {
+    public static Path getLocalInstallationBasePathForCLI(String cliExecutable) {
         var defaultInstallation = getLocalDefaultInstallationBasePath();
 
         // Can be empty in development mode
@@ -155,11 +155,11 @@ public class XPipeInstallation {
 
         var path = Path.of(cliExecutable);
         if (OsType.getLocal().equals(OsType.MACOS)) {
-            return path.getParent().getParent().getParent().toString();
+            return path.getParent().getParent().getParent();
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
-            return path.getParent().getParent().toString();
+            return path.getParent().getParent();
         } else {
-            return path.getParent().getParent().toString();
+            return path.getParent().getParent();
         }
     }
 
@@ -173,7 +173,7 @@ public class XPipeInstallation {
     }
 
     public static String getLocalDefaultCliExecutable() {
-        Path path = isImage() ? getCurrentInstallationBasePath() : Path.of(getLocalDefaultInstallationBasePath());
+        Path path = isImage() ? getCurrentInstallationBasePath() : getLocalDefaultInstallationBasePath();
         return path.resolve(getRelativeCliExecutablePath(OsType.getLocal())).toString();
     }
 
@@ -200,25 +200,25 @@ public class XPipeInstallation {
         }
     }
 
-    public static String getLocalDefaultInstallationBasePath() {
+    public static Path getLocalDefaultInstallationBasePath() {
         return getLocalDefaultInstallationBasePath(staging);
     }
 
-    public static String getLocalDefaultInstallationBasePath(boolean stage) {
-        String path;
+    public static Path getLocalDefaultInstallationBasePath(boolean stage) {
+        Path path;
         if (OsType.getLocal().equals(OsType.WINDOWS)) {
             var pg = System.getenv("ProgramFiles");
             var systemPath = Path.of(pg, stage ? "XPipe PTB" : "XPipe");
             if (Files.exists(systemPath)) {
-                return systemPath.toString();
+                return systemPath;
             }
 
-            var base = System.getenv("LOCALAPPDATA");
-            path = FileNames.join(base, stage ? "XPipe PTB" : "XPipe");
+            var base = Path.of(System.getenv("LOCALAPPDATA"));
+            path = base.resolve(stage ? "XPipe PTB" : "XPipe");
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
-            path = stage ? "/opt/xpipe-ptb" : "/opt/xpipe";
+            path = Path.of(stage ? "/opt/xpipe-ptb" : "/opt/xpipe");
         } else {
-            path = stage ? "/Applications/XPipe PTB.app" : "/Applications/XPipe.app";
+            path = Path.of(stage ? "/Applications/XPipe PTB.app" : "/Applications/XPipe.app");
         }
 
         return path;

@@ -5,8 +5,6 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppRestart;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
@@ -135,7 +133,7 @@ public class AppInstaller {
                         file,
                         logFile,
                         args,
-                        AppRestart.getRestartCommand(ShellDialects.CMD)
+                        AppRestart.getBackgroundRestartCommand(ShellDialects.CMD)
                 );
             }
 
@@ -159,7 +157,7 @@ public class AppInstaller {
                         file,
                         logFile,
                         startProcessProperty,
-                        AppRestart.getRestartCommand(ShellDialects.POWERSHELL)
+                        AppRestart.getBackgroundRestartCommand(ShellDialects.POWERSHELL)
                 );
             }
         }
@@ -169,20 +167,19 @@ public class AppInstaller {
 
             @Override
             public void installLocal(Path file) {
-                var name = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
                 var command = new ShellScript(String.format(
                         """
                                              runinstaller() {
                                                  echo "Installing downloaded .deb installer ..."
                                                  echo "+ sudo apt install \\"%s\\""
-                                                 DEBIAN_FRONTEND=noninteractive sudo apt-get install -qy "%s" || return 1
-                                                 %s open -d "%s" || return 1
+                                                 DEBIAN_FRONTEND=noninteractive sudo apt install -y "%s" || return 1
+                                                 %s || return 1
                                              }
 
                                              cd ~
                                              runinstaller || echo "Update failed ..." && read key
                                              """,
-                        file, file, name, AppProperties.get().getDataDir()));
+                        file, file, AppRestart.getTerminalRestartCommand()));
                 runAndClose(() -> {
                     TerminalLauncher.openDirectFallback("XPipe Updater", sc -> command);
                 });
@@ -212,7 +209,7 @@ public class AppInstaller {
                                              runinstaller || read -rsp "Update failed ..."$'\\n' -n 1 key
                                              """,
                         file, file,
-                        AppRestart.getRestartCommand()));
+                        AppRestart.getTerminalRestartCommand()));
 
                 runAndClose(() -> {
                     TerminalLauncher.openDirectFallback("XPipe Updater", sc -> command);
@@ -243,7 +240,7 @@ public class AppInstaller {
                                            runinstaller || echo "Update failed ..." && read -rs -k 1 key
                                            """,
                         file, file,
-                        AppRestart.getRestartCommand()));
+                        AppRestart.getTerminalRestartCommand()));
 
                 runAndClose(() -> {
                     TerminalLauncher.openDirectFallback("XPipe Updater", sc -> command);
