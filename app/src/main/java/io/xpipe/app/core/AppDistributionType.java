@@ -5,9 +5,11 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.update.*;
 import io.xpipe.app.util.LocalExec;
+import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.Translatable;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.ShellScript;
 import io.xpipe.core.util.XPipeInstallation;
 
@@ -29,24 +31,27 @@ public enum AppDistributionType implements Translatable {
         var pkg = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
         return new CommandUpdater(ShellScript.lines(
                 "brew upgrade --cask xpipe-io/tap/" + pkg,
-                OperationMode.getRestartCommand()
+                AppRestart.getRestartCommand(),
+                LocalShell.getDialect().getPauseCommand()
         ));
     }),
     APT_REPO("apt", true, () -> {
         var pkg = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
         return new CommandUpdater(ShellScript.lines(
-                "echo \"+ sudo apt update && sudo apt install " + pkg + "\"",
+                "echo \"+ sudo apt update && sudo apt install -y " + pkg + "\"",
                 "sudo apt update",
-                "sudo apt install " + pkg,
-                OperationMode.getRestartCommand()
+                "sudo apt install -y " + pkg,
+                AppRestart.getRestartCommand(),
+                LocalShell.getDialect().getPauseCommand()
         ));
     }),
     RPM_REPO("rpm", true, () -> {
         var pkg = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
         return new CommandUpdater(ShellScript.lines(
-                "echo \"+ sudo yum upgrade " + pkg + " --refresh\"",
-                "sudo yum upgrade " + pkg + " --refresh",
-                OperationMode.getRestartCommand()
+                "echo \"+ sudo yum upgrade " + pkg + " --refresh -y\"",
+                "sudo yum upgrade " + pkg + " --refresh -y",
+                AppRestart.getRestartCommand(),
+                LocalShell.getDialect().getPauseCommand()
         ));
     }),
     WEBTOP("webtop", true, () -> new WebtopUpdater()),
@@ -56,12 +61,14 @@ public enum AppDistributionType implements Translatable {
         if (systemWide) {
             return new CommandUpdater(ShellScript.lines(
                     "powershell -Command \"Start-Process -Verb runAs -FilePath choco -ArgumentList upgrade, " + pkg + "\"",
-                    OperationMode.getRestartCommand()
+                    AppRestart.getRestartCommand(),
+                    LocalShell.getDialect().getPauseCommand()
             ));
         } else {
             return new CommandUpdater(ShellScript.lines(
                     "choco upgrade " + pkg,
-                    OperationMode.getRestartCommand()
+                    AppRestart.getRestartCommand(),
+                    LocalShell.getDialect().getPauseCommand()
             ));
         }
     });
@@ -173,9 +180,9 @@ public enum AppDistributionType implements Translatable {
         }
 
         if (OsType.getLocal().equals(OsType.WINDOWS)) {
-            var out = LocalExec.readStdoutIfPossible("choco", "list", "xpipe");
+            var out = LocalExec.readStdoutIfPossible("choco", "list", AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe");
             if (out.isPresent()) {
-                if (out.get().contains("xpipe")) {
+                if (out.get().contains(AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe")) {
                     return CHOCO;
                 }
             }

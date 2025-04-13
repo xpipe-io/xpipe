@@ -3,6 +3,7 @@ package io.xpipe.app.util;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.core.process.ProcessOutputException;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
 
 import lombok.Getter;
@@ -63,5 +64,9 @@ public class LocalShell {
         }
 
         return local.start();
+    }
+
+    public static ShellDialect getDialect() {
+        return ProcessControlProvider.get().getEffectiveLocalDialect();
     }
 }

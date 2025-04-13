@@ -5,6 +5,7 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppRestart;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.util.PlatformThread;
 
@@ -46,7 +47,7 @@ public class AppPrefsSidebarComp extends SimpleComp {
                 .collect(Collectors.toCollection(ArrayList::new));
 
         var restartButton = new ButtonComp(AppI18n.observable("restartApp"), new FontIcon("mdi2r-restart"), () -> {
-            OperationMode.restart();
+            AppRestart.restart();
         });
         restartButton.grow(true, false);
         restartButton.visible(AppPrefs.get().getRequiresRestart());

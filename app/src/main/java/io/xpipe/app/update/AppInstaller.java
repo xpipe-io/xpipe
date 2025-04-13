@@ -2,6 +2,7 @@ package io.xpipe.app.update;
 
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.AppRestart;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.prefs.AppPrefs;
@@ -134,7 +135,7 @@ public class AppInstaller {
                         file,
                         logFile,
                         args,
-                        OperationMode.getRestartCommand()
+                        AppRestart.getRestartCommand(ShellDialects.CMD)
                 );
             }
 
@@ -158,7 +159,7 @@ public class AppInstaller {
                         file,
                         logFile,
                         startProcessProperty,
-                        OperationMode.getRestartCommand()
+                        AppRestart.getRestartCommand(ShellDialects.POWERSHELL)
                 );
             }
         }
@@ -168,13 +169,6 @@ public class AppInstaller {
 
             @Override
             public void installLocal(Path file) {
-                var start = AppPrefs.get() != null
-                        && AppPrefs.get().terminalType().getValue() != null
-                        && AppPrefs.get().terminalType().getValue().isAvailable();
-                if (!start) {
-                    return;
-                }
-
                 var name = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
                 var command = new ShellScript(String.format(
                         """
@@ -205,13 +199,6 @@ public class AppInstaller {
 
             @Override
             public void installLocal(Path file) {
-                var start = AppPrefs.get() != null
-                        && AppPrefs.get().terminalType().getValue() != null
-                        && AppPrefs.get().terminalType().getValue().isAvailable();
-                if (!start) {
-                    return;
-                }
-
                 var command = new ShellScript(String.format(
                         """
                                              runinstaller() {
@@ -224,7 +211,8 @@ public class AppInstaller {
                                              cd ~
                                              runinstaller || read -rsp "Update failed ..."$'\\n' -n 1 key
                                              """,
-                        file, file, OperationMode.getRestartCommand()));
+                        file, file,
+                        AppRestart.getRestartCommand()));
 
                 runAndClose(() -> {
                     TerminalLauncher.openDirectFallback("XPipe Updater", sc -> command);
@@ -242,13 +230,6 @@ public class AppInstaller {
 
             @Override
             public void installLocal(Path file) {
-                var start = AppPrefs.get() != null
-                        && AppPrefs.get().terminalType().getValue() != null
-                        && AppPrefs.get().terminalType().getValue().isAvailable();
-                if (!start) {
-                    return;
-                }
-
                 var command = new ShellScript(String.format(
                         """
                                            runinstaller() {
@@ -261,7 +242,8 @@ public class AppInstaller {
                                            cd ~
                                            runinstaller || echo "Update failed ..." && read -rs -k 1 key
                                            """,
-                        file, file, OperationMode.getRestartCommand()));
+                        file, file,
+                        AppRestart.getRestartCommand()));
 
                 runAndClose(() -> {
                     TerminalLauncher.openDirectFallback("XPipe Updater", sc -> command);

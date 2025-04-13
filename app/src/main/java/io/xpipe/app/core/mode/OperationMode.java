@@ -263,31 +263,6 @@ public abstract class OperationMode {
         return ALL;
     }
 
-    public static String getRestartCommand() {
-        var loc = AppProperties.get().isDevelopmentEnvironment()
-                ? XPipeInstallation.getLocalDefaultInstallationBasePath()
-                : XPipeInstallation.getCurrentInstallationBasePath().toString();
-        var dataDir = AppProperties.get().getDataDir();
-        // We have to quote the arguments like this to make it work in PowerShell as well
-        var exec = XPipeInstallation.createExternalAsyncLaunchCommand(
-                loc,
-                XPipeDaemonMode.GUI,
-                "\"-Dio.xpipe.app.acceptEula=true\" \"-Dio.xpipe.app.dataDir=" + dataDir
-                        + "\" \"-Dio.xpipe.app.restarted=true\"",
-                true);
-        return exec;
-    }
-
-    public static void startNewInstance() throws Exception {
-        LocalShell.getShell().executeSimpleCommand(getRestartCommand());
-    }
-
-    public static void restart() {
-        OperationMode.executeAfterShutdown(() -> {
-            startNewInstance();
-        });
-    }
-
     public static void executeAfterShutdown(FailableRunnable<Exception> r) {
         Runnable exec = () -> {
             if (inShutdown) {
