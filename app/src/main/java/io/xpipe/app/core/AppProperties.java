@@ -194,7 +194,6 @@ public class AppProperties {
                 .tag("raw", arguments.getRawArgs())
                 .tag("resolved", arguments.getResolvedArgs())
                 .tag("resolvedCommand", arguments.getOpenArgs())
-                .tag("resolvedMode", arguments.getModeArg())
                 .handle();
 
         for (var e : System.getProperties().entrySet()) {

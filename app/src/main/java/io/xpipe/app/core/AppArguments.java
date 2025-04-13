@@ -19,7 +19,6 @@ public class AppArguments {
 
     List<String> rawArgs;
     List<String> resolvedArgs;
-    XPipeDaemonMode modeArg;
     List<String> openArgs;
 
     private static final Pattern PROPERTY_PATTERN = Pattern.compile("^-[DP](.+)=(.+)$");
@@ -28,7 +27,7 @@ public class AppArguments {
         var rawArgs = Arrays.asList(args);
         var resolvedArgs = Arrays.asList(parseProperties(args));
         var command = LauncherCommand.resolveLauncher(resolvedArgs.toArray(String[]::new));
-        return new AppArguments(rawArgs, resolvedArgs, command.mode, command.inputs);
+        return new AppArguments(rawArgs, resolvedArgs, command.inputs);
     }
 
     private static String[] parseProperties(String[] args) {
@@ -59,13 +58,6 @@ public class AppArguments {
 
         @CommandLine.Parameters(paramLabel = "<input>")
         final List<String> inputs = List.of();
-
-        @CommandLine.Option(
-                names = {"--mode"},
-                description = "The mode to launch the daemon in or switch too",
-                paramLabel = "<mode id>",
-                converter = ModeConverter.class)
-        XPipeDaemonMode mode;
 
         public static LauncherCommand resolveLauncher(String[] args) {
             var cmd = new CommandLine(new LauncherCommand());

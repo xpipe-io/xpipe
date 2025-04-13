@@ -136,14 +136,6 @@ public abstract class OperationMode {
             return XPipeDaemonMode.GUI;
         }
 
-        var arg = AppProperties.get().getArguments().getModeArg();
-        if (arg != null) {
-            event.tag("mode", arg.getDisplayName())
-                    .tag("reason", "modeArgPassed")
-                    .handle();
-            return arg;
-        }
-
         var prop = AppProperties.get().getExplicitMode();
         if (prop != null) {
             event.tag("mode", prop.getDisplayName())

@@ -63,8 +63,7 @@ public class AppRestart {
         var dataDir = AppProperties.get().getDataDir();
         var exec = createBackgroundLaunchCommand(
                 List.of(
-                        "--mode",
-                        "gui",
+                        "-Dio.xpipe.app.mode=gui",
                         "-Dio.xpipe.app.acceptEula=true",
                         "-Dio.xpipe.app.dataDir=\"" + dataDir + "\"",
                         "-Dio.xpipe.app.restarted=true"),
@@ -80,8 +79,7 @@ public class AppRestart {
         var dataDir = AppProperties.get().getDataDir();
         var exec = createTerminalLaunchCommand(
                 List.of(
-                        "--mode",
-                        "gui",
+                        "-Dio.xpipe.app.mode=gui",
                         "-Dio.xpipe.app.acceptEula=true",
                         "-Dio.xpipe.app.dataDir=\"" + dataDir + "\"",
                         "-Dio.xpipe.app.restarted=true"),

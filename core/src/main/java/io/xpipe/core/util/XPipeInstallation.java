@@ -33,7 +33,7 @@ public class XPipeInstallation {
     public static String createExternalAsyncLaunchCommand(
             String installationBase, XPipeDaemonMode mode, String arguments, boolean restart) {
         var suffix = (arguments != null ? " " + arguments : "");
-        var modeOption = mode != null ? " --mode " + mode.getDisplayName() : "";
+        var modeOption = mode != null ? " -Dio.xpipe.app.mode=" + mode.getDisplayName() : "";
         if (OsType.getLocal().equals(OsType.LINUX)) {
             return "nohup \"" + installationBase + "/bin/xpiped\"" + modeOption + suffix + "</dev/null >/dev/null 2>&1 & disown";
         } else if (OsType.getLocal().equals(OsType.MACOS)) {
@@ -51,7 +51,7 @@ public class XPipeInstallation {
 
     public static String createExternalLaunchCommand(String command, String arguments, XPipeDaemonMode mode) {
         var suffix = (arguments != null ? " " + arguments : "");
-        var modeOption = mode != null ? " --mode " + mode.getDisplayName() : null;
+        var modeOption = mode != null ? " -Dio.xpipe.app.mode=" + mode.getDisplayName() : "";
         return "\"" + command + "\"" + modeOption + suffix;
     }
 
