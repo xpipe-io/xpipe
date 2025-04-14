@@ -171,9 +171,9 @@ public class AppMainWindow {
     }
 
     private static String createTitle() {
-        var t = LicenseProvider.get().licenseTitle();
+        var t = LicenseProvider.get() != null ? LicenseProvider.get().licenseTitle() : new SimpleStringProperty("?");
         var base =
-                String.format("XPipe %s (%s)", t.getValue(), AppProperties.get().getVersion());
+                String.format("XPipe %s (%s)", t, AppProperties.get().getVersion());
         var prefix = AppProperties.get().isStaging() ? "[Public Test Build, Not a proper release] " : "";
         var dist = AppDistributionType.get();
         if (dist == AppDistributionType.UNKNOWN) {

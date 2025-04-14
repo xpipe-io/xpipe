@@ -30,6 +30,7 @@ public enum DocumentationLink {
     VMWARE("guide/vmware"),
     VNC("guide/vnc"),
     SSH("guide/ssh"),
+    SSH_MACS("guide/ssh#no-matching-mac-found"),
     KEEPASSXC("guide/password-manager#keepassxc"),
     PASSWORD_MANAGER("guide/password-manager");
 

@@ -1,5 +1,6 @@
 package io.xpipe.app.ext;
 
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.StubShellControl;
@@ -8,6 +9,11 @@ import io.xpipe.core.store.*;
 public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore, SingletonSessionStore<ShellSession> {
 
     default ShellControl getOrStartSession() throws Exception {
+        // For tests, the cache is not available
+        if (AppProperties.get().isTest()) {
+            return standaloneControl();
+        }
+
         var session = getSession();
         if (session != null) {
             session.getShellControl().refreshRunningState();

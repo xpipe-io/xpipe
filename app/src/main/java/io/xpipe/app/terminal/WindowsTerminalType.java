@@ -153,7 +153,15 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             checkProfile();
-            super.launch(configuration);
+
+            var inPath = LocalShell.getShell().view().findProgram("wt").isPresent();
+            if (inPath) {
+                super.launch(configuration);
+            } else {
+                LocalShell.getShell()
+                        .executeSimpleCommand(
+                                CommandBuilder.of().addFile(getPath().toString()).add(toCommand(configuration)));
+            }
         }
 
         @Override
@@ -164,6 +172,12 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         @Override
         protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return WindowsTerminalType.toCommand(configuration);
+        }
+
+        private Path getPath() {
+            var local = System.getenv("LOCALAPPDATA");
+            return Path.of(local)
+                    .resolve("Microsoft\\WindowsApps\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\wt.exe");
         }
 
         @Override

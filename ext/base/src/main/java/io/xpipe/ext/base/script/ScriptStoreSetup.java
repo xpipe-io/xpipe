@@ -38,26 +38,6 @@ public class ScriptStoreSetup {
                 }
             }
 
-            var checkedPermissions = new AtomicReference<Boolean>();
-            FailableFunction<ShellControl, Boolean, Exception> permissionCheck = (sc) -> {
-                if (checkedPermissions.get() != null) {
-                    return checkedPermissions.get();
-                }
-
-                // If we don't have write permissions / it is a read-only file system, don't create scripts
-                if (sc.getOsType() == OsType.LINUX) {
-                    var file = sc.getSystemTemporaryDirectory().join("xpipe-test");
-                    var test = sc.command(CommandBuilder.of().add("touch").addFile(file).add("&&", "rm").addFile(file)).executeAndCheck();
-                    if (!test) {
-                        checkedPermissions.set(false);
-                        return false;
-                    }
-                }
-
-                checkedPermissions.set(true);
-                return true;
-            };
-
             var initFlattened = flatten(enabledScripts).stream()
                     .filter(store -> store.getStore().isInitScript())
                     .toList();
@@ -74,10 +54,6 @@ public class ScriptStoreSetup {
                 pc.withInitSnippet(new ShellTerminalInitCommand() {
                     @Override
                     public Optional<String> terminalContent(ShellControl shellControl) throws Exception {
-                        if (!permissionCheck.apply(shellControl)) {
-                            return Optional.empty();
-                        }
-
                         return Optional.ofNullable(s.getStore().assembleScriptChain(shellControl));
                     }
 
@@ -94,10 +70,6 @@ public class ScriptStoreSetup {
 
                     @Override
                     public Optional<String> terminalContent(ShellControl shellControl) throws Exception {
-                        if (!permissionCheck.apply(shellControl)) {
-                            return Optional.empty();
-                        }
-
                         if (dir == null) {
                             dir = initScriptsDirectory(shellControl, bringFlattened);
                         }
