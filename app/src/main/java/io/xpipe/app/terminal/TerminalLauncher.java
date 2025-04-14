@@ -121,7 +121,7 @@ public class TerminalLauncher {
                             TerminalInitFunction.none()),
                     true);
             var config = new TerminalLaunchConfiguration(null, title, title, true, script, sc.getShellDialect());
-            type.launch(config);
+            launch(type, config, new CountDownLatch(1));
         }
     }
 
@@ -164,17 +164,22 @@ public class TerminalLauncher {
         var config = TerminalLaunchConfiguration.create(
                 request, entry, cleanTitle, adjustedTitle, preferTabs, promptRestart);
 
-        if (preferTabs && launchMultiplexerTabInExistingTerminal(request, terminalConfig, config)) {
-            latch.await();
-            return;
-        }
+        synchronized (TerminalLauncher.class) {
+            // There will be timing issues when launching multiple tabs in a short time span
+            TerminalMultiplexerManager.synchronizeMultiplexerLaunchTiming();
 
-        if (preferTabs) {
-            var multiplexerConfig = launchMultiplexerTabInNewTerminal(request, terminalConfig, config);
-            if (multiplexerConfig.isPresent()) {
-                TerminalMultiplexerManager.registerMultiplexerLaunch(request);
-                launch(type, multiplexerConfig.get(), latch);
+            if (preferTabs && launchMultiplexerTabInExistingTerminal(request, terminalConfig, config)) {
+                latch.await();
                 return;
+            }
+
+            if (preferTabs) {
+                var multiplexerConfig = launchMultiplexerTabInNewTerminal(request, terminalConfig, config);
+                if (multiplexerConfig.isPresent()) {
+                    TerminalMultiplexerManager.registerMultiplexerLaunch(request);
+                    launch(type, multiplexerConfig.get(), latch);
+                    return;
+                }
             }
         }
 
@@ -194,6 +199,10 @@ public class TerminalLauncher {
 
     private static void launch(ExternalTerminalType type, TerminalLaunchConfiguration config, CountDownLatch latch)
             throws Exception {
+        if (type == null) {
+            return;
+        }
+
         try {
             type.launch(config);
             latch.await();

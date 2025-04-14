@@ -136,7 +136,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                             .getAccentColor()
                             .desaturate()
                             .desaturate();
-                    return new Background(new BackgroundFill(c, new CornerRadii(8), new Insets(16, 1, 14, 2)));
+                    return new Background(new BackgroundFill(c, new CornerRadii(8), new Insets(17, 1, 15, 2)));
                 },
                 Platform.getPreferences().accentColorProperty());
         var hoverBorder = Bindings.createObjectBinding(
@@ -146,7 +146,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                             .darker()
                             .desaturate()
                             .desaturate();
-                    return new Background(new BackgroundFill(c, new CornerRadii(8), new Insets(16, 1, 14, 2)));
+                    return new Background(new BackgroundFill(c, new CornerRadii(8), new Insets(17, 1, 15, 2)));
                 },
                 Platform.getPreferences().accentColorProperty());
         var noneBorder = Bindings.createObjectBinding(

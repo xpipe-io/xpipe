@@ -140,16 +140,6 @@ public class PodmanContainerStore
                 var pc = new PodmanCommandView(parent).container().exec(containerName);
                 pc.withSourceStore(PodmanContainerStore.this);
                 pc.withShellStateInit(PodmanContainerStore.this);
-                pc.onInit(shellControl -> {
-                    var s = getState().toBuilder()
-                            .osType(shellControl.getOsType())
-                            .shellDialect(shellControl.getShellDialect())
-                            .ttyState(shellControl.getTtyState())
-                            .running(true)
-                            .osName(shellControl.getOsName())
-                            .build();
-                    setState(s);
-                });
                 pc.onStartupFail(throwable -> {
                     if (throwable instanceof LicenseRequiredException) {
                         return;

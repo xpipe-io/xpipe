@@ -12,6 +12,7 @@ import io.xpipe.ext.base.store.StartableStore;
 import io.xpipe.ext.base.store.StoppableStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.ext.system.incus.IncusContainerStore;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;
@@ -76,39 +77,31 @@ public class LxdContainerStore
             @Override
             public ShellControl control(ShellControl parent) {
                 var user = identity != null ? identity.unwrap().getUsername() : null;
-                var base = new LxdCommandView(parent).exec(containerName, user, () -> {
+                var sc = new LxdCommandView(parent).exec(containerName, user, () -> {
                     var state = getState();
                     var alpine = state.getOsName() != null
                             && state.getOsName().toLowerCase().contains("alpine");
                     return alpine;
                 });
                 if (identity != null && identity.unwrap().getPassword() != null) {
-                    base.setElevationHandler(new BaseElevationHandler(
+                    sc.setElevationHandler(new BaseElevationHandler(
                                     LxdContainerStore.this, identity.unwrap().getPassword())
-                            .orElse(base.getElevationHandler()));
+                            .orElse(sc.getElevationHandler()));
                 }
-                return base.withSourceStore(LxdContainerStore.this)
-                        .onInit(shellControl -> {
-                            var s = getState().toBuilder()
-                                    .osType(shellControl.getOsType())
-                                    .shellDialect(shellControl.getShellDialect())
-                                    .ttyState(shellControl.getTtyState())
-                                    .running(true)
-                                    .osName(shellControl.getOsName())
-                                    .build();
-                            setState(s);
-                        })
-                        .onStartupFail(throwable -> {
-                            if (throwable instanceof LicenseRequiredException) {
-                                return;
-                            }
+                sc.withSourceStore(LxdContainerStore.this);
+                sc.withShellStateInit(LxdContainerStore.this);
+                sc.onStartupFail(throwable -> {
+                    if (throwable instanceof LicenseRequiredException) {
+                        return;
+                    }
 
-                            var s = getState().toBuilder()
-                                    .running(false)
-                                    .containerState("Connection failed")
-                                    .build();
-                            setState(s);
-                        });
+                    var s = getState().toBuilder()
+                            .running(false)
+                            .containerState("Connection failed")
+                            .build();
+                    setState(s);
+                });
+                return sc;
             }
         };
     }

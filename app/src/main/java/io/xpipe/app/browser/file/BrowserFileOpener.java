@@ -1,15 +1,18 @@
 package io.xpipe.app.browser.file;
 
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.ext.ConnectionFileSystem;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.FileBridge;
 import io.xpipe.app.util.FileOpener;
+import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ElevationFunction;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileInfo;
+import io.xpipe.core.store.FilePath;
 
 import java.io.FilterOutputStream;
 import java.io.IOException;
@@ -31,19 +34,12 @@ public class BrowserFileOpener {
         }
 
         var info = (FileInfo.Unix) file.getInfo();
-        if (info.getPermissions() == null) {
+        var requiresSudo = requiresSudo(model, info, file.getPath());
+        if (!requiresSudo) {
             return fileSystem.openOutput(file.getPath(), totalBytes);
         }
 
-        var zero = Integer.valueOf(0);
-        var otherWrite = info.getPermissions().charAt(7) == 'w';
-        var requiresRoot = zero.equals(info.getUid()) && zero.equals(info.getGid()) && !otherWrite;
-        if (!requiresRoot || model.getCache().isRoot()) {
-            return fileSystem.openOutput(file.getPath(), totalBytes);
-        }
-
-        var elevate = AppWindowHelper.showConfirmationAlert(
-                "app.fileWriteSudoTitle", "app.fileWriteSudoHeader", "app.fileWriteSudoContent");
+        var elevate = AppDialog.confirm("fileWriteSudo");
         if (!elevate) {
             return fileSystem.openOutput(file.getPath(), totalBytes);
         }
@@ -64,6 +60,29 @@ public class BrowserFileOpener {
             rootFs.close();
             throw ex;
         }
+    }
+
+    private static boolean requiresSudo(BrowserFileSystemTabModel model, FileInfo.Unix info, FilePath filePath) throws Exception {
+        if (model.getCache().isRoot()) {
+            return false;
+        }
+
+        if (info != null) {
+            var otherWrite = info.getPermissions().charAt(7) == 'w';
+            if (otherWrite) {
+                return false;
+            }
+
+            var userOwned = info.getUid() != null && model.getCache().getUidForUser(model.getCache().getUsername()) == info.getUid() ||
+                    info.getUser() != null && model.getCache().getUsername().equals(info.getUser());
+            var userWrite = info.getPermissions().charAt(1) == 'w';
+            if (userOwned && userWrite) {
+                return false;
+            }
+        }
+
+        var test = model.getFileSystem().getShell().orElseThrow().command(CommandBuilder.of().add("test", "-w").addFile(filePath)).executeAndCheck();
+        return !test;
     }
 
     private static int calculateKey(FileEntry entry) {

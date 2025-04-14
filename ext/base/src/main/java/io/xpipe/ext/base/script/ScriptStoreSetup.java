@@ -4,14 +4,18 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.ShellTemp;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellDialect;
-import io.xpipe.core.process.ShellTerminalInitCommand;
+import io.xpipe.core.process.*;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FilePath;
+import io.xpipe.core.util.FailableFunction;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class ScriptStoreSetup {
 
@@ -25,6 +29,34 @@ public class ScriptStoreSetup {
             if (!pc.getEffectiveSecurityPolicy().permitTempScriptCreation()) {
                 return;
             }
+
+            // If we don't have write permissions / it is a read-only file system, don't create scripts
+            if (pc.getOsType() == OsType.LINUX) {
+                var test = pc.command(CommandBuilder.of().add("test", "-w").addFile(pc.getSystemTemporaryDirectory())).executeAndCheck();
+                if (!test) {
+                    return;
+                }
+            }
+
+            var checkedPermissions = new AtomicReference<Boolean>();
+            FailableFunction<ShellControl, Boolean, Exception> permissionCheck = (sc) -> {
+                if (checkedPermissions.get() != null) {
+                    return checkedPermissions.get();
+                }
+
+                // If we don't have write permissions / it is a read-only file system, don't create scripts
+                if (sc.getOsType() == OsType.LINUX) {
+                    var file = sc.getSystemTemporaryDirectory().join("xpipe-test");
+                    var test = sc.command(CommandBuilder.of().add("touch").addFile(file).add("&&", "rm").addFile(file)).executeAndCheck();
+                    if (!test) {
+                        checkedPermissions.set(false);
+                        return false;
+                    }
+                }
+
+                checkedPermissions.set(true);
+                return true;
+            };
 
             var initFlattened = flatten(enabledScripts).stream()
                     .filter(store -> store.getStore().isInitScript())
@@ -41,7 +73,11 @@ public class ScriptStoreSetup {
             initFlattened.forEach(s -> {
                 pc.withInitSnippet(new ShellTerminalInitCommand() {
                     @Override
-                    public Optional<String> terminalContent(ShellControl shellControl) {
+                    public Optional<String> terminalContent(ShellControl shellControl) throws Exception {
+                        if (!permissionCheck.apply(shellControl)) {
+                            return Optional.empty();
+                        }
+
                         return Optional.ofNullable(s.getStore().assembleScriptChain(shellControl));
                     }
 
@@ -58,6 +94,10 @@ public class ScriptStoreSetup {
 
                     @Override
                     public Optional<String> terminalContent(ShellControl shellControl) throws Exception {
+                        if (!permissionCheck.apply(shellControl)) {
+                            return Optional.empty();
+                        }
+
                         if (dir == null) {
                             dir = initScriptsDirectory(shellControl, bringFlattened);
                         }
