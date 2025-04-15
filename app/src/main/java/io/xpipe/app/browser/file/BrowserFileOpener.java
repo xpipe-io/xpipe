@@ -86,7 +86,9 @@ public class BrowserFileOpener {
     }
 
     private static int calculateKey(FileEntry entry) {
-        return Objects.hash(entry.getPath(), entry.getFileSystem(), entry.getKind(), entry.getInfo());
+        // Use different key for empty / non-empty files to prevent any issues from blanked files when transfer fails
+        var empty = entry.getFileSizeLong().orElse(-1) == 0;
+        return Objects.hash(entry.getPath(), entry.getFileSystem(), entry.getKind(), entry.getInfo(), empty);
     }
 
     public static void openWithAnyApplication(BrowserFileSystemTabModel model, FileEntry entry) {
