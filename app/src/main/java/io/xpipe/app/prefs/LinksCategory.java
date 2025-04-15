@@ -58,7 +58,7 @@ public class LinksCategory extends AppPrefsCategory {
                                 })
                                 .grow(true, false),
                         null)
-                .addComp(Comp.vspacer(25))
+                .addComp(Comp.vspacer(40))
                 .buildComp();
     }
 

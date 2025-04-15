@@ -58,19 +58,7 @@ public class AskpassExchangeImpl extends AskpassExchange {
         if (term.isEmpty()) {
             return;
         }
-
-        var control = term.get().controllable();
-        if (control.isPresent()) {
-            control.get().focus();
-        } else {
-            if (OsType.getLocal() == OsType.MACOS) {
-                // Just focus the app, this is correct most of the time
-                var terminalType = AppPrefs.get().terminalType().getValue();
-                if (terminalType instanceof ExternalApplicationType.MacApplication m) {
-                    m.focus();
-                }
-            }
-        }
+        TerminalView.focus(term.get());
     }
 
     @Override

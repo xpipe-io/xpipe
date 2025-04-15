@@ -61,17 +61,18 @@ public class TerminalMultiplexerManager {
         lastCheck = Instant.now();
     }
 
-    public static boolean requiresNewTerminalSession(UUID requestUuid) {
+    public static Optional<TerminalView.TerminalSession> getActiveTerminalSession(UUID requestUuid) {
         var mult = getEffectiveMultiplexer();
         if (mult.isEmpty()) {
             connectionHubRequests.put(requestUuid, null);
-            return true;
+            return Optional.empty();
         }
 
-        var hasTerminal = TerminalView.get().getSessions().stream()
-                .anyMatch(shellSession -> shellSession.getTerminal().isRunning()
-                        && mult.get() == connectionHubRequests.get(shellSession.getRequest()));
+        var session = TerminalView.get().getSessions().stream()
+                .filter(shellSession -> shellSession.getTerminal().isRunning()
+                        && mult.get() == connectionHubRequests.get(shellSession.getRequest()))
+                .findFirst();
         connectionHubRequests.put(requestUuid, mult.get());
-        return !hasTerminal;
+        return session.map(shellSession -> shellSession.getTerminal());
     }
 }

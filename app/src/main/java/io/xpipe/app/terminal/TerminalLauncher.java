@@ -236,7 +236,8 @@ public class TerminalLauncher {
         // Throw if not supported
         multiplexer.get().checkSupported(control);
 
-        if (TerminalMultiplexerManager.requiresNewTerminalSession(request)) {
+        var session = TerminalMultiplexerManager.getActiveTerminalSession(request);
+        if (session.isEmpty()) {
             return false;
         }
 
@@ -246,6 +247,7 @@ public class TerminalLauncher {
                 .launchScriptExternal(control, openCommand, initScriptConfig)
                 .toString();
         control.command(multiplexerCommand).execute();
+        TerminalView.focus(session.get());
         return true;
     }
 
@@ -260,7 +262,7 @@ public class TerminalLauncher {
         // Throw if not supported
         multiplexer.get().checkSupported(TerminalProxyManager.getProxy().orElse(LocalShell.getShell()));
 
-        if (!TerminalMultiplexerManager.requiresNewTerminalSession(request)) {
+        if (TerminalMultiplexerManager.getActiveTerminalSession(request).isPresent()) {
             return Optional.empty();
         }
 

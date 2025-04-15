@@ -3,6 +3,7 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.core.window.NativeWinWindowControl;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 
@@ -75,6 +76,22 @@ public class TerminalView {
 
     public synchronized void removeListener(Listener listener) {
         this.listeners.remove(listener);
+    }
+
+    public static void focus(TerminalSession term) {
+        var control = term.controllable();
+        if (control.isPresent()) {
+            control.get().show();
+            control.get().focus();
+        } else {
+            if (OsType.getLocal() == OsType.MACOS) {
+                // Just focus the app, this is correct most of the time
+                var terminalType = AppPrefs.get().terminalType().getValue();
+                if (terminalType instanceof ExternalApplicationType.MacApplication m) {
+                    m.focus();
+                }
+            }
+        }
     }
 
     public synchronized void open(UUID request, long pid) {

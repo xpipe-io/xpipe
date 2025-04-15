@@ -55,7 +55,7 @@ public class AboutCategory extends AppPrefsCategory {
         }
 
         var section = new OptionsBuilder()
-                .addComp(Comp.vspacer(40))
+                .addComp(Comp.vspacer(45))
                 .addComp(title, null)
                 .addComp(Comp.vspacer(10))
                 .name("build")

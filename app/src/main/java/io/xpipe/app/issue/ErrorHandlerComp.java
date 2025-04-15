@@ -6,10 +6,13 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.LicenseRequiredException;
 import io.xpipe.app.util.ThreadHelper;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -47,12 +50,12 @@ public class ErrorHandlerComp extends SimpleComp {
         return text;
     }
 
-    private Region createActionComp(ErrorAction a) {
+    private Region createActionComp(ErrorAction a, BooleanProperty busy) {
         var graphic = createActionButtonGraphic(a.getName(), a.getDescription());
         var b = new ButtonComp(null, graphic, () -> {
             takenAction.setValue(a);
             ThreadHelper.runAsync(() -> {
-                try {
+                try (var ignored = new BooleanScope(busy).start()) {
                     var r = a.handle(event);
                     if (r) {
                         closeDialogAction.run();
@@ -62,6 +65,7 @@ public class ErrorHandlerComp extends SimpleComp {
                 }
             });
         });
+        b.disable(busy);
         b.apply(GrowAugment.create(true, false));
         return b.createRegion();
     }
@@ -82,7 +86,7 @@ public class ErrorHandlerComp extends SimpleComp {
         }
 
         var descriptionField = new TextArea(desc);
-        descriptionField.setPrefRowCount(Math.max(5, Math.min((int) desc.lines().count() + 1, 14)));
+        descriptionField.setPrefRowCount(Math.max(5, Math.min((int) desc.lines().count() + 2, 14)));
         descriptionField.setWrapText(true);
         descriptionField.setEditable(false);
         descriptionField.setPadding(Insets.EMPTY);
@@ -125,19 +129,20 @@ public class ErrorHandlerComp extends SimpleComp {
         }
 
         var custom = event.getCustomActions();
+        var busy = new SimpleBooleanProperty();
         for (var c : custom) {
-            var ac = createActionComp(c);
+            var ac = createActionComp(c, busy);
             ac.getStyleClass().addAll(BUTTON_OUTLINED, ACCENT);
             actionBox.getChildren().add(ac);
         }
 
         if (event.getLink() != null) {
-            actionBox.getChildren().add(createActionComp(ErrorAction.openDocumentation(event.getLink())));
+            actionBox.getChildren().add(createActionComp(ErrorAction.openDocumentation(event.getLink()), busy));
         }
 
         var hasCustomActions = event.getCustomActions().size() > 0 || event.getLink() != null;
         if (hasCustomActions) {
-            actionBox.getChildren().add(createActionComp(ErrorAction.ignore()));
+            actionBox.getChildren().add(createActionComp(ErrorAction.ignore(), busy));
         }
 
         if (actionBox.getChildren().size() > 0) {
