@@ -13,6 +13,7 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileInfo;
 import io.xpipe.core.store.FilePath;
+import lombok.SneakyThrows;
 
 import java.io.FilterOutputStream;
 import java.io.IOException;
@@ -85,15 +86,16 @@ public class BrowserFileOpener {
         return !test;
     }
 
-    private static int calculateKey(FileEntry entry) {
+    @SneakyThrows
+    private static int calculateKey(BrowserFileSystemTabModel model, FileEntry entry) {
         // Use different key for empty / non-empty files to prevent any issues from blanked files when transfer fails
-        var empty = entry.getFileSizeLong().orElse(-1) == 0;
+        var empty = model.getFileSystem().getFileSize(entry.getPath()) == 0;
         return Objects.hash(entry.getPath(), entry.getFileSystem(), entry.getKind(), entry.getInfo(), empty);
     }
 
     public static void openWithAnyApplication(BrowserFileSystemTabModel model, FileEntry entry) {
         var file = entry.getPath();
-        var key = calculateKey(entry);
+        var key = calculateKey(model, entry);
         FileBridge.get()
                 .openIO(
                         file.getFileName(),
@@ -114,7 +116,7 @@ public class BrowserFileOpener {
 
     public static void openInDefaultApplication(BrowserFileSystemTabModel model, FileEntry entry) {
         var file = entry.getPath();
-        var key = calculateKey(entry);
+        var key = calculateKey(model, entry);
         FileBridge.get()
                 .openIO(
                         file.getFileName(),
@@ -140,7 +142,7 @@ public class BrowserFileOpener {
         }
 
         var file = entry.getPath();
-        var key = calculateKey(entry);
+        var key = calculateKey(model, entry);
         FileBridge.get()
                 .openIO(
                         file.getFileName(),
