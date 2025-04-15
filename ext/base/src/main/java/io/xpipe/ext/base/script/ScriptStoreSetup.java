@@ -1,5 +1,6 @@
 package io.xpipe.ext.base.script;
 
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -9,6 +10,7 @@ import io.xpipe.app.util.ShellTemp;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FilePath;
+import io.xpipe.core.store.StatefulDataStore;
 import io.xpipe.core.util.FailableFunction;
 
 import java.util.*;
@@ -30,19 +32,25 @@ public class ScriptStoreSetup {
                 return;
             }
 
-            // If we don't have write permissions / it is a read-only file system, don't create scripts
-            if (pc.getOsType() == OsType.LINUX) {
-                var test = pc.command(CommandBuilder.of().add("test", "-w").addFile(pc.getSystemTemporaryDirectory())).executeAndCheck();
-                if (!test) {
-                    return;
+            var dialect = pc.getShellDialect();
+            if (dialect == null) {
+                var source = pc.getSourceStore();
+                if (source.isPresent() && source.get() instanceof StatefulDataStore<?> sds) {
+                    var state = sds.getState();
+                    if (state instanceof SystemState systemState) {
+                        dialect = systemState.getShellDialect();
+                    }
                 }
             }
 
+            var finalDialect = dialect;
             var initFlattened = flatten(enabledScripts).stream()
                     .filter(store -> store.getStore().isInitScript())
+                    .filter(store -> finalDialect == null || store.getStore().isCompatible(finalDialect))
                     .toList();
             var bringFlattened = flatten(enabledScripts).stream()
                     .filter(store -> store.getStore().isShellScript())
+                    .filter(store -> finalDialect == null || store.getStore().isCompatible(finalDialect))
                     .toList();
 
             // Optimize if we have nothing to do

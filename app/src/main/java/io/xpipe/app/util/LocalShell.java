@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.ProcessOutputException;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialect;
@@ -22,14 +23,32 @@ public class LocalShell {
         localCache = new LocalShellCache(local);
     }
 
-    public static void reset() {
+    public static void reset(boolean force) {
         if (local != null) {
-            local.kill();
+            if (!force) {
+                try {
+                    local.exitAndWait();
+                } catch (Exception e) {
+                    ErrorEvent.fromThrowable(e).omit().handle();
+                    local.kill();
+                }
+            } else {
+                local.kill();
+            }
             local = null;
         }
         localCache = null;
         if (localPowershell != null) {
-            localPowershell.kill();
+            if (!force) {
+                try {
+                    localPowershell.exitAndWait();
+                } catch (Exception e) {
+                    ErrorEvent.fromThrowable(e).omit().handle();
+                    local.kill();
+                }
+            } else {
+                localPowershell.kill();
+            }
             localPowershell = null;
         }
     }

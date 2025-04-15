@@ -196,7 +196,7 @@ public class StoreCreationModel {
                     .getMessages()
                     .getFirst()
                     .getText();
-            ErrorEvent.fromMessage(msg).handle();
+            ErrorEvent.fromMessage(msg).expected().handle();
             changedSinceError.setValue(false);
             return;
         }

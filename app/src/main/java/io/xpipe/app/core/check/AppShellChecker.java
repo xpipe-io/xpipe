@@ -78,7 +78,7 @@ public abstract class AppShellChecker {
     protected abstract String listReasons();
 
     private void toggleFallback() throws Exception {
-        LocalShell.reset();
+        LocalShell.reset(true);
         ProcessControlProvider.get().toggleFallbackShell();
         LocalShell.init();
     }

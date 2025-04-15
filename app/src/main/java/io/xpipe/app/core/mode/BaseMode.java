@@ -168,7 +168,7 @@ public class BaseMode extends OperationMode {
         DataStorageSyncHandler.getInstance().reset();
         SshLocalBridge.reset();
         BrowserFullSessionModel.DEFAULT.reset();
-        LocalShell.reset();
+        LocalShell.reset(false);
         BrowserLocalFileSystem.reset();
         ProcessControlProvider.get().reset();
         AppPrefs.reset();
