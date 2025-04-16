@@ -21,8 +21,6 @@ public class FileBrowserCategory extends AppPrefsCategory {
                         .addToggle(prefs.enableTerminalDocking)
                         .pref(prefs.editFilesWithDoubleClick)
                         .addToggle(prefs.editFilesWithDoubleClick)
-                        .pref(prefs.confirmAllDeletions)
-                        .addToggle(prefs.confirmAllDeletions)
                         .pref(prefs.downloadsDirectory)
                         .addComp(
                                 new TextFieldComp(prefs.downloadsDirectory).maxWidth(getCompWidth()),

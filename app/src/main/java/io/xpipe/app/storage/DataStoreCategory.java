@@ -31,7 +31,7 @@ public class DataStoreCategory extends StorageElement {
     StoreSortMode sortMode;
 
     @NonFinal
-    boolean sync;
+    DataStoreCategoryConfig config;
 
     public DataStoreCategory(
             Path directory,
@@ -39,16 +39,15 @@ public class DataStoreCategory extends StorageElement {
             String name,
             Instant lastUsed,
             Instant lastModified,
-            DataStoreColor color,
             boolean dirty,
             UUID parentCategory,
             StoreSortMode sortMode,
-            boolean sync,
-            boolean expanded) {
-        super(directory, uuid, name, lastUsed, lastModified, color, expanded, dirty);
+            boolean expanded, DataStoreCategoryConfig config
+    ) {
+        super(directory, uuid, name, lastUsed, lastModified, expanded, dirty);
         this.parentCategory = parentCategory;
         this.sortMode = sortMode;
-        this.sync = sync;
+        this.config = config;
     }
 
     public static DataStoreCategory createNew(UUID parentCategory, @NonNull String name) {
@@ -58,12 +57,11 @@ public class DataStoreCategory extends StorageElement {
                 name,
                 Instant.now(),
                 Instant.now(),
-                null,
                 true,
                 parentCategory,
                 StoreSortMode.getDefault(),
-                false,
-                true);
+                true,
+                DataStoreCategoryConfig.empty());
     }
 
     public static DataStoreCategory createNew(UUID parentCategory, @NonNull UUID uuid, @NonNull String name) {
@@ -73,12 +71,12 @@ public class DataStoreCategory extends StorageElement {
                 name,
                 Instant.now(),
                 Instant.now(),
-                null,
                 true,
                 parentCategory,
                 StoreSortMode.getDefault(),
-                false,
-                true);
+                true,
+                DataStoreCategoryConfig.empty()
+        );
     }
 
     public static Optional<DataStoreCategory> fromDirectory(Path dir) throws Exception {
@@ -99,23 +97,12 @@ public class DataStoreCategory extends StorageElement {
                 .filter(jsonNode -> !jsonNode.isNull())
                 .map(jsonNode -> UUID.fromString(jsonNode.textValue()))
                 .orElse(null);
-        var color = Optional.ofNullable(json.get("color"))
-                .map(node -> {
-                    try {
-                        return mapper.treeToValue(node, DataStoreColor.class);
-                    } catch (JsonProcessingException e) {
-                        return null;
-                    }
-                })
-                .orElse(null);
         var name = json.required("name").textValue();
 
         var sortMode = Optional.ofNullable(stateJson.get("sortMode"))
                 .map(JsonNode::asText)
                 .flatMap(string -> StoreSortMode.fromId(string))
                 .orElse(StoreSortMode.getDefault());
-        var share =
-                Optional.ofNullable(json.get("share")).map(JsonNode::asBoolean).orElse(false);
         var lastUsed = Optional.ofNullable(stateJson.get("lastUsed"))
                 .map(jsonNode -> jsonNode.textValue())
                 .map(Instant::parse)
@@ -127,9 +114,35 @@ public class DataStoreCategory extends StorageElement {
         var expanded = Optional.ofNullable(stateJson.get("expanded"))
                 .map(jsonNode -> jsonNode.booleanValue())
                 .orElse(true);
+        var config = Optional.ofNullable(stateJson.get("config"))
+                .map(jsonNode -> {
+                    try {
+                        return JacksonMapper.getDefault().treeToValue(jsonNode, DataStoreCategoryConfig.class);
+                    } catch (JsonProcessingException e) {
+                        return DataStoreCategoryConfig.empty();
+                    }
+                })
+                .orElse(DataStoreCategoryConfig.empty());
+
+        var share =
+                Optional.ofNullable(json.get("share")).map(JsonNode::asBoolean).orElse(null);
+        if (share != null) {
+            config = config.withSync(share);
+        }
+        var color = Optional.ofNullable(json.get("color"))
+                .map(node -> {
+                    try {
+                        return mapper.treeToValue(node, DataStoreColor.class);
+                    } catch (JsonProcessingException e) {
+                        return null;
+                    }
+                }).orElse(null);
+        if (color != null) {
+            config = config.withColor(color);
+        }
 
         return Optional.of(new DataStoreCategory(
-                dir, uuid, name, lastUsed, lastModified, color, false, parentUuid, sortMode, share, expanded));
+                dir, uuid, name, lastUsed, lastModified, false, parentUuid, sortMode, expanded, config));
     }
 
     public void setSortMode(StoreSortMode sortMode) {
@@ -140,12 +153,14 @@ public class DataStoreCategory extends StorageElement {
         }
     }
 
-    public void setSync(boolean newShare) {
-        var changed = sync != newShare;
+    public boolean setConfig(DataStoreCategoryConfig config) {
+        var changed = !this.config.equals(config);
         if (changed) {
-            this.sync = newShare;
+            this.config = config;
             notifyUpdate(false, true);
+            return true;
         }
+        return false;
     }
 
     public void setParentCategory(UUID parentCategory) {
@@ -174,7 +189,7 @@ public class DataStoreCategory extends StorageElement {
             return false;
         }
 
-        return isSync();
+        return Boolean.TRUE.equals(config.getSync());
     }
 
     @Override
@@ -197,8 +212,6 @@ public class DataStoreCategory extends StorageElement {
         ObjectNode stateObj = JsonNodeFactory.instance.objectNode();
         obj.put("uuid", uuid.toString());
         obj.put("name", name);
-        obj.put("share", sync);
-        obj.set("color", mapper.valueToTree(color));
         stateObj.put("lastUsed", lastUsed.toString());
         stateObj.put("lastModified", lastModified.toString());
         stateObj.put("sortMode", sortMode.getId());

@@ -3,6 +3,7 @@ package io.xpipe.app.comp.store;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
@@ -14,7 +15,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.control.*;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -68,7 +68,7 @@ public class StoreCreationModel {
             store.unbind();
             store.setValue(null);
             if (n != null) {
-                store.setValue(n.defaultStore());
+                store.setValue(n.defaultStore(getTargetCategory(existingEntry)));
             }
         });
 
@@ -95,51 +95,9 @@ public class StoreCreationModel {
                             name.getValue(),
                             store.getValue());
                     var p = DataStorage.get().getDefaultDisplayParent(testE).orElse(null);
-
-                    var targetCategory = p != null
-                            ? p.getCategoryUuid()
-                            : DataStorage.get().getSelectedCategory().getUuid();
-                    var rootCategory = DataStorage.get()
-                            .getRootCategory(DataStorage.get()
-                                    .getStoreCategoryIfPresent(targetCategory)
-                                    .orElseThrow());
-
-                    // Don't put it in the wrong root category
-                    if ((provider.getValue().getCreationCategory() == null
-                            || !provider.getValue()
-                                    .getCreationCategory()
-                                    .getCategory()
-                                    .equals(rootCategory.getUuid()))) {
-                        targetCategory = provider.getValue().getCreationCategory() != null
-                                ? provider.getValue().getCreationCategory().getCategory()
-                                : DataStorage.ALL_CONNECTIONS_CATEGORY_UUID;
-                    }
-
-                    // Don't use the all connections category
-                    if (targetCategory.equals(
-                            DataStorage.get().getAllConnectionsCategory().getUuid())) {
-                        targetCategory = DataStorage.get()
-                                .getDefaultConnectionsCategory()
-                                .getUuid();
-                    }
-
-                    // Don't use the all scripts category
-                    if (targetCategory.equals(
-                            DataStorage.get().getAllScriptsCategory().getUuid())) {
-                        targetCategory = DataStorage.CUSTOM_SCRIPTS_CATEGORY_UUID;
-                    }
-
-                    // Don't use the all identities category
-                    if (targetCategory.equals(
-                            DataStorage.get().getAllIdentitiesCategory().getUuid())) {
-                        targetCategory = DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID;
-                    }
-
-                    // Custom category stuff
-                    targetCategory = provider.getValue().getTargetCategory(store.getValue(), targetCategory);
-
+                    var targetCategory = getTargetCategory(p);
                     return DataStoreEntry.createNew(
-                            UUID.randomUUID(), targetCategory, name.getValue(), store.getValue());
+                            UUID.randomUUID(), targetCategory.getUuid(), name.getValue(), store.getValue());
                 },
                 name,
                 store);
@@ -154,6 +112,51 @@ public class StoreCreationModel {
                 },
                 store,
                 name));
+    }
+
+    private DataStoreCategory getTargetCategory(DataStoreEntry base) {
+        var targetCategory = base != null
+                ? base.getCategoryUuid()
+                : DataStorage.get().getSelectedCategory().getUuid();
+        var rootCategory = DataStorage.get()
+                .getRootCategory(DataStorage.get()
+                        .getStoreCategoryIfPresent(targetCategory)
+                        .orElseThrow());
+
+        // Don't put it in the wrong root category
+        if ((provider.getValue().getCreationCategory() == null
+                || !provider.getValue()
+                .getCreationCategory()
+                .getCategory()
+                .equals(rootCategory.getUuid()))) {
+            targetCategory = provider.getValue().getCreationCategory() != null
+                    ? provider.getValue().getCreationCategory().getCategory()
+                    : DataStorage.ALL_CONNECTIONS_CATEGORY_UUID;
+        }
+
+        // Don't use the all connections category
+        if (targetCategory.equals(
+                DataStorage.get().getAllConnectionsCategory().getUuid())) {
+            targetCategory = DataStorage.get()
+                    .getDefaultConnectionsCategory()
+                    .getUuid();
+        }
+
+        // Don't use the all scripts category
+        if (targetCategory.equals(
+                DataStorage.get().getAllScriptsCategory().getUuid())) {
+            targetCategory = DataStorage.CUSTOM_SCRIPTS_CATEGORY_UUID;
+        }
+
+        // Don't use the all identities category
+        if (targetCategory.equals(
+                DataStorage.get().getAllIdentitiesCategory().getUuid())) {
+            targetCategory = DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID;
+        }
+
+        // Custom category stuff
+        targetCategory = provider.getValue().getTargetCategory(store.getValue(), targetCategory);
+        return DataStorage.get().getStoreCategoryIfPresent(targetCategory).orElseThrow();
     }
 
     ObservableBooleanValue canConnect() {

@@ -424,11 +424,6 @@ public class StandardStorage extends DataStorage {
         return dataStorageSyncHandler.supportsSync();
     }
 
-    @Override
-    public boolean isOtherUserEntry(UUID uuid) {
-        return inaccessibleEntries.contains(uuid);
-    }
-
     private void deleteLeftovers() {
         var storesDir = getStoresDir();
         var categoriesDir = getCategoriesDir();

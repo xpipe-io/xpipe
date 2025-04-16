@@ -60,7 +60,7 @@ public class StoreCreationDialog {
     }
 
     public static void showCreation(DataStoreProvider selected, DataStoreCreationCategory category) {
-        showCreation(selected != null ? selected.defaultStore() : null, category, dataStoreEntry -> {}, true);
+        showCreation(selected != null ? selected.defaultStore(DataStorage.get().getSelectedCategory()) : null, category, dataStoreEntry -> {}, true);
     }
 
     public static void showCreation(

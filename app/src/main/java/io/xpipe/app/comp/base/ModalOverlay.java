@@ -1,6 +1,7 @@
 package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.util.LabelGraphic;
@@ -19,7 +20,7 @@ import java.util.List;
 public class ModalOverlay {
 
     public static ModalOverlay of(Comp<?> content) {
-        return of(null, content, null);
+        return of((ObservableValue<String>) null, content, null);
     }
 
     public static ModalOverlay of(String titleKey, Comp<?> content) {
@@ -27,7 +28,11 @@ public class ModalOverlay {
     }
 
     public static ModalOverlay of(String titleKey, Comp<?> content, LabelGraphic graphic) {
-        return new ModalOverlay(titleKey, content, graphic, new ArrayList<>(), true, false, null);
+        return of(titleKey != null ? AppI18n.observable(titleKey) : null, content, graphic);
+    }
+
+    public static ModalOverlay of(ObservableValue<String> title, Comp<?> content, LabelGraphic graphic) {
+        return new ModalOverlay(title, content, graphic, new ArrayList<>(), true, false, null);
     }
 
     public ModalOverlay withDefaultButtons(Runnable action) {
@@ -40,7 +45,7 @@ public class ModalOverlay {
         return withDefaultButtons(() -> {});
     }
 
-    String titleKey;
+    ObservableValue<String> title;
     Comp<?> content;
     LabelGraphic graphic;
 

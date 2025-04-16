@@ -214,52 +214,11 @@ public class StoreCategoryComp extends SimpleComp {
 
         contextMenu.getItems().add(new SeparatorMenuItem());
 
-        var color = new Menu(AppI18n.get("color"), new FontIcon("mdi2f-format-color-fill"));
-        var none = new MenuItem();
-        none.textProperty().bind(AppI18n.observable("none"));
-        none.setOnAction(event -> {
-            category.getCategory().setColor(null);
-            event.consume();
+        var configure = new MenuItem(AppI18n.get("configure"), new FontIcon("mdi2w-wrench"));
+        configure.setOnAction(event -> {
+            StoreCategoryConfigComp.show(category);
         });
-        color.getItems().add(none);
-        Arrays.stream(DataStoreColor.values()).forEach(dataStoreColor -> {
-            MenuItem m = new MenuItem();
-            m.textProperty().bind(AppI18n.observable(dataStoreColor.getId()));
-            m.setOnAction(event -> {
-                category.getCategory().setColor(dataStoreColor);
-                event.consume();
-            });
-            color.getItems().add(m);
-        });
-        contextMenu.getItems().add(color);
-
-        if (DataStorage.get().supportsSharing() && category.getCategory().canShare()) {
-            var share = new MenuItem();
-            share.textProperty()
-                    .bind(Bindings.createStringBinding(
-                            () -> {
-                                if (category.getSync().getValue()) {
-                                    return AppI18n.get("unshare");
-                                } else {
-                                    return AppI18n.get("share");
-                                }
-                            },
-                            category.getSync()));
-            share.graphicProperty()
-                    .bind(Bindings.createObjectBinding(
-                            () -> {
-                                if (category.getSync().getValue()) {
-                                    return new FontIcon("mdi2b-block-helper");
-                                } else {
-                                    return new FontIcon("mdi2g-git");
-                                }
-                            },
-                            category.getSync()));
-            share.setOnAction(event -> {
-                category.getSync().setValue(!category.getSync().getValue());
-            });
-            contextMenu.getItems().add(share);
-        }
+        contextMenu.getItems().add(configure);
 
         var rename = new MenuItem(AppI18n.get("rename"), new FontIcon("mdal-edit"));
         rename.setOnAction(event -> {

@@ -4,6 +4,7 @@ import io.xpipe.app.comp.store.StoreChoiceComp;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.GuiDialog;
+import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.store.DataStore;
@@ -64,7 +65,7 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
     }
 
     @Override
-    public DataStore defaultStore() {
+    public DataStore defaultStore(DataStoreCategory category) {
         return CustomServiceStore.builder().build();
     }
 

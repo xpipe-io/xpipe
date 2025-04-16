@@ -152,7 +152,7 @@ public class ModalOverlayComp extends SimpleComp {
         var modalBox = toBox(modal, overlay);
         modal.setPersistent(overlay.isRequireCloseButtonForClose());
         modal.show(modalBox);
-        if (!overlay.isHasCloseButton() || overlay.getTitleKey() == null) {
+        if (!overlay.isHasCloseButton() || overlay.getTitle() == null) {
             var closeButton = modalBox.lookup(".close-button");
             if (closeButton != null) {
                 closeButton.setVisible(false);
@@ -172,9 +172,9 @@ public class ModalOverlayComp extends SimpleComp {
         });
         content.setSpacing(20);
 
-        if (newValue.getTitleKey() != null) {
+        if (newValue.getTitle() != null) {
             var l = new Label(
-                    AppI18n.get(newValue.getTitleKey()),
+                    newValue.getTitle().getValue(),
                     newValue.getGraphic() != null ? newValue.getGraphic().createGraphicNode() : null);
             l.setGraphicTextGap(8);
             AppFontSizes.xl(l);

@@ -2,7 +2,7 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppWindowHelper;
-import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FilePath;
@@ -74,8 +74,9 @@ public class BrowserAlerts {
                 .orElse(false);
     }
 
-    public static boolean showDeleteAlert(List<FileEntry> source) {
-        if (!AppPrefs.get().confirmDeletions().get()
+    public static boolean showDeleteAlert(BrowserFileSystemTabModel model, List<FileEntry> source) {
+        var config = DataStorage.get().getEffectiveCategoryConfig(model.getEntry().get());
+        if (!Boolean.TRUE.equals(config.getConfirmAllModifications())
                 && source.stream().noneMatch(entry -> entry.getKind() == FileKind.DIRECTORY)) {
             return true;
         }

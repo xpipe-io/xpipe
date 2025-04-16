@@ -27,11 +27,6 @@ public class ScriptStoreSetup {
 
     public static void controlWithScripts(ShellControl pc, List<DataStoreEntryRef<ScriptStore>> enabledScripts) {
         try {
-            // Don't copy scripts if we don't want to modify the file system
-            if (!pc.getEffectiveSecurityPolicy().permitTempScriptCreation()) {
-                return;
-            }
-
             var dialect = pc.getShellDialect();
             if (dialect == null) {
                 var source = pc.getSourceStore();

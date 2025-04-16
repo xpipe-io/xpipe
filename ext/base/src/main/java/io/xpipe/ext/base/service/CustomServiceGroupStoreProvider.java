@@ -1,5 +1,6 @@
 package io.xpipe.ext.base.service;
 
+import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.store.DataStore;
 
@@ -8,7 +9,7 @@ import java.util.List;
 public class CustomServiceGroupStoreProvider extends AbstractServiceGroupStoreProvider {
 
     @Override
-    public DataStore defaultStore() {
+    public DataStore defaultStore(DataStoreCategory category) {
         return CustomServiceGroupStore.builder().build();
     }
 

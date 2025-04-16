@@ -36,7 +36,7 @@ public class ToggleSwitchComp extends Comp<CompStructure<ToggleSwitch>> {
         });
         s.setAlignment(Pos.CENTER);
         s.getStyleClass().add("toggle-switch-comp");
-        s.setSelected(selected.getValue());
+        s.setSelected(selected.getValue() != null ? selected.getValue() : false);
         s.selectedProperty().addListener((observable, oldValue, newValue) -> {
             selected.setValue(newValue);
         });

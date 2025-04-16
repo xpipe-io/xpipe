@@ -29,6 +29,7 @@ public class ScrollComp extends Comp<CompStructure<ScrollPane>> {
         sp.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         sp.setSkin(new ScrollPaneSkin(sp));
+        sp.prefHeightProperty().bind(stack.heightProperty());
 
         ScrollBar bar = (ScrollBar) sp.lookup(".scroll-bar:vertical");
         bar.opacityProperty()

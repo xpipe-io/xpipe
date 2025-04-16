@@ -79,7 +79,7 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
     }
 
     @Override
-    public DataStore defaultStore() {
+    public DataStore defaultStore(DataStoreCategory category) {
         return LocalIdentityStore.builder()
                 .password(EncryptedValue.of(new SecretRetrievalStrategy.None()))
                 .sshIdentity(EncryptedValue.of(new SshIdentityStrategy.None()))

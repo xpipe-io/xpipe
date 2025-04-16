@@ -5,11 +5,13 @@ import io.xpipe.app.comp.store.*;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.core.store.DataStore;
 
+import io.xpipe.ext.base.identity.IdentityValue;
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;
@@ -68,7 +70,7 @@ public class IncusInstallStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public DataStore defaultStore() {
+    public DataStore defaultStore(DataStoreCategory category) {
         return new IncusInstallStore(DataStorage.get().local().ref());
     }
 

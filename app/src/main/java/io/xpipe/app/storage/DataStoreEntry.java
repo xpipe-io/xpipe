@@ -74,6 +74,8 @@ public class DataStoreEntry extends StorageElement {
     @NonFinal
     String icon;
 
+    @NonFinal @Getter DataStoreColor color;
+
     private DataStoreEntry(
             Path directory,
             UUID uuid,
@@ -91,7 +93,8 @@ public class DataStoreEntry extends StorageElement {
             String notes,
             Order explicitOrder,
             String icon) {
-        super(directory, uuid, name, lastUsed, lastModified, color, expanded, dirty);
+        super(directory, uuid, name, lastUsed, lastModified, expanded, dirty);
+        this.color = color;
         this.categoryUuid = categoryUuid;
         this.store = store;
         this.storeNode = storeNode;
@@ -113,7 +116,7 @@ public class DataStoreEntry extends StorageElement {
             DataStore store,
             Order explicitOrder,
             String icon) {
-        super(directory, uuid, name, lastUsed, lastModified, null, false, false);
+        super(directory, uuid, name, lastUsed, lastModified, false, false);
         this.categoryUuid = categoryUuid;
         this.store = store;
         this.explicitOrder = explicitOrder;
@@ -308,6 +311,15 @@ public class DataStoreEntry extends StorageElement {
     public void setExplicitOrder(Order uuid) {
         var changed = !Objects.equals(explicitOrder, uuid);
         this.explicitOrder = uuid;
+        if (changed) {
+            notifyUpdate(false, true);
+        }
+    }
+
+
+    public void setColor(DataStoreColor newColor) {
+        var changed = !Objects.equals(color, newColor);
+        this.color = newColor;
         if (changed) {
             notifyUpdate(false, true);
         }

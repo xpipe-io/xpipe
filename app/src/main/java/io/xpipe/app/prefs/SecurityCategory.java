@@ -19,8 +19,6 @@ public class SecurityCategory extends AppPrefsCategory {
                         .addToggle(prefs.alwaysConfirmElevation)
                         .pref(prefs.dontCachePasswords)
                         .addToggle(prefs.dontCachePasswords)
-                        .pref(prefs.denyTempScriptCreation)
-                        .addToggle(prefs.denyTempScriptCreation)
                         .pref(prefs.disableCertutilUse)
                         .addToggle(prefs.disableCertutilUse)
                         .pref(prefs.dontAcceptNewHostKeys)

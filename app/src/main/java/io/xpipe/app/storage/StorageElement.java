@@ -40,15 +40,12 @@ public abstract class StorageElement {
     @Getter
     protected boolean expanded;
 
-    protected @NonFinal @Getter DataStoreColor color;
-
     public StorageElement(
             Path directory,
             UUID uuid,
             String name,
             Instant lastUsed,
             Instant lastModified,
-            DataStoreColor color,
             boolean expanded,
             boolean dirty) {
         this.directory = directory;
@@ -56,7 +53,6 @@ public abstract class StorageElement {
         this.name = name;
         this.lastUsed = lastUsed;
         this.lastModified = lastModified;
-        this.color = color;
         this.expanded = expanded;
         this.dirty = dirty;
     }
@@ -93,14 +89,6 @@ public abstract class StorageElement {
 
     public final void deleteFromDisk() throws IOException {
         FileUtils.deleteDirectory(directory.toFile());
-    }
-
-    public void setColor(DataStoreColor newColor) {
-        var changed = !Objects.equals(color, newColor);
-        this.color = newColor;
-        if (changed) {
-            notifyUpdate(false, true);
-        }
     }
 
     public abstract void writeDataToDisk() throws Exception;

@@ -98,8 +98,6 @@ public class AppPrefs {
             mapVaultShared(new SimpleObjectProperty<>(false), "alwaysConfirmElevation", Boolean.class, false);
     public final BooleanProperty dontCachePasswords =
             mapVaultShared(new SimpleBooleanProperty(false), "dontCachePasswords", Boolean.class, false);
-    public final BooleanProperty denyTempScriptCreation =
-            mapVaultShared(new SimpleBooleanProperty(false), "denyTempScriptCreation", Boolean.class, false);
     final Property<PasswordManager> passwordManager = map(Mapping.builder()
             .property(new SimpleObjectProperty<>())
             .key("passwordManager")
@@ -180,8 +178,6 @@ public class AppPrefs {
             new SimpleBooleanProperty(true), "openConnectionSearchWindowOnConnectionCreation", Boolean.class, false);
     final ObjectProperty<String> downloadsDirectory =
             mapLocal(new SimpleObjectProperty<>(), "downloadsDirectory", String.class, false);
-    final BooleanProperty confirmAllDeletions =
-            mapLocal(new SimpleBooleanProperty(false), "confirmAllDeletions", Boolean.class, false);
     final BooleanProperty developerMode =
             mapLocal(new SimpleBooleanProperty(false), "developerMode", Boolean.class, true);
     final BooleanProperty developerDisableUpdateVersionCheck =
@@ -414,10 +410,6 @@ public class AppPrefs {
 
     public ObservableBooleanValue dontCachePasswords() {
         return dontCachePasswords;
-    }
-
-    public ObservableBooleanValue denyTempScriptCreation() {
-        return denyTempScriptCreation;
     }
 
     public ObservableBooleanValue enableGitStorage() {

@@ -118,7 +118,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
     }
 
     @Override
-    public DataStore defaultStore() {
+    public DataStore defaultStore(DataStoreCategory category) {
         return SyncedIdentityStore.builder()
                 .password(EncryptedValue.VaultKey.of(new SecretRetrievalStrategy.None()))
                 .sshIdentity(EncryptedValue.VaultKey.of(new SshIdentityStrategy.None()))

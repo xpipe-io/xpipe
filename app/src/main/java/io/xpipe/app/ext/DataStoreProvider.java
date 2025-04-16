@@ -8,6 +8,7 @@ import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.comp.store.StoreSectionComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.resources.AppImages;
+import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.store.DataStore;
 
@@ -202,7 +203,7 @@ public interface DataStoreProvider {
         return getModuleName() + ":" + getId() + "_icon.svg";
     }
 
-    default DataStore defaultStore() {
+    default DataStore defaultStore(DataStoreCategory category) {
         return null;
     }
 

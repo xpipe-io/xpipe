@@ -1,13 +1,18 @@
 package io.xpipe.ext.base.action;
 
+import io.xpipe.app.comp.store.StoreCategoryConfigComp;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreCategoryConfig;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.TerminalLauncher;
+import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.CommandDialog;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.process.CommandControl;
@@ -430,6 +435,72 @@ public class RunScriptActionMenu implements ActionProvider {
         }
     }
 
+    private static class ScriptsDisabledActionProvider implements ActionProvider {
+
+        private static class Action implements ActionProvider.Action {
+
+            private final DataStoreEntry entry;
+
+            private Action(DataStoreEntry entry) {this.entry = entry;}
+
+            @Override
+            public void execute() {
+                var wrapper = StoreViewState.get().getCategoryWrapper(DataStorage.get().getStoreCategory(entry));
+                StoreCategoryConfigComp.show(wrapper);
+            }
+        }
+
+        @Override
+        public LeafDataStoreCallSite<?> getLeafDataStoreCallSite() {
+            return new LeafDataStoreCallSite<ShellStore>() {
+                @Override
+                public Action createAction(DataStoreEntryRef<ShellStore> store) {
+                    return new Action(store.get());
+                }
+
+                @Override
+                public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
+                    return AppI18n.observable("scriptsDisabled");
+                }
+
+                @Override
+                public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+                    return new LabelGraphic.IconGraphic("mdi2b-block-helper");
+                }
+
+                @Override
+                public Class<?> getApplicableClass() {
+                    return ShellStore.class;
+                }
+            };
+        }
+
+        @Override
+        public BatchDataStoreCallSite<?> getBatchDataStoreCallSite() {
+            return new BatchDataStoreCallSite<ShellStore>() {
+                @Override
+                public ObservableValue<String> getName() {
+                    return AppI18n.observable("scriptsDisabled");
+                }
+
+                @Override
+                public LabelGraphic getIcon() {
+                    return new LabelGraphic.IconGraphic("mdi2b-block-helper");
+                }
+
+                @Override
+                public Class<?> getApplicableClass() {
+                    return ShellStore.class;
+                }
+
+                @Override
+                public ActionProvider.Action createAction(List<DataStoreEntryRef<ShellStore>> stores) {
+                    return new Action(stores.getFirst().get());
+                }
+            };
+        }
+    }
+
     private static class NoStateActionProvider implements ActionProvider {
 
         @Override
@@ -539,6 +610,10 @@ public class RunScriptActionMenu implements ActionProvider {
 
             @Override
             public List<? extends ActionProvider> getChildren(DataStoreEntryRef<ShellStore> store) {
+                if (Boolean.TRUE.equals(DataStorage.get().getEffectiveCategoryConfig(store.get()).getDontAllowScripts())) {
+                    return List.of(new ScriptsDisabledActionProvider());
+                }
+
                 var replacement = ProcessControlProvider.get().replace(store);
                 var state = replacement.get().getStorePersistentState();
                 if (!(state instanceof SystemState systemState) || systemState.getShellDialect() == null) {
@@ -589,6 +664,11 @@ public class RunScriptActionMenu implements ActionProvider {
 
             @Override
             public List<ActionProvider> getChildren(List<DataStoreEntryRef<ShellStore>> batch) {
+                if (batch.stream().anyMatch(store -> Boolean.TRUE.equals(
+                        DataStorage.get().getEffectiveCategoryConfig(store.get()).getDontAllowScripts()))) {
+                    return List.of(new ScriptsDisabledActionProvider());
+                }
+
                 var stateMissing = batch.stream().anyMatch(ref -> {
                     var state = ref.get().getStorePersistentState();
                     if (state instanceof SystemState systemState) {

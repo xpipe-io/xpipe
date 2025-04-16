@@ -208,7 +208,7 @@ public abstract class DataStorage {
                 var cat = DataStoreCategory.createNew(
                         ALL_IDENTITIES_CATEGORY_UUID, SYNCED_IDENTITIES_CATEGORY_UUID, "Synced");
                 cat.setDirectory(categoriesDir.resolve(SYNCED_IDENTITIES_CATEGORY_UUID.toString()));
-                cat.setSync(true);
+                cat.setConfig(cat.getConfig().withSync(true));
                 storeCategories.add(cat);
             } else {
                 sharedIdentities.get().setParentCategory(ALL_IDENTITIES_CATEGORY_UUID);
@@ -222,12 +222,11 @@ public abstract class DataStorage {
                     "Default",
                     Instant.now(),
                     Instant.now(),
-                    null,
                     true,
                     ALL_CONNECTIONS_CATEGORY_UUID,
                     StoreSortMode.getDefault(),
-                    false,
-                    true));
+                    true,
+                    DataStoreCategoryConfig.empty()));
         }
 
         storeCategories.forEach(dataStoreCategory -> {
@@ -385,24 +384,12 @@ public abstract class DataStorage {
         saveAsync();
     }
 
-    public void syncCategory(DataStoreCategory category, boolean share) {
-        category.setSync(share);
-
-        DataStoreCategory p = category;
-        if (share) {
-            while ((p = DataStorage.get()
-                            .getStoreCategoryIfPresent(p.getParentCategory())
-                            .orElse(null))
-                    != null) {
-                p.setSync(true);
-            }
+    public void updateCategoryConfig(DataStoreCategory category, DataStoreCategoryConfig config) {
+        if (category.setConfig(category.getConfig())) {
+            // Update git remote if needed
+            DataStorage.get().saveAsync();
         }
-
-        // Update git remote if needed
-        DataStorage.get().saveAsync();
     }
-
-    public abstract boolean isOtherUserEntry(UUID uuid);
 
     public void moveEntryToCategory(DataStoreEntry entry, DataStoreCategory newCategory) {
         if (newCategory.getUuid().equals(entry.getCategoryUuid())) {
@@ -890,14 +877,8 @@ public abstract class DataStorage {
             return root.getColor();
         }
 
-        var cats = getCategoryParentHierarchy(cat);
-        for (DataStoreCategory r : cats.reversed()) {
-            if (r.getColor() != null) {
-                return r.getColor();
-            }
-        }
-
-        return null;
+        var catConfig = getEffectiveCategoryConfig(cat);
+        return catConfig.getColor();
     }
 
     public DataStoreEntry getRootForEntry(DataStoreEntry entry, DataStoreCategory cat) {
@@ -1094,6 +1075,10 @@ public abstract class DataStorage {
         return last;
     }
 
+    public DataStoreCategory getStoreCategory(DataStoreEntry entry) {
+        return getStoreCategoryIfPresent(entry.getCategoryUuid()).orElseThrow();
+    }
+
     public Optional<DataStoreCategory> getStoreCategoryIfPresent(UUID uuid) {
         if (uuid == null) {
             return Optional.empty();
@@ -1122,6 +1107,20 @@ public abstract class DataStorage {
         }
 
         return entry.getProvider().displayName(entry);
+    }
+
+    public DataStoreCategoryConfig getEffectiveCategoryConfig(DataStoreEntry entry) {
+        var category = getStoreCategoryIfPresent(entry.getCategoryUuid());
+        if (category.isEmpty()) {
+            return DataStoreCategoryConfig.empty();
+        }
+
+        return getEffectiveCategoryConfig(category.get());
+    }
+
+    public DataStoreCategoryConfig getEffectiveCategoryConfig(DataStoreCategory category) {
+        var hierarchy = getCategoryParentHierarchy(category);
+        return DataStoreCategoryConfig.merge(hierarchy.stream().map(dataStoreCategory -> dataStoreCategory.getConfig()).toList());
     }
 
     public Optional<DataStoreEntry> getStoreEntryIfPresent(UUID id) {

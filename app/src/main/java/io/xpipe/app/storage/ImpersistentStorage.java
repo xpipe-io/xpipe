@@ -5,7 +5,6 @@ import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.util.EncryptionKey;
 
 import java.time.Instant;
-import java.util.UUID;
 import javax.crypto.SecretKey;
 
 public class ImpersistentStorage extends DataStorage {
@@ -36,12 +35,11 @@ public class ImpersistentStorage extends DataStorage {
                     "Default",
                     Instant.now(),
                     Instant.now(),
-                    null,
                     true,
                     ALL_CONNECTIONS_CATEGORY_UUID,
                     StoreSortMode.getDefault(),
                     true,
-                    true);
+                    DataStoreCategoryConfig.empty());
             storeCategories.add(cat);
             selectedCategory = getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).orElseThrow();
         }
@@ -63,8 +61,4 @@ public class ImpersistentStorage extends DataStorage {
         return false;
     }
 
-    @Override
-    public boolean isOtherUserEntry(UUID uuid) {
-        return false;
-    }
 }

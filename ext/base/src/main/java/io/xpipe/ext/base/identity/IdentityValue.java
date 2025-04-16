@@ -1,5 +1,7 @@
 package io.xpipe.ext.base.identity;
 
+import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.EncryptedValue;
 import io.xpipe.app.util.SecretRetrievalStrategy;
@@ -19,6 +21,20 @@ import lombok.extern.jackson.Jacksonized;
     @JsonSubTypes.Type(value = IdentityValue.Ref.class)
 })
 public interface IdentityValue {
+
+    static IdentityValue ofCategory(DataStoreCategory category) {
+        var effective = DataStorage.get().getEffectiveCategoryConfig(category);
+        if (effective.getDefaultIdentityStore() == null) {
+            return null;
+        }
+
+        var found = DataStorage.get().getStoreEntryIfPresent(effective.getDefaultIdentityStore());
+        if (found.isEmpty() || !(found.get().getStore() instanceof IdentityStore identityStore)) {
+            return null;
+        }
+
+        return new Ref(found.get().ref());
+    }
 
     static IdentityValue.InPlace of(LocalIdentityStore identityStore) {
         return new InPlace(identityStore);
