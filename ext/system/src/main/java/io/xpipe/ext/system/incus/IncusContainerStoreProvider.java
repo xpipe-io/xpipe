@@ -58,8 +58,7 @@ public class IncusContainerStoreProvider implements ShellStoreProvider {
                 .disable()
                 .name("container")
                 .description("lxdContainerDescription")
-                .addString(new SimpleObjectProperty<>(st.getContainerName()), false)
-                .disable()
+                .addStaticString(st.getContainerName())
                 .sub(IdentityChoice.container(identity), identity)
                 .bind(
                         () -> {

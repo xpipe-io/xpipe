@@ -66,8 +66,7 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
                 .disable()
                 .name("container")
                 .description("podmanContainerDescription")
-                .addString(new SimpleObjectProperty<>(st.getContainerName()), false)
-                .disable()
+                .addStaticString(st.getContainerName())
                 .buildComp();
         return new GuiDialog(q, val);
     }
