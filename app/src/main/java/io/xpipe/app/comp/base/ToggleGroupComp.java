@@ -39,20 +39,17 @@ public class ToggleGroupComp<T> extends Comp<CompStructure<HBox>> {
             for (var entry : val.entrySet()) {
                 var b = new ToggleButton(entry.getValue().getValue());
                 b.setOnAction(e -> {
-                    value.setValue(entry.getKey());
+                    if (entry.getKey().equals(value.getValue())) {
+                        value.setValue(null);
+                    } else {
+                        value.setValue(entry.getKey());
+                    }
                     e.consume();
                 });
+                group.getToggles().add(b);
                 box.getChildren().add(b);
-                b.setToggleGroup(group);
-                value.addListener((c, o, n) -> {
-                    PlatformThread.runLaterIfNeeded(() -> {
-                        if (entry.getKey().equals(n)) {
-                            group.selectToggle(b);
-                        }
-                    });
-                });
                 if (entry.getKey().equals(value.getValue())) {
-                    group.selectToggle(b);
+                    b.setSelected(true);
                 }
             }
 
@@ -62,12 +59,6 @@ public class ToggleGroupComp<T> extends Comp<CompStructure<HBox>> {
                     box.getChildren().get(i).getStyleClass().add(Styles.CENTER_PILL);
                 }
                 box.getChildren().getLast().getStyleClass().add(Styles.RIGHT_PILL);
-            }
-        });
-
-        group.selectedToggleProperty().addListener((obsVal, oldVal, newVal) -> {
-            if (newVal == null) {
-                oldVal.setSelected(true);
             }
         });
 

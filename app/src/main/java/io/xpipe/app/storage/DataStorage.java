@@ -202,7 +202,7 @@ public abstract class DataStorage {
             localIdentities.get().setParentCategory(ALL_IDENTITIES_CATEGORY_UUID);
         }
 
-        if (supportsSharing()) {
+        if (supportsSync()) {
             var sharedIdentities = getStoreCategoryIfPresent(SYNCED_IDENTITIES_CATEGORY_UUID);
             if (sharedIdentities.isEmpty()) {
                 var cat = DataStoreCategory.createNew(
@@ -269,7 +269,7 @@ public abstract class DataStorage {
 
     public abstract void save(boolean dispose);
 
-    public abstract boolean supportsSharing();
+    public abstract boolean supportsSync();
 
     public boolean shouldSync(DataStoreCategory category) {
         // Don't sync lone identities category
@@ -285,16 +285,8 @@ public abstract class DataStorage {
             return false;
         }
 
-        DataStoreCategory c = category;
-        do {
-            if (!c.shouldShareChildren()) {
-                return false;
-            }
-        } while ((c = DataStorage.get()
-                        .getStoreCategoryIfPresent(c.getParentCategory())
-                        .orElse(null))
-                != null);
-        return true;
+        var config = getEffectiveCategoryConfig(category);
+        return Boolean.TRUE.equals(config.getSync());
     }
 
     public boolean shouldSync(DataStoreEntry entry) {
@@ -385,7 +377,7 @@ public abstract class DataStorage {
     }
 
     public void updateCategoryConfig(DataStoreCategory category, DataStoreCategoryConfig config) {
-        if (category.setConfig(category.getConfig())) {
+        if (category.setConfig(config)) {
             // Update git remote if needed
             DataStorage.get().saveAsync();
         }

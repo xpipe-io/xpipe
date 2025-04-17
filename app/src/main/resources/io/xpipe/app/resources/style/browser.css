@@ -79,6 +79,21 @@
     -fx-padding: 7 0 7 0;
 }
 
+.browser .terminal-dock-comp:empty {
+    -fx-border-insets: 6;
+    -fx-border-width: 1;
+    -fx-border-color: -color-border-default;
+    -fx-border-radius: 4;
+    -fx-background-color: -color-bg-default;
+    -fx-background-insets: 6;
+    -fx-background-radius: 4;
+}
+
+.root.nord .browser .terminal-dock-comp:empty {
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
+
 .selected-file-list {
     -fx-spacing: 5px;
     -fx-padding: 8px;

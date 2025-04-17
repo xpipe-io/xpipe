@@ -22,7 +22,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
 
     @Override
     public DataStoreCreationCategory getCreationCategory() {
-        return DataStorage.get().supportsSharing() ? DataStoreCreationCategory.IDENTITY : null;
+        return DataStorage.get().supportsSync() ? DataStoreCreationCategory.IDENTITY : null;
     }
 
     @Override

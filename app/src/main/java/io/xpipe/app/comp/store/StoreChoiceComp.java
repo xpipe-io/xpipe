@@ -140,7 +140,7 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                         MenuButton m = new MenuButton(null, new FontIcon("mdi2p-plus-box-outline"));
                         m.setMaxHeight(100);
                         m.setMinHeight(0);
-                        StoreCreationMenu.addButtons(m);
+                        StoreCreationMenu.addButtons(m, false);
                         return m;
                     })
                     .accessibleTextKey("addConnection")

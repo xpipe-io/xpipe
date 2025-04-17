@@ -420,7 +420,7 @@ public class StandardStorage extends DataStorage {
     }
 
     @Override
-    public boolean supportsSharing() {
+    public boolean supportsSync() {
         return dataStorageSyncHandler.supportsSync();
     }
 

@@ -57,7 +57,7 @@ public class ImpersistentStorage extends DataStorage {
     public synchronized void save(boolean dispose) {}
 
     @Override
-    public boolean supportsSharing() {
+    public boolean supportsSync() {
         return false;
     }
 

@@ -45,7 +45,7 @@ public class LocalIdentityConvertAction implements ActionProvider {
 
             @Override
             public boolean isApplicable(DataStoreEntryRef<LocalIdentityStore> o) {
-                return DataStorage.get().supportsSharing();
+                return DataStorage.get().supportsSync();
             }
         };
     }

@@ -18,16 +18,18 @@ import java.util.Comparator;
 
 public class StoreCreationMenu {
 
-    public static void addButtons(MenuButton menu) {
-        var automatically = new MenuItem();
-        automatically.setGraphic(new FontIcon("mdi2e-eye-plus-outline"));
-        automatically.textProperty().bind(AppI18n.observable("addAutomatically"));
-        automatically.setOnAction(event -> {
-            ScanDialog.showSingleAsync(null);
-            event.consume();
-        });
-        menu.getItems().add(automatically);
-        menu.getItems().add(new SeparatorMenuItem());
+    public static void addButtons(MenuButton menu, boolean allowSearch) {
+        if (allowSearch) {
+            var automatically = new MenuItem();
+            automatically.setGraphic(new FontIcon("mdi2e-eye-plus-outline"));
+            automatically.textProperty().bind(AppI18n.observable("addAutomatically"));
+            automatically.setOnAction(event -> {
+                ScanDialog.showSingleAsync(null);
+                event.consume();
+            });
+            menu.getItems().add(automatically);
+            menu.getItems().add(new SeparatorMenuItem());
+        }
 
         menu.getItems().add(category("addHost", "mdi2h-home-plus", DataStoreCreationCategory.HOST, "ssh"));
 
@@ -95,8 +97,7 @@ public class StoreCreationMenu {
             });
 
             // Fix weird JavaFX NPE
-            menu.hide();
-            event.consume();
+            menu.getParentPopup().hide();
         });
 
         var providers = sub.stream()

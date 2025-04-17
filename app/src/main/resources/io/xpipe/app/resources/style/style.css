@@ -153,3 +153,7 @@
 .root:performance:dark .store-active-comp .dot {
     -fx-fill: rgb(30, 180, 30, 0.7);
 }
+
+.toggle-group-comp .toggle-button {
+    -fx-padding: 3 10;
+}

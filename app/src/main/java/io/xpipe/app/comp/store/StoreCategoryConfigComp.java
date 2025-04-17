@@ -27,7 +27,7 @@ public class StoreCategoryConfigComp extends SimpleComp {
     public static void show(StoreCategoryWrapper wrapper) {
         var config = new SimpleObjectProperty<>(wrapper.getCategory().getConfig());
         var comp = new ScrollComp(new StoreCategoryConfigComp(wrapper, config));
-        comp.prefWidth(500);
+        comp.prefWidth(600);
         var modal = ModalOverlay.of(AppI18n.observable("categoryConfigTitle", wrapper.getName().getValue()), comp, null);
         modal.addButton(ModalButton.cancel());
         modal.addButton(ModalButton.ok(() -> {
@@ -54,16 +54,20 @@ public class StoreCategoryConfigComp extends SimpleComp {
         var sync = new SimpleObjectProperty<>(c.getSync());
         var ref = new SimpleObjectProperty<>(c.getDefaultIdentityStore() != null ? DataStorage.get().getStoreEntryIfPresent(c.getDefaultIdentityStore()).map(
                 DataStoreEntry::ref).orElse(null) : null);
+        var connectionsCategory = wrapper.getRoot().equals(StoreViewState.get().getAllConnectionsCategory());
         var options = new OptionsBuilder()
                 .nameAndDescription("categorySync")
-                .addToggle(sync)
-                .hide(!DataStorage.get().supportsSharing() || !wrapper.getCategory().canShare())
+                .addYesNoToggle(sync)
+                .hide(!DataStorage.get().supportsSync() || !wrapper.getCategory().canShare())
                 .nameAndDescription("categoryDontAllowScripts")
-                .addToggle(scripts)
-                .nameAndDescription("categoryConfirmAllModifications")
-                .addToggle(confirm)
+                .addYesNoToggle(scripts)
+                .hide(!connectionsCategory)
+//                .nameAndDescription("categoryConfirmAllModifications")
+//                .addYesNoToggle(confirm)
+//                .hide(!connectionsCategory)
                 .nameAndDescription("categoryDefaultIdentity")
                 .addComp(StoreChoiceComp.other(ref, DataStore.class, s -> true, StoreViewState.get().getAllIdentitiesCategory()), ref)
+                .hide(!connectionsCategory)
                 .nameAndDescription("categoryColor")
                 .choice(color, colors)
                 .bind(() -> {

@@ -114,7 +114,7 @@ public class DataStoreCategory extends StorageElement {
         var expanded = Optional.ofNullable(stateJson.get("expanded"))
                 .map(jsonNode -> jsonNode.booleanValue())
                 .orElse(true);
-        var config = Optional.ofNullable(stateJson.get("config"))
+        var config = Optional.ofNullable(json.get("config"))
                 .map(jsonNode -> {
                     try {
                         return JacksonMapper.getDefault().treeToValue(jsonNode, DataStoreCategoryConfig.class);
@@ -180,18 +180,6 @@ public class DataStoreCategory extends StorageElement {
         return true;
     }
 
-    public boolean shouldShareChildren() {
-        if (parentCategory == null) {
-            return true;
-        }
-
-        if (!canShare()) {
-            return false;
-        }
-
-        return Boolean.TRUE.equals(config.getSync());
-    }
-
     @Override
     public Path[] getShareableFiles() {
         return new Path[] {directory.resolve("category.json")};
@@ -217,6 +205,7 @@ public class DataStoreCategory extends StorageElement {
         stateObj.put("sortMode", sortMode.getId());
         stateObj.put("expanded", expanded);
         obj.put("parentUuid", parentCategory != null ? parentCategory.toString() : null);
+        obj.set("config", JacksonMapper.getDefault().valueToTree(config));
 
         var entryString = mapper.writeValueAsString(obj);
         var stateString = mapper.writeValueAsString(stateObj);

@@ -25,7 +25,8 @@ public class DataStoreCategoryConfig {
         Boolean warnOnAllModifications = null;
         Boolean sync = null;
         UUID defaultIdentityStore = null;
-        for (DataStoreCategoryConfig config : configs) {
+        for (int i = configs.size() - 1; i >= 0; i--) {
+            var config = configs.get(i);
             if (color == null) {
                 color = config.color;
             }

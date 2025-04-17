@@ -12,6 +12,7 @@ import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.util.ClipboardHelper;
 import io.xpipe.app.util.ContextMenuHelper;
+import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.process.OsType;
 
@@ -23,7 +24,6 @@ import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.KeyCode;
@@ -37,7 +37,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -97,7 +96,7 @@ public class StoreCategoryComp extends SimpleComp {
                         return new LabelGraphic.IconGraphic("mdomz-settings");
                     }
 
-                    if (!DataStorage.get().supportsSharing()
+                    if (!DataStorage.get().supportsSync()
                             || (!category.getCategory().canShare())) {
                         return new LabelGraphic.IconGraphic("mdi2g-git");
                     }
@@ -128,7 +127,7 @@ public class StoreCategoryComp extends SimpleComp {
                 string -> "(" + string + ")");
         count.visible(Bindings.notEqual(0, category.getShownContainedEntriesCount()));
 
-        var showStatus = hover.or(new SimpleBooleanProperty(DataStorage.get().supportsSharing()))
+        var showStatus = hover.or(new SimpleBooleanProperty(DataStorage.get().supportsSync()))
                 .or(showing);
         var focus = new SimpleBooleanProperty();
         var h = new HorizontalComp(List.of(
@@ -202,6 +201,13 @@ public class StoreCategoryComp extends SimpleComp {
             copyId.setOnAction(event ->
                     ClipboardHelper.copyText(category.getCategory().getUuid().toString()));
             contextMenu.getItems().add(copyId);
+        }
+
+        if (AppPrefs.get().developerMode().getValue()) {
+            var browse = new MenuItem(AppI18n.get("browseInternalStorage"), new FontIcon("mdi2f-folder-open-outline"));
+            browse.setOnAction(event ->
+                    DesktopHelper.browsePathLocal(category.getCategory().getDirectory()));
+            contextMenu.getItems().add(browse);
         }
 
         var newCategory = new MenuItem(AppI18n.get("newCategory"), new FontIcon("mdi2p-plus-thick"));

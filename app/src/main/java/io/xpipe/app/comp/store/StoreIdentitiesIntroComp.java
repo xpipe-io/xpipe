@@ -48,7 +48,7 @@ public class StoreIdentitiesIntroComp extends SimpleComp {
         var addButton = new Button(null, new FontIcon("mdi2p-play-circle"));
         addButton.textProperty().bind(AppI18n.observable("createIdentity"));
         addButton.setOnAction(event -> {
-            var canSync = DataStorage.get().supportsSharing();
+            var canSync = DataStorage.get().supportsSync();
             var prov = canSync
                     ? DataStoreProviders.byId("syncedIdentity").orElseThrow()
                     : DataStoreProviders.byId("localIdentity").orElseThrow();

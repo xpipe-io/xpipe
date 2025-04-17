@@ -40,7 +40,6 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
     public CompStructure<Pane> createBase() {
         Pane pane;
         var content = new VBox();
-        content.setSpacing(7);
         pane = content;
         pane.getStyleClass().add("options-comp");
 
@@ -62,7 +61,6 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
             if (showVertical) {
                 var line = new VBox();
                 line.prefWidthProperty().bind(pane.widthProperty());
-                line.setSpacing(2);
 
                 var name = new Label();
                 name.getStyleClass().add("name");
@@ -71,6 +69,9 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                 name.setMinHeight(Region.USE_PREF_SIZE);
                 name.setAlignment(Pos.CENTER_LEFT);
                 if (compRegion != null) {
+                    line.spacingProperty().bind(PlatformThread.sync(Bindings.createDoubleBinding(() -> {
+                        return name.isManaged() ? 2.0 : 0.0;
+                    }, name.managedProperty())));
                     name.visibleProperty().bind(PlatformThread.sync(compRegion.visibleProperty()));
                     name.managedProperty().bind(PlatformThread.sync(compRegion.managedProperty()));
                 }
@@ -180,6 +181,16 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
             } else {
                 if (compRegion != null) {
                     pane.getChildren().add(compRegion);
+                }
+            }
+
+            var last = entry.equals(entries.getLast());
+            if (!last) {
+                Spacer spacer = new Spacer(7, Orientation.VERTICAL);
+                content.getChildren().add(spacer);
+                if (compRegion != null) {
+                    spacer.visibleProperty().bind(PlatformThread.sync(compRegion.visibleProperty()));
+                    spacer.managedProperty().bind(PlatformThread.sync(compRegion.managedProperty()));
                 }
             }
         }

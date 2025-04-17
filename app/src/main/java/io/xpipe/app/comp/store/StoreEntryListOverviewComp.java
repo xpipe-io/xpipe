@@ -116,7 +116,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
         menu.textProperty().bind(AppI18n.observable("new"));
         menu.setAlignment(Pos.CENTER);
         menu.setTextAlignment(TextAlignment.CENTER);
-        StoreCreationMenu.addButtons(menu);
+        StoreCreationMenu.addButtons(menu, true);
         menu.setOpacity(0.85);
         menu.setMinWidth(Region.USE_PREF_SIZE);
         return menu;
