@@ -8,6 +8,7 @@ import javafx.beans.binding.Bindings;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.skin.ScrollPaneSkin;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
 public class ScrollComp extends Comp<CompStructure<ScrollPane>> {
@@ -20,7 +21,8 @@ public class ScrollComp extends Comp<CompStructure<ScrollPane>> {
 
     @Override
     public CompStructure<ScrollPane> createBase() {
-        var stack = new StackPane(content.createRegion());
+        var r = content.createRegion();
+        var stack = new StackPane(r);
         stack.getStyleClass().add("scroll-comp-content");
 
         var sp = new ScrollPane(stack);
@@ -29,7 +31,6 @@ public class ScrollComp extends Comp<CompStructure<ScrollPane>> {
         sp.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         sp.setSkin(new ScrollPaneSkin(sp));
-        sp.prefHeightProperty().bind(stack.heightProperty());
 
         ScrollBar bar = (ScrollBar) sp.lookup(".scroll-bar:vertical");
         bar.opacityProperty()

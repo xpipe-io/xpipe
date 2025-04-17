@@ -2,25 +2,27 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.FilterComp;
-import io.xpipe.app.comp.base.HorizontalComp;
-import io.xpipe.app.comp.base.PrettyImageHelper;
+import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.DataStoreCategoryChoiceComp;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.store.DataStore;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.StringBinding;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.MenuButton;
@@ -128,6 +130,7 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                         }
                     },
                     initialExpanded);
+
             var category = new DataStoreCategoryChoiceComp(
                             initialCategory != null ? initialCategory.getRoot() : null,
                             StoreViewState.get().getActiveCategory(),
@@ -174,11 +177,24 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                     })
                     .createStructure()
                     .get();
-            var r = section.vgrow().createRegion();
+
+            var emptyText = Bindings.createStringBinding(() -> {
+                var count = StoreViewState.get().getAllEntries().getList().stream().filter(applicable).count();
+                return count == 0 ? AppI18n.get("noCompatibleConnection") : null;
+            }, StoreViewState.get().getAllEntries().getList());
+            var emptyLabel = new LabelComp(emptyText, new SimpleObjectProperty<>(new LabelGraphic.IconGraphic("mdi2f-filter")));
+            emptyLabel.apply(struc -> AppFontSizes.sm(struc.get()));
+            emptyLabel.hide(BindingsHelper.map(emptyText, s -> s == null));
+            emptyLabel.minHeight(80);
+
+            var listStack = new StackComp(List.of(emptyLabel, section));
+            listStack.vgrow();
+
+            var r = listStack.createRegion();
             var content = new VBox(top, r);
             content.setFillWidth(true);
             content.getStyleClass().add("choice-comp-content");
-            content.setPrefWidth(500);
+            content.setPrefWidth(480);
             content.setMaxHeight(550);
 
             popover.setContentNode(content);
@@ -188,6 +204,11 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
             popover.setDetachable(true);
             popover.setTitle(AppI18n.get("selectConnection"));
             AppFontSizes.xs(popover.getContentNode());
+
+            // Hide on connection creation dialog
+            AppDialog.getModalOverlays().addListener((ListChangeListener<? super ModalOverlay>) c -> {
+                popover.hide();
+            });
         }
 
         return popover;

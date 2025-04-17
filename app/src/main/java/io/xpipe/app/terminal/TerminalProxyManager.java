@@ -28,10 +28,6 @@ public class TerminalProxyManager {
             return false;
         }
 
-        if (ref.get().equals(DataStorage.get().local())) {
-            return true;
-        }
-
         var parent = DataStorage.get().getDefaultDisplayParent(ref.get());
         if (parent.isEmpty()) {
             return false;

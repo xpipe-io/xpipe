@@ -15,7 +15,9 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import lombok.AllArgsConstructor;
 
 import java.util.Arrays;
@@ -26,7 +28,7 @@ public class StoreCategoryConfigComp extends SimpleComp {
 
     public static void show(StoreCategoryWrapper wrapper) {
         var config = new SimpleObjectProperty<>(wrapper.getCategory().getConfig());
-        var comp = new ScrollComp(new StoreCategoryConfigComp(wrapper, config));
+        var comp = new StoreCategoryConfigComp(wrapper, config);
         comp.prefWidth(600);
         var modal = ModalOverlay.of(AppI18n.observable("categoryConfigTitle", wrapper.getName().getValue()), comp, null);
         modal.addButton(ModalButton.cancel());
@@ -74,6 +76,10 @@ public class StoreCategoryConfigComp extends SimpleComp {
                     return new DataStoreCategoryConfig(color.get() > 0 ? DataStoreColor.values()[color.get() - 1] : null, scripts.get(), confirm.get(), sync.get(), ref.get() != null ? ref.get().get().getUuid() : null);
                 }, config)
                 .buildComp();
-        return options.createRegion();
+        var r = options.createRegion();
+        var sp = new ScrollPane(r);
+        sp.setFitToWidth(true);
+        sp.prefHeightProperty().bind(r.heightProperty());
+        return sp;
     }
 }

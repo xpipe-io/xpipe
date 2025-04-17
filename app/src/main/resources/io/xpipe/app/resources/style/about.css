@@ -14,10 +14,6 @@
 
 }
 
-.properties-comp {
-    -fx-spacing: 0.4em;
-}
-
 .properties-comp .header {
     -fx-graphic-text-gap: 0.8em;
 }

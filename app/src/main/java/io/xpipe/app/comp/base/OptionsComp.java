@@ -11,6 +11,7 @@ import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -38,9 +39,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
 
     @Override
     public CompStructure<Pane> createBase() {
-        Pane pane;
-        var content = new VBox();
-        pane = content;
+        Pane pane = new VBox();
         pane.getStyleClass().add("options-comp");
 
         var nameRegions = new ArrayList<Region>();
@@ -76,6 +75,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                     name.managedProperty().bind(PlatformThread.sync(compRegion.managedProperty()));
                 }
                 line.getChildren().add(name);
+                VBox.setMargin(name, new Insets(0, 0, 0, 1));
 
                 if (entry.description() != null) {
                     var description = new Label();
@@ -132,6 +132,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                         HBox.setHgrow(descriptionBox, Priority.ALWAYS);
                         descriptionBox.setAlignment(Pos.CENTER_LEFT);
                         line.getChildren().add(descriptionBox);
+                        VBox.setMargin(descriptionBox, new Insets(0, 0, 0, 1));
 
                         if (compRegion != null) {
                             descriptionBox.visibleProperty().bind(PlatformThread.sync(compRegion.visibleProperty()));
@@ -140,6 +141,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                     } else {
                         line.getChildren().add(description);
                         line.getChildren().add(new Spacer(2, Orientation.VERTICAL));
+                        VBox.setMargin(description, new Insets(0, 0, 0, 1));
                     }
                 }
 
@@ -187,7 +189,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
             var last = entry.equals(entries.getLast());
             if (!last) {
                 Spacer spacer = new Spacer(7, Orientation.VERTICAL);
-                content.getChildren().add(spacer);
+                pane.getChildren().add(spacer);
                 if (compRegion != null) {
                     spacer.visibleProperty().bind(PlatformThread.sync(compRegion.visibleProperty()));
                     spacer.managedProperty().bind(PlatformThread.sync(compRegion.managedProperty()));

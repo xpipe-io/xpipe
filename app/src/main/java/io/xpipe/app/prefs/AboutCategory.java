@@ -26,16 +26,16 @@ public class AboutCategory extends AppPrefsCategory {
 
     @Override
     protected Comp<?> create() {
-        var props = createProperties().padding(new Insets(0, 0, 0, 5));
+        var props = createProperties();
         var update = new UpdateCheckComp().prefWidth(600);
         return new VerticalComp(List.of(
                         props,
-                        Comp.hspacer(8),
+                        Comp.hspacer(3),
                         update,
                         Comp.hspacer(13),
                         Comp.hseparator().padding(Insets.EMPTY).maxWidth(600)))
                 .apply(s -> s.get().setFillWidth(true))
-                .apply(struc -> struc.get().setSpacing(15))
+                .apply(struc -> struc.get().setSpacing(12))
                 .styleClass("information")
                 .styleClass("about-tab")
                 .apply(struc -> struc.get().maxWidth(600));
@@ -55,18 +55,16 @@ public class AboutCategory extends AppPrefsCategory {
         }
 
         var section = new OptionsBuilder()
-                .addComp(Comp.vspacer(45))
+                .addComp(Comp.vspacer(40))
                 .addComp(title, null)
                 .addComp(Comp.vspacer(10))
                 .name("build")
                 .addComp(new LabelComp(AppProperties.get().getBuild()), null)
                 .name("distribution")
                 .addComp(new LabelComp(AppDistributionType.get().toTranslatedString()))
-                .name("runtimeVersion")
-                .addComp(new LabelComp(System.getProperty("java.vm.version")), null)
                 .name("virtualMachine")
                 .addComp(
-                        new LabelComp(System.getProperty("java.vm.vendor") + " " + System.getProperty("java.vm.name")),
+                        new LabelComp(System.getProperty("java.vm.vendor") + " " + System.getProperty("java.vm.name") + " " + System.getProperty("java.vm.version")),
                         null)
                 .buildComp();
         return section.styleClass("properties-comp");
