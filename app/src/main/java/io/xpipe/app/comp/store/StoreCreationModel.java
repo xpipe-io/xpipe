@@ -125,32 +125,24 @@ public class StoreCreationModel {
 
         // Don't put it in the wrong root category
         if ((provider.getValue().getCreationCategory() == null
-                || !provider.getValue()
-                .getCreationCategory()
-                .getCategory()
-                .equals(rootCategory.getUuid()))) {
+                || !provider.getValue().getCreationCategory().getCategory().equals(rootCategory.getUuid()))) {
             targetCategory = provider.getValue().getCreationCategory() != null
                     ? provider.getValue().getCreationCategory().getCategory()
                     : DataStorage.ALL_CONNECTIONS_CATEGORY_UUID;
         }
 
         // Don't use the all connections category
-        if (targetCategory.equals(
-                DataStorage.get().getAllConnectionsCategory().getUuid())) {
-            targetCategory = DataStorage.get()
-                    .getDefaultConnectionsCategory()
-                    .getUuid();
+        if (targetCategory.equals(DataStorage.get().getAllConnectionsCategory().getUuid())) {
+            targetCategory = DataStorage.get().getDefaultConnectionsCategory().getUuid();
         }
 
         // Don't use the all scripts category
-        if (targetCategory.equals(
-                DataStorage.get().getAllScriptsCategory().getUuid())) {
+        if (targetCategory.equals(DataStorage.get().getAllScriptsCategory().getUuid())) {
             targetCategory = DataStorage.CUSTOM_SCRIPTS_CATEGORY_UUID;
         }
 
         // Don't use the all identities category
-        if (targetCategory.equals(
-                DataStorage.get().getAllIdentitiesCategory().getUuid())) {
+        if (targetCategory.equals(DataStorage.get().getAllIdentitiesCategory().getUuid())) {
             targetCategory = DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID;
         }
 

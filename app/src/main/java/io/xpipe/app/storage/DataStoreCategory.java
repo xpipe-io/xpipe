@@ -42,8 +42,8 @@ public class DataStoreCategory extends StorageElement {
             boolean dirty,
             UUID parentCategory,
             StoreSortMode sortMode,
-            boolean expanded, DataStoreCategoryConfig config
-    ) {
+            boolean expanded,
+            DataStoreCategoryConfig config) {
         super(directory, uuid, name, lastUsed, lastModified, expanded, dirty);
         this.parentCategory = parentCategory;
         this.sortMode = sortMode;
@@ -75,8 +75,7 @@ public class DataStoreCategory extends StorageElement {
                 parentCategory,
                 StoreSortMode.getDefault(),
                 true,
-                DataStoreCategoryConfig.empty()
-        );
+                DataStoreCategoryConfig.empty());
     }
 
     public static Optional<DataStoreCategory> fromDirectory(Path dir) throws Exception {
@@ -136,7 +135,8 @@ public class DataStoreCategory extends StorageElement {
                     } catch (JsonProcessingException e) {
                         return null;
                     }
-                }).orElse(null);
+                })
+                .orElse(null);
         if (color != null) {
             config = config.withColor(color);
         }

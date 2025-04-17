@@ -6,7 +6,6 @@ import io.xpipe.app.browser.action.BrowserBranchAction;
 import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
-import io.xpipe.app.comp.store.StoreCategoryConfigComp;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
@@ -50,7 +49,8 @@ public class RunScriptAction implements BrowserAction, BrowserBranchAction {
     @Override
     public List<? extends BrowserAction> getBranchingActions(
             BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        var config = DataStorage.get().getEffectiveCategoryConfig(model.getEntry().get());
+        var config =
+                DataStorage.get().getEffectiveCategoryConfig(model.getEntry().get());
         if (Boolean.TRUE.equals(config.getDontAllowScripts())) {
             return List.of(new BrowserLeafAction() {
                 @Override

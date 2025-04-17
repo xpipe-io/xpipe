@@ -8,7 +8,6 @@ import javafx.beans.binding.Bindings;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.skin.ScrollPaneSkin;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
 public class ScrollComp extends Comp<CompStructure<ScrollPane>> {

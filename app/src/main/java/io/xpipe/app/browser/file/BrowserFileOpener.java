@@ -1,7 +1,6 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.ext.ConnectionFileSystem;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BooleanScope;
@@ -13,6 +12,7 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileInfo;
 import io.xpipe.core.store.FilePath;
+
 import lombok.SneakyThrows;
 
 import java.io.FilterOutputStream;
@@ -63,7 +63,8 @@ public class BrowserFileOpener {
         }
     }
 
-    private static boolean requiresSudo(BrowserFileSystemTabModel model, FileInfo.Unix info, FilePath filePath) throws Exception {
+    private static boolean requiresSudo(BrowserFileSystemTabModel model, FileInfo.Unix info, FilePath filePath)
+            throws Exception {
         if (model.getCache().isRoot()) {
             return false;
         }
@@ -74,15 +75,20 @@ public class BrowserFileOpener {
                 return false;
             }
 
-            var userOwned = info.getUid() != null && model.getCache().getUidForUser(model.getCache().getUsername()) == info.getUid() ||
-                    info.getUser() != null && model.getCache().getUsername().equals(info.getUser());
+            var userOwned = info.getUid() != null
+                            && model.getCache().getUidForUser(model.getCache().getUsername()) == info.getUid()
+                    || info.getUser() != null && model.getCache().getUsername().equals(info.getUser());
             var userWrite = info.getPermissions().charAt(1) == 'w';
             if (userOwned && userWrite) {
                 return false;
             }
         }
 
-        var test = model.getFileSystem().getShell().orElseThrow().command(CommandBuilder.of().add("test", "-w").addFile(filePath)).executeAndCheck();
+        var test = model.getFileSystem()
+                .getShell()
+                .orElseThrow()
+                .command(CommandBuilder.of().add("test", "-w").addFile(filePath))
+                .executeAndCheck();
         return !test;
     }
 

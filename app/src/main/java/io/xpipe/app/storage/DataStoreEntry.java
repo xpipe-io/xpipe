@@ -74,7 +74,9 @@ public class DataStoreEntry extends StorageElement {
     @NonFinal
     String icon;
 
-    @NonFinal @Getter DataStoreColor color;
+    @NonFinal
+    @Getter
+    DataStoreColor color;
 
     private DataStoreEntry(
             Path directory,
@@ -315,7 +317,6 @@ public class DataStoreEntry extends StorageElement {
             notifyUpdate(false, true);
         }
     }
-
 
     public void setColor(DataStoreColor newColor) {
         var changed = !Objects.equals(color, newColor);

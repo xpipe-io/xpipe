@@ -236,8 +236,13 @@ public class TerminalCategory extends AppPrefsCategory {
                 .build();
         var choice = choiceBuilder.build().buildComp();
         choice.maxWidth(getCompWidth());
-        var options = new OptionsBuilder().name("terminalMultiplexer").description(
-                OsType.getLocal() == OsType.WINDOWS ? "terminalMultiplexerWindowsDescription" : "terminalMultiplexerDescription").addComp(choice);
+        var options = new OptionsBuilder()
+                .name("terminalMultiplexer")
+                .description(
+                        OsType.getLocal() == OsType.WINDOWS
+                                ? "terminalMultiplexerWindowsDescription"
+                                : "terminalMultiplexerDescription")
+                .addComp(choice);
         if (OsType.getLocal() == OsType.WINDOWS) {
             options.disable(BindingsHelper.map(prefs.terminalProxy(), uuid -> uuid == null));
         }

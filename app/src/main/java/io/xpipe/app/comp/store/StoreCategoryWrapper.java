@@ -56,10 +56,12 @@ public class StoreCategoryWrapper {
         this.name = new SimpleStringProperty(category.getName());
         this.lastAccess = new SimpleObjectProperty<>(category.getLastAccess());
         this.sortMode = new SimpleObjectProperty<>(category.getSortMode());
-        this.sync = new SimpleBooleanProperty(Boolean.TRUE.equals(DataStorage.get().getEffectiveCategoryConfig(category).getSync()));
+        this.sync = new SimpleBooleanProperty(Boolean.TRUE.equals(
+                DataStorage.get().getEffectiveCategoryConfig(category).getSync()));
         this.children = DerivedObservableList.arrayList(true);
         this.directContainedEntries = DerivedObservableList.arrayList(true);
-        this.color.setValue(DataStorage.get().getEffectiveCategoryConfig(category).getColor());
+        this.color.setValue(
+                DataStorage.get().getEffectiveCategoryConfig(category).getColor());
         setupListeners();
     }
 
@@ -163,7 +165,8 @@ public class StoreCategoryWrapper {
 
         lastAccess.setValue(category.getLastAccess().minus(Duration.ofMillis(500)));
         sortMode.setValue(category.getSortMode());
-        sync.setValue(Boolean.TRUE.equals(DataStorage.get().getEffectiveCategoryConfig(category).getSync()));
+        sync.setValue(Boolean.TRUE.equals(
+                DataStorage.get().getEffectiveCategoryConfig(category).getSync()));
         expanded.setValue(category.isExpanded());
         color.setValue(DataStorage.get().getEffectiveCategoryConfig(category).getColor());
 

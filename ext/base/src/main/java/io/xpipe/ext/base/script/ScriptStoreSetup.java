@@ -1,23 +1,16 @@
 package io.xpipe.ext.base.script;
 
-import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.ShellTemp;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.StatefulDataStore;
-import io.xpipe.core.util.FailableFunction;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class ScriptStoreSetup {
 

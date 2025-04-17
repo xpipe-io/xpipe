@@ -311,7 +311,12 @@ public class AppTheme {
                 Color.WHITE,
                 Color.web("#24292f"),
                 () -> ColorHelper.withOpacity(
-                        Platform.getPreferences().getAccentColor().darker().desaturate().brighter(), 0.3));
+                        Platform.getPreferences()
+                                .getAccentColor()
+                                .darker()
+                                .desaturate()
+                                .brighter(),
+                        0.3));
         public static final Theme PRIMER_DARK = new Theme(
                 "dark",
                 "primer",
@@ -320,7 +325,12 @@ public class AppTheme {
                 Color.web("#0d1117"),
                 Color.web("#c9d1d9"),
                 () -> ColorHelper.withOpacity(
-                        Platform.getPreferences().getAccentColor().desaturate().desaturate().darker(), 0.2));
+                        Platform.getPreferences()
+                                .getAccentColor()
+                                .desaturate()
+                                .desaturate()
+                                .darker(),
+                        0.2));
         public static final Theme NORD_LIGHT = new Theme(
                 "nordLight",
                 "nord",
@@ -329,7 +339,12 @@ public class AppTheme {
                 Color.web("#dadadc"),
                 Color.web("#2E3440"),
                 () -> ColorHelper.withOpacity(
-                        Platform.getPreferences().getAccentColor().darker().desaturate().brighter(), 0.3));
+                        Platform.getPreferences()
+                                .getAccentColor()
+                                .darker()
+                                .desaturate()
+                                .brighter(),
+                        0.3));
         public static final Theme NORD_DARK = new Theme(
                 "nordDark",
                 "nord",
@@ -338,7 +353,12 @@ public class AppTheme {
                 Color.web("#2d3137"),
                 Color.web("#24292f"),
                 () -> ColorHelper.withOpacity(
-                        Platform.getPreferences().getAccentColor().desaturate().desaturate().darker(), 0.2));
+                        Platform.getPreferences()
+                                .getAccentColor()
+                                .desaturate()
+                                .desaturate()
+                                .darker(),
+                        0.2));
         public static final Theme CUPERTINO_LIGHT = new Theme(
                 "cupertinoLight",
                 "cupertino",
@@ -347,7 +367,12 @@ public class AppTheme {
                 Color.WHITE,
                 Color.BLACK,
                 () -> ColorHelper.withOpacity(
-                        Platform.getPreferences().getAccentColor().darker().desaturate().brighter(), 0.3));
+                        Platform.getPreferences()
+                                .getAccentColor()
+                                .darker()
+                                .desaturate()
+                                .brighter(),
+                        0.3));
         public static final Theme CUPERTINO_DARK = new Theme(
                 "cupertinoDark",
                 "cupertino",
@@ -356,7 +381,12 @@ public class AppTheme {
                 Color.BLACK,
                 Color.WHITE,
                 () -> ColorHelper.withOpacity(
-                        Platform.getPreferences().getAccentColor().desaturate().desaturate().darker(), 0.2));
+                        Platform.getPreferences()
+                                .getAccentColor()
+                                .desaturate()
+                                .desaturate()
+                                .darker(),
+                        0.2));
         public static final Theme DRACULA = new Theme(
                 "dracula",
                 "dracula",
@@ -365,7 +395,12 @@ public class AppTheme {
                 Color.web("#383f49"),
                 Color.web("#9580ff"),
                 () -> ColorHelper.withOpacity(
-                        Platform.getPreferences().getAccentColor().desaturate().desaturate().darker(), 0.2));
+                        Platform.getPreferences()
+                                .getAccentColor()
+                                .desaturate()
+                                .desaturate()
+                                .darker(),
+                        0.2));
         public static final Theme MOCHA = new DerivedTheme(
                 "mocha",
                 "mocha",
@@ -375,7 +410,12 @@ public class AppTheme {
                 Color.web("#2E2E4EFF"),
                 Color.web("#CDD6F4FF"),
                 () -> ColorHelper.withOpacity(
-                        Platform.getPreferences().getAccentColor().desaturate().desaturate().darker(), 0.2),
+                        Platform.getPreferences()
+                                .getAccentColor()
+                                .desaturate()
+                                .desaturate()
+                                .darker(),
+                        0.2),
                 91);
 
         // Adjust this to create your own theme

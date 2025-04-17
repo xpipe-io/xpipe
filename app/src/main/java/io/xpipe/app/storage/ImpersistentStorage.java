@@ -60,5 +60,4 @@ public class ImpersistentStorage extends DataStorage {
     public boolean supportsSync() {
         return false;
     }
-
 }

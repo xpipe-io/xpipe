@@ -12,7 +12,6 @@ import io.xpipe.ext.base.store.StartableStore;
 import io.xpipe.ext.base.store.StoppableStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.ext.system.incus.IncusContainerStore;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;

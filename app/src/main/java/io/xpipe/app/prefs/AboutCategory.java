@@ -64,7 +64,8 @@ public class AboutCategory extends AppPrefsCategory {
                 .addComp(new LabelComp(AppDistributionType.get().toTranslatedString()))
                 .name("virtualMachine")
                 .addComp(
-                        new LabelComp(System.getProperty("java.vm.vendor") + " " + System.getProperty("java.vm.name") + " " + System.getProperty("java.vm.version")),
+                        new LabelComp(System.getProperty("java.vm.vendor") + " " + System.getProperty("java.vm.name")
+                                + " " + System.getProperty("java.vm.version")),
                         null)
                 .buildComp();
         return section.styleClass("properties-comp");

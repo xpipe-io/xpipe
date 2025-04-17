@@ -295,9 +295,7 @@ public class OptionsBuilder {
         var map = new LinkedHashMap<Boolean, ObservableValue<String>>();
         map.put(Boolean.FALSE, AppI18n.observable("app.no"));
         map.put(Boolean.TRUE, AppI18n.observable("app.yes"));
-        var comp = new ToggleGroupComp<>(
-                prop,
-                new SimpleObjectProperty<>(map));
+        var comp = new ToggleGroupComp<>(prop, new SimpleObjectProperty<>(map));
         pushComp(comp);
         props.add(prop);
         return this;

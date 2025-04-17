@@ -7,7 +7,6 @@ import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FilePath;
 
-import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
@@ -76,7 +75,8 @@ public class BrowserAlerts {
     }
 
     public static boolean showDeleteAlert(BrowserFileSystemTabModel model, List<FileEntry> source) {
-        var config = DataStorage.get().getEffectiveCategoryConfig(model.getEntry().get());
+        var config =
+                DataStorage.get().getEffectiveCategoryConfig(model.getEntry().get());
         if (!Boolean.TRUE.equals(config.getConfirmAllModifications())
                 && source.stream().noneMatch(entry -> entry.getKind() == FileKind.DIRECTORY)) {
             return true;

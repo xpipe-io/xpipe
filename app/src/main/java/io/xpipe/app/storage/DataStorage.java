@@ -1112,7 +1112,9 @@ public abstract class DataStorage {
 
     public DataStoreCategoryConfig getEffectiveCategoryConfig(DataStoreCategory category) {
         var hierarchy = getCategoryParentHierarchy(category);
-        return DataStoreCategoryConfig.merge(hierarchy.stream().map(dataStoreCategory -> dataStoreCategory.getConfig()).toList());
+        return DataStoreCategoryConfig.merge(hierarchy.stream()
+                .map(dataStoreCategory -> dataStoreCategory.getConfig())
+                .toList());
     }
 
     public Optional<DataStoreEntry> getStoreEntryIfPresent(UUID id) {

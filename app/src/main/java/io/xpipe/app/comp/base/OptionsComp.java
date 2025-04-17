@@ -68,9 +68,12 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                 name.setMinHeight(Region.USE_PREF_SIZE);
                 name.setAlignment(Pos.CENTER_LEFT);
                 if (compRegion != null) {
-                    line.spacingProperty().bind(PlatformThread.sync(Bindings.createDoubleBinding(() -> {
-                        return name.isManaged() ? 2.0 : 0.0;
-                    }, name.managedProperty())));
+                    line.spacingProperty()
+                            .bind(PlatformThread.sync(Bindings.createDoubleBinding(
+                                    () -> {
+                                        return name.isManaged() ? 2.0 : 0.0;
+                                    },
+                                    name.managedProperty())));
                     name.visibleProperty().bind(PlatformThread.sync(compRegion.visibleProperty()));
                     name.managedProperty().bind(PlatformThread.sync(compRegion.managedProperty()));
                 }

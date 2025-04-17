@@ -11,7 +11,6 @@ import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.core.store.DataStore;
 
-import io.xpipe.ext.base.identity.IdentityValue;
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;

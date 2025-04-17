@@ -17,7 +17,6 @@ import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.store.DataStore;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringBinding;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -178,11 +177,16 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                     .createStructure()
                     .get();
 
-            var emptyText = Bindings.createStringBinding(() -> {
-                var count = StoreViewState.get().getAllEntries().getList().stream().filter(applicable).count();
-                return count == 0 ? AppI18n.get("noCompatibleConnection") : null;
-            }, StoreViewState.get().getAllEntries().getList());
-            var emptyLabel = new LabelComp(emptyText, new SimpleObjectProperty<>(new LabelGraphic.IconGraphic("mdi2f-filter")));
+            var emptyText = Bindings.createStringBinding(
+                    () -> {
+                        var count = StoreViewState.get().getAllEntries().getList().stream()
+                                .filter(applicable)
+                                .count();
+                        return count == 0 ? AppI18n.get("noCompatibleConnection") : null;
+                    },
+                    StoreViewState.get().getAllEntries().getList());
+            var emptyLabel =
+                    new LabelComp(emptyText, new SimpleObjectProperty<>(new LabelGraphic.IconGraphic("mdi2f-filter")));
             emptyLabel.apply(struc -> AppFontSizes.sm(struc.get()));
             emptyLabel.hide(BindingsHelper.map(emptyText, s -> s == null));
             emptyLabel.minHeight(80);

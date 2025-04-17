@@ -8,11 +8,9 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStoreCategoryConfig;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.TerminalLauncher;
-import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.CommandDialog;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.process.CommandControl;
@@ -441,11 +439,14 @@ public class RunScriptActionMenu implements ActionProvider {
 
             private final DataStoreEntry entry;
 
-            private Action(DataStoreEntry entry) {this.entry = entry;}
+            private Action(DataStoreEntry entry) {
+                this.entry = entry;
+            }
 
             @Override
             public void execute() {
-                var wrapper = StoreViewState.get().getCategoryWrapper(DataStorage.get().getStoreCategory(entry));
+                var wrapper = StoreViewState.get()
+                        .getCategoryWrapper(DataStorage.get().getStoreCategory(entry));
                 StoreCategoryConfigComp.show(wrapper);
             }
         }
@@ -610,7 +611,9 @@ public class RunScriptActionMenu implements ActionProvider {
 
             @Override
             public List<? extends ActionProvider> getChildren(DataStoreEntryRef<ShellStore> store) {
-                if (Boolean.TRUE.equals(DataStorage.get().getEffectiveCategoryConfig(store.get()).getDontAllowScripts())) {
+                if (Boolean.TRUE.equals(DataStorage.get()
+                        .getEffectiveCategoryConfig(store.get())
+                        .getDontAllowScripts())) {
                     return List.of(new ScriptsDisabledActionProvider());
                 }
 
@@ -664,8 +667,10 @@ public class RunScriptActionMenu implements ActionProvider {
 
             @Override
             public List<ActionProvider> getChildren(List<DataStoreEntryRef<ShellStore>> batch) {
-                if (batch.stream().anyMatch(store -> Boolean.TRUE.equals(
-                        DataStorage.get().getEffectiveCategoryConfig(store.get()).getDontAllowScripts()))) {
+                if (batch.stream()
+                        .anyMatch(store -> Boolean.TRUE.equals(DataStorage.get()
+                                .getEffectiveCategoryConfig(store.get())
+                                .getDontAllowScripts()))) {
                     return List.of(new ScriptsDisabledActionProvider());
                 }
 

@@ -159,8 +159,9 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
                 super.launch(configuration);
             } else {
                 LocalShell.getShell()
-                        .executeSimpleCommand(
-                                CommandBuilder.of().addFile(getPath().toString()).add(toCommand(configuration)));
+                        .executeSimpleCommand(CommandBuilder.of()
+                                .addFile(getPath().toString())
+                                .add(toCommand(configuration)));
             }
         }
 
@@ -176,8 +177,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
 
         private Path getPath() {
             var local = System.getenv("LOCALAPPDATA");
-            return Path.of(local)
-                    .resolve("Microsoft\\WindowsApps\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\wt.exe");
+            return Path.of(local).resolve("Microsoft\\WindowsApps\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\wt.exe");
         }
 
         @Override
