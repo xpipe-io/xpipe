@@ -52,7 +52,7 @@ public class StoreCategoryConfigComp extends SimpleComp {
 
         var c = config.getValue();
         var color = new SimpleIntegerProperty(
-                c.getColor() != null ? Arrays.asList(DataStoreColor.values()).indexOf(c.getColor()) : 0);
+                c.getColor() != null ? Arrays.asList(DataStoreColor.values()).indexOf(c.getColor()) + 1 : 0);
         var scripts = new SimpleObjectProperty<>(c.getDontAllowScripts());
         var confirm = new SimpleObjectProperty<>(c.getConfirmAllModifications());
         var sync = new SimpleObjectProperty<>(c.getSync());
