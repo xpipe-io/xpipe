@@ -9,8 +9,7 @@ There are no real formal contribution guidelines right now, they will maybe come
   This mainly concerns API classes not a lot of implementation.
 - [beacon](beacon) - The XPipe beacon component is responsible for handling all communications between the XPipe
   daemon and the client applications, for example APIs and the CLI
-- [app](app) - Contains the XPipe daemon implementation, the XPipe desktop application, and an
-  API to create all different kinds of extensions for the XPipe platform
+- [app](app) - Contains the XPipe daemon implementation and the XPipe desktop application
 - [dist](dist) - Tools to create a distributable package of XPipe
 - [ext](ext) - Available XPipe extensions. Essentially every concrete feature implementation is implemented as an extension
 
@@ -25,9 +24,9 @@ components from it when it is run in a development environment.
 Note that in case the current master branch is ahead of the latest release, it might happen that there are some incompatibilities when loading data from your local XPipe installation.
 You should therefore always check out the matching version tag for your local repository and local XPipe installation.
 You can find the available version tags at https://github.com/xpipe-io/xpipe/tags.
-So for example if you currently have XPipe `13.0` installed, you should run `git reset --hard 13.0` first to properly compile against it.
+So for example if you currently have XPipe `16.0` installed, you should run `git reset --hard 16.0` first to properly compile against it.
 
-You need to have JDK for Java 22 installed to compile the project.
+You need to have JDK for Java 24 installed to compile the project.
 If you are on Linux or macOS, you can easily accomplish that by running
 ```bash
 curl -s "https://get.sdkman.io" | bash
@@ -47,17 +46,12 @@ You can use the gradle wrapper to build and run the project:
 - `gradlew clean dist` will create a distributable production version in `dist/build/dist/base`.
 - `gradlew <project>:test` will run the tests of the specified project.
 
-You are also able to properly debug the built production application through two different methods:
+You are also able to properly debug the built production application:
 - The `dist/build/dist/base/app/scripts/xpiped_debug` script will launch the application in debug mode and with a console attached to it
-- The `dist/build/dist/base/app/scripts/xpiped_debug_attach` script attaches a debugger with the help of [AttachMe](https://plugins.jetbrains.com/plugin/13263-attachme).
-  Just make sure that the attachme process is running within IntelliJ, and the debugger should launch automatically once you start up the application.
-
-Note that when any unit test is run using a debugger, the XPipe daemon process that is started will also attempt
-to connect to that debugger through [AttachMe](https://plugins.jetbrains.com/plugin/13263-attachme) as well.
 
 ## Modularity and IDEs
 
-All XPipe components target [Java 22](https://openjdk.java.net/projects/jdk/22/) and make full use of the Java Module System (JPMS).
+All XPipe components target [Java 24](https://openjdk.java.net/projects/jdk/24/) and make full use of the Java Module System (JPMS).
 All components are modularized, including all their dependencies.
 In case a dependency is (sadly) not modularized yet, module information is manually added using [extra-java-module-info](https://github.com/gradlex-org/extra-java-module-info).
 Further, note that as this is a pretty complicated Java project that fully utilizes modularity,
@@ -97,10 +91,6 @@ All actions that you can perform for certain connections in the connection overv
 ### Adding more predefined scripts
 
 You can add custom script definitions [here](https://github.com/xpipe-io/xpipe/tree/master/ext/base/src/main/java/io/xpipe/ext/base/script/PredefinedScriptStore.java) and [here](https://github.com/xpipe-io/xpipe/tree/master/ext/base/src/main/resources/io/xpipe/ext/base/resources/scripts).
-
-### Adding more system icons for system autodetection
-
-You can register new system types [here](https://github.com/xpipe-io/xpipe/blob/master/app/src/main/java/io/xpipe/app/resources/SystemIcons.java) and add the respective icons [here](https://github.com/xpipe-io/xpipe/tree/master/app/src/main/resources/io/xpipe/app/resources/img/system).
 
 ### Adding more file icons for specific types
 

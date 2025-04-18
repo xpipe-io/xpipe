@@ -1,6 +1,7 @@
 package io.xpipe.app.comp.store;
 
 import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
@@ -204,7 +205,7 @@ public class StoreCreationModel {
 
             try (var ignored = new BooleanScope(busy).start()) {
                 DataStorage.get().addStoreEntryInProgress(entry.getValue());
-                entry.getValue().validateOrThrow();
+                validate();
                 commit(true);
             } catch (Throwable ex) {
                 if (ex instanceof ValidationException) {
@@ -221,6 +222,19 @@ public class StoreCreationModel {
                 DataStorage.get().removeStoreEntryInProgress(entry.getValue());
             }
         });
+    }
+
+    private void validate() throws Throwable {
+        var s = entry.getValue().getStore();
+        if (s == null) {
+            return;
+        }
+
+        s.checkComplete();
+        // Start session for later
+        if (s instanceof ShellStore ss) {
+            ss.getOrStartSession();
+        }
     }
 
     void showDocs() {

@@ -77,10 +77,7 @@ class ScanSingleDialogComp extends ModalOverlayContentComp {
                 .addComp(list.vgrow())
                 .buildComp()
                 .prefWidth(500)
-                .prefHeight(680)
-                .apply(struc -> {
-                    VBox.setVgrow(struc.get().getChildren().get(1), ALWAYS);
-                });
+                .prefHeight(680);
         return b.createRegion();
     }
 }

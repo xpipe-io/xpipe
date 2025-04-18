@@ -265,10 +265,11 @@ public interface SshIdentityStrategy {
             }
 
             if (resolved.endsWith(".ppk")) {
-                throw ErrorEvent.expected(
-                        new IllegalArgumentException(
-                                "Identity file " + resolved
-                                        + " is in non-standard PuTTY Private Key format (.ppk), which is not supported by OpenSSH. Please export/convert it to a standard format like .pem via PuTTY"));
+                var ex = new IllegalArgumentException("Identity file " +
+                        resolved +
+                        " is in non-standard PuTTY Private Key format (.ppk), which is not supported by OpenSSH. Please export/convert it to a standard format like .pem via PuTTY");
+                ErrorEvent.preconfigure(ErrorEvent.fromThrowable(ex).expected().link("https://www.puttygen.com/convert-pem-to-ppk"));
+                throw ex;
             }
 
             if (resolved.endsWith(".pub")) {

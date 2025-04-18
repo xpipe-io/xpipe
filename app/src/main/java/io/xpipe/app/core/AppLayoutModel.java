@@ -121,6 +121,12 @@ public class AppLayoutModel {
                         null,
                         null),
                 new Entry(
+                        AppI18n.observable("docs"),
+                        new LabelGraphic.IconGraphic("mdi2b-book-open-variant"),
+                        null,
+                        () -> Hyperlinks.open(Hyperlinks.DOCS),
+                        null),
+                new Entry(
                         AppI18n.observable("visitGithubRepository"),
                         new LabelGraphic.IconGraphic("mdi2g-github"),
                         null,
@@ -131,20 +137,14 @@ public class AppLayoutModel {
                         new LabelGraphic.IconGraphic("mdi2d-discord"),
                         null,
                         () -> Hyperlinks.open(Hyperlinks.DISCORD),
-                        null),
+                        null)));
                 //                new Entry(
                 //                        AppI18n.observable("api"),
                 //                        new LabelGraphic.IconGraphic("mdi2c-code-json"),
                 //                        null,
                 //                        () -> Hyperlinks.open(
                 //                                "http://localhost:" + AppBeaconServer.get().getPort()),
-                //                        null),
-                new Entry(
-                        AppI18n.observable("docs"),
-                        new LabelGraphic.IconGraphic("mdi2b-book-open-variant"),
-                        null,
-                        () -> Hyperlinks.open(Hyperlinks.DOCS),
-                        null)));
+                //                        null),);
         if (AppDistributionType.get() != AppDistributionType.WEBTOP) {
             l.add(new Entry(
                     AppI18n.observable("webtop"),

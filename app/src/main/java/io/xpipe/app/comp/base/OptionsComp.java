@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class OptionsComp extends Comp<CompStructure<Pane>> {
+public class OptionsComp extends Comp<CompStructure<VBox>> {
 
     private final List<Entry> entries;
 
@@ -38,8 +38,8 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
     }
 
     @Override
-    public CompStructure<Pane> createBase() {
-        Pane pane = new VBox();
+    public CompStructure<VBox> createBase() {
+        VBox pane = new VBox();
         pane.getStyleClass().add("options-comp");
 
         var nameRegions = new ArrayList<Region>();
@@ -68,6 +68,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                 name.setMinHeight(Region.USE_PREF_SIZE);
                 name.setAlignment(Pos.CENTER_LEFT);
                 if (compRegion != null) {
+                    VBox.setVgrow(line, VBox.getVgrow(compRegion));
                     line.spacingProperty()
                             .bind(PlatformThread.sync(Bindings.createDoubleBinding(
                                     () -> {
