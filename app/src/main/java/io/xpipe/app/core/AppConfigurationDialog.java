@@ -16,7 +16,7 @@ public class AppConfigurationDialog {
 
     public static void showIfNeeded() {
         if (!AppProperties.get().isInitialLaunch()) {
-            // return;
+            return;
         }
 
         var options = new OptionsBuilder()
