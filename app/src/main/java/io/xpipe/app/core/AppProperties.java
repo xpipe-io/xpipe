@@ -165,6 +165,10 @@ public class AppProperties {
                 .orElse(null);
     }
 
+    public void resetInitialLaunch() {
+        AppCache.clear("lastBuildId");
+    }
+
     private static boolean isJUnitTest() {
         for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
             if (element.getClassName().startsWith("org.junit.")) {

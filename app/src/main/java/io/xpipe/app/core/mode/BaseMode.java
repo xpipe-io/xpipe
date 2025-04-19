@@ -153,6 +153,8 @@ public class BaseMode extends OperationMode {
         ActionProvider.initProviders();
         DataStoreProviders.init();
 
+        AppConfigurationDialog.showIfNeeded();
+
         TrackEvent.info("Finished base components initialization");
         initialized = true;
     }

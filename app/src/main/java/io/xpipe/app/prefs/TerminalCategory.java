@@ -61,7 +61,7 @@ public class TerminalCategory extends AppPrefsCategory {
                 .sub(terminalPrompt())
                 .sub(terminalProxy())
                 .sub(terminalMultiplexer())
-                .sub(terminalInitScript())
+                // .sub(terminalInitScript())
                 .sub(new OptionsBuilder()
                         .pref(prefs.clearTerminalOnInit)
                         .addToggle(prefs.clearTerminalOnInit)
@@ -71,7 +71,7 @@ public class TerminalCategory extends AppPrefsCategory {
                 .buildComp();
     }
 
-    private OptionsBuilder terminalChoice() {
+    public static OptionsBuilder terminalChoice() {
         var prefs = AppPrefs.get();
         var c = ChoiceComp.ofTranslatable(
                 prefs.terminalType, PrefsChoiceValue.getSupported(ExternalTerminalType.class), false);
@@ -99,7 +99,7 @@ public class TerminalCategory extends AppPrefsCategory {
                 };
             });
         });
-        c.hgrow();
+        c.prefWidth(300);
 
         var visit = new ButtonComp(AppI18n.observable("website"), new FontIcon("mdi2w-web"), () -> {
             var t = prefs.terminalType().getValue();
@@ -125,7 +125,7 @@ public class TerminalCategory extends AppPrefsCategory {
             struc.get().setAlignment(Pos.CENTER_LEFT);
             struc.get().setSpacing(10);
         });
-        h.maxWidth(getCompWidth());
+        h.maxWidth(600);
 
         var terminalTest = new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
                     ThreadHelper.runFailableAsync(() -> {
@@ -135,7 +135,7 @@ public class TerminalCategory extends AppPrefsCategory {
                                     "Test",
                                     ProcessControlProvider.get()
                                             .createLocalProcessControl(true)
-                                            .command("echo Test"),
+                                            .command(ProcessControlProvider.get().getEffectiveLocalDialect().getEchoCommand("If you can read this, the terminal integration works", false)),
                                     UUID.randomUUID());
                         }
                     });
@@ -164,7 +164,7 @@ public class TerminalCategory extends AppPrefsCategory {
                                 .ref()
                         : DataStorage.get().local().ref());
         ref.addListener((observable, oldValue, newValue) -> {
-            prefs.terminalProxy.setValue(newValue != null ? newValue.get().getUuid() : null);
+            prefs.terminalProxy.setValue(newValue != null && !newValue.get().equals(DataStorage.get().local()) ? newValue.get().getUuid() : null);
         });
         var proxyChoice = new DelayedInitComp(
                 Comp.of(() -> {
@@ -173,7 +173,7 @@ public class TerminalCategory extends AppPrefsCategory {
                             null,
                             ref,
                             ShellStore.class,
-                            r -> TerminalProxyManager.canUseAsProxy(r),
+                            r -> r.get().equals(DataStorage.get().local()) || TerminalProxyManager.canUseAsProxy(r),
                             StoreViewState.get().getAllConnectionsCategory());
                     return comp.createRegion();
                 }),
@@ -197,14 +197,13 @@ public class TerminalCategory extends AppPrefsCategory {
                                     .ref()
                             : DataStorage.get().local().ref());
         });
-        var script = new SimpleObjectProperty<>(prefs.terminalInitScript().getValue());
         return new OptionsBuilder()
                 .nameAndDescription("terminalInitScript")
                 .addComp(
-                        IntegratedTextAreaComp.script(ref, script)
+                        IntegratedTextAreaComp.script(ref, prefs.terminalInitScript)
                                 .maxWidth(getCompWidth())
                                 .minHeight(150),
-                        script);
+                        prefs.terminalInitScript);
     }
 
     private OptionsBuilder terminalMultiplexer() {

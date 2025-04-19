@@ -54,6 +54,7 @@ public class SyncCategory extends AppPrefsCategory {
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
 
         var remoteRepo = new TextFieldComp(prefs.storageGitRemote).hgrow();
+        remoteRepo.disable(prefs.enableGitStorage.not());
         var helpButton = new ButtonComp(AppI18n.observable("help"), new FontIcon("mdi2h-help-circle-outline"), () -> {
             DocumentationLink.SYNC.open();
         });
@@ -68,7 +69,6 @@ public class SyncCategory extends AppPrefsCategory {
                         .addToggle(prefs.enableGitStorage)
                         .pref(prefs.storageGitRemote)
                         .addComp(remoteRow, prefs.storageGitRemote)
-                        .disable(prefs.enableGitStorage.not())
                         .addComp(testRow)
                         .disable(prefs.storageGitRemote.isNull().or(prefs.enableGitStorage.not()))
                         .addComp(prefs.getCustomComp("gitVaultIdentityStrategy"))

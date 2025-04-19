@@ -55,28 +55,26 @@ public class DerivedObservableList<T> {
     }
 
     public void setContent(List<? extends T> newList) {
-        synchronized (newList) {
-            synchronized (list) {
-                if (list.equals(newList)) {
-                    return;
-                }
-
-                if (list.size() == 0) {
-                    list.addAll(newList);
-                    return;
-                }
-
-                if (newList.size() == 0) {
-                    list.clear();
-                    return;
-                }
+        synchronized (list) {
+            if (list.equals(newList)) {
+                return;
             }
 
-            if (unique) {
-                setContentUnique(newList);
-            } else {
-                setContentNonUnique(newList);
+            if (list.size() == 0) {
+                list.addAll(newList);
+                return;
             }
+
+            if (newList.size() == 0) {
+                list.clear();
+                return;
+            }
+        }
+
+        if (unique) {
+            setContentUnique(newList);
+        } else {
+            setContentNonUnique(newList);
         }
     }
 
@@ -184,30 +182,25 @@ public class DerivedObservableList<T> {
         var cache = new HashMap<T, V>();
         var l1 = this.<V>createNewDerived();
         Runnable runnable = () -> {
+            List<V> toApply;
             synchronized (list) {
                 var listSet = new HashSet<>(list);
                 cache.keySet().removeIf(t -> !listSet.contains(t));
-                l1.setContent(listStream().map(v -> {
+                toApply = listStream().map(v -> {
                     if (!cache.containsKey(v)) {
                         cache.put(v, map.apply(v));
                     }
 
                     return cache.get(v);
-                }).toList());
+                }).toList();
             }
+            l1.setContent(toApply);
         };
         runnable.run();
         list.addListener((ListChangeListener<? super T>) c -> {
             runnable.run();
         });
         return l1;
-    }
-
-    public void bindContent(ObservableList<T> other) {
-        setContent(other);
-        other.addListener((ListChangeListener<? super T>) c -> {
-            setContent(other);
-        });
     }
 
     public DerivedObservableList<T> filtered(Predicate<T> predicate) {
@@ -230,9 +223,11 @@ public class DerivedObservableList<T> {
     public DerivedObservableList<T> filtered(ObservableValue<Predicate<T>> predicate) {
         var d = this.<T>createNewDerived();
         Runnable runnable = () -> {
+            List<T> toApply;
             synchronized (list) {
-                d.setContent(predicate.getValue() != null ? listStream().filter(predicate.getValue()).toList() : list);
+                toApply = predicate.getValue() != null ? listStream().filter(predicate.getValue()).toList() : list;
             }
+            d.setContent(toApply);
         };
         runnable.run();
         list.addListener((ListChangeListener<? super T>) c -> {
@@ -260,9 +255,11 @@ public class DerivedObservableList<T> {
     public DerivedObservableList<T> sorted(ObservableValue<Comparator<T>> comp) {
         var d = this.<T>createNewDerived();
         Runnable runnable = () -> {
+            List<T> toApply;
             synchronized (list) {
-                d.setContent(listStream().sorted(comp.getValue()).toList());
+                toApply = listStream().sorted(comp.getValue()).toList();
             }
+            d.setContent(toApply);
         };
         runnable.run();
         list.addListener((ListChangeListener<? super T>) c -> {

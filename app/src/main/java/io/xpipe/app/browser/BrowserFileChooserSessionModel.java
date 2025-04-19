@@ -14,6 +14,7 @@ import io.xpipe.core.util.FailableFunction;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 import lombok.Getter;
@@ -40,8 +41,10 @@ public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<
                 return;
             }
 
-            var l = DerivedObservableList.wrap(fileSelection, true);
-            l.bindContent(newValue.getFileList().getSelection());
+            fileSelection.setAll(newValue.getFileList().getSelection());
+            newValue.getFileList().getSelection().addListener((ListChangeListener<? super BrowserEntry>) c -> {
+                fileSelection.setAll(newValue.getFileList().getSelection());
+            });
         });
     }
 

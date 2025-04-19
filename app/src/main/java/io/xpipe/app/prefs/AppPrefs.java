@@ -16,6 +16,7 @@ import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.ShellScript;
 
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableDoubleValue;
@@ -629,11 +630,18 @@ public class AppPrefs {
 
     public void selectCategory(String id) {
         AppLayoutModel.get().selectSettings();
-        var found = categories.stream()
-                .filter(appPrefsCategory -> appPrefsCategory.getId().equals(id))
-                .findFirst();
-        found.ifPresent(appPrefsCategory -> {
-            selectedCategory.setValue(appPrefsCategory);
+
+        // This is ugly but required to give the layout time when first navigating to the settings menu
+        // Otherwise, our calculated position is off if the settings were not open before
+        Platform.runLater(() -> {
+            Platform.runLater(() -> {
+                var found = categories.stream()
+                        .filter(appPrefsCategory -> appPrefsCategory.getId().equals(id))
+                        .findFirst();
+                found.ifPresent(appPrefsCategory -> {
+                    selectedCategory.setValue(appPrefsCategory);
+                });
+            });
         });
     }
 

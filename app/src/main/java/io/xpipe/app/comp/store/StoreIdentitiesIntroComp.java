@@ -97,7 +97,7 @@ public class StoreIdentitiesIntroComp extends SimpleComp {
         fi.setIconSize(80);
         var img = new StackPane(fi);
         img.setPrefWidth(100);
-        img.setPrefHeight(150);
+        img.setPrefHeight(120);
         var text = new VBox(title, importDesc);
         text.setSpacing(5);
         text.setAlignment(Pos.CENTER_LEFT);

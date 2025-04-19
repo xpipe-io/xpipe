@@ -8,6 +8,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.DerivedObservableList;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -113,15 +114,26 @@ public class BrowserHistoryTabComp extends SimpleComp {
     }
 
     private Comp<?> createEmptyDisplay() {
-        var intro = new IntroComp(
+        var docs = new IntroComp(
+                "browserWelcomeDocs",
+                new LabelGraphic.IconGraphic("mdi2b-book-open-variant"));
+        docs.setButtonAction(() -> {
+            DocumentationLink.INDEX.open();
+        });
+        docs.setButtonDefault(true);
+
+        var open = new IntroComp(
                 "browserWelcomeEmpty",
                 new LabelGraphic.CompGraphic(PrettyImageHelper.ofSpecificFixedSize("graphics/Hips.svg", 100, 122)));
-        intro.setButtonAction(() -> {
+        open.setButtonAction(() -> {
             BrowserFullSessionModel.DEFAULT.openFileSystemAsync(
                     DataStorage.get().local().ref(), null, null);
         });
-        intro.setButtonDefault(true);
-        return intro;
+
+        var v = new VerticalComp(List.of(docs, open));
+        v.spacing(70);
+        v.apply(struc -> struc.get().setAlignment(Pos.CENTER));
+        return v;
     }
 
     private Comp<?> entryButton(BrowserHistorySavedState.Entry e, BooleanProperty disable) {

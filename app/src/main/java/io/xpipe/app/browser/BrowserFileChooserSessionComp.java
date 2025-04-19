@@ -143,7 +143,6 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
         var vertical = new VerticalComp(List.of(bookmarkTopBar, bookmarksContainer)).styleClass("left");
         var splitPane = new LeftSplitPaneComp(vertical, stack)
                 .withInitialWidth(AppLayoutModel.get().getSavedState().getBrowserConnectionsWidth())
-                .styleClass("background")
                 .apply(struc -> {
                     struc.getLeft().setMinWidth(200);
                     struc.getLeft().setMaxWidth(500);

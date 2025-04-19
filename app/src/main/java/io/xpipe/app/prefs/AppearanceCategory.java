@@ -40,14 +40,14 @@ public class AppearanceCategory extends AppPrefsCategory {
         return new OptionsBuilder()
                 .addTitle("uiOptions")
                 .sub(new OptionsBuilder()
-                        .pref(prefs.language)
-                        .addComp(languageChoice(), prefs.language)
-                        .pref(prefs.theme)
-                        .addComp(themeChoice(), prefs.theme)
+                        .sub(languageChoice())
+                        .sub(themeChoice())
                         .pref(prefs.performanceMode)
                         .addToggle(prefs.performanceMode)
                         .pref(prefs.uiScale)
-                        .addComp(new IntFieldComp(prefs.uiScale).maxWidth(100), prefs.uiScale)
+                        .addComp(new IntFieldComp(prefs.uiScale).maxWidth(100).apply(struc -> {
+                            struc.get().setPromptText("100");
+                        }), prefs.uiScale)
                         .hide(new SimpleBooleanProperty(OsType.getLocal() == OsType.MACOS))
                         .pref(prefs.useSystemFont)
                         .addToggle(prefs.useSystemFont)
@@ -70,7 +70,7 @@ public class AppearanceCategory extends AppPrefsCategory {
                 .buildComp();
     }
 
-    private Comp<?> themeChoice() {
+    public static OptionsBuilder themeChoice() {
         var prefs = AppPrefs.get();
         var c = ChoiceComp.ofTranslatable(prefs.theme, AppTheme.Theme.ALL, false)
                 .styleClass("theme-switcher");
@@ -100,14 +100,16 @@ public class AppearanceCategory extends AppPrefsCategory {
                 return cell.get();
             });
         });
-        c.minWidth(getCompWidth() / 2.0);
-        return c;
+        c.minWidth(600 / 2.0);
+        return new OptionsBuilder()
+                .pref(prefs.theme)
+                .addComp(c, prefs.theme);
     }
 
-    private Comp<?> languageChoice() {
+    public static OptionsBuilder languageChoice() {
         var prefs = AppPrefs.get();
         var c = ChoiceComp.ofTranslatable(prefs.language, Arrays.asList(SupportedLocale.values()), false);
-        c.prefWidth(getCompWidth() / 2);
+        c.prefWidth(600 / 2);
         c.hgrow();
         var visit = new ButtonComp(AppI18n.observable("translate"), new FontIcon("mdi2w-web"), () -> {
             Hyperlinks.open(Hyperlinks.TRANSLATE);
@@ -116,6 +118,8 @@ public class AppearanceCategory extends AppPrefsCategory {
             struc.get().setAlignment(Pos.CENTER_LEFT);
             struc.get().setSpacing(10);
         });
-        return h;
+        return new OptionsBuilder()
+                .pref(prefs.language)
+                .addComp(h, prefs.language);
     }
 }

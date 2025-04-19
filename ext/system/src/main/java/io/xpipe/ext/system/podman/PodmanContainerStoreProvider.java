@@ -1,9 +1,7 @@
 package io.xpipe.ext.system.podman;
 
-import io.xpipe.app.comp.store.StoreChoiceComp;
-import io.xpipe.app.comp.store.StoreEntryWrapper;
-import io.xpipe.app.comp.store.StoreSection;
-import io.xpipe.app.comp.store.StoreViewState;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.store.*;
 import io.xpipe.app.ext.ContainerStoreState;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.DataStorage;
@@ -24,6 +22,20 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
     @Override
     public DocumentationLink getHelpLink() {
         return DocumentationLink.PODMAN;
+    }
+
+    public Comp<?> stateDisplay(StoreEntryWrapper w) {
+        return new OsLogoComp(w, BindingsHelper.map(w.getPersistentState(), o -> {
+            var state = (ContainerStoreState) o;
+            var cs = state.getContainerState();
+            if (cs != null && cs.toLowerCase().contains("exited")) {
+                return SystemStateComp.State.FAILURE;
+            } else if (cs != null && cs.toLowerCase().contains("up")) {
+                return SystemStateComp.State.SUCCESS;
+            } else {
+                return SystemStateComp.State.OTHER;
+            }
+        }));
     }
 
     public void onParentRefresh(DataStoreEntry entry) {

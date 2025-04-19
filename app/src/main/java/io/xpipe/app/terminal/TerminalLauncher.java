@@ -189,11 +189,9 @@ public class TerminalLauncher {
             return;
         }
 
-        var initScript = AppPrefs.get().terminalInitScript().getValue();
-        var customInit = initScript != null ? initScript + "\n" : "";
         config = config.withScript(
                 ProcessControlProvider.get().getEffectiveLocalDialect(),
-                getTerminalRegisterCommand(request) + "\n" + customInit + "\n" + config.getScriptContent());
+                getTerminalRegisterCommand(request) + "\n" + config.getScriptContent());
         launch(type, config, latch);
     }
 
@@ -266,15 +264,12 @@ public class TerminalLauncher {
             return Optional.empty();
         }
 
-        var initScript = AppPrefs.get().terminalInitScript().getValue();
-        var initialCommand = initScript != null ? initScript + "\n" : "";
         var openCommand = launchConfiguration.getDialectLaunchCommand().buildSimple();
-        var fullCommand = initialCommand + openCommand;
         var proxyControl = TerminalProxyManager.getProxy();
         if (proxyControl.isPresent()) {
             var proxyMultiplexerCommand = multiplexer
                     .get()
-                    .launchScriptSession(proxyControl.get(), fullCommand, initScriptConfig)
+                    .launchScriptSession(proxyControl.get(), openCommand, initScriptConfig)
                     .toString();
             var proxyLaunchCommand = proxyControl
                     .get()
@@ -295,7 +290,7 @@ public class TerminalLauncher {
         } else {
             var multiplexerCommand = multiplexer
                     .get()
-                    .launchScriptSession(LocalShell.getShell(), fullCommand, initScriptConfig)
+                    .launchScriptSession(LocalShell.getShell(), openCommand, initScriptConfig)
                     .toString();
             var launchCommand = LocalShell.getShell()
                     .prepareIntermediateTerminalOpen(
@@ -320,14 +315,11 @@ public class TerminalLauncher {
             return Optional.empty();
         }
 
-        var initScript = AppPrefs.get().terminalInitScript().getValue();
-        var initialCommand = initScript != null ? initScript + "\n" : "";
         var openCommand = launchConfiguration.getDialectLaunchCommand().buildSimple();
-        var fullCommand = initialCommand + openCommand;
         var launchCommand = proxyControl
                 .get()
                 .prepareIntermediateTerminalOpen(
-                        TerminalInitFunction.fixed(fullCommand),
+                        TerminalInitFunction.fixed(openCommand),
                         TerminalInitScriptConfig.ofName("XPipe"),
                         WorkingDirectoryFunction.none());
         // Restart for the next time

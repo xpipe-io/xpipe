@@ -7,7 +7,12 @@
     -fx-font-weight: BOLD;
     -fx-font-size: 1.1em;
 }
-.prefs-container.options-comp > .options-comp {
+
+.initial-setup.prefs-container {
+    -fx-padding: -1.8em 25 0 0;
+}
+
+.prefs .prefs-container.options-comp > .options-comp {
     -fx-padding: 0 0 0 1em;
 }
 
