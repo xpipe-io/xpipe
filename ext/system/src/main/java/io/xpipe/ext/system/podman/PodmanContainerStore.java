@@ -61,19 +61,18 @@ public class PodmanContainerStore
 
     @Override
     public void start() throws Exception {
-        var view = commandView(getCmd().getStore().getHost().getStore().getOrStartSession());
+        var sc = getCmd().getStore().getHost().getStore().getOrStartSession();
+        var view = commandView(sc);
         view.start(containerName);
-        var state = getState().toBuilder().running(true).containerState("Up").build();
-        setState(state);
+        refreshContainerState(sc);
     }
 
     @Override
     public void stop() throws Exception {
-        var view = commandView(getCmd().getStore().getHost().getStore().getOrStartSession());
+        var sc = getCmd().getStore().getHost().getStore().getOrStartSession();
+        var view = commandView(sc);
         view.stop(containerName);
-        var state =
-                getState().toBuilder().running(false).containerState("Exited").build();
-        setState(state);
+        refreshContainerState(sc);
     }
 
     @Override
@@ -156,5 +155,14 @@ public class PodmanContainerStore
                 return pc;
             }
         };
+    }
+
+    private void refreshContainerState(ShellControl sc) throws Exception {
+        var state = getState();
+        var view = new PodmanCommandView(sc).container();
+        var displayState = view.queryState(containerName);
+        var running = displayState.startsWith("Up");
+        var newState = state.toBuilder().containerState(displayState).running(running).build();
+        setState(newState);
     }
 }

@@ -7,6 +7,7 @@ import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
 
@@ -16,6 +17,11 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 
 public abstract class AbstractServiceGroupStoreProvider implements DataStoreProvider {
+
+    @Override
+    public DocumentationLink getHelpLink() {
+        return DocumentationLink.SERVICES;
+    }
 
     @Override
     public DataStoreUsageCategory getUsageCategory() {

@@ -38,8 +38,8 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
     }
 
     @Override
-    public String getHelpLink() {
-        return DocumentationLink.SCRIPTING.getLink();
+    public DocumentationLink getHelpLink() {
+        return DocumentationLink.SCRIPTING;
     }
 
     @Override

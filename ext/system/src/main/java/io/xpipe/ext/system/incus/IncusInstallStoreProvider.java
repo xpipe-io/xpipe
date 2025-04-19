@@ -9,6 +9,7 @@ import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.DataStoreFormatter;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.core.store.DataStore;
 
 import javafx.beans.value.ObservableValue;
@@ -16,6 +17,12 @@ import javafx.beans.value.ObservableValue;
 import java.util.List;
 
 public class IncusInstallStoreProvider implements DataStoreProvider {
+
+    @Override
+    public DocumentationLink getHelpLink() {
+        return DocumentationLink.LXC;
+    }
+
 
     @Override
     public DataStoreUsageCategory getUsageCategory() {

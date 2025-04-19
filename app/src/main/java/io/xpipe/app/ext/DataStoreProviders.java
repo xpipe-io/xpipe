@@ -71,10 +71,6 @@ public class DataStoreProviders {
                     .collect(Collectors.toList());
             ALL.removeIf(p -> {
                 try {
-                    if (!p.preInit()) {
-                        return true;
-                    }
-
                     p.validate();
                     return false;
                 } catch (Throwable e) {

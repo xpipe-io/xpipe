@@ -8,6 +8,7 @@ import io.xpipe.app.ext.ContainerStoreState;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DataStoreFormatter;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.StoreStateFormat;
 import io.xpipe.core.store.DataStore;
@@ -21,6 +22,11 @@ import javafx.beans.value.ObservableValue;
 import java.util.List;
 
 public class LxdContainerStoreProvider implements ShellStoreProvider {
+
+    @Override
+    public DocumentationLink getHelpLink() {
+        return DocumentationLink.LXC;
+    }
 
     @Override
     public boolean shouldShow(StoreEntryWrapper w) {

@@ -13,6 +13,8 @@ public enum DocumentationLink {
     EULA("legal/eula"),
     WEBTOP_UPDATE("guide/webtop#updating"),
     SYNC("guide/sync"),
+    DESKTOPS("guide/desktops"),
+    SERVICES("guide/services"),
     SCRIPTING("guide/scripting"),
     SCRIPTING_COMPATIBILITY("guide/scripting#shell-compatibility"),
     SCRIPTING_EDITING("guide/scripting#editing"),
@@ -30,6 +32,9 @@ public enum DocumentationLink {
     VMWARE("guide/vmware"),
     VNC("guide/vnc"),
     SSH("guide/ssh"),
+    PSSESSION("guide/pssession"),
+    RDP("guide/rdp"),
+    HYPERV("guide/hyperv"),
     SSH_MACS("guide/ssh#no-matching-mac-found"),
     KEEPASSXC("guide/password-manager#keepassxc"),
     PASSWORD_MANAGER("guide/password-manager");

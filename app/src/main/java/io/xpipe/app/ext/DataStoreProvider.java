@@ -5,11 +5,11 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.store.StoreEntryComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreSection;
-import io.xpipe.app.comp.store.StoreSectionComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.core.store.DataStore;
 
 import javafx.beans.property.BooleanProperty;
@@ -24,7 +24,7 @@ import java.util.UUID;
 
 public interface DataStoreProvider {
 
-    default String getHelpLink() {
+    default DocumentationLink getHelpLink() {
         return null;
     }
 
@@ -95,10 +95,6 @@ public interface DataStoreProvider {
         return StoreEntryComp.create(s, null, preferLarge);
     }
 
-    default StoreSectionComp customSectionComp(StoreSection section) {
-        return new StoreSectionComp(section);
-    }
-
     default boolean shouldShowScan() {
         return true;
     }
@@ -150,10 +146,6 @@ public interface DataStoreProvider {
 
     default GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
         return null;
-    }
-
-    default boolean preInit() {
-        return true;
     }
 
     default void init() {}

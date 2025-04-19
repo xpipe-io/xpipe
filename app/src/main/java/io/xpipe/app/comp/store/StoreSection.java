@@ -54,12 +54,7 @@ public class StoreSection {
     }
 
     public static Comp<?> customSection(StoreSection e) {
-        var prov = e.getWrapper().getEntry().getProvider();
-        if (prov != null) {
-            return prov.customSectionComp(e);
-        } else {
-            return new StoreSectionComp(e);
-        }
+        return new StoreSectionComp(e);
     }
 
     private static DerivedObservableList<StoreSection> sorted(

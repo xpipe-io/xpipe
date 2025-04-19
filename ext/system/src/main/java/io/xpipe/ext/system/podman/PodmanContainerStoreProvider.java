@@ -8,10 +8,7 @@ import io.xpipe.app.ext.ContainerStoreState;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.DataStoreFormatter;
-import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.SimpleValidator;
-import io.xpipe.app.util.StoreStateFormat;
+import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.ext.base.service.FixedServiceGroupStore;
 import io.xpipe.ext.base.store.ShellStoreProvider;
@@ -23,6 +20,11 @@ import javafx.beans.value.ObservableValue;
 import java.util.List;
 
 public class PodmanContainerStoreProvider implements ShellStoreProvider {
+
+    @Override
+    public DocumentationLink getHelpLink() {
+        return DocumentationLink.PODMAN;
+    }
 
     public void onParentRefresh(DataStoreEntry entry) {
         var services = FixedServiceGroupStore.builder().parent(entry.ref()).build();

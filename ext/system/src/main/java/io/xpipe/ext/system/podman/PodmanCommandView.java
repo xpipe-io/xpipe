@@ -75,6 +75,12 @@ public class PodmanCommandView extends CommandViewBase {
             return this;
         }
 
+        public String queryState(String container) throws Exception {
+            return build(commandBuilder -> commandBuilder.add(
+                    "ls", "-a", "-f", "name=\"^" + container + "$\"", "--format=\"{{.Status}}\""))
+                    .readStdoutOrThrow();
+        }
+
         @Override
         protected CommandControl build(Consumer<CommandBuilder> builder) {
             return PodmanCommandView.this.build((b) -> {

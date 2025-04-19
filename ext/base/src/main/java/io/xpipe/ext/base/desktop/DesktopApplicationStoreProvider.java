@@ -8,6 +8,7 @@ import io.xpipe.app.ext.*;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DataStoreFormatter;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.store.DataStore;
 
@@ -19,6 +20,11 @@ import javafx.beans.property.SimpleStringProperty;
 import java.util.List;
 
 public class DesktopApplicationStoreProvider implements DataStoreProvider {
+
+    @Override
+    public DocumentationLink getHelpLink() {
+        return DocumentationLink.DESKTOPS;
+    }
 
     @Override
     public DataStoreUsageCategory getUsageCategory() {

@@ -10,6 +10,7 @@ import io.xpipe.app.ext.SingletonSessionStoreProvider;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DataStoreFormatter;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.StoreStateFormat;
 import io.xpipe.core.store.DataStore;
 
@@ -19,6 +20,11 @@ import javafx.beans.value.ObservableValue;
 import java.util.List;
 
 public abstract class AbstractServiceStoreProvider implements SingletonSessionStoreProvider, DataStoreProvider {
+
+    @Override
+    public DocumentationLink getHelpLink() {
+        return DocumentationLink.SERVICES;
+    }
 
     @Override
     public ActionProvider.Action launchAction(DataStoreEntry store) {

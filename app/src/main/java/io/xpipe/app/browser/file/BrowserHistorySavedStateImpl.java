@@ -48,15 +48,12 @@ public class BrowserHistorySavedStateImpl implements BrowserHistorySavedState {
 
     @Override
     public synchronized void add(BrowserHistorySavedState.Entry entry) {
-        var copy = new ArrayList<>(lastSystems);
-        for (Entry e : copy) {
-            if (e.getUuid().equals(entry.getUuid())) {
-                lastSystems.remove(e);
+        synchronized (lastSystems) {
+            lastSystems.removeIf(e -> e == null || e.getUuid().equals(entry.getUuid()));
+            lastSystems.addFirst(entry);
+            if (lastSystems.size() > 15) {
+                lastSystems.removeLast();
             }
-        }
-        lastSystems.addFirst(entry);
-        if (lastSystems.size() > 15) {
-            lastSystems.removeLast();
         }
     }
 

@@ -238,7 +238,7 @@ public class StoreCreationModel {
     }
 
     void showDocs() {
-        Hyperlinks.open(provider.getValue().getHelpLink());
+        Hyperlinks.open(provider.getValue().getHelpLink().getLink());
     }
 
     ObservableBooleanValue canShowDocs() {

@@ -21,6 +21,11 @@ import java.util.List;
 public class IncusContainerStoreProvider implements ShellStoreProvider {
 
     @Override
+    public DocumentationLink getHelpLink() {
+        return DocumentationLink.LXC;
+    }
+
+    @Override
     public String getDisplayIconFileName(DataStore store) {
         return "system:lxd_icon.svg";
     }
