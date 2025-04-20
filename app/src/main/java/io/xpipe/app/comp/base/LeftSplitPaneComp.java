@@ -5,6 +5,7 @@ import io.xpipe.app.comp.CompStructure;
 
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.ObservableList;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.Region;
 
@@ -60,8 +61,11 @@ public class LeftSplitPaneComp extends Comp<LeftSplitPaneComp.Structure> {
         };
 
         sidebar.managedProperty().subscribe(m -> {
+            var divs = r.getDividers();
             if (!m) {
-                r.getDividers().getFirst().positionProperty().removeListener(changeListener);
+                if (!divs.isEmpty()) {
+                    divs.getFirst().positionProperty().removeListener(changeListener);
+                }
                 r.getItems().remove(sidebar);
                 if (onDividerChange != null) {
                     onDividerChange.accept(0.0);
@@ -69,12 +73,12 @@ public class LeftSplitPaneComp extends Comp<LeftSplitPaneComp.Structure> {
             } else if (!r.getItems().contains(sidebar)) {
                 r.getItems().addFirst(sidebar);
                 var d = dividerPosition.get();
-                r.getDividers().getFirst().setPosition(d);
+                divs.getFirst().setPosition(d);
                 r.layout();
                 if (onDividerChange != null) {
                     onDividerChange.accept(d);
                 }
-                r.getDividers().getFirst().positionProperty().addListener(changeListener);
+                divs.getFirst().positionProperty().addListener(changeListener);
             }
         });
 
