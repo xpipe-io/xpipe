@@ -7,6 +7,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
+import io.xpipe.core.process.ShellTtyState;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.ValidatableStore;
 import io.xpipe.core.util.ValidationException;
@@ -231,9 +232,14 @@ public class StoreCreationModel {
         }
 
         s.checkComplete();
+
         // Start session for later
         if (s instanceof ShellStore ss) {
-            ss.getOrStartSession();
+            var sc = ss.getOrStartSession();
+            var unsupported = !sc.getShellDialect().getDumbMode().supportsAnyPossibleInteraction() || sc.getTtyState() != ShellTtyState.NONE;
+            if (unsupported) {
+                ss.stopSessionIfNeeded();
+            }
         }
     }
 

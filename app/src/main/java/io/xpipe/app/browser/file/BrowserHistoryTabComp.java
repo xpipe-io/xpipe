@@ -118,7 +118,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
                 "browserWelcomeDocs",
                 new LabelGraphic.IconGraphic("mdi2b-book-open-variant"));
         docs.setButtonAction(() -> {
-            DocumentationLink.INDEX.open();
+            DocumentationLink.GETTING_STARTED.open();
         });
         docs.setButtonDefault(true);
 

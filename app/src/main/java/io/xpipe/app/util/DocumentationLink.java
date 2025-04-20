@@ -13,6 +13,7 @@ public enum DocumentationLink {
     EULA("legal/eula"),
     WEBTOP_UPDATE("guide/webtop#updating"),
     SYNC("guide/sync"),
+    GETTING_STARTED("guide/getting-started"),
     DESKTOPS("guide/desktops"),
     SERVICES("guide/services"),
     SCRIPTING("guide/scripting"),

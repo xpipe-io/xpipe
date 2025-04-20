@@ -68,6 +68,8 @@ public class AppPrefsComp extends SimpleComp {
                 }
 
                 BooleanScope.executeExclusive(externalUpdate, () -> {
+                    // This value is off initially if we haven't opened the settings before
+                    // Perhaps it's the layout that is not done yet?
                     var off = computeCategoryOffset(box, scrollPane, val);
                     scrollPane.setVvalue(off);
                 });

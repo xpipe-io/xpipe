@@ -630,18 +630,11 @@ public class AppPrefs {
 
     public void selectCategory(String id) {
         AppLayoutModel.get().selectSettings();
-
-        // This is ugly but required to give the layout time when first navigating to the settings menu
-        // Otherwise, our calculated position is off if the settings were not open before
-        Platform.runLater(() -> {
-            Platform.runLater(() -> {
-                var found = categories.stream()
-                        .filter(appPrefsCategory -> appPrefsCategory.getId().equals(id))
-                        .findFirst();
-                found.ifPresent(appPrefsCategory -> {
-                    selectedCategory.setValue(appPrefsCategory);
-                });
-            });
+        var found = categories.stream()
+                .filter(appPrefsCategory -> appPrefsCategory.getId().equals(id))
+                .findFirst();
+        found.ifPresent(appPrefsCategory -> {
+            selectedCategory.setValue(appPrefsCategory);
         });
     }
 

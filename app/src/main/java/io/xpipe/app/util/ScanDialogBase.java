@@ -10,6 +10,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
+import io.xpipe.core.process.ShellControl;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -111,6 +112,7 @@ public class ScanDialogBase {
                     }
                     if (!r) {
                         closeAction.run();
+                        entry.getStore().stopSessionIfNeeded();
                     }
                 }
             });

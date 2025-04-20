@@ -15,6 +15,10 @@ public class LxdScanProvider extends ScanProvider {
             return null;
         }
 
+        if (entry.getStore() instanceof LxdContainerStore) {
+            return null;
+        }
+
         return new ScanOpportunity("system.lxdContainers", !new LxdCommandView(sc).isSupported());
     }
 
