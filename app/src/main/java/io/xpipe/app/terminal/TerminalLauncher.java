@@ -121,7 +121,7 @@ public class TerminalLauncher {
                             TerminalInitFunction.none()),
                     true);
             var config = new TerminalLaunchConfiguration(null, title, title, true, script, sc.getShellDialect());
-            launch(type, config, new CountDownLatch(1));
+            launch(type, config, new CountDownLatch(0));
         }
     }
 

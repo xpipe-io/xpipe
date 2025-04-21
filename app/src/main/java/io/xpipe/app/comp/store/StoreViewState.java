@@ -142,17 +142,6 @@ public class StoreViewState {
         }
     }
 
-    public boolean isSectionSelected(StoreSection section) {
-        if (section.getWrapper() == null) {
-            var childSet = section.getShownChildren().getList().stream()
-                    .map(s -> s.getWrapper())
-                    .toList();
-            return batchModeSelectionSet.containsAll(childSet);
-        }
-
-        return getBatchModeSelection().getList().contains(section.getWrapper());
-    }
-
     private void updateContent() {
         categories.getList().forEach(c -> c.update());
         allEntries.getList().forEach(e -> e.update());

@@ -1,6 +1,7 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
@@ -61,22 +62,31 @@ public class AppWindowsShutdown {
         public WinDef.LRESULT callback(int nCode, WinDef.WPARAM wParam, CWPSSTRUCT hookProcStruct) {
             if (nCode >= 0 && hookProcStruct.hwnd.equals(hwnd)) {
                 if (hookProcStruct.message.longValue() == WM_QUERYENDSESSION) {
+                    TrackEvent.info("Received window shutdown callback WM_QUERYENDSESSION");
                     // Indicates that we need to run the endsession case blocking
                     return new WinDef.LRESULT(0);
                 }
 
                 if (hookProcStruct.message.longValue() == WM_ENDSESSION) {
+                    var type = hookProcStruct.lParam.longValue();
+                    TrackEvent.withInfo("Received window shutdown callback WM_ENDSESSION")
+                            .tag("type", type)
+                            .handle();
+
                     // Instant exit for critical shutdowns
-                    if (hookProcStruct.lParam.longValue() == ENDSESSION_CRITICAL) {
+                    if (type == ENDSESSION_CRITICAL) {
                         OperationMode.halt(0);
                     }
 
                     // A shutdown hook will be started in parallel while we exit
                     // The only thing we have to do is wait for it to exit the platform
                     while (PlatformState.getCurrent() != PlatformState.EXITED) {
-                        ThreadHelper.sleep(100);
-                        PlatformThread.runNestedLoopIteration();
+                        ThreadHelper.sleep(10);
                     }
+
+                    TrackEvent.withInfo("Wait for shutdown for WM_ENDSESSION finished")
+                            .tag("type", type)
+                            .handle();
 
                     return new WinDef.LRESULT(0);
                 }

@@ -47,9 +47,12 @@ public enum PlatformState {
         //            } catch (IllegalStateException ignored) {
         //            }
         //        });
+        setCurrent(PlatformState.EXITED);
+
+        // Give other threads, e.g. windows shutdown hook time to properly signal exit state
+        ThreadHelper.sleep(100);
 
         Platform.exit();
-        setCurrent(PlatformState.EXITED);
     }
 
     public static void initPlatformOrThrow() throws Throwable {

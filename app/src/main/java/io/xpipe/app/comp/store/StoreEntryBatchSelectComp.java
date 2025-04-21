@@ -64,7 +64,7 @@ public class StoreEntryBatchSelectComp extends SimpleComp {
     }
 
     private void externalUpdate(CheckBox checkBox) {
-        var isSelected = StoreViewState.get().isSectionSelected(section);
+        var isSelected = section.getWrapper() == null ? checkBox.isSelected() : StoreViewState.get().isBatchModeSelected(section.getWrapper());
         checkBox.setSelected(isSelected);
         if (section.getShownChildren().getList().size() == 0) {
             checkBox.setIndeterminate(false);
