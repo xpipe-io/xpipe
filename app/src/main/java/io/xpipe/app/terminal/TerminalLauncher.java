@@ -189,9 +189,10 @@ public class TerminalLauncher {
             return;
         }
 
+        var changedDialect = config.getScriptDialect() != ProcessControlProvider.get().getEffectiveLocalDialect();
         config = config.withScript(
                 ProcessControlProvider.get().getEffectiveLocalDialect(),
-                getTerminalRegisterCommand(request) + "\n" + config.getScriptContent());
+                getTerminalRegisterCommand(request) + "\n" + (changedDialect ? config.getDialectLaunchCommand().buildSimple() : config.getScriptContent()));
         launch(type, config, latch);
     }
 
@@ -315,7 +316,8 @@ public class TerminalLauncher {
             return Optional.empty();
         }
 
-        var openCommand = launchConfiguration.getDialectLaunchCommand().buildSimple();
+        var changedDialect = launchConfiguration.getScriptDialect() != ProcessControlProvider.get().getEffectiveLocalDialect();
+        var openCommand = changedDialect ? launchConfiguration.getDialectLaunchCommand().buildSimple() : launchConfiguration.getScriptContent();
         var launchCommand = proxyControl
                 .get()
                 .prepareIntermediateTerminalOpen(

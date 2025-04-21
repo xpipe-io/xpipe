@@ -165,11 +165,11 @@ public enum AppDistributionType implements Translatable {
             return WEBTOP;
         }
 
-        if (OsType.getLocal().equals(OsType.WINDOWS)) {
+        if (OsType.getLocal().equals(OsType.WINDOWS) && !AppProperties.get().isStaging()) {
             var out = LocalExec.readStdoutIfPossible(
-                    "choco", "list", AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe");
+                    "choco", "list", "xpipe");
             if (out.isPresent()) {
-                if (out.get().contains(AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe")) {
+                if (out.get().contains("xpipe")) {
                     return CHOCO;
                 }
             }

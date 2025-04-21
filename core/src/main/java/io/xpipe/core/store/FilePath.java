@@ -215,6 +215,10 @@ public final class FilePath {
     }
 
     public FilePath toUnix() {
+        if (value.equals("/")) {
+            return this;
+        }
+
         var joined = String.join("/", split());
         var prefix = value.startsWith("/") ? "/" : "";
         var suffix = value.endsWith("/") || value.endsWith("\\") ? "/" : "";

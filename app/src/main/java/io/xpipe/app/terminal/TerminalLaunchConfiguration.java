@@ -52,10 +52,10 @@ public class TerminalLaunchConfiguration {
             boolean promptRestart)
             throws Exception {
         var color = entry != null ? DataStorage.get().getEffectiveColor(entry) : null;
-        var d = ProcessControlProvider.get().getEffectiveLocalDialect();
-        var launcherScript = d.terminalLauncherScript(request, adjustedTitle, promptRestart);
 
         if (!AppPrefs.get().enableTerminalLogging().get()) {
+            var d = ProcessControlProvider.get().getEffectiveLocalDialect();
+            var launcherScript = d.terminalLauncherScript(request, adjustedTitle, promptRestart);
             var config = new TerminalLaunchConfiguration(
                     entry != null ? color : null, adjustedTitle, cleanTitle, preferTabs, launcherScript, d);
             return config;
@@ -76,6 +76,7 @@ public class TerminalLaunchConfiguration {
                 .replaceAll(" ", "_"));
         try (var sc = LocalShell.getShell().start()) {
             if (OsType.getLocal() == OsType.WINDOWS) {
+                var launcherScript = ShellDialects.POWERSHELL.terminalLauncherScript(request, adjustedTitle, promptRestart);
                 var content =
                         """
                               echo 'Transcript started, output file is "sessions\\%s"'
@@ -98,6 +99,8 @@ public class TerminalLaunchConfiguration {
                         ShellDialects.POWERSHELL);
                 return config;
             } else {
+                var launcherScript = sc.getShellDialect().terminalLauncherScript(request, adjustedTitle, promptRestart);
+
                 var found = sc.command(sc.getShellDialect().getWhichCommand("script"))
                         .executeAndCheck();
                 if (!found) {
