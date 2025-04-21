@@ -100,11 +100,11 @@
     -fx-font-size: 0.9em;
 }
 
-.store-creator > .top > .choice-comp {
+.store-creator > .choice-comp {
     -fx-opacity: 0.9;
 }
 
-.store-creator > .top > .choice-comp * {
+.store-creator > .choice-comp * {
     -fx-opacity: 1.0;
 }
 

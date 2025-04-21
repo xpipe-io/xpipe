@@ -91,11 +91,6 @@ disabled = true
     public void install(ShellControl sc) throws Exception {
         if (sc.getShellDialect() == ShellDialects.CMD) {
             ClinkHelper.install(sc);
-            var configDir = getConfigurationDirectory(sc);
-            sc.view().mkdir(configDir);
-            sc.view()
-                    .writeTextFile(
-                            configDir.join("starship.lua"), "load(io.popen('starship init cmd'):read(\"*a\"))()");
         }
 
         var dir = getBinaryDirectory(sc);
@@ -119,21 +114,28 @@ disabled = true
     protected ShellScript setupTerminalCommand(ShellControl shellControl, FilePath config) throws Exception {
         var lines = new ArrayList<String>();
         var dialect = shellControl.getOriginalShellDialect();
-        if (dialect == ShellDialects.CMD) {
-            lines.add(dialect.addToPathVariableCommand(
-                    List.of(ClinkHelper.getTargetDir(shellControl).toString()), false));
-        }
         if (config != null) {
             lines.add(dialect.getSetEnvironmentVariableCommand("STARSHIP_CONFIG", config.toString()));
         }
         if (dialect == ShellDialects.CMD) {
-            lines.add("clink inject --quiet --profile \"" + getConfigurationDirectory(shellControl) + "\"");
-        } else if (ShellDialects.isPowershell(shellControl)) {
-            lines.add("Invoke-Expression (&starship init powershell)");
-        } else if (dialect == ShellDialects.FISH) {
-            lines.add("starship init fish | source");
+            var configDir = getConfigurationDirectory(shellControl);
+            shellControl.view().mkdir(configDir);
+            var configFile = configDir.join("starship.lua");
+            if (!shellControl.view().fileExists(configFile)) {
+                shellControl.view().writeTextFile(configFile, "load(io.popen('starship init cmd'):read(\"*a\"))()");
+            }
+
+            lines.add(dialect.addToPathVariableCommand(
+                    List.of(ClinkHelper.getTargetDir(shellControl).toString()), false));
+            lines.add("clink inject --quiet --profile \"" + configDir + "\"");
         } else {
-            lines.add("eval \"$(starship init " + dialect.getId() + ")\"");
+            if (ShellDialects.isPowershell(shellControl)) {
+                lines.add("Invoke-Expression (&starship init powershell)");
+            } else if (dialect == ShellDialects.FISH) {
+                lines.add("starship init fish | source");
+            } else {
+                lines.add("eval \"$(starship init " + dialect.getId() + ")\"");
+            }
         }
         return ShellScript.lines(lines);
     }

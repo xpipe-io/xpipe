@@ -16,12 +16,16 @@ public class GuiMode extends PlatformMode {
 
     @Override
     public void onSwitchFrom() {
-        Platform.runLater(() -> {
-            TrackEvent.info("Closing windows");
-            Stage.getWindows().stream().toList().forEach(w -> {
-                w.hide();
+        // If we are in an externally started shutdown hook, don't close the windows until the platform exits
+        // That way, it is kept open to block for shutdowns
+        if (!OperationMode.isInShutdownHook()) {
+            Platform.runLater(() -> {
+                TrackEvent.info("Closing windows");
+                Stage.getWindows().stream().toList().forEach(w -> {
+                    w.hide();
+                });
             });
-        });
+        }
     }
 
     @Override

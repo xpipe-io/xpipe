@@ -158,11 +158,6 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
     public void install(ShellControl sc) throws Exception {
         if (sc.getShellDialect() == ShellDialects.CMD) {
             ClinkHelper.install(sc);
-            var configDir = getConfigurationDirectory(sc);
-            sc.view().mkdir(configDir);
-            sc.view()
-                    .writeTextFile(
-                            configDir.join("oh-my-posh.lua"), "load(io.popen('oh-my-posh init cmd'):read(\"*a\"))()");
         }
 
         var dir = getBinaryDirectory(sc);
@@ -189,19 +184,25 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
         var lines = new ArrayList<String>();
         var dialect = shellControl.getOriginalShellDialect();
         if (dialect == ShellDialects.CMD) {
+            var configDir = getConfigurationDirectory(shellControl);
+            shellControl.view().mkdir(configDir);
+            var configFile = configDir.join("oh-my-posh.lua");
+            if (!shellControl.view().fileExists(configFile)) {
+                shellControl.view().writeTextFile(configFile, "load(io.popen('oh-my-posh init cmd'):read(\"*a\"))()");
+            }
+
             lines.add(dialect.addToPathVariableCommand(
                     List.of(ClinkHelper.getTargetDir(shellControl).toString()), false));
-        }
-        var configArg = config != null ? " --config \"" + config + "\"" : "";
-        if (dialect == ShellDialects.CMD) {
-            lines.add("clink inject --quiet --profile \"" + getConfigurationDirectory(shellControl) + "\"");
-        } else if (ShellDialects.isPowershell(shellControl)) {
-            lines.add("& ([ScriptBlock]::Create((oh-my-posh init $(oh-my-posh get shell) --print" + configArg
-                    + ") -join \"`n\"))");
-        } else if (dialect == ShellDialects.FISH) {
-            lines.add("oh-my-posh init fish" + configArg + " | source");
+            lines.add("clink inject --quiet --profile \"" + configDir + "\"");
         } else {
-            lines.add("eval \"$(oh-my-posh init " + dialect.getId() + configArg + ")\"");
+            var configArg = config != null ? " --config \"" + config + "\"" : "";
+            if (ShellDialects.isPowershell(shellControl)) {
+                lines.add("& ([ScriptBlock]::Create((oh-my-posh init $(oh-my-posh get shell) --print" + configArg + ") -join \"`n\"))");
+            } else if (dialect == ShellDialects.FISH) {
+                lines.add("oh-my-posh init fish" + configArg + " | source");
+            } else {
+                lines.add("eval \"$(oh-my-posh init " + dialect.getId() + configArg + ")\"");
+            }
         }
         return ShellScript.lines(lines);
     }

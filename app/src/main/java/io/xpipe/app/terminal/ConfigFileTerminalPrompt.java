@@ -59,13 +59,9 @@ public abstract class ConfigFileTerminalPrompt implements TerminalPrompt {
                     return Optional.empty();
                 }
 
-                FilePath configFile = getTargetConfigFile(shellControl);
-                if (configuration == null || configuration.isBlank()) {
-                    shellControl.view().deleteFileIfPossible(configFile);
-                    configFile = null;
-                } else {
-                    prepareCustomConfigFile(shellControl, configFile);
-                    shellControl.view().writeTextFile(configFile, configuration);
+                FilePath configFile = null;
+                if (configuration != null && !configuration.isBlank()) {
+                    configFile = shellControl.view().writeTextFileDeterministic(getTargetConfigFile(shellControl), configuration);
                 }
 
                 var s = shellControl

@@ -36,6 +36,9 @@ public abstract class OperationMode {
     @Getter
     private static boolean inShutdown;
 
+    @Getter
+    private static boolean inShutdownHook;
+
     private static OperationMode CURRENT = null;
 
     public static OperationMode map(XPipeDaemonMode mode) {
@@ -71,6 +74,7 @@ public abstract class OperationMode {
                     return;
                 }
 
+                inShutdownHook = true;
                 TrackEvent.info("Received SIGTERM externally");
                 OperationMode.shutdown(false);
             }));

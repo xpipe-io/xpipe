@@ -19,10 +19,9 @@ public class ShellView {
         return shellControl.getShellDialect();
     }
 
-    public FilePath writeTempTextFileDeterministic(String fileName, String text) throws Exception {
+    public FilePath writeTextFileDeterministic(FilePath base, String text) throws Exception {
         var hash = Math.abs(text.hashCode());
-        var f = FilePath.of(fileName);
-        var target = FilePath.of(f.getBaseName().toString() + "-" + hash + f.getExtension());
+        var target = FilePath.of(base.getBaseName().toString() + "-" + hash + "." + base.getExtension());
         if (fileExists(target)) {
             return target;
         }
