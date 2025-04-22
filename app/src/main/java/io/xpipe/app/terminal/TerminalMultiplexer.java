@@ -26,7 +26,7 @@ public interface TerminalMultiplexer {
 
     void checkSupported(ShellControl sc) throws Exception;
 
-    ShellScript launchScriptExternal(ShellControl control, String command, TerminalInitScriptConfig config);
+    ShellScript launchForExistingSession(ShellControl control, String command, TerminalInitScriptConfig config);
 
-    ShellScript launchScriptSession(ShellControl control, String command, TerminalInitScriptConfig config);
+    ShellScript launchNewSession(ShellControl control, String command, TerminalInitScriptConfig config);
 }

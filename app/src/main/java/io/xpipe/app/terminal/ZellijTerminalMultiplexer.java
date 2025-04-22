@@ -25,7 +25,7 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
     }
 
     @Override
-    public ShellScript launchScriptExternal(ShellControl control, String command, TerminalInitScriptConfig config) {
+    public ShellScript launchForExistingSession(ShellControl control, String command, TerminalInitScriptConfig config) {
         return ShellScript.lines(
                 "zellij attach --create-background xpipe",
                 "zellij -s xpipe action new-tab --name \"" + escape(config.getDisplayName(), false, true) + "\"",
@@ -35,7 +35,7 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
     }
 
     @Override
-    public ShellScript launchScriptSession(ShellControl control, String command, TerminalInitScriptConfig config) {
+    public ShellScript launchNewSession(ShellControl control, String command, TerminalInitScriptConfig config) {
         return ShellScript.lines(
                 "zellij delete-session -f xpipe > /dev/null 2>&1",
                 "zellij attach --create-background xpipe",

@@ -577,7 +577,7 @@ public class AppPrefs {
         }
 
         // Migrate legacy password manager
-        if (passwordManagerCommand.get() != null && passwordManager.getValue() == null) {
+        if (passwordManagerCommand.get() != null && !passwordManagerCommand.get().isBlank() && passwordManager.getValue() == null) {
             passwordManager.setValue(PasswordManagerCommand.builder()
                     .script(new ShellScript(passwordManagerCommand.get()))
                     .build());
@@ -634,6 +634,8 @@ public class AppPrefs {
                 .filter(appPrefsCategory -> appPrefsCategory.getId().equals(id))
                 .findFirst();
         found.ifPresent(appPrefsCategory -> {
+            // Reset scroll in case the target category is already somewhat in focus
+            selectedCategory.setValue(null);
             selectedCategory.setValue(appPrefsCategory);
         });
     }

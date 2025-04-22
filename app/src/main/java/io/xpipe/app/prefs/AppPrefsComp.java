@@ -92,7 +92,7 @@ public class AppPrefsComp extends SimpleComp {
     }
 
     private double computeCategoryOffset(VBox box, ScrollPane scrollPane, AppPrefsCategory val) {
-        var node = box.lookup("." + val.getId());
+        var node = val != null ? box.lookup("." + val.getId()) : null;
         if (node != null && scrollPane.getHeight() > 0.0) {
             var s = Math.min(
                             box.getHeight(),

@@ -139,6 +139,9 @@ public interface SecretRetrievalStrategy {
                 public SecretQueryResult query(String prompt) {
                     var pm = AppPrefs.get().passwordManager().getValue();
                     if (pm == null) {
+                        ErrorEvent.fromMessage("A password manager was requested but no password manager has been set in the settings menu")
+                                .expected()
+                                .handle();
                         return new SecretQueryResult(null, SecretQueryState.RETRIEVAL_FAILURE);
                     }
 

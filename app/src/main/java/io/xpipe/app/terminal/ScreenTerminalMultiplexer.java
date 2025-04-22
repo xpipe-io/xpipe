@@ -26,7 +26,7 @@ public class ScreenTerminalMultiplexer implements TerminalMultiplexer {
     }
 
     @Override
-    public ShellScript launchScriptExternal(ShellControl control, String command, TerminalInitScriptConfig config) {
+    public ShellScript launchForExistingSession(ShellControl control, String command, TerminalInitScriptConfig config) {
         // Screen has a limit of 100 chars for commands
         var effectiveCommand = command.length() > 90
                 ? ScriptHelper.createExecScript(control, command).toString()
@@ -36,7 +36,7 @@ public class ScreenTerminalMultiplexer implements TerminalMultiplexer {
     }
 
     @Override
-    public ShellScript launchScriptSession(ShellControl control, String command, TerminalInitScriptConfig config) {
+    public ShellScript launchNewSession(ShellControl control, String command, TerminalInitScriptConfig config) {
         // Screen has a limit of 100 chars for commands
         var effectiveCommand = command.length() > 90
                 ? ScriptHelper.createExecScript(control, command).toString()

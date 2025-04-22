@@ -26,8 +26,7 @@ public class PowerShellTerminalType extends ExternalTerminalType.SimplePathType 
 
     @Override
     public int getProcessHierarchyOffset() {
-        var powershell = ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.POWERSHELL
-                || AppPrefs.get().enableTerminalLogging().get();
+        var powershell = ShellDialects.isPowershell(ProcessControlProvider.get().getEffectiveLocalDialect());
         return powershell ? -1 : 0;
     }
 

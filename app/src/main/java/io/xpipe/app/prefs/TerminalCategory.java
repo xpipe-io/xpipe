@@ -131,12 +131,16 @@ public class TerminalCategory extends AppPrefsCategory {
                     ThreadHelper.runFailableAsync(() -> {
                         var term = AppPrefs.get().terminalType().getValue();
                         if (term != null) {
+                            // Don't use tabs to not use multiplexer stuff
                             TerminalLauncher.open(
+                                    null,
                                     "Test",
+                                    null,
                                     ProcessControlProvider.get()
                                             .createLocalProcessControl(true)
                                             .command(ProcessControlProvider.get().getEffectiveLocalDialect().getEchoCommand("If you can read this, the terminal integration works", false)),
-                                    UUID.randomUUID());
+                                    UUID.randomUUID(),
+                                    false);
                         }
                     });
                 })

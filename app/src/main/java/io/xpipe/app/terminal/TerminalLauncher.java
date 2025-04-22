@@ -243,7 +243,7 @@ public class TerminalLauncher {
         var openCommand = launchConfiguration.getDialectLaunchCommand().buildFull(control);
         var multiplexerCommand = multiplexer
                 .get()
-                .launchScriptExternal(control, openCommand, initScriptConfig)
+                .launchForExistingSession(control, openCommand, initScriptConfig)
                 .toString();
         control.command(multiplexerCommand).execute();
         TerminalView.focus(session.get());
@@ -270,7 +270,7 @@ public class TerminalLauncher {
         if (proxyControl.isPresent()) {
             var proxyMultiplexerCommand = multiplexer
                     .get()
-                    .launchScriptSession(proxyControl.get(), openCommand, initScriptConfig)
+                    .launchNewSession(proxyControl.get(), openCommand, initScriptConfig)
                     .toString();
             var proxyLaunchCommand = proxyControl
                     .get()
@@ -291,7 +291,7 @@ public class TerminalLauncher {
         } else {
             var multiplexerCommand = multiplexer
                     .get()
-                    .launchScriptSession(LocalShell.getShell(), openCommand, initScriptConfig)
+                    .launchNewSession(LocalShell.getShell(), openCommand, initScriptConfig)
                     .toString();
             var launchCommand = LocalShell.getShell()
                     .prepareIntermediateTerminalOpen(

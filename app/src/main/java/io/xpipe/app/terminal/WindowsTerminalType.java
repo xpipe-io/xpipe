@@ -45,29 +45,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         var fixedName = FileNames.removeTrailingSlash(configuration.getColoredTitle());
         cmd.add("--title").addQuoted(fixedName);
         cmd.add("--profile").addQuoted("{021eff0f-b38a-45f9-895d-41467e9d510f}");
-
-        // wt can't elevate a command consisting out of multiple parts if wt is configured to elevate by default
-        // So work around it by just passing a script file if possible
-        if (ShellDialects.isPowershell(configuration.getScriptDialect())) {
-            var usesPowershell =
-                    ShellDialects.isPowershell(ProcessControlProvider.get().getEffectiveLocalDialect());
-            if (usesPowershell) {
-                // We can't work around it in this case, so let's just hope that there's no elevation configured
-                cmd.add(configuration.getDialectLaunchCommand());
-            } else {
-                // There might be a mismatch if we are for example using logging
-                // In this case we can actually work around the problem
-                cmd.addFile(shellControl -> {
-                    var script = ScriptHelper.createExecScript(
-                            shellControl,
-                            configuration.getDialectLaunchCommand().buildFull(shellControl));
-                    return script;
-                });
-            }
-        } else {
-            cmd.addFile(configuration.getScriptFile());
-        }
-
+        cmd.add(configuration.getDialectLaunchCommand());
         return cmd;
     }
 
@@ -123,13 +101,6 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
     @Override
     default TerminalOpenFormat getOpenFormat() {
         return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
-    }
-
-    @Override
-    default int getProcessHierarchyOffset() {
-        var powershell = AppPrefs.get().enableTerminalLogging().get()
-                && !ShellDialects.isPowershell(ProcessControlProvider.get().getEffectiveLocalDialect());
-        return powershell ? 1 : 0;
     }
 
     @Override
